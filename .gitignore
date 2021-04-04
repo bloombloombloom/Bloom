@@ -1,0 +1,9 @@
+.idea/
+release
+_CPack_Packages
+build/cmake-build-debug
+build/cmake-build-release
+build/resources
+build/bin/bloom
+build/bin/bloom.json
+*.deb

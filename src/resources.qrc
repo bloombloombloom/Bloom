@@ -1,0 +1,16 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+    <file alias="/compiled/resources/help.txt">../resources/help.txt</file>
+    <file alias="/compiled/resources/bloom.template.json">../resources/bloom.template.json</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss">./Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg">./Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/RAM.svg">./Insight/UserInterfaces/InsightWindow/Images/RAM.svg</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/refresh.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh.svg</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</file>
+</qresource>
+</RCC>

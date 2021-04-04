@@ -1,0 +1,190 @@
+* {
+    color: #c2c4c6;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+QMainWindow {
+    background-color: #3C3F41;
+}
+
+#header {
+    position: relative;
+    background-color: transparent;
+    max-height: 25px;
+    width: auto;
+    border-top: 1px solid #515151;
+    border-bottom: 1px solid #515151;
+}
+
+QMenuBar::item {
+    position: relative;
+    margin: 0;
+    top: 0;
+    padding-top: 0;
+    padding-bottom: 1px;
+    padding-right: 4px;
+    padding-left: 4px;
+    background-color: transparent;
+    float: left;
+    font-size: 14px;
+    border: none;
+}
+
+QMenuBar::item:pressed {
+    background-color: #2F65CA;
+}
+
+QMenuBar {
+    border: none;
+    margin: 0;
+    padding: 0;
+    min-height: 24px;
+    background-color: transparent;
+    spacing: 0;
+    color: #c2c4c6;
+    font-size: 14px;
+}
+
+QMenu {
+    margin: 0;
+    padding: 0;
+    background-color: #3C3F41;
+    color: #c2c4c6;
+    border: 1px solid #515151;
+    min-width: 200px;
+    font-size: 14px;
+}
+
+QMenu::item {
+    padding: 4px 5px 4px 25px;
+    min-width: 200px;
+}
+
+QMenu::item:selected {
+    background-color: #2F65CA;
+}
+
+QMenu::item:disabled {
+    color: #808484;
+}
+
+QMenu#help-menu::separator {
+    border-top: 1px solid #515151;
+    height: 1px;
+    margin: 1px 0;
+}
+
+#rhSideBar {
+    max-width: 25px;
+    background-color: transparent;
+    height: auto;
+    border-left: 1px solid #515151;
+    text-align: right;
+}
+
+#rhSideBar #inspectRamBtn {
+    position: relative;
+    max-width: 25px;
+    height: 25px;
+    color: #000;
+    border: none;
+    qproperty-icon: url(":/compiled/Insight/UserInterfaces/InsightWindow/Images/RAM.svg");
+    icon-size: 25px;
+}
+
+#rhSideBar #inspectRamBtn:hover {
+    background-color: #343536;
+    border: none;
+
+}
+
+#header-tool-bar {
+    min-height: 25px;
+    min-width: 100%;
+}
+
+#header-tool-bar QToolButton {
+    background-color: transparent;
+    max-width: 25px;
+    max-height: 21px;
+    border: none;
+    padding: 0;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    margin-left: 2px;
+}
+
+#header-tool-bar QToolButton:hover {
+    background-color: #505353;
+    border: none;
+    padding: 0;
+}
+
+QToolTip {
+    background-color: #474949;
+    border: 1px solid #616365;
+    color: #c2c4c6;
+    padding: 1px 2px;
+    font-size: 13px;
+}
+
+
+#footer {
+    position: relative;
+    background-color: transparent;
+    padding: 0 3px 0 30px;
+    max-height: 25px;
+    width: auto;
+    border-top: 1px solid #515151;
+
+}
+
+#footer QLabel,
+#target-variant-menu-bar,
+#footer QMenu::item {
+    font-size: 14px;
+}
+
+#target-variant-menu-bar::item {
+    padding: 0 10px 0 4px;
+    border-left: 1px solid #515151;
+    margin-bottom: 0;
+}
+
+#target-variant-menu-bar::item:selected {
+    background-color: #4d4e50;
+}
+
+#footer QLabel {
+    margin-left: 3px;
+}
+
+#target-program-counter-value {
+    border-color: #515151;
+    border-style: solid;
+    border-width: 0 1px 0 0;
+    padding-right: 5px;
+    margin-right: 3px;
+}
+
+#target-name {
+    max-width: 200px;
+    padding-right: 0;
+    margin-right: 0;
+}
+
+#target-id {
+    margin-right: 6px;
+}
+
+#target-variant-menu-bar {
+    min-height: 25px;
+}
+
+#footer QLayoutItem {
+    max-width: 100px;
+}
+
+#target-variant-menu::item {
+    padding: 4px 10px 4px 10px;
+}

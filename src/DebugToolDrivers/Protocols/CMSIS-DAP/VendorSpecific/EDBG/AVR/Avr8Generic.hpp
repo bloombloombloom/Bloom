@@ -1,0 +1,146 @@
+#pragma once
+
+namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+{
+    struct Avr8EdbgParameter
+    {
+        unsigned char context = 0x00;
+        unsigned char id = 0x00;
+
+        constexpr Avr8EdbgParameter() = default;
+        constexpr Avr8EdbgParameter(unsigned char context, unsigned char id)
+            : context(context), id(id) {};
+    };
+
+    struct Avr8EdbgParameters
+    {
+        constexpr static Avr8EdbgParameter CONFIG_VARIANT {0x00, 0x00};
+        constexpr static Avr8EdbgParameter CONFIG_FUNCTION {0x00, 0x01};
+        constexpr static Avr8EdbgParameter PHYSICAL_INTERFACE {0x01, 0x00};
+        constexpr static Avr8EdbgParameter DW_CLOCK_DIVISION_FACTOR {0x01, 0x10};
+        constexpr static Avr8EdbgParameter XMEGA_PDI_CLOCK {0x01, 0x31};
+
+        // debugWire and JTAG parameters
+        constexpr static Avr8EdbgParameter DEVICE_BOOT_START_ADDR {0x02, 0x0A};
+        constexpr static Avr8EdbgParameter DEVICE_FLASH_BASE {0x02, 0x06};
+        constexpr static Avr8EdbgParameter DEVICE_SRAM_START {0x02, 0x0E};
+        constexpr static Avr8EdbgParameter DEVICE_EEPROM_SIZE {0x02, 0x10};
+        constexpr static Avr8EdbgParameter DEVICE_EEPROM_PAGE_SIZE {0x02, 0x12};
+        constexpr static Avr8EdbgParameter DEVICE_FLASH_PAGE_SIZE {0x02, 0x00};
+        constexpr static Avr8EdbgParameter DEVICE_FLASH_SIZE {0x02, 0x02};
+        constexpr static Avr8EdbgParameter DEVICE_OCD_REVISION {0x02, 0x13};
+        constexpr static Avr8EdbgParameter DEVICE_OCD_DATA_REGISTER {0x02, 0x18};
+        constexpr static Avr8EdbgParameter DEVICE_SPMCR_REGISTER {0x02, 0x1D};
+        constexpr static Avr8EdbgParameter DEVICE_OSCCAL_ADDR {0x02, 0x1E};
+        constexpr static Avr8EdbgParameter DEVICE_EEARH_ADDR {0x02, 0x19};
+        constexpr static Avr8EdbgParameter DEVICE_EEARL_ADDR {0x02, 0x1A};
+        constexpr static Avr8EdbgParameter DEVICE_EECR_ADDR {0x02, 0x1B};
+        constexpr static Avr8EdbgParameter DEVICE_EEDR_ADDR {0x02, 0x1C};
+
+        // PDI/XMega device parameters
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_APPL_BASE_ADDR {0x02, 0x00};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_BOOT_BASE_ADDR {0x02, 0x04};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_EEPROM_BASE_ADDR {0x02, 0x08};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_FUSE_BASE_ADDR {0x02, 0x0C};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_LOCKBIT_BASE_ADDR {0x02, 0x10};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_USER_SIGN_BASE_ADDR {0x02, 0x14};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_PROD_SIGN_BASE_ADDR {0x02, 0x18};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_DATA_BASE_ADDR {0x02, 0x1C};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_APPLICATION_BYTES {0x02, 0x20};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_BOOT_BYTES {0x02, 0x24};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_NVM_BASE {0x02, 0x2B};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_SIGNATURE_OFFSET {0x02, 0x2D};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_FLASH_PAGE_BYTES {0x02, 0x26};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_EEPROM_SIZE {0x02, 0x28};
+        constexpr static Avr8EdbgParameter DEVICE_XMEGA_EEPROM_PAGE_SIZE {0x02, 0x2A};
+
+        constexpr static Avr8EdbgParameter RUN_TIMERS_WHILST_STOPPED {0x03, 0x00};
+    };
+
+    enum class Avr8ConfigVariant: unsigned char
+    {
+        LOOPBACK = 0x00,
+        NONE = 0xff,
+        DEBUG_WIRE = 0x01,
+        MEGAJTAG = 0x02,
+        XMEGA = 0x03,
+        UPDI = 0x05,
+    };
+
+    enum class Avr8ConfigFunction: unsigned char
+    {
+        NONE = 0x00,
+        PROGRAMMING = 0x01,
+        DEBUGGING = 0x02,
+    };
+
+    enum class Avr8PhysicalInterface: unsigned char
+    {
+        NONE = 0x00,
+        JTAG = 0x04,
+        DEBUG_WIRE = 0x05,
+        PDI = 0x06,
+        PDI_1W = 0x08,
+    };
+
+    enum class Avr8MemoryType: unsigned char
+    {
+        /**
+         * The SRAM memory type can be used to read  &write to internal memory on the target.
+         *
+         * It's available with all of the config variants in debugging mode.
+         */
+        SRAM = 0x20,
+
+        /**
+         * The EEPROM memory type can be used to read  &write to EEPROM memory on the target.
+         *
+         * It's available with all of the config variants, in debugging mode.
+         */
+        EEPROM = 0x22,
+
+        /**
+         * The FLASH_PAGE memory type can be used to read  &write full flash pages on the target.
+         *
+         * Only available with the JTAG and debugWire config variants.
+         *
+         * This memory type is not available with the JTAG config variant in debugging mode. Programming mode will need
+         * to be enabled before it can be used with JTAG targets. With the debugWire variant, this memory type *can* be
+         * used whilst in debugging mode.
+         */
+        FLASH_PAGE = 0xB0,
+
+        /**
+         * The APPL_FLASH memory type can be used to read/write flash memory on the target.
+         *
+         * Only available with the XMEGA (PDI) and UPDI (PDI_1W) config variants.
+         *
+         * When in debugging mode, only read access is permitted. Programming mode will need to be enabled before
+         * any attempts of writing data.
+         */
+        APPL_FLASH = 0xC0,
+
+        /**
+         * The SPM memory type can be used to read memory from the target whilst in debugging mode.
+         *
+         * Only available with JTAG and debugWire config variants.
+         */
+        SPM = 0xA0,
+
+        /**
+         * The REGISTER_FILE memory type can be used to read  &write to general purpose registers.
+         *
+         * Only available in debugging mode and with XMEGA and UPDI config variants. The SRAM memory type can be used
+         * to access general purpose registers when other variants are in use.
+         */
+        REGISTER_FILE = 0xB8,
+    };
+
+    enum class Avr8ResponseId: unsigned char
+    {
+        OK = 0x80,
+        DATA = 0x84,
+        FAILED = 0xA0,
+    };
+
+}

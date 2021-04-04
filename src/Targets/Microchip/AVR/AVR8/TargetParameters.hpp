@@ -1,0 +1,54 @@
+#pragma once
+
+#include <cstdint>
+#include <optional>
+
+#include "src/Targets/Microchip/AVR/AVR8/PartDescription/AddressSpace.hpp"
+#include "../TargetSignature.hpp"
+#include "Family.hpp"
+
+namespace Bloom::Targets::Microchip::Avr::Avr8Bit
+{
+    struct TargetParameters
+    {
+        std::optional<Family> family;
+
+        std::optional<std::uint32_t> bootSectionStartAddress;
+        std::optional<std::uint32_t> gpRegisterStartAddress;
+        std::optional<std::uint32_t> gpRegisterSize;
+        std::optional<std::uint16_t> flashPageSize;
+        std::optional<std::uint32_t> flashSize;
+        std::optional<std::uint32_t> flashStartAddress;
+        std::optional<std::uint16_t> ramStartAddress;
+        std::optional<std::uint32_t> ramSize;
+        std::optional<std::uint16_t> eepromSize;
+        std::optional<std::uint16_t> eepromPageSize;
+        std::optional<std::uint8_t> eepromAddressRegisterHigh;
+        std::optional<std::uint8_t> eepromAddressRegisterLow;
+        std::optional<std::uint8_t> eepromDataRegisterAddress;
+        std::optional<std::uint8_t> eepromControlRegisterAddress;
+        std::optional<std::uint8_t> ocdRevision;
+        std::optional<std::uint8_t> ocdDataRegister;
+        std::optional<std::uint16_t> statusRegisterStartAddress;
+        std::optional<std::uint16_t> statusRegisterSize;
+        std::optional<std::uint16_t> stackPointerRegisterStartAddress;
+        std::optional<std::uint16_t> stackPointerRegisterSize;
+        std::optional<std::uint8_t> spmcsRegisterStartAddress;
+        std::optional<std::uint8_t> osccalAddress;
+
+        // XMega/PDI specific target params
+        std::optional<std::uint32_t> appSectionPdiOffset;
+        std::optional<std::uint16_t> bootSectionSize;
+        std::optional<std::uint32_t> bootSectionPdiOffset;
+        std::optional<std::uint32_t> eepromPdiOffset;
+        std::optional<std::uint32_t> ramPdiOffset;
+        std::optional<std::uint32_t> fuseRegistersPdiOffset;
+        std::optional<std::uint32_t> lockRegistersPdiOffset;
+        std::optional<std::uint32_t> userSignaturesPdiOffset;
+        std::optional<std::uint32_t> productSignaturesPdiOffset;
+
+
+        std::optional<std::uint32_t> ioPortAddressRangeStart;
+        std::optional<std::uint32_t> ioPortAddressRangeEnd;
+    };
+}

@@ -1,0 +1,5 @@
+# Suppression file can be specified via:
+# TSAN_OPTIONS="suppressions=../../../ThreadSanitizerSuppression.txt" bloom
+
+race:libusb-1.0
+race:libglib

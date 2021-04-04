@@ -1,0 +1,30 @@
+#target-pin-number,
+#target-pin-number {
+    font-size: 14px;
+}
+
+#target-pin-name,
+#target-pin-direction {
+    font-size: 11px;
+}
+
+#target-pin-name {
+    color: #a6a7aa;
+}
+
+#target-pin-direction {
+    color: #8a8a8d;
+}
+
+#target-pin-number-top {
+}
+
+#target-body {
+    qproperty-bodyColor: #A6A8AB;
+    qproperty-disableAlphaLevel: 100;
+}
+
+#target-pin-body {
+    qproperty-bodyColor: #A6A8AB;
+    qproperty-disableAlphaLevel: 100;
+}

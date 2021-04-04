@@ -1,0 +1,20 @@
+{
+  "environments": {
+    "default": {
+      "debugToolName": "atmel-ice",
+
+      "target": {
+        "name": "avr8",
+        "physicalInterface": "debugWire"
+      },
+
+      "debugServer": {
+        "name": "avr-gdb-rsp"
+      }
+    }
+  },
+
+  "insight": {
+    "enabled": true
+  }
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <widget class="QMainWindow" name="about-window">
+        <property name="windowTitle"><string>About</string></property>
+        <property name="maximized"><bool>false</bool></property>
+
+        <widget class="QWidget" name="container">
+            <layout class="QVBoxLayout">
+                <item alignment="Qt::AlignHCenter">
+                    <widget class="QWidget" name="bloom-icon">
+
+                    </widget>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                    <widget class="QLabel" name="version-label">
+                        <property name="text">
+                            <string>Bloom</string>
+                        </property>
+                    </widget>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                    <widget class="QLabel" name="link-label">
+                        <property name="text">
+                            <string><![CDATA[
+                            <a style="color: #3F86A0;" href="https://bloom.oscillate.io/">https://bloom.oscillate.io/</a>
+                            ]]></string>
+                        </property>
+                        <property name="openExternalLinks">
+                            <bool>true</bool>
+                        </property>
+                    </widget>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                    <widget class="QLabel" name="author-label">
+                        <property name="text">
+                            <string>Nav Mohammed</string>
+                        </property>
+                    </widget>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                    <spacer name="vSpacer">
+                        <property name="orientation">
+                            <enum>Qt::Vertical</enum>
+                        </property>
+                    </spacer>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                    <widget class="QLabel" name="os-link-label">
+                        <property name="text">
+                            <string><![CDATA[
+                            <span>Powered by <a style="color: #3F86A0;" href="https://bloom.oscillate.io/">open-source software</a></span>
+                            ]]></string>
+                        </property>
+                        <property name="openExternalLinks">
+                            <bool>true</bool>
+                        </property>
+                    </widget>
+                </item>
+            </layout>
+        </widget>
+    </widget>
+</ui>
