@@ -30,8 +30,8 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
      *
      * Each debug tool that supports interfacing with AVR8 targets must provide an implementation
      * of this interface class. For example, the Atmel-ICE provides the EdbgAvr8Interface implementation for
-     * interfacing with AVR8 targets. See Bloom::DebugToolDrivers::AtmelIce->getAvr8Interface() and
-     * Bloom::DebugToolDriver->getAvr8Interface() for more on this.
+     * interfacing with AVR8 targets. See Bloom::DebugToolDrivers::AtmelIce::getAvr8Interface() and
+     * Bloom::DebugTool::getAvr8Interface() for more on this.
      */
     class Avr8Interface
     {

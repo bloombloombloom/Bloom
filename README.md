@@ -1,5 +1,3 @@
-<img alt="" src="/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg"/>
-
 ## Bloom
 Bloom is a Linux-based debug platform for microcontrollers. This is the official repository for Bloom's source code.
 For information on how to use Bloom, please visit https://bloom.oscillate.io.
