@@ -11,7 +11,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
     public:
         ActivatePhysical() = default;
-        ActivatePhysical(bool reset) : reset(reset) {};
+        ActivatePhysical(bool reset): reset(reset) {};
 
         void setReset(bool reset) {
             this->reset = reset;

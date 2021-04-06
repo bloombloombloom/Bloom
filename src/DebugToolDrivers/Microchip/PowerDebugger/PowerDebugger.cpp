@@ -1,5 +1,3 @@
-#include <stdexcept>
-
 #include "PowerDebugger.hpp"
 #include "src/Exceptions/Exception.hpp"
 

@@ -20,7 +20,7 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
         std::optional<TargetRegisterMap> registerMap;
         std::optional<StopReason> stopReason;
 
-        TargetStopped(Signal signal) : signal(signal) {}
+        TargetStopped(Signal signal): signal(signal) {}
 
         std::vector<unsigned char> getData() const override {
             std::string output = "T" + this->dataToHex({static_cast<unsigned char>(this->signal)});

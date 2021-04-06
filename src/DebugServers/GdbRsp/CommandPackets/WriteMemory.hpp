@@ -29,7 +29,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
 
         TargetMemoryBuffer buffer;
 
-        WriteMemory(std::vector<unsigned char> rawPacket) : CommandPacket(rawPacket) {
+        WriteMemory(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             init();
         };
 

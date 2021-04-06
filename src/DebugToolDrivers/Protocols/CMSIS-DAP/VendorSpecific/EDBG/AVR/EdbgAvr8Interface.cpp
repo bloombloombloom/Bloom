@@ -5,6 +5,7 @@
 #include "EdbgAvr8Interface.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Exceptions/Avr8CommandFailure.hpp"
+#include "src/Logger/Logger.hpp"
 
 // Command frames
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/SetParameter.hpp"

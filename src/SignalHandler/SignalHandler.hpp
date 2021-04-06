@@ -1,9 +1,10 @@
 #pragma once
 
-#include <src/Helpers/Thread.hpp>
-#include <src/EventManager/EventManager.hpp>
-#include "src/Helpers/SyncSafe.hpp"
 #include <csignal>
+
+#include "src/Helpers/Thread.hpp"
+#include "src/EventManager/EventManager.hpp"
+#include "src/Helpers/SyncSafe.hpp"
 
 namespace Bloom
 {
@@ -33,7 +34,7 @@ namespace Bloom
         int shutdownSignalsReceived = 0;
 
     public:
-        SignalHandler(EventManager& eventManager) : eventManager(eventManager) {};
+        SignalHandler(EventManager& eventManager): eventManager(eventManager) {};
 
         /**
          * Entry point for SignalHandler thread.

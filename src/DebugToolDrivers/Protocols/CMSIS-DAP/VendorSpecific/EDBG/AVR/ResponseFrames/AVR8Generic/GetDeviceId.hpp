@@ -10,7 +10,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     class GetDeviceId: public Avr8GenericResponseFrame
     {
     public:
-        GetDeviceId(const std::vector<AvrResponse>& AvrResponses) : Avr8GenericResponseFrame(AvrResponses) {}
+        GetDeviceId(const std::vector<AvrResponse>& AvrResponses): Avr8GenericResponseFrame(AvrResponses) {}
         GetDeviceId() {}
 
         TargetSignature extractSignature(Avr8PhysicalInterface physicalInterface) {

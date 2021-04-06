@@ -29,7 +29,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         void init();
 
     public:
-        SupportedFeaturesQuery(std::vector<unsigned char> rawPacket) : CommandPacket(rawPacket) {
+        SupportedFeaturesQuery(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             this->init();
         };
 

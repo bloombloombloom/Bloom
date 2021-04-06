@@ -14,7 +14,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         std::uint32_t programCounter = 0;
 
     public:
-        SetProgramCounter(std::uint32_t programCounter) : programCounter(programCounter) {}
+        SetProgramCounter(std::uint32_t programCounter): programCounter(programCounter) {}
 
         virtual std::vector<unsigned char> getPayload() const override {
             /*

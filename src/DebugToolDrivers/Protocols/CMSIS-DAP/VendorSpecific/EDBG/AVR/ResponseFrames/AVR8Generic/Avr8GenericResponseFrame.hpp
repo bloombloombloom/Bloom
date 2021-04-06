@@ -7,7 +7,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     class Avr8GenericResponseFrame: public AvrResponseFrame
     {
     public:
-        Avr8GenericResponseFrame(const std::vector<AvrResponse>& AVRResponses) : AvrResponseFrame(AVRResponses) {}
+        Avr8GenericResponseFrame(const std::vector<AvrResponse>& AVRResponses): AvrResponseFrame(AVRResponses) {}
         Avr8GenericResponseFrame() {}
 
         /**

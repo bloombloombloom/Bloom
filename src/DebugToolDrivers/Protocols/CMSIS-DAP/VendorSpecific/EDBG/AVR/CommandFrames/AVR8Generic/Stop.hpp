@@ -11,7 +11,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
     public:
         Stop() = default;
-        Stop(bool stopImmediately) : stopImmediately(stopImmediately) {};
+        Stop(bool stopImmediately): stopImmediately(stopImmediately) {};
 
         void setStopImmediately(bool stopImmediately) {
             this->stopImmediately = stopImmediately;

@@ -7,3 +7,4 @@ build/resources
 build/bin/bloom
 build/bin/bloom.json
 *.deb
+src/Generated

@@ -19,7 +19,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->setParameter(parameter);
         }
 
-        GetParameter(const Avr8EdbgParameter& parameter, std::uint8_t size) : GetParameter(parameter) {
+        GetParameter(const Avr8EdbgParameter& parameter, std::uint8_t size): GetParameter(parameter) {
             this->setSize(size);
         }
 

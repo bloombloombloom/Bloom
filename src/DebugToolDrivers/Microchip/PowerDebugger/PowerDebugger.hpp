@@ -59,7 +59,7 @@ namespace Bloom::DebugToolDrivers
         static const std::uint16_t USB_VENDOR_ID = 1003;
         static const std::uint16_t USB_PRODUCT_ID = 8516;
 
-        PowerDebugger() : UsbDevice(PowerDebugger::USB_VENDOR_ID, PowerDebugger::USB_PRODUCT_ID) {}
+        PowerDebugger(): UsbDevice(PowerDebugger::USB_VENDOR_ID, PowerDebugger::USB_PRODUCT_ID) {}
 
         void init() override;
         void close() override;

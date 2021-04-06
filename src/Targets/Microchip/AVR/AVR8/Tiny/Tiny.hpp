@@ -7,7 +7,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     class Tiny: public Avr8
     {
     public:
-        Tiny(const Avr8& avr8) : Avr8(avr8) {};
+        Tiny(const Avr8& avr8): Avr8(avr8) {};
 
         virtual bool supportsPromotion() override {
             return false;

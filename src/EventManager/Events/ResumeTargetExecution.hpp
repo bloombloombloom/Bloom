@@ -17,6 +17,6 @@ namespace Bloom::Events
         }
 
         ResumeTargetExecution() = default;
-        ResumeTargetExecution(std::uint32_t fromProgramCounter) : fromProgramCounter(fromProgramCounter) {};
+        ResumeTargetExecution(std::uint32_t fromProgramCounter): fromProgramCounter(fromProgramCounter) {};
     };
 }

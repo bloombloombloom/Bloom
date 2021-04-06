@@ -1,21 +1,17 @@
-#include <stdexcept>
-#include <iostream>
-
 #include "AvrEvent.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
 using namespace Bloom::Exceptions;
 
-void AvrEvent::init(unsigned char* response, size_t length)
-{
-    Response::init(response, length);
+void AvrEvent::init(const std::vector<unsigned char>& rawResponse) {
+    Response::init(rawResponse);
 
     if (this->getResponseId() != 0x82) {
         throw Exception("Failed to construct AvrEvent object - invalid response ID.");
     }
 
-    std::vector<unsigned char> responseData = this->getData();
+    auto& responseData = this->getData();
 
     if (responseData.size() < 2) {
         // All AVR_EVT responses should consist of at least two bytes (excluding the AVR_EVT ID)
@@ -32,7 +28,7 @@ void AvrEvent::init(unsigned char* response, size_t length)
                         "contained invalid event data size.");
     }
 
-    std::vector<unsigned char> eventData;
+    auto eventData = std::vector<unsigned char>();
 
     /*
      * Ignore the SOF, protocol version  &handler id and sequence ID (with all make up 5 bytes in total, 7 when

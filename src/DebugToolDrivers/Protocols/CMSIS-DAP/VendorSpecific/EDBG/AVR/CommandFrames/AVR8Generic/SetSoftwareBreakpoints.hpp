@@ -14,7 +14,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         SetSoftwareBreakpoints() = default;
 
-        SetSoftwareBreakpoints(const std::vector<std::uint32_t>& addresses) : addresses(addresses) {}
+        SetSoftwareBreakpoints(const std::vector<std::uint32_t>& addresses): addresses(addresses) {}
 
         void setAddresses(const std::vector<std::uint32_t>& addresses) {
             this->addresses = addresses;

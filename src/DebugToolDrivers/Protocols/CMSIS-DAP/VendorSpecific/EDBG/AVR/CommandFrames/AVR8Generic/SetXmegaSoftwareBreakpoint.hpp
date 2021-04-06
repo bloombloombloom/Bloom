@@ -14,7 +14,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         SetXmegaSoftwareBreakpoint() = default;
 
-        SetXmegaSoftwareBreakpoint(std::uint32_t address) : address(address) {}
+        SetXmegaSoftwareBreakpoint(std::uint32_t address): address(address) {}
 
         void setAddress(std::uint32_t address) {
             this->address = address;

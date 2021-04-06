@@ -16,9 +16,7 @@ std::vector<unsigned char> AvrCommand::getData() const
     data[2] = (unsigned char) (commandPacketSize & 0xFF);
 
     if (commandPacketSize > 0) {
-        for (std::size_t index = 0; index <= commandPacketSize - 1; index++) {
-            data[3 + index] = commandPacket[index];
-        }
+        data.insert(data.begin() + 3, commandPacket.begin(), commandPacket.end());
     }
 
     return data;

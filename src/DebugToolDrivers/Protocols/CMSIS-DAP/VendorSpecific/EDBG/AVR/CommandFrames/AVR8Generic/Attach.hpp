@@ -11,7 +11,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
     public:
         Attach() = default;
-        Attach(bool breakAfterAttach) : breakAfterAttach(breakAfterAttach) {};
+        Attach(bool breakAfterAttach): breakAfterAttach(breakAfterAttach) {};
 
         void setBreadAfterAttach(bool breakAfterAttach) {
             this->breakAfterAttach = breakAfterAttach;

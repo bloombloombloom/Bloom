@@ -80,7 +80,7 @@ namespace Bloom
         std::vector<GenericEventPointer> getEvents();
 
     public:
-        explicit EventListener(const std::string& name) : name(name) {};
+        explicit EventListener(const std::string& name): name(name) {};
 
         void setId(size_t id) {
             this->id = id;

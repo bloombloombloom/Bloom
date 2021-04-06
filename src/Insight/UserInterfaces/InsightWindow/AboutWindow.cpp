@@ -1,9 +1,9 @@
 #include <QtUiTools>
-#include <src/Exceptions/Exception.hpp>
 
 #include "AboutWindow.hpp"
 #include "TargetWidgets/DIP/DualInlinePackageWidget.hpp"
 #include "src/Logger/Logger.hpp"
+#include "src/Exceptions/Exception.hpp"
 #include "src/Application.hpp"
 
 using namespace Bloom;

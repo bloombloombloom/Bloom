@@ -169,7 +169,7 @@ namespace Bloom::DebugServers
         void removeBreakpointOnTarget(TargetBreakpoint breakpoint);
 
     public:
-        DebugServer(EventManager& eventManager) : eventManager(eventManager) {};
+        DebugServer(EventManager& eventManager): eventManager(eventManager) {};
 
         void setApplicationConfig(const ApplicationConfig& applicationConfig) {
             this->applicationConfig = applicationConfig;

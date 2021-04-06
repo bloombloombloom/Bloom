@@ -16,7 +16,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using namespace DebugToolDrivers;
     using namespace Targets;
     using namespace Targets::Microchip::Avr;
-    using namespace Events;
 
     using Protocols::CmsisDap::Edbg::EdbgInterface;
     using Targets::Microchip::Avr::Avr8Bit::Family;

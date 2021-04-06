@@ -112,7 +112,7 @@ namespace Bloom::DebugServers::Gdb
         };
 
     public:
-        AvrGdbRsp(EventManager& eventManager) : GdbRspDebugServer(eventManager) {};
+        AvrGdbRsp(EventManager& eventManager): GdbRspDebugServer(eventManager) {};
 
         std::string getName() const override {
             return "AVR GDB Remote Serial Protocol Debug Server";

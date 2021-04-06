@@ -25,9 +25,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         QueryContext context;
 
     public:
-        Query() : DiscoveryCommandFrame() {}
+        Query(): DiscoveryCommandFrame() {}
 
-        Query(QueryContext context) : DiscoveryCommandFrame() {
+        Query(QueryContext context): DiscoveryCommandFrame() {
             this->setContext(context);
         }
 

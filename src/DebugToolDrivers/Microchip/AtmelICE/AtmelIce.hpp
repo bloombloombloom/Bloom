@@ -67,7 +67,7 @@ namespace Bloom::DebugToolDrivers
         static const std::uint16_t USB_VENDOR_ID = 1003;
         static const std::uint16_t USB_PRODUCT_ID = 8513;
 
-        AtmelIce() : UsbDevice(AtmelIce::USB_VENDOR_ID, AtmelIce::USB_PRODUCT_ID) {}
+        AtmelIce(): UsbDevice(AtmelIce::USB_VENDOR_ID, AtmelIce::USB_PRODUCT_ID) {}
 
         void init() override;
         void close() override;

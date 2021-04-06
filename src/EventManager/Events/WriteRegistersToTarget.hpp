@@ -20,6 +20,6 @@ namespace Bloom::Events
         }
 
         WriteRegistersToTarget() = default;
-        WriteRegistersToTarget(const TargetRegisters& registers) : registers(registers) {};
+        WriteRegistersToTarget(const TargetRegisters& registers): registers(registers) {};
     };
 }

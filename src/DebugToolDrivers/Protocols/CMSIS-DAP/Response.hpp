@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <vector>
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
@@ -23,10 +22,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
 
     public:
         Response() = default;
-        virtual void init(unsigned char* response, std::size_t length);
-        virtual void init(std::vector<unsigned char> response) {
-            this->init(response.data(), response.size());
-        }
+        virtual void init(const std::vector<unsigned char>& rawResponse);
 
         unsigned char getResponseId() const {
             return this->responseId;

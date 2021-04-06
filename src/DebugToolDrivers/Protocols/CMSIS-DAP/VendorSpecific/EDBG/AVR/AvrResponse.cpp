@@ -6,20 +6,19 @@
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
 using namespace Bloom::Exceptions;
 
-void AvrResponse::init(unsigned char* response, std::size_t length)
-{
-    Response::init(response, length);
+void AvrResponse::init(const std::vector<unsigned char>& rawResponse) {
+    Response::init(rawResponse);
 
     if (this->getResponseId() != 0x81) {
         throw Exception("Failed to construct AvrResponse object - invalid response ID.");
     }
 
-    std::vector<unsigned char> responseData = this->getData();
+    auto& responseData = this->getData();
 
     if (responseData.empty()) {
         // All AVR responses should contain at least one byte (the fragment info byte)
         throw Exception("Failed to construct AvrResponse object - AVR_RSP response "
-                                 "returned no additional data");
+                        "returned no additional data");
     }
 
     if (responseData[0] == 0x00) {

@@ -60,11 +60,11 @@ namespace Bloom::Exceptions
         });
 
     public:
-        explicit Avr8CommandFailure(const std::string& message) : Exception(message) {
+        explicit Avr8CommandFailure(const std::string& message): Exception(message) {
             this->message = message;
         }
 
-        explicit Avr8CommandFailure(const char* message) : Exception(message) {
+        explicit Avr8CommandFailure(const char* message): Exception(message) {
             this->message = std::string(message);
         }
 

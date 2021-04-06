@@ -17,6 +17,6 @@ namespace Bloom::Events
         }
 
         StepTargetExecution() = default;
-        StepTargetExecution(std::uint32_t fromProgramCounter) : fromProgramCounter(fromProgramCounter) {};
+        StepTargetExecution(std::uint32_t fromProgramCounter): fromProgramCounter(fromProgramCounter) {};
     };
 }

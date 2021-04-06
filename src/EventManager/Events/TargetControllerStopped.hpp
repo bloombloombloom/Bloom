@@ -1,7 +1,7 @@
 #pragma once
 
-#include <src/Exceptions/Exception.hpp>
 #include "Event.hpp"
+#include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::Events
 {

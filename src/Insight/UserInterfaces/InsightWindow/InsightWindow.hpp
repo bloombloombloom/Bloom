@@ -5,7 +5,6 @@
 #include <QtUiTools/QtUiTools>
 #include <memory>
 #include <optional>
-#include <src/Logger/Logger.hpp>
 
 #include "AboutWindow.hpp"
 #include "TargetWidgets/TargetPackageWidget.hpp"

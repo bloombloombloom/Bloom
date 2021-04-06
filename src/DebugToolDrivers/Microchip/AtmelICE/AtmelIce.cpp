@@ -1,5 +1,3 @@
-#include <stdexcept>
-
 #include "AtmelIce.hpp"
 #include "src/Exceptions/Exception.hpp"
 

@@ -11,7 +11,7 @@ namespace Bloom::Events
     private:
         ThreadState state;
     public:
-        TargetControllerStateChanged(ThreadState state) : state(state) {
+        TargetControllerStateChanged(ThreadState state): state(state) {
 
         };
 

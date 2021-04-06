@@ -28,7 +28,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          */
         std::optional<int> registerNumber;
 
-        ReadGeneralRegisters(std::vector<unsigned char> rawPacket) : CommandPacket(rawPacket) {
+        ReadGeneralRegisters(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             init();
         };
 

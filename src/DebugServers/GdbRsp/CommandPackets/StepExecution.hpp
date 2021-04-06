@@ -23,7 +23,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          */
         std::optional<size_t> fromProgramCounter;
 
-        StepExecution(std::vector<unsigned char> rawPacket) : CommandPacket(rawPacket) {
+        StepExecution(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             init();
         };
 

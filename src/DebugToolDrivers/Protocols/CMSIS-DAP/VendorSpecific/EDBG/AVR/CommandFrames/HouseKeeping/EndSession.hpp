@@ -23,7 +23,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         }
 
     public:
-        EndSession() : HouseKeepingCommandFrame() {
+        EndSession(): HouseKeepingCommandFrame() {
             this->init();
         }
     };

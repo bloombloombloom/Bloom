@@ -1,7 +1,7 @@
 #pragma once
 
-#include <src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/DiscoveryResponseFrame.hpp>
 #include "../AvrCommandFrame.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/DiscoveryResponseFrame.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Discovery
 {

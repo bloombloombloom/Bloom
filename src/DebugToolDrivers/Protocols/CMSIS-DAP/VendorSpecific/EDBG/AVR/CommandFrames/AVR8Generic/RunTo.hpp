@@ -14,7 +14,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         RunTo() = default;
 
-        RunTo(const std::uint32_t& address) : address(address) {}
+        RunTo(const std::uint32_t& address): address(address) {}
 
         void setAddress(const std::uint32_t& address) {
             this->address = address;

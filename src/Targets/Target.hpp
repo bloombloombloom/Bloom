@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <src/EventManager/Events/Event.hpp>
 #include <set>
 #include <map>
 
@@ -18,8 +17,6 @@
 
 namespace Bloom::Targets
 {
-    using namespace Events;
-
     class Target
     {
     protected:

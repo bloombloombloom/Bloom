@@ -1,7 +1,7 @@
 #pragma once
 
-#include <src/Helpers/Thread.hpp>
 #include "Event.hpp"
+#include "src/Helpers/Thread.hpp"
 
 namespace Bloom::Events
 {
@@ -10,7 +10,7 @@ namespace Bloom::Events
     private:
         ThreadState state;
     public:
-        DebugServerStateChanged(ThreadState state) : state(state) {};
+        DebugServerStateChanged(ThreadState state): state(state) {};
 
         static inline const std::string name = "DebugServerStateChanged";
 

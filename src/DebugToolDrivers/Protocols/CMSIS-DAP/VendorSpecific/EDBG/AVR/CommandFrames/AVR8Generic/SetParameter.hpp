@@ -19,11 +19,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->setParameter(parameter);
         }
 
-        SetParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) : SetParameter(parameter) {
+        SetParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value): SetParameter(parameter) {
             this->setValue(value);
         }
 
-        SetParameter(const Avr8EdbgParameter& parameter, unsigned char value) : SetParameter(parameter) {
+        SetParameter(const Avr8EdbgParameter& parameter, unsigned char value): SetParameter(parameter) {
             this->setValue(value);
         }
 

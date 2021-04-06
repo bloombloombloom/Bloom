@@ -33,7 +33,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          */
         std::uint32_t bytes;
 
-        ReadMemory(std::vector<unsigned char> rawPacket) : CommandPacket(rawPacket) {
+        ReadMemory(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             init();
         };
 

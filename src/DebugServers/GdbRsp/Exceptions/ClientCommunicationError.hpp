@@ -15,11 +15,11 @@ namespace Bloom::DebugServers::Gdb::Exceptions
     class ClientCommunicationError: public Exception
     {
     public:
-        explicit ClientCommunicationError(const std::string& message) : Exception(message) {
+        explicit ClientCommunicationError(const std::string& message): Exception(message) {
             this->message = message;
         }
 
-        explicit ClientCommunicationError(const char* message) : Exception(message) {
+        explicit ClientCommunicationError(const char* message): Exception(message) {
             this->message = std::string(message);
         }
 

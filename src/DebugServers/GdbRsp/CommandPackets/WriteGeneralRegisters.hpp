@@ -25,7 +25,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         int registerNumber;
         std::vector<unsigned char> registerValue;
 
-        WriteGeneralRegisters(std::vector<unsigned char> rawPacket) : CommandPacket(rawPacket) {
+        WriteGeneralRegisters(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             init();
         };
 

@@ -45,10 +45,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         void init(const Response& response) {
             auto rawData = response.getData();
             rawData.insert(rawData.begin(), response.getResponseId());
-            this->init(rawData.data(), rawData.size());
+            this->init(rawData);
         }
 
-        void init(unsigned char* response, size_t length) override;
+        void init(const std::vector<unsigned char>& rawResponse) override;
 
         const std::vector<unsigned char>& getEventData() const {
             return this->eventData;

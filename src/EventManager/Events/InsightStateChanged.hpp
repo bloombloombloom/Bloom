@@ -10,7 +10,7 @@ namespace Bloom::Events
     private:
         ThreadState state;
     public:
-        InsightStateChanged(ThreadState state) : state(state) {
+        InsightStateChanged(ThreadState state): state(state) {
 
         };
 

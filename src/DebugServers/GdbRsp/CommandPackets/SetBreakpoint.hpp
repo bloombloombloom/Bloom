@@ -35,7 +35,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          */
         std::uint32_t address;
 
-        SetBreakpoint(std::vector<unsigned char> rawPacket) : CommandPacket(rawPacket) {
+        SetBreakpoint(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             this->init();
         };
 

@@ -1,10 +1,10 @@
 #include <cstdint>
 #include <string>
 #include <stdexcept>
-#include <src/Logger/Logger.hpp>
 
-#include "hidapi.hpp"
 #include "HidInterface.hpp"
+#include "hidapi.hpp"
+#include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/DeviceCommunicationFailure.hpp"
 

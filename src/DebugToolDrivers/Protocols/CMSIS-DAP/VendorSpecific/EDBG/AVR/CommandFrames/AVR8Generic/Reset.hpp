@@ -11,7 +11,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
     public:
         Reset() = default;
-        Reset(bool stopAtMainAddress) : stopAtMainAddress(stopAtMainAddress) {};
+        Reset(bool stopAtMainAddress): stopAtMainAddress(stopAtMainAddress) {};
 
         void setStopAtMainAddress(bool stopAtMainAddress) {
             this->stopAtMainAddress = stopAtMainAddress;

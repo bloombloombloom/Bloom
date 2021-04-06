@@ -29,7 +29,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          */
         std::optional<std::uint32_t> fromProgramCounter;
 
-        ContinueExecution(std::vector<unsigned char> rawPacket) : CommandPacket(rawPacket) {
+        ContinueExecution(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             init();
         };
 

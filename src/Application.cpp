@@ -22,7 +22,7 @@ int Application::run(const std::vector<std::string>& arguments) {
 
         if (!arguments.empty()) {
             auto firstArg = arguments.front();
-            auto commandsToCallbackMapping = this->getCommandToCallbackMapping();
+            auto commandsToCallbackMapping = this->getCommandToHandlerMapping();
 
             if (commandsToCallbackMapping.contains(firstArg)) {
                 // User has passed an argument that maps to a command callback - invoke the callback and shutdown

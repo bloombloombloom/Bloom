@@ -1,13 +1,9 @@
-#include <iostream>
 #include <csignal>
-#include <QtCore>
-#include <experimental/filesystem>
 #include <thread>
-#include <src/Exceptions/Exception.hpp>
-#include <src/EventManager/Events/ShutdownTargetController.hpp>
 
-#include "src/Logger/Logger.hpp"
 #include "SignalHandler.hpp"
+#include "src/Logger/Logger.hpp"
+#include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom;
 

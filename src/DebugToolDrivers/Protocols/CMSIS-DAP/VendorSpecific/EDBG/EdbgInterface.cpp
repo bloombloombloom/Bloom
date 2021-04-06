@@ -53,7 +53,7 @@ std::optional<Protocols::CmsisDap::Edbg::Avr::AvrEvent> EdbgInterface::requestAv
         // This is an AVR_EVT response
         auto avrEvent = Protocols::CmsisDap::Edbg::Avr::AvrEvent();
         avrEvent.init(*cmsisResponse);
-        return avrEvent.getEventDataSize() > 0 ? std::optional(avrEvent) : std::nullopt;
+        return avrEvent.getEventDataSize() > 0 ? std::optional(avrEvent): std::nullopt;
     } else {
         throw Exception("Unexpected response to AvrEventCommand from device");
     }
