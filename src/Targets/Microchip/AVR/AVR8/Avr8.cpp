@@ -357,6 +357,20 @@ TargetParameters& Avr8::getTargetParameters() {
                 this->targetParameters->lockRegistersPdiOffset = pdiInterfaceProperties
                     .at("lock_registers_offset").value.toInt(nullptr, 16);
             }
+
+            auto& peripheralModules = this->partDescription->getPeripheralModulesMappedByName();
+
+            if (peripheralModules.contains("nvm")) {
+                auto& nvmModule = peripheralModules.at("nvm");
+
+                if (nvmModule.instancesMappedByName.contains("nvm")) {
+                    auto& nvmInstance = nvmModule.instancesMappedByName.at("nvm");
+
+                    if (nvmInstance.registerGroupsMappedByName.contains("nvm")) {
+                        this->targetParameters->nvmBaseAddress = nvmInstance.registerGroupsMappedByName.at("nvm").offset;
+                    }
+                }
+            }
         }
     }
 

@@ -163,6 +163,10 @@ void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& con
             throw Exception("Missing required parameter: EEPROM_PAGE_SIZE");
         }
 
+        if (!config.nvmBaseAddress.has_value()) {
+            throw Exception("Missing required parameter: NVM_BASE");
+        }
+
         Logger::debug("Setting APPL_BASE_ADDR AVR8 parameter");
         this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_APPL_BASE_ADDR, config.appSectionPdiOffset.value());
 
@@ -202,8 +206,8 @@ void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& con
         Logger::debug("Setting EEPROM_PAGE_SIZE AVR8 parameter");
         this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_EEPROM_PAGE_SIZE, static_cast<unsigned char>(config.eepromPageSize.value()));
 
-        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_NVM_BASE, static_cast<std::uint16_t>(0x01c0));
-//        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_SIGNATURE_OFFSET, static_cast<std::uint16_t>(0x0090));
+        Logger::debug("Setting NVM_BASE AVR8 parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_NVM_BASE, config.nvmBaseAddress.value());
 
     } else {
         if (config.flashPageSize.has_value()) {
