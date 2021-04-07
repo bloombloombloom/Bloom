@@ -67,8 +67,6 @@ namespace Bloom
          * and return an instance to the derived DebugTool class. They should never attempt to establish
          * a connection to the device.
          *
-         * Currently, the only debug tool we support is the Atmel-ICE.
-         *
          * @return
          */
         static auto getSupportedDebugTools() {

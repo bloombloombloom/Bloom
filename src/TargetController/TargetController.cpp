@@ -53,37 +53,37 @@ void TargetController::startup() {
     auto supportedDebugTools = TargetController::getSupportedDebugTools();
     auto supportedTargets = TargetController::getSupportedTargets();
 
-    if (supportedDebugTools.find(debugToolName) == supportedDebugTools.end()) {
+    if (!supportedDebugTools.contains(debugToolName)) {
         throw Exceptions::InvalidConfig(
             "Debug tool name (\"" + debugToolName + "\") not recognised. Please check your configuration!"
         );
     }
 
-    if (supportedTargets.find(targetName) == supportedTargets.end()) {
+    if (!supportedTargets.contains(targetName)) {
         throw Exceptions::InvalidConfig(
             "Target name (\"" + targetName + "\") not recognised. Please check your configuration!"
         );
     }
 
     // Initiate debug tool and target
-    this->setDebugTool(std::move(supportedDebugTools.find(debugToolName)->second()));
-    this->setTarget(supportedTargets.find(targetName)->second());
+    this->setDebugTool(std::move(supportedDebugTools.at(debugToolName)()));
+    this->setTarget(supportedTargets.at(targetName)());
 
     Logger::info("Connecting to debug tool");
     this->debugTool->init();
 
     Logger::info("Debug tool connected");
-    Logger::info("Debug tool name: " + debugTool->getName());
-    Logger::info("Debug tool serial: " + debugTool->getSerialNumber());
+    Logger::info("Debug tool name: " + this->debugTool->getName());
+    Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
 
-    if (!this->target->isDebugToolSupported(debugTool.get())) {
+    if (!this->target->isDebugToolSupported(this->debugTool.get())) {
         throw Exceptions::InvalidConfig(
-            "Debug tool (\"" + debugTool->getName() + "\") not supported " +
+            "Debug tool (\"" + this->debugTool->getName() + "\") not supported " +
                 "by target (\"" + this->target->getName() + "\")."
         );
     }
 
-    this->target->setDebugTool(debugTool.get());
+    this->target->setDebugTool(this->debugTool.get());
     this->target->preActivationConfigure(this->environmentConfig.targetConfig);
 
     Logger::info("Activating target");
@@ -104,8 +104,8 @@ void TargetController::startup() {
         this->target->postPromotionConfigure();
     }
 
-    Logger::info("Target ID: " + target->getHumanReadableId());
-    Logger::info("Target name: " + target->getName());
+    Logger::info("Target ID: " + this->target->getHumanReadableId());
+    Logger::info("Target name: " + this->target->getName());
 
     if (this->target->getState() == TargetState::STOPPED) {
         this->target->run();
