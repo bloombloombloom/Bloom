@@ -85,6 +85,12 @@ namespace Bloom
                         return std::make_unique<PowerDebugger>();
                     }
                 },
+                {
+                    "snap",
+                    []() -> std::unique_ptr<DebugTool> {
+                        return std::make_unique<MplabSnap>();
+                    }
+                },
             };
         }
 
