@@ -67,6 +67,7 @@ void TargetController::startup() {
 
     // Initiate debug tool and target
     this->setDebugTool(std::move(supportedDebugTools.find(debugToolName)->second()));
+    this->setTarget(supportedTargets.find(targetName)->second());
 
     Logger::info("Connecting to debug tool");
     this->debugTool->init();
@@ -74,8 +75,6 @@ void TargetController::startup() {
     Logger::info("Debug tool connected");
     Logger::info("Debug tool name: " + debugTool->getName());
     Logger::info("Debug tool serial: " + debugTool->getSerialNumber());
-
-    this->setTarget(supportedTargets.find(targetName)->second());
 
     if (!this->target->isDebugToolSupported(debugTool.get())) {
         throw Exceptions::InvalidConfig(
@@ -399,10 +398,10 @@ void TargetController::onWriteMemoryEvent(EventPointer<Events::WriteMemoryToTarg
         memoryWrittenEvent->correlationId = event->id;
         this->eventManager.triggerEvent(memoryWrittenEvent);
 
-        if (this->target->willMemoryWriteAffectIoPorts(
+        if (this->target->memoryAddressRangeClashesWithIoPortRegisters(
             event->memoryType,
             event->startAddress,
-            static_cast<std::uint32_t>(event->buffer.size())
+            static_cast<std::uint32_t>(event->startAddress + (event->buffer.size() - 1))
         )) {
             // This memory write has affected the target's IO port values
             this->eventManager.triggerEvent(std::make_shared<Events::TargetIoPortsUpdated>());

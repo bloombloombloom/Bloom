@@ -32,8 +32,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         Avr8Interface* avr8Interface;
         std::string name = "";
         std::optional<Family> family;
-        std::optional<PartDescriptionFile> partDescription = std::nullopt;
-        std::optional<TargetParameters> targetParameters = std::nullopt;
+        std::optional<PartDescriptionFile> partDescription;
+        std::optional<TargetParameters> targetParameters;
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
 
@@ -123,10 +123,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             const TargetPinState& state
         ) override;
 
-        virtual bool willMemoryWriteAffectIoPorts(
+        virtual bool memoryAddressRangeClashesWithIoPortRegisters(
             TargetMemoryType memoryType,
             std::uint32_t startAddress,
-            std::uint32_t bytes
+            std::uint32_t endAddress
         ) override;
     };
 }

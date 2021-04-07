@@ -126,34 +126,44 @@ void Avr8::loadPadDescriptors() {
                         for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
                             if (registerName.find("outset") == 0) {
                                 // Include the port register offset
-                                padDescriptor.gpioPortSetAddress = (portPeripheralRegisterGroup.has_value() && portPeripheralRegisterGroup->offset.has_value()) ?
+                                padDescriptor.gpioPortSetAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
                                     portPeripheralRegisterGroup->offset.value_or(0) : 0;
 
-                                padDescriptor.gpioPortSetAddress = padDescriptor.gpioPortSetAddress.value() + portRegister.offset;
+                                padDescriptor.gpioPortSetAddress = padDescriptor.gpioPortSetAddress.value()
+                                    + portRegister.offset;
 
                             } else if (registerName.find("outclr") == 0) {
-                                padDescriptor.gpioPortClearAddress = (portPeripheralRegisterGroup.has_value() && portPeripheralRegisterGroup->offset.has_value()) ?
+                                padDescriptor.gpioPortClearAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
                                     portPeripheralRegisterGroup->offset.value_or(0) : 0;
 
-                                padDescriptor.gpioPortClearAddress = padDescriptor.gpioPortClearAddress.value() + portRegister.offset;
+                                padDescriptor.gpioPortClearAddress = padDescriptor.gpioPortClearAddress.value()
+                                    + portRegister.offset;
 
                             } else if (registerName.find("dirset") == 0) {
-                                padDescriptor.ddrSetAddress = (portPeripheralRegisterGroup.has_value() && portPeripheralRegisterGroup->offset.has_value()) ?
+                                padDescriptor.ddrSetAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
                                     portPeripheralRegisterGroup->offset.value_or(0) : 0;
 
-                                padDescriptor.ddrSetAddress = padDescriptor.ddrSetAddress.value() + portRegister.offset;
+                                padDescriptor.ddrSetAddress = padDescriptor.ddrSetAddress.value()
+                                    + portRegister.offset;
 
                             } else if (registerName.find("dirclr") == 0) {
-                                padDescriptor.ddrClearAddress = (portPeripheralRegisterGroup.has_value() && portPeripheralRegisterGroup->offset.has_value()) ?
+                                padDescriptor.ddrClearAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
                                     portPeripheralRegisterGroup->offset.value_or(0) : 0;
 
-                                padDescriptor.ddrClearAddress = padDescriptor.ddrClearAddress.value() + portRegister.offset;
+                                padDescriptor.ddrClearAddress = padDescriptor.ddrClearAddress.value()
+                                    + portRegister.offset;
 
                             } else if (registerName == "in") {
-                                padDescriptor.gpioPortInputAddress = (portPeripheralRegisterGroup.has_value() && portPeripheralRegisterGroup->offset.has_value()) ?
+                                padDescriptor.gpioPortInputAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
                                     portPeripheralRegisterGroup->offset.value_or(0) : 0;
 
-                                padDescriptor.gpioPortInputAddress = padDescriptor.gpioPortInputAddress.value() + portRegister.offset;
+                                padDescriptor.gpioPortInputAddress = padDescriptor.gpioPortInputAddress.value()
+                                    + portRegister.offset;
                             }
                         }
                     }
@@ -408,7 +418,7 @@ std::unique_ptr<Targets::Target> Avr8::promote() {
 }
 
 void Avr8::activate() {
-    if (this->getActivated()) {
+    if (this->isActivated()) {
         return;
     }
 
@@ -837,7 +847,7 @@ void Avr8::setPinState(int variantId, const TargetPinDescriptor& pinDescriptor, 
     }
 }
 
-bool Avr8::willMemoryWriteAffectIoPorts(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes) {
+bool Avr8::memoryAddressRangeClashesWithIoPortRegisters(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t endAddress) {
     auto& targetParameters = this->getTargetParameters();
 
     /*
@@ -847,7 +857,6 @@ bool Avr8::willMemoryWriteAffectIoPorts(TargetMemoryType memoryType, std::uint32
      * If they're not aligned, this function may report false positives.
      */
     if (targetParameters.ioPortAddressRangeStart.has_value() && targetParameters.ioPortAddressRangeEnd.has_value()) {
-        auto endAddress = startAddress + (bytes - 1);
         return (
             startAddress >= targetParameters.ioPortAddressRangeStart
             && startAddress <= targetParameters.ioPortAddressRangeEnd
