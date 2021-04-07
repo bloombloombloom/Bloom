@@ -652,7 +652,11 @@ TargetState EdbgAvr8Interface::getTargetState() {
 }
 
 TargetMemoryBuffer EdbgAvr8Interface::readMemory(Avr8MemoryType type, std::uint32_t address, std::uint32_t bytes) {
-    if (type == Avr8MemoryType::FLASH_PAGE && this->targetParameters.flashPageSize.value_or(0) > 0) {
+    if (type == Avr8MemoryType::FLASH_PAGE) {
+        if (this->targetParameters.flashPageSize.value_or(0) < 1) {
+            throw Exception("Missing/invalid flash page size parameter");
+        }
+
         // Flash reads must be done in pages
         auto pageSize = this->targetParameters.flashPageSize.value();
 
@@ -744,40 +748,41 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(Avr8MemoryType type, std::uint3
 
             return memoryBuffer;
         }
-    }
 
-    /*
-     * EDBG AVR8 debug tools behave in a really weird way when responding with more than two packets
-     * for a single read memory command. The data they return in this case appears to be of little use.
-     *
-     * To address this, we make sure we only issue read memory commands that will result in no more than two
-     * response packets. For calls that require more than this, we simply split them into numerous calls.
-     */
-
-    /*
-     * The subtraction of 20 bytes here is just to account for any other bytes included in the response
-     * that isn't actually the memory data (like the command ID, version bytes, etc). I could have sought the
-     * actual value but who has the time. It won't exceed 20 bytes. Bite me.
-     */
-    auto singlePacketSize = static_cast<std::uint32_t>(this->edbgInterface.getUsbHidInputReportSize() - 20);
-    auto totalResponsePackets = std::ceil(static_cast<float>(bytes) / static_cast<float>(singlePacketSize));
-    auto totalReadsRequired = std::ceil(static_cast<float>(totalResponsePackets) / 2);
-
-    if (totalResponsePackets > 2) {
+    } else {
         /*
-         * This call to readMemory() will result in more than two response packets, so split it into multiple calls
-         * that will result in no more than two response packets per call.
+         * EDBG AVR8 debug tools behave in a really weird way when responding with more than two packets
+         * for a single read (non-flash) memory command. The data they return in this case appears to be of little use.
+         *
+         * To address this, we make sure we only issue read memory commands that will result in no more than two
+         * response packets. For calls that require more than this, we simply split them into numerous calls.
          */
-        auto output = std::vector<unsigned char>();
 
-        for (float i = 1; i <= totalReadsRequired; i++) {
-            auto bytesToRead = static_cast<std::uint32_t>((bytes - output.size()) > (singlePacketSize * 2) ?
-                (singlePacketSize * 2) : bytes - output.size());
-            auto data = this->readMemory(type, static_cast<std::uint32_t>(address + output.size()), bytesToRead);
-            output.insert(output.end(), data.begin(), data.end());
+        /*
+         * The subtraction of 20 bytes here is just to account for any other bytes included in the response
+         * that isn't actually the memory data (like the command ID, version bytes, etc). I could have sought the
+         * actual value but who has the time. It won't exceed 20 bytes. Bite me.
+         */
+        auto singlePacketSize = static_cast<std::uint32_t>(this->edbgInterface.getUsbHidInputReportSize() - 20);
+        auto totalResponsePackets = std::ceil(static_cast<float>(bytes) / static_cast<float>(singlePacketSize));
+        auto totalReadsRequired = std::ceil(static_cast<float>(totalResponsePackets) / 2);
+
+        if (totalResponsePackets > 2) {
+            /*
+             * This call to readMemory() will result in more than two response packets, so split it into multiple calls
+             * that will result in no more than two response packets per call.
+             */
+            auto output = std::vector<unsigned char>();
+
+            for (float i = 1; i <= totalReadsRequired; i++) {
+                auto bytesToRead = static_cast<std::uint32_t>((bytes - output.size()) > (singlePacketSize * 2) ?
+                                                              (singlePacketSize * 2) : bytes - output.size());
+                auto data = this->readMemory(type, static_cast<std::uint32_t>(address + output.size()), bytesToRead);
+                output.insert(output.end(), data.begin(), data.end());
+            }
+
+            return output;
         }
-
-        return output;
     }
 
     auto commandFrame = CommandFrames::Avr8Generic::ReadMemory();

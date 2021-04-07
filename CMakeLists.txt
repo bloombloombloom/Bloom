@@ -39,8 +39,11 @@ add_executable(Bloom
     src/SignalHandler/SignalHandler.cpp
     src/DebugToolDrivers/USB/Interface.cpp
     src/DebugToolDrivers/USB/HID/HidInterface.cpp
+
     src/DebugToolDrivers/Microchip/AtmelICE/AtmelIce.cpp
     src/DebugToolDrivers/Microchip/PowerDebugger/PowerDebugger.cpp
+    src/DebugToolDrivers/Microchip/MplabSnap/MplabSnap.cpp
+
     src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/Response.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.cpp
@@ -142,7 +145,8 @@ target_compile_options(
     PUBLIC -Wconversion
     PUBLIC -fno-sized-deallocation
     PUBLIC $<$<CONFIG:DEBUG>:-g>
-    PUBLIC $<$<CONFIG:DEBUG>:-Os>
+    PUBLIC $<$<CONFIG:DEBUG>:-O0>
+#    PUBLIC $<$<CONFIG:DEBUG>:-Os>
     PUBLIC $<$<CONFIG:RELEASE>:-O2>
     PUBLIC $<$<CONFIG:DEBUG>:-fno-inline>
     PUBLIC $<$<CONFIG:DEBUG>:-fkeep-static-functions>
