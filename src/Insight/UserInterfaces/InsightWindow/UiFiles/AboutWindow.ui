@@ -48,7 +48,7 @@
                     <widget class="QLabel" name="os-link-label">
                         <property name="text">
                             <string><![CDATA[
-                            <span>Powered by <a style="color: #3F86A0;" href="https://bloom.oscillate.io/">open-source software</a></span>
+                            <span>Powered by <a style="color: #3F86A0;" href="https://bloom.oscillate.io/powered-by">open-source software</a></span>
                             ]]></string>
                         </property>
                         <property name="openExternalLinks">
