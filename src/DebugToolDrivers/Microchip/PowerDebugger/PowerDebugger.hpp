@@ -26,10 +26,7 @@ namespace Bloom::DebugToolDrivers
      * as an Atmel Data Gateway Interface (DGI).
      *
      * Communication:
-     *  Like the Atmel-ICE, using the Power Debugger device for AVR debugging/programming requires the AVR
-     *  communication protocol, which is a sub-protocol of the CMSIS-DAP.
-     *
-     *  For more information on the communication protocol, see the DebugToolDrivers::AtmelIce class.
+     *  Uses the same EDBG protocol as described in the AtmelIce driver. See the AtmelIce debug tool class for more.
      *
      * USB Setup:
      *  Vendor ID: 0x03eb (1003)

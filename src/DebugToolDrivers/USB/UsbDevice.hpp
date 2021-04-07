@@ -12,9 +12,10 @@ namespace Bloom::Usb
 {
     class UsbDevice
     {
-    private:
+    protected:
         libusb_context* libUsbContext = nullptr;
         libusb_device* libUsbDevice = nullptr;
+        libusb_device_handle* libUsbDeviceHandle = nullptr;
         std::uint16_t vendorId;
         std::uint16_t productId;
 
@@ -22,7 +23,6 @@ namespace Bloom::Usb
             std::optional<std::uint16_t> vendorId = std::nullopt, std::optional<std::uint16_t> productId = std::nullopt
         );
 
-    protected:
         void close();
 
     public:
@@ -50,5 +50,12 @@ namespace Bloom::Usb
         std::uint16_t getProductId() const {
             return this->productId;
         }
+
+        /**
+         * Selects a specific configuration on the device, using the configuration index.
+         *
+         * @param configIndex
+         */
+        virtual void setConfiguration(int configIndex);
     };
 }

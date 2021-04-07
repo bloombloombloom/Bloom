@@ -11,82 +11,45 @@ using namespace Bloom::Exceptions;
 
 
 void Interface::init() {
-    libusb_device_descriptor deviceDescriptor = {};
-    auto deviceHandle = this->getLibUsbDeviceHandle();
-    auto libUsbDevice = this->getUSBDevice();
-    int libUsbStatusCode;
-
-    if (libUsbDevice == nullptr) {
-        throw Exception("Cannot open USB device without libusb device pointer.");
+    if (this->libUsbDevice == nullptr) {
+        throw Exception("Cannot initialise interface without libusb device pointer.");
     }
 
-    if (deviceHandle == nullptr) {
-        // Obtain a device handle from libusb
-        if ((libUsbStatusCode = libusb_open(libUsbDevice, &deviceHandle)) < 0) {
-            throw Exception("Failed to open USB device - error code "
-                                         + std::to_string(libUsbStatusCode) + " returned.");
-        }
+    if (this->libUsbDeviceHandle == nullptr) {
+        throw Exception("Cannot initialise interface without libusb device handle.");
     }
 
-    if ((libUsbStatusCode = libusb_get_device_descriptor(libUsbDevice, &deviceDescriptor))) {
-        throw Exception("Failed to obtain USB device descriptor - error code "
-                                     + std::to_string(libUsbStatusCode) + " returned.");
-    }
-
-    this->setLibUsbDeviceHandle(deviceHandle);
-    this->setInitialised(true);
-}
-
-void Interface::setConfiguration(int configIndex) {
-    libusb_config_descriptor* configDescriptor = {};
-    int libUsbStatusCode;
-
-    if ((libUsbStatusCode = libusb_get_config_descriptor(this->getUSBDevice(), 0, &configDescriptor))) {
-        throw Exception("Failed to obtain USB configuration descriptor - error code "
-                            + std::to_string(libUsbStatusCode) + " returned.");
-    }
-
-    if ((libUsbStatusCode = libusb_set_configuration(this->getLibUsbDeviceHandle(), configDescriptor->bConfigurationValue))) {
-        throw Exception("Failed to set USB configuration - error code "
-                            + std::to_string(libUsbStatusCode) + " returned.");
-    }
-
-    libusb_free_config_descriptor(configDescriptor);
+    this->initialised = true;
 }
 
 void Interface::close() {
-    auto deviceHandle = this->getLibUsbDeviceHandle();
-    this->release();
-
-    if (deviceHandle != nullptr) {
-        libusb_close(deviceHandle);
-        this->setLibUsbDeviceHandle(nullptr);
+    if (this->libUsbDeviceHandle != nullptr) {
+        this->release();
     }
 
-    this->setInitialised(false);
+    this->initialised = false;
 }
 
 void Interface::claim() {
     int interfaceNumber = this->getNumber();
-    int libUsbStatusCode = 0;
 
     this->detachKernelDriver();
 
-    if (libusb_claim_interface(this->getLibUsbDeviceHandle(), interfaceNumber) != 0) {
+    if (libusb_claim_interface(this->libUsbDeviceHandle, interfaceNumber) != 0) {
         throw Exception("Failed to claim interface {" + std::to_string(interfaceNumber) + "} on USB device\n");
     }
 
-    this->setClaimed(true);
+    this->claimed = true;
 }
 
 void Interface::detachKernelDriver() {
     int interfaceNumber = this->getNumber();
     int libUsbStatusCode;
 
-    if ((libUsbStatusCode = libusb_kernel_driver_active(this->getLibUsbDeviceHandle(), interfaceNumber)) != 0) {
+    if ((libUsbStatusCode = libusb_kernel_driver_active(this->libUsbDeviceHandle, interfaceNumber)) != 0) {
         if (libUsbStatusCode == 1) {
             // A kernel driver is active on this interface. Attempt to detach it
-            if (libusb_detach_kernel_driver(this->getLibUsbDeviceHandle(), interfaceNumber) != 0) {
+            if (libusb_detach_kernel_driver(this->libUsbDeviceHandle, interfaceNumber) != 0) {
                 throw Exception("Failed to detach kernel driver from interface " +
                     std::to_string(interfaceNumber) + "\n");
             }
@@ -98,11 +61,11 @@ void Interface::detachKernelDriver() {
 
 void Interface::release() {
     if (this->isClaimed()) {
-        if (libusb_release_interface(this->getLibUsbDeviceHandle(), this->getNumber()) != 0) {
+        if (libusb_release_interface(this->libUsbDeviceHandle, this->getNumber()) != 0) {
             throw Exception("Failed to release interface {" + std::to_string(this->getNumber()) + "} on USB device\n");
         }
 
-        this->setClaimed(false);
+        this->claimed = false;
     }
 }
 
@@ -113,12 +76,12 @@ int Interface::read(unsigned char* buffer, unsigned char endPoint, size_t length
 
     while (length > totalTransferred) {
         libUsbStatusCode = libusb_interrupt_transfer(
-                this->getLibUsbDeviceHandle(),
-                endPoint,
-                buffer,
-                static_cast<int>(length),
-                &transferred,
-                static_cast<unsigned int>(timeout)
+            this->libUsbDeviceHandle,
+            endPoint,
+            buffer,
+            static_cast<int>(length),
+            &transferred,
+            static_cast<unsigned int>(timeout)
         );
 
         if (libUsbStatusCode != 0 && libUsbStatusCode != -7) {
@@ -136,7 +99,7 @@ void Interface::write(unsigned char* buffer, unsigned char endPoint, int length)
     int libUsbStatusCode = 0;
 
     libUsbStatusCode = libusb_interrupt_transfer(
-        this->getLibUsbDeviceHandle(),
+        this->libUsbDeviceHandle,
         endPoint,
         buffer,
         length,

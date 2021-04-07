@@ -10,7 +10,7 @@
 namespace Bloom::Usb
 {
     /**
-     * The HIDInterface uses the HIDAPI library to implement communication with HID endpoints.
+     * The HidInterface uses the HIDAPI library to implement communication with HID endpoints.
      *
      * Currently, this interface only supports single-report HID implementations. HID interfaces with
      * multiple reports will be supported as-and-when we need it.
@@ -48,6 +48,8 @@ namespace Bloom::Usb
          * Keeping this in the private scope to enforce use of vector<unsigned char>. See read()
          * method in public scope.
          *
+         * @TODO: Do we really need this? Why not just have the one that accepts the vector. Review
+         *
          * @param buffer
          * @param maxLength
          * @param timeout
@@ -56,17 +58,6 @@ namespace Bloom::Usb
          *  Number of bytes read.
          */
         std::size_t read(unsigned char* buffer, std::size_t maxLength, unsigned int timeout);
-
-        /**
-         * Writes `length` bytes from `buffer` to HID output endpoint.
-         *
-         * Keeping this in the private scope to enforce use of vector<unsigned char>.
-         * @see write(std::vector<unsigned char> buffer);
-         *
-         * @param buffer
-         * @param length
-         */
-        void write(unsigned char* buffer, std::size_t length);
 
     protected:
         hid_device* getHidDevice() const {
@@ -79,14 +70,17 @@ namespace Bloom::Usb
         }
 
         /**
-         * Claims the USB HID interface, obtains a hid_device instance and configures
+         * Claims the USB HID interface and obtains a hid_device instance
          */
         void init() override;
 
+        /**
+         * Closes the hid_device and releases any claimed interfaces (via hid_close())
+         */
         void close() override;
 
         /**
-         * Wrapper for write(unsigned char *buffer, int length)
+         * Writes buffer to HID output endpoint.
          *
          * @param buffer
          */

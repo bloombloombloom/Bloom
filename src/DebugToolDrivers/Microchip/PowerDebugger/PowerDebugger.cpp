@@ -11,9 +11,10 @@ void PowerDebugger::init() {
     // TODO: Move away from hard-coding the CMSIS-DAP/EDBG interface number
     auto& usbHidInterface = this->getEdbgInterface().getUsbHidInterface();
     usbHidInterface.setNumber(0);
-    usbHidInterface.setUSBDevice(this->getLibUsbDevice());
-    usbHidInterface.setVendorId(this->getVendorId());
-    usbHidInterface.setProductId(this->getProductId());
+    usbHidInterface.setLibUsbDevice(this->libUsbDevice);
+    usbHidInterface.setLibUsbDeviceHandle(this->libUsbDeviceHandle);
+    usbHidInterface.setVendorId(this->vendorId);
+    usbHidInterface.setProductId(this->productId);
 
     if (!usbHidInterface.isInitialised()) {
         usbHidInterface.init();
