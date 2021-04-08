@@ -6,14 +6,12 @@ Bloom is a debug interface for embedded systems development on Linux. This is th
 source code. For information on how to use Bloom, please visit https://bloom.oscillate.io.
 
 Bloom implements a number of user-space device drivers, enabling support for many debug tools (such as the Atmel-ICE, 
-Power Debugger, MPLAB SNAP* and the MPLAB PICkit 4*). Bloom exposes an interface to the connected target, via a GDB 
+the Power Debugger and the MPLAB SNAP). Bloom exposes an interface to the connected target, via a GDB 
 RSP server. This allows any IDE with GDB RSP client capabilities to interface with Bloom and gain full
 access to the target.
 
 Currently, Bloom only supports AVR8 targets from Microchip. Bloom was designed to accommodate targets from different 
 families and architectures. Support for other target families will be considered as and when requested.
-
-*These debug tools are not yet officially supported by Bloom, but will be soon.
 
 ### License
 Bloom is released under the LGPLv3 license. See LICENSE.txt
