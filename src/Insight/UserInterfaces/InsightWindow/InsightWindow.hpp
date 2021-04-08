@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "AboutWindow.hpp"
+#include "src/ApplicationConfig.hpp"
 #include "TargetWidgets/TargetPackageWidget.hpp"
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
@@ -71,7 +72,12 @@ namespace Bloom
     public:
         InsightWindow() = default;
 
-        void init(QApplication& application, Targets::TargetDescriptor targetDescriptor);
+        void init(
+            QApplication& application,
+            Targets::TargetDescriptor targetDescriptor,
+            const InsightConfig& config,
+            const TargetConfig& targetConfig
+        );
 
         void show();
 

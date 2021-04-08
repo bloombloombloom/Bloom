@@ -47,6 +47,9 @@ namespace Bloom
         void init(QJsonObject jsonObject);
 
         std::string name;
+
+        std::string variantName;
+
         QJsonObject jsonObject;
     };
 

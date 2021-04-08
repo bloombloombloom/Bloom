@@ -16,7 +16,12 @@ using Targets::TargetVariant;
 using Targets::TargetPackage;
 
 
-void InsightWindow::init(QApplication& application, TargetDescriptor targetDescriptor) {
+void InsightWindow::init(
+    QApplication& application,
+    TargetDescriptor targetDescriptor,
+    const InsightConfig& config,
+    const TargetConfig& targetConfig
+) {
     this->targetDescriptor = targetDescriptor;
 
     auto mainWindowUiFile = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui");
@@ -106,7 +111,21 @@ void InsightWindow::init(QApplication& application, TargetDescriptor targetDescr
     Logger::debug("Number of target variants supported by Insight: " + std::to_string(supportedVariants.size()));
 
     if (!supportedVariants.empty()) {
-        this->selectVariant(&supportedVariants.front());
+        auto selectedVariant = std::find_if(
+            supportedVariants.begin(),
+            supportedVariants.end(),
+            [&targetConfig](const TargetVariant& variant) {
+                auto variantName = QString::fromStdString(variant.name).toLower().toStdString();
+                return !targetConfig.variantName.empty() && targetConfig.variantName == variantName;
+            }
+        );
+
+        /*
+         * If ths user specified a valid variant name in their config file, use that as the default, otherwise just
+         * use the first supported variant.
+         */
+        this->selectVariant((selectedVariant != supportedVariants.end()) ? &(*selectedVariant)
+            : &supportedVariants.front());
 
     } else {
         if (this->targetDescriptor.variants.empty()) {

@@ -61,7 +61,7 @@ void Insight::startup() {
     qRegisterMetaType<Bloom::Targets::TargetState>();
     qRegisterMetaType<std::map<int, Bloom::Targets::TargetPinState>>();
 
-    this->mainWindow.init(*(this->application), targetDescriptor);
+    this->mainWindow.init(*(this->application), targetDescriptor, this->insightConfig, this->environmentConfig.targetConfig);
     this->mainWindow.show();
 
     /*

@@ -79,6 +79,11 @@ void TargetConfig::init(QJsonObject jsonObject) {
     }
 
     this->name = jsonObject.find("name")->toString().toLower().toStdString();
+
+    if (jsonObject.contains("variantName")) {
+        this->variantName = jsonObject.find("variantName").value().toString().toLower().toStdString();
+    }
+
     this->jsonObject = jsonObject;
 }
 

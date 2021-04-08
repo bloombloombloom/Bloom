@@ -26,6 +26,7 @@ namespace Bloom
     private:
         ApplicationConfig applicationConfig;
         EnvironmentConfig environmentConfig;
+        InsightConfig insightConfig;
 
         EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightEventListener");
@@ -52,6 +53,10 @@ namespace Bloom
 
         void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
             this->environmentConfig = environmentConfig;
+        }
+
+        void setInsightConfig(const InsightConfig& insightConfig) {
+            this->insightConfig = insightConfig;
         }
 
         /**
