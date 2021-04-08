@@ -27,7 +27,7 @@ namespace Bloom
     /**
      * The TargetController possesses full control of the debugging target and the debug tool.
      *
-`    * The TargetController runs on a dedicated thread. Its sole purpose is to handle communication to  &from the
+`    * The TargetController runs on a dedicated thread. Its sole purpose is to handle communication to & from the
      * debug tool and target.
      *
      * The TargetController should be oblivious to any manufacture/device specific functionality. It should
@@ -73,19 +73,19 @@ namespace Bloom
             return std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
                 {
                     "atmel-ice",
-                    []() -> std::unique_ptr<DebugTool> {
+                    []() {
                         return std::make_unique<AtmelIce>();
                     }
                 },
                 {
                     "power-debugger",
-                    []() -> std::unique_ptr<DebugTool> {
+                    []() {
                         return std::make_unique<PowerDebugger>();
                     }
                 },
                 {
                     "snap",
-                    []() -> std::unique_ptr<DebugTool> {
+                    []() {
                         return std::make_unique<MplabSnap>();
                     }
                 },
@@ -102,7 +102,7 @@ namespace Bloom
             auto mapping = std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>> {
                 {
                     "avr8",
-                    []() -> std::unique_ptr<Targets::Target> {
+                    []() {
                         return std::make_unique<Avr8>();
                     }
                 },
@@ -119,10 +119,10 @@ namespace Bloom
                     auto targetName = targetIt->toObject().find("targetName").value().toString()
                         .toLower().toStdString();
 
-                    if (mapping.find(targetName) == mapping.end()) {
+                    if (!mapping.contains(targetName)) {
                         mapping.insert({
                            targetName,
-                           [targetName]() -> std::unique_ptr<Targets::Target> {
+                           [targetName]() {
                                return std::make_unique<Avr8>(targetName);
                            }
                        });

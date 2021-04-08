@@ -37,21 +37,62 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
 
+        /**
+         * Extracts the ID from the target's memory.
+         *
+         * This function will cache the ID value and use the cached version for any subsequent calls.
+         *
+         * @return
+         */
+        TargetSignature getId() override;
+
+        /**
+         * Extracts the AVR8 target parameters from the loaded part description file.
+         *
+         * @return
+         */
         virtual TargetParameters& getTargetParameters();
 
+        /**
+         * Generates a collection of PadDescriptor object from data in the loaded part description file and
+         * populates this->padDescriptorsByName.
+         */
         virtual void loadPadDescriptors();
+
+        /**
+         * Extracts target variant information from the loaded part description file and generates a collection
+         * of TargetVariant objects.
+         *
+         * @return
+         */
+        virtual std::vector<TargetVariant> generateVariantsFromPartDescription();
+
+        /**
+         * Populates this->targetVariantsById using this->generateVariantsFromPartDescription() and data from
+         * this->padDescriptorsByName.
+         */
         virtual void loadTargetVariants();
 
     public:
         explicit Avr8() = default;
         Avr8(const std::string& name): name(name) {};
 
-        [[nodiscard]] std::string getName() const override {
-            return this->name;
-        }
+        /*
+         * The functions below implement the Target interface for AVR8 targets.
+         *
+         * See the Bloom::Targets::Target interface class for documentation on the expected behaviour of
+         * each function.
+         */
+
+        void preActivationConfigure(const TargetConfig& targetConfig) override;
+        void postActivationConfigure() override;
+        virtual void postPromotionConfigure() override;
+
+        void activate() override;
+        void deactivate() override;
 
         /**
-         * Checks if DebugTool is compatible with AVR8 targets.
+         * All AVR8 compatible debug tools must provide a valid Avr8Interface.
          *
          * @param debugTool
          * @return
@@ -64,31 +105,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             this->avr8Interface = debugTool->getAvr8Interface();
         };
 
-        void preActivationConfigure(const TargetConfig& targetConfig) override;
-        void postActivationConfigure() override;
-
-        virtual void postPromotionConfigure() override;
-
-        void activate() override;
-
-        void deactivate() override;
-
-        TargetSignature getId() override;
-
-        void run() override;
-
-        void stop() override;
-
-        void step() override;
-
-        void reset() override;
-
-        void setBreakpoint(std::uint32_t address) override;
-        void removeBreakpoint(std::uint32_t address) override;
-        void clearAllBreakpoints() override;
-
         /**
-         * AVR8 targets are promotable. See promote() method for more.
+         * Instances to this target class can be promoted. See Avr8::promote() method for more.
          *
          * @return
          */
@@ -96,25 +114,52 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             return true;
         }
 
-        virtual std::vector<TargetVariant> generateVariantsFromPartDescription();
+        /**
+         * Instances of this generic Avr8 target class will be promoted to a family specific class (see the Mega, Xmega
+         * and Tiny classes for more).
+         *
+         * @return
+         */
+        virtual std::unique_ptr<Targets::Target> promote() override;
+
+        std::string getName() const override {
+            return this->name;
+        }
 
         virtual TargetDescriptor getDescriptor() override;
 
-        virtual std::unique_ptr<Targets::Target> promote() override;
+        void run() override;
+        void stop() override;
+        void step() override;
+        void reset() override;
+
+        void setBreakpoint(std::uint32_t address) override;
+        void removeBreakpoint(std::uint32_t address) override;
+        void clearAllBreakpoints() override;
 
         virtual TargetRegisters readGeneralPurposeRegisters(std::set<std::size_t> registerIds) override;
         virtual void writeRegisters(const TargetRegisters& registers) override;
         virtual TargetRegisters readRegisters(const TargetRegisterDescriptors& descriptors) override;
-        virtual TargetMemoryBuffer readMemory(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes) override;
-        virtual void writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) override;
+
+        virtual TargetMemoryBuffer readMemory(
+            TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            std::uint32_t bytes
+        ) override;
+        virtual void writeMemory(
+            TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            const TargetMemoryBuffer& buffer
+        ) override;
 
         virtual TargetState getState() override;
 
         virtual std::uint32_t getProgramCounter() override;
         virtual TargetRegister getProgramCounterRegister() override;
+        virtual void setProgramCounter(std::uint32_t programCounter) override;
+
         virtual TargetRegister getStackPointerRegister() override;
         virtual TargetRegister getStatusRegister() override;
-        virtual void setProgramCounter(std::uint32_t programCounter) override;
 
         virtual std::map<int, TargetPinState> getPinStates(int variantId) override;
         virtual void setPinState(

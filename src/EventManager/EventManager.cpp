@@ -19,7 +19,7 @@ void EventManager::triggerEvent(std::shared_ptr<const Events::Event> event) {
     auto registerListenersLock = std::unique_lock(this->registerListenerMutex);
     for(auto const& [listenerId, listener] : this->registeredListeners) {
         auto registeredEventTypes = listener->getRegisteredEventTypeNames();
-        if (registeredEventTypes.find(event->getName()) != registeredEventTypes.end()) {
+        if (registeredEventTypes.contains(event->getName())) {
             listener->registerEvent(event);
         }
     }

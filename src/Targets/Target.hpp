@@ -30,13 +30,13 @@ namespace Bloom::Targets
     class Target
     {
     protected:
-        bool activated = false;
-
         /**
          * Target related configuration provided by the user. This is passed in via the first stage of target
          * configuration. See Target::preActivationConfigure() for more.
          */
         TargetConfig config;
+
+        bool activated = false;
 
     public:
         explicit Target() {}
@@ -54,15 +54,15 @@ namespace Bloom::Targets
          * that is required in order for us to successfully activate the target. For an example, we use this method in
          * the Avr8 target class to configure the debug tool with the correct physical interface and config variant
          * parameters (taken from the user's settings, via the TargetConfig instance). Without these being configured,
-         * the debug tool would not be able to interface with the target, and thus target activation would fail.
+         * the debug tool would not be able to interface with the AVR8 target, and thus target activation would fail.
          *
          * postActivationConfigure() - The second stage is right after target activation (successful invocation of
          * Target::activate()). At this point, we will have established a connection with the target and so interaction
          * with the target is permitted here. We use this method in the Avr8 target class to extract the target signature
          * from the target's memory, which we then use to find & load the correct part description file.
          *
-         * postPromotionConfigure() - The final stage of configuration occurs just after the target has been promoted
-         * to its final form. See the Target::promote() method for more in this.
+         * postPromotionConfigure() - The final stage of configuration occurs just after the target instance has been
+         * promoted to a different class. See the Target::promote() method for more in this.
          *
          * If any of the three configuration methods throw an exception, the exception will be treated as a fatal error.
          * In response, the TargetController will shutdown, along with the rest of Bloom.
@@ -98,13 +98,15 @@ namespace Bloom::Targets
 
         /**
          * Should check if the given debugTool is compatible with the target. Returning false in this method will
-         * prevent Bloom from attempting to use the selected debug tool with the selected target.
+         * prevent Bloom from attempting to use the selected debug tool with the selected target. An InvalidConfig
+         * exception will be raised and Bloom will shutdown.
          *
          * For AVR8 targets, we simply check if the debug tool returns a valid Avr8Interface
          * (via DebugTool::getAvr8Interface()). If it fails to do so, it would mean that the debug tool, or more so our
          * debug tool driver, does not support AVR8 targets.
          *
          * @param debugTool
+         *
          * @return
          */
         virtual bool isDebugToolSupported(DebugTool* debugTool) = 0;
@@ -157,6 +159,9 @@ namespace Bloom::Targets
          *   - The call to Target::promote() on the current target instance returns an std::unique_ptr(nullptr)
          *   - The call to Target::promote() on the current target instance returns a target class type that is equal
          *     to the type of the current target instance (promotion failed).
+         *
+         * Once at least one of the above conditions are met, the TargetController will break out of the loop and use
+         * the last promoted target instance from there onwards.
          *
          * See TargetController::startup() for more on this.
          *
@@ -220,9 +225,10 @@ namespace Bloom::Targets
         virtual void clearAllBreakpoints() = 0;
 
         /**
-         * Should read general purpose register values, for the given general prupose register ids.
+         * Should read general purpose register values, for the given general purpose register ids.
          *
          * @param registerIds
+         *
          * @return
          */
         virtual TargetRegisters readGeneralPurposeRegisters(std::set<std::size_t> registerIds) = 0;
@@ -238,6 +244,7 @@ namespace Bloom::Targets
          * Should read register values of the registers described by the given descriptors.
          *
          * @param descriptors
+         *
          * @return
          */
         virtual TargetRegisters readRegisters(const TargetRegisterDescriptors& descriptors) = 0;
@@ -248,6 +255,7 @@ namespace Bloom::Targets
          * @param memoryType
          * @param startAddress
          * @param bytes
+         *
          * @return
          */
         virtual TargetMemoryBuffer readMemory(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes) = 0;
@@ -283,6 +291,13 @@ namespace Bloom::Targets
         virtual TargetRegister getProgramCounterRegister() = 0;
 
         /**
+         * Should update the program counter on the target.
+         *
+         * @param programCounter
+         */
+        virtual void setProgramCounter(std::uint32_t programCounter) = 0;
+
+        /**
          * Should fetch the status register value.
          *
          * @return
@@ -297,16 +312,10 @@ namespace Bloom::Targets
         virtual TargetRegister getStackPointerRegister() = 0;
 
         /**
-         * Should update the program counter on the target.
-         *
-         * @param programCounter
-         */
-        virtual void setProgramCounter(std::uint32_t programCounter) = 0;
-
-        /**
          * Should get the current pin states for each pin on the target, mapped by pin number
          *
          * @param variantId
+         *
          * @return
          */
         virtual std::map<int, TargetPinState> getPinStates(int variantId) = 0;
