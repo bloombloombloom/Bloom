@@ -88,6 +88,7 @@ namespace Bloom
         void onTargetIoPortsUpdate();
         void close();
         void openReportIssuesUrl();
+        void openGettingStartedUrl();
         void openAboutWindow();
         void togglePinIoState(TargetPinWidget* pinWidget);
 

@@ -15,7 +15,6 @@ using Targets::TargetDescriptor;
 using Targets::TargetVariant;
 using Targets::TargetPackage;
 
-
 void InsightWindow::init(
     QApplication& application,
     TargetDescriptor targetDescriptor,
@@ -48,10 +47,12 @@ void InsightWindow::init(
     auto helpMenu = this->mainMenuBar->findChild<QMenu*>("help-menu");
     auto quitAction = fileMenu->findChild<QAction*>("close-insight");
     auto openReportIssuesUrlAction = helpMenu->findChild<QAction*>("open-report-issues-url");
+    auto openGettingStartedUrlAction = helpMenu->findChild<QAction*>("open-getting-started-url");
     auto openAboutWindowAction = helpMenu->findChild<QAction*>("open-about-dialogue");
 
     connect(quitAction, &QAction::triggered, this, &InsightWindow::close);
     connect(openReportIssuesUrlAction, &QAction::triggered, this, &InsightWindow::openReportIssuesUrl);
+    connect(openGettingStartedUrlAction, &QAction::triggered, this, &InsightWindow::openGettingStartedUrl);
     connect(openAboutWindowAction, &QAction::triggered, this, &InsightWindow::openAboutWindow);
 
     this->header = this->mainWindowWidget->findChild<QWidget*>("header");
@@ -231,6 +232,10 @@ void InsightWindow::openReportIssuesUrl() {
     url.setQuery(urlQuery);
 
     QDesktopServices::openUrl(url);
+}
+
+void InsightWindow::openGettingStartedUrl() {
+    QDesktopServices::openUrl(QUrl("https://bloom.oscillate.io/docs/getting-started"));
 }
 
 void InsightWindow::openAboutWindow() {
