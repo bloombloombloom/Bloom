@@ -174,6 +174,10 @@ void GdbRspDebugServer::handleGdbPacket(CommandPacket& packet) {
         // Status report
         this->clientConnection->writePacket(TargetStopped(Signal::TRAP));
 
+    } else if (packetString[0] == 'D') {
+        // Detach packet - there's not really anything we need to do here, so just respond with an OK
+        this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
+
     } else if (packetString.find("qAttached") == 0) {
         Logger::debug("Handling qAttached");
         this->clientConnection->writePacket(ResponsePacket({1}));
