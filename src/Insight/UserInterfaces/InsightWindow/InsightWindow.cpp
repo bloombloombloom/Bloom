@@ -209,7 +209,28 @@ bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
 }
 
 void InsightWindow::openReportIssuesUrl() {
-    QDesktopServices::openUrl(QUrl("https://bloom.oscillate.io/report-issue"));
+    auto url = QUrl("https://bloom.oscillate.io/report-issue");
+    /*
+     * The https://bloom.oscillate.io/report-issue URL just redirects to the Bloom GitHub issue page.
+     *
+     * We can use query parameters in the URL to pre-fill the body of the issue. We use this to include some
+     * target information.
+     */
+    auto urlQuery = QUrlQuery();
+    auto issueBody = QString("Issue reported via Bloom Insight.\nTarget name: "
+        + QString::fromStdString(this->targetDescriptor.name) + "\n"
+        + "Target ID: " + QString::fromStdString(this->targetDescriptor.id) + "\n"
+    );
+
+    if (this->selectedVariant != nullptr) {
+        issueBody += "Target variant: " + QString::fromStdString(this->selectedVariant->name) + "\n";
+    }
+
+    issueBody += "\nPlease describe your issue below. Include as much detail as possible.";
+    urlQuery.addQueryItem("body", issueBody);
+    url.setQuery(urlQuery);
+
+    QDesktopServices::openUrl(url);
 }
 
 void InsightWindow::openAboutWindow() {
