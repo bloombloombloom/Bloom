@@ -3,6 +3,11 @@
 #include <libusb-1.0/libusb.h>
 #include <hidapi/hidapi.h>
 
+/*
+ * The code below was extracted from the HIDAPI library. Third-party license may apply here.
+ *
+ * https://github.com/signal11/hidapi
+ */
 struct hid_device_ {
     // Handle to the actual device.
     libusb_device_handle* device_handle;
