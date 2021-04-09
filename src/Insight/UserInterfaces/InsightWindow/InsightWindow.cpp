@@ -82,6 +82,10 @@ void InsightWindow::init(
         );
 
         if (this->isVariantSupported(targetVariant)) {
+            this->supportedVariantsByName.insert(
+                std::pair(QString::fromStdString(targetVariant.name).toLower().toStdString(), targetVariant)
+            );
+
             connect(
                 variantAction,
                 &QAction::triggered,
@@ -100,33 +104,21 @@ void InsightWindow::init(
         this->variantMenu->addAction(variantAction);
     }
 
-    std::copy_if(
-        this->targetDescriptor.variants.begin(),
-        this->targetDescriptor.variants.end(),
-        std::back_inserter(this->supportedVariants),
-        [this](auto variant) {
-            return this->isVariantSupported(variant);
-        }
-    );
+    Logger::debug("Number of target variants supported by Insight: " + std::to_string(supportedVariantsByName.size()));
 
-    Logger::debug("Number of target variants supported by Insight: " + std::to_string(supportedVariants.size()));
+    if (!this->supportedVariantsByName.empty()) {
+        if (!targetConfig.variantName.empty() && this->supportedVariantsByName.contains(targetConfig.variantName)) {
+            // The user has specified a valid variant name in their config file, so use that as the default
+            this->selectVariant(&(this->supportedVariantsByName.at(targetConfig.variantName)));
 
-    if (!supportedVariants.empty()) {
-        auto selectedVariant = std::find_if(
-            supportedVariants.begin(),
-            supportedVariants.end(),
-            [&targetConfig](const TargetVariant& variant) {
-                auto variantName = QString::fromStdString(variant.name).toLower().toStdString();
-                return !targetConfig.variantName.empty() && targetConfig.variantName == variantName;
+        } else {
+            if (!targetConfig.variantName.empty()) {
+                Logger::error("Invalid target variant name \"" + targetConfig.variantName
+                    + "\" - no such variant with the given name was found.");
             }
-        );
 
-        /*
-         * If ths user specified a valid variant name in their config file, use that as the default, otherwise just
-         * use the first supported variant.
-         */
-        this->selectVariant((selectedVariant != supportedVariants.end()) ? &(*selectedVariant)
-            : &supportedVariants.front());
+            this->selectVariant(&(this->supportedVariantsByName.begin()->second));
+        }
 
     } else {
         if (this->targetDescriptor.variants.empty()) {

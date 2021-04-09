@@ -11,6 +11,7 @@ namespace Bloom::InsightTargetWidgets::Qfp
     Q_PROPERTY(int disableAlphaLevel READ getDisableAlphaLevel WRITE setDisableAlphaLevel DESIGNABLE true)
 
     private:
+        // These properties can be modified via Qt style sheets (see Stylesheets/QuadFlatPackage.qss)
         QColor bodyColor = QColor("#AFB1B3");
         int disableAlphaLevel = 100;
 

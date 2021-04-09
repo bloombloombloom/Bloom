@@ -47,7 +47,7 @@ namespace Bloom
         QLabel* targetStatusLabel = nullptr;
         QLabel* programCounterValueLabel = nullptr;
 
-        std::vector<TargetVariant> supportedVariants;
+        std::map<std::string, TargetVariant> supportedVariantsByName;
         const TargetVariant* selectedVariant = nullptr;
         bool uiDisabled = false;
 

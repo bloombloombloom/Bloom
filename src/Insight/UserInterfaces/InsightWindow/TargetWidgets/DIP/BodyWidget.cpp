@@ -23,7 +23,6 @@ void BodyWidget::drawWidget(QPainter& painter) {
     painter.setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
 
     // Draw target body
-//    auto targetBodyColor = QColor("#AFB1B3");
     auto targetBodyColor = this->getBodyColor();
     auto backgroundColor = QColor("#3C3F41");
 

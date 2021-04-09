@@ -193,6 +193,7 @@ namespace Bloom
          * @param correlationId
          */
         void emitErrorEvent(int correlationId);
+
     public:
         TargetController(EventManager& eventManager): eventManager(eventManager) {};
 
