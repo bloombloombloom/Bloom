@@ -17,6 +17,7 @@ families and architectures. Support for other target families will be considered
 Bloom is released under the LGPLv3 license. See LICENSE.txt
 
 ### Bloom Architecture
+
 Bloom is a multithreaded event-driven program written in C++. It consists of four components:
 
 - TargetController
