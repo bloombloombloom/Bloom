@@ -57,8 +57,8 @@ The components described above interact with each other using an event-based mec
 ---
 
 ### Compiling Bloom
-To compile Bloom, the following dependencies must be resolved. The accompanying installation commands will only work on
-distros with apt-get support.
+To compile Bloom, the following dependencies must be resolved. The accompanying installation commands require support 
+for apt-get.
 
 #### CMake version 3.10 or later:
 This can be installed via `sudo apt-get install cmake`, provided the appropriate version is available in your OS package
@@ -75,9 +75,9 @@ Also, build-essential (`sudo apt-get install build-essential`).
 Some of Bloom's build scripts are written in PHP.
 
 ```
-sudo apt-get install software-properties-common
-sudo add-apt-repository ppa:ondrej/php
-sudo apt-get install php8.0-cli php8.0-xml
+sudo apt-get install software-properties-common;
+sudo add-apt-repository ppa:ondrej/php;
+sudo apt-get install php8.0-cli php8.0-xml;
 ```
 
 #### Qt Version 5.12.10 or later
@@ -85,6 +85,14 @@ It's best to install this via the Qt installer: https://www.qt.io/download
 
 You may also need to install mesa-common-dev and libglu1-mesa-dev (Qt dependencies):
 `sudo apt install mesa-common-dev libglu1-mesa-dev`
+
+If you already have another version of Qt installed, you may need to temporarily point qtchooser to the right place
+(unless you can figure out another way to make cmake use the right Qt binaries (specifically, the moc)):
+```
+# Set the appropriate paths to your Qt installation in here. You may want to backup this file incase you wish to revert the changes
+# You may need to change the path below
+sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
+```
 
 #### Notes on compiling:
 
@@ -107,7 +115,7 @@ You may also need to install mesa-common-dev and libglu1-mesa-dev (Qt dependenci
   cd /path/to/Bloom;
   cmake --build ./build/cmake-build-debug --target Bloom;
   ```
-- To run the clean target Bloom (debug):
+- To run the clean target:
   ```
   cd /path/to/Bloom;
   cmake --build ./build/cmake-build-debug --target clean;
