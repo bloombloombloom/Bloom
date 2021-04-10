@@ -45,7 +45,7 @@ namespace Bloom::DebugServers::Gdb
          * This will be pulled from the user's project configuration, if set. Otherwise it will default to whatever is
          * set here.
          */
-        std::uint16_t listeningPortNumber = 1055;
+        std::uint16_t listeningPortNumber = 1442;
 
         /**
          * The address for the GDB server to listen on.

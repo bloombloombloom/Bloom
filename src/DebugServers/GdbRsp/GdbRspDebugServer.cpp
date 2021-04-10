@@ -15,14 +15,17 @@ using namespace Exceptions;
 
 void GdbRspDebugServer::init() {
     auto ipAddress = this->debugServerConfig.jsonObject.find("ipAddress")->toString().toStdString();
-    auto port = static_cast<std::uint16_t>(this->debugServerConfig.jsonObject.find("port")->toInt());
+    auto configPortJsonValue = this->debugServerConfig.jsonObject.find("port");
+    auto configPortValue = configPortJsonValue->isString()
+        ? static_cast<std::uint16_t>(configPortJsonValue->toString().toInt(nullptr, 10))
+        : static_cast<std::uint16_t>(configPortJsonValue->toInt());
 
     if (!ipAddress.empty()) {
         this->listeningAddress = ipAddress;
     }
 
-    if (port > 0) {
-        this->listeningPortNumber = port;
+    if (configPortValue > 0) {
+        this->listeningPortNumber = configPortValue;
     }
 
     this->socketAddress.sin_family = AF_INET;
@@ -55,7 +58,8 @@ void GdbRspDebugServer::init() {
         sizeof(this->socketAddress)
         ) < 0
     ) {
-        throw Exception("Failed to bind address.");
+        throw Exception("Failed to bind address. The selected port number ("
+            + std::to_string(this->listeningPortNumber) + ") may be in use.");
     }
 
     this->serverSocketFileDescriptor = socketFileDescriptor;

@@ -9,7 +9,9 @@
       },
 
       "debugServer": {
-        "name": "avr-gdb-rsp"
+        "name": "avr-gdb-rsp",
+        "ipAddress": "127.0.0.1",
+        "port": "1442"
       }
     }
   },
