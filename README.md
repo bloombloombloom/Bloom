@@ -16,6 +16,8 @@ families and architectures. Support for other target families will be considered
 ### License
 Bloom is released under the LGPLv3 license. See LICENSE.txt
 
+---
+
 ### Bloom Architecture
 
 Bloom is a multithreaded event-driven program written in C++. It consists of four components:
@@ -50,6 +52,65 @@ other threads within Bloom do not accept any UNIX signals.
 See source code in src/SignalHandler/ for more.
 
 #### Inter-component communication
-The components described above interact with each other using an event-based mechanism.
+The components described above interact with each other using an event-based mechanism. More on this to follow.
+
+---
+
+### Compiling Bloom
+To compile Bloom, the following dependencies must be resolved. The accompanying installation commands will only work on
+distros with apt-get support.
+
+#### CMake version 3.10 or later:
+This can be installed via `sudo apt-get install cmake`, provided the appropriate version is available in your OS package
+repositories. Otherwise, you'll need to download CMake from the official website.
+
+#### G++9 or later
+Bloom uses features that are only available in C++20. G++9 is (likely) the minimum version Bloom will compile with.
+Also, build-essential (`sudo apt-get install build-essential`).
+
+#### libusb v1.0 & libhidapi
+`sudo apt-get install libusb-1.0-0-dev libhidapi-dev`
+
+#### PHP version 8 or later, with the xml extension
+Some of Bloom's build scripts are written in PHP.
+
+```
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:ondrej/php
+sudo apt-get install php8.0-cli php8.0-xml
+```
+
+#### Qt Version 5.12.10 or later
+It's best to install this via the Qt installer: https://www.qt.io/download
+
+You may also need to install mesa-common-dev and libglu1-mesa-dev (Qt dependencies):
+`sudo apt install mesa-common-dev libglu1-mesa-dev`
+
+#### Notes on compiling:
+
+- If CMake fails to find the Qt packages, you may need to tell it where to look:
+`export CMAKE_PREFIX_PATH=/path/to/Qt-installation/5.12.10/gcc_64/`
+- Use the build directory build/cmake-build-debug, when generating the build system for the debug build as it's already 
+  gitingored. (You'll have to create it)
+- Use the build directory build/cmake-build-release, when generating the build system for the release build as it's 
+  already gitingored. (You'll have to create it)
+- To generate the build system with cmake (for debug build)
+  ```
+  # For release build, change cmake-build-debug to cmake-build-release and -DCMAKE_BUILD_TYPE=Debug to -DCMAKE_BUILD_TYPE=Release
+  # You may also need to change the path to the compiler
+  # You may also need to supply an absolute path to the source (cmake gets a bit weird about this, sometimes)
+  cd /path/to/Bloom/build/cmake-build-debug/;
+  cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 ./;
+  ```
+- To build Bloom (debug):
+  ```
+  cd /path/to/Bloom;
+  cmake --build ./build/cmake-build-debug --target Bloom;
+  ```
+- To run the clean target Bloom (debug):
+  ```
+  cd /path/to/Bloom;
+  cmake --build ./build/cmake-build-debug --target clean;
+  ```
 
 More documentation to follow.
