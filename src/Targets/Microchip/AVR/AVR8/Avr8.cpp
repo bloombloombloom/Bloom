@@ -564,8 +564,6 @@ void Avr8::writeRegisters(const TargetRegisters& registers) {
             gpRegisters.push_back(targetRegister);
 
         } else if (targetRegister.descriptor.type == TargetRegisterType::PROGRAM_COUNTER) {
-            Logger::debug("Setting PC register");
-
             auto programCounterBytes = targetRegister.value;
 
             if (programCounterBytes.size() < 4) {
@@ -581,11 +579,9 @@ void Avr8::writeRegisters(const TargetRegisters& registers) {
             ));
 
         } else if (targetRegister.descriptor.type == TargetRegisterType::STATUS_REGISTER) {
-            Logger::error("Setting status register");
             this->avr8Interface->setStatusRegister(targetRegister);
 
         } else if (targetRegister.descriptor.type == TargetRegisterType::STACK_POINTER) {
-            Logger::error("Setting stack pointer register");
             this->avr8Interface->setStackPointerRegister(targetRegister);
         }
     }
@@ -707,11 +703,9 @@ std::map<int, TargetPinState> Avr8::getPinStates(int variantId) {
             if (pad.ddrSetAddress.has_value()) {
                 auto dataDirectionRegisterValue = readMemoryBitset(pad.ddrSetAddress.value());
                 pinState.ioDirection = dataDirectionRegisterValue.test(pad.gpioPinNumber.value()) ?
-                                       TargetPinState::IoDirection::OUTPUT : TargetPinState::IoDirection::INPUT;
+                    TargetPinState::IoDirection::OUTPUT : TargetPinState::IoDirection::INPUT;
 
-                if (pinState.ioDirection == TargetPinState::IoDirection::OUTPUT
-                    && pad.gpioPortSetAddress.has_value()
-                ) {
+                if (pinState.ioDirection == TargetPinState::IoDirection::OUTPUT && pad.gpioPortSetAddress.has_value()) {
                     auto portRegisterValue = readMemoryBitset(pad.gpioPortSetAddress.value());
                     pinState.ioState = portRegisterValue.test(pad.gpioPinNumber.value()) ?
                         TargetPinState::IoState::HIGH : TargetPinState::IoState::LOW;

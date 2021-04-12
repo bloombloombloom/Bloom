@@ -235,6 +235,7 @@ void TargetController::shutdown() {
             Logger::info("Closing debug tool");
             debugTool->close();
         }
+
     } catch (const std::exception& exception) {
         Logger::error("Failed to properly shutdown TargetController. Error: " + std::string(exception.what()));
     }

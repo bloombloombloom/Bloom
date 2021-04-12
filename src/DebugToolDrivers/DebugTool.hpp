@@ -29,8 +29,14 @@ namespace Bloom
             return this->initialised;
         }
 
+        /**
+         * Should establish a connection to the device and prepare it for a debug session.
+         */
         virtual void init() = 0;
 
+        /**
+         * Should disconnect from the device after performing any tasks required to formally end the debug session.
+         */
         virtual void close() = 0;
 
         virtual std::string getName() = 0;
@@ -42,6 +48,8 @@ namespace Bloom
          * class, via this method.
          *
          * For debug tools that do not support AVR8 targets, this method should return a nullptr.
+         *
+         * Note: the caller of this method will not manage the lifetime of the returned Avr8Interface instance.
          *
          * @return
          */

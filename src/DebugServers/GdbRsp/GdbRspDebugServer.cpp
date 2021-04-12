@@ -156,6 +156,7 @@ void GdbRspDebugServer::waitForConnection() {
 
         Logger::info("Accepted GDP RSP connection from " + this->clientConnection->getIpAddress());
         this->eventManager.triggerEvent(std::make_shared<Events::DebugSessionStarted>());
+
     } else {
         // This method should not return until a connection has been established (or an exception is thrown)
         return this->waitForConnection();
