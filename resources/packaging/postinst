@@ -2,12 +2,12 @@
 
 BLOOM_UDEV_FILE_PATH=/etc/udev/rules.d/
 
-if [ ! -f "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ]; then
+if [ ! -f "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ ! -L "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ ! -e "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ]; then
   sudo ln -s /opt/bloom/resources/UDevRules/99-bloom.rules "$BLOOM_UDEV_FILE_PATH";
 fi
 
 
-if [ -f "/usr/bin/bloom" ]; then
+if [ -f "/usr/bin/bloom" ] || [ -L "/usr/bin/bloom" ] || [ -e "/usr/bin/bloom" ]; then
   sudo rm /usr/bin/bloom;
 fi
 

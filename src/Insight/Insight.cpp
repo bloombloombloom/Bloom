@@ -51,7 +51,7 @@ void Insight::startup() {
     std::string qtAppName = "Bloom";
     char* appArguments[] = {qtAppName.data()};
     auto appArgCount = 1;
-//        QCoreApplication::addLibraryPath(QString::fromStdString(Application::getApplicationDirPath() + "/plugins"));
+    QCoreApplication::addLibraryPath(QString::fromStdString(Application::getApplicationDirPath() + "/plugins"));
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 
     this->application = new QApplication(appArgCount, appArguments);

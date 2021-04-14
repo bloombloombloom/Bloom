@@ -108,7 +108,7 @@ sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
   # You may also need to change the path to the compiler
   # You may also need to supply an absolute path to the source (cmake gets a bit weird about this, sometimes)
   cd /path/to/Bloom/build/cmake-build-debug/;
-  cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 ./;
+  cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 ../../;
   ```
 - To build Bloom (debug):
   ```

@@ -1,1 +1,1 @@
-Bloom is a Linux-based debug interface for embedded systems development. Bloom supports most Microchip AVR8 targets, along with numerous EDBG-based debug tools.
+A debug interface for embedded systems development on Linux. Bloom supports most Microchip AVR8 targets, along with numerous EDBG-based debug tools.
