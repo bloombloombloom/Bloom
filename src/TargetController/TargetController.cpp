@@ -193,7 +193,7 @@ void TargetController::checkUdevRules() {
             Logger::error("Bloom udev rules missing - cannot install udev rules without root privileges.\n"
                 "Running Bloom once with root privileges will allow it to automatically install the udev rules."
                 " Alternatively, instructions on manually installing the udev rules can be found "
-                "here: https://bloom.oscillate.io/some/link.\nBloom may fail to connect to some debug tools "
+                "here: https://bloom.oscillate.io/docs/getting-started\nBloom may fail to connect to some debug tools "
                 "until this is resolved.");
             return;
         }

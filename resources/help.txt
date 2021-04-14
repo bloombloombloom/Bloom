@@ -11,4 +11,4 @@ Commands:
   --version, -v   Displays the current version number.
   init            Creates a new Bloom project configuration file (bloom.json) in the working directory.
 
-For more information on getting started with Bloom, please visit https://bloom.oscillate.io/getting-started.
+For more information on getting started with Bloom, please visit https://bloom.oscillate.io/docs/getting-started.
