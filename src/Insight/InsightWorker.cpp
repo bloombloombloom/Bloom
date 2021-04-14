@@ -35,7 +35,7 @@ void InsightWorker::startup() {
 
     this->eventDispatchTimer = new QTimer(this);
     QTimer::connect(this->eventDispatchTimer, &QTimer::timeout, this, &InsightWorker::dispatchEvents);
-    this->eventDispatchTimer->start(50);
+    this->eventDispatchTimer->start(5);
 
     this->eventManager.triggerEvent(
         std::make_shared<Events::InsightStateChanged>(ThreadState::READY)

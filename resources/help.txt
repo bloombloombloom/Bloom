@@ -1,4 +1,4 @@
-A Linux-based debug interface for embedded systems development.
+A debug interface for embedded systems development on Linux..
 
 Usage:
   bloom [ENVIRONMENT_NAME/COMMAND]

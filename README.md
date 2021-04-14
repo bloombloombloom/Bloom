@@ -1,6 +1,6 @@
 ## Bloom
 
-** First Beta release to be published by end of April 2021 **
+Version 0.0.1 of Bloom can be downloaded at https://bloom.oscillate.io/download.
 
 Bloom is a debug interface for embedded systems development on Linux. This is the official repository for Bloom's 
 source code. For information on how to use Bloom, please visit https://bloom.oscillate.io.
