@@ -26,7 +26,10 @@ namespace Bloom
      * When instances of these structs are passed to the appropriate entities, any configuration required by those
      * entities is extracted from the jsonObject member. This means we don't have to worry about any entity specific
      * config parameters at the application level. We can simply extract what we need at an entity level and the rest
-     * of the application can remain oblivious. For an example on extracting entity specific config, see AVR8::configure().
+     * of the application can remain oblivious. For an example on extracting entity specific config, see
+     * AVR8::preActivationConfigure().
+     *
+     * For more on project configuration, see Bloom documentation at https://bloom.oscillate.io/docs/configuration
      */
 
     /**
