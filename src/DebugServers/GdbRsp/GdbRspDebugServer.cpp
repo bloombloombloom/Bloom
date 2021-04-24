@@ -238,7 +238,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadGeneralRegisters& pa
             }
         }
 
-        auto registerSet = this->readGeneralRegistersFromTarget(descriptors);
+        auto registerSet = this->targetControllerConsole.readGeneralRegisters(descriptors);
         auto registerNumberToDescriptorMapping = this->getRegisterNumberToDescriptorMapping();
 
         /*
@@ -297,7 +297,9 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteGeneralRegisters& p
 
     try {
         auto registerDescriptor = this->getRegisterDescriptorFromNumber(packet.registerNumber);
-        this->writeGeneralRegistersToTarget({TargetRegister(registerDescriptor, packet.registerValue)});
+        this->targetControllerConsole.writeGeneralRegisters({
+                                                                TargetRegister(registerDescriptor, packet.registerValue)
+                                                            });
         this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
 
     } catch (const Exception& exception) {
@@ -310,7 +312,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ContinueExecution& packe
     Logger::debug("Handling ContinueExecution packet");
 
     try {
-        this->continueTargetExecution(packet.fromProgramCounter);
+        this->targetControllerConsole.continueTargetExecution(packet.fromProgramCounter);
         this->clientConnection->waitingForBreak = true;
 
     } catch (const Exception& exception) {
@@ -323,7 +325,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::StepExecution& packet) {
     Logger::debug("Handling StepExecution packet");
 
     try {
-        this->stepTargetExecution(packet.fromProgramCounter);
+        this->targetControllerConsole.stepTargetExecution(packet.fromProgramCounter);
         this->clientConnection->waitingForBreak = true;
 
     } catch (const Exception& exception) {
@@ -338,7 +340,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadMemory& packet) {
     try {
         auto memoryType = this->getMemoryTypeFromGdbAddress(packet.startAddress);
         auto startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(packet.startAddress);
-        auto memoryBuffer = this->readMemoryFromTarget(memoryType, startAddress, packet.bytes);
+        auto memoryBuffer = this->targetControllerConsole.readMemory(memoryType, startAddress, packet.bytes);
 
         auto hexMemoryBuffer = Packet::dataToHex(memoryBuffer);
         this->clientConnection->writePacket(
@@ -357,7 +359,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteMemory& packet) {
     try {
         auto memoryType = this->getMemoryTypeFromGdbAddress(packet.startAddress);
         auto startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(packet.startAddress);
-        this->writeMemoryToTarget(memoryType, startAddress, packet.buffer);
+        this->targetControllerConsole.writeMemory(memoryType, startAddress, packet.buffer);
 
         this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
 
@@ -373,7 +375,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::SetBreakpoint& packet) {
     try {
         auto breakpoint = TargetBreakpoint();
         breakpoint.address = packet.address;
-        this->setBreakpointOnTarget(breakpoint);
+        this->targetControllerConsole.setBreakpoint(breakpoint);
 
         this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
 
@@ -389,7 +391,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::RemoveBreakpoint& packet
     try {
         auto breakpoint = TargetBreakpoint();
         breakpoint.address = packet.address;
-        this->removeBreakpointOnTarget(breakpoint);
+        this->targetControllerConsole.removeBreakpoint(breakpoint);
 
         this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
 
@@ -403,7 +405,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::InterruptExecution& pack
     Logger::debug("Handling InterruptExecution packet");
 
     try {
-        this->stopTargetExecution();
+        this->targetControllerConsole.stopTargetExecution();
         this->clientConnection->writePacket(TargetStopped(Signal::INTERRUPTED));
 
     } catch (const Exception& exception) {

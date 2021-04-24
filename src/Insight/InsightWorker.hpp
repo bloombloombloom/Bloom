@@ -8,6 +8,7 @@
 #include "src/ApplicationConfig.hpp"
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
+#include "src/TargetController/TargetControllerConsole.hpp"
 
 namespace Bloom
 {
@@ -24,6 +25,11 @@ namespace Bloom
     private:
         EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightWorkerEventListener");
+
+        TargetControllerConsole targetControllerConsole = TargetControllerConsole(
+            this->eventManager,
+            *(this->eventListener)
+        );
 
         QTimer* eventDispatchTimer = nullptr;
 

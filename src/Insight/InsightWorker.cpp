@@ -43,10 +43,7 @@ void InsightWorker::startup() {
 }
 
 void InsightWorker::requestPinStates(int variantId) {
-    auto requestEvent = std::make_shared<Events::RetrieveTargetPinStates>();
-    requestEvent->variantId = variantId;
-
-    this->eventManager.triggerEvent(requestEvent);
+    this->targetControllerConsole.requestPinStates(variantId);
 }
 
 void InsightWorker::requestPinStateUpdate(
@@ -54,12 +51,7 @@ void InsightWorker::requestPinStateUpdate(
     Bloom::Targets::TargetPinDescriptor pinDescriptor,
     Bloom::Targets::TargetPinState pinState
 ) {
-    auto updateEvent = std::make_shared<Events::SetTargetPinState>();
-    updateEvent->variantId = variantId;
-    updateEvent->pinDescriptor = pinDescriptor;
-    updateEvent->pinState = pinState;
-
-    this->eventManager.triggerEvent(updateEvent);
+    this->targetControllerConsole.setPinState(variantId, pinDescriptor, pinState);
 }
 
 void InsightWorker::onTargetStoppedEvent(EventPointer<TargetExecutionStopped> event) {

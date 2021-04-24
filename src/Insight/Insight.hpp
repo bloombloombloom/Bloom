@@ -2,13 +2,13 @@
 
 #include <QtCore>
 #include <QApplication>
-
 #include "UserInterfaces/InsightWindow/InsightWindow.hpp"
+
 #include "src/Helpers/Thread.hpp"
 #include "src/ApplicationConfig.hpp"
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
-#include "src/Targets/TargetDescriptor.hpp"
+#include "src/TargetController/TargetControllerConsole.hpp"
 
 namespace Bloom
 {
@@ -34,6 +34,11 @@ namespace Bloom
         QApplication* application = nullptr;
         InsightWindow mainWindow;
 
+        TargetControllerConsole targetControllerConsole = TargetControllerConsole(
+            this->eventManager,
+            *(this->eventListener)
+        );
+
         /**
          * Insight consists of two threads - the main thread where the main Qt event loop runs (for the GUI), and
          * a single worker thread to handle any blocking/time-expensive operations.
@@ -41,8 +46,6 @@ namespace Bloom
         QThread* workerThread;
 
         void startup();
-
-        Targets::TargetDescriptor getTargetDescriptor();
 
     public:
         Insight(EventManager& eventManager): eventManager(eventManager) {};

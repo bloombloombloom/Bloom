@@ -4,6 +4,7 @@
 #include <functional>
 #include <cstdint>
 
+#include "src/TargetController/TargetControllerConsole.hpp"
 #include "src/EventManager/Events/Events.hpp"
 #include "src/EventManager/EventManager.hpp"
 #include "src/Exceptions/DebugServerInterrupted.hpp"
@@ -75,6 +76,11 @@ namespace Bloom::DebugServers
         EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("DebugServerEventListener");
 
+        TargetControllerConsole targetControllerConsole = TargetControllerConsole(
+            this->eventManager,
+            *(this->eventListener)
+        );
+
         /**
          * Enables the interruption of any blocking file IO.
          */
@@ -98,75 +104,6 @@ namespace Bloom::DebugServers
          * Called on shutdown of the debug server.
          */
         virtual void close() = 0;
-
-        /**
-         * Requests the TargetController to halt execution on the target.
-         */
-        void stopTargetExecution();
-
-        /**
-         * Requests the TargetController to continue execution on the target.
-         *
-         * @param fromAddress
-         */
-        void continueTargetExecution(std::optional<std::uint32_t> fromAddress);
-
-        /**
-         * Requests the TargetController to step execution on the target.
-         *
-         * @param fromAddress
-         */
-        void stepTargetExecution(std::optional<std::uint32_t> fromAddress);
-
-        /**
-         * Requests the TargetController to read register values from the target.
-         *
-         * @param descriptors
-         *  Descriptors of the registers to read.
-         *
-         * @return
-         */
-        TargetRegisters readGeneralRegistersFromTarget(TargetRegisterDescriptors descriptors);
-
-        /**
-         * Requests the TargetController to write register values to the target.
-         *
-         * @param registers
-         */
-        void writeGeneralRegistersToTarget(TargetRegisters registers);
-
-        /**
-         * Requests the TargetController to read memory from the target.
-         *
-         * @param memoryType
-         * @param startAddress
-         * @param bytes
-         * @return
-         */
-        TargetMemoryBuffer readMemoryFromTarget(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes);
-
-        /**
-         * Requests the TargetController to write memory to the target.
-         *
-         * @param memoryType
-         * @param startAddress
-         * @param buffer
-         */
-        void writeMemoryToTarget(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer);
-
-        /**
-         * Requests the TargetController to set a breakpoint on the target.
-         *
-         * @param breakpoint
-         */
-        void setBreakpointOnTarget(TargetBreakpoint breakpoint);
-
-        /**
-         * Requests the TargetController to remove a breakpoint from the target.
-         *
-         * @param breakpoint
-         */
-        void removeBreakpointOnTarget(TargetBreakpoint breakpoint);
 
     public:
         DebugServer(EventManager& eventManager): eventManager(eventManager) {};

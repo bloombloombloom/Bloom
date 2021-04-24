@@ -63,6 +63,7 @@ add_executable(Bloom
     src/Application.cpp
     src/DebugToolDrivers/USB/UsbDevice.cpp
     src/TargetController/TargetController.cpp
+    src/TargetController/TargetControllerConsole.cpp
     src/EventManager/EventListener.cpp
     src/EventManager/EventManager.cpp
     src/DebugServers/DebugServer.cpp

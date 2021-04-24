@@ -46,7 +46,7 @@ void Insight::startup() {
         std::bind(&Insight::onTargetControllerStateChangedEvent, this, std::placeholders::_1)
     );
 
-    auto targetDescriptor = this->getTargetDescriptor();
+    auto targetDescriptor = this->targetControllerConsole.getTargetDescriptor();
 
     std::string qtAppName = "Bloom";
     char* appArguments[] = {qtAppName.data()};
@@ -89,24 +89,6 @@ void Insight::startup() {
     connect(worker, &InsightWorker::targetIoPortsUpdated, &(this->mainWindow), &InsightWindow::onTargetIoPortsUpdate);
     connect(&(this->mainWindow), &InsightWindow::refreshTargetPinStates, worker, &InsightWorker::requestPinStates);
     connect(&(this->mainWindow), &InsightWindow::setTargetPinState, worker, &InsightWorker::requestPinStateUpdate);
-}
-
-Targets::TargetDescriptor Insight::getTargetDescriptor() {
-    auto extractEvent = std::make_shared<Events::ExtractTargetDescriptor>();
-    this->eventManager.triggerEvent(extractEvent);
-    auto responseEvent = this->eventListener->waitForEvent<
-        Events::TargetDescriptorExtracted,
-        Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), extractEvent->id);
-
-    if (!responseEvent.has_value()
-        || !std::holds_alternative<EventPointer<Events::TargetDescriptorExtracted>>(responseEvent.value())
-        ) {
-        throw Exception("Unexpected response from TargetController");
-    }
-
-    auto descriptorExtracted = std::get<EventPointer<Events::TargetDescriptorExtracted>>(responseEvent.value());
-    return descriptorExtracted->targetDescriptor;
 }
 
 void Insight::shutdown() {
