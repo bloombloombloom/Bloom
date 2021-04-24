@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(Bloom LANGUAGES CXX VERSION 0.0.2)
 
 set(CMAKE_VERBOSE_MAKEFILE off)
@@ -157,6 +157,10 @@ target_link_options(
     Bloom
     PUBLIC [=[-Wl,--disable-new-dtags]=] #,--verbose
 )
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    add_compile_definitions(BLOOM_DEBUG_BUILD)
+endif()
 
 if (${ENABLE_SANITIZERS})
     message(WARNING "Sanitizers have been enabled")

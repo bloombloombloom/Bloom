@@ -37,6 +37,10 @@ int Application::run(const std::vector<std::string>& arguments) {
             }
         }
 
+#ifdef BLOOM_DEBUG_BUILD
+        Logger::warning("This is a debug build - some functions may not work as expected.");
+#endif
+
         this->startup();
 
         if (this->insightConfig.insightEnabled) {
@@ -162,6 +166,11 @@ int Application::presentVersionText() {
     Logger::silence();
 
     std::cout << "Bloom v" << Application::VERSION_STR << "\n";
+
+#ifdef BLOOM_DEBUG_BUILD
+    std::cout << "DEBUG BUILD - Compilation timestamp: " << __DATE__ << " " << __TIME__ << "\n";
+#endif
+
     std::cout << "https://bloom.oscillate.io/" << "\n";
     std::cout << "Nav Mohammed" << std::endl;
     return EXIT_SUCCESS;
