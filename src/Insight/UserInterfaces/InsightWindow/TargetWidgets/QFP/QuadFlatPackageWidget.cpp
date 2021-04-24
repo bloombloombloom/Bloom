@@ -19,7 +19,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(const TargetVariant& targetVariant,
 TargetPackageWidget(targetVariant, insightWindowObj, parent) {
     assert((targetVariant.pinDescriptorsByNumber.size() % 4) == 0);
 
-    auto stylesheetFile = QFile("/home/nav/Projects/Bloom/src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss");
+    auto stylesheetFile = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss");
     stylesheetFile.open(QFile::ReadOnly);
     this->setStyleSheet(stylesheetFile.readAll());
 

@@ -17,7 +17,7 @@ using namespace Bloom::Exceptions;
 
 DualInlinePackageWidget::DualInlinePackageWidget(const TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent):
 TargetPackageWidget(targetVariant, insightWindowObj, parent) {
-    auto stylesheetFile = QFile("/home/nav/Projects/Bloom/src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss");
+    auto stylesheetFile = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss");
     stylesheetFile.open(QFile::ReadOnly);
     this->setStyleSheet(stylesheetFile.readAll());
 

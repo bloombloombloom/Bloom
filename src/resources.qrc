@@ -8,6 +8,7 @@
     <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss</file>
     <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss</file>
     <file alias="/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss">./Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss</file>
+    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss">./Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss</file>
     <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg">./Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg</file>
     <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/RAM.svg">./Insight/UserInterfaces/InsightWindow/Images/RAM.svg</file>
     <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/refresh.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh.svg</file>
