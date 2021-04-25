@@ -26,11 +26,18 @@ find_package(Qt5Xml)
 find_package(Qt5Svg)
 find_package(Qt5UiTools)
 
-# CMAKE_SKIP_BUILD_RPATH needs to be set to true to use Gammaray during development
 set(CMAKE_SKIP_BUILD_RPATH false)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
 set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib")
 set(CMAKE_BUILD_RPATH ${CMAKE_INSTALL_RPATH})
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    add_compile_definitions(BLOOM_DEBUG_BUILD)
+
+    # CMAKE_SKIP_BUILD_RPATH needs to be set to true to use Gammaray during development.
+    # This is because the distributed Qt binaries may not be compatible with the local installation of Gammaray
+    set(CMAKE_SKIP_BUILD_RPATH true)
+endif()
 
 add_executable(Bloom
     src/main.cpp
@@ -158,10 +165,6 @@ target_link_options(
     Bloom
     PUBLIC [=[-Wl,--disable-new-dtags]=] #,--verbose
 )
-
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    add_compile_definitions(BLOOM_DEBUG_BUILD)
-endif()
 
 if (${ENABLE_SANITIZERS})
     message(WARNING "Sanitizers have been enabled")

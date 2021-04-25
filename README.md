@@ -120,5 +120,9 @@ sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
   cd /path/to/Bloom;
   cmake --build ./build/cmake-build-debug --target clean;
   ```
+- To use Gammaray for GUI debugging, be sure to build Bloom with the debug configuration. Your local installation of
+  Gammaray will likely be incompatible with the distributed Qt binaries, which ld will use if you've built with the
+  release config. Building with the debug config will disable the RPATH and prevent Qt from loading any plugins from 
+  the distribution directory.
 
 More documentation to follow.

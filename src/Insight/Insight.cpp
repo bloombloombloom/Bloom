@@ -51,7 +51,10 @@ void Insight::startup() {
     std::string qtAppName = "Bloom";
     char* appArguments[] = {qtAppName.data()};
     auto appArgCount = 1;
+
+#ifndef BLOOM_DEBUG_BUILD
     QCoreApplication::addLibraryPath(QString::fromStdString(Application::getApplicationDirPath() + "/plugins"));
+#endif
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 
     this->application = new QApplication(appArgCount, appArguments);
@@ -61,7 +64,12 @@ void Insight::startup() {
     qRegisterMetaType<Bloom::Targets::TargetState>();
     qRegisterMetaType<std::map<int, Bloom::Targets::TargetPinState>>();
 
-    this->mainWindow.init(*(this->application), targetDescriptor, this->insightConfig, this->environmentConfig.targetConfig);
+    this->mainWindow.init(
+        *(this->application),
+        targetDescriptor,
+        this->insightConfig,
+        this->environmentConfig.targetConfig
+    );
     this->mainWindow.show();
 
     /*
