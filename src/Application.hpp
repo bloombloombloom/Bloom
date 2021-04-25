@@ -228,7 +228,7 @@ namespace Bloom
          *
          * @param event
          */
-        void handleTargetControllerStateChangedEvent(EventPointer<Events::TargetControllerStateChanged> event);
+        void onTargetControllerStateChanged(EventPointer<Events::TargetControllerStateChanged> event);
 
         /**
          * Same goes for the DebugServer - it should never shutdown unless a shutdown request was issued. If it does,
@@ -241,7 +241,7 @@ namespace Bloom
         /**
          * Triggers a shutdown of Bloom and all of its components.
          */
-        void handleShutdownApplicationEvent(EventPointer<Events::ShutdownApplication>);
+        void onShutdownApplicationRequest(EventPointer<Events::ShutdownApplication>);
 
         /**
          * Returns the path to the directory in which the Bloom binary resides.

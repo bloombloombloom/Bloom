@@ -73,7 +73,7 @@ void Application::startup() {
     auto applicationEventListener = this->applicationEventListener;
     this->eventManager.registerListener(applicationEventListener);
     applicationEventListener->registerCallbackForEventType<Events::ShutdownApplication>(
-        std::bind(&Application::handleShutdownApplicationEvent, this, std::placeholders::_1)
+        std::bind(&Application::onShutdownApplicationRequest, this, std::placeholders::_1)
     );
 
     this->applicationConfig = this->extractConfig();
@@ -107,7 +107,7 @@ void Application::startup() {
     }
 
     applicationEventListener->registerCallbackForEventType<Events::TargetControllerStateChanged>(
-        std::bind(&Application::handleTargetControllerStateChangedEvent, this, std::placeholders::_1)
+        std::bind(&Application::onTargetControllerStateChanged, this, std::placeholders::_1)
     );
 
     applicationEventListener->registerCallbackForEventType<Events::DebugServerStateChanged>(
@@ -316,14 +316,14 @@ void Application::stopDebugServer() {
     }
 }
 
-void Application::handleTargetControllerStateChangedEvent(EventPointer<Events::TargetControllerStateChanged> event) {
+void Application::onTargetControllerStateChanged(EventPointer<Events::TargetControllerStateChanged> event) {
     if (event->getState() == ThreadState::STOPPED || event->getState() == ThreadState::SHUTDOWN_INITIATED) {
         // TargetController has unexpectedly shutdown - it must have encountered a fatal error.
         this->shutdown();
     }
 }
 
-void Application::handleShutdownApplicationEvent(EventPointer<Events::ShutdownApplication>) {
+void Application::onShutdownApplicationRequest(EventPointer<Events::ShutdownApplication>) {
     Logger::debug("ShutdownApplication event received.");
     this->shutdown();
 }
