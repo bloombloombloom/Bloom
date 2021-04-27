@@ -19,6 +19,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         constexpr static Avr8EdbgParameter PHYSICAL_INTERFACE {0x01, 0x00};
         constexpr static Avr8EdbgParameter DW_CLOCK_DIVISION_FACTOR {0x01, 0x10};
         constexpr static Avr8EdbgParameter XMEGA_PDI_CLOCK {0x01, 0x31};
+        constexpr static Avr8EdbgParameter MEGA_DEBUG_CLOCK {0x01, 0x21};
+        constexpr static Avr8EdbgParameter JTAG_DAISY_CHAIN_SETTINGS {0x01, 0x01};
 
         // debugWire and JTAG parameters
         constexpr static Avr8EdbgParameter DEVICE_BOOT_START_ADDR {0x02, 0x0A};

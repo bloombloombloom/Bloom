@@ -84,11 +84,6 @@ void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
 
     this->physicalInterface = selectedPhysicalInterface;
     this->configVariant = availableConfigVariants.find(selectedPhysicalInterface)->second;
-
-    if (this->configVariant == Avr8ConfigVariant::XMEGA) {
-        // Default PDI clock to 4MHz
-        this->setParameter(Avr8EdbgParameters::XMEGA_PDI_CLOCK, static_cast<std::uint16_t>(0x0FA0));
-    }
 }
 
 void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& config) {
@@ -288,6 +283,19 @@ void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& con
 }
 
 void EdbgAvr8Interface::init() {
+    if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+        // Default PDI clock to 4MHz
+        // TODO: Make this adjustable via a target config parameter
+        this->setParameter(Avr8EdbgParameters::XMEGA_PDI_CLOCK, static_cast<std::uint16_t>(0x0FA0));
+    }
+
+    if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
+        // Default clock value for mega debugging is 2KHz
+        // TODO: Make this adjustable via a target config parameter
+        this->setParameter(Avr8EdbgParameters::MEGA_DEBUG_CLOCK, static_cast<std::uint16_t>(0x00C8));
+        this->setParameter(Avr8EdbgParameters::JTAG_DAISY_CHAIN_SETTINGS, static_cast<std::uint32_t>(0));
+    }
+
     this->setParameter(
         Avr8EdbgParameters::CONFIG_VARIANT,
         static_cast<unsigned char>(this->configVariant)
