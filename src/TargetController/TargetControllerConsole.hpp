@@ -27,9 +27,15 @@ namespace Bloom
         EventManager& eventManager;
         EventListener& eventListener;
 
+        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(10000);
+
     public:
         TargetControllerConsole(EventManager& eventManager, EventListener& eventListener):
         eventManager(eventManager), eventListener(eventListener) {};
+
+        void setDefaultTimeout(std::chrono::milliseconds timeout) {
+            this->defaultTimeout = timeout;
+        }
 
         /**
          * Requests the TargetDescriptor from the TargetController

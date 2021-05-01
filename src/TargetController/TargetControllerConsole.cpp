@@ -12,7 +12,7 @@ Targets::TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
     auto responseEvent = this->eventListener.waitForEvent<
         Events::TargetDescriptorExtracted,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), extractEvent->id);
+    >(this->defaultTimeout, extractEvent->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::TargetDescriptorExtracted>>(responseEvent.value())
@@ -31,7 +31,7 @@ void TargetControllerConsole::stopTargetExecution() {
     auto responseEvent = this->eventListener.waitForEvent<
         Events::TargetExecutionStopped,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), stopTargetEvent->id);
+    >(this->defaultTimeout, stopTargetEvent->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::TargetExecutionStopped>>(responseEvent.value())
@@ -51,7 +51,7 @@ void TargetControllerConsole::continueTargetExecution(std::optional<std::uint32_
     auto responseEvent = this->eventListener.waitForEvent<
         Events::TargetExecutionResumed,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), resumeExecutionEvent->id);
+    >(this->defaultTimeout, resumeExecutionEvent->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::TargetExecutionResumed>>(responseEvent.value())
@@ -71,7 +71,7 @@ void TargetControllerConsole::stepTargetExecution(std::optional<std::uint32_t> f
     auto responseEvent = this->eventListener.waitForEvent<
         Events::TargetExecutionResumed,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), stepExecutionEvent->id);
+    >(this->defaultTimeout, stepExecutionEvent->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::TargetExecutionResumed>>(responseEvent.value())
@@ -88,7 +88,7 @@ TargetRegisters TargetControllerConsole::readGeneralRegisters(TargetRegisterDesc
     auto responseEvent = this->eventListener.waitForEvent<
         Events::RegistersRetrievedFromTarget,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), readRegistersEvent->id);
+    >(this->defaultTimeout, readRegistersEvent->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::RegistersRetrievedFromTarget>>(responseEvent.value())
@@ -108,7 +108,7 @@ void TargetControllerConsole::writeGeneralRegisters(TargetRegisters registers) {
     auto responseEvent = this->eventListener.waitForEvent<
         Events::RegistersWrittenToTarget,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), event->id);
+    >(this->defaultTimeout, event->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::RegistersWrittenToTarget>>(responseEvent.value())
@@ -131,7 +131,7 @@ TargetMemoryBuffer TargetControllerConsole::readMemory(
     auto responseEvent = this->eventListener.waitForEvent<
         Events::MemoryRetrievedFromTarget,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), readMemoryEvent->id);
+    >(this->defaultTimeout, readMemoryEvent->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::MemoryRetrievedFromTarget>>(responseEvent.value())
@@ -157,7 +157,7 @@ void TargetControllerConsole::writeMemory(
     auto responseEvent = this->eventListener.waitForEvent<
         Events::MemoryWrittenToTarget,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), writeMemoryEvent->id);
+    >(this->defaultTimeout, writeMemoryEvent->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::MemoryWrittenToTarget>>(responseEvent.value())
@@ -174,7 +174,7 @@ void TargetControllerConsole::setBreakpoint(TargetBreakpoint breakpoint) {
     auto responseEvent = this->eventListener.waitForEvent<
         Events::BreakpointSetOnTarget,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), event->id);
+    >(this->defaultTimeout, event->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::BreakpointSetOnTarget>>(responseEvent.value())
@@ -191,7 +191,7 @@ void TargetControllerConsole::removeBreakpoint(TargetBreakpoint breakpoint) {
     auto responseEvent = this->eventListener.waitForEvent<
         Events::BreakpointRemovedOnTarget,
         Events::TargetControllerErrorOccurred
-    >(std::chrono::milliseconds(5000), event->id);
+    >(this->defaultTimeout, event->id);
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::BreakpointRemovedOnTarget>>(responseEvent.value())
