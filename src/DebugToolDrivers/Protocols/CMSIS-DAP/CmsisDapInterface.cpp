@@ -27,7 +27,7 @@ void CmsisDapInterface::sendCommand(const Command& cmsisDapCommand) {
 }
 
 std::unique_ptr<Response> CmsisDapInterface::getResponse() {
-    auto rawResponse = this->getUsbHidInterface().read(5000);
+    auto rawResponse = this->getUsbHidInterface().read(10000);
 
     if (rawResponse.size() == 0) {
         throw Exception("Empty CMSIS-DAP response received");
