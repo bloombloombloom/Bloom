@@ -341,7 +341,7 @@ void TargetController::onResumeTargetExecutionEvent(EventPointer<Events::ResumeT
         this->eventManager.triggerEvent(executionResumedEvent);
 
     } catch (const Exception& exception) {
-        Logger::error("Failed to stop execution on target - " + exception.getMessage());
+        Logger::error("Failed to resume execution on target - " + exception.getMessage());
         this->emitErrorEvent(event->id);
     }
 }
