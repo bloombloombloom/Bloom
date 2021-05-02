@@ -40,30 +40,45 @@ void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
 }
 
 void Avr8::postActivationConfigure() {
-    auto targetSignature = this->getId();
-    auto partDescription = PartDescriptionFile(
-        targetSignature.toHex(),
-        (!this->name.empty()) ? std::optional(this->name) : std::nullopt
-    );
-    auto pdSignature = partDescription.getTargetSignature();
-
-    if (targetSignature != pdSignature) {
-        // This should never happen. If it does, someone has screwed up the part description mapping file.
-        throw Exception("Failed to activate target - target signature mismatch.\nThe target signature (\""
-            + targetSignature.toHex() + "\") does not match the AVR8 part description signature (\""
-            + pdSignature.toHex() + "\"). Please review your target configuration in bloom.json");
+    if (!this->partDescription.has_value()) {
+        this->loadPartDescription();
     }
 
-    this->partDescription = partDescription;
-    this->id = partDescription.getTargetSignature();
-    this->name = partDescription.getTargetName();
-    this->family = partDescription.getFamily();
+    /*
+     * The signature obtained from the device should match what is in the part description file
+     *
+     * We don't use this->getId() here as that could return the ID that was extracted from the part description file
+     * (which it would, if the user specified the exact target name in their project config - see Avr8::getId() and
+     * TargetController::getSupportedTargets() for more).
+     */
+    auto targetSignature = this->avr8Interface->getDeviceId();
+    auto pdSignature = this->partDescription->getTargetSignature();
+
+    if (targetSignature != pdSignature) {
+        throw Exception("Failed to validate connected target - target signature mismatch.\nThe target signature"
+            "(\"" + targetSignature.toHex() + "\") does not match the AVR8 part description signature (\""
+            + pdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the configuration file"
+            + " (bloom.json)."
+        );
+    }
 }
 
 void Avr8::postPromotionConfigure() {
     this->avr8Interface->setTargetParameters(this->getTargetParameters());
     this->loadPadDescriptors();
     this->loadTargetVariants();
+}
+
+void Avr8::loadPartDescription() {
+    auto targetSignature = this->getId();
+    auto partDescription = PartDescriptionFile(
+        targetSignature.toHex(),
+        (!this->name.empty()) ? std::optional(this->name) : std::nullopt
+    );
+
+    this->partDescription = partDescription;
+    this->name = partDescription.getTargetName();
+    this->family = partDescription.getFamily();
 }
 
 void Avr8::loadPadDescriptors() {

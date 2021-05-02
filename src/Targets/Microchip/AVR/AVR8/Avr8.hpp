@@ -73,9 +73,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          */
         virtual void loadTargetVariants();
 
+        void loadPartDescription();
+
     public:
         explicit Avr8() = default;
-        Avr8(const std::string& name): name(name) {};
+        Avr8(const std::string& name, const TargetSignature& signature): name(name) {
+            this->id = signature;
+        };
 
         /*
          * The functions below implement the Target interface for AVR8 targets.

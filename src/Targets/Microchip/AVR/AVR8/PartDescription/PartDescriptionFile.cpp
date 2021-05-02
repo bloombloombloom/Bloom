@@ -14,40 +14,40 @@ PartDescriptionFile::PartDescriptionFile(const std::string& targetSignatureHex, 
     if (mapping.contains(qTargetSignatureHex)) {
         // We have a match for the target signature.
         auto descriptionFilesJsonArray = mapping.find(qTargetSignatureHex).value().toArray();
-        auto descriptionFiles = std::vector<QJsonValue>();
+        auto matchingDescriptionFiles = std::vector<QJsonValue>();
         std::copy_if(
             descriptionFilesJsonArray.begin(),
             descriptionFilesJsonArray.end(),
-            std::back_inserter(descriptionFiles),
+            std::back_inserter(matchingDescriptionFiles),
             [&targetName] (const QJsonValue& value) {
                 auto pdTargetName = value.toObject().find("targetName")->toString().toLower().toStdString();
                 return !targetName.has_value() || (targetName.has_value() && targetName.value() == pdTargetName);
             }
         );
 
-        if (targetName.has_value() && descriptionFiles.empty()) {
+        if (targetName.has_value() && matchingDescriptionFiles.empty()) {
             throw Exception("Failed to resolve target description file for target \"" + targetName.value()
                 + "\" - target signature \"" + targetSignatureHex + "\" does not belong to target with name \"" +
                 targetName.value() + "\". Please review your bloom.json configuration.");
         }
 
-        if (descriptionFiles.size() == 1) {
+        if (matchingDescriptionFiles.size() == 1) {
             // Attempt to load the XML part description file
             auto descriptionFilePath = QString::fromStdString(Application::getApplicationDirPath()) + "/"
-                + descriptionFiles.front().toObject().find("targetDescriptionFilePath")->toString();
+                + matchingDescriptionFiles.front().toObject().find("targetDescriptionFilePath")->toString();
 
             Logger::debug("Loading AVR8 part description file: " + descriptionFilePath.toStdString());
             this->init(descriptionFilePath);
 
-        } else if (descriptionFiles.size() > 1) {
+        } else if (matchingDescriptionFiles.size() > 1) {
             /*
              * There are numerous part description files mapped to this target signature. There's really not
              * much we can do at this point, so we'll just instruct the user to use a more specific target name.
              */
             QStringList targetNames;
             std::transform(
-                descriptionFiles.begin(),
-                descriptionFiles.end(),
+                matchingDescriptionFiles.begin(),
+                matchingDescriptionFiles.end(),
                 std::back_inserter(targetNames),
                 [](const QJsonValue& descriptionFile) {
                     return QString("\"" + descriptionFile.toObject().find("targetName")->toString().toLower() + "\"");

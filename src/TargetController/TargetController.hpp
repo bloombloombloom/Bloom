@@ -118,12 +118,13 @@ namespace Bloom
                 for (auto targetIt = targets.begin(); targetIt != targets.end(); targetIt++) {
                     auto targetName = targetIt->toObject().find("targetName").value().toString()
                         .toLower().toStdString();
+                    auto targetSignatureHex = mapIt.key().toLower().toStdString();
 
                     if (!mapping.contains(targetName)) {
                         mapping.insert({
                            targetName,
-                           [targetName]() {
-                               return std::make_unique<Avr8>(targetName);
+                           [targetName, targetSignatureHex]() {
+                               return std::make_unique<Avr8>(targetName, TargetSignature(targetSignatureHex));
                            }
                        });
                     }

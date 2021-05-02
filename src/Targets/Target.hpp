@@ -139,13 +139,12 @@ namespace Bloom::Targets
          * begin the target configuration and activation process, we are able to learn a lot more about the target.
          * For AVR8 targets, we extract the target signature shortly after activation, and with that signature we find
          * the appropriate part description file, which has all of the information regarding the target that we could
-         * possibly need.
-         * So, by the time we have activated the target, we will know a lot more about it, and it is at this point, where
-         * we may want to promote it to a more specific target class (from the generic Avr8 target class). The generic
-         * AVR8 target class will attempt to promote the target to one that is more specific to the target's AVR8 family
-         * (ATmega, XMega, Tiny, etc). These classes can then also perform promotion of their own, if required, where
-         * they could promote to a class that's not only specific to an AVR8 family, but to a particular target model (for
-         * example, a target class that was written specifically for the ATmega328P target).
+         * possibly need. So, by the time we have activated the target, we will know a lot more about it, and it is at
+         * this point, where we may want to promote it to a more specific target class (from the generic Avr8 target
+         * class). The generic AVR8 target class will attempt to promote the target to one that is more specific to
+         * the target's AVR8 family (ATmega, XMega, Tiny, etc). These classes can then also perform promotion of their
+         * own, if required, where they could promote to a class that's not only specific to an AVR8 family, but to a
+         * particular target model (for example, a target class that was written specifically for the ATmega328P target).
          *
          * This method should attempt to promote the current target class to one that is more specific to the connected
          * target, with the information it currently holds on the target.
