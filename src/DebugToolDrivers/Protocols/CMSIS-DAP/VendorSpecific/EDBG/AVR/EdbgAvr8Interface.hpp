@@ -128,7 +128,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         static inline std::map<std::string, Avr8PhysicalInterface> physicalInterfacesByName = {
             {"debugwire", Avr8PhysicalInterface::DEBUG_WIRE},
             {"pdi", Avr8PhysicalInterface::PDI},
-//            {"jtag", Avr8PhysicalInterface::JTAG}, // Disabled for now - will add support later
+            {"jtag", Avr8PhysicalInterface::JTAG},
 //            {"updi", Avr8PhysicalInterface::PDI_1W}, // Disabled for now - will add support later
         };
 
