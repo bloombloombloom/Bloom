@@ -35,6 +35,7 @@
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
 using namespace Bloom::Exceptions;
+
 using Bloom::Targets::TargetState;
 using Bloom::Targets::TargetRegister;
 using Bloom::Targets::TargetRegisters;
@@ -327,7 +328,7 @@ std::unique_ptr<AvrEvent> EdbgAvr8Interface::getAvrEvent() {
         default: {
             /*
              * TODO: This isn't very nice as we're performing an unnecessary copy. Maybe requestAvrEvents should
-             * return a unique_ptr instead?
+             *       return a unique_ptr instead?
              */
             return std::make_unique<AvrEvent>(event.value());
         }
@@ -347,6 +348,7 @@ void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
             // Try again with external reset applied
             Logger::debug("Failed to activate physical interface on AVR8 target - retrying with external reset applied.");
             return this->activatePhysical(true);
+
         } else {
             throw Exception("Activate physical interface command failed");
         }
