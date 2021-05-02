@@ -367,7 +367,17 @@ void EdbgAvr8Interface::deactivatePhysical() {
 }
 
 void EdbgAvr8Interface::attach() {
-    auto commandFrame = CommandFrames::Avr8Generic::Attach(true);
+    /*
+     * When attaching an ATmega target that is connected via JTAG, we must not set the breakAfterAttach flag, as this
+     * results in a timeout.
+     *
+     * However, in this case the attach command seems to _sometimes_ halt the target anyway, regardless of the
+     * value of the breakAfterAttach flag. So we still expect a stop event to be received shortly after issuing
+     * the attach command.
+     */
+    auto commandFrame = CommandFrames::Avr8Generic::Attach(
+        this->configVariant != Avr8ConfigVariant::MEGAJTAG
+    );
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
@@ -376,8 +386,13 @@ void EdbgAvr8Interface::attach() {
 
     this->targetAttached = true;
 
-    // Wait for stopped event
-    this->waitForStoppedEvent();
+    try {
+        // Wait for stopped event
+        this->waitForStoppedEvent();
+
+    } catch (const Exception& exception) {
+        Logger::error("Execution on AVR8 target could not be halted post attach - " + exception.getMessage());
+    }
 }
 
 void EdbgAvr8Interface::detach() {
