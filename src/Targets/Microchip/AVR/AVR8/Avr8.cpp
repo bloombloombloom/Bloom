@@ -313,9 +313,15 @@ TargetParameters& Avr8::getTargetParameters() {
             }
         }
 
-        auto spmcsrRegister = this->partDescription->getSpmcsrRegister();
-        if (spmcsrRegister.has_value()) {
-            this->targetParameters->spmcsRegisterStartAddress = spmcsrRegister->offset;
+        auto spmcsRegister = this->partDescription->getSpmcsRegister();
+        if (spmcsRegister.has_value()) {
+            this->targetParameters->spmcRegisterStartAddress = spmcsRegister->offset;
+
+        } else {
+            auto spmcRegister = this->partDescription->getSpmcRegister();
+            if (spmcRegister.has_value()) {
+                this->targetParameters->spmcRegisterStartAddress = spmcRegister->offset;
+            }
         }
 
         auto osccalRegister = this->partDescription->getOscillatorCalibrationRegister();

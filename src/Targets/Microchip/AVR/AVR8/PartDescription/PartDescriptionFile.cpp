@@ -624,6 +624,21 @@ std::optional<RegisterGroup> PartDescriptionFile::getCpuRegisterGroup() const {
     return std::nullopt;
 }
 
+std::optional<RegisterGroup> PartDescriptionFile::getBootLoadRegisterGroup() const {
+    auto& modulesByName = this->getModulesMappedByName();
+
+    if (modulesByName.contains("boot_load")) {
+        auto& bootLoadModule = modulesByName.at("boot_load");
+        auto bootLoadRegisterGroupIt = bootLoadModule.registerGroupsMappedByName.find("boot_load");
+
+        if (bootLoadRegisterGroupIt != bootLoadModule.registerGroupsMappedByName.end()) {
+            return bootLoadRegisterGroupIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
 std::optional<RegisterGroup> PartDescriptionFile::getEepromRegisterGroup() const {
     auto& modulesByName = this->getModulesMappedByName();
 
@@ -709,14 +724,28 @@ std::optional<Register> PartDescriptionFile::getOscillatorCalibrationRegister() 
     return std::nullopt;
 }
 
-std::optional<Register> PartDescriptionFile::getSpmcsrRegister() const {
+std::optional<Register> PartDescriptionFile::getSpmcsRegister() const {
     auto cpuRegisterGroup = this->getCpuRegisterGroup();
 
     if (cpuRegisterGroup.has_value()) {
-        auto spmcsrRegisterIt = cpuRegisterGroup->registersMappedByName.find("spmcsr");
+        auto spmcsRegisterIt = cpuRegisterGroup->registersMappedByName.find("spmcsr");
 
-        if (spmcsrRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
-            return spmcsrRegisterIt->second;
+        if (spmcsRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
+            return spmcsRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> PartDescriptionFile::getSpmcRegister() const {
+    auto bootLoadRegisterGroup = this->getBootLoadRegisterGroup();
+
+    if (bootLoadRegisterGroup.has_value()) {
+        auto spmcRegisterIt = bootLoadRegisterGroup->registersMappedByName.find("spmcr");
+
+        if (spmcRegisterIt != bootLoadRegisterGroup->registersMappedByName.end()) {
+            return spmcRegisterIt->second;
         }
     }
 

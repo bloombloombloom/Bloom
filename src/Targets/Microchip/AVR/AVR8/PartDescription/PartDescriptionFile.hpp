@@ -158,13 +158,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::PartDescription
         std::optional<MemorySegment> getEepromMemorySegment() const;
         std::optional<MemorySegment> getFirstBootSectionMemorySegment() const;
         std::optional<RegisterGroup> getCpuRegisterGroup() const;
+        std::optional<RegisterGroup> getBootLoadRegisterGroup() const;
         std::optional<RegisterGroup> getEepromRegisterGroup() const;
         std::optional<Register> getStatusRegister() const;
         std::optional<Register> getStackPointerRegister() const;
         std::optional<Register> getStackPointerHighRegister() const;
         std::optional<Register> getStackPointerLowRegister() const;
         std::optional<Register> getOscillatorCalibrationRegister() const;
-        std::optional<Register> getSpmcsrRegister() const;
+        std::optional<Register> getSpmcsRegister() const;
+        std::optional<Register> getSpmcRegister() const;
         std::optional<Register> getEepromAddressRegister() const;
         std::optional<Register> getEepromDataRegister() const;
         std::optional<Register> getEepromControlRegister() const;

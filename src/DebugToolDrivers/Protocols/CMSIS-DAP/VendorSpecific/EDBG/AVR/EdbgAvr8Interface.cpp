@@ -245,9 +245,9 @@ void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& con
             this->setParameter(Avr8EdbgParameters::DEVICE_OCD_DATA_REGISTER, config.ocdDataRegister.value());
         }
 
-        if (config.spmcsRegisterStartAddress.has_value()) {
+        if (config.spmcRegisterStartAddress.has_value()) {
             Logger::debug("Setting DEVICE_SPMCR_REGISTER AVR8 parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_SPMCR_REGISTER, config.spmcsRegisterStartAddress.value());
+            this->setParameter(Avr8EdbgParameters::DEVICE_SPMCR_REGISTER, config.spmcRegisterStartAddress.value());
         }
 
         if (config.osccalAddress.has_value()) {
