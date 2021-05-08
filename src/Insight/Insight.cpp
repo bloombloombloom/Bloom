@@ -48,16 +48,12 @@ void Insight::startup() {
 
     auto targetDescriptor = this->targetControllerConsole.getTargetDescriptor();
 
-    std::string qtAppName = "Bloom";
-    char* appArguments[] = {qtAppName.data()};
-    auto appArgCount = 1;
-
 #ifndef BLOOM_DEBUG_BUILD
     QCoreApplication::addLibraryPath(QString::fromStdString(Application::getApplicationDirPath() + "/plugins"));
 #endif
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 
-    this->application = new QApplication(appArgCount, appArguments);
+    this->application = new QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data());
     this->application->setQuitOnLastWindowClosed(true);
     qRegisterMetaType<Bloom::Targets::TargetPinDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinState>();

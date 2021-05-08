@@ -24,6 +24,10 @@ namespace Bloom
     {
     Q_OBJECT
     private:
+        std::string qtApplicationName = "Bloom";
+        std::array<char*, 1> qtApplicationArgv = {this->qtApplicationName.data()};
+        int qtApplicationArgc = 1;
+
         ApplicationConfig applicationConfig;
         EnvironmentConfig environmentConfig;
         InsightConfig insightConfig;
