@@ -89,7 +89,14 @@ namespace Bloom
         EnvironmentConfig environmentConfig;
         DebugServerConfig debugServerConfig;
         InsightConfig insightConfig;
-        std::optional<std::string> selectedEnvironmentName;
+
+        /**
+         * The project environment selected by the user.
+         *
+         * If an environment name is not provided as an argument when running Bloom, Bloom will fallback to the
+         * environment named "default".
+         */
+        std::string selectedEnvironmentName = "default";
 
         /**
          * Some CLI arguments are interpreted as commands and thus require specific handler methods to be called.

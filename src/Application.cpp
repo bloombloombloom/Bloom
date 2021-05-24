@@ -83,17 +83,16 @@ void Application::startup() {
     this->blockAllSignalsOnCurrentThread();
     this->signalHandlerThread = std::thread(&SignalHandler::run, std::ref(this->signalHandler));
 
-    auto environmentName = this->selectedEnvironmentName.value_or("default");
-    Logger::info("Selected environment: " + environmentName);
+    Logger::info("Selected environment: " + this->selectedEnvironmentName);
     Logger::debug("Number of environments extracted from config: "
         + std::to_string(this->applicationConfig.environments.size()));
 
     // Validate the selected environment
-    if (!applicationConfig.environments.contains(environmentName)) {
-        throw InvalidConfig("Environment (\"" + environmentName + "\") not found in configuration.");
+    if (!applicationConfig.environments.contains(this->selectedEnvironmentName)) {
+        throw InvalidConfig("Environment (\"" + this->selectedEnvironmentName + "\") not found in configuration.");
     }
 
-    this->environmentConfig = applicationConfig.environments.at(environmentName);
+    this->environmentConfig = applicationConfig.environments.at(this->selectedEnvironmentName);
     this->insightConfig = this->environmentConfig.insightConfig.value_or(this->applicationConfig.insightConfig);
 
     if (this->environmentConfig.debugServerConfig.has_value()) {
