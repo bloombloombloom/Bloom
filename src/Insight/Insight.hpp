@@ -88,7 +88,9 @@ namespace Bloom
          *
          * @param event
          */
-        void onTargetControllerStateChangedEvent(EventPointer<TargetControllerStateChanged> event);
+        void onTargetControllerThreadStateChangedEvent(
+            Events::EventPointer<Events::TargetControllerThreadStateChanged> event
+        );
 
         /**
          * Dispatches any events currently in the queue.

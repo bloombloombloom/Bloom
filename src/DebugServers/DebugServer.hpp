@@ -50,7 +50,7 @@ namespace Bloom::DebugServers
         void setStateAndEmitEvent(ThreadState state) {
             Thread::setState(state);
             this->eventManager.triggerEvent(
-                std::make_shared<Events::DebugServerStateChanged>(state)
+                std::make_shared<Events::DebugServerThreadStateChanged>(state)
             );
         };
 
@@ -59,7 +59,7 @@ namespace Bloom::DebugServers
          *
          * @param event
          */
-        void onShutdownDebugServerEvent(EventPointer<Events::ShutdownDebugServer> event);
+        void onShutdownDebugServerEvent(Events::EventPointer<Events::ShutdownDebugServer> event);
 
     protected:
         /**

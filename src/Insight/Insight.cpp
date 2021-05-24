@@ -43,8 +43,8 @@ void Insight::startup() {
         std::bind(&Insight::onShutdownApplicationEvent, this, std::placeholders::_1)
     );
 
-    this->eventListener->registerCallbackForEventType<TargetControllerStateChanged>(
-        std::bind(&Insight::onTargetControllerStateChangedEvent, this, std::placeholders::_1)
+    this->eventListener->registerCallbackForEventType<TargetControllerThreadStateChanged>(
+        std::bind(&Insight::onTargetControllerThreadStateChangedEvent, this, std::placeholders::_1)
     );
 
     auto targetDescriptor = this->targetControllerConsole.getTargetDescriptor();
@@ -123,7 +123,7 @@ void Insight::onShutdownApplicationEvent(EventPointer<ShutdownApplication>) {
     this->shutdown();
 }
 
-void Insight::onTargetControllerStateChangedEvent(EventPointer<TargetControllerStateChanged> event) {
+void Insight::onTargetControllerThreadStateChangedEvent(EventPointer<TargetControllerThreadStateChanged> event) {
     if (event->getState() == ThreadState::STOPPED) {
         // Something horrible has happened with the TargetController - Insight is useless without the TargetController
         this->shutdown();

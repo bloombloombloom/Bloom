@@ -105,12 +105,12 @@ void Application::startup() {
         throw InvalidConfig("Debug server configuration missing.");
     }
 
-    applicationEventListener->registerCallbackForEventType<Events::TargetControllerStateChanged>(
-        std::bind(&Application::onTargetControllerStateChanged, this, std::placeholders::_1)
+    applicationEventListener->registerCallbackForEventType<Events::TargetControllerThreadStateChanged>(
+        std::bind(&Application::onTargetControllerThreadStateChanged, this, std::placeholders::_1)
     );
 
-    applicationEventListener->registerCallbackForEventType<Events::DebugServerStateChanged>(
-        std::bind(&Application::onDebugServerStateChanged, this, std::placeholders::_1)
+    applicationEventListener->registerCallbackForEventType<Events::DebugServerThreadStateChanged>(
+        std::bind(&Application::onDebugServerThreadStateChanged, this, std::placeholders::_1)
     );
 
     this->startTargetController();
@@ -245,7 +245,7 @@ void Application::startTargetController() {
         std::ref(this->targetController)
     );
 
-    auto tcStateChangeEvent = this->applicationEventListener->waitForEvent<Events::TargetControllerStateChanged>();
+    auto tcStateChangeEvent = this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>();
 
     if (!tcStateChangeEvent.has_value() || tcStateChangeEvent->get()->getState() != ThreadState::READY) {
         throw Exception("TargetController failed to startup.");
@@ -255,9 +255,8 @@ void Application::startTargetController() {
 void Application::stopTargetController() {
     auto targetControllerState = this->targetController.getState();
     if (targetControllerState == ThreadState::STARTING || targetControllerState == ThreadState::READY) {
-        // this->applicationEventListener->clearEventsOfType(Events::TargetControllerStateChanged::name);
         this->eventManager.triggerEvent(std::make_shared<Events::ShutdownTargetController>());
-        this->applicationEventListener->waitForEvent<Events::TargetControllerStateChanged>(
+        this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>(
             std::chrono::milliseconds(10000)
         );
     }
@@ -287,7 +286,7 @@ void Application::startDebugServer() {
         this->debugServer.get()
     );
 
-    auto dsStateChangeEvent = this->applicationEventListener->waitForEvent<Events::DebugServerStateChanged>();
+    auto dsStateChangeEvent = this->applicationEventListener->waitForEvent<Events::DebugServerThreadStateChanged>();
 
     if (!dsStateChangeEvent.has_value() || dsStateChangeEvent->get()->getState() != ThreadState::READY) {
         throw Exception("DebugServer failed to startup.");
@@ -303,7 +302,7 @@ void Application::stopDebugServer() {
     auto debugServerState = this->debugServer->getState();
     if (debugServerState == ThreadState::STARTING || debugServerState == ThreadState::READY) {
         this->eventManager.triggerEvent(std::make_shared<Events::ShutdownDebugServer>());
-        this->applicationEventListener->waitForEvent<Events::DebugServerStateChanged>(
+        this->applicationEventListener->waitForEvent<Events::DebugServerThreadStateChanged>(
             std::chrono::milliseconds(5000)
         );
     }
@@ -315,7 +314,7 @@ void Application::stopDebugServer() {
     }
 }
 
-void Application::onTargetControllerStateChanged(EventPointer<Events::TargetControllerStateChanged> event) {
+void Application::onTargetControllerThreadStateChanged(EventPointer<Events::TargetControllerThreadStateChanged> event) {
     if (event->getState() == ThreadState::STOPPED || event->getState() == ThreadState::SHUTDOWN_INITIATED) {
         // TargetController has unexpectedly shutdown - it must have encountered a fatal error.
         this->shutdown();
@@ -327,7 +326,7 @@ void Application::onShutdownApplicationRequest(EventPointer<Events::ShutdownAppl
     this->shutdown();
 }
 
-void Application::onDebugServerStateChanged(EventPointer<Events::DebugServerStateChanged> event) {
+void Application::onDebugServerThreadStateChanged(EventPointer<Events::DebugServerThreadStateChanged> event) {
     if (event->getState() == ThreadState::STOPPED || event->getState() == ThreadState::SHUTDOWN_INITIATED) {
         // DebugServer has unexpectedly shutdown - it must have encountered a fatal error.
         this->shutdown();
