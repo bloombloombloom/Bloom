@@ -22,9 +22,6 @@
 
 namespace Bloom::DebugServers::Gdb
 {
-    using Bloom::Targets::TargetRegisterType;
-    using Bloom::Targets::TargetRegisterDescriptor;
-
     /**
      * The GdbRspDebugServer is an implementation of a GDB server using the GDB Remote Serial Protocol.
      *
@@ -123,7 +120,7 @@ namespace Bloom::DebugServers::Gdb
          * @param address
          * @return
          */
-        virtual TargetMemoryType getMemoryTypeFromGdbAddress(std::uint32_t address) = 0;
+        virtual Targets::TargetMemoryType getMemoryTypeFromGdbAddress(std::uint32_t address) = 0;
 
         /**
          * Removes memory type information from memory address.
@@ -143,7 +140,10 @@ namespace Bloom::DebugServers::Gdb
          *
          * @return
          */
-        virtual BiMap<GdbRegisterNumber, TargetRegisterDescriptor> getRegisterNumberToDescriptorMapping() = 0;
+        virtual BiMap<
+            GdbRegisterNumber,
+            Targets::TargetRegisterDescriptor
+        > getRegisterNumberToDescriptorMapping() = 0;
 
         /**
          * Obtains the appropriate register descriptor from a register number.
@@ -151,12 +151,12 @@ namespace Bloom::DebugServers::Gdb
          * @param number
          * @return
          */
-        virtual TargetRegisterDescriptor getRegisterDescriptorFromNumber(GdbRegisterNumber number) {
+        virtual Targets::TargetRegisterDescriptor getRegisterDescriptorFromNumber(GdbRegisterNumber number) {
             auto mapping = this->getRegisterNumberToDescriptorMapping();
 
             if (!mapping.contains(number)) {
-                throw Exception("Unknown register from GDB - register number (" + std::to_string(number)
-                    + ") not mapped to any register descriptor.");
+                throw Exceptions::Exception("Unknown register from GDB - register number ("
+                    + std::to_string(number) + ") not mapped to any register descriptor.");
             }
 
             return mapping.valueAt(number).value();
@@ -173,7 +173,7 @@ namespace Bloom::DebugServers::Gdb
          * If the GDB client is currently waiting for the target execution to stop, this event handler will issue
          * a "stop reply" packet to the client once the target execution stops.
          */
-        void onTargetExecutionStopped(EventPointer<Events::TargetExecutionStopped>);
+        void onTargetExecutionStopped(Events::EventPointer<Events::TargetExecutionStopped>);
 
         /**
          * Handles any other GDB command packet that has not been promoted to a more specific type.
@@ -181,7 +181,7 @@ namespace Bloom::DebugServers::Gdb
          *
          * @param packet
          */
-        virtual void handleGdbPacket(CommandPacket& packet);
+        virtual void handleGdbPacket(CommandPackets::CommandPacket& packet);
 
         /**
          * Handles the supported features query ("qSupported") command packet.

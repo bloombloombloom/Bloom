@@ -8,7 +8,9 @@
 #include "src/Application.hpp"
 
 using namespace Bloom;
-using namespace Exceptions;
+using namespace Bloom::Targets;
+using namespace Bloom::Events;
+using namespace Bloom::Exceptions;
 
 void TargetController::run() {
     try {

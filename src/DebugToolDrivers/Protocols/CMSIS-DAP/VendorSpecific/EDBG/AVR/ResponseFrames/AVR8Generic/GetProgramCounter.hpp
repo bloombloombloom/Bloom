@@ -7,8 +7,6 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
 {
-    using namespace Bloom::Exceptions;
-
     class GetProgramCounter: public Avr8GenericResponseFrame
     {
     public:
@@ -22,7 +20,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
              */
             auto& payload = this->getPayload();
             if (payload.size() != 6) {
-                throw Exception("Failed to extract PC from payload of PC read command response frame - unexpected payload size.");
+                throw Exceptions::Exception("Failed to extract PC from payload of PC read command response "
+                    "frame - unexpected payload size.");
             }
 
             return static_cast<std::uint32_t>(payload[5] << 24 | payload[4] << 16 | payload[3] << 8 | payload[2]) * 2;

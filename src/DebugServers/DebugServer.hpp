@@ -15,14 +15,6 @@
 
 namespace Bloom::DebugServers
 {
-    using Targets::TargetRegister;
-    using Targets::TargetRegisterDescriptor;
-    using Targets::TargetRegisters;
-    using Targets::TargetRegisterMap;
-    using Targets::TargetMemoryBuffer;
-    using Targets::TargetMemoryType;
-    using Targets::TargetBreakpoint;
-
     /**
      * The DebugServer exposes the connected target to third-party debugging software such as IDEs.
      * The DebugServer runs on a dedicated thread which is kicked off shortly after the TargetController has been

@@ -5,7 +5,6 @@
 
 namespace Bloom::Exceptions
 {
-    using Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic::Avr8GenericResponseFrame;
     class Avr8CommandFailure: public Exception
     {
     private:
@@ -68,8 +67,10 @@ namespace Bloom::Exceptions
             this->message = std::string(message);
         }
 
-        explicit Avr8CommandFailure(const std::string& message, Avr8GenericResponseFrame& responseFrame)
-        : Exception(message) {
+        explicit Avr8CommandFailure(
+            const std::string& message,
+            DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic::Avr8GenericResponseFrame& responseFrame
+        ): Exception(message) {
             this->message = message;
 
             auto responsePayload = responseFrame.getPayload();

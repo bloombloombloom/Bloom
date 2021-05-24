@@ -1,7 +1,9 @@
 #include "WriteGeneralRegisters.hpp"
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
+#include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
+using namespace Bloom::Exceptions;
 
 void WriteGeneralRegisters::init() {
     // The P packet updates a single register

@@ -12,9 +12,6 @@
 
 namespace Bloom
 {
-    using namespace Events;
-    using Targets::TargetState;
-
     /**
      * The InsightWorker runs on a separate thread to the main GUI thread. Its purpose is to handle any
      * blocking/time-expensive operations.
@@ -33,10 +30,10 @@ namespace Bloom
 
         QTimer* eventDispatchTimer = nullptr;
 
-        void onTargetStoppedEvent(EventPointer<TargetExecutionStopped> event);
-        void onTargetResumedEvent(EventPointer<TargetExecutionResumed> event);
-        void onTargetPinStatesRetrievedEvent(EventPointer<TargetPinStatesRetrieved> event);
-        void onTargetIoPortsUpdatedEvent(EventPointer<TargetIoPortsUpdated> event);
+        void onTargetStoppedEvent(Events::EventPointer<Events::TargetExecutionStopped> event);
+        void onTargetResumedEvent(Events::EventPointer<Events::TargetExecutionResumed> event);
+        void onTargetPinStatesRetrievedEvent(Events::EventPointer<Events::TargetPinStatesRetrieved> event);
+        void onTargetIoPortsUpdatedEvent(Events::EventPointer<Events::TargetIoPortsUpdated> event);
 
     public:
         InsightWorker(EventManager& eventManager): eventManager(eventManager) {};

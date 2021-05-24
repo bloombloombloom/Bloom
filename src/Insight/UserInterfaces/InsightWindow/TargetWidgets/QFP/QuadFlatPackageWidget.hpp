@@ -12,8 +12,6 @@
 
 namespace Bloom::InsightTargetWidgets::Qfp
 {
-    using Targets::TargetVariant;
-
     /**
      * QuadFlatPackageWidget implements a custom Qt widget for Quad-flat package variants.
      */
@@ -36,6 +34,6 @@ namespace Bloom::InsightTargetWidgets::Qfp
     public:
         static const int PIN_WIDGET_LAYOUT_PADDING = 46;
         static const int PIN_WIDGET_SPACING = 8;
-        QuadFlatPackageWidget(const TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent);
+        QuadFlatPackageWidget(const Targets::TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent);
     };
 }

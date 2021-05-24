@@ -4,6 +4,7 @@
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
+using namespace Bloom::Targets;
 using namespace Bloom::Exceptions;
 
 void BreakEvent::init(const AvrEvent& event) {

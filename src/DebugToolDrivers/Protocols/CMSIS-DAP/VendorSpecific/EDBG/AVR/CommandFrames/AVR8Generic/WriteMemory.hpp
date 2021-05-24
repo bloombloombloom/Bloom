@@ -7,15 +7,12 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
-    using namespace Exceptions;
-    using Bloom::Targets::TargetMemoryBuffer;
-
     class WriteMemory: public Avr8GenericCommandFrame
     {
     private:
         Avr8MemoryType type;
         std::uint32_t address = 0;
-        TargetMemoryBuffer buffer;
+        Targets::TargetMemoryBuffer buffer;
 
     public:
         WriteMemory() = default;
@@ -28,7 +25,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->address = address;
         }
 
-        void setBuffer(const TargetMemoryBuffer& buffer) {
+        void setBuffer(const Targets::TargetMemoryBuffer& buffer) {
             this->buffer = buffer;
         }
 

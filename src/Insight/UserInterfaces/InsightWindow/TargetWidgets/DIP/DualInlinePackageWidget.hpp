@@ -12,8 +12,6 @@
 
 namespace Bloom::InsightTargetWidgets::Dip
 {
-    using Targets::TargetVariant;
-
     /**
      * The DualInlinePackageWidget implements a custom Qt widget for the Dual-inline package target variants.
      */
@@ -32,6 +30,6 @@ namespace Bloom::InsightTargetWidgets::Dip
         void drawWidget(QPainter& painter);
 
     public:
-        DualInlinePackageWidget(const TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent);
+        DualInlinePackageWidget(const Targets::TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent);
     };
 }

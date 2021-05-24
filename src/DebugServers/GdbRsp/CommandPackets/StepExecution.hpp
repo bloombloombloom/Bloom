@@ -6,8 +6,6 @@
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-
     /**
      * The StepExecution class implements the structure for "s" command packets. Upon receiving this command, the
      * server is expected to step execution on the target.

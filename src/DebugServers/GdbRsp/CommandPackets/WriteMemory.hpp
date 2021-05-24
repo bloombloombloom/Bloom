@@ -8,9 +8,6 @@
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-    using Bloom::Targets::TargetMemoryBuffer;
-
     /**
      * The WriteMemory class implements the structure for "M" packets. Upon receiving this packet, the server is
      * expected to write data to the target's memory, at the specified start address.
@@ -27,7 +24,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          */
         std::uint32_t startAddress;
 
-        TargetMemoryBuffer buffer;
+        Targets::TargetMemoryBuffer buffer;
 
         WriteMemory(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             init();

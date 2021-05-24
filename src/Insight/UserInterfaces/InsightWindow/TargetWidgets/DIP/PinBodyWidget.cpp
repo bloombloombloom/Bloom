@@ -10,6 +10,7 @@
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::InsightTargetWidgets::Dip;
+using namespace Bloom::Targets;
 using namespace Bloom::Exceptions;
 
 void PinBodyWidget::paintEvent(QPaintEvent* event) {

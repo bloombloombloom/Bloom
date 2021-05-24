@@ -5,16 +5,13 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
 {
-    using namespace Bloom::Exceptions;
-    using Bloom::Targets::TargetMemoryBuffer;
-
     class ReadMemory: public Avr8GenericResponseFrame
     {
     public:
         ReadMemory(const std::vector<AvrResponse>& AVRResponses): Avr8GenericResponseFrame(AVRResponses) {}
         ReadMemory() {}
 
-        TargetMemoryBuffer getMemoryBuffer() {
+        Targets::TargetMemoryBuffer getMemoryBuffer() {
             /*
              * AVR8 data payloads are typically in little endian form, but this does not apply the data returned
              * from the READ MEMORY commands.

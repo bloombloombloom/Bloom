@@ -5,7 +5,6 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Discovery
 {
-    using namespace DebugToolDrivers::Protocols::CmsisDap;
     /**
      * Discovery commands can only return two responses; A LIST response and a failure.
      */

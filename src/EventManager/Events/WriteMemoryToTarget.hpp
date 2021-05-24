@@ -7,22 +7,23 @@
 
 namespace Bloom::Events
 {
-    using Bloom::Targets::TargetMemoryBuffer;
-
     class WriteMemoryToTarget: public Event
     {
     public:
         static inline const std::string name = "WriteMemoryToTarget";
-        TargetMemoryType memoryType;
+        Targets::TargetMemoryType memoryType;
         std::uint32_t startAddress;
-        TargetMemoryBuffer buffer;
+        Targets::TargetMemoryBuffer buffer;
 
         std::string getName() const override {
             return WriteMemoryToTarget::name;
         }
 
         WriteMemoryToTarget() = default;
-        WriteMemoryToTarget(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer)
-        : memoryType(memoryType), startAddress(startAddress), buffer(buffer) {};
+        WriteMemoryToTarget(
+            Targets::TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            const Targets::TargetMemoryBuffer& buffer
+        ): memoryType(memoryType), startAddress(startAddress), buffer(buffer) {};
     };
 }

@@ -11,7 +11,17 @@
 #include "src/Logger/Logger.hpp"
 
 using namespace Bloom::DebugServers::Gdb;
-using namespace Exceptions;
+using namespace Bloom::DebugServers::Gdb::CommandPackets;
+using namespace Bloom::DebugServers::Gdb::ResponsePackets;
+using namespace Bloom::DebugServers::Gdb::Exceptions;
+using namespace Bloom::Events;
+using namespace Bloom::Exceptions;
+
+using Bloom::Targets::TargetRegister;
+using Bloom::Targets::TargetRegisterType;
+using Bloom::Targets::TargetRegisterDescriptor;
+using Bloom::Targets::TargetRegisterDescriptors;
+using Bloom::Targets::TargetBreakpoint;
 
 void GdbRspDebugServer::init() {
     auto ipAddress = this->debugServerConfig.jsonObject.find("ipAddress")->toString().toStdString();

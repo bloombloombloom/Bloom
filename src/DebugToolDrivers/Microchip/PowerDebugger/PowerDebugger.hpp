@@ -14,13 +14,6 @@
 
 namespace Bloom::DebugToolDrivers
 {
-    using namespace Protocols::CmsisDap;
-    using namespace Protocols::CmsisDap::Edbg::Avr::CommandFrames;
-    using namespace Protocols::CmsisDap::Edbg::Avr::CommandFrames::Discovery;
-    using namespace Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping;
-    using Protocols::CmsisDap::Edbg::EdbgInterface;
-    using Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface;
-
     /**
      * The Power Debugger device is very similar to the Atmel-ICE. It implements the CMSIS-DAP layer as well
      * as an Atmel Data Gateway Interface (DGI).
@@ -43,12 +36,12 @@ namespace Bloom::DebugToolDrivers
          * Any non-EDBG CMSIS-DAP commands for the Power Debugger can be sent through the EDBGInterface (as the
          * EdbgInterface extends the CmsisDapInterface).
          */
-        EdbgInterface edbgInterface = EdbgInterface();
+        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
 
         /**
          * The Power Debugger employs the EDBG AVR8Generic protocol for interfacing with AVR8 targets.
          */
-        std::unique_ptr<EdbgAvr8Interface> edbgAvr8Interface;
+        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface;
 
         bool sessionStarted = false;
 
@@ -59,13 +52,15 @@ namespace Bloom::DebugToolDrivers
         PowerDebugger(): UsbDevice(PowerDebugger::USB_VENDOR_ID, PowerDebugger::USB_PRODUCT_ID) {}
 
         void init() override;
+
         void close() override;
 
-        EdbgInterface& getEdbgInterface()  {
+
+        Protocols::CmsisDap::Edbg::EdbgInterface& getEdbgInterface()  {
             return this->edbgInterface;
         }
 
-        Avr8Interface* getAvr8Interface() override {
+        TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* getAvr8Interface() override {
             return this->edbgAvr8Interface.get();
         }
 

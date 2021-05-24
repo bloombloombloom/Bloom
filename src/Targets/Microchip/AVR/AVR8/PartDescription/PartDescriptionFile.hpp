@@ -15,8 +15,6 @@
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit::PartDescription
 {
-    using Avr::TargetSignature;
-
     /**
      * An AVR8 part description file is an XML file that describes a particular AVR8 target.
      * All supported AVR8 targets come with a part description file.
@@ -27,7 +25,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::PartDescription
      * During the build process, all part description files are copied to the distribution directory, ready
      * to be shipped with the Bloom binary. Alongside these files is a JSON file, containing a mapping of AVR8 target
      * signatures to part description file paths. Bloom uses this mapping to find a particular part description
-     * file, given a target signature. See directory "bin/Distribution/Resources/TargetPartDescriptions".
+     * file, given a target signature. See directory "build/resources/TargetPartDescriptions".
      * The copying of the part description files, and the generation of the JSON mapping, is done by a PHP script:
      * "build/scripts/CopyAvrPartFilesAndCreateMapping.php". This script is invoked via a custom command, at build time.
      *

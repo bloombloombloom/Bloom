@@ -5,6 +5,9 @@
 #include "src/Logger/Logger.hpp"
 
 using namespace Bloom;
+using namespace Bloom::Targets;
+using namespace Bloom::Events;
+using namespace Bloom::Exceptions;
 
 Targets::TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
     auto extractEvent = std::make_shared<Events::ExtractTargetDescriptor>();

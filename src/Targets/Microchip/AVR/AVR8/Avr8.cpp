@@ -2,8 +2,6 @@
 #include <QtCore>
 #include <QJsonDocument>
 #include <cassert>
-#include <algorithm>
-#include <iterator>
 #include <bitset>
 #include <limits>
 
@@ -20,11 +18,10 @@
 #include "Tiny/Tiny.hpp"
 
 using namespace Bloom;
-using namespace Targets;
-using namespace Targets::Microchip::Avr;
-using namespace Avr8Bit;
+using namespace Bloom::Targets;
+using namespace Bloom::Targets::Microchip::Avr;
+using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
 using namespace Exceptions;
-using Avr8Bit::Avr8;
 
 /**
  * Initialises the target from config parameters extracted from user's config file.
@@ -71,7 +68,7 @@ void Avr8::postPromotionConfigure() {
 
 void Avr8::loadPartDescription() {
     auto targetSignature = this->getId();
-    auto partDescription = PartDescriptionFile(
+    auto partDescription = PartDescription::PartDescriptionFile(
         targetSignature.toHex(),
         (!this->name.empty()) ? std::optional(this->name) : std::nullopt
     );

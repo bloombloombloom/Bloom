@@ -1,16 +1,14 @@
 #include <QPainter>
 #include <QLayout>
-#include <cmath>
 #include <QEvent>
 #include <QMenu>
 #include <QContextMenuEvent>
 
 #include "PinBodyWidget.hpp"
 #include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::InsightTargetWidgets::Qfp;
-using namespace Bloom::Exceptions;
+using namespace Bloom::Targets;
 
 void PinBodyWidget::paintEvent(QPaintEvent* event) {
     auto painter = QPainter(this);

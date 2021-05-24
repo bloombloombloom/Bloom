@@ -284,7 +284,7 @@ void Application::startDebugServer() {
     Logger::info("Selected DebugServer: " + this->debugServer->getName());
 
     this->debugServerThread = std::thread(
-        &DebugServer::run,
+        &DebugServers::DebugServer::run,
         this->debugServer.get()
     );
 

@@ -7,8 +7,6 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
-    using namespace Exceptions;
-
     class ReadMemory: public Avr8GenericCommandFrame
     {
     private:

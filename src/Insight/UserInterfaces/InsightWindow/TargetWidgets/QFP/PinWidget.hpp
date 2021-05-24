@@ -41,19 +41,26 @@ namespace Bloom::InsightTargetWidgets::Qfp
         static const int LABEL_HEIGHT = 20;
         static const int MAXIMUM_LABEL_WIDTH = PinBodyWidget::WIDTH;
         static const int MAXIMUM_LABEL_HEIGHT = 20;
-        static const int MAXIMUM_HORIZONTAL_WIDTH = PinBodyWidget::HEIGHT + (PinWidget::MAXIMUM_LABEL_WIDTH * PinWidget::MAXIMUM_LABEL_COUNT);
+        static const int MAXIMUM_HORIZONTAL_WIDTH = PinBodyWidget::HEIGHT
+            + (PinWidget::MAXIMUM_LABEL_WIDTH * PinWidget::MAXIMUM_LABEL_COUNT);
         static const int MAXIMUM_HORIZONTAL_HEIGHT = PinBodyWidget::WIDTH;
-        static const int MAXIMUM_VERTICAL_HEIGHT = PinBodyWidget::HEIGHT + (PinWidget::MAXIMUM_LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT);
+        static const int MAXIMUM_VERTICAL_HEIGHT = PinBodyWidget::HEIGHT
+            + (PinWidget::MAXIMUM_LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT);
         static const int MAXIMUM_VERTICAL_WIDTH = PinBodyWidget::WIDTH;
 
-        PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, const TargetVariant& targetVariant);
+        PinWidget(
+            QWidget* parent,
+            const Targets::TargetPinDescriptor& pinDescriptor,
+            const Targets::TargetVariant& targetVariant
+        );
 
-        virtual void updatePinState(const TargetPinState& pinState) override {
+        virtual void updatePinState(const Targets::TargetPinState& pinState) override {
             TargetPinWidget::updatePinState(pinState);
 
             if (pinState.ioDirection.has_value()) {
-                this->pinDirectionLabel->setText(pinState.ioDirection.value() == TargetPinState::IoDirection::INPUT ?
-                    "IN" : "OUT");
+                this->pinDirectionLabel->setText(
+                    pinState.ioDirection.value() == Targets::TargetPinState::IoDirection::INPUT ? "IN" : "OUT"
+                );
 
             } else {
                 this->pinDirectionLabel->setText("");

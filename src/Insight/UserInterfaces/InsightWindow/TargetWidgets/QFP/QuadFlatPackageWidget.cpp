@@ -7,16 +7,17 @@
 
 #include "../../InsightWindow.hpp"
 #include "QuadFlatPackageWidget.hpp"
-#include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 
 using namespace Bloom::InsightTargetWidgets::Qfp;
-using namespace Bloom::Exceptions;
+using namespace Bloom::Targets;
 
-QuadFlatPackageWidget::QuadFlatPackageWidget(const TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent):
-TargetPackageWidget(targetVariant, insightWindowObj, parent) {
+QuadFlatPackageWidget::QuadFlatPackageWidget(
+    const TargetVariant& targetVariant,
+    QObject* insightWindowObj,
+    QWidget* parent
+): TargetPackageWidget(targetVariant, insightWindowObj, parent) {
     assert((targetVariant.pinDescriptorsByNumber.size() % 4) == 0);
 
     auto stylesheetFile = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss");
@@ -212,4 +213,3 @@ void QuadFlatPackageWidget::drawWidget(QPainter& painter) {
         containerHeight
     );
 }
-

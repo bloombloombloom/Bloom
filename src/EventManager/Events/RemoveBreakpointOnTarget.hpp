@@ -7,14 +7,12 @@
 
 namespace Bloom::Events
 {
-    using Targets::TargetBreakpoint;
-
     class RemoveBreakpointOnTarget: public Event
     {
     public:
         static inline const std::string name = "RemoveBreakpointOnTarget";
         std::uint32_t address;
-        TargetBreakpoint breakpoint;
+        Targets::TargetBreakpoint breakpoint;
 
         std::string getName() const override {
             return RemoveBreakpointOnTarget::name;

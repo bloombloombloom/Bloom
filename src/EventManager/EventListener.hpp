@@ -19,8 +19,6 @@
 
 namespace Bloom
 {
-    using namespace Events;
-
     /**
      * The EventListener allows specific threads the ability to handle any events, from other threads, that
      * are of interest.
@@ -65,7 +63,7 @@ namespace Bloom
          * Events are grouped by event type name, and removed from their queue just *before* the dispatching to
          * registered handlers begins.
          */
-        SyncSafe<std::map<std::string, std::queue<GenericEventPointer>>> eventQueueByEventType;
+        SyncSafe<std::map<std::string, std::queue<Events::GenericEventPointer>>> eventQueueByEventType;
         std::condition_variable eventQueueByEventTypeCV;
 
         /**
@@ -75,12 +73,12 @@ namespace Bloom
          * Each callback will be passed an std::shared_ptr<const EventType> of the event (we downcast the events in
          * EventListener::waiteAndDispatch() before dispatching them).
          */
-        SyncSafe<std::map<std::string, std::vector<std::function<void(GenericEventPointer)>>>> eventTypeToCallbacksMapping;
+        SyncSafe<std::map<std::string, std::vector<std::function<void(Events::GenericEventPointer)>>>> eventTypeToCallbacksMapping;
         SyncSafe<std::set<std::string>> registeredEventTypes;
 
         std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
 
-        std::vector<GenericEventPointer> getEvents();
+        std::vector<Events::GenericEventPointer> getEvents();
 
     public:
         explicit EventListener(const std::string& name): name(name) {};
@@ -105,7 +103,7 @@ namespace Bloom
          *
          * @param event
          */
-        void registerEvent(GenericEventPointer event);
+        void registerEvent(Events::GenericEventPointer event);
 
         void setInterruptEventNotifier(std::shared_ptr<EventNotifier> interruptEventNotifier) {
             this->interruptEventNotifier = interruptEventNotifier;
@@ -121,8 +119,8 @@ namespace Bloom
         template<class EventType>
         void registerCallbackForEventType(std::function<void(std::shared_ptr<const EventType>)> callback) {
             // We encapsulate the callback in a lambda to handle the downcasting.
-            std::function<void(GenericEventPointer)> parentCallback =
-                [callback] (GenericEventPointer event) {
+            std::function<void(Events::GenericEventPointer)> parentCallback =
+                [callback] (Events::GenericEventPointer event) {
                     // Downcast the event to the expected type
                     callback(std::dynamic_pointer_cast<const EventType>(event));
                 }
@@ -139,9 +137,9 @@ namespace Bloom
                  * the type name to callback vector mapping.
                  */
                 mapping.insert(
-                    std::pair<std::string, std::vector<std::function<void(GenericEventPointer)>>>(
+                    std::pair<std::string, std::vector<std::function<void(Events::GenericEventPointer)>>>(
                         EventType::name,
-                        std::vector<std::function<void(GenericEventPointer)>>()
+                        std::vector<std::function<void(Events::GenericEventPointer)>>()
                     )
                 );
             }
@@ -177,20 +175,20 @@ namespace Bloom
             std::optional<int> correlationId = std::nullopt
         ) {
             // Different return types, depending on how many event type arguments are passed in.
-            using MonoType = std::optional<EventPointer<EventTypeA>>;
+            using MonoType = std::optional<Events::EventPointer<EventTypeA>>;
             using BiVariantType = std::optional<
                 std::variant<
                     std::monostate,
-                    EventPointer<EventTypeA>,
-                    EventPointer<EventTypeB>
+                    Events::EventPointer<EventTypeA>,
+                    Events::EventPointer<EventTypeB>
                 >
             >;
             using TriVariantType = std::optional<
                 std::variant<
                     std::monostate,
-                    EventPointer<EventTypeA>,
-                    EventPointer<EventTypeB>,
-                    EventPointer<EventTypeC>
+                    Events::EventPointer<EventTypeA>,
+                    Events::EventPointer<EventTypeB>,
+                    Events::EventPointer<EventTypeC>
                 >
             >;
             using ReturnType = typename std::conditional<
@@ -211,12 +209,18 @@ namespace Bloom
             auto eventTypeNamesToDeRegister = std::set<std::string>();
 
             if constexpr (!std::is_same_v<EventTypeA, EventTypeB>) {
-                static_assert(std::is_base_of_v<Event, EventTypeB>, "All event types must be derived from the Event base class.");
+                static_assert(
+                    std::is_base_of_v<Events::Event, EventTypeB>,
+                    "All event types must be derived from the Event base class."
+                );
                 eventTypeNames.insert(EventTypeB::name);
             }
 
             if constexpr (!std::is_same_v<EventTypeB, EventTypeC>) {
-                static_assert(std::is_base_of_v<Event, EventTypeC>, "All event types must be derived from the Event base class.");
+                static_assert(
+                    std::is_base_of_v<Events::Event, EventTypeC>,
+                    "All event types must be derived from the Event base class."
+                );
                 eventTypeNames.insert(EventTypeC::name);
             }
 
@@ -232,7 +236,7 @@ namespace Bloom
                 }
             }
 
-            GenericEventPointer foundEvent = nullptr;
+            Events::GenericEventPointer foundEvent = nullptr;
             auto eventsFound = [&eventTypeNames, &eventQueueByType, &correlationId, &foundEvent]() -> bool {
                 for (const auto& eventTypeName : eventTypeNames) {
                     if (eventQueueByType.find(eventTypeName) != eventQueueByType.end()
@@ -279,17 +283,23 @@ namespace Bloom
                 // If we're looking for multiple event types, use an std::variant.
                 if constexpr (!std::is_same_v<EventTypeA, EventTypeB> || !std::is_same_v<EventTypeB, EventTypeC>) {
                     if (foundEvent->getName() == EventTypeA::name) {
-                        output = std::optional<typename decltype(output)::value_type>(std::dynamic_pointer_cast<const EventTypeA>(foundEvent));
+                        output = std::optional<typename decltype(output)::value_type>(
+                            std::dynamic_pointer_cast<const EventTypeA>(foundEvent)
+                        );
 
                     } else if constexpr (!std::is_same_v<EventTypeA, EventTypeB>) {
                         if (foundEvent->getName() == EventTypeB::name) {
-                            output = std::optional<typename decltype(output)::value_type>(std::dynamic_pointer_cast<const EventTypeB>(foundEvent));
+                            output = std::optional<typename decltype(output)::value_type>(
+                                std::dynamic_pointer_cast<const EventTypeB>(foundEvent)
+                            );
                         }
                     }
 
                     if constexpr (!std::is_same_v<EventTypeB, EventTypeC>) {
                         if (foundEvent->getName() == EventTypeC::name) {
-                            output = std::optional<typename decltype(output)::value_type>(std::dynamic_pointer_cast<const EventTypeC>(foundEvent));
+                            output = std::optional<typename decltype(output)::value_type>(
+                                std::dynamic_pointer_cast<const EventTypeC>(foundEvent)
+                            );
                         }
                     }
 
@@ -311,7 +321,7 @@ namespace Bloom
          */
         void waitAndDispatch(int msTimeout = 0);
 
-        void dispatchEvent(GenericEventPointer event);
+        void dispatchEvent(Events::GenericEventPointer event);
 
         void dispatchCurrentEvents();
 

@@ -12,6 +12,8 @@
 #include "CommandPackets/CommandPacketFactory.hpp"
 
 using namespace Bloom::DebugServers::Gdb;
+using namespace Bloom::DebugServers::Gdb::CommandPackets;
+using namespace Bloom::DebugServers::Gdb::ResponsePackets;
 using namespace Bloom::DebugServers::Gdb::Exceptions;
 using namespace Bloom::Exceptions;
 

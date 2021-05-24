@@ -9,6 +9,7 @@
 #include "src/Logger/Logger.hpp"
 
 using namespace Bloom::InsightTargetWidgets::Qfp;
+using namespace Bloom::Targets;
 
 PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, const TargetVariant& targetVariant):
     TargetPinWidget(parent, pinDescriptor, targetVariant) {

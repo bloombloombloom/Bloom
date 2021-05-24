@@ -7,9 +7,6 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
-    using namespace DebugToolDrivers::Protocols::CmsisDap;
-    using namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
-
     class Avr8GenericCommandFrame: public AvrCommandFrame
     {
     public:

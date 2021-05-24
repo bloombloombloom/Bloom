@@ -7,8 +7,6 @@
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-
     /**
      * The ReadMemory class implements a structure for "m" packets. Upon receiving these packets, the server is
      * expected to read memory from the target and send it the client.

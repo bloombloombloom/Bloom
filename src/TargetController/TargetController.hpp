@@ -18,12 +18,6 @@
 
 namespace Bloom
 {
-    using namespace Targets;
-    using namespace DebugToolDrivers;
-    using namespace Targets::Microchip::Avr;
-    using Avr8Bit::Avr8;
-    using Events::EventPointer;
-
     /**
      * The TargetController possesses full control of the debugging target and the debug tool.
      *
@@ -55,12 +49,12 @@ namespace Bloom
          * different state to what's stored in lastTargetState, a state change (TargetExecutionStopped/TargetExecutionResumed)
          * event is emitted.
          */
-        TargetState lastTargetState = TargetState::UNKNOWN;
+        Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
 
         /**
          * Obtaining a TargetDescriptor for the connected target can be quite expensive. We cache it here.
          */
-        std::optional<TargetDescriptor> cachedTargetDescriptor;
+        std::optional<Targets::TargetDescriptor> cachedTargetDescriptor;
 
         /**
          * Constructs a mapping of supported debug tool names to lambdas. The lambdas should *only* instantiate
@@ -70,26 +64,28 @@ namespace Bloom
          * @return
          */
         static auto getSupportedDebugTools() {
-            return std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
+            static auto mapping = std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
                 {
                     "atmel-ice",
                     []() {
-                        return std::make_unique<AtmelIce>();
+                        return std::make_unique<DebugToolDrivers::AtmelIce>();
                     }
                 },
                 {
                     "power-debugger",
                     []() {
-                        return std::make_unique<PowerDebugger>();
+                        return std::make_unique<DebugToolDrivers::PowerDebugger>();
                     }
                 },
                 {
                     "snap",
                     []() {
-                        return std::make_unique<MplabSnap>();
+                        return std::make_unique<DebugToolDrivers::MplabSnap>();
                     }
                 },
             };
+
+            return mapping;
         }
 
         /**
@@ -99,34 +95,42 @@ namespace Bloom
          * @return
          */
         static auto getSupportedTargets() {
-            auto mapping = std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>> {
-                {
-                    "avr8",
-                    []() {
-                        return std::make_unique<Avr8>();
-                    }
-                },
-            };
+            static std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>> mapping;
 
-            // Include all targets from AVR8 part description files
-            auto avr8PdMapping = Avr8Bit::PartDescriptionFile::getPartDescriptionMapping();
+            if (mapping.empty()) {
+                mapping = {
+                    {
+                        "avr8",
+                        []() {
+                            return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>();
+                        }
+                    },
+                };
 
-            for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); mapIt++) {
-                // Each target signature maps to an array of targets, as numerous targets can possess the same signature.
-                auto targets = mapIt.value().toArray();
+                // Include all targets from AVR8 part description files
+                auto avr8PdMapping =
+                    Targets::Microchip::Avr::Avr8Bit::PartDescription::PartDescriptionFile::getPartDescriptionMapping();
 
-                for (auto targetIt = targets.begin(); targetIt != targets.end(); targetIt++) {
-                    auto targetName = targetIt->toObject().find("targetName").value().toString()
-                        .toLower().toStdString();
-                    auto targetSignatureHex = mapIt.key().toLower().toStdString();
+                for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); mapIt++) {
+                    // Each target signature maps to an array of targets, as numerous targets can possess the same signature.
+                    auto targets = mapIt.value().toArray();
 
-                    if (!mapping.contains(targetName)) {
-                        mapping.insert({
-                           targetName,
-                           [targetName, targetSignatureHex]() {
-                               return std::make_unique<Avr8>(targetName, TargetSignature(targetSignatureHex));
-                           }
-                       });
+                    for (auto targetIt = targets.begin(); targetIt != targets.end(); targetIt++) {
+                        auto targetName = targetIt->toObject().find("targetName").value().toString()
+                            .toLower().toStdString();
+                        auto targetSignatureHex = mapIt.key().toLower().toStdString();
+
+                        if (!mapping.contains(targetName)) {
+                            mapping.insert({
+                                targetName,
+                                [targetName, targetSignatureHex]() {
+                                    return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>(
+                                        targetName,
+                                        Targets::Microchip::Avr::TargetSignature(targetSignatureHex)
+                                    );
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -216,63 +220,63 @@ namespace Bloom
          *
          * @param event
          */
-        void onExtractTargetDescriptor(EventPointer<Events::ExtractTargetDescriptor> event);
+        void onExtractTargetDescriptor(Events::EventPointer<Events::ExtractTargetDescriptor> event);
 
         /**
          * Will attempt to stop execution on the target and emit a TargetExecutionStopped event.
          *
          * @param event
          */
-        void onStopTargetExecutionEvent(EventPointer<Events::StopTargetExecution> event);
+        void onStopTargetExecutionEvent(Events::EventPointer<Events::StopTargetExecution> event);
 
         /**
          * Will attempt to step execution on the target and emit a TargetExecutionResumed event.
          *
          * @param event
          */
-        void onStepTargetExecutionEvent(EventPointer<Events::StepTargetExecution> event);
+        void onStepTargetExecutionEvent(Events::EventPointer<Events::StepTargetExecution> event);
 
         /**
          * Will attempt to resume execution on the target and emit a TargetExecutionResumed event.
          *
          * @param event
          */
-        void onResumeTargetExecutionEvent(EventPointer<Events::ResumeTargetExecution> event);
+        void onResumeTargetExecutionEvent(Events::EventPointer<Events::ResumeTargetExecution> event);
 
         /**
          * Invokes a shutdown.
          *
          * @param event
          */
-        void onShutdownTargetControllerEvent(EventPointer<Events::ShutdownTargetController> event);
+        void onShutdownTargetControllerEvent(Events::EventPointer<Events::ShutdownTargetController> event);
 
         /**
          * Will attempt to read the requested registers and emit a RegistersRetrievedFromTarget event.
          *
          * @param event
          */
-        void onReadRegistersEvent(EventPointer<Events::RetrieveRegistersFromTarget> event);
+        void onReadRegistersEvent(Events::EventPointer<Events::RetrieveRegistersFromTarget> event);
 
         /**
          * Will attempt to write the specified register values and emit a RegistersWrittenToTarget event.
          *
          * @param event
          */
-        void onWriteRegistersEvent(EventPointer<Events::WriteRegistersToTarget> event);
+        void onWriteRegistersEvent(Events::EventPointer<Events::WriteRegistersToTarget> event);
 
         /**
          * Will attempt to read memory from the target and include the data in a MemoryRetrievedFromTarget event.
          *
          * @param event
          */
-        void onReadMemoryEvent(EventPointer<Events::RetrieveMemoryFromTarget> event);
+        void onReadMemoryEvent(Events::EventPointer<Events::RetrieveMemoryFromTarget> event);
 
         /**
          * Will attempt to write memory to the target. On success, a MemoryWrittenToTarget event is emitted.
          *
          * @param event
          */
-        void onWriteMemoryEvent(EventPointer<Events::WriteMemoryToTarget> event);
+        void onWriteMemoryEvent(Events::EventPointer<Events::WriteMemoryToTarget> event);
 
         /**
          * Will attempt to set the specific breakpoint on the target. On success, the BreakpointSetOnTarget event will
@@ -280,7 +284,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onSetBreakpointEvent(EventPointer<Events::SetBreakpointOnTarget> event);
+        void onSetBreakpointEvent(Events::EventPointer<Events::SetBreakpointOnTarget> event);
 
         /**
          * Will attempt to remove a breakpoint at the specified address, on the target. On success, the
@@ -288,21 +292,21 @@ namespace Bloom
          *
          * @param event
          */
-        void onRemoveBreakpointEvent(EventPointer<Events::RemoveBreakpointOnTarget> event);
+        void onRemoveBreakpointEvent(Events::EventPointer<Events::RemoveBreakpointOnTarget> event);
 
         /**
          * Will hold the target stopped at it's current state.
          *
          * @param event
          */
-        void onDebugSessionStartedEvent(EventPointer<Events::DebugSessionStarted> event);
+        void onDebugSessionStartedEvent(Events::EventPointer<Events::DebugSessionStarted> event);
 
         /**
          * Will simply kick off execution on the target.
          *
          * @param event
          */
-        void onDebugSessionFinishedEvent(EventPointer<Events::DebugSessionFinished> event);
+        void onDebugSessionFinishedEvent(Events::EventPointer<Events::DebugSessionFinished> event);
 
         /**
          * Will update the program counter value on the target. On success, a ProgramCounterSetOnTarget event is
@@ -310,7 +314,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onSetProgramCounterEvent(EventPointer<Events::SetProgramCounterOnTarget> event);
+        void onSetProgramCounterEvent(Events::EventPointer<Events::SetProgramCounterOnTarget> event);
 
         /**
          * Will automatically fire a target state update event.
@@ -318,14 +322,14 @@ namespace Bloom
          *
          * @param event
          */
-        void onInsightStateChangedEvent(EventPointer<Events::InsightStateChanged> event);
+        void onInsightStateChangedEvent(Events::EventPointer<Events::InsightStateChanged> event);
 
         /**
          * Will attempt to obtain the pin states from the target. Will emit a TargetPinStatesRetrieved event on success.
          *
          * @param event
          */
-        void onRetrieveTargetPinStatesEvent(EventPointer<Events::RetrieveTargetPinStates> event);
+        void onRetrieveTargetPinStatesEvent(Events::EventPointer<Events::RetrieveTargetPinStates> event);
 
         /**
          * Will update a pin state for a particular pin. Will emit a TargetPinStatesRetrieved with the new pin
@@ -333,6 +337,6 @@ namespace Bloom
          *
          * @param event
          */
-        void onSetPinStateEvent(EventPointer<Events::SetTargetPinState> event);
+        void onSetPinStateEvent(Events::EventPointer<Events::SetTargetPinState> event);
     };
 }

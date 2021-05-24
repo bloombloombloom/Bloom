@@ -6,8 +6,6 @@
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-
     /**
      * The ReadGeneralRegisters class implements a structure for "g" and "p" command packets. In response to these
      * packets, the server is expected to send register values for all registers (for "g" packets) or for a single

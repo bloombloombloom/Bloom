@@ -5,8 +5,6 @@
 
 namespace Bloom::Events
 {
-    using Bloom::Targets::TargetMemoryBuffer;
-
     class MemoryWrittenToTarget: public Event
     {
     public:

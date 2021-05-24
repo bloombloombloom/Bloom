@@ -12,17 +12,6 @@
 
 namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
 {
-    using namespace Bloom;
-    using namespace Targets::Microchip::Avr;
-
-    using Targets::TargetState;
-    using Targets::TargetRegisterMap;
-    using Targets::TargetMemoryBuffer;
-    using Targets::TargetMemoryType;
-    using Targets::TargetRegister;
-    using Targets::TargetRegisters;
-    using Targets::Microchip::Avr::TargetSignature;
-
     /**
      * Interfacing with an AVR8 target can vary significantly, depending on the debug tool being used.
      *
@@ -52,7 +41,7 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          *
          * @param config
          */
-        virtual void setTargetParameters(const Avr8Bit::TargetParameters& config) = 0;
+        virtual void setTargetParameters(const Targets::Microchip::Avr::Avr8Bit::TargetParameters& config) = 0;
 
         /**
          * Should initialise the interface between the debug tool and the AVR8 target.
@@ -102,7 +91,7 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          *
          * @return
          */
-        virtual TargetSignature getDeviceId() = 0;
+        virtual Targets::Microchip::Avr::TargetSignature getDeviceId() = 0;
 
         /**
          * Should set a software breakpoint at a given address.
@@ -135,14 +124,14 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          *
          * @return
          */
-        virtual TargetRegister getStackPointerRegister() = 0;
+        virtual Targets::TargetRegister getStackPointerRegister() = 0;
 
         /**
          * Should retrieve the current status register value from the target.
          *
          * @return
          */
-        virtual TargetRegister getStatusRegister() = 0;
+        virtual Targets::TargetRegister getStatusRegister() = 0;
 
         /**
          * Should update the program counter value on the target.
@@ -156,14 +145,14 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          *
          * @param stackPointerRegister
          */
-        virtual void setStackPointerRegister(const TargetRegister& stackPointerRegister) = 0;
+        virtual void setStackPointerRegister(const Targets::TargetRegister& stackPointerRegister) = 0;
 
         /**
          * Should update the status register value on the target.
          *
          * @param statusRegister
          */
-        virtual void setStatusRegister(const TargetRegister& statusRegister) = 0;
+        virtual void setStatusRegister(const Targets::TargetRegister& statusRegister) = 0;
 
         /**
          * Should read the requested general purpose register from the target.
@@ -173,14 +162,14 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          *
          * @return
          */
-        virtual TargetRegisters readGeneralPurposeRegisters(std::set<size_t> registerIds) = 0;
+        virtual Targets::TargetRegisters readGeneralPurposeRegisters(std::set<size_t> registerIds) = 0;
 
         /**
          * Should update the value of general purpose registers.
          *
          * @param registers
          */
-        virtual void writeGeneralPurposeRegisters(const TargetRegisters& registers) = 0;
+        virtual void writeGeneralPurposeRegisters(const Targets::TargetRegisters& registers) = 0;
 
         /**
          * Should read memory from the target, for the given memory type.
@@ -190,7 +179,11 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          * @param bytes
          * @return
          */
-        virtual TargetMemoryBuffer readMemory(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes) = 0;
+        virtual Targets::TargetMemoryBuffer readMemory(
+            Targets::TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            std::uint32_t bytes
+        ) = 0;
 
         /**
          * Should write memory to the target, for a given memory type.
@@ -199,13 +192,17 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          * @param startAddress
          * @param buffer
          */
-        virtual void writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) = 0;
+        virtual void writeMemory(
+            Targets::TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            const Targets::TargetMemoryBuffer& buffer
+        ) = 0;
 
         /**
          * Should obtain the current target state.
          *
          * @return
          */
-        virtual TargetState getTargetState() = 0;
+        virtual Targets::TargetState getTargetState() = 0;
     };
 }

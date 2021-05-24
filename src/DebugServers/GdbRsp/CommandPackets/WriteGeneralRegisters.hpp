@@ -7,10 +7,6 @@
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-    using Bloom::Targets::TargetRegister;
-    using Bloom::Targets::TargetRegisterMap;
-
     /**
      * The WriteGeneralRegisters class implements the structure for "G" and "P" packets. Upon receiving this packet,
      * server is expected to write register values to the target.
@@ -21,7 +17,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         void init();
 
     public:
-        TargetRegisterMap registerMap;
+        Bloom::Targets::TargetRegisterMap registerMap;
         int registerNumber;
         std::vector<unsigned char> registerValue;
 

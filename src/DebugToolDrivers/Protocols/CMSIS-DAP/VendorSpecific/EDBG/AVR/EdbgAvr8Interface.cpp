@@ -33,13 +33,17 @@
 // AVR events
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Events/AVR8Generic/BreakEvent.hpp"
 
+using namespace Bloom::Targets::Microchip::Avr;
+using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
 using namespace Bloom::Exceptions;
 
 using Bloom::Targets::TargetState;
+using Bloom::Targets::TargetMemoryType;
+using Bloom::Targets::TargetMemoryBuffer;
 using Bloom::Targets::TargetRegister;
-using Bloom::Targets::TargetRegisters;
 using Bloom::Targets::TargetRegisterType;
+using Bloom::Targets::TargetRegisters;
 
 void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
     auto commandFrame = CommandFrames::Avr8Generic::SetParameter(parameter, value);

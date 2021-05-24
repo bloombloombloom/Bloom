@@ -4,6 +4,7 @@
 
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
 #include "src/DebugServers/GdbRsp/Register.hpp"
+#include "src/Helpers/BiMap.hpp"
 
 namespace Bloom::DebugServers::Gdb
 {
@@ -44,7 +45,10 @@ namespace Bloom::DebugServers::Gdb
          *
          * @return
          */
-        BiMap<GdbRegisterNumber, TargetRegisterDescriptor> getRegisterNumberToDescriptorMapping() override {
+        BiMap<GdbRegisterNumber, Targets::TargetRegisterDescriptor> getRegisterNumberToDescriptorMapping() override {
+            using Targets::TargetRegisterDescriptor;
+            using Targets::TargetRegisterType;
+
             static BiMap<GdbRegisterNumber, TargetRegisterDescriptor> mapping = {
                 {0, TargetRegisterDescriptor(0, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
                 {1, TargetRegisterDescriptor(1, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
@@ -93,12 +97,12 @@ namespace Bloom::DebugServers::Gdb
          * @param address
          * @return
          */
-        TargetMemoryType getMemoryTypeFromGdbAddress(std::uint32_t address) override {
+        Targets::TargetMemoryType getMemoryTypeFromGdbAddress(std::uint32_t address) override {
             if (address & this->gdbInternalMemoryMask) {
-                return TargetMemoryType::RAM;
+                return Targets::TargetMemoryType::RAM;
             }
 
-            return TargetMemoryType::FLASH;
+            return Targets::TargetMemoryType::FLASH;
         };
 
         /**

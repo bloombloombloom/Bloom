@@ -15,21 +15,12 @@
 
 namespace Bloom
 {
-    using InsightTargetWidgets::TargetPackageWidget;
-    using InsightTargetWidgets::TargetPinWidget;
-
-    using Targets::TargetDescriptor;
-    using Targets::TargetVariant;
-    using Targets::TargetPackage;
-    using Targets::TargetState;
-    using Targets::TargetPinState;
-
     class InsightWindow: public QObject
     {
     Q_OBJECT
     private:
-        TargetDescriptor targetDescriptor;
-        TargetState targetState = TargetState::UNKNOWN;
+        Targets::TargetDescriptor targetDescriptor;
+        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         QWidget* mainWindowWidget = nullptr;
         AboutWindow* aboutWindowWidget = nullptr;
@@ -41,19 +32,19 @@ namespace Bloom
 
         QWidget* ioContainerWidget = nullptr;
         QWidget* ioUnavailableWidget = nullptr;
-        TargetPackageWidget* targetPackageWidget = nullptr;
+        InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
 
         QWidget* footer = nullptr;
         QLabel* targetStatusLabel = nullptr;
         QLabel* programCounterValueLabel = nullptr;
 
-        std::map<std::string, TargetVariant> supportedVariantsByName;
-        const TargetVariant* selectedVariant = nullptr;
+        std::map<std::string, Targets::TargetVariant> supportedVariantsByName;
+        const Targets::TargetVariant* selectedVariant = nullptr;
         bool uiDisabled = false;
 
-        bool isVariantSupported(const TargetVariant& variant);
+        bool isVariantSupported(const Targets::TargetVariant& variant);
 
-        void selectVariant(const TargetVariant* variant);
+        void selectVariant(const Targets::TargetVariant* variant);
 
         void toggleUi(bool disable) {
             this->uiDisabled = disable;
@@ -83,14 +74,14 @@ namespace Bloom
 
     public slots:
         void onTargetPinStatesUpdate(int variantId, Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);
-        void onTargetStateUpdate(TargetState newState);
+        void onTargetStateUpdate(Targets::TargetState newState);
         void onTargetProgramCounterUpdate(quint32 programCounter);
         void onTargetIoPortsUpdate();
         void close();
         void openReportIssuesUrl();
         void openGettingStartedUrl();
         void openAboutWindow();
-        void togglePinIoState(TargetPinWidget* pinWidget);
+        void togglePinIoState(InsightTargetWidgets::TargetPinWidget* pinWidget);
 
     signals:
         void refreshTargetPinStates(int variantId);

@@ -8,8 +8,6 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.hpp"
 
-using namespace Bloom::DebugToolDrivers;
-
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
 {
     /**

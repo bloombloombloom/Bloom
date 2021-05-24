@@ -11,8 +11,6 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    using namespace Edbg;
-
     class AvrResponseFrame
     {
     private:

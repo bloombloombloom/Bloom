@@ -11,7 +11,10 @@
 #include "src/Exceptions/InvalidConfig.hpp"
 
 using namespace Bloom;
-using namespace Exceptions;
+using namespace Bloom::Events;
+using namespace Bloom::Exceptions;
+
+using Bloom::Targets::TargetState;
 
 void InsightWorker::startup() {
     Logger::debug("Starting InsightWorker thread");

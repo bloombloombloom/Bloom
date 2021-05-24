@@ -7,8 +7,6 @@
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-
     /**
      * The ContinueExecution class implements a structure for "c" packets. These packets instruct the server
      * to continue execution on the target.

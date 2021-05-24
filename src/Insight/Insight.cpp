@@ -10,7 +10,8 @@
 #include "src/Targets/TargetState.hpp"
 
 using namespace Bloom;
-using namespace Exceptions;
+using namespace Bloom::Events;
+using namespace Bloom::Exceptions;
 
 void Insight::run() {
     try {

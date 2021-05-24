@@ -4,8 +4,6 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
-    using namespace Exceptions;
-
     class SetParameter: public Avr8GenericCommandFrame
     {
     private:

@@ -7,10 +7,6 @@
 
 namespace Bloom::InsightTargetWidgets::Dip
 {
-    using Targets::TargetPinDescriptor;
-    using Targets::TargetPinType;
-    using Targets::TargetPinState;
-
     class PinBodyWidget: public QWidget
     {
     Q_OBJECT
@@ -18,8 +14,8 @@ namespace Bloom::InsightTargetWidgets::Dip
         Q_PROPERTY(int disableAlphaLevel READ getDisableAlphaLevel WRITE setDisableAlphaLevel DESIGNABLE true)
 
     private:
-        TargetPinDescriptor pinDescriptor;
-        std::optional<TargetPinState> pinState;
+        Targets::TargetPinDescriptor pinDescriptor;
+        std::optional<Targets::TargetPinState> pinState;
         QColor bodyColor = QColor("#AFB1B3");
         int disableAlphaLevel = 100;
 
@@ -40,12 +36,15 @@ namespace Bloom::InsightTargetWidgets::Dip
         static const int WIDTH = 30;
         static const int HEIGHT = 40;
 
-        PinBodyWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor): QWidget(parent), pinDescriptor(pinDescriptor) {
+        PinBodyWidget(
+            QWidget* parent,
+            const Targets::TargetPinDescriptor& pinDescriptor
+        ): QWidget(parent), pinDescriptor(pinDescriptor) {
             this->setFixedSize(PinBodyWidget::WIDTH, PinBodyWidget::HEIGHT);
             this->setObjectName("target-pin-body");
         }
 
-        void setPinState(const TargetPinState& pinState) {
+        void setPinState(const Targets::TargetPinState& pinState) {
             this->pinState = pinState;
         }
 

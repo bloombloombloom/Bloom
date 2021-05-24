@@ -9,8 +9,6 @@
 
 namespace Bloom
 {
-    using namespace Exceptions;
-
     /**
      * The EventNotifier class provides a means to interrupt a thread that is blocked by an IO call.
      *
@@ -36,7 +34,8 @@ namespace Bloom
             this->fileDescriptor = ::eventfd(0, EFD_NONBLOCK);
 
             if (this->fileDescriptor < -1) {
-                throw Exception("Failed to create new eventfd object - error number: " + std::to_string(errno));
+                throw Exceptions::Exception("Failed to create new eventfd object - error number: "
+                    + std::to_string(errno));
             }
         }
 
@@ -46,15 +45,16 @@ namespace Bloom
 
         void notify() {
             if (::eventfd_write(this->fileDescriptor, 1) < 0) {
-                throw Exception("Failed to increment eventfd counter - error number: " + std::to_string(errno));
+                throw Exceptions::Exception("Failed to increment eventfd counter - error number: "
+                    + std::to_string(errno));
             }
         }
 
         void clear() {
             eventfd_t counter;
             if (::eventfd_read(this->fileDescriptor, &counter) < 0 && errno != EAGAIN) {
-                throw Exception("Failed to clear EventNotifier object - eventfd_read failed - error number: "
-                                + std::to_string(errno));
+                throw Exceptions::Exception("Failed to clear EventNotifier object - eventfd_read failed - "
+                    "error number: " + std::to_string(errno));
             }
         }
 

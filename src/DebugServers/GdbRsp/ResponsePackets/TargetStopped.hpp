@@ -7,8 +7,6 @@
 
 namespace Bloom::DebugServers::Gdb::ResponsePackets
 {
-    using Bloom::Targets::TargetRegisterMap;
-
     /**
      * The TargetStopped class implements the response packet structure for any commands that expect a "StopReply"
      * packet in response.
@@ -17,7 +15,7 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
     {
     public:
         Signal signal;
-        std::optional<TargetRegisterMap> registerMap;
+        std::optional<Targets::TargetRegisterMap> registerMap;
         std::optional<StopReason> stopReason;
 
         TargetStopped(Signal signal): signal(signal) {}

@@ -14,9 +14,6 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 {
-    using namespace Protocols::CmsisDap::Edbg::Avr;
-    using namespace Exceptions;
-
     /**
      * The EdbgInterface class implements the EDBG sub-protocol, which takes the form of numerous CMSIS-DAP vendor
      * commands.
@@ -52,12 +49,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
             const CommandFrameType& avrCommandFrame
         ) {
             static_assert(
-                std::is_base_of<AvrCommandFrame, CommandFrameType>::value,
+                std::is_base_of<Protocols::CmsisDap::Edbg::Avr::AvrCommandFrame, CommandFrameType>::value,
                 "AVR Command must be base of AvrCommandFrame."
             );
 
             static_assert(
-                std::is_base_of<AvrResponseFrame, typename CommandFrameType::ResponseFrameType>::value,
+                std::is_base_of<Protocols::CmsisDap::Edbg::Avr::AvrResponseFrame, typename CommandFrameType::ResponseFrameType>::value,
                 "AVR Command must specify a valid response frame type, derived from AvrResponseFrame."
             );
 
@@ -65,7 +62,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 
             if (response.getData()[0] != 0x01) {
                 // The last response packet should always acknowledge receipt of the AvrCommandFrame
-                throw Exception("Failed to send AvrCommandFrame to device - device did not acknowledge receipt.");
+                throw Exceptions::Exception("Failed to send AvrCommandFrame to device "
+                    "- device did not acknowledge receipt.");
             }
 
             auto responses = this->requestAvrResponses();

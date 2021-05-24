@@ -3,7 +3,9 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Application.hpp"
 
+using namespace Bloom::Targets::Microchip::Avr::Avr8Bit::PartDescription;
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
+using namespace Bloom::Targets::Microchip::Avr;
 using namespace Bloom::Exceptions;
 
 // TODO: Move this into a resolvePartDescriptionFile() method.

@@ -5,6 +5,7 @@
 #include "CommandPacketFactory.hpp"
 
 using namespace Bloom::DebugServers::Gdb;
+using namespace Bloom::DebugServers::Gdb::CommandPackets;
 
 std::unique_ptr<CommandPacket> CommandPacketFactory::create(std::vector<unsigned char> rawPacket) {
 

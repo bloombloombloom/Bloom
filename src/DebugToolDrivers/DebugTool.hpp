@@ -4,8 +4,6 @@
 
 namespace Bloom
 {
-    using DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface;
-
     /**
      * A debug tool can be any device that provides access to the connected target. Debug tools are usually connected
      * to the host machine via USB.
@@ -53,7 +51,7 @@ namespace Bloom
          *
          * @return
          */
-        virtual Avr8Interface* getAvr8Interface() {
+        virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* getAvr8Interface() {
             return nullptr;
         };
 

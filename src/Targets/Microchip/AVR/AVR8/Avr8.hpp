@@ -19,20 +19,13 @@
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
-    using namespace Exceptions;
-    using namespace PartDescription;
-
-    using PartDescription::PartDescriptionFile;
-    using DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface;
-    using Targets::TargetRegisterMap;
-
     class Avr8: public Target
     {
     protected:
-        Avr8Interface* avr8Interface;
+        DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* avr8Interface;
         std::string name = "";
         std::optional<Family> family;
-        std::optional<PartDescriptionFile> partDescription;
+        std::optional<PartDescription::PartDescriptionFile> partDescription;
         std::optional<TargetParameters> targetParameters;
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;

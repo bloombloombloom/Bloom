@@ -14,10 +14,6 @@
 
 namespace Bloom::DebugToolDrivers
 {
-    using namespace Protocols::CmsisDap;
-    using Protocols::CmsisDap::Edbg::EdbgInterface;
-    using Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface;
-
     /**
      * The MPLAB Snap device is a hybrid device - that is, it can present itself as an "MPLAB Snap ICD" device, as well
      * as an EDBG (Embedded Debugger) device. The device switches between these two modes via a firmware update, issued
@@ -39,13 +35,13 @@ namespace Bloom::DebugToolDrivers
     class MplabSnap: public DebugTool, public Usb::UsbDevice
     {
     private:
-        EdbgInterface edbgInterface = EdbgInterface();
+        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
 
         /**
          * The MPLAB Snap employs the EDBG AVR8 Generic protocol, for debugging AVR8 targets. This protocol is
          * implemented in EdbgAvr8Interface. See the EdbgAvr8Interface class for more information.
          */
-        std::unique_ptr<EdbgAvr8Interface> edbgAvr8Interface = nullptr;
+        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
 
         bool sessionStarted = false;
 
@@ -56,13 +52,15 @@ namespace Bloom::DebugToolDrivers
         MplabSnap(): UsbDevice(MplabSnap::USB_VENDOR_ID, MplabSnap::USB_PRODUCT_ID) {}
 
         void init() override;
+
         void close() override;
 
-        EdbgInterface& getEdbgInterface()  {
+
+        Protocols::CmsisDap::Edbg::EdbgInterface& getEdbgInterface()  {
             return this->edbgInterface;
         }
 
-        Avr8Interface* getAvr8Interface() override {
+        TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* getAvr8Interface() override {
             return this->edbgAvr8Interface.get();
         }
 

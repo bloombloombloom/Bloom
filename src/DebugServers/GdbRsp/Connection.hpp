@@ -14,9 +14,6 @@
 
 namespace Bloom::DebugServers::Gdb
 {
-    using namespace CommandPackets;
-    using namespace ResponsePackets;
-
     /**
      * The Connection class represents an active connection between the GDB RSP server and client.
      *
@@ -46,7 +43,7 @@ namespace Bloom::DebugServers::Gdb
          *
          * @param interruptible
          *  If this flag is set to false, no other component within Bloom will be able to gracefully interrupt
-         *  the read (via means of this->interruptEventNotifier). This flag has no affect if this->readInterruptEnabled
+         *  the read (via means of this->interruptEventNotifier). This flag has no effect if this->readInterruptEnabled
          *  is false.
          *
          * @param msTimeout
@@ -121,14 +118,14 @@ namespace Bloom::DebugServers::Gdb
          *
          * @return
          */
-        std::vector<std::unique_ptr<CommandPacket>> readPackets();
+        std::vector<std::unique_ptr<CommandPackets::CommandPacket>> readPackets();
 
         /**
          * Sends a response packet to the client.
          *
          * @param packet
          */
-        void writePacket(const ResponsePacket& packet);
+        void writePacket(const ResponsePackets::ResponsePacket& packet);
 
         int getMaxPacketSize() {
             return this->maxPacketSize;

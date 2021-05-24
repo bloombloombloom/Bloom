@@ -34,16 +34,22 @@ namespace Bloom::InsightTargetWidgets::Dip
         static const int MINIMUM_WIDTH = 30;
         static const int MAXIMUM_LABEL_COUNT = 3;
         static const int LABEL_HEIGHT = 20;
-        static const int MAXIMUM_HEIGHT = PinBodyWidget::HEIGHT + (PinWidget::LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT);
+        static const int MAXIMUM_HEIGHT = PinBodyWidget::HEIGHT
+            + (PinWidget::LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT);
 
-        PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, const TargetVariant& targetVariant);
+        PinWidget(
+            QWidget* parent,
+            const Targets::TargetPinDescriptor& pinDescriptor,
+            const Targets::TargetVariant& targetVariant
+        );
 
-        virtual void updatePinState(const TargetPinState& pinState) override {
+        virtual void updatePinState(const Targets::TargetPinState& pinState) override {
             TargetPinWidget::updatePinState(pinState);
 
             if (pinState.ioDirection.has_value()) {
-                this->pinDirectionLabel->setText(pinState.ioDirection.value() == TargetPinState::IoDirection::INPUT ?
-                    "IN" : "OUT");
+                this->pinDirectionLabel->setText(
+                    pinState.ioDirection.value() == Targets::TargetPinState::IoDirection::INPUT ? "IN" : "OUT"
+                );
 
             } else {
                 this->pinDirectionLabel->setText("");

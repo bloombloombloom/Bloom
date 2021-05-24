@@ -14,10 +14,6 @@
 
 namespace Bloom::DebugToolDrivers
 {
-    using namespace Protocols::CmsisDap;
-    using Protocols::CmsisDap::Edbg::EdbgInterface;
-    using Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface;
-
     /**
      * The Atmel-ICE device is an EDBG (Embedded Debugger) device. It implements the CMSIS-DAP layer as well
      * as an Atmel Data Gateway Interface (DGI).
@@ -53,13 +49,13 @@ namespace Bloom::DebugToolDrivers
          * Any non-EDBG CMSIS-DAP commands for the Atmel-ICE can be sent through the EdbgInterface (as the
          * EdbgInterface extends the CmsisDapInterface).
          */
-        EdbgInterface edbgInterface = EdbgInterface();
+        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
 
         /**
          * The Atmel-ICE employs the EDBG AVR8 Generic protocol, for debugging AVR8 targets. This protocol is
          * implemented in EdbgAvr8Interface. See the EdbgAvr8Interface class for more information.
          */
-        std::unique_ptr<EdbgAvr8Interface> edbgAvr8Interface = nullptr;
+        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
 
         bool sessionStarted = false;
 
@@ -70,13 +66,15 @@ namespace Bloom::DebugToolDrivers
         AtmelIce(): UsbDevice(AtmelIce::USB_VENDOR_ID, AtmelIce::USB_PRODUCT_ID) {}
 
         void init() override;
+
         void close() override;
 
-        EdbgInterface& getEdbgInterface()  {
+
+        Protocols::CmsisDap::Edbg::EdbgInterface& getEdbgInterface()  {
             return this->edbgInterface;
         }
 
-        Avr8Interface* getAvr8Interface() override {
+        TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* getAvr8Interface() override {
             return this->edbgAvr8Interface.get();
         }
 

@@ -4,8 +4,6 @@
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-
     /**
      * The InterruptException class represents interrupt command packets. Upon receiving an interrupt packet, the
      * server is expected to interrupt execution on the target.

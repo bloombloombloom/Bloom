@@ -10,10 +10,14 @@
 #include "src/Targets/TargetDescriptor.hpp"
 
 using namespace Bloom;
-using namespace Exceptions;
-using Targets::TargetDescriptor;
-using Targets::TargetVariant;
-using Targets::TargetPackage;
+using namespace Bloom::Exceptions;
+using namespace Bloom::InsightTargetWidgets;
+
+using Bloom::Targets::TargetDescriptor;
+using Bloom::Targets::TargetState;
+using Bloom::Targets::TargetPinState;
+using Bloom::Targets::TargetVariant;
+using Bloom::Targets::TargetPackage;
 
 void InsightWindow::init(
     QApplication& application,

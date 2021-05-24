@@ -4,8 +4,9 @@
 
 #include "EdbgInterface.hpp"
 
-using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
+using namespace Bloom::DebugToolDrivers;
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg;
+using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
 using namespace Bloom::Exceptions;
 
 Protocols::CmsisDap::Response EdbgInterface::sendAvrCommandFrameAndWaitForResponse(

@@ -6,6 +6,7 @@
 #include "src/Logger/Logger.hpp"
 
 using namespace Bloom::DebugServers;
+using namespace Bloom::Events;
 
 void DebugServer::run() {
     try {

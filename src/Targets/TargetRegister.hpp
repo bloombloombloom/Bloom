@@ -50,21 +50,23 @@ namespace Bloom::Targets
         }
     };
 
-    using TargetRegisterMap = std::map<TargetRegister::IdType , TargetRegister>;
+    using TargetRegisterMap = std::map<TargetRegister::IdType, TargetRegister>;
     using TargetRegisters = std::vector<TargetRegister>;
     using TargetRegisterDescriptors = std::vector<TargetRegisterDescriptor>;
 }
 
 namespace std {
-
-    using Bloom::Targets::TargetRegisterDescriptor;
-
+    /**
+     * Hashing function for TargetRegisterDescriptor type.
+     *
+     * This is required in order to use TargetRegisterDescriptor as a key in an std::unordered_map (see the BiMap
+     * class)
+     */
     template<>
-    class hash<TargetRegisterDescriptor> {
+    class hash<Bloom::Targets::TargetRegisterDescriptor> {
     public:
-        size_t operator()(const TargetRegisterDescriptor& descriptor) const {
+        size_t operator()(const Bloom::Targets::TargetRegisterDescriptor& descriptor) const {
             return descriptor.id.value_or(0) + static_cast<size_t>(descriptor.type);
         }
     };
-
 }

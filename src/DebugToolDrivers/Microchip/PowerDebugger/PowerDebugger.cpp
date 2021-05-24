@@ -2,8 +2,10 @@
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugToolDrivers;
-using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
+using namespace Protocols::CmsisDap::Edbg::Avr;
 using namespace Bloom::Exceptions;
+
+using Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface;
 
 void PowerDebugger::init() {
     UsbDevice::init();
@@ -48,10 +50,10 @@ void PowerDebugger::close() {
 
 std::string PowerDebugger::getSerialNumber() {
     auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
-        CommandFrames::Discovery::Query(Discovery::QueryContext::SERIAL_NUMBER)
+        CommandFrames::Discovery::Query(CommandFrames::Discovery::QueryContext::SERIAL_NUMBER)
     );
 
-    if (response.getResponseId() != Discovery::ResponseId::OK) {
+    if (response.getResponseId() != CommandFrames::Discovery::ResponseId::OK) {
         throw Exception("Failed to fetch serial number from device - invalid Discovery Protocol response ID.");
     }
 
@@ -64,7 +66,7 @@ void PowerDebugger::startSession() {
         CommandFrames::HouseKeeping::StartSession()
     );
 
-    if (response.getResponseId() == HouseKeeping::ResponseId::FAILED) {
+    if (response.getResponseId() == CommandFrames::HouseKeeping::ResponseId::FAILED) {
         // Failed response returned!
         throw Exception("Failed to start session with the Power Debugger - device returned failed response ID");
     }
@@ -77,7 +79,7 @@ void PowerDebugger::endSession() {
         CommandFrames::HouseKeeping::EndSession()
     );
 
-    if (response.getResponseId() == HouseKeeping::ResponseId::FAILED) {
+    if (response.getResponseId() == CommandFrames::HouseKeeping::ResponseId::FAILED) {
         // Failed response returned!
         throw Exception("Failed to end session with the Power Debugger - device returned failed response ID");
     }

@@ -7,14 +7,13 @@
 #include "../BreakpointType.hpp"
 #include "CommandPacket.hpp"
 
-namespace Bloom::DebugServers::Gdb {
+namespace Bloom::DebugServers::Gdb
+{
     enum class Feature: int;
 }
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-
     /**
      * The RemoveBreakpoint class implements the structure for "z" command packets. Upon receiving this command, the
      * server is expected to remove a breakpoint at the specified address.

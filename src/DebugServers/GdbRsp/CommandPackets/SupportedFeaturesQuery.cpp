@@ -1,8 +1,7 @@
-#include "SupportedFeaturesQuery.hpp"
 #include <QtCore/QString>
 
+#include "SupportedFeaturesQuery.hpp"
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
-#include "../Feature.hpp"
 
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 

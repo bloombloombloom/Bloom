@@ -20,8 +20,6 @@
 
 namespace Bloom
 {
-    using namespace DebugServers;
-
     /**
      * Bloom - a debug interface for embedded systems development on Linux.
      *
@@ -68,7 +66,7 @@ namespace Bloom
          *
          * See the DebugServer and GdbRspDebugServer class for more on this.
          */
-        std::unique_ptr<DebugServer> debugServer = nullptr;
+        std::unique_ptr<DebugServers::DebugServer> debugServer = nullptr;
         std::thread debugServerThread;
 
         /**
@@ -203,10 +201,10 @@ namespace Bloom
          * @return
          */
         auto getSupportedDebugServers() {
-            return std::map<std::string, std::function<std::unique_ptr<DebugServer>()>> {
+            return std::map<std::string, std::function<std::unique_ptr<DebugServers::DebugServer>()>> {
                 {
                     "avr-gdb-rsp",
-                    [this]() -> std::unique_ptr<DebugServer> {
+                    [this]() -> std::unique_ptr<DebugServers::DebugServer> {
                         return std::make_unique<DebugServers::Gdb::AvrGdbRsp>(this->eventManager);
                     }
                 },

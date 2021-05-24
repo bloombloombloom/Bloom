@@ -1,7 +1,7 @@
-#include <sys/eventfd.h>
 #include "EventListener.hpp"
 
 using namespace Bloom;
+using namespace Bloom::Events;
 
 std::set<std::string> EventListener::getRegisteredEventTypeNames() {
     return this->registeredEventTypes.getValue();

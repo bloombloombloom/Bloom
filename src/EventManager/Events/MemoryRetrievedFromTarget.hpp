@@ -7,12 +7,11 @@
 
 namespace Bloom::Events
 {
-    using Targets::TargetMemoryBuffer;
     class MemoryRetrievedFromTarget: public Event
     {
     public:
         static inline const std::string name = "MemoryRetrievedFromTarget";
-        TargetMemoryBuffer data;
+        Targets::TargetMemoryBuffer data;
 
         std::string getName() const override {
             return MemoryRetrievedFromTarget::name;

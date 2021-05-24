@@ -7,23 +7,21 @@
 
 namespace Bloom::InsightTargetWidgets
 {
-    using Targets::TargetVariant;
-    using Targets::TargetPinDescriptor;
-    using Targets::TargetPinType;
-    using Targets::TargetPinState;
-
     class TargetPinWidget: public QWidget
     {
     Q_OBJECT
     protected:
-        TargetVariant targetVariant;
-        TargetPinDescriptor pinDescriptor;
-        std::optional<TargetPinState> pinState;
+        Targets::TargetVariant targetVariant;
+        Targets::TargetPinDescriptor pinDescriptor;
+        std::optional<Targets::TargetPinState> pinState;
         bool pinStateChanged = false;
 
     public:
-        TargetPinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, const TargetVariant& targetVariant):
-        QWidget(parent), targetVariant(targetVariant), pinDescriptor(pinDescriptor) {
+        TargetPinWidget(
+            QWidget* parent,
+            const Targets::TargetPinDescriptor& pinDescriptor,
+            const Targets::TargetVariant& targetVariant
+        ): QWidget(parent), targetVariant(targetVariant), pinDescriptor(pinDescriptor) {
             this->setDisabled(false);
         };
 
@@ -31,15 +29,15 @@ namespace Bloom::InsightTargetWidgets
             return this->pinDescriptor.number;
         }
 
-        const TargetPinDescriptor& getPinDescriptor() const {
+        const Targets::TargetPinDescriptor& getPinDescriptor() const {
             return this->pinDescriptor;
         }
 
-        std::optional<TargetPinState> getPinState() const {
+        std::optional<Targets::TargetPinState> getPinState() const {
             return this->pinState;
         }
 
-        virtual void updatePinState(const TargetPinState& pinState) {
+        virtual void updatePinState(const Targets::TargetPinState& pinState) {
             this->pinStateChanged = !this->pinState.has_value()
                 || this->pinState->ioState != pinState.ioState
                 || this->pinState->ioDirection != pinState.ioDirection;
@@ -48,9 +46,9 @@ namespace Bloom::InsightTargetWidgets
         }
 
         void setDisabled(bool disabled) {
-            if (pinDescriptor.type != TargetPinType::GND
-                && pinDescriptor.type != TargetPinType::VCC
-                && pinDescriptor.type != TargetPinType::UNKNOWN
+            if (pinDescriptor.type != Targets::TargetPinType::GND
+                && pinDescriptor.type != Targets::TargetPinType::VCC
+                && pinDescriptor.type != Targets::TargetPinType::UNKNOWN
             ) {
                 QWidget::setDisabled(disabled);
 

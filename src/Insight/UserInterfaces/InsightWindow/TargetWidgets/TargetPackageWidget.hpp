@@ -10,9 +10,6 @@
 
 namespace Bloom::InsightTargetWidgets
 {
-    using Targets::TargetVariant;
-    using Targets::TargetPinState;
-
     /**
      * Each custom target package widget should be derived from this class.
      */
@@ -20,14 +17,14 @@ namespace Bloom::InsightTargetWidgets
     {
     Q_OBJECT
     protected:
-        TargetVariant targetVariant;
+        Targets::TargetVariant targetVariant;
         std::vector<TargetPinWidget*> pinWidgets;
 
     public:
-        TargetPackageWidget(const TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent):
+        TargetPackageWidget(const Targets::TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent):
         QWidget(parent), targetVariant(targetVariant) {};
 
-        virtual void updatePinStates(std::map<int, TargetPinState> pinStatesByNumber) {
+        virtual void updatePinStates(std::map<int, Targets::TargetPinState> pinStatesByNumber) {
             for (auto& pinWidget : this->pinWidgets) {
                 auto pinNumber = pinWidget->getPinNumber();
                 if (pinStatesByNumber.contains(pinNumber)) {

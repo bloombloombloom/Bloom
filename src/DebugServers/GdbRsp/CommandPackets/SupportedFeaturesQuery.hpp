@@ -8,8 +8,6 @@
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-
     /**
      * The SupportedFeaturesQuery command packet is a query from the GDB client, requesting a list of GDB features
      * supported by the GDB server. The body of this packet also contains a list GDB features that are supported or

@@ -18,8 +18,6 @@
 
 namespace Bloom::DebugServers::Gdb
 {
-    using namespace CommandPackets;
-
     /**
      * The CommandPacketFactory class provides a means for extracting raw packet data from a raw buffer, and
      * constructing the appropriate CommandPacket objects.
@@ -46,6 +44,6 @@ namespace Bloom::DebugServers::Gdb
          *
          * @return
          */
-        static std::unique_ptr<CommandPacket> create(std::vector<unsigned char> rawPacket);
+        static std::unique_ptr<CommandPackets::CommandPacket> create(std::vector<unsigned char> rawPacket);
     };
 }

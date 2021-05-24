@@ -15,8 +15,6 @@
 
 namespace Bloom
 {
-    using namespace Targets;
-
     /**
      * The TargetControllerConsole provides an interface to the TargetController, for components within Bloom that
      * require access to common functionality from the TargetController.
@@ -42,7 +40,7 @@ namespace Bloom
          *
          * @return
          */
-        TargetDescriptor getTargetDescriptor();
+        Targets::TargetDescriptor getTargetDescriptor();
 
         /**
          * Requests the TargetController to halt execution on the target.
@@ -71,14 +69,14 @@ namespace Bloom
          *
          * @return
          */
-        TargetRegisters readGeneralRegisters(TargetRegisterDescriptors descriptors);
+        Targets::TargetRegisters readGeneralRegisters(Targets::TargetRegisterDescriptors descriptors);
 
         /**
          * Requests the TargetController to write register values to the target.
          *
          * @param registers
          */
-        void writeGeneralRegisters(TargetRegisters registers);
+        void writeGeneralRegisters(Targets::TargetRegisters registers);
 
         /**
          * Requests the TargetController to read memory from the target.
@@ -88,7 +86,11 @@ namespace Bloom
          * @param bytes
          * @return
          */
-        TargetMemoryBuffer readMemory(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes);
+        Targets::TargetMemoryBuffer readMemory(
+            Targets::TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            std::uint32_t bytes
+        );
 
         /**
          * Requests the TargetController to write memory to the target.
@@ -97,21 +99,25 @@ namespace Bloom
          * @param startAddress
          * @param buffer
          */
-        void writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer);
+        void writeMemory(
+            Targets::TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            const Targets::TargetMemoryBuffer& buffer
+        );
 
         /**
          * Requests the TargetController to set a breakpoint on the target.
          *
          * @param breakpoint
          */
-        void setBreakpoint(TargetBreakpoint breakpoint);
+        void setBreakpoint(Targets::TargetBreakpoint breakpoint);
 
         /**
          * Requests the TargetController to remove a breakpoint from the target.
          *
          * @param breakpoint
          */
-        void removeBreakpoint(TargetBreakpoint breakpoint);
+        void removeBreakpoint(Targets::TargetBreakpoint breakpoint);
 
         /**
          * Requests a pin state update on the target, for a specific pin.
@@ -120,7 +126,7 @@ namespace Bloom
          * @param pinDescriptor
          * @param pinState
          */
-        void setPinState(int variantId, TargetPinDescriptor pinDescriptor, TargetPinState pinState);
+        void setPinState(int variantId, Targets::TargetPinDescriptor pinDescriptor, Targets::TargetPinState pinState);
 
         /**
          * Requests a pin state refresh from the TargetController, for a specific target variant.

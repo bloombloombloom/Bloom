@@ -7,14 +7,13 @@
 #include "../BreakpointType.hpp"
 #include "CommandPacket.hpp"
 
-namespace Bloom::DebugServers::Gdb {
+namespace Bloom::DebugServers::Gdb
+{
     enum class Feature: int;
 }
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::DebugServers::Gdb;
-
     /**
      * The SetBreakpoint class implements the structure for "Z" command packets. Upon receiving this command, the
      * server is expected to set a breakpoint at the specified address.

@@ -7,13 +7,11 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    using Targets::TargetBreakCause;
-
     class BreakEvent: public AvrEvent
     {
     private:
         std::uint32_t programCounter;
-        TargetBreakCause breakCause;
+        Targets::TargetBreakCause breakCause;
 
         void init(const AvrEvent& event);
 
@@ -26,7 +24,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return this->programCounter;
         }
 
-        TargetBreakCause getBreakCause() {
+        Targets::TargetBreakCause getBreakCause() {
             return this->breakCause;
         }
     };

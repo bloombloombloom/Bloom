@@ -81,7 +81,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onShutdownApplicationEvent(EventPointer<ShutdownApplication> event);
+        void onShutdownApplicationEvent(Events::EventPointer<Events::ShutdownApplication> event);
 
         /**
          * If the something horrible was to happen and the TC dies unexpectedly, Insight will shutdown in response.
