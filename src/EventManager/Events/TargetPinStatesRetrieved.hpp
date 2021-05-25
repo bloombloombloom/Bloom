@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstdint>
 #include <map>
+#include <string>
 
 #include "Event.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"

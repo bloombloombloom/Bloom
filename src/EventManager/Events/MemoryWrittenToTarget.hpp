@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Event.hpp"
 #include "src/Targets/TargetMemory.hpp"
 

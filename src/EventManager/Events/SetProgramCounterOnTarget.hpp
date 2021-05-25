@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 #include "Event.hpp"
 
 namespace Bloom::Events

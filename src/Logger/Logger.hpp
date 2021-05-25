@@ -20,7 +20,8 @@ namespace Bloom
         DEBUG = 4,
     };
 
-    struct LogEntry {
+    struct LogEntry
+    {
         std::string threadName;
         std::string message;
         LogLevel logLevel;

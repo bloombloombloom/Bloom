@@ -17,9 +17,9 @@ void SignalHandler::run() {
         while(Thread::getState() == ThreadState::READY) {
             if (sigwait(&signalSet, &signalNumber) == 0) {
                 Logger::debug("SIGNAL " + std::to_string(signalNumber) + " received");
-                if (this->handlersMappedBySignalNum.find(signalNumber) != this->handlersMappedBySignalNum.end()) {
+                if (this->handlersMappedBySignalNum.contains(signalNumber)) {
                     // We have a registered handler for this signal.
-                    this->handlersMappedBySignalNum.find(signalNumber)->second();
+                    this->handlersMappedBySignalNum.at(signalNumber)();
                 }
             }
         }

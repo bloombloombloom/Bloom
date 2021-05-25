@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Event.hpp"
 
 namespace Bloom::Events

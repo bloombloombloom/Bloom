@@ -8,7 +8,8 @@
 
 namespace Bloom::Targets
 {
-    enum class TargetPinType: int {
+    enum class TargetPinType: int
+    {
         UNKNOWN,
         GPIO,
         GND,
@@ -28,12 +29,14 @@ namespace Bloom::Targets
 
     struct TargetPinState
     {
-        enum class IoState: int {
+        enum class IoState: int
+        {
             HIGH,
             LOW,
         };
 
-        enum class IoDirection: int {
+        enum class IoDirection: int
+        {
             INPUT,
             OUTPUT,
         };

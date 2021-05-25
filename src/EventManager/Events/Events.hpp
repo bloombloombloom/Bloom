@@ -9,7 +9,6 @@
 #include "DebugSessionStarted.hpp"
 #include "DebugSessionFinished.hpp"
 #include "TargetControllerThreadStateChanged.hpp"
-#include "TargetControllerStopped.hpp"
 #include "ShutdownTargetController.hpp"
 #include "TargetControllerErrorOccurred.hpp"
 #include "ShutdownApplication.hpp"

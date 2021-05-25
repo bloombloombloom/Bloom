@@ -8,7 +8,8 @@
 
 namespace Bloom::Targets
 {
-    enum class TargetPackage: int {
+    enum class TargetPackage: int
+    {
         UNKNOWN,
 
         /**

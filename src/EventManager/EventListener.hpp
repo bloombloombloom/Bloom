@@ -63,10 +63,11 @@ namespace Bloom
 
         /**
          * A mapping of event type names to a vector of callback functions. Events will be dispatched to these
-         * callback functions, during a call to EventListener::waiteAndDispatch().
+         * callback functions, during a call to EventListener::dispatchEvent().
          *
-         * Each callback will be passed an std::shared_ptr<const EventType> of the event (we downcast the events in
-         * EventListener::waiteAndDispatch() before dispatching them).
+         * Each callback will be passed an std::shared_ptr<const EventType> of the event (we wrap all registered
+         * callbacks in a lambda, where we perform a downcast before invoking the callback.
+         * See EventListener::registerCallbackForEventType() for more)
          */
         SyncSafe<std::map<std::string, std::vector<std::function<void(Events::GenericEventPointer)>>>> eventTypeToCallbacksMapping;
         SyncSafe<std::set<std::string>> registeredEventTypes;
