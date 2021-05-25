@@ -49,13 +49,8 @@ namespace Bloom
          */
         std::string name;
 
-        /**
-         * Each event listener is supplied an ID upon registering with the EventManager.
-         *
-         * @TODO: It might be a better idea to use an std::atomic to generate this auto-incremented ID. Like we do
-         *        with events.
-         */
-        size_t id = 0;
+        static inline std::atomic<std::size_t> lastId = 0;
+        std::size_t id = ++(this->lastId);
 
         /**
          * Holds all events registered to this listener.
@@ -83,11 +78,7 @@ namespace Bloom
     public:
         explicit EventListener(const std::string& name): name(name) {};
 
-        void setId(size_t id) {
-            this->id = id;
-        };
-
-        size_t getId() const {
+        std::size_t getId() const {
             return this->id;
         };
 

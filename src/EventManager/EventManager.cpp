@@ -4,10 +4,7 @@ using namespace Bloom;
 
 void EventManager::registerListener(std::shared_ptr<EventListener> listener) {
     auto registerListenersLock = std::unique_lock(this->registerListenerMutex);
-    size_t newId = this->registeredListeners.size() + 1;
-
-    this->registeredListeners.insert(std::pair<size_t, std::shared_ptr<EventListener>>(newId, listener));
-    listener->setId(newId);
+    this->registeredListeners.insert(std::pair(listener->getId(), listener));
 }
 
 void EventManager::deregisterListener(size_t listenerId) {
