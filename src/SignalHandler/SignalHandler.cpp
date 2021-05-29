@@ -14,7 +14,7 @@ void SignalHandler::run() {
         int signalNumber = 0;
 
         Logger::debug("SignalHandler ready");
-        while(Thread::getState() == ThreadState::READY) {
+        while(Thread::getThreadState() == ThreadState::READY) {
             if (sigwait(&signalSet, &signalNumber) == 0) {
                 Logger::debug("SIGNAL " + std::to_string(signalNumber) + " received");
                 if (this->handlersMappedBySignalNum.contains(signalNumber)) {
@@ -29,7 +29,7 @@ void SignalHandler::run() {
     }
 
     Logger::debug("SignalHandler shutting down");
-    Thread::setState(ThreadState::STOPPED);
+    Thread::setThreadState(ThreadState::STOPPED);
 }
 
 void SignalHandler::startup() {

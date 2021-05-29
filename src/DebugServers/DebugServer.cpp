@@ -14,7 +14,7 @@ void DebugServer::run() {
 
         Logger::info("DebugServer ready");
 
-        while (this->getState() == ThreadState::READY) {
+        while (this->getThreadState() == ThreadState::READY) {
             this->serve();
             this->eventListener->dispatchCurrentEvents();
         }
@@ -41,19 +41,19 @@ void DebugServer::startup() {
     );
 
     this->init();
-    this->setStateAndEmitEvent(ThreadState::READY);
+    this->setThreadStateAndEmitEvent(ThreadState::READY);
 }
 
 void DebugServer::shutdown() {
-    if (this->getState() == ThreadState::STOPPED || this->getState() == ThreadState::SHUTDOWN_INITIATED) {
+    if (this->getThreadState() == ThreadState::STOPPED || this->getThreadState() == ThreadState::SHUTDOWN_INITIATED) {
         return;
     }
 
-    this->setState(ThreadState::SHUTDOWN_INITIATED);
+    this->setThreadState(ThreadState::SHUTDOWN_INITIATED);
     Logger::info("Shutting down DebugServer");
     this->close();
     this->interruptEventNotifier->close();
-    this->setStateAndEmitEvent(ThreadState::STOPPED);
+    this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
 }
 
 void DebugServer::onShutdownDebugServerEvent(EventPointer<Events::ShutdownDebugServer> event) {

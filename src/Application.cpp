@@ -54,7 +54,7 @@ int Application::run(const std::vector<std::string>& arguments) {
         }
 
         // Main event loop
-        while (Thread::getState() == ThreadState::READY) {
+        while (Thread::getThreadState() == ThreadState::READY) {
             this->applicationEventListener->waitAndDispatch();
         }
 
@@ -116,7 +116,7 @@ void Application::startup() {
     this->startTargetController();
     this->startDebugServer();
 
-    Thread::setState(ThreadState::READY);
+    Thread::setThreadState(ThreadState::READY);
 }
 
 ApplicationConfig Application::extractConfig() {
@@ -208,18 +208,18 @@ int Application::initProject() {
 }
 
 void Application::shutdown() {
-    auto appState = Thread::getState();
+    auto appState = Thread::getThreadState();
     if (appState == ThreadState::STOPPED || appState == ThreadState::SHUTDOWN_INITIATED) {
         return;
     }
 
-    Thread::setState(ThreadState::SHUTDOWN_INITIATED);
+    Thread::setThreadState(ThreadState::SHUTDOWN_INITIATED);
     Logger::info("Shutting down Bloom");
 
     this->stopDebugServer();
     this->stopTargetController();
 
-    if (this->signalHandler.getState() == ThreadState::READY) {
+    if (this->signalHandler.getThreadState() != ThreadState::STOPPED) {
         // Signal handler is still running
         this->signalHandler.triggerShutdown();
 
@@ -233,7 +233,7 @@ void Application::shutdown() {
         Logger::debug("SignalHandler thread joined");
     }
 
-    Thread::setState(ThreadState::STOPPED);
+    Thread::setThreadState(ThreadState::STOPPED);
 }
 
 void Application::startTargetController() {
@@ -253,7 +253,7 @@ void Application::startTargetController() {
 }
 
 void Application::stopTargetController() {
-    auto targetControllerState = this->targetController.getState();
+    auto targetControllerState = this->targetController.getThreadState();
     if (targetControllerState == ThreadState::STARTING || targetControllerState == ThreadState::READY) {
         this->eventManager.triggerEvent(std::make_shared<Events::ShutdownTargetController>());
         this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>(
@@ -299,7 +299,7 @@ void Application::stopDebugServer() {
         return;
     }
 
-    auto debugServerState = this->debugServer->getState();
+    auto debugServerState = this->debugServer->getThreadState();
     if (debugServerState == ThreadState::STARTING || debugServerState == ThreadState::READY) {
         this->eventManager.triggerEvent(std::make_shared<Events::ShutdownDebugServer>());
         this->applicationEventListener->waitForEvent<Events::DebugServerThreadStateChanged>(

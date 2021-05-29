@@ -47,12 +47,12 @@ namespace Bloom::DebugServers
          * @param state
          * @param emitEvent
          */
-        void setStateAndEmitEvent(ThreadState state) {
-            Thread::setState(state);
+        void setThreadStateAndEmitEvent(ThreadState state) {
+            Thread::setThreadState(state);
             this->eventManager.triggerEvent(
                 std::make_shared<Events::DebugServerThreadStateChanged>(state)
             );
-        };
+        }
 
         /**
          * Handles a shutdown request.

@@ -1,4 +1,3 @@
-#include <thread>
 #include <typeindex>
 #include <QTimer>
 
@@ -18,7 +17,7 @@ void Insight::run() {
         this->startup();
 
         this->workerThread->start();
-        this->setState(ThreadState::READY);
+        this->setThreadState(ThreadState::READY);
         Logger::info("Insight ready");
         this->application->exec();
 
@@ -36,7 +35,7 @@ void Insight::run() {
 
 void Insight::startup() {
     Logger::info("Starting Insight");
-    this->setState(ThreadState::STARTING);
+    this->setThreadState(ThreadState::STARTING);
     this->eventManager.registerListener(this->eventListener);
 
     this->eventListener->registerCallbackForEventType<ShutdownApplication>(
@@ -97,7 +96,7 @@ void Insight::startup() {
 }
 
 void Insight::shutdown() {
-    if (this->getState() == ThreadState::STOPPED) {
+    if (this->getThreadState() == ThreadState::STOPPED) {
         return;
     }
 
@@ -112,7 +111,7 @@ void Insight::shutdown() {
         this->application->exit(0);
     }
 
-    this->setState(ThreadState::STOPPED);
+    this->setThreadState(ThreadState::STOPPED);
 }
 
 void Insight::onShutdownApplicationEvent(EventPointer<ShutdownApplication>) {

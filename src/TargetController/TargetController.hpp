@@ -160,12 +160,12 @@ namespace Bloom
          * @param state
          * @param emitEvent
          */
-        void setStateAndEmitEvent(ThreadState state) {
-            this->setState(state);
+        void setThreadStateAndEmitEvent(ThreadState state) {
+            this->setThreadState(state);
             this->eventManager.triggerEvent(
-                std::make_shared<Events::TargetControllerStateChanged>(state)
+                std::make_shared<Events::TargetControllerThreadStateChanged>(state)
             );
-        };
+        }
 
         /**
          * Installs Bloom's udev rules on user's machine. Rules are copied from build/Distribution/Resources/UdevRules

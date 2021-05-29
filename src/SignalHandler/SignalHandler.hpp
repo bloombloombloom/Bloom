@@ -50,7 +50,7 @@ namespace Bloom
          * Triggers the shutdown of the SignalHandler thread.
          */
         void triggerShutdown() {
-            this->setState(ThreadState::SHUTDOWN_INITIATED);
+            this->setThreadState(ThreadState::SHUTDOWN_INITIATED);
         };
 
         /**

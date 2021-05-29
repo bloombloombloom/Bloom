@@ -16,7 +16,7 @@ void TargetController::run() {
     try {
         this->startup();
 
-        this->setStateAndEmitEvent(ThreadState::READY);
+        this->setThreadStateAndEmitEvent(ThreadState::READY);
         Logger::debug("TargetController ready and waiting for events.");
 
         while (this->getState() == ThreadState::READY) {
@@ -43,7 +43,7 @@ void TargetController::run() {
 void TargetController::startup() {
     this->setName("TC");
     Logger::info("Starting TargetController");
-    this->setState(ThreadState::STARTING);
+    this->setThreadState(ThreadState::STARTING);
     this->blockAllSignalsOnCurrentThread();
     this->eventManager.registerListener(this->eventListener);
 
@@ -477,7 +477,7 @@ void TargetController::onSetProgramCounterEvent(EventPointer<Events::SetProgramC
 }
 
 // TODO: remove this
-void TargetController::onInsightStateChangedEvent(EventPointer<Events::InsightStateChanged> event) {
+void TargetController::onInsightStateChangedEvent(EventPointer<Events::InsightThreadStateChanged> event) {
     if (event->getState() == ThreadState::READY) {
         /*
          * Insight has just started up.

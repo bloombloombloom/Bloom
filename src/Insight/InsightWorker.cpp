@@ -40,7 +40,7 @@ void InsightWorker::startup() {
     this->eventDispatchTimer->start(5);
 
     this->eventManager.triggerEvent(
-        std::make_shared<Events::InsightStateChanged>(ThreadState::READY)
+        std::make_shared<Events::InsightThreadStateChanged>(ThreadState::READY)
     );
 }
 

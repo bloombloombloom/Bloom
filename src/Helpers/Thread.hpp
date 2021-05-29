@@ -22,7 +22,7 @@ namespace Bloom
         SyncSafe<ThreadState> state = SyncSafe<ThreadState>(ThreadState::UNINITIALISED);
 
     protected:
-        virtual void setState(ThreadState state) {
+        virtual void setThreadState(ThreadState state) {
             this->state.setValue(state);
         };
 
@@ -43,7 +43,7 @@ namespace Bloom
         }
 
     public:
-        virtual ThreadState getState() {
+        virtual ThreadState getThreadState() {
             return this->state.getValue();
         };
     };
