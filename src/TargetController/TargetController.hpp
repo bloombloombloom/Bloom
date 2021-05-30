@@ -8,13 +8,17 @@
 #include <QJsonArray>
 
 #include "src/Helpers/Thread.hpp"
-#include "src/Logger/Logger.hpp"
-#include "src/EventManager/EventListener.hpp"
+#include "TargetControllerState.hpp"
+
 #include "src/DebugToolDrivers/DebugTools.hpp"
 #include "src/Targets/Target.hpp"
 #include "src/Targets/Targets.hpp"
+
 #include "src/EventManager/EventManager.hpp"
+#include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
+
+#include "src/Logger/Logger.hpp"
 
 namespace Bloom
 {
@@ -30,6 +34,11 @@ namespace Bloom
     class TargetController: public Thread
     {
     private:
+        /**
+         * The TC starts off in a suspended state. TargetController::resume() is invoked from the startup routine.
+         */
+        TargetControllerState state = TargetControllerState::SUSPENDED;
+
         ApplicationConfig applicationConfig;
         EnvironmentConfig environmentConfig;
 
@@ -138,14 +147,6 @@ namespace Bloom
             return mapping;
         }
 
-        void setDebugTool(std::unique_ptr<DebugTool> debugTool) {
-            this->debugTool = std::move(debugTool);
-        }
-
-        void setTarget(std::unique_ptr<Targets::Target> target) {
-            this->target = std::move(target);
-        }
-
         Targets::Target* getTarget() {
             return this->target.get();
         }
@@ -186,6 +187,15 @@ namespace Bloom
          */
         void shutdown();
 
+
+        void suspend();
+
+        void resume();
+
+        void acquireResources();
+
+        void releaseResources();
+
         /**
          * Should fire any events queued on the target.
          */
@@ -214,6 +224,13 @@ namespace Bloom
          * Entry point for the TargetController.
          */
         void run();
+
+        /**
+         * Reports the current state of the TargetController.
+         *
+         * @param event
+         */
+        void onStateReportRequest(Events::EventPointer<Events::ReportTargetControllerState> event);
 
         /**
          * Obtains a TargetDescriptor from the target and includes it in a TargetDescriptorExtracted event.
@@ -322,7 +339,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onInsightStateChangedEvent(Events::EventPointer<Events::InsightStateChanged> event);
+        void onInsightStateChangedEvent(Events::EventPointer<Events::InsightThreadStateChanged> event);
 
         /**
          * Will attempt to obtain the pin states from the target. Will emit a TargetPinStatesRetrieved event on success.

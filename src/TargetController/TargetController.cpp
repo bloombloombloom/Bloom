@@ -5,6 +5,7 @@
 #include "TargetController.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Exceptions/TargetControllerStartupFailure.hpp"
+#include "src/Exceptions/DeviceCommunicationFailure.hpp"
 #include "src/Application.hpp"
 
 using namespace Bloom;
@@ -19,9 +20,27 @@ void TargetController::run() {
         this->setThreadStateAndEmitEvent(ThreadState::READY);
         Logger::debug("TargetController ready and waiting for events.");
 
-        while (this->getState() == ThreadState::READY) {
-            this->fireTargetEvents();
-            this->eventListener->waitAndDispatch(60);
+        while (this->getThreadState() == ThreadState::READY) {
+            try {
+                if (this->state == TargetControllerState::ACTIVE) {
+                    this->fireTargetEvents();
+                }
+
+                this->eventListener->waitAndDispatch(60);
+
+            } catch (const DeviceCommunicationFailure& exception) {
+                /*
+                 * Upon a device communication failure, we assume Bloom has lost control of the debug tool. This could
+                 * be the result of the user disconnecting the debug tool, or issuing a soft reset.
+                 * The soft reset could have been issued via another application, without the user's knowledge.
+                 * See https://github.com/navnavnav/Bloom/issues/3 for more on that.
+                 *
+                 * The TC will go into a suspended state and the DebugServer should terminate any active debug
+                 * session. When the user attempts to start another debug session, we will try to re-connect to the
+                 * debug tool.
+                 */
+                this->suspend();
+            }
         }
 
     } catch (const TargetControllerStartupFailure& exception) {
@@ -50,70 +69,11 @@ void TargetController::startup() {
     // Install Bloom's udev rules if not already installed
     this->checkUdevRules();
 
-    auto debugToolName = this->environmentConfig.debugToolName;
-    auto targetName = this->environmentConfig.targetConfig.name;
-    auto supportedDebugTools = TargetController::getSupportedDebugTools();
-    auto supportedTargets = TargetController::getSupportedTargets();
-
-    if (!supportedDebugTools.contains(debugToolName)) {
-        throw Exceptions::InvalidConfig(
-            "Debug tool name (\"" + debugToolName + "\") not recognised. Please check your configuration!"
-        );
-    }
-
-    if (!supportedTargets.contains(targetName)) {
-        throw Exceptions::InvalidConfig(
-            "Target name (\"" + targetName + "\") not recognised. Please check your configuration!"
-        );
-    }
-
-    // Initiate debug tool and target
-    this->setDebugTool(std::move(supportedDebugTools.at(debugToolName)()));
-    this->setTarget(supportedTargets.at(targetName)());
-
-    Logger::info("Connecting to debug tool");
-    this->debugTool->init();
-
-    Logger::info("Debug tool connected");
-    Logger::info("Debug tool name: " + this->debugTool->getName());
-    Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
-
-    if (!this->target->isDebugToolSupported(this->debugTool.get())) {
-        throw Exceptions::InvalidConfig(
-            "Debug tool (\"" + this->debugTool->getName() + "\") not supported " +
-                "by target (\"" + this->target->getName() + "\")."
-        );
-    }
-
-    this->target->setDebugTool(this->debugTool.get());
-    this->target->preActivationConfigure(this->environmentConfig.targetConfig);
-
-    Logger::info("Activating target");
-    this->target->activate();
-    Logger::info("Target activated");
-    this->target->postActivationConfigure();
-
-    while (this->target->supportsPromotion()) {
-        auto promotedTarget = this->target->promote();
-
-        if (promotedTarget == nullptr
-            || std::type_index(typeid(*promotedTarget)) == std::type_index(typeid(*this->target))
-        ) {
-            break;
-        }
-
-        this->target.reset(promotedTarget.release());
-        this->target->postPromotionConfigure();
-    }
-
-    Logger::info("Target ID: " + this->target->getHumanReadableId());
-    Logger::info("Target name: " + this->target->getName());
-
-    if (this->target->getState() == TargetState::STOPPED) {
-        this->target->run();
-    }
-
     // Register event handlers
+    this->eventListener->registerCallbackForEventType<Events::ReportTargetControllerState>(
+        std::bind(&TargetController::onStateReportRequest, this, std::placeholders::_1)
+    );
+
     this->eventListener->registerCallbackForEventType<Events::ShutdownTargetController>(
         std::bind(&TargetController::onShutdownTargetControllerEvent, this, std::placeholders::_1)
     );
@@ -121,6 +81,100 @@ void TargetController::startup() {
     this->eventListener->registerCallbackForEventType<Events::DebugSessionStarted>(
         std::bind(&TargetController::onDebugSessionStartedEvent, this, std::placeholders::_1)
     );
+
+    this->resume();
+}
+
+void TargetController::checkUdevRules() {
+    auto bloomRulesPath = std::string("/etc/udev/rules.d/99-bloom.rules");
+    auto latestBloomRulesPath = Application::getResourcesDirPath() + "/UDevRules/99-bloom.rules";
+
+    if (!std::filesystem::exists(bloomRulesPath)) {
+        Logger::warning("Bloom udev rules missing - attempting installation");
+
+        // We can only install them if we're running as root
+        if (!Application::isRunningAsRoot()) {
+            Logger::error("Bloom udev rules missing - cannot install udev rules without root privileges.\n"
+                "Running Bloom once with root privileges will allow it to automatically install the udev rules."
+                " Alternatively, instructions on manually installing the udev rules can be found "
+                "here: https://bloom.oscillate.io/docs/getting-started\nBloom may fail to connect to some debug tools "
+                "until this is resolved.");
+            return;
+        }
+
+        if (!std::filesystem::exists(latestBloomRulesPath)) {
+            // This shouldn't happen, but it can if someone has been messing with the installation files
+            Logger::error("Unable to install Bloom udev rules - \"" + latestBloomRulesPath + "\" does not exist.");
+            return;
+        }
+
+        std::filesystem::copy(latestBloomRulesPath, bloomRulesPath);
+        Logger::warning("Bloom udev rules installed - a reconnect of the debug tool may be required "
+            "before the new udev rules come into effect.");
+    }
+}
+
+void TargetController::shutdown() {
+    if (this->getThreadState() == ThreadState::STOPPED) {
+        return;
+    }
+
+    try {
+        Logger::info("Shutting down TargetController");
+        this->eventManager.deregisterListener(this->eventListener->getId());
+        this->releaseResources();
+
+    } catch (const std::exception& exception) {
+        Logger::error("Failed to properly shutdown TargetController. Error: " + std::string(exception.what()));
+    }
+
+    this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
+}
+
+void TargetController::suspend() {
+    if (this->getThreadState() != ThreadState::READY) {
+        return;
+    }
+
+    Logger::debug("Suspending TargetController");
+
+    try {
+        this->releaseResources();
+
+    } catch (const std::exception& exception) {
+        Logger::error("Failed to release connected debug tool and target resources. Error: "
+            + std::string(exception.what()));
+    }
+
+    this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
+    this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
+    this->eventListener->deregisterCallbacksForEventType<Events::StopTargetExecution>();
+    this->eventListener->deregisterCallbacksForEventType<Events::StepTargetExecution>();
+    this->eventListener->deregisterCallbacksForEventType<Events::ResumeTargetExecution>();
+    this->eventListener->deregisterCallbacksForEventType<Events::RetrieveRegistersFromTarget>();
+    this->eventListener->deregisterCallbacksForEventType<Events::WriteRegistersToTarget>();
+    this->eventListener->deregisterCallbacksForEventType<Events::RetrieveMemoryFromTarget>();
+    this->eventListener->deregisterCallbacksForEventType<Events::WriteMemoryToTarget>();
+    this->eventListener->deregisterCallbacksForEventType<Events::SetBreakpointOnTarget>();
+    this->eventListener->deregisterCallbacksForEventType<Events::RemoveBreakpointOnTarget>();
+    this->eventListener->deregisterCallbacksForEventType<Events::SetProgramCounterOnTarget>();
+    this->eventListener->deregisterCallbacksForEventType<Events::InsightThreadStateChanged>();
+    this->eventListener->deregisterCallbacksForEventType<Events::RetrieveTargetPinStates>();
+    this->eventListener->deregisterCallbacksForEventType<Events::SetTargetPinState>();
+
+    this->lastTargetState = TargetState::UNKNOWN;
+    this->cachedTargetDescriptor = std::nullopt;
+
+    this->state = TargetControllerState::SUSPENDED;
+    this->eventManager.triggerEvent(
+        std::make_shared<TargetControllerStateReported>(this->state)
+    );
+
+    Logger::debug("TargetController suspended");
+}
+
+void TargetController::resume() {
+    this->acquireResources();
 
     this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
         std::bind(&TargetController::onDebugSessionFinishedEvent, this, std::placeholders::_1)
@@ -170,7 +224,7 @@ void TargetController::startup() {
         std::bind(&TargetController::onSetProgramCounterEvent, this, std::placeholders::_1)
     );
 
-    this->eventListener->registerCallbackForEventType<Events::InsightStateChanged>(
+    this->eventListener->registerCallbackForEventType<Events::InsightThreadStateChanged>(
         std::bind(&TargetController::onInsightStateChangedEvent, this, std::placeholders::_1)
     );
 
@@ -181,68 +235,101 @@ void TargetController::startup() {
     this->eventListener->registerCallbackForEventType<Events::SetTargetPinState>(
         std::bind(&TargetController::onSetPinStateEvent, this, std::placeholders::_1)
     );
-}
 
-void TargetController::checkUdevRules() {
-    auto bloomRulesPath = std::string("/etc/udev/rules.d/99-bloom.rules");
-    auto latestBloomRulesPath = Application::getResourcesDirPath() + "/UDevRules/99-bloom.rules";
+    Logger::debug("TC resumed");
+    this->state = TargetControllerState::ACTIVE;
+    this->eventManager.triggerEvent(
+        std::make_shared<TargetControllerStateReported>(this->state)
+    );
 
-    if (!std::filesystem::exists(bloomRulesPath)) {
-        Logger::warning("Bloom udev rules missing - attempting installation");
-
-        // We can only install them if we're running as root
-        if (!Application::isRunningAsRoot()) {
-            Logger::error("Bloom udev rules missing - cannot install udev rules without root privileges.\n"
-                "Running Bloom once with root privileges will allow it to automatically install the udev rules."
-                " Alternatively, instructions on manually installing the udev rules can be found "
-                "here: https://bloom.oscillate.io/docs/getting-started\nBloom may fail to connect to some debug tools "
-                "until this is resolved.");
-            return;
-        }
-
-        if (!std::filesystem::exists(latestBloomRulesPath)) {
-            // This shouldn't happen, but it can if someone has been messing with the installation files
-            Logger::error("Unable to install Bloom udev rules - \"" + latestBloomRulesPath + "\" does not exist.");
-            return;
-        }
-
-        std::filesystem::copy(latestBloomRulesPath, bloomRulesPath);
-        Logger::warning("Bloom udev rules installed - a reconnect of the debug tool may be required "
-            "before the new udev rules come into effect.");
+    if (this->target->getState() != TargetState::RUNNING) {
+        this->target->run();
     }
 }
 
-void TargetController::shutdown() {
-    if (this->getState() == ThreadState::STOPPED) {
-        return;
+void TargetController::acquireResources() {
+    auto debugToolName = this->environmentConfig.debugToolConfig.name;
+    auto targetName = this->environmentConfig.targetConfig.name;
+
+    auto supportedDebugTools = TargetController::getSupportedDebugTools();
+    auto supportedTargets = TargetController::getSupportedTargets();
+
+    if (!supportedDebugTools.contains(debugToolName)) {
+        throw Exceptions::InvalidConfig(
+            "Debug tool name (\"" + debugToolName + "\") not recognised. Please check your configuration!"
+        );
     }
 
-    try {
-        Logger::info("Shutting down TargetController");
-        //this->targetControllerEventListener->clearAllCallbacks();
-        this->eventManager.deregisterListener(this->eventListener->getId());
-        auto target = this->getTarget();
-        auto debugTool = this->getDebugTool();
+    if (!supportedTargets.contains(targetName)) {
+        throw Exceptions::InvalidConfig(
+            "Target name (\"" + targetName + "\") not recognised. Please check your configuration!"
+        );
+    }
 
-        if (debugTool != nullptr && debugTool->isInitialised()) {
-            if (target != nullptr) {
-                /*
-                 * We call deactivate() without checking if the target is activated. This will address any cases
-                 * where a target is only partially activated (where the call to activate() failed).
-                 */
-                Logger::info("Deactivating target");
-                target->deactivate();
-            }
+    // Initiate debug tool and target
+    this->debugTool = supportedDebugTools.at(debugToolName)();
 
-            Logger::info("Closing debug tool");
-            debugTool->close();
+    Logger::info("Connecting to debug tool");
+    this->debugTool->init();
+
+    Logger::info("Debug tool connected");
+    Logger::info("Debug tool name: " + this->debugTool->getName());
+    Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
+
+    this->target = supportedTargets.at(targetName)();
+
+    if (!this->target->isDebugToolSupported(this->debugTool.get())) {
+        throw Exceptions::InvalidConfig(
+            "Debug tool (\"" + this->debugTool->getName() + "\") not supported " +
+                "by target (\"" + this->target->getName() + "\")."
+        );
+    }
+
+    this->target->setDebugTool(this->debugTool.get());
+    this->target->preActivationConfigure(this->environmentConfig.targetConfig);
+
+    Logger::info("Activating target");
+    this->target->activate();
+    Logger::info("Target activated");
+    this->target->postActivationConfigure();
+
+    while (this->target->supportsPromotion()) {
+        auto promotedTarget = this->target->promote();
+
+        if (promotedTarget == nullptr
+            || std::type_index(typeid(*promotedTarget)) == std::type_index(typeid(*this->target))
+            ) {
+            break;
         }
 
-    } catch (const std::exception& exception) {
-        Logger::error("Failed to properly shutdown TargetController. Error: " + std::string(exception.what()));
+        this->target.reset(promotedTarget.release());
+        this->target->postPromotionConfigure();
     }
 
-    this->setStateAndEmitEvent(ThreadState::STOPPED);
+    Logger::info("Target ID: " + this->target->getHumanReadableId());
+    Logger::info("Target name: " + this->target->getName());
+}
+
+void TargetController::releaseResources() {
+    auto target = this->getTarget();
+    auto debugTool = this->getDebugTool();
+
+    if (debugTool != nullptr && debugTool->isInitialised()) {
+        if (target != nullptr) {
+            /*
+             * We call deactivate() without checking if the target is activated. This will address any cases
+             * where a target is only partially activated (where the call to activate() failed).
+             */
+            Logger::info("Deactivating target");
+            target->deactivate();
+        }
+
+        Logger::info("Closing debug tool");
+        debugTool->close();
+    }
+
+    this->debugTool.reset();
+    this->target.reset();
 }
 
 void TargetController::fireTargetEvents() {
@@ -274,6 +361,38 @@ void TargetController::emitErrorEvent(int correlationId) {
 
 void TargetController::onShutdownTargetControllerEvent(EventPointer<Events::ShutdownTargetController> event) {
     this->shutdown();
+}
+
+void TargetController::onStateReportRequest(EventPointer<Events::ReportTargetControllerState> event) {
+    auto stateEvent = std::make_shared<TargetControllerStateReported>(this->state);
+    stateEvent->correlationId = event->id;
+    this->eventManager.triggerEvent(stateEvent);
+}
+
+void TargetController::onDebugSessionStartedEvent(EventPointer<Events::DebugSessionStarted>) {
+    if (this->state == TargetControllerState::SUSPENDED) {
+        Logger::debug("Waking TargetController");
+
+        this->resume();
+        this->fireTargetEvents();
+    }
+
+    this->target->reset();
+
+    if (this->target->getState() != TargetState::STOPPED) {
+        this->target->stop();
+    }
+}
+
+void TargetController::onDebugSessionFinishedEvent(EventPointer<DebugSessionFinished>) {
+    if (this->target->getState() != TargetState::RUNNING) {
+        this->target->run();
+        this->fireTargetEvents();
+    }
+
+    if (this->environmentConfig.debugToolConfig.releasePostDebugSession) {
+        this->suspend();
+    }
 }
 
 void TargetController::onExtractTargetDescriptor(EventPointer<Events::ExtractTargetDescriptor> event) {
@@ -441,20 +560,6 @@ void TargetController::onRemoveBreakpointEvent(EventPointer<Events::RemoveBreakp
     } catch (const Exception& exception) {
         Logger::error("Failed to remove breakpoint on target - " + exception.getMessage());
         this->emitErrorEvent(event->id);
-    }
-}
-
-void TargetController::onDebugSessionStartedEvent(EventPointer<Events::DebugSessionStarted>) {
-    this->target->reset();
-
-    if (this->target->getState() != TargetState::STOPPED) {
-        this->target->stop();
-    }
-}
-
-void TargetController::onDebugSessionFinishedEvent(EventPointer<DebugSessionFinished>) {
-    if (this->target->getState() != TargetState::RUNNING) {
-        this->target->run();
     }
 }
 

@@ -55,7 +55,6 @@ namespace Bloom::DebugToolDrivers
 
         void close() override;
 
-
         Protocols::CmsisDap::Edbg::EdbgInterface& getEdbgInterface()  {
             return this->edbgInterface;
         }

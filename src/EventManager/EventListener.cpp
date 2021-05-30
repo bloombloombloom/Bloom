@@ -15,7 +15,7 @@ void EventListener::clearAllCallbacks() {
 void EventListener::registerEvent(GenericEventPointer event) {
     auto eventName = event->getName();
     Logger::debug("Event \"" + eventName + "\" (" + std::to_string(event->id)
-    + ") registered for listener " + std::to_string(this->id));
+    + ") registered for listener " + this->name);
     auto queueLock = this->eventQueueByEventType.acquireLock();
     auto& eventQueueByType = this->eventQueueByEventType.getReference();
 
@@ -57,7 +57,7 @@ std::vector<GenericEventPointer> EventListener::getEvents() {
 
 void EventListener::dispatchEvent(GenericEventPointer event) {
     auto eventName = event->getName();
-    Logger::debug("Dispatching event " + eventName + ".");
+    Logger::debug("Dispatching event " + eventName + " (" + std::to_string(event->id) + ").");
     // Dispatch the event to all registered handlers
     auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
     auto& callbacks = this->eventTypeToCallbacksMapping.getReference().find(eventName)->second;

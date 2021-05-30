@@ -9,6 +9,33 @@ using namespace Bloom::Targets;
 using namespace Bloom::Events;
 using namespace Bloom::Exceptions;
 
+TargetControllerState TargetControllerConsole::getTargetControllerState() {
+    auto getStateEvent = std::make_shared<Events::ReportTargetControllerState>();
+    this->eventManager.triggerEvent(getStateEvent);
+    auto responseEvent = this->eventListener.waitForEvent<
+        Events::TargetControllerStateReported,
+        Events::TargetControllerErrorOccurred
+    >(this->defaultTimeout, getStateEvent->id);
+
+    if (!responseEvent.has_value()
+        || !std::holds_alternative<EventPointer<Events::TargetControllerStateReported>>(responseEvent.value())
+        ) {
+        throw Exception("Unexpected response from TargetController");
+    }
+
+    auto stateReportedEvent = std::get<EventPointer<Events::TargetControllerStateReported>>(responseEvent.value());
+    return stateReportedEvent->state;
+}
+
+bool TargetControllerConsole::isTargetControllerInService() noexcept {
+    try {
+        return this->getTargetControllerState() == TargetControllerState::ACTIVE;
+
+    } catch (const std::runtime_error&) {
+        return false;
+    }
+}
+
 Targets::TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
     auto extractEvent = std::make_shared<Events::ExtractTargetDescriptor>();
     this->eventManager.triggerEvent(extractEvent);

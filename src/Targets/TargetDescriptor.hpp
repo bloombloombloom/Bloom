@@ -17,3 +17,4 @@ namespace Bloom::Targets
     };
 }
 
+Q_DECLARE_METATYPE(Bloom::Targets::TargetDescriptor)

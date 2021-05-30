@@ -7,19 +7,17 @@
 
 namespace Bloom::Events
 {
-    class InsightStateChanged: public Event
+    class InsightThreadStateChanged: public Event
     {
     private:
         ThreadState state;
     public:
-        InsightStateChanged(ThreadState state): state(state) {
+        InsightThreadStateChanged(ThreadState state): state(state) {};
 
-        };
-
-        static inline const std::string name = "InsightStateChanged";
+        static inline const std::string name = "InsightThreadStateChanged";
 
         std::string getName() const override {
-            return InsightStateChanged::name;
+            return InsightThreadStateChanged::name;
         }
 
         ThreadState getState() const {

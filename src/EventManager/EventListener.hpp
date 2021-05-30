@@ -142,6 +142,40 @@ namespace Bloom
         }
 
         /**
+         * Clears all registered callbacks for a specific event type.
+         *
+         * @tparam EventType
+         */
+        template<class EventType>
+        void deregisterCallbacksForEventType() {
+            static_assert(
+                std::is_base_of<Events::Event, EventType>::value,
+                "EventType is not a derivation of Event"
+            );
+
+            {
+                auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
+                auto& mapping = this->eventTypeToCallbacksMapping.getReference();
+
+                if (mapping.contains(EventType::name)) {
+                    mapping.at(EventType::name).clear();
+                }
+            }
+
+            {
+                auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
+                this->registeredEventTypes.getReference().erase(EventType::name);
+            }
+
+            auto queueLock = this->eventQueueByEventType.acquireLock();
+            auto& eventQueueByType = this->eventQueueByEventType.getReference();
+
+            if (eventQueueByType.contains(EventType::name)) {
+                eventQueueByType.erase(EventType::name);
+            }
+        }
+
+        /**
          * Waits for an event (of type EventTypeA, EventTypeB or EventTypeC) to be dispatched to the listener.
          * Then returns the event object. If timeout is reached, an std::nullopt object will be returned.
          *

@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <optional>
 
+#include "TargetControllerState.hpp"
+
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/EventManager.hpp"
 
@@ -34,6 +36,10 @@ namespace Bloom
         void setDefaultTimeout(std::chrono::milliseconds timeout) {
             this->defaultTimeout = timeout;
         }
+
+        TargetControllerState getTargetControllerState();
+
+        bool isTargetControllerInService() noexcept;
 
         /**
          * Requests the TargetDescriptor from the TargetController

@@ -105,7 +105,19 @@ void GdbRspDebugServer::serve() {
     try {
         if (!this->clientConnection.has_value()) {
             Logger::info("Waiting for GDB RSP connection");
-            this->waitForConnection();
+
+            while (!this->clientConnection.has_value()) {
+                this->waitForConnection();
+            }
+
+            /*
+             * Before proceeding with a new debug session, we must ensure that the TargetController is able to
+             * service it.
+             */
+            if (!this->targetControllerConsole.isTargetControllerInService()) {
+                this->closeClientConnection();
+                throw DebugSessionAborted("TargetController not in service");
+            }
         }
 
         auto packets = this->clientConnection->readPackets();
@@ -121,12 +133,17 @@ void GdbRspDebugServer::serve() {
         return;
 
     } catch (const ClientCommunicationError& exception) {
-        Logger::error("GDB client communication error - " + exception.getMessage() + " - closing connection");
+        Logger::error("GDB RSP client communication error - " + exception.getMessage() + " - closing connection");
         this->closeClientConnection();
         return;
 
     } catch (const ClientNotSupported& exception) {
-        Logger::error("Invalid GDB client - " + exception.getMessage() + " - closing connection");
+        Logger::error("Invalid GDB RSP client - " + exception.getMessage() + " - closing connection");
+        this->closeClientConnection();
+        return;
+
+    } catch (const DebugSessionAborted& exception) {
+        Logger::warning("GDB debug session aborted - " + exception.getMessage());
         this->closeClientConnection();
         return;
 
@@ -163,13 +180,9 @@ void GdbRspDebugServer::waitForConnection() {
 
         this->clientConnection = Connection(this->interruptEventNotifier);
         this->clientConnection->accept(this->serverSocketFileDescriptor);
-
-        Logger::info("Accepted GDP RSP connection from " + this->clientConnection->getIpAddress());
         this->eventManager.triggerEvent(std::make_shared<Events::DebugSessionStarted>());
 
-    } else {
-        // This method should not return until a connection has been established (or an exception is thrown)
-        return this->waitForConnection();
+        Logger::info("Accepted GDP RSP connection from " + this->clientConnection->getIpAddress());
     }
 }
 
