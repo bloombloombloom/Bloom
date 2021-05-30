@@ -19,6 +19,10 @@ void InsightWorker::startup() {
     Logger::debug("Starting InsightWorker thread");
     this->eventManager.registerListener(this->eventListener);
 
+    this->eventListener->registerCallbackForEventType<TargetControllerStateReported>(
+        std::bind(&InsightWorker::onTargetControllerStateReported, this, std::placeholders::_1)
+    );
+
     this->eventListener->registerCallbackForEventType<TargetExecutionStopped>(
         std::bind(&InsightWorker::onTargetStoppedEvent, this, std::placeholders::_1)
     );
@@ -100,4 +104,21 @@ void InsightWorker::onTargetIoPortsUpdatedEvent(EventPointer<TargetIoPortsUpdate
     emit this->targetIoPortsUpdated();
 }
 
+void InsightWorker::onTargetControllerStateReported(EventPointer<TargetControllerStateReported> event) {
+    if (this->lastTargetControllerState == TargetControllerState::ACTIVE
+        && event->state == TargetControllerState::SUSPENDED
+    ) {
+        emit this->targetControllerSuspended();
 
+    } else if (this->lastTargetControllerState == TargetControllerState::SUSPENDED
+        && event->state == TargetControllerState::ACTIVE
+    ) {
+        try {
+            emit this->targetControllerResumed(this->targetControllerConsole.getTargetDescriptor());
+
+        } catch (const Exception& exception) {
+            Logger::error("Insight resume failed - " + exception.getMessage());
+        }
+    }
+    this->lastTargetControllerState = event->state;
+}

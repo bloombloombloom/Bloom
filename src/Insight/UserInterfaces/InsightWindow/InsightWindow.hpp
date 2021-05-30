@@ -19,6 +19,12 @@ namespace Bloom
     {
     Q_OBJECT
     private:
+        InsightConfig insightConfig;
+        EnvironmentConfig environmentConfig;
+        TargetConfig targetConfig;
+
+        bool activated = false;
+
         Targets::TargetDescriptor targetDescriptor;
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
@@ -31,14 +37,14 @@ namespace Bloom
         QToolButton* refreshIoInspectionButton = nullptr;
 
         QWidget* ioContainerWidget = nullptr;
-        QWidget* ioUnavailableWidget = nullptr;
+        QLabel* ioUnavailableWidget = nullptr;
         InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
 
         QWidget* footer = nullptr;
         QLabel* targetStatusLabel = nullptr;
         QLabel* programCounterValueLabel = nullptr;
 
-        std::map<std::string, Targets::TargetVariant> supportedVariantsByName;
+        std::map<QString, Targets::TargetVariant> supportedVariantsByName;
         const Targets::TargetVariant* selectedVariant = nullptr;
         bool uiDisabled = false;
 
@@ -46,33 +52,32 @@ namespace Bloom
 
         void selectVariant(const Targets::TargetVariant* variant);
 
-        void toggleUi(bool disable) {
-            this->uiDisabled = disable;
-
-            if (this->refreshIoInspectionButton != nullptr) {
-                this->refreshIoInspectionButton->setDisabled(disable);
-                this->refreshIoInspectionButton->repaint();
-            }
-
-            if (this->ioContainerWidget != nullptr) {
-                this->ioContainerWidget->setDisabled(disable);
-                this->ioContainerWidget->repaint();
-            }
-        }
+        void toggleUi(bool disable);
+        void activate();
+        void deactivate();
 
     public:
         InsightWindow() = default;
 
+        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
+            this->environmentConfig = environmentConfig;
+            this->targetConfig = environmentConfig.targetConfig;
+        }
+
+        void setInsightConfig(const InsightConfig& insightConfig) {
+            this->insightConfig = insightConfig;
+        }
+
         void init(
             QApplication& application,
-            Targets::TargetDescriptor targetDescriptor,
-            const InsightConfig& config,
-            const TargetConfig& targetConfig
+            Targets::TargetDescriptor targetDescriptor
         );
 
         void show();
 
     public slots:
+        void onTargetControllerSuspended();
+        void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void onTargetPinStatesUpdate(int variantId, Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);
         void onTargetStateUpdate(Targets::TargetState newState);
         void onTargetProgramCounterUpdate(quint32 programCounter);

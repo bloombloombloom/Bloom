@@ -9,6 +9,7 @@
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
 #include "src/TargetController/TargetControllerConsole.hpp"
+#include "src/TargetController/TargetControllerState.hpp"
 
 namespace Bloom
 {
@@ -28,12 +29,15 @@ namespace Bloom
             *(this->eventListener)
         );
 
+        TargetControllerState lastTargetControllerState = TargetControllerState::ACTIVE;
+
         QTimer* eventDispatchTimer = nullptr;
 
         void onTargetStoppedEvent(Events::EventPointer<Events::TargetExecutionStopped> event);
         void onTargetResumedEvent(Events::EventPointer<Events::TargetExecutionResumed> event);
         void onTargetPinStatesRetrievedEvent(Events::EventPointer<Events::TargetPinStatesRetrieved> event);
         void onTargetIoPortsUpdatedEvent(Events::EventPointer<Events::TargetIoPortsUpdated> event);
+        void onTargetControllerStateReported(Events::EventPointer<Events::TargetControllerStateReported> event);
 
     public:
         InsightWorker(EventManager& eventManager): eventManager(eventManager) {};
@@ -56,6 +60,8 @@ namespace Bloom
         void targetProgramCounterUpdated(quint32 programCounter);
         void targetPinStatesUpdated(int variantId, Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);
         void targetIoPortsUpdated();
+        void targetControllerSuspended();
+        void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
 
     };
 }

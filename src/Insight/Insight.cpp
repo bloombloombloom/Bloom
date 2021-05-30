@@ -55,17 +55,20 @@ void Insight::startup() {
 
     this->application = new QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data());
     this->application->setQuitOnLastWindowClosed(true);
+    qRegisterMetaType<Bloom::Targets::TargetDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinState>();
     qRegisterMetaType<Bloom::Targets::TargetState>();
     qRegisterMetaType<std::map<int, Bloom::Targets::TargetPinState>>();
 
+    this->mainWindow.setInsightConfig(this->insightConfig);
+    this->mainWindow.setEnvironmentConfig(this->environmentConfig);
+
     this->mainWindow.init(
         *(this->application),
-        targetDescriptor,
-        this->insightConfig,
-        this->environmentConfig.targetConfig
+        targetDescriptor
     );
+
     this->mainWindow.show();
 
     /*
@@ -87,6 +90,8 @@ void Insight::startup() {
     connect(this->workerThread, &QThread::finished, worker, &QObject::deleteLater);
     connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
 
+    connect(worker, &InsightWorker::targetControllerSuspended, &(this->mainWindow), &InsightWindow::onTargetControllerSuspended);
+    connect(worker, &InsightWorker::targetControllerResumed, &(this->mainWindow), &InsightWindow::onTargetControllerResumed);
     connect(worker, &InsightWorker::targetStateUpdated, &(this->mainWindow), &InsightWindow::onTargetStateUpdate);
     connect(worker, &InsightWorker::targetProgramCounterUpdated, &(this->mainWindow), &InsightWindow::onTargetProgramCounterUpdate);
     connect(worker, &InsightWorker::targetPinStatesUpdated, &(this->mainWindow), &InsightWindow::onTargetPinStatesUpdate);

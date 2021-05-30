@@ -88,8 +88,11 @@
                                         <item alignment="Qt::AlignHCenter">
                                             <widget class="QLabel" name="io-inspection-unavailable">
                                                 <property name="visible"><bool>false</bool></property>
+                                                <property name="alignment">
+                                                    <enum>Qt::AlignCenter</enum>
+                                                </property>
                                                 <property name="text">
-                                                    <string>IO inspection is not available for this target. Please report this to Bloom developers by clicking Help -> Report An Issue</string>
+                                                    <string>-</string>
                                                 </property>
                                             </widget>
                                         </item>

@@ -21,9 +21,7 @@ using Bloom::Targets::TargetPackage;
 
 void InsightWindow::init(
     QApplication& application,
-    TargetDescriptor targetDescriptor,
-    const InsightConfig& config,
-    const TargetConfig& targetConfig
+    TargetDescriptor targetDescriptor
 ) {
     this->targetDescriptor = targetDescriptor;
 
@@ -44,7 +42,7 @@ void InsightWindow::init(
 
     application.setWindowIcon(QIcon(":/compiled/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg"));
     this->ioContainerWidget = this->mainWindowWidget->findChild<QWidget*>("io-container");
-    this->ioUnavailableWidget = this->mainWindowWidget->findChild<QWidget*>("io-inspection-unavailable");
+    this->ioUnavailableWidget = this->mainWindowWidget->findChild<QLabel*>("io-inspection-unavailable");
     this->mainMenuBar = this->mainWindowWidget->findChild<QMenuBar*>("menu-bar");
 
     auto fileMenu = this->mainMenuBar->findChild<QMenu*>("file-menu");
@@ -70,67 +68,10 @@ void InsightWindow::init(
     });
 
     this->footer = this->mainWindowWidget->findChild<QWidget*>("footer");
-    auto targetNameLabel = this->footer->findChild<QLabel*>("target-name");
-    auto targetIdLabel = this->footer->findChild<QLabel*>("target-id");
     this->targetStatusLabel = this->footer->findChild<QLabel*>("target-state");
     this->programCounterValueLabel = this->footer->findChild<QLabel*>("target-program-counter-value");
-    targetNameLabel->setText(QString::fromStdString(this->targetDescriptor.name));
-    targetIdLabel->setText("0x" + QString::fromStdString(this->targetDescriptor.id).remove("0x").toUpper());
 
-    this->variantMenu = this->footer->findChild<QMenu*>("target-variant-menu");
-
-    for (const auto& targetVariant: this->targetDescriptor.variants) {
-        auto variantAction = new QAction(this->variantMenu);
-        variantAction->setText(
-            QString::fromStdString(targetVariant.name + " (" + targetVariant.packageName + ")")
-        );
-
-        if (this->isVariantSupported(targetVariant)) {
-            this->supportedVariantsByName.insert(
-                std::pair(QString::fromStdString(targetVariant.name).toLower().toStdString(), targetVariant)
-            );
-
-            connect(
-                variantAction,
-                &QAction::triggered,
-                this,
-                [this, &targetVariant] {
-                    this->selectVariant(&targetVariant);
-                }
-            );
-
-        } else {
-            variantAction->setEnabled(false);
-            variantAction->setText(variantAction->text() + " (unsupported)");
-
-        };
-
-        this->variantMenu->addAction(variantAction);
-    }
-
-    Logger::debug("Number of target variants supported by Insight: " + std::to_string(supportedVariantsByName.size()));
-
-    if (!this->supportedVariantsByName.empty()) {
-        if (!targetConfig.variantName.empty() && this->supportedVariantsByName.contains(targetConfig.variantName)) {
-            // The user has specified a valid variant name in their config file, so use that as the default
-            this->selectVariant(&(this->supportedVariantsByName.at(targetConfig.variantName)));
-
-        } else {
-            if (!targetConfig.variantName.empty()) {
-                Logger::error("Invalid target variant name \"" + targetConfig.variantName
-                    + "\" - no such variant with the given name was found.");
-            }
-
-            this->selectVariant(&(this->supportedVariantsByName.begin()->second));
-        }
-
-    } else {
-        if (this->targetDescriptor.variants.empty()) {
-            this->variantMenu->parentWidget()->hide();
-        }
-
-        this->ioUnavailableWidget->show();
-    }
+    this->activate();
 
     /*
      * Do not delete svgWidget. It seems like it's absolutely pointless, but it's really not. I know this is gross but
@@ -155,6 +96,134 @@ void InsightWindow::init(
     auto svgWidget = QSvgWidget();
 }
 
+void InsightWindow::activate() {
+    auto targetNameLabel = this->footer->findChild<QLabel*>("target-name");
+    auto targetIdLabel = this->footer->findChild<QLabel*>("target-id");
+    targetNameLabel->setText(QString::fromStdString(this->targetDescriptor.name));
+    targetIdLabel->setText("0x" + QString::fromStdString(this->targetDescriptor.id).remove("0x").toUpper());
+    this->variantMenu = this->footer->findChild<QMenu*>("target-variant-menu");
+
+    this->ioUnavailableWidget->hide();
+
+    std::optional<QString> previouslySelectedVariantName;
+    if (this->selectedVariant != nullptr) {
+        previouslySelectedVariantName = QString::fromStdString(this->selectedVariant->name).toLower();
+        this->selectedVariant = nullptr;
+    }
+
+    this->supportedVariantsByName.clear();
+
+    for (const auto& targetVariant: this->targetDescriptor.variants) {
+        auto variantAction = new QAction(this->variantMenu);
+        variantAction->setText(
+            QString::fromStdString(targetVariant.name + " (" + targetVariant.packageName + ")")
+        );
+
+        if (this->isVariantSupported(targetVariant)) {
+            auto supportedVariantPtr = &(this->supportedVariantsByName.insert(
+                std::pair(QString::fromStdString(targetVariant.name).toLower(), targetVariant)
+            ).first->second);
+
+            connect(
+                variantAction,
+                &QAction::triggered,
+                this,
+                [this, supportedVariantPtr] {
+                    this->selectVariant(supportedVariantPtr);
+                }
+            );
+
+        } else {
+            variantAction->setEnabled(false);
+            variantAction->setText(variantAction->text() + " (unsupported)");
+        }
+
+        this->variantMenu->addAction(variantAction);
+    }
+
+    this->variantMenu->setEnabled(true);
+
+    Logger::debug("Number of target variants supported by Insight: " + std::to_string(supportedVariantsByName.size()));
+
+    if (!this->supportedVariantsByName.empty()) {
+        if (previouslySelectedVariantName.has_value()
+            && this->supportedVariantsByName.contains(previouslySelectedVariantName.value())
+        ) {
+            this->selectVariant(&(this->supportedVariantsByName.at(previouslySelectedVariantName.value())));
+
+        } else if (this->targetConfig.variantName.has_value()) {
+            auto selectedVariantName = QString::fromStdString(this->targetConfig.variantName.value());
+            if (this->supportedVariantsByName.contains(selectedVariantName)) {
+                // The user has specified a valid variant name in their config file, so use that as the default
+                this->selectVariant(&(this->supportedVariantsByName.at(selectedVariantName)));
+            }
+
+        } else {
+            if (this->targetConfig.variantName.has_value()) {
+                Logger::error("Invalid target variant name \"" + this->targetConfig.variantName.value()
+                    + "\" - no such variant with the given name was found.");
+            }
+
+            this->selectVariant(&(this->supportedVariantsByName.begin()->second));
+        }
+
+    } else {
+        if (this->targetDescriptor.variants.empty()) {
+            this->variantMenu->parentWidget()->hide();
+        }
+
+        this->ioUnavailableWidget->setText(
+            "GPIO inspection is not available for this target. "
+            "Please report this to Bloom developers by clicking Help -> Report An Issue"
+        );
+        this->ioUnavailableWidget->show();
+    }
+
+    this->toggleUi(this->targetState != TargetState::STOPPED);
+    this->activated = true;
+}
+
+void InsightWindow::deactivate() {
+    if (this->targetPackageWidget != nullptr) {
+        this->targetPackageWidget->hide();
+        this->targetPackageWidget->deleteLater();
+        this->targetPackageWidget = nullptr;
+    }
+
+    this->ioUnavailableWidget->setText(
+        "Insight deactivated - Bloom has been disconnected from the target.\n"
+        "Bloom will attempt to reconnect upon the start of a debug session."
+    );
+    this->ioUnavailableWidget->show();
+
+    this->targetStatusLabel->setText("Unknown");
+    this->programCounterValueLabel->setText("-");
+
+    this->variantMenu->clear();
+    this->variantMenu->setEnabled(false);
+
+    this->toggleUi(true);
+    this->activated = false;
+}
+
+bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
+    if (variant.package == TargetPackage::DIP) {
+        // All DIP variants must have a pin count that is a multiple of two
+        if (variant.pinDescriptorsByNumber.size() % 2 == 0) {
+            return true;
+        }
+    }
+
+    if (variant.package == TargetPackage::QFP) {
+        // All QFP variants must have a pin count that is a multiple of four
+        if (variant.pinDescriptorsByNumber.size() % 4 == 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void InsightWindow::selectVariant(const TargetVariant* variant) {
     if (!this->isVariantSupported(*variant)) {
         Logger::error("Attempted to select unsupported target variant.");
@@ -168,6 +237,7 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
     if (this->targetPackageWidget != nullptr) {
         this->targetPackageWidget->hide();
         this->targetPackageWidget->deleteLater();
+        this->targetPackageWidget = nullptr;
     }
 
     this->selectedVariant = variant;
@@ -209,22 +279,31 @@ void InsightWindow::close() {
     }
 }
 
-bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
-    if (variant.package == TargetPackage::DIP) {
-        // All DIP variants must have a pin count that is a multiple of two
-        if (variant.pinDescriptorsByNumber.size() % 2 == 0) {
-            return true;
-        }
+void InsightWindow::toggleUi(bool disable) {
+    this->uiDisabled = disable;
+
+    if (this->refreshIoInspectionButton != nullptr) {
+        this->refreshIoInspectionButton->setDisabled(disable);
+        this->refreshIoInspectionButton->repaint();
     }
 
-    if (variant.package == TargetPackage::QFP) {
-        // All QFP variants must have a pin count that is a multiple of four
-        if (variant.pinDescriptorsByNumber.size() % 4 == 0) {
-            return true;
-        }
+    if (this->ioContainerWidget != nullptr) {
+        this->ioContainerWidget->setDisabled(disable);
+        this->ioContainerWidget->repaint();
     }
+}
 
-    return false;
+void InsightWindow::onTargetControllerSuspended() {
+    if (this->activated) {
+        this->deactivate();
+    }
+}
+
+void InsightWindow::onTargetControllerResumed(const TargetDescriptor& targetDescriptor) {
+    if (!this->activated) {
+        this->targetDescriptor = targetDescriptor;
+        this->activate();
+    }
 }
 
 void InsightWindow::openReportIssuesUrl() {
