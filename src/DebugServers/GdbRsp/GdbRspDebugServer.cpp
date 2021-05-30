@@ -123,6 +123,10 @@ void GdbRspDebugServer::serve() {
                 this->waitForConnection();
             }
 
+            this->clientConnection->accept(this->serverSocketFileDescriptor);
+            Logger::info("Accepted GDP RSP connection from " + this->clientConnection->getIpAddress());
+            this->eventManager.triggerEvent(std::make_shared<Events::DebugSessionStarted>());
+
             /*
              * Before proceeding with a new debug session, we must ensure that the TargetController is able to
              * service it.
@@ -135,9 +139,10 @@ void GdbRspDebugServer::serve() {
 
         auto packets = this->clientConnection->readPackets();
 
-        for (auto& packet : packets) {
+        // Only process the last packet - any others will likely be duplicates from an impatient client
+        if (!packets.empty()) {
             // Double-dispatch to appropriate handler
-            packet->dispatchToHandler(*this);
+            packets.back()->dispatchToHandler(*this);
         }
 
     } catch (const ClientDisconnected&) {
@@ -192,10 +197,6 @@ void GdbRspDebugServer::waitForConnection() {
         }
 
         this->clientConnection = Connection(this->interruptEventNotifier);
-        this->clientConnection->accept(this->serverSocketFileDescriptor);
-        this->eventManager.triggerEvent(std::make_shared<Events::DebugSessionStarted>());
-
-        Logger::info("Accepted GDP RSP connection from " + this->clientConnection->getIpAddress());
     }
 }
 
