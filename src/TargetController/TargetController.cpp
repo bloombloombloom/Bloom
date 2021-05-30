@@ -7,6 +7,7 @@
 #include "src/Exceptions/TargetControllerStartupFailure.hpp"
 #include "src/Exceptions/DeviceCommunicationFailure.hpp"
 #include "src/Application.hpp"
+#include "src/Helpers/Paths.hpp"
 
 using namespace Bloom;
 using namespace Bloom::Targets;
@@ -87,7 +88,7 @@ void TargetController::startup() {
 
 void TargetController::checkUdevRules() {
     auto bloomRulesPath = std::string("/etc/udev/rules.d/99-bloom.rules");
-    auto latestBloomRulesPath = Application::getResourcesDirPath() + "/UDevRules/99-bloom.rules";
+    auto latestBloomRulesPath = Paths::resourcesDirPath() + "/UDevRules/99-bloom.rules";
 
     if (!std::filesystem::exists(bloomRulesPath)) {
         Logger::warning("Bloom udev rules missing - attempting installation");

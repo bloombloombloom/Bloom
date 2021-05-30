@@ -9,6 +9,7 @@
 #include "DualInlinePackageWidget.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
+#include "src/Helpers/Paths.hpp"
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 
@@ -22,7 +23,11 @@ DualInlinePackageWidget::DualInlinePackageWidget(
     QObject* insightWindowObj,
     QWidget* parent
 ): TargetPackageWidget(targetVariant, insightWindowObj, parent) {
-    auto stylesheetFile = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss");
+    auto stylesheetFile = QFile(QString::fromStdString(
+            Paths::compiledResourcesPath()
+            + "/src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss"
+        )
+    );
     stylesheetFile.open(QFile::ReadOnly);
     this->setStyleSheet(stylesheetFile.readAll());
 
@@ -121,4 +126,3 @@ void DualInlinePackageWidget::drawWidget(QPainter& painter) {
         height
     );
 }
-

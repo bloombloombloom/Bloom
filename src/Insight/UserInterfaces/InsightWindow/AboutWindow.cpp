@@ -5,14 +5,23 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Application.hpp"
+#include "src/Helpers/Paths.hpp"
 
 using namespace Bloom;
 using namespace InsightTargetWidgets;
 using namespace Exceptions;
 
 AboutWindow::AboutWindow(QWidget* parent): QObject(parent) {
-    auto aboutWindowUiFile = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui");
-    auto aboutWindowStylesheet = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss");
+    auto aboutWindowUiFile = QFile(QString::fromStdString(
+            Paths::compiledResourcesPath()
+            + "/src/Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui"
+        )
+    );
+    auto aboutWindowStylesheet = QFile(QString::fromStdString(
+            Paths::compiledResourcesPath()
+            + "/src/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss"
+        )
+    );
 
     if (!aboutWindowUiFile.open(QFile::ReadOnly)) {
         throw Exception("Failed to open AboutWindow UI file");

@@ -1,6 +1,15 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
 <qresource>
+    <!--
+    CAUTION: For aliases, please be sure to use the path of the file, relative to the Bloom project dir, but prefixed
+    with "/compiled/". See below for examples.
+
+    This is required because Bloom does not use compiled resources for debug builds. Instead, it will use the files
+    located in the Bloom project directory. See comment for BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE macro
+    in CMakeLists.txt for more.
+    -->
+
     <!-- The contents of help.txt is presented to the user in response to the invocation of the help command-->
     <file alias="/compiled/resources/help.txt">../resources/help.txt</file>
 
@@ -8,19 +17,19 @@
     <file alias="/compiled/resources/bloom.template.json">../resources/bloom.template.json</file>
 
     <!-- QT UI templates for Insight-->
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui</file>
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui</file>
 
     <!-- QT UI stylesheets for Insight-->
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss</file>
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss</file>
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss">./Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss</file>
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss">./Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss">./Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss">./Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss</file>
 
     <!-- Icons for Insight-->
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg">./Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg</file>
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/RAM.svg">./Insight/UserInterfaces/InsightWindow/Images/RAM.svg</file>
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/refresh.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh.svg</file>
-    <file alias="/compiled/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg">./Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/RAM.svg">./Insight/UserInterfaces/InsightWindow/Images/RAM.svg</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh.svg</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</file>
 </qresource>
 </RCC>

@@ -249,20 +249,6 @@ namespace Bloom
         void onShutdownApplicationRequest(Events::EventPointer<Events::ShutdownApplication>);
 
         /**
-         * Returns the path to the directory in which the Bloom binary resides.
-         *
-         * @return
-         */
-        static std::string getApplicationDirPath();
-
-        /**
-         * Returns the path to the Resources directory, located in the application directory.
-         *
-         * @return
-         */
-        static std::string getResourcesDirPath();
-
-        /**
          * Checks if the current effective user running Bloom has root privileges.
          *
          * @return

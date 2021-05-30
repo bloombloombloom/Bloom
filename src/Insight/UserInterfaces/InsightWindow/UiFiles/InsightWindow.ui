@@ -62,8 +62,8 @@
                             <widget class="QToolButton" name="refresh-io-inspection-btn">
                                 <property name="icon">
                                     <iconset>
-                                        <disabledoff>:/compiled/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</disabledoff>
-                                        <normalon>:/compiled/Insight/UserInterfaces/InsightWindow/Images/refresh.svg</normalon>
+                                        <disabledoff>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</disabledoff>
+                                        <normalon>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh.svg</normalon>
                                     </iconset>
                                 </property>
                                 <property name="toolTip">

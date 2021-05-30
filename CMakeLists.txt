@@ -34,6 +34,14 @@ set(CMAKE_BUILD_RPATH ${CMAKE_INSTALL_RPATH})
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     add_compile_definitions(BLOOM_DEBUG_BUILD)
 
+    # BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE can be used to override the file path used for compiled resources.
+    # We override this path in debug builds to avoid using compiled resources. This makes debugging and small tweaks
+    # a lot easier, as it removes the need to recompile for each tweak.
+    # CAUTION: Although convenient, this does add a limitation; the debug build can only be run on the same machine
+    # that compiled it. Or a machine that has the Bloom source located in the same place.
+    # See Paths::compiledResourcesPath() for more.
+    add_compile_definitions(BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE="${CMAKE_CURRENT_SOURCE_DIR}")
+
     # CMAKE_SKIP_BUILD_RPATH needs to be set to true to use Gammaray during development.
     # This is because the distributed Qt binaries may not be compatible with the local installation of Gammaray
     set(CMAKE_SKIP_BUILD_RPATH true)

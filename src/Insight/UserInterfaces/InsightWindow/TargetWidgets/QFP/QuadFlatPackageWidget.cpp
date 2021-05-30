@@ -7,6 +7,7 @@
 
 #include "../../InsightWindow.hpp"
 #include "QuadFlatPackageWidget.hpp"
+#include "src/Helpers/Paths.hpp"
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 
@@ -20,7 +21,11 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
 ): TargetPackageWidget(targetVariant, insightWindowObj, parent) {
     assert((targetVariant.pinDescriptorsByNumber.size() % 4) == 0);
 
-    auto stylesheetFile = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss");
+    auto stylesheetFile = QFile(QString::fromStdString(
+            Paths::compiledResourcesPath()
+            + "/src/Insight/UserInterfaces/InsightWindow/TargetWidgets//QFP/Stylesheets/QuadFlatPackage.qss"
+        )
+    );
     stylesheetFile.open(QFile::ReadOnly);
     this->setStyleSheet(stylesheetFile.readAll());
 

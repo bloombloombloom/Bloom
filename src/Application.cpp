@@ -9,6 +9,7 @@
 
 #include "Application.hpp"
 #include "src/Logger/Logger.hpp"
+#include "src/Helpers/Paths.hpp"
 #include "SignalHandler/SignalHandler.hpp"
 #include "Exceptions/InvalidConfig.hpp"
 
@@ -149,7 +150,11 @@ int Application::presentHelpText() {
     Logger::silence();
 
     // The file help.txt is included in the binary image as a resource. See src/resource.qrc
-    auto helpFile = QFile(":/compiled/resources/help.txt");
+    auto helpFile = QFile(QString::fromStdString(
+            Paths::compiledResourcesPath()
+            + "/resources/help.txt"
+        )
+    );
 
     if (!helpFile.open(QIODevice::ReadOnly)) {
         // This should never happen - if it does, something has gone very wrong
@@ -188,7 +193,11 @@ int Application::initProject() {
      *
      * We simply copy the template file into the user's working directory.
      */
-    auto templateConfigFile = QFile(":/compiled/resources/bloom.template.json");
+    auto templateConfigFile = QFile(QString::fromStdString(
+            Paths::compiledResourcesPath()
+            + "/resources/bloom.template.json"
+        )
+    );
 
     if (!templateConfigFile.open(QIODevice::ReadOnly)) {
         throw Exception("Failed to open template configuration file - please report this issue at https://bloom.oscillate.io/report-issue");
@@ -331,20 +340,6 @@ void Application::onDebugServerThreadStateChanged(EventPointer<Events::DebugServ
         // DebugServer has unexpectedly shutdown - it must have encountered a fatal error.
         this->shutdown();
     }
-}
-
-std::string Application::getApplicationDirPath() {
-    auto pathCharArray = std::array<char, PATH_MAX>();
-
-    if (readlink("/proc/self/exe", pathCharArray.data(), PATH_MAX) < 0) {
-        throw Exception("Failed to obtain application directory path.");
-    }
-
-    return std::filesystem::path(std::string(pathCharArray.begin(), pathCharArray.end())).parent_path();
-}
-
-std::string Application::getResourcesDirPath() {
-    return Application::getApplicationDirPath() + "/../resources/";
 }
 
 bool Application::isRunningAsRoot() {

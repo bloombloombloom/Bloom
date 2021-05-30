@@ -8,6 +8,7 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
+#include "src/Helpers/Paths.hpp"
 
 using namespace Bloom;
 using namespace Bloom::Exceptions;
@@ -25,8 +26,16 @@ void InsightWindow::init(
 ) {
     this->targetDescriptor = targetDescriptor;
 
-    auto mainWindowUiFile = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui");
-    auto mainWindowStylesheet = QFile(":/compiled/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss");
+    auto mainWindowUiFile = QFile(
+        QString::fromStdString(Paths::compiledResourcesPath()
+            + "/src/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui"
+        )
+    );
+    auto mainWindowStylesheet = QFile(
+        QString::fromStdString(Paths::compiledResourcesPath()
+            + "/src/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss"
+        )
+    );
 
     if (!mainWindowUiFile.open(QFile::ReadOnly)) {
         throw Exception("Failed to open InsightWindow UI file");
@@ -40,7 +49,11 @@ void InsightWindow::init(
     this->mainWindowWidget = uiLoader.load(&mainWindowUiFile);
     this->mainWindowWidget->setStyleSheet(mainWindowStylesheet.readAll());
 
-    application.setWindowIcon(QIcon(":/compiled/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg"));
+    application.setWindowIcon(QIcon(
+        QString::fromStdString(Paths::compiledResourcesPath()
+            + "/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg"
+        )
+    ));
     this->ioContainerWidget = this->mainWindowWidget->findChild<QWidget*>("io-container");
     this->ioUnavailableWidget = this->mainWindowWidget->findChild<QLabel*>("io-inspection-unavailable");
     this->mainMenuBar = this->mainWindowWidget->findChild<QMenuBar*>("menu-bar");

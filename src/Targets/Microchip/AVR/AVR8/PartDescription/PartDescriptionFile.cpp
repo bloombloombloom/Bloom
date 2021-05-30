@@ -1,7 +1,10 @@
+#include <QJsonDocument>
+#include <QJsonArray>
+
 #include "PartDescriptionFile.hpp"
 #include "src/Targets/Microchip/AVR/Exceptions/PartDescriptionParsingFailureException.hpp"
 #include "src/Logger/Logger.hpp"
-#include "src/Application.hpp"
+#include "src/Helpers/Paths.hpp"
 
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit::PartDescription;
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
@@ -35,7 +38,7 @@ PartDescriptionFile::PartDescriptionFile(const std::string& targetSignatureHex, 
 
         if (matchingDescriptionFiles.size() == 1) {
             // Attempt to load the XML part description file
-            auto descriptionFilePath = QString::fromStdString(Application::getApplicationDirPath()) + "/"
+            auto descriptionFilePath = QString::fromStdString(Paths::applicationDirPath()) + "/"
                 + matchingDescriptionFiles.front().toObject().find("targetDescriptionFilePath")->toString();
 
             Logger::debug("Loading AVR8 part description file: " + descriptionFilePath.toStdString());
@@ -102,7 +105,7 @@ void PartDescriptionFile::init(const QDomDocument& xml) {
 
 QJsonObject PartDescriptionFile::getPartDescriptionMapping() {
     auto mappingFile = QFile(
-        QString::fromStdString(Application::getResourcesDirPath() + "/TargetPartDescriptions/AVR/Mapping.json")
+        QString::fromStdString(Paths::resourcesDirPath() + "/TargetPartDescriptions/AVR/Mapping.json")
     );
 
     if (!mappingFile.exists()) {

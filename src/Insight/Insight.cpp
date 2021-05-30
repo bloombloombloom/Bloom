@@ -3,7 +3,7 @@
 
 #include "Insight.hpp"
 #include "InsightWorker.hpp"
-#include "src/Application.hpp"
+#include "src/Helpers/Paths.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Targets/TargetState.hpp"
@@ -49,7 +49,7 @@ void Insight::startup() {
     auto targetDescriptor = this->targetControllerConsole.getTargetDescriptor();
 
 #ifndef BLOOM_DEBUG_BUILD
-    QCoreApplication::addLibraryPath(QString::fromStdString(Application::getApplicationDirPath() + "/plugins"));
+    QCoreApplication::addLibraryPath(QString::fromStdString(Paths::applicationDirPath() + "/plugins"));
 #endif
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 
