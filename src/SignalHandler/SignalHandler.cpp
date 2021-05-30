@@ -34,6 +34,7 @@ void SignalHandler::run() {
 
 void SignalHandler::startup() {
     this->setName("SH");
+    Thread::setThreadState(ThreadState::STARTING);
     Logger::debug("Starting SignalHandler");
     // Block all signal interrupts
     auto signalSet = this->getRegisteredSignalSet();
@@ -50,7 +51,10 @@ void SignalHandler::startup() {
         std::bind(&SignalHandler::triggerApplicationShutdown, this)
     ));
 
-    Thread::setState(ThreadState::READY);
+    // It's possible that the SignalHandler has been instructed to shutdown, before it could finish starting up.
+    if (this->getThreadState() != ThreadState::SHUTDOWN_INITIATED) {
+        Thread::setThreadState(ThreadState::READY);
+    }
 }
 
 sigset_t SignalHandler::getRegisteredSignalSet() const {
