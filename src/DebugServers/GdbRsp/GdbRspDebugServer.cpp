@@ -6,6 +6,7 @@
 #include "Exceptions/ClientDisconnected.hpp"
 #include "Exceptions/ClientNotSupported.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"
+#include "Exceptions/DebugSessionAborted.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Logger/Logger.hpp"
@@ -96,9 +97,21 @@ void GdbRspDebugServer::init() {
     Logger::info("GDB RSP address: " + this->listeningAddress);
     Logger::info("GDB RSP port: " + std::to_string(this->listeningPortNumber));
 
+    this->eventListener->registerCallbackForEventType<Events::TargetControllerStateReported>(
+        std::bind(&GdbRspDebugServer::onTargetControllerStateReported, this, std::placeholders::_1)
+    );
+
     this->eventListener->registerCallbackForEventType<Events::TargetExecutionStopped>(
         std::bind(&GdbRspDebugServer::onTargetExecutionStopped, this, std::placeholders::_1)
     );
+}
+
+void GdbRspDebugServer::close() {
+    this->closeClientConnection();
+
+    if (this->serverSocketFileDescriptor > 0) {
+        ::close(this->serverSocketFileDescriptor);
+    }
 }
 
 void GdbRspDebugServer::serve() {
@@ -186,11 +199,10 @@ void GdbRspDebugServer::waitForConnection() {
     }
 }
 
-void GdbRspDebugServer::close() {
-    this->closeClientConnection();
-
-    if (this->serverSocketFileDescriptor > 0) {
-        ::close(this->serverSocketFileDescriptor);
+void GdbRspDebugServer::onTargetControllerStateReported(Events::EventPointer<Events::TargetControllerStateReported> event) {
+    if (event->state == TargetControllerState::SUSPENDED && this->clientConnection.has_value()) {
+        Logger::warning("Terminating debug session - TargetController suspended unexpectedly");
+        this->closeClientConnection();
     }
 }
 

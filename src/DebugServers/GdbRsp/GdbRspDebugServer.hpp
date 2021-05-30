@@ -169,6 +169,8 @@ namespace Bloom::DebugServers::Gdb
             return "GDB Remote Serial Protocol DebugServer";
         };
 
+        void onTargetControllerStateReported(Events::EventPointer<Events::TargetControllerStateReported> event);
+
         /**
          * If the GDB client is currently waiting for the target execution to stop, this event handler will issue
          * a "stop reply" packet to the client once the target execution stops.
