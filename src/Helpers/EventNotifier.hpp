@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <atomic>
 
 #include "src/Exceptions/Exception.hpp"
 
@@ -26,9 +27,7 @@ namespace Bloom
     {
     private:
         int fileDescriptor = -1;
-
-    public:
-        EventNotifier() = default;
+        std::atomic<bool> initialised = false;
 
         void init() {
             this->fileDescriptor = ::eventfd(0, EFD_NONBLOCK);
@@ -37,10 +36,32 @@ namespace Bloom
                 throw Exceptions::Exception("Failed to create new eventfd object - error number: "
                     + std::to_string(errno));
             }
+
+            this->initialised = true;
+        }
+
+        void close() {
+            ::close(this->fileDescriptor);
+            this->initialised = false;
+        }
+
+    public:
+        EventNotifier() {
+            this->init();
+        };
+
+        ~EventNotifier() {
+            if (this->initialised) {
+                this->close();
+            }
         }
 
         int getFileDescriptor() {
             return this->fileDescriptor;
+        }
+
+        bool isInitialised() {
+            return this->initialised;
         }
 
         void notify() {
@@ -56,10 +77,6 @@ namespace Bloom
                 throw Exceptions::Exception("Failed to clear EventNotifier object - eventfd_read failed - "
                     "error number: " + std::to_string(errno));
             }
-        }
-
-        void close() {
-            ::close(this->fileDescriptor);
         }
     };
 }

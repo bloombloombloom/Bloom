@@ -32,7 +32,6 @@ void DebugServer::startup() {
     this->eventManager.registerListener(this->eventListener);
 
     this->interruptEventNotifier = std::make_shared<EventNotifier>();
-    this->interruptEventNotifier->init();
     this->eventListener->setInterruptEventNotifier(this->interruptEventNotifier);
 
     // Register event handlers
@@ -52,8 +51,8 @@ void DebugServer::shutdown() {
     this->setThreadState(ThreadState::SHUTDOWN_INITIATED);
     Logger::info("Shutting down DebugServer");
     this->close();
-    this->interruptEventNotifier->close();
     this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
+    this->eventManager.deregisterListener(this->eventListener->getId());
 }
 
 void DebugServer::onShutdownDebugServerEvent(EventPointer<Events::ShutdownDebugServer> event) {

@@ -31,7 +31,7 @@ void EventListener::registerEvent(GenericEventPointer event) {
     eventQueueByType[eventName].push(event);
     this->eventQueueByEventTypeCV.notify_all();
 
-    if (this->interruptEventNotifier != nullptr) {
+    if (this->interruptEventNotifier != nullptr && this->interruptEventNotifier->isInitialised()) {
         this->interruptEventNotifier->notify();
     }
 }
