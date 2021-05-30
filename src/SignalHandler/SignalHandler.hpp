@@ -19,6 +19,17 @@ namespace Bloom
         std::map<int, std::function<void()>> handlersMappedBySignalNum;
 
         /**
+         * We keep record of the number of shutdown signals received. See definition of triggerApplicationShutdown()
+         * for more on this.
+         */
+        int shutdownSignalsReceived = 0;
+
+        /**
+         * Initiates the SignalHandler thread.
+         */
+        void startup();
+
+        /**
          * Fetches all signals currently of interest to the application.
          *
          * Currently this just returns a set of all signals (using sigfillset())
@@ -28,10 +39,12 @@ namespace Bloom
         sigset_t getRegisteredSignalSet() const;
 
         /**
-         * We keep record of the number of shutdown signals received. See definition of triggerApplicationShutdown()
-         * for more on this.
+         * Handler for SIGINT, SIGTERM, etc signals.
+         *
+         * Will trigger a ShutdownApplication event to kick-off a clean shutdown or it will terminate the
+         * program immediately if numerous SIGINT signals have been received.
          */
-        int shutdownSignalsReceived = 0;
+        void triggerApplicationShutdown();
 
     public:
         SignalHandler(EventManager& eventManager): eventManager(eventManager) {};
@@ -42,23 +55,10 @@ namespace Bloom
         void run();
 
         /**
-         * Initiates the SignalHandler thread.
-         */
-        void startup();
-
-        /**
          * Triggers the shutdown of the SignalHandler thread.
          */
         void triggerShutdown() {
             this->setThreadState(ThreadState::SHUTDOWN_INITIATED);
         };
-
-        /**
-         * Handler for SIGINT, SIGTERM, etc signals.
-         *
-         * Will trigger a ShutdownApplication event to kick-off a clean shutdown or it will terminate the
-         * program immediately if numerous SIGINT signals have been received.
-         */
-        void triggerApplicationShutdown();
     };
 }

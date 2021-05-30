@@ -48,18 +48,29 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 endif()
 
 add_executable(Bloom
-    src/main.cpp
     src/Generated/resources.cpp
-    src/ApplicationConfig.cpp
-    src/Logger/Logger.cpp
+
+    src/main.cpp
+    src/Application.cpp
+    src/TargetController/TargetController.cpp
+    src/DebugServers/DebugServer.cpp
+    src/Insight/Insight.cpp
+    src/Insight/InsightWorker.cpp
     src/SignalHandler/SignalHandler.cpp
+
+    src/EventManager/EventListener.cpp
+    src/EventManager/EventManager.cpp
+    src/ApplicationConfig.cpp
+    src/TargetController/TargetControllerConsole.cpp
+    src/Logger/Logger.cpp
+    src/Helpers/Paths.cpp
+
+    src/DebugToolDrivers/USB/UsbDevice.cpp
     src/DebugToolDrivers/USB/Interface.cpp
     src/DebugToolDrivers/USB/HID/HidInterface.cpp
-
     src/DebugToolDrivers/Microchip/AtmelICE/AtmelIce.cpp
     src/DebugToolDrivers/Microchip/PowerDebugger/PowerDebugger.cpp
     src/DebugToolDrivers/Microchip/MplabSnap/MplabSnap.cpp
-
     src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/Response.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.cpp
@@ -71,18 +82,15 @@ add_executable(Bloom
     src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.cpp
+
     src/Targets/Target.cpp
     src/Targets/Microchip/AVR/AVR8/Avr8.cpp
     src/Targets/Microchip/AVR/AVR8/Mega/Mega.cpp
     src/Targets/Microchip/AVR/AVR8/PartDescription/PartDescriptionFile.cpp
-    src/Application.cpp
-    src/DebugToolDrivers/USB/UsbDevice.cpp
-    src/TargetController/TargetController.cpp
-    src/TargetController/TargetControllerConsole.cpp
-    src/EventManager/EventListener.cpp
-    src/EventManager/EventManager.cpp
-    src/DebugServers/DebugServer.cpp
+    build/resources/TargetPartDescriptions/AVR/Mapping.json
+
     src/DebugServers/GdbRsp/GdbRspDebugServer.cpp
+    src/DebugServers/GdbRsp/Connection.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacket.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacketFactory.cpp
     src/DebugServers/GdbRsp/CommandPackets/SupportedFeaturesQuery.cpp
@@ -96,24 +104,19 @@ add_executable(Bloom
     src/DebugServers/GdbRsp/CommandPackets/SetBreakpoint.cpp
     src/DebugServers/GdbRsp/CommandPackets/RemoveBreakpoint.cpp
     src/DebugServers/GdbRsp/ResponsePackets/SupportedFeaturesResponse.cpp
-    src/DebugServers/GdbRsp/Connection.cpp
-    src/Insight/Insight.cpp
-    src/Insight/InsightWorker.cpp
+
     src/Insight/UserInterfaces/InsightWindow/InsightWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/AboutWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/TargetPackageWidget.hpp
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/TargetPinWidget.hpp
-
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/DualInlinePackageWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/PinWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/PinBodyWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/BodyWidget.cpp
-
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/QuadFlatPackageWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/PinWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/PinBodyWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/BodyWidget.cpp
-    build/resources/TargetPartDescriptions/AVR/Mapping.json
 )
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)

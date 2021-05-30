@@ -204,8 +204,8 @@ void InsightWindow::deactivate() {
     }
 
     this->ioUnavailableWidget->setText(
-        "Insight deactivated - Bloom has been disconnected from the target.\n"
-        "Bloom will attempt to reconnect upon the start of a debug session."
+        "Insight deactivated - Bloom has been disconnected from the target.\n\n"
+        "Bloom will attempt to reconnect upon the start of a new debug session."
     );
     this->ioUnavailableWidget->show();
 

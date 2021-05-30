@@ -183,18 +183,32 @@ namespace Bloom
         /**
          * Exit point - must be called before the TargetController thread is terminated.
          *
-         * Handles deactivating the target among other clean-up related things.
+         * Handles releasing the hardware among other clean-up related things.
          */
         void shutdown();
 
+        /**
+         * Establishes a connection with the debug tool and target. Prepares the hardware for a debug session.
+         */
+        void acquireHardware();
 
+        /**
+         * Attempts to gracefully disconnect from the debug tool and the target. All control of the debug tool and
+         * target will cease.
+         */
+        void releaseHardware();
+
+        /**
+         * Puts the TargetController into the suspended state.
+         *
+         * In this state, the hardware is released and the TargetController will only handle a subset of events.
+         */
         void suspend();
 
+        /**
+         * Wakes the TargetController from the suspended state.
+         */
         void resume();
-
-        void acquireResources();
-
-        void releaseResources();
 
         /**
          * Should fire any events queued on the target.

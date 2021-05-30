@@ -202,7 +202,6 @@ std::vector<std::unique_ptr<CommandPacket>> Connection::readPackets() {
         } catch (const Exception& exception) {
             Logger::error("Failed to parse GDB packet - " + exception.getMessage());
             this->write({'-'});
-
         }
     }
 

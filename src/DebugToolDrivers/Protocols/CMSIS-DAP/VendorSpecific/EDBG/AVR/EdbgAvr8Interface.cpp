@@ -354,7 +354,7 @@ void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
             return this->activatePhysical(true);
 
         } else {
-            throw Exception("Activate physical interface command failed");
+            throw Avr8CommandFailure("Activate physical interface command failed", response);
         }
     }
 

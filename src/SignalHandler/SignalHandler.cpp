@@ -7,31 +7,6 @@
 
 using namespace Bloom;
 
-void SignalHandler::run() {
-    try {
-        this->startup();
-        auto signalSet = this->getRegisteredSignalSet();
-        int signalNumber = 0;
-
-        Logger::debug("SignalHandler ready");
-        while(Thread::getThreadState() == ThreadState::READY) {
-            if (sigwait(&signalSet, &signalNumber) == 0) {
-                Logger::debug("SIGNAL " + std::to_string(signalNumber) + " received");
-                if (this->handlersMappedBySignalNum.contains(signalNumber)) {
-                    // We have a registered handler for this signal.
-                    this->handlersMappedBySignalNum.at(signalNumber)();
-                }
-            }
-        }
-
-    } catch (std::exception& exception) {
-        Logger::error("SignalHandler fatal error: " + std::string(exception.what()));
-    }
-
-    Logger::debug("SignalHandler shutting down");
-    Thread::setThreadState(ThreadState::STOPPED);
-}
-
 void SignalHandler::startup() {
     this->setName("SH");
     Thread::setThreadState(ThreadState::STARTING);
@@ -55,6 +30,31 @@ void SignalHandler::startup() {
     if (this->getThreadState() != ThreadState::SHUTDOWN_INITIATED) {
         Thread::setThreadState(ThreadState::READY);
     }
+}
+
+void SignalHandler::run() {
+    try {
+        this->startup();
+        auto signalSet = this->getRegisteredSignalSet();
+        int signalNumber = 0;
+
+        Logger::debug("SignalHandler ready");
+        while(Thread::getThreadState() == ThreadState::READY) {
+            if (sigwait(&signalSet, &signalNumber) == 0) {
+                Logger::debug("SIGNAL " + std::to_string(signalNumber) + " received");
+                if (this->handlersMappedBySignalNum.contains(signalNumber)) {
+                    // We have a registered handler for this signal.
+                    this->handlersMappedBySignalNum.at(signalNumber)();
+                }
+            }
+        }
+
+    } catch (std::exception& exception) {
+        Logger::error("SignalHandler fatal error: " + std::string(exception.what()));
+    }
+
+    Logger::info("Shutting down SignalHandler");
+    Thread::setThreadState(ThreadState::STOPPED);
 }
 
 sigset_t SignalHandler::getRegisteredSignalSet() const {

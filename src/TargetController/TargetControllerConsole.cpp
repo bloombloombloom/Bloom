@@ -19,7 +19,7 @@ TargetControllerState TargetControllerConsole::getTargetControllerState() {
 
     if (!responseEvent.has_value()
         || !std::holds_alternative<EventPointer<Events::TargetControllerStateReported>>(responseEvent.value())
-        ) {
+    ) {
         throw Exception("Unexpected response from TargetController");
     }
 

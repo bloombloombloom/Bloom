@@ -123,7 +123,7 @@ void TargetController::shutdown() {
     try {
         Logger::info("Shutting down TargetController");
         this->eventManager.deregisterListener(this->eventListener->getId());
-        this->releaseResources();
+        this->releaseHardware();
 
     } catch (const std::exception& exception) {
         Logger::error("Failed to properly shutdown TargetController. Error: " + std::string(exception.what()));
@@ -140,7 +140,7 @@ void TargetController::suspend() {
     Logger::debug("Suspending TargetController");
 
     try {
-        this->releaseResources();
+        this->releaseHardware();
 
     } catch (const std::exception& exception) {
         Logger::error("Failed to release connected debug tool and target resources. Error: "
@@ -175,7 +175,7 @@ void TargetController::suspend() {
 }
 
 void TargetController::resume() {
-    this->acquireResources();
+    this->acquireHardware();
 
     this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
         std::bind(&TargetController::onDebugSessionFinishedEvent, this, std::placeholders::_1)
@@ -248,7 +248,7 @@ void TargetController::resume() {
     }
 }
 
-void TargetController::acquireResources() {
+void TargetController::acquireHardware() {
     auto debugToolName = this->environmentConfig.debugToolConfig.name;
     auto targetName = this->environmentConfig.targetConfig.name;
 
@@ -311,7 +311,7 @@ void TargetController::acquireResources() {
     Logger::info("Target name: " + this->target->getName());
 }
 
-void TargetController::releaseResources() {
+void TargetController::releaseHardware() {
     auto target = this->getTarget();
     auto debugTool = this->getDebugTool();
 
@@ -360,7 +360,7 @@ void TargetController::emitErrorEvent(int correlationId) {
     this->eventManager.triggerEvent(errorEvent);
 }
 
-void TargetController::onShutdownTargetControllerEvent(EventPointer<Events::ShutdownTargetController> event) {
+void TargetController::onShutdownTargetControllerEvent(EventPointer<Events::ShutdownTargetController>) {
     this->shutdown();
 }
 

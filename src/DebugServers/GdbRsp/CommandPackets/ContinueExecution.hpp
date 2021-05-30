@@ -29,7 +29,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
 
         ContinueExecution(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
             init();
-        };
+        }
 
         virtual void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
     };
