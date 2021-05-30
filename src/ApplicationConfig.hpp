@@ -49,9 +49,50 @@ namespace Bloom
          */
         void init(QJsonObject jsonObject);
 
+        /**
+         * The name of the selected target.
+         */
         std::string name;
 
-        std::string variantName;
+        /**
+         * The name of the selected target variant.
+         *
+         * Insight uses this to determine which variant to select on startup.
+         */
+        std::optional<std::string> variantName;
+
+        QJsonObject jsonObject;
+    };
+
+    /**
+     * Configuration relating to a specific debug tool.
+     *
+     * As with the TargetConfig struct, please don't add any manufacture/model specific configuration here. This
+     * configuration should apply to all supported debug tools. Specific configuration can be extracted from the
+     * jsonObject member, as described in the TargetConfig comment above.
+     */
+    struct DebugToolConfig
+    {
+        /**
+         * Obtains config parameters from JSON object.
+         *
+         * @param jsonObject
+         */
+        void init(QJsonObject jsonObject);
+
+        /**
+         * The name of the selected debug tool.
+         */
+        std::string name;
+
+        /**
+         * Determines if the TargetController will release the debug tool at the end of a debug session.
+         *
+         * If this is enabled, the TargetController will automatically suspend once the current debug session has
+         * ended. If not enabled, the TargetController will remain active and in control of the debug tool, preventing
+         * the user from running any other application that needs access to the debug tool.
+         */
+        bool releasePostDebugSession = true;
 
         QJsonObject jsonObject;
     };
@@ -107,14 +148,16 @@ namespace Bloom
         std::string name;
 
         /**
-         * Name of the selected debug tool for this environment.
+         * Configuration for the environment's selected debug tool.
+         *
+         * Each environment can select only one debug tool.
          */
-        std::string debugToolName;
+        DebugToolConfig debugToolConfig;
 
         /**
          * Configuration for the environment's selected target.
          *
-         * Each environment can consist of only one target.
+         * Each environment can select only one target.
          */
         TargetConfig targetConfig;
 

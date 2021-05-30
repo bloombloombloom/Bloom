@@ -1,7 +1,10 @@
 {
   "environments": {
     "default": {
-      "debugToolName": "atmel-ice",
+      "debugTool": {
+        "name": "atmel-ice",
+        "releasePostDebugSession": true
+      },
 
       "target": {
         "name": "avr8",

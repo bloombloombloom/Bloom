@@ -49,15 +49,16 @@ void InsightConfig::init(QJsonObject jsonObject) {
 }
 
 void EnvironmentConfig::init(std::string name, QJsonObject jsonObject) {
-    this->name = name;
-    this->debugToolName = jsonObject.find("debugToolName")->toString().toLower().toStdString();
-
-    // Extract target data
-    if (!jsonObject.contains("target")) {
-        // Environment has no target data - ignore
-        throw Exceptions::InvalidConfig("No target configuration provided");
+    if (!jsonObject.contains("debugTool")) {
+        throw Exceptions::InvalidConfig("No debug tool configuration provided.");
     }
 
+    if (!jsonObject.contains("target")) {
+        throw Exceptions::InvalidConfig("No target configuration provided.");
+    }
+
+    this->name = name;
+    this->debugToolConfig.init(jsonObject.find("debugTool")->toObject());
     this->targetConfig.init(jsonObject.find("target")->toObject());
 
     if (jsonObject.contains("debugServer")) {
@@ -82,6 +83,20 @@ void TargetConfig::init(QJsonObject jsonObject) {
 
     if (jsonObject.contains("variantName")) {
         this->variantName = jsonObject.find("variantName").value().toString().toLower().toStdString();
+    }
+
+    this->jsonObject = jsonObject;
+}
+
+void DebugToolConfig::init(QJsonObject jsonObject) {
+    if (!jsonObject.contains("name")) {
+        throw Exceptions::InvalidConfig("No debug tool name found.");
+    }
+
+    this->name = jsonObject.find("name")->toString().toLower().toStdString();
+
+    if (jsonObject.contains("releasePostDebugSession")) {
+        this->releasePostDebugSession = jsonObject.find("releasePostDebugSession").value().toBool();
     }
 
     this->jsonObject = jsonObject;
