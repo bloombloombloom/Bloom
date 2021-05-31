@@ -14,8 +14,8 @@
 #include "Family.hpp"
 #include "PadDescriptor.hpp"
 
-// Part Description
-#include "PartDescription/PartDescriptionFile.hpp"
+// target description
+#include "TargetDescription/TargetDescriptionFile.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
@@ -25,7 +25,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* avr8Interface;
         std::string name = "";
         std::optional<Family> family;
-        std::optional<PartDescription::PartDescriptionFile> partDescription;
+        std::optional<TargetDescription::TargetDescriptionFile> partDescription;
         std::optional<TargetParameters> targetParameters;
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
@@ -40,20 +40,20 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         TargetSignature getId() override;
 
         /**
-         * Extracts the AVR8 target parameters from the loaded part description file.
+         * Extracts the AVR8 target parameters from the loaded target description file.
          *
          * @return
          */
         virtual TargetParameters& getTargetParameters();
 
         /**
-         * Generates a collection of PadDescriptor object from data in the loaded part description file and
+         * Generates a collection of PadDescriptor object from data in the loaded target description file and
          * populates this->padDescriptorsByName.
          */
         virtual void loadPadDescriptors();
 
         /**
-         * Extracts target variant information from the loaded part description file and generates a collection
+         * Extracts target variant information from the loaded target description file and generates a collection
          * of TargetVariant objects.
          *
          * @return

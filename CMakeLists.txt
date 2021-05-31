@@ -84,10 +84,11 @@ add_executable(Bloom
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.cpp
 
     src/Targets/Target.cpp
+    src/Targets/TargetDescription/TargetDescriptionFile.cpp
     src/Targets/Microchip/AVR/AVR8/Avr8.cpp
     src/Targets/Microchip/AVR/AVR8/Mega/Mega.cpp
-    src/Targets/Microchip/AVR/AVR8/PartDescription/PartDescriptionFile.cpp
-    build/resources/TargetPartDescriptions/AVR/Mapping.json
+    src/Targets/Microchip/AVR/AVR8/TargetDescription/TargetDescriptionFile.cpp
+    build/resources/TargetDescriptionFiles/AVR/Mapping.json
 
     src/DebugServers/GdbRsp/GdbRspDebugServer.cpp
     src/DebugServers/GdbRsp/Connection.cpp
@@ -122,10 +123,10 @@ add_executable(Bloom
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
 target_include_directories(Bloom PUBLIC ./)
 
-# Construct JSON mapping of part description files.
+# Construct JSON mapping of target description files.
 add_custom_command(
     OUTPUT
-    ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/TargetPartDescriptions/AVR/Mapping.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/TargetDescriptionFiles/AVR/Mapping.json
     DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/CopyAvrPartFilesAndCreateMapping.php
     COMMAND echo 'Processing AVR target description files.'

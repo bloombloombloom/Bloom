@@ -17,7 +17,7 @@ namespace Bloom::Targets::Microchip::Avr
      * Some AVR targets have been found to carry identical signatures. For example, the AT90PWM1, AT90PWM2B
      * and the AT90PWM3B all carry a signature of 0x1E9383. Although these devices may not differ in
      * significant ways, Bloom does still take duplicate signatures into account, to ensure that the correct
-     * part description file is used.
+     * target description file is used.
      *
      * This class represents an AVR target signature.
      */

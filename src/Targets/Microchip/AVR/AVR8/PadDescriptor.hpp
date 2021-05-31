@@ -13,7 +13,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
      * pin 4 is mapped to a GND pad.
      *
      * PadDescriptor describes a single pad on an AVR8 target. On target configuration, PadDescriptors are
-     * generated from the AVR8 part description file. These descriptors are mapped to pad names.
+     * generated from the AVR8 target description file. These descriptors are mapped to pad names.
      * See Avr8::loadPadDescriptors() for more.
      */
     struct PadDescriptor

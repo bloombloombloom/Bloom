@@ -59,7 +59,7 @@ namespace Bloom::Targets
          * postActivationConfigure() - The second stage is right after target activation (successful invocation of
          * Target::activate()). At this point, we will have established a connection with the target and so interaction
          * with the target is permitted here. We use this method in the Avr8 target class to extract the target signature
-         * from the target's memory, which we then use to find & load the correct part description file.
+         * from the target's memory, which we then use to find & load the correct target description file.
          *
          * postPromotionConfigure() - The final stage of configuration occurs just after the target instance has been
          * promoted to a different class. See the Target::promote() method for more in this.
@@ -138,7 +138,7 @@ namespace Bloom::Targets
          * know about the target is that it's part of the AVR8 family. Nothing else. But this is ok, because, when we
          * begin the target configuration and activation process, we are able to learn a lot more about the target.
          * For AVR8 targets, we extract the target signature shortly after activation, and with that signature we find
-         * the appropriate part description file, which has all of the information regarding the target that we could
+         * the appropriate target description file, which has all of the information regarding the target that we could
          * possibly need. So, by the time we have activated the target, we will know a lot more about it, and it is at
          * this point, where we may want to promote it to a more specific target class (from the generic Avr8 target
          * class). The generic AVR8 target class will attempt to promote the target to one that is more specific to

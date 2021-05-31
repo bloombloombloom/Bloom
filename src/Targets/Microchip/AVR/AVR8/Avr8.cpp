@@ -10,7 +10,7 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Targets/TargetRegister.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/PartDescription/PartDescriptionFile.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/TargetDescription/TargetDescriptionFile.hpp"
 
 // Derived AVR8 targets
 #include "XMega/XMega.hpp"
@@ -42,9 +42,9 @@ void Avr8::postActivationConfigure() {
     }
 
     /*
-     * The signature obtained from the device should match what is in the part description file
+     * The signature obtained from the device should match what is in the target description file
      *
-     * We don't use this->getId() here as that could return the ID that was extracted from the part description file
+     * We don't use this->getId() here as that could return the ID that was extracted from the target description file
      * (which it would, if the user specified the exact target name in their project config - see Avr8::getId() and
      * TargetController::getSupportedTargets() for more).
      */
@@ -53,7 +53,7 @@ void Avr8::postActivationConfigure() {
 
     if (targetSignature != pdSignature) {
         throw Exception("Failed to validate connected target - target signature mismatch.\nThe target signature"
-            "(\"" + targetSignature.toHex() + "\") does not match the AVR8 part description signature (\""
+            "(\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
             + pdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the configuration file"
             + " (bloom.json)."
         );
@@ -68,7 +68,7 @@ void Avr8::postPromotionConfigure() {
 
 void Avr8::loadPartDescription() {
     auto targetSignature = this->getId();
-    auto partDescription = PartDescription::PartDescriptionFile(
+    auto partDescription = TargetDescription::TargetDescriptionFile(
         targetSignature.toHex(),
         (!this->name.empty()) ? std::optional(this->name) : std::nullopt
     );
@@ -82,7 +82,7 @@ void Avr8::loadPadDescriptors() {
     auto& targetParameters = this->getTargetParameters();
 
     /*
-     * Every port address we extract from the part description will be stored in portAddresses, so that
+     * Every port address we extract from the target description will be stored in portAddresses, so that
      * we can extract the start (min) and end (max) for the target's IO port address
      * range (TargetParameters::ioPortAddressRangeStart & TargetParameters::ioPortAddressRangeEnd)
      */
@@ -493,7 +493,7 @@ std::vector<TargetVariant> Avr8::generateVariantsFromPartDescription() {
         }
 
         if (!pdPinoutsByName.contains(pdVariant.pinoutName)) {
-            // Missing pinouts in the part description file
+            // Missing pinouts in the target description file
             continue;
         }
 
@@ -883,4 +883,3 @@ bool Avr8::memoryAddressRangeClashesWithIoPortRegisters(TargetMemoryType memoryT
 
     return false;
 }
-

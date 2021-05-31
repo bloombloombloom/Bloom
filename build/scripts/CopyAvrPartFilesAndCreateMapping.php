@@ -1,6 +1,6 @@
 <?php
 /*
- * Parses Microchip AVR Part Description (.atdf/.xml) files and creates a JSON mapping of target IDs to file paths.
+ * Parses Microchip AVR target description (.atdf/.xml) files and creates a JSON mapping of target IDs to file paths.
  * Also copies the files over to the Distribution directory.
  *
  * The JSON mapping is compiled as a Qt resource and used for looking-up target description file paths, by target ID.
@@ -8,9 +8,9 @@
  * This script should be run as part of the build process.
  */
 
-CONST AVR_PD_FILE_PATH = __DIR__ . "/../../src/Targets/Microchip/AVR/PartDescriptionFiles";
-CONST TARGET_PD_DEST_FILE_PATH = __DIR__ . "/../resources/TargetPartDescriptions/AVR";
-CONST TARGET_PD_DEST_RELATIVE_FILE_PATH = "../resources/TargetPartDescriptions/AVR";
+CONST AVR_PD_FILE_PATH = __DIR__ . "/../../src/Targets/TargetDescriptionFiles";
+CONST TARGET_PD_DEST_FILE_PATH = __DIR__ . "/../resources/TargetDescriptionFiles/AVR";
+CONST TARGET_PD_DEST_RELATIVE_FILE_PATH = "../resources/TargetDescriptionFiles/AVR";
 CONST TARGET_PD_MAPPING_FILE_PATH = TARGET_PD_DEST_FILE_PATH . "/Mapping.json";
 
 CONST PD_COMMENT = "\n<!-- This is an automatically generated file. Any changes made to it will likely be lost. -->\n";
@@ -153,7 +153,7 @@ function processAvrPartFiles($path) : array {
         }
 
         $output[$partDescriptionXml->targetId][] = $partDescriptionXml;
-        echo "Target Part Description File Processed: \"" . substr($partDescriptionXml->originalFilePath, strlen(AVR_PD_FILE_PATH)) . "\"\n"
+        echo "Target description File Processed: \"" . substr($partDescriptionXml->originalFilePath, strlen(AVR_PD_FILE_PATH)) . "\"\n"
             . "Target Name: \"" . $partDescriptionXml->targetName . "\" Target ID: \"" . $partDescriptionXml->targetId
             . "\" Destination: \"" . substr($partDescriptionXml->destinationFilePath, strlen(TARGET_PD_DEST_FILE_PATH))
             . "\"\n\n"

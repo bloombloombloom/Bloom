@@ -116,9 +116,9 @@ namespace Bloom
                     },
                 };
 
-                // Include all targets from AVR8 part description files
+                // Include all targets from AVR8 target description files
                 auto avr8PdMapping =
-                    Targets::Microchip::Avr::Avr8Bit::PartDescription::PartDescriptionFile::getPartDescriptionMapping();
+                    Targets::Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile::getTargetDescriptionMapping();
 
                 for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); mapIt++) {
                     // Each target signature maps to an array of targets, as numerous targets can possess the same signature.

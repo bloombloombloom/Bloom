@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <optional>
 
-#include "src/Targets/Microchip/AVR/AVR8/PartDescription/AddressSpace.hpp"
 #include "../TargetSignature.hpp"
 #include "Family.hpp"
 
