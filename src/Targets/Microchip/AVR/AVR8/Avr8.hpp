@@ -52,16 +52,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         virtual void loadPadDescriptors();
 
         /**
-         * Extracts target variant information from the loaded target description file and generates a collection
-         * of TargetVariant objects.
-         *
-         * @return
-         */
-        virtual std::vector<TargetVariant> generateVariantsFromTdf();
-
-        /**
-         * Populates this->targetVariantsById using this->generateVariantsFromTdf() and data from
-         * this->padDescriptorsByName.
+         * Loads all variants for the AVR8 target, from the TDF.
          */
         virtual void loadTargetVariants();
 

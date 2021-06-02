@@ -62,8 +62,6 @@ void Avr8::postActivationConfigure() {
 
 void Avr8::postPromotionConfigure() {
     this->avr8Interface->setTargetParameters(this->getTargetParameters());
-    this->loadPadDescriptors();
-    this->loadTargetVariants();
 }
 
 void Avr8::loadTargetDescriptionFile() {
@@ -76,6 +74,9 @@ void Avr8::loadTargetDescriptionFile() {
     this->targetDescriptionFile = targetDescriptionFile;
     this->name = targetDescriptionFile.getTargetName();
     this->family = targetDescriptionFile.getFamily();
+
+    this->loadPadDescriptors();
+    this->loadTargetVariants();
 }
 
 void Avr8::loadPadDescriptors() {
@@ -202,6 +203,7 @@ void Avr8::loadPadDescriptors() {
         }
     }
 
+    // TODO: Move this into getTargetParameters()
     if (!portAddresses.empty()) {
         targetParameters.ioPortAddressRangeStart = *std::min_element(portAddresses.begin(), portAddresses.end());
         targetParameters.ioPortAddressRangeEnd = *std::max_element(portAddresses.begin(), portAddresses.end());
@@ -209,16 +211,61 @@ void Avr8::loadPadDescriptors() {
 }
 
 void Avr8::loadTargetVariants() {
-    auto variants = this->generateVariantsFromTdf();
+    auto tdVariants = this->targetDescriptionFile->getVariants();
+    auto tdPinoutsByName = this->targetDescriptionFile->getPinoutsMappedByName();
+    auto& modules = this->targetDescriptionFile->getModulesMappedByName();
 
-    for (auto& targetVariant : variants) {
-        for (auto& [pinNumber, pinDescriptor] : targetVariant.pinDescriptorsByNumber) {
-            if (this->padDescriptorsByName.contains(pinDescriptor.padName)) {
-                auto& pad = this->padDescriptorsByName.at(pinDescriptor.padName);
+    for (const auto& tdVariant : tdVariants) {
+        if (tdVariant.disabled) {
+            continue;
+        }
+
+        auto targetVariant = TargetVariant();
+        targetVariant.id = static_cast<int>(this->targetVariantsById.size());
+        targetVariant.name = tdVariant.orderCode;
+        targetVariant.packageName = tdVariant.package;
+
+        if (tdVariant.package.find("QFP") == 0 || tdVariant.package.find("TQFP") == 0) {
+            targetVariant.package = TargetPackage::QFP;
+
+        } else if (tdVariant.package.find("PDIP") == 0 || tdVariant.package.find("DIP") == 0) {
+            targetVariant.package = TargetPackage::DIP;
+
+        } else if (tdVariant.package.find("QFN") == 0 || tdVariant.package.find("VQFN") == 0) {
+            targetVariant.package = TargetPackage::QFN;
+
+        } else if (tdVariant.package.find("SOIC") == 0) {
+            targetVariant.package = TargetPackage::SOIC;
+        }
+
+        if (!tdPinoutsByName.contains(tdVariant.pinoutName)) {
+            // Missing pinouts in the target description file
+            continue;
+        }
+
+        auto tdPinout = tdPinoutsByName.find(tdVariant.pinoutName)->second;
+        for (const auto& tdPin : tdPinout.pins) {
+            auto targetPin = TargetPinDescriptor();
+            targetPin.name = tdPin.pad;
+            targetPin.padName = tdPin.pad;
+            targetPin.number = tdPin.position;
+
+            // TODO: REMOVE THIS:
+            if (tdPin.pad.find("vcc") == 0 || tdPin.pad.find("avcc") == 0 || tdPin.pad.find("aref") == 0) {
+                targetPin.type = TargetPinType::VCC;
+
+            } else if (tdPin.pad.find("gnd") == 0) {
+                targetPin.type = TargetPinType::GND;
+            }
+
+            if (this->padDescriptorsByName.contains(targetPin.padName)) {
+                auto& pad = this->padDescriptorsByName.at(targetPin.padName);
                 if (pad.gpioPortSetAddress.has_value() && pad.ddrSetAddress.has_value()) {
-                    pinDescriptor.type = TargetPinType::GPIO;
+                    targetPin.type = TargetPinType::GPIO;
                 }
             }
+
+            targetVariant.pinDescriptorsByNumber.insert(std::pair(targetPin.number, targetPin));
         }
 
         this->targetVariantsById.insert(std::pair(targetVariant.id, targetVariant));
@@ -461,64 +508,6 @@ TargetSignature Avr8::getId() {
     }
 
     return this->id.value();
-}
-
-std::vector<TargetVariant> Avr8::generateVariantsFromTdf() {
-    std::vector<TargetVariant> output;
-    auto tdVariants = this->targetDescriptionFile->getVariants();
-    auto tdPinoutsByName = this->targetDescriptionFile->getPinoutsMappedByName();
-    auto& modules = this->targetDescriptionFile->getModulesMappedByName();
-
-    for (const auto& tdVariant : tdVariants) {
-        if (tdVariant.disabled) {
-            continue;
-        }
-
-        auto targetVariant = TargetVariant();
-        targetVariant.id = static_cast<int>(output.size());
-        targetVariant.name = tdVariant.orderCode;
-        targetVariant.packageName = tdVariant.package;
-
-        if (tdVariant.package.find("QFP") == 0 || tdVariant.package.find("TQFP") == 0) {
-            targetVariant.package = TargetPackage::QFP;
-
-        } else if (tdVariant.package.find("PDIP") == 0 || tdVariant.package.find("DIP") == 0) {
-            targetVariant.package = TargetPackage::DIP;
-
-        } else if (tdVariant.package.find("QFN") == 0 || tdVariant.package.find("VQFN") == 0) {
-            targetVariant.package = TargetPackage::QFN;
-
-        } else if (tdVariant.package.find("SOIC") == 0) {
-            targetVariant.package = TargetPackage::SOIC;
-        }
-
-        if (!tdPinoutsByName.contains(tdVariant.pinoutName)) {
-            // Missing pinouts in the target description file
-            continue;
-        }
-
-        auto tdPinout = tdPinoutsByName.find(tdVariant.pinoutName)->second;
-        for (const auto& tdPin : tdPinout.pins) {
-            auto targetPin = TargetPinDescriptor();
-            targetPin.name = tdPin.pad;
-            targetPin.padName = tdPin.pad;
-            targetPin.number = tdPin.position;
-
-            // TODO: REMOVE THIS:
-            if (tdPin.pad.find("vcc") == 0 || tdPin.pad.find("avcc") == 0 || tdPin.pad.find("aref") == 0) {
-                targetPin.type = TargetPinType::VCC;
-
-            } else if (tdPin.pad.find("gnd") == 0) {
-                targetPin.type = TargetPinType::GND;
-            }
-
-            targetVariant.pinDescriptorsByNumber.insert(std::pair(targetPin.number, targetPin));
-        }
-
-        output.push_back(targetVariant);
-    }
-
-    return output;
 }
 
 TargetDescriptor Avr8Bit::Avr8::getDescriptor() {
