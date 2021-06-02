@@ -14,7 +14,6 @@
 #include "Family.hpp"
 #include "PadDescriptor.hpp"
 
-// target description
 #include "TargetDescription/TargetDescriptionFile.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
@@ -25,7 +24,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* avr8Interface;
         std::string name = "";
         std::optional<Family> family;
-        std::optional<TargetDescription::TargetDescriptionFile> partDescription;
+        std::optional<TargetDescription::TargetDescriptionFile> targetDescriptionFile;
         std::optional<TargetParameters> targetParameters;
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
@@ -58,15 +57,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          *
          * @return
          */
-        virtual std::vector<TargetVariant> generateVariantsFromPartDescription();
+        virtual std::vector<TargetVariant> generateVariantsFromTdf();
 
         /**
-         * Populates this->targetVariantsById using this->generateVariantsFromPartDescription() and data from
+         * Populates this->targetVariantsById using this->generateVariantsFromTdf() and data from
          * this->padDescriptorsByName.
          */
         virtual void loadTargetVariants();
 
-        void loadPartDescription();
+        void loadTargetDescriptionFile();
 
     public:
         explicit Avr8() = default;

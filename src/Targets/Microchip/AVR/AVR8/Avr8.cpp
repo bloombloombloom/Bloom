@@ -37,8 +37,8 @@ void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
 }
 
 void Avr8::postActivationConfigure() {
-    if (!this->partDescription.has_value()) {
-        this->loadPartDescription();
+    if (!this->targetDescriptionFile.has_value()) {
+        this->loadTargetDescriptionFile();
     }
 
     /*
@@ -49,12 +49,12 @@ void Avr8::postActivationConfigure() {
      * TargetController::getSupportedTargets() for more).
      */
     auto targetSignature = this->avr8Interface->getDeviceId();
-    auto pdSignature = this->partDescription->getTargetSignature();
+    auto tdSignature = this->targetDescriptionFile->getTargetSignature();
 
-    if (targetSignature != pdSignature) {
+    if (targetSignature != tdSignature) {
         throw Exception("Failed to validate connected target - target signature mismatch.\nThe target signature"
             "(\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
-            + pdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the configuration file"
+            + tdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the configuration file"
             + " (bloom.json)."
         );
     }
@@ -66,16 +66,16 @@ void Avr8::postPromotionConfigure() {
     this->loadTargetVariants();
 }
 
-void Avr8::loadPartDescription() {
+void Avr8::loadTargetDescriptionFile() {
     auto targetSignature = this->getId();
-    auto partDescription = TargetDescription::TargetDescriptionFile(
+    auto targetDescriptionFile = TargetDescription::TargetDescriptionFile(
         targetSignature,
         (!this->name.empty()) ? std::optional(this->name) : std::nullopt
     );
 
-    this->partDescription = partDescription;
-    this->name = partDescription.getTargetName();
-    this->family = partDescription.getFamily();
+    this->targetDescriptionFile = targetDescriptionFile;
+    this->name = targetDescriptionFile.getTargetName();
+    this->family = targetDescriptionFile.getFamily();
 }
 
 void Avr8::loadPadDescriptors() {
@@ -88,9 +88,9 @@ void Avr8::loadPadDescriptors() {
      */
     std::vector<std::uint32_t> portAddresses;
 
-    auto& modules = this->partDescription->getModulesMappedByName();
+    auto& modules = this->targetDescriptionFile->getModulesMappedByName();
     auto portModule = (modules.contains("port")) ? std::optional(modules.find("port")->second) : std::nullopt;
-    auto& peripheralModules = this->partDescription->getPeripheralModulesMappedByName();
+    auto& peripheralModules = this->targetDescriptionFile->getPeripheralModulesMappedByName();
 
     if (peripheralModules.contains("port")) {
         auto portPeripheralModule = peripheralModules.find("port")->second;
@@ -209,7 +209,7 @@ void Avr8::loadPadDescriptors() {
 }
 
 void Avr8::loadTargetVariants() {
-    auto variants = this->generateVariantsFromPartDescription();
+    auto variants = this->generateVariantsFromTdf();
 
     for (auto& targetVariant : variants) {
         for (auto& [pinNumber, pinDescriptor] : targetVariant.pinDescriptorsByNumber) {
@@ -227,12 +227,12 @@ void Avr8::loadTargetVariants() {
 
 TargetParameters& Avr8::getTargetParameters() {
     if (!this->targetParameters.has_value()) {
-        assert(this->partDescription.has_value());
+        assert(this->targetDescriptionFile.has_value());
         this->targetParameters = TargetParameters();
         this->targetParameters->family = this->family;
-        auto& propertyGroups = this->partDescription->getPropertyGroupsMappedByName();
+        auto& propertyGroups = this->targetDescriptionFile->getPropertyGroupsMappedByName();
 
-        auto flashMemorySegment = this->partDescription->getFlashMemorySegment();
+        auto flashMemorySegment = this->targetDescriptionFile->getFlashMemorySegment();
         if (flashMemorySegment.has_value()) {
             this->targetParameters->flashSize = flashMemorySegment->size;
             this->targetParameters->flashStartAddress = flashMemorySegment->startAddress;
@@ -242,19 +242,19 @@ TargetParameters& Avr8::getTargetParameters() {
             }
         }
 
-        auto ramMemorySegment = this->partDescription->getRamMemorySegment();
+        auto ramMemorySegment = this->targetDescriptionFile->getRamMemorySegment();
         if (ramMemorySegment.has_value()) {
             this->targetParameters->ramSize = ramMemorySegment->size;
             this->targetParameters->ramStartAddress = ramMemorySegment->startAddress;
         }
 
-        auto registerMemorySegment = this->partDescription->getRegisterMemorySegment();
+        auto registerMemorySegment = this->targetDescriptionFile->getRegisterMemorySegment();
         if (registerMemorySegment.has_value()) {
             this->targetParameters->gpRegisterSize = registerMemorySegment->size;
             this->targetParameters->gpRegisterStartAddress = registerMemorySegment->startAddress;
         }
 
-        auto eepromMemorySegment = this->partDescription->getEepromMemorySegment();
+        auto eepromMemorySegment = this->targetDescriptionFile->getEepromMemorySegment();
         if (eepromMemorySegment.has_value()) {
             this->targetParameters->eepromSize = eepromMemorySegment->size;
 
@@ -263,7 +263,7 @@ TargetParameters& Avr8::getTargetParameters() {
             }
         }
 
-        auto firstBootSectionMemorySegment = this->partDescription->getFirstBootSectionMemorySegment();
+        auto firstBootSectionMemorySegment = this->targetDescriptionFile->getFirstBootSectionMemorySegment();
         if (firstBootSectionMemorySegment.has_value()) {
             this->targetParameters->bootSectionStartAddress = firstBootSectionMemorySegment->startAddress / 2;
             this->targetParameters->bootSectionSize = firstBootSectionMemorySegment->size;
@@ -282,21 +282,21 @@ TargetParameters& Avr8::getTargetParameters() {
             }
         }
 
-        auto statusRegister = this->partDescription->getStatusRegister();
+        auto statusRegister = this->targetDescriptionFile->getStatusRegister();
         if (statusRegister.has_value()) {
             this->targetParameters->statusRegisterStartAddress = statusRegister->offset;
             this->targetParameters->statusRegisterSize = statusRegister->size;
         }
 
-        auto stackPointerRegister = this->partDescription->getStackPointerRegister();
+        auto stackPointerRegister = this->targetDescriptionFile->getStackPointerRegister();
         if (stackPointerRegister.has_value()) {
             this->targetParameters->stackPointerRegisterStartAddress = stackPointerRegister->offset;
             this->targetParameters->stackPointerRegisterSize = stackPointerRegister->size;
 
         } else {
             // Sometimes the SP register is split into two register nodes, one for low, the other for high
-            auto stackPointerLowRegister = this->partDescription->getStackPointerLowRegister();
-            auto stackPointerHighRegister = this->partDescription->getStackPointerHighRegister();
+            auto stackPointerLowRegister = this->targetDescriptionFile->getStackPointerLowRegister();
+            auto stackPointerHighRegister = this->targetDescriptionFile->getStackPointerHighRegister();
 
             if (stackPointerLowRegister.has_value()) {
                 this->targetParameters->stackPointerRegisterStartAddress = stackPointerLowRegister->offset;
@@ -310,83 +310,83 @@ TargetParameters& Avr8::getTargetParameters() {
             }
         }
 
-        auto spmcsRegister = this->partDescription->getSpmcsRegister();
+        auto spmcsRegister = this->targetDescriptionFile->getSpmcsRegister();
         if (spmcsRegister.has_value()) {
             this->targetParameters->spmcRegisterStartAddress = spmcsRegister->offset;
 
         } else {
-            auto spmcRegister = this->partDescription->getSpmcRegister();
+            auto spmcRegister = this->targetDescriptionFile->getSpmcRegister();
             if (spmcRegister.has_value()) {
                 this->targetParameters->spmcRegisterStartAddress = spmcRegister->offset;
             }
         }
 
-        auto osccalRegister = this->partDescription->getOscillatorCalibrationRegister();
+        auto osccalRegister = this->targetDescriptionFile->getOscillatorCalibrationRegister();
         if (osccalRegister.has_value()) {
             this->targetParameters->osccalAddress = osccalRegister->offset;
         }
 
-        auto eepromAddressRegister = this->partDescription->getEepromAddressRegister();
+        auto eepromAddressRegister = this->targetDescriptionFile->getEepromAddressRegister();
         if (eepromAddressRegister.has_value()) {
             this->targetParameters->eepromAddressRegisterLow = eepromAddressRegister->offset;
             this->targetParameters->eepromAddressRegisterHigh = (eepromAddressRegister->size == 2)
                 ? eepromAddressRegister->offset + 1 : eepromAddressRegister->offset;
         }
 
-        auto eepromDataRegister = this->partDescription->getEepromDataRegister();
+        auto eepromDataRegister = this->targetDescriptionFile->getEepromDataRegister();
         if (eepromDataRegister.has_value()) {
             this->targetParameters->eepromDataRegisterAddress = eepromDataRegister->offset;
         }
 
-        auto eepromControlRegister = this->partDescription->getEepromControlRegister();
+        auto eepromControlRegister = this->targetDescriptionFile->getEepromControlRegister();
         if (eepromControlRegister.has_value()) {
             this->targetParameters->eepromControlRegisterAddress = eepromControlRegister->offset;
         }
 
         if (propertyGroups.contains("pdi_interface")) {
-            auto& pdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
+            auto& tdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
 
-            if (pdiInterfaceProperties.contains("app_section_offset")) {
-                this->targetParameters->appSectionPdiOffset = pdiInterfaceProperties
+            if (tdiInterfaceProperties.contains("app_section_offset")) {
+                this->targetParameters->appSectionPdiOffset = tdiInterfaceProperties
                     .at("app_section_offset").value.toInt(nullptr, 16);
             }
 
-            if (pdiInterfaceProperties.contains("boot_section_offset")) {
-                this->targetParameters->bootSectionPdiOffset = pdiInterfaceProperties
+            if (tdiInterfaceProperties.contains("boot_section_offset")) {
+                this->targetParameters->bootSectionPdiOffset = tdiInterfaceProperties
                     .at("boot_section_offset").value.toInt(nullptr, 16);
             }
 
-            if (pdiInterfaceProperties.contains("datamem_offset")) {
-                this->targetParameters->ramPdiOffset = pdiInterfaceProperties
+            if (tdiInterfaceProperties.contains("datamem_offset")) {
+                this->targetParameters->ramPdiOffset = tdiInterfaceProperties
                     .at("datamem_offset").value.toInt(nullptr, 16);
             }
 
-            if (pdiInterfaceProperties.contains("eeprom_offset")) {
-                this->targetParameters->eepromPdiOffset = pdiInterfaceProperties
+            if (tdiInterfaceProperties.contains("eeprom_offset")) {
+                this->targetParameters->eepromPdiOffset = tdiInterfaceProperties
                     .at("eeprom_offset").value.toInt(nullptr, 16);
             }
 
-            if (pdiInterfaceProperties.contains("user_signatures_offset")) {
-                this->targetParameters->userSignaturesPdiOffset = pdiInterfaceProperties
+            if (tdiInterfaceProperties.contains("user_signatures_offset")) {
+                this->targetParameters->userSignaturesPdiOffset = tdiInterfaceProperties
                     .at("user_signatures_offset").value.toInt(nullptr, 16);
             }
 
-            if (pdiInterfaceProperties.contains("prod_signatures_offset")) {
-                this->targetParameters->productSignaturesPdiOffset = pdiInterfaceProperties
+            if (tdiInterfaceProperties.contains("prod_signatures_offset")) {
+                this->targetParameters->productSignaturesPdiOffset = tdiInterfaceProperties
                     .at("prod_signatures_offset").value.toInt(nullptr, 16);
             }
 
-            if (pdiInterfaceProperties.contains("fuse_registers_offset")) {
-                this->targetParameters->fuseRegistersPdiOffset = pdiInterfaceProperties
+            if (tdiInterfaceProperties.contains("fuse_registers_offset")) {
+                this->targetParameters->fuseRegistersPdiOffset = tdiInterfaceProperties
                     .at("fuse_registers_offset").value.toInt(nullptr, 16);
             }
 
-            if (pdiInterfaceProperties.contains("lock_registers_offset")) {
-                this->targetParameters->lockRegistersPdiOffset = pdiInterfaceProperties
+            if (tdiInterfaceProperties.contains("lock_registers_offset")) {
+                this->targetParameters->lockRegistersPdiOffset = tdiInterfaceProperties
                     .at("lock_registers_offset").value.toInt(nullptr, 16);
             }
 
-            auto& peripheralModules = this->partDescription->getPeripheralModulesMappedByName();
+            auto& peripheralModules = this->targetDescriptionFile->getPeripheralModulesMappedByName();
 
             if (peripheralModules.contains("nvm")) {
                 auto& nvmModule = peripheralModules.at("nvm");
@@ -463,52 +463,52 @@ TargetSignature Avr8::getId() {
     return this->id.value();
 }
 
-std::vector<TargetVariant> Avr8::generateVariantsFromPartDescription() {
+std::vector<TargetVariant> Avr8::generateVariantsFromTdf() {
     std::vector<TargetVariant> output;
-    auto pdVariants = this->partDescription->getVariants();
-    auto pdPinoutsByName = this->partDescription->getPinoutsMappedByName();
-    auto& modules = this->partDescription->getModulesMappedByName();
+    auto tdVariants = this->targetDescriptionFile->getVariants();
+    auto tdPinoutsByName = this->targetDescriptionFile->getPinoutsMappedByName();
+    auto& modules = this->targetDescriptionFile->getModulesMappedByName();
 
-    for (const auto& pdVariant : pdVariants) {
-        if (pdVariant.disabled) {
+    for (const auto& tdVariant : tdVariants) {
+        if (tdVariant.disabled) {
             continue;
         }
 
         auto targetVariant = TargetVariant();
         targetVariant.id = static_cast<int>(output.size());
-        targetVariant.name = pdVariant.orderCode;
-        targetVariant.packageName = pdVariant.package;
+        targetVariant.name = tdVariant.orderCode;
+        targetVariant.packageName = tdVariant.package;
 
-        if (pdVariant.package.find("QFP") == 0 || pdVariant.package.find("TQFP") == 0) {
+        if (tdVariant.package.find("QFP") == 0 || tdVariant.package.find("TQFP") == 0) {
             targetVariant.package = TargetPackage::QFP;
 
-        } else if (pdVariant.package.find("PDIP") == 0 || pdVariant.package.find("DIP") == 0) {
+        } else if (tdVariant.package.find("PDIP") == 0 || tdVariant.package.find("DIP") == 0) {
             targetVariant.package = TargetPackage::DIP;
 
-        } else if (pdVariant.package.find("QFN") == 0 || pdVariant.package.find("VQFN") == 0) {
+        } else if (tdVariant.package.find("QFN") == 0 || tdVariant.package.find("VQFN") == 0) {
             targetVariant.package = TargetPackage::QFN;
 
-        } else if (pdVariant.package.find("SOIC") == 0) {
+        } else if (tdVariant.package.find("SOIC") == 0) {
             targetVariant.package = TargetPackage::SOIC;
         }
 
-        if (!pdPinoutsByName.contains(pdVariant.pinoutName)) {
+        if (!tdPinoutsByName.contains(tdVariant.pinoutName)) {
             // Missing pinouts in the target description file
             continue;
         }
 
-        auto pdPinout = pdPinoutsByName.find(pdVariant.pinoutName)->second;
-        for (const auto& pdPin : pdPinout.pins) {
+        auto tdPinout = tdPinoutsByName.find(tdVariant.pinoutName)->second;
+        for (const auto& tdPin : tdPinout.pins) {
             auto targetPin = TargetPinDescriptor();
-            targetPin.name = pdPin.pad;
-            targetPin.padName = pdPin.pad;
-            targetPin.number = pdPin.position;
+            targetPin.name = tdPin.pad;
+            targetPin.padName = tdPin.pad;
+            targetPin.number = tdPin.position;
 
             // TODO: REMOVE THIS:
-            if (pdPin.pad.find("vcc") == 0 || pdPin.pad.find("avcc") == 0 || pdPin.pad.find("aref") == 0) {
+            if (tdPin.pad.find("vcc") == 0 || tdPin.pad.find("avcc") == 0 || tdPin.pad.find("aref") == 0) {
                 targetPin.type = TargetPinType::VCC;
 
-            } else if (pdPin.pad.find("gnd") == 0) {
+            } else if (tdPin.pad.find("gnd") == 0) {
                 targetPin.type = TargetPinType::GND;
             }
 

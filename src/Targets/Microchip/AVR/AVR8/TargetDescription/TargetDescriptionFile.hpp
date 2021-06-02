@@ -12,7 +12,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
      *
      * During the build process, we generate a JSON file containing a mapping of AVR8 target signatures to target
      * description file paths. Bloom uses this mapping to find a particular target description file, for AVR8 targets,
-     * given a target signature. See directory "build/resources/TargetPartDescriptions".
+     * given a target signature. See directory "build/resources/TargetDescriptionFiles".
      * The generation of the JSON mapping, is done by a PHP script:
      * "build/scripts/CopyAvrPartFilesAndCreateMapping.php". This script is invoked via a custom command, at build time.
      */
