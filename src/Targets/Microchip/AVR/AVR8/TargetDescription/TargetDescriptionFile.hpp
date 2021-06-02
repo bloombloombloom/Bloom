@@ -46,7 +46,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @param targetSignatureHex
          * @param targetName
          */
-        TargetDescriptionFile(const std::string& targetSignatureHex, std::optional<std::string> targetName);
+        TargetDescriptionFile(const TargetSignature& targetSignature, std::optional<std::string> targetName);
 
         /**
          * Loads the AVR8 target description JSON mapping file.

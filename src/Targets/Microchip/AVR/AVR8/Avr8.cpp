@@ -69,7 +69,7 @@ void Avr8::postPromotionConfigure() {
 void Avr8::loadPartDescription() {
     auto targetSignature = this->getId();
     auto partDescription = TargetDescription::TargetDescriptionFile(
-        targetSignature.toHex(),
+        targetSignature,
         (!this->name.empty()) ? std::optional(this->name) : std::nullopt
     );
 

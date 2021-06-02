@@ -13,10 +13,11 @@ using namespace Bloom::Targets::Microchip::Avr;
 using namespace Bloom::Exceptions;
 
 TargetDescriptionFile::TargetDescriptionFile(
-    const std::string& targetSignatureHex,
+    const TargetSignature& targetSignature,
     std::optional<std::string> targetName
 ) {
-    auto mapping = this->getTargetDescriptionMapping();
+    auto targetSignatureHex = targetSignature.toHex();
+    auto mapping = TargetDescriptionFile::getTargetDescriptionMapping();
     auto qTargetSignatureHex = QString::fromStdString(targetSignatureHex);
 
     if (mapping.contains(qTargetSignatureHex)) {

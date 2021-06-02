@@ -37,7 +37,7 @@ namespace Bloom::Targets::Microchip::Avr
             this->byteTwo = static_cast<unsigned char>(signature);
         }
 
-        std::string toHex() {
+        std::string toHex() const {
             std::stringstream stream;
             stream << std::hex << std::setfill('0');
             stream << std::setw(2) << static_cast<unsigned int>(this->byteZero);
