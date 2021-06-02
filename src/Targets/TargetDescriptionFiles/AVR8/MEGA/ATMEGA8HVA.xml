@@ -3,254 +3,252 @@
     <variants>
         <variant tempmin="0" tempmax="0" speedmax="0" package="" ordercode="standard" vccmin="1.8" vccmax="4.5"/>
     </variants>
-    <devices>
-        <device name="ATmega8HVA" architecture="AVR8" family="megaAVR">
-            <address-spaces>
-                <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x2000">
-                    <memory-segment start="0x0000" size="0x2000" type="flash" rw="RW" exec="1" name="FLASH"
-                                    pagesize="0x80"/>
-                </address-space>
-                <address-space endianness="little" name="signatures" id="signatures" start="0" size="3">
-                    <memory-segment start="0" size="3" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
-                </address-space>
-                <address-space endianness="little" name="fuses" id="fuses" start="0" size="0x0001">
-                    <memory-segment start="0" size="0x0001" type="fuses" rw="RW" exec="0" name="FUSES"/>
-                </address-space>
-                <address-space endianness="little" name="lockbits" id="lockbits" start="0" size="0x0001">
-                    <memory-segment start="0" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
-                </address-space>
-                <address-space endianness="little" name="data" id="data" start="0x0000" size="0x0300">
-                    <memory-segment external="false" type="regs" size="0x0020" start="0x0000" name="REGISTERS"/>
-                    <memory-segment name="MAPPED_IO" start="0x0020" size="0x00e0" type="io" external="false"/>
-                    <memory-segment name="IRAM" start="0x0100" size="0x0200" type="ram" external="false"/>
-                </address-space>
-                <address-space endianness="little" name="eeprom" id="eeprom" start="0x0000" size="0x0100">
-                    <memory-segment start="0x0000" size="0x0100" type="eeprom" rw="RW" exec="0" name="EEPROM"
-                                    pagesize="0x04"/>
-                </address-space>
-                <address-space size="0x40" start="0x00" endianness="little" name="io" id="io"/>
-            </address-spaces>
-            <peripherals>
-                <module name="ADC">
-                    <instance name="ADC" caption="Analog-to-Digital Converter">
-                        <register-group name="ADC" name-in-module="ADC" offset="0x00" address-space="data"
-                                        caption="Analog-to-Digital Converter"/>
-                    </instance>
-                </module>
-                <module name="WDT">
-                    <instance name="WDT" caption="Watchdog Timer">
-                        <register-group name="WDT" name-in-module="WDT" offset="0x00" address-space="data"
-                                        caption="Watchdog Timer"/>
-                    </instance>
-                </module>
-                <module name="BANDGAP">
-                    <instance name="BANDGAP" caption="Bandgap">
-                        <register-group name="BANDGAP" name-in-module="BANDGAP" offset="0x00" address-space="data"
-                                        caption="Bandgap"/>
-                    </instance>
-                </module>
-                <module name="EXINT">
-                    <instance name="EXINT" caption="External Interrupts">
-                        <register-group name="EXINT" name-in-module="EXINT" offset="0x00" address-space="data"
-                                        caption="External Interrupts"/>
-                    </instance>
-                </module>
-                <module name="PORT">
-                    <instance name="PORTC" caption="I/O Port">
-                        <register-group name="PORTC" name-in-module="PORTC" offset="0x00" address-space="data"
-                                        caption="I/O Port"/>
-                    </instance>
-                    <instance name="PORTA" caption="I/O Port">
-                        <register-group name="PORTA" name-in-module="PORTA" offset="0x00" address-space="data"
-                                        caption="I/O Port"/>
-                    </instance>
-                    <instance name="PORTB" caption="I/O Port">
-                        <register-group name="PORTB" name-in-module="PORTB" offset="0x00" address-space="data"
-                                        caption="I/O Port"/>
-                    </instance>
-                </module>
-                <module name="FET">
-                    <instance name="FET" caption="FET Control">
-                        <register-group name="FET" name-in-module="FET" offset="0x00" address-space="data"
-                                        caption="FET Control"/>
-                    </instance>
-                </module>
-                <module name="SPI">
-                    <instance name="SPI" caption="Serial Peripheral Interface">
-                        <register-group name="SPI" name-in-module="SPI" offset="0x00" address-space="data"
-                                        caption="Serial Peripheral Interface"/>
-                    </instance>
-                </module>
-                <module name="BOOT_LOAD">
-                    <instance name="BOOT_LOAD" caption="Bootloader">
-                        <register-group name="BOOT_LOAD" name-in-module="BOOT_LOAD" offset="0x00" address-space="data"
-                                        caption="Bootloader"/>
-                    </instance>
-                </module>
-                <module name="CPU">
-                    <instance name="CPU" caption="CPU Registers">
-                        <register-group name="CPU" name-in-module="CPU" offset="0x00" address-space="data"
-                                        caption="CPU Registers"/>
-                        <parameters>
-                            <param name="CORE_VERSION" value="V2E"/>
-                        </parameters>
-                    </instance>
-                </module>
-                <module name="BATTERY_PROTECTION">
-                    <instance name="BATTERY_PROTECTION" caption="Battery Protection">
-                        <register-group name="BATTERY_PROTECTION" name-in-module="BATTERY_PROTECTION" offset="0x00"
-                                        address-space="data" caption="Battery Protection"/>
-                    </instance>
-                </module>
-                <module name="EEPROM">
-                    <instance name="EEPROM" caption="EEPROM">
-                        <register-group name="EEPROM" name-in-module="EEPROM" offset="0x00" address-space="data"
-                                        caption="EEPROM"/>
-                    </instance>
-                </module>
-                <module name="TC16">
-                    <instance name="TC1" caption="Timer/Counter, 16-bit">
-                        <register-group name="TC1" name-in-module="TC1" offset="0x00" address-space="data"
-                                        caption="Timer/Counter, 16-bit"/>
-                    </instance>
-                    <instance name="TC0" caption="Timer/Counter, 16-bit">
-                        <register-group name="TC0" name-in-module="TC0" offset="0x00" address-space="data"
-                                        caption="Timer/Counter, 16-bit"/>
-                    </instance>
-                </module>
-                <module name="COULOMB_COUNTER">
-                    <instance name="COULOMB_COUNTER" caption="Coulomb Counter">
-                        <register-group name="COULOMB_COUNTER" name-in-module="COULOMB_COUNTER" offset="0x00"
-                                        address-space="data" caption="Coulomb Counter"/>
-                    </instance>
-                </module>
-                <module name="VOLTAGE_REGULATOR">
-                    <instance name="VOLTAGE_REGULATOR" caption="Voltage Regulator">
-                        <register-group name="VOLTAGE_REGULATOR" name-in-module="VOLTAGE_REGULATOR" offset="0x00"
-                                        address-space="data" caption="Voltage Regulator"/>
-                    </instance>
-                </module>
-                <module name="FUSE">
-                    <instance name="FUSE" caption="Fuses">
-                        <register-group name="FUSE" name-in-module="FUSE" offset="0" address-space="fuses"
-                                        caption="Fuses"/>
-                    </instance>
-                </module>
-                <module name="LOCKBIT">
-                    <instance name="LOCKBIT" caption="Lockbits">
-                        <register-group name="LOCKBIT" name-in-module="LOCKBIT" offset="0" address-space="lockbits"
-                                        caption="Lockbits"/>
-                    </instance>
-                </module>
-            </peripherals>
-            <interrupts>
-                <interrupt index="0" name="RESET"
-                           caption="External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset"/>
-                <interrupt index="1" name="BPINT" caption="Battery Protection Interrupt"/>
-                <interrupt index="2" name="VREGMON" caption="Voltage regulator monitor interrupt"/>
-                <interrupt index="3" name="INT0" caption="External Interrupt Request 0"/>
-                <interrupt index="4" name="INT1" caption="External Interrupt Request 1"/>
-                <interrupt index="5" name="INT2" caption="External Interrupt Request 2"/>
-                <interrupt index="6" name="WDT" caption="Watchdog Timeout Interrupt"/>
-                <interrupt index="7" name="TIMER1_IC" caption="Timer 1 Input capture"/>
-                <interrupt index="8" name="TIMER1_COMPA" caption="Timer 1 Compare Match A"/>
-                <interrupt index="9" name="TIMER1_COMPB" caption="Timer 1 Compare Match B"/>
-                <interrupt index="10" name="TIMER1_OVF" caption="Timer 1 overflow"/>
-                <interrupt index="11" name="TIMER0_IC" caption="Timer 0 Input Capture"/>
-                <interrupt index="12" name="TIMER0_COMPA" caption="Timer 0 Comapre Match A"/>
-                <interrupt index="13" name="TIMER0_COMPB" caption="Timer 0 Compare Match B"/>
-                <interrupt index="14" name="TIMER0_OVF" caption="Timer 0 Overflow"/>
-                <interrupt index="15" name="SPI_STC" caption="SPI Serial transfer complete"/>
-                <interrupt index="16" name="VADC" caption="Voltage ADC Conversion Complete"/>
-                <interrupt index="17" name="CCADC_CONV" caption="Coulomb Counter ADC Conversion Complete"/>
-                <interrupt index="18" name="CCADC_REG_CUR" caption="Coloumb Counter ADC Regular Current"/>
-                <interrupt index="19" name="CCADC_ACC" caption="Coloumb Counter ADC Accumulator"/>
-                <interrupt index="20" name="EE_READY" caption="EEPROM Ready"/>
-            </interrupts>
-            <interfaces>
-                <interface name="ISP" type="isp"/>
-                <interface name="HVSP" type="hvsp"/>
-                <interface name="debugWIRE" type="dw"/>
-            </interfaces>
-            <property-groups>
-                <property-group name="SIGNATURES">
-                    <property name="JTAGID" value="0x9310"/>
-                    <property name="SIGNATURE0" value="0x1e"/>
-                    <property name="SIGNATURE1" value="0x93"/>
-                    <property name="SIGNATURE2" value="0x10"/>
-                </property-group>
-                <property-group name="OCD">
-                    <property name="OCD_REVISION" value="1"/>
-                    <property name="OCD_DATAREG" value="0x31"/>
-                    <property name="PROGBASE" value="0x0000"/>
-                </property-group>
-                <property-group name="JTAG_INTERFACE">
-                    <property name="ALLOWFULLPAGESTREAM" value="0x00"/>
-                </property-group>
-                <property-group name="ISP_INTERFACE">
-                    <property name="IspEnterProgMode_timeout" value="200"/>
-                    <property name="IspEnterProgMode_stabDelay" value="100"/>
-                    <property name="IspEnterProgMode_cmdexeDelay" value="25"/>
-                    <property name="IspEnterProgMode_synchLoops" value="32"/>
-                    <property name="IspEnterProgMode_byteDelay" value="0"/>
-                    <property name="IspEnterProgMode_pollIndex" value="3"/>
-                    <property name="IspEnterProgMode_pollValue" value="0x53"/>
-                    <property name="IspLeaveProgMode_preDelay" value="1"/>
-                    <property name="IspLeaveProgMode_postDelay" value="1"/>
-                    <property name="IspChipErase_eraseDelay" value="20"/>
-                    <property name="IspChipErase_pollMethod" value="1"/>
-                    <property name="IspProgramFlash_mode" value="0x41"/>
-                    <property name="IspProgramFlash_blockSize" value="128"/>
-                    <property name="IspProgramFlash_delay" value="10"/>
-                    <property name="IspProgramFlash_cmd1" value="0x40"/>
-                    <property name="IspProgramFlash_cmd2" value="0x4C"/>
-                    <property name="IspProgramFlash_cmd3" value="0x00"/>
-                    <property name="IspProgramFlash_pollVal1" value="0x00"/>
-                    <property name="IspProgramFlash_pollVal2" value="0x00"/>
-                    <property name="IspProgramEeprom_mode" value="0x41"/>
-                    <property name="IspProgramEeprom_blockSize" value="4"/>
-                    <property name="IspProgramEeprom_delay" value="20"/>
-                    <property name="IspProgramEeprom_cmd1" value="0xC1"/>
-                    <property name="IspProgramEeprom_cmd2" value="0xC2"/>
-                    <property name="IspProgramEeprom_cmd3" value="0x00"/>
-                    <property name="IspProgramEeprom_pollVal1" value="0x00"/>
-                    <property name="IspProgramEeprom_pollVal2" value="0x00"/>
-                    <property name="IspReadFlash_blockSize" value="256"/>
-                    <property name="IspReadEeprom_blockSize" value="256"/>
-                    <property name="IspReadFuse_pollIndex" value="4"/>
-                    <property name="IspReadLock_pollIndex" value="4"/>
-                    <property name="IspReadSign_pollIndex" value="4"/>
-                    <property name="IspReadOsccal_pollIndex" value="4"/>
-                </property-group>
-                <property-group name="HVSP_INTERFACE">
-                    <property name="HvspControlStack"
-                              value="0x4C 0x0C 0x1C 0x2C 0x3C 0x64 0x74 0x66 0x68 0x78 0x68 0x68 0x7A 0x6A 0x68 0x78 0x78 0x7D 0x6D 0x0C 0x80 0x40 0x20 0x10 0x11 0x08 0x04 0x02 0x03 0x08 0x04 0x0F"/>
-                    <property name="HvspEnterProgMode_stabDelay" value="100"/>
-                    <property name="HvspEnterProgMode_cmdexeDelay" value="0"/>
-                    <property name="HvspEnterProgMode_synchCycles" value="6"/>
-                    <property name="HvspEnterProgMode_latchCycles" value="1"/>
-                    <property name="HvspEnterProgMode_toggleVtg" value="1"/>
-                    <property name="HvspEnterProgMode_powoffDelay" value="25"/>
-                    <property name="HvspEnterProgMode_resetDelay1" value="1"/>
-                    <property name="HvspEnterProgMode_resetDelay2" value="70"/>
-                    <property name="HvspLeaveProgMode_stabDelay" value="101"/>
-                    <property name="HvspLeaveProgMode_resetDelay" value="26"/>
-                    <property name="HvspChipErase_pollTimeout" value="40"/>
-                    <property name="HvspChipErase_eraseTime" value="1"/>
-                    <property name="HvspProgramFlash_mode" value="0x0D"/>
-                    <property name="HvspProgramFlash_blockSize" value="256"/>
-                    <property name="HvspProgramFlash_pollTimeout" value="6"/>
-                    <property name="HvspReadFlash_blockSize" value="256"/>
-                    <property name="HvspProgramEeprom_mode" value="0x05"/>
-                    <property name="HvspProgramEeprom_blockSize" value="256"/>
-                    <property name="HvspProgramEeprom_pollTimeout" value="5"/>
-                    <property name="HvspReadEeprom_blockSize" value="256"/>
-                    <property name="HvspProgramFuse_pollTimeout" value="25"/>
-                    <property name="HvspProgramLock_pollTimeout" value="25"/>
-                </property-group>
-            </property-groups>
-        </device>
-    </devices>
+    <device name="ATmega8HVA" architecture="AVR8" family="megaAVR">
+        <address-spaces>
+            <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x2000">
+                <memory-segment start="0x0000" size="0x2000" type="flash" rw="RW" exec="1" name="FLASH"
+                                pagesize="0x80"/>
+            </address-space>
+            <address-space endianness="little" name="signatures" id="signatures" start="0" size="3">
+                <memory-segment start="0" size="3" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
+            </address-space>
+            <address-space endianness="little" name="fuses" id="fuses" start="0" size="0x0001">
+                <memory-segment start="0" size="0x0001" type="fuses" rw="RW" exec="0" name="FUSES"/>
+            </address-space>
+            <address-space endianness="little" name="lockbits" id="lockbits" start="0" size="0x0001">
+                <memory-segment start="0" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
+            </address-space>
+            <address-space endianness="little" name="data" id="data" start="0x0000" size="0x0300">
+                <memory-segment external="false" type="regs" size="0x0020" start="0x0000" name="REGISTERS"/>
+                <memory-segment name="MAPPED_IO" start="0x0020" size="0x00e0" type="io" external="false"/>
+                <memory-segment name="IRAM" start="0x0100" size="0x0200" type="ram" external="false"/>
+            </address-space>
+            <address-space endianness="little" name="eeprom" id="eeprom" start="0x0000" size="0x0100">
+                <memory-segment start="0x0000" size="0x0100" type="eeprom" rw="RW" exec="0" name="EEPROM"
+                                pagesize="0x04"/>
+            </address-space>
+            <address-space size="0x40" start="0x00" endianness="little" name="io" id="io"/>
+        </address-spaces>
+        <peripherals>
+            <module name="ADC">
+                <instance name="ADC" caption="Analog-to-Digital Converter">
+                    <register-group name="ADC" name-in-module="ADC" offset="0x00" address-space="data"
+                                    caption="Analog-to-Digital Converter"/>
+                </instance>
+            </module>
+            <module name="WDT">
+                <instance name="WDT" caption="Watchdog Timer">
+                    <register-group name="WDT" name-in-module="WDT" offset="0x00" address-space="data"
+                                    caption="Watchdog Timer"/>
+                </instance>
+            </module>
+            <module name="BANDGAP">
+                <instance name="BANDGAP" caption="Bandgap">
+                    <register-group name="BANDGAP" name-in-module="BANDGAP" offset="0x00" address-space="data"
+                                    caption="Bandgap"/>
+                </instance>
+            </module>
+            <module name="EXINT">
+                <instance name="EXINT" caption="External Interrupts">
+                    <register-group name="EXINT" name-in-module="EXINT" offset="0x00" address-space="data"
+                                    caption="External Interrupts"/>
+                </instance>
+            </module>
+            <module name="PORT">
+                <instance name="PORTC" caption="I/O Port">
+                    <register-group name="PORTC" name-in-module="PORTC" offset="0x00" address-space="data"
+                                    caption="I/O Port"/>
+                </instance>
+                <instance name="PORTA" caption="I/O Port">
+                    <register-group name="PORTA" name-in-module="PORTA" offset="0x00" address-space="data"
+                                    caption="I/O Port"/>
+                </instance>
+                <instance name="PORTB" caption="I/O Port">
+                    <register-group name="PORTB" name-in-module="PORTB" offset="0x00" address-space="data"
+                                    caption="I/O Port"/>
+                </instance>
+            </module>
+            <module name="FET">
+                <instance name="FET" caption="FET Control">
+                    <register-group name="FET" name-in-module="FET" offset="0x00" address-space="data"
+                                    caption="FET Control"/>
+                </instance>
+            </module>
+            <module name="SPI">
+                <instance name="SPI" caption="Serial Peripheral Interface">
+                    <register-group name="SPI" name-in-module="SPI" offset="0x00" address-space="data"
+                                    caption="Serial Peripheral Interface"/>
+                </instance>
+            </module>
+            <module name="BOOT_LOAD">
+                <instance name="BOOT_LOAD" caption="Bootloader">
+                    <register-group name="BOOT_LOAD" name-in-module="BOOT_LOAD" offset="0x00" address-space="data"
+                                    caption="Bootloader"/>
+                </instance>
+            </module>
+            <module name="CPU">
+                <instance name="CPU" caption="CPU Registers">
+                    <register-group name="CPU" name-in-module="CPU" offset="0x00" address-space="data"
+                                    caption="CPU Registers"/>
+                    <parameters>
+                        <param name="CORE_VERSION" value="V2E"/>
+                    </parameters>
+                </instance>
+            </module>
+            <module name="BATTERY_PROTECTION">
+                <instance name="BATTERY_PROTECTION" caption="Battery Protection">
+                    <register-group name="BATTERY_PROTECTION" name-in-module="BATTERY_PROTECTION" offset="0x00"
+                                    address-space="data" caption="Battery Protection"/>
+                </instance>
+            </module>
+            <module name="EEPROM">
+                <instance name="EEPROM" caption="EEPROM">
+                    <register-group name="EEPROM" name-in-module="EEPROM" offset="0x00" address-space="data"
+                                    caption="EEPROM"/>
+                </instance>
+            </module>
+            <module name="TC16">
+                <instance name="TC1" caption="Timer/Counter, 16-bit">
+                    <register-group name="TC1" name-in-module="TC1" offset="0x00" address-space="data"
+                                    caption="Timer/Counter, 16-bit"/>
+                </instance>
+                <instance name="TC0" caption="Timer/Counter, 16-bit">
+                    <register-group name="TC0" name-in-module="TC0" offset="0x00" address-space="data"
+                                    caption="Timer/Counter, 16-bit"/>
+                </instance>
+            </module>
+            <module name="COULOMB_COUNTER">
+                <instance name="COULOMB_COUNTER" caption="Coulomb Counter">
+                    <register-group name="COULOMB_COUNTER" name-in-module="COULOMB_COUNTER" offset="0x00"
+                                    address-space="data" caption="Coulomb Counter"/>
+                </instance>
+            </module>
+            <module name="VOLTAGE_REGULATOR">
+                <instance name="VOLTAGE_REGULATOR" caption="Voltage Regulator">
+                    <register-group name="VOLTAGE_REGULATOR" name-in-module="VOLTAGE_REGULATOR" offset="0x00"
+                                    address-space="data" caption="Voltage Regulator"/>
+                </instance>
+            </module>
+            <module name="FUSE">
+                <instance name="FUSE" caption="Fuses">
+                    <register-group name="FUSE" name-in-module="FUSE" offset="0" address-space="fuses"
+                                    caption="Fuses"/>
+                </instance>
+            </module>
+            <module name="LOCKBIT">
+                <instance name="LOCKBIT" caption="Lockbits">
+                    <register-group name="LOCKBIT" name-in-module="LOCKBIT" offset="0" address-space="lockbits"
+                                    caption="Lockbits"/>
+                </instance>
+            </module>
+        </peripherals>
+        <interrupts>
+            <interrupt index="0" name="RESET"
+                       caption="External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset"/>
+            <interrupt index="1" name="BPINT" caption="Battery Protection Interrupt"/>
+            <interrupt index="2" name="VREGMON" caption="Voltage regulator monitor interrupt"/>
+            <interrupt index="3" name="INT0" caption="External Interrupt Request 0"/>
+            <interrupt index="4" name="INT1" caption="External Interrupt Request 1"/>
+            <interrupt index="5" name="INT2" caption="External Interrupt Request 2"/>
+            <interrupt index="6" name="WDT" caption="Watchdog Timeout Interrupt"/>
+            <interrupt index="7" name="TIMER1_IC" caption="Timer 1 Input capture"/>
+            <interrupt index="8" name="TIMER1_COMPA" caption="Timer 1 Compare Match A"/>
+            <interrupt index="9" name="TIMER1_COMPB" caption="Timer 1 Compare Match B"/>
+            <interrupt index="10" name="TIMER1_OVF" caption="Timer 1 overflow"/>
+            <interrupt index="11" name="TIMER0_IC" caption="Timer 0 Input Capture"/>
+            <interrupt index="12" name="TIMER0_COMPA" caption="Timer 0 Comapre Match A"/>
+            <interrupt index="13" name="TIMER0_COMPB" caption="Timer 0 Compare Match B"/>
+            <interrupt index="14" name="TIMER0_OVF" caption="Timer 0 Overflow"/>
+            <interrupt index="15" name="SPI_STC" caption="SPI Serial transfer complete"/>
+            <interrupt index="16" name="VADC" caption="Voltage ADC Conversion Complete"/>
+            <interrupt index="17" name="CCADC_CONV" caption="Coulomb Counter ADC Conversion Complete"/>
+            <interrupt index="18" name="CCADC_REG_CUR" caption="Coloumb Counter ADC Regular Current"/>
+            <interrupt index="19" name="CCADC_ACC" caption="Coloumb Counter ADC Accumulator"/>
+            <interrupt index="20" name="EE_READY" caption="EEPROM Ready"/>
+        </interrupts>
+        <interfaces>
+            <interface name="ISP" type="isp"/>
+            <interface name="HVSP" type="hvsp"/>
+            <interface name="debugWIRE" type="dw"/>
+        </interfaces>
+        <property-groups>
+            <property-group name="SIGNATURES">
+                <property name="JTAGID" value="0x9310"/>
+                <property name="SIGNATURE0" value="0x1e"/>
+                <property name="SIGNATURE1" value="0x93"/>
+                <property name="SIGNATURE2" value="0x10"/>
+            </property-group>
+            <property-group name="OCD">
+                <property name="OCD_REVISION" value="1"/>
+                <property name="OCD_DATAREG" value="0x31"/>
+                <property name="PROGBASE" value="0x0000"/>
+            </property-group>
+            <property-group name="JTAG_INTERFACE">
+                <property name="ALLOWFULLPAGESTREAM" value="0x00"/>
+            </property-group>
+            <property-group name="ISP_INTERFACE">
+                <property name="IspEnterProgMode_timeout" value="200"/>
+                <property name="IspEnterProgMode_stabDelay" value="100"/>
+                <property name="IspEnterProgMode_cmdexeDelay" value="25"/>
+                <property name="IspEnterProgMode_synchLoops" value="32"/>
+                <property name="IspEnterProgMode_byteDelay" value="0"/>
+                <property name="IspEnterProgMode_pollIndex" value="3"/>
+                <property name="IspEnterProgMode_pollValue" value="0x53"/>
+                <property name="IspLeaveProgMode_preDelay" value="1"/>
+                <property name="IspLeaveProgMode_postDelay" value="1"/>
+                <property name="IspChipErase_eraseDelay" value="20"/>
+                <property name="IspChipErase_pollMethod" value="1"/>
+                <property name="IspProgramFlash_mode" value="0x41"/>
+                <property name="IspProgramFlash_blockSize" value="128"/>
+                <property name="IspProgramFlash_delay" value="10"/>
+                <property name="IspProgramFlash_cmd1" value="0x40"/>
+                <property name="IspProgramFlash_cmd2" value="0x4C"/>
+                <property name="IspProgramFlash_cmd3" value="0x00"/>
+                <property name="IspProgramFlash_pollVal1" value="0x00"/>
+                <property name="IspProgramFlash_pollVal2" value="0x00"/>
+                <property name="IspProgramEeprom_mode" value="0x41"/>
+                <property name="IspProgramEeprom_blockSize" value="4"/>
+                <property name="IspProgramEeprom_delay" value="20"/>
+                <property name="IspProgramEeprom_cmd1" value="0xC1"/>
+                <property name="IspProgramEeprom_cmd2" value="0xC2"/>
+                <property name="IspProgramEeprom_cmd3" value="0x00"/>
+                <property name="IspProgramEeprom_pollVal1" value="0x00"/>
+                <property name="IspProgramEeprom_pollVal2" value="0x00"/>
+                <property name="IspReadFlash_blockSize" value="256"/>
+                <property name="IspReadEeprom_blockSize" value="256"/>
+                <property name="IspReadFuse_pollIndex" value="4"/>
+                <property name="IspReadLock_pollIndex" value="4"/>
+                <property name="IspReadSign_pollIndex" value="4"/>
+                <property name="IspReadOsccal_pollIndex" value="4"/>
+            </property-group>
+            <property-group name="HVSP_INTERFACE">
+                <property name="HvspControlStack"
+                          value="0x4C 0x0C 0x1C 0x2C 0x3C 0x64 0x74 0x66 0x68 0x78 0x68 0x68 0x7A 0x6A 0x68 0x78 0x78 0x7D 0x6D 0x0C 0x80 0x40 0x20 0x10 0x11 0x08 0x04 0x02 0x03 0x08 0x04 0x0F"/>
+                <property name="HvspEnterProgMode_stabDelay" value="100"/>
+                <property name="HvspEnterProgMode_cmdexeDelay" value="0"/>
+                <property name="HvspEnterProgMode_synchCycles" value="6"/>
+                <property name="HvspEnterProgMode_latchCycles" value="1"/>
+                <property name="HvspEnterProgMode_toggleVtg" value="1"/>
+                <property name="HvspEnterProgMode_powoffDelay" value="25"/>
+                <property name="HvspEnterProgMode_resetDelay1" value="1"/>
+                <property name="HvspEnterProgMode_resetDelay2" value="70"/>
+                <property name="HvspLeaveProgMode_stabDelay" value="101"/>
+                <property name="HvspLeaveProgMode_resetDelay" value="26"/>
+                <property name="HvspChipErase_pollTimeout" value="40"/>
+                <property name="HvspChipErase_eraseTime" value="1"/>
+                <property name="HvspProgramFlash_mode" value="0x0D"/>
+                <property name="HvspProgramFlash_blockSize" value="256"/>
+                <property name="HvspProgramFlash_pollTimeout" value="6"/>
+                <property name="HvspReadFlash_blockSize" value="256"/>
+                <property name="HvspProgramEeprom_mode" value="0x05"/>
+                <property name="HvspProgramEeprom_blockSize" value="256"/>
+                <property name="HvspProgramEeprom_pollTimeout" value="5"/>
+                <property name="HvspReadEeprom_blockSize" value="256"/>
+                <property name="HvspProgramFuse_pollTimeout" value="25"/>
+                <property name="HvspProgramLock_pollTimeout" value="25"/>
+            </property-group>
+        </property-groups>
+    </device>
     <modules>
         <module caption="Fuses" name="FUSE">
             <register-group caption="Fuses" name="FUSE">

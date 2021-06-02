@@ -81,7 +81,7 @@ function processAvrPartFiles($path) : array {
             continue;
         }
 
-        $device = $pdXml->devices[0]->device;
+        $device = $pdXml->device;
 
         $partDescriptionXml = new TargetDescription();
         $partDescriptionXml->originalFilePath = $file;

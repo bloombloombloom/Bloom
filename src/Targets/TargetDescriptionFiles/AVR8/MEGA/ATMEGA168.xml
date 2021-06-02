@@ -14,451 +14,449 @@
         <variant ordercode="ATmega168-20PU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="PDIP28"
                  package="PDIP28" vccmin="2.7" vccmax="5.5"/>
     </variants>
-    <devices>
-        <device name="ATmega168" architecture="AVR8" family="megaAVR">
-            <address-spaces>
-                <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x4000">
-                    <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="FLASH"
-                                    pagesize="0x80"/>
-                    <memory-segment start="0x3f00" size="0x0100" type="flash" rw="RW" exec="1" name="BOOT_SECTION_1"
-                                    pagesize="0x80"/>
-                    <memory-segment start="0x3e00" size="0x0200" type="flash" rw="RW" exec="1" name="BOOT_SECTION_2"
-                                    pagesize="0x80"/>
-                    <memory-segment start="0x3c00" size="0x0400" type="flash" rw="RW" exec="1" name="BOOT_SECTION_3"
-                                    pagesize="0x80"/>
-                    <memory-segment start="0x3800" size="0x0800" type="flash" rw="RW" exec="1" name="BOOT_SECTION_4"
-                                    pagesize="0x80"/>
-                </address-space>
-                <address-space endianness="little" name="signatures" id="signatures" start="0" size="3">
-                    <memory-segment start="0" size="3" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
-                </address-space>
-                <address-space endianness="little" name="fuses" id="fuses" start="0" size="0x0003">
-                    <memory-segment start="0" size="0x0003" type="fuses" rw="RW" exec="0" name="FUSES"/>
-                </address-space>
-                <address-space endianness="little" name="lockbits" id="lockbits" start="0" size="0x0001">
-                    <memory-segment start="0" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
-                </address-space>
-                <address-space endianness="little" name="data" id="data" start="0x0000" size="0x0500">
-                    <memory-segment external="false" type="regs" size="0x0020" start="0x0000" name="REGISTERS"/>
-                    <memory-segment name="MAPPED_IO" start="0x0020" size="0x00e0" type="io" external="false"/>
-                    <memory-segment name="IRAM" start="0x0100" size="0x0400" type="ram" external="false"/>
-                </address-space>
-                <address-space endianness="little" name="eeprom" id="eeprom" start="0x0000" size="0x0200">
-                    <memory-segment start="0x0000" size="0x0200" type="eeprom" rw="RW" exec="0" name="EEPROM"
-                                    pagesize="0x04"/>
-                </address-space>
-                <address-space size="0x40" start="0x00" endianness="little" name="io" id="io"/>
-                <address-space endianness="little" name="osccal" id="osccal" start="0" size="1">
-                    <memory-segment start="0" size="1" type="osccal" rw="R" exec="0" name="OSCCAL"/>
-                </address-space>
-            </address-spaces>
-            <peripherals>
-                <module name="USART">
-                    <instance name="USART0" caption="USART">
-                        <register-group name="USART0" name-in-module="USART0" offset="0x00" address-space="data"
-                                        caption="USART"/>
-                        <signals>
-                            <signal group="TXD" function="default" pad="PD1"/>
-                            <signal group="RXD" function="default" pad="PD0"/>
-                            <signal group="XCK" function="default" pad="PD4"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="TWI">
-                    <instance name="TWI" caption="Two Wire Serial Interface">
-                        <register-group name="TWI" name-in-module="TWI" offset="0x00" address-space="data"
-                                        caption="Two Wire Serial Interface"/>
-                        <signals>
-                            <signal group="SDA" function="default" pad="PC4"/>
-                            <signal group="SCL" function="default" pad="PC5"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="TC16">
-                    <instance name="TC1" caption="Timer/Counter, 16-bit">
-                        <register-group name="TC1" name-in-module="TC1" offset="0x00" address-space="data"
-                                        caption="Timer/Counter, 16-bit"/>
-                        <signals>
-                            <signal group="T" function="default" pad="PD5"/>
-                            <signal group="ICP" function="default" pad="PB0"/>
-                            <signal group="OCA" function="default" pad="PB1"/>
-                            <signal group="OCB" function="default" pad="PB2"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="TC8_ASYNC">
-                    <instance name="TC2" caption="Timer/Counter, 8-bit Async">
-                        <register-group name="TC2" name-in-module="TC2" offset="0x00" address-space="data"
-                                        caption="Timer/Counter, 8-bit Async"/>
-                        <signals>
-                            <signal group="OCA" function="default" pad="PB3"/>
-                            <signal group="OCB" function="default" pad="PD3"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="ADC">
-                    <instance name="ADC" caption="Analog-to-Digital Converter">
-                        <register-group name="ADC" name-in-module="ADC" offset="0x00" address-space="data"
-                                        caption="Analog-to-Digital Converter"/>
-                        <signals>
-                            <signal group="ADC" index="0" function="default" pad="PC0"/>
-                            <signal group="ADC" index="1" function="default" pad="PC1"/>
-                            <signal group="ADC" index="2" function="default" pad="PC2"/>
-                            <signal group="ADC" index="3" function="default" pad="PC3"/>
-                            <signal group="ADC" index="4" function="default" pad="PC4"/>
-                            <signal group="ADC" index="5" function="default" pad="PC5"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="AC">
-                    <instance name="AC" caption="Analog Comparator">
-                        <register-group name="AC" name-in-module="AC" offset="0x00" address-space="data"
-                                        caption="Analog Comparator"/>
-                        <signals>
-                            <signal group="AIN" index="0" function="default" pad="PD6"/>
-                            <signal group="AIN" index="1" function="default" pad="PD7"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="PORT">
-                    <instance name="PORTB" caption="I/O Port">
-                        <register-group name="PORTB" name-in-module="PORTB" offset="0x00" address-space="data"
-                                        caption="I/O Port"/>
-                        <signals>
-                            <signal group="P" function="default" pad="PB0" index="0"/>
-                            <signal group="P" function="default" pad="PB1" index="1"/>
-                            <signal group="P" function="default" pad="PB2" index="2"/>
-                            <signal group="P" function="default" pad="PB3" index="3"/>
-                            <signal group="P" function="default" pad="PB4" index="4"/>
-                            <signal group="P" function="default" pad="PB5" index="5"/>
-                            <signal group="P" function="default" pad="PB6" index="6"/>
-                            <signal group="P" function="default" pad="PB7" index="7"/>
-                        </signals>
-                    </instance>
-                    <instance name="PORTC" caption="I/O Port">
-                        <register-group name="PORTC" name-in-module="PORTC" offset="0x00" address-space="data"
-                                        caption="I/O Port"/>
-                        <signals>
-                            <signal group="P" function="default" pad="PC0" index="0"/>
-                            <signal group="P" function="default" pad="PC1" index="1"/>
-                            <signal group="P" function="default" pad="PC2" index="2"/>
-                            <signal group="P" function="default" pad="PC3" index="3"/>
-                            <signal group="P" function="default" pad="PC4" index="4"/>
-                            <signal group="P" function="default" pad="PC5" index="5"/>
-                            <signal group="P" function="default" pad="PC6" index="6"/>
-                        </signals>
-                    </instance>
-                    <instance name="PORTD" caption="I/O Port">
-                        <register-group name="PORTD" name-in-module="PORTD" offset="0x00" address-space="data"
-                                        caption="I/O Port"/>
-                        <signals>
-                            <signal group="P" function="default" pad="PD0" index="0"/>
-                            <signal group="P" function="default" pad="PD1" index="1"/>
-                            <signal group="P" function="default" pad="PD2" index="2"/>
-                            <signal group="P" function="default" pad="PD3" index="3"/>
-                            <signal group="P" function="default" pad="PD4" index="4"/>
-                            <signal group="P" function="default" pad="PD5" index="5"/>
-                            <signal group="P" function="default" pad="PD6" index="6"/>
-                            <signal group="P" function="default" pad="PD7" index="7"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="TC8">
-                    <instance name="TC0" caption="Timer/Counter, 8-bit">
-                        <register-group name="TC0" name-in-module="TC0" offset="0x00" address-space="data"
-                                        caption="Timer/Counter, 8-bit"/>
-                        <signals>
-                            <signal group="T" function="default" pad="PD4"/>
-                            <signal group="OCB" function="default" pad="PD5"/>
-                            <signal group="OCA" function="default" pad="PD6"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="EXINT">
-                    <instance name="EXINT" caption="External Interrupts">
-                        <register-group name="EXINT" name-in-module="EXINT" offset="0x00" address-space="data"
-                                        caption="External Interrupts"/>
-                        <signals>
-                            <signal group="INT" index="1" function="default" pad="PD3"/>
-                            <signal group="PCINT" index="19" function="default" pad="PD3"/>
-                            <signal group="PCINT" index="20" function="default" pad="PD4"/>
-                            <signal group="PCINT" index="6" function="default" pad="PB6"/>
-                            <signal group="PCINT" index="7" function="default" pad="PB7"/>
-                            <signal group="PCINT" index="21" function="default" pad="PD5"/>
-                            <signal group="PCINT" index="22" function="default" pad="PD6"/>
-                            <signal group="PCINT" index="23" function="default" pad="PD7"/>
-                            <signal group="PCINT" index="0" function="default" pad="PB0"/>
-                            <signal group="PCINT" index="1" function="default" pad="PB1"/>
-                            <signal group="PCINT" index="2" function="default" pad="PB2"/>
-                            <signal group="PCINT" index="3" function="default" pad="PB3"/>
-                            <signal group="PCINT" index="4" function="default" pad="PB4"/>
-                            <signal group="PCINT" index="5" function="default" pad="PB5"/>
-                            <signal group="PCINT" index="8" function="default" pad="PC0"/>
-                            <signal group="PCINT" index="9" function="default" pad="PC1"/>
-                            <signal group="PCINT" index="10" function="default" pad="PC2"/>
-                            <signal group="PCINT" index="11" function="default" pad="PC3"/>
-                            <signal group="PCINT" index="12" function="default" pad="PC4"/>
-                            <signal group="PCINT" index="13" function="default" pad="PC5"/>
-                            <signal group="PCINT" index="14" function="default" pad="PC6"/>
-                            <signal group="PCINT" index="16" function="default" pad="PD0"/>
-                            <signal group="PCINT" index="17" function="default" pad="PD1"/>
-                            <signal group="PCINT" index="18" function="default" pad="PD2"/>
-                            <signal group="INT" index="0" function="default" pad="PD2"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="SPI">
-                    <instance name="SPI" caption="Serial Peripheral Interface">
-                        <register-group name="SPI" name-in-module="SPI" offset="0x00" address-space="data"
-                                        caption="Serial Peripheral Interface"/>
-                        <signals>
-                            <signal group="SS" function="default" pad="PB2"/>
-                            <signal group="MOSI" function="default" pad="PB3"/>
-                            <signal group="MISO" function="default" pad="PB4"/>
-                            <signal group="SCK" function="default" pad="PB5"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="CPU">
-                    <instance name="CPU" caption="CPU Registers">
-                        <register-group name="CPU" name-in-module="CPU" offset="0x00" address-space="data"
-                                        caption="CPU Registers"/>
-                        <signals>
-                            <signal group="CLK" index="0" function="default" pad="PB0"/>
-                        </signals>
-                        <parameters>
-                            <param name="CORE_VERSION" value="V2E"/>
-                        </parameters>
-                    </instance>
-                </module>
-                <module name="WDT">
-                    <instance name="WDT" caption="Watchdog Timer">
-                        <register-group name="WDT" name-in-module="WDT" offset="0x00" address-space="data"
-                                        caption="Watchdog Timer"/>
-                    </instance>
-                </module>
-                <module name="EEPROM">
-                    <instance name="EEPROM" caption="EEPROM">
-                        <register-group name="EEPROM" name-in-module="EEPROM" offset="0x00" address-space="data"
-                                        caption="EEPROM"/>
-                    </instance>
-                </module>
-                <module name="FUSE">
-                    <instance name="FUSE" caption="Fuses">
-                        <register-group name="FUSE" name-in-module="FUSE" offset="0" address-space="fuses"
-                                        caption="Fuses"/>
-                    </instance>
-                </module>
-                <module name="LOCKBIT">
-                    <instance name="LOCKBIT" caption="Lockbits">
-                        <register-group name="LOCKBIT" name-in-module="LOCKBIT" offset="0" address-space="lockbits"
-                                        caption="Lockbits"/>
-                    </instance>
-                </module>
-            </peripherals>
-            <interrupts>
-                <interrupt index="0" name="RESET"
-                           caption="External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset"/>
-                <interrupt index="1" name="INT0" caption="External Interrupt Request 0"/>
-                <interrupt index="2" name="INT1" caption="External Interrupt Request 1"/>
-                <interrupt index="3" name="PCINT0" caption="Pin Change Interrupt Request 0"/>
-                <interrupt index="4" name="PCINT1" caption="Pin Change Interrupt Request 0"/>
-                <interrupt index="5" name="PCINT2" caption="Pin Change Interrupt Request 1"/>
-                <interrupt index="6" name="WDT" caption="Watchdog Time-out Interrupt"/>
-                <interrupt index="7" name="TIMER2_COMPA" caption="Timer/Counter2 Compare Match A"/>
-                <interrupt index="8" name="TIMER2_COMPB" caption="Timer/Counter2 Compare Match A"/>
-                <interrupt index="9" name="TIMER2_OVF" caption="Timer/Counter2 Overflow"/>
-                <interrupt index="10" name="TIMER1_CAPT" caption="Timer/Counter1 Capture Event"/>
-                <interrupt index="11" name="TIMER1_COMPA" caption="Timer/Counter1 Compare Match A"/>
-                <interrupt index="12" name="TIMER1_COMPB" caption="Timer/Counter1 Compare Match B"/>
-                <interrupt index="13" name="TIMER1_OVF" caption="Timer/Counter1 Overflow"/>
-                <interrupt index="14" name="TIMER0_COMPA" caption="TimerCounter0 Compare Match A"/>
-                <interrupt index="15" name="TIMER0_COMPB" caption="TimerCounter0 Compare Match B"/>
-                <interrupt index="16" name="TIMER0_OVF" caption="Timer/Couner0 Overflow"/>
-                <interrupt index="17" name="SPI_STC" caption="SPI Serial Transfer Complete"/>
-                <interrupt index="18" name="USART_RX" caption="USART Rx Complete"/>
-                <interrupt index="19" name="USART_UDRE" caption="USART, Data Register Empty"/>
-                <interrupt index="20" name="USART_TX" caption="USART Tx Complete"/>
-                <interrupt index="21" name="ADC" caption="ADC Conversion Complete"/>
-                <interrupt index="22" name="EE_READY" caption="EEPROM Ready"/>
-                <interrupt index="23" name="ANALOG_COMP" caption="Analog Comparator"/>
-                <interrupt index="24" name="TWI" caption="Two-wire Serial Interface"/>
-                <interrupt index="25" name="SPM_READY" caption="Store Program Memory Read"/>
-            </interrupts>
-            <interfaces>
-                <interface name="ISP" type="isp"/>
-                <interface name="HVPP" type="hvpp"/>
-                <interface name="debugWIRE" type="dw"/>
-            </interfaces>
-            <property-groups>
-                <property-group name="SIGNATURES">
-                    <property name="JTAGID" value="0x9406"/>
-                    <property name="SIGNATURE0" value="0x1e"/>
-                    <property name="SIGNATURE1" value="0x94"/>
-                    <property name="SIGNATURE2" value="0x06"/>
-                </property-group>
-                <property-group name="OCD">
-                    <property name="OCD_REVISION" value="1"/>
-                    <property name="OCD_DATAREG" value="0x31"/>
-                    <property name="PROGBASE" value="0x0000"/>
-                </property-group>
-                <property-group name="JTAG_INTERFACE">
-                    <property name="ALLOWFULLPAGESTREAM" value="0x00"/>
-                </property-group>
-                <property-group name="ISP_INTERFACE">
-                    <property name="IspEnterProgMode_timeout" value="200"/>
-                    <property name="IspEnterProgMode_stabDelay" value="100"/>
-                    <property name="IspEnterProgMode_cmdexeDelay" value="25"/>
-                    <property name="IspEnterProgMode_synchLoops" value="32"/>
-                    <property name="IspEnterProgMode_byteDelay" value="0"/>
-                    <property name="IspEnterProgMode_pollIndex" value="3"/>
-                    <property name="IspEnterProgMode_pollValue" value="0x53"/>
-                    <property name="IspLeaveProgMode_preDelay" value="1"/>
-                    <property name="IspLeaveProgMode_postDelay" value="1"/>
-                    <property name="IspChipErase_eraseDelay" value="45"/>
-                    <property name="IspChipErase_pollMethod" value="1"/>
-                    <property name="IspProgramFlash_mode" value="0x41"/>
-                    <property name="IspProgramFlash_blockSize" value="128"/>
-                    <property name="IspProgramFlash_delay" value="10"/>
-                    <property name="IspProgramFlash_cmd1" value="0x40"/>
-                    <property name="IspProgramFlash_cmd2" value="0x4C"/>
-                    <property name="IspProgramFlash_cmd3" value="0x00"/>
-                    <property name="IspProgramFlash_pollVal1" value="0x00"/>
-                    <property name="IspProgramFlash_pollVal2" value="0x00"/>
-                    <property name="IspProgramEeprom_mode" value="0x41"/>
-                    <property name="IspProgramEeprom_blockSize" value="4"/>
-                    <property name="IspProgramEeprom_delay" value="20"/>
-                    <property name="IspProgramEeprom_cmd1" value="0xC1"/>
-                    <property name="IspProgramEeprom_cmd2" value="0xC2"/>
-                    <property name="IspProgramEeprom_cmd3" value="0x00"/>
-                    <property name="IspProgramEeprom_pollVal1" value="0x00"/>
-                    <property name="IspProgramEeprom_pollVal2" value="0x00"/>
-                    <property name="IspReadFlash_blockSize" value="256"/>
-                    <property name="IspReadEeprom_blockSize" value="256"/>
-                    <property name="IspReadFuse_pollIndex" value="4"/>
-                    <property name="IspReadLock_pollIndex" value="4"/>
-                    <property name="IspReadSign_pollIndex" value="4"/>
-                    <property name="IspReadOsccal_pollIndex" value="4"/>
-                </property-group>
-                <property-group name="PP_INTERFACE">
-                    <property name="PpControlStack"
-                              value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
-                    <property name="PpEnterProgMode_stabDelay" value="100"/>
-                    <property name="PpEnterProgMode_progModeDelay" value="0"/>
-                    <property name="PpEnterProgMode_latchCycles" value="5"/>
-                    <property name="PpEnterProgMode_toggleVtg" value="1"/>
-                    <property name="PpEnterProgMode_powerOffDelay" value="15"/>
-                    <property name="PpEnterProgMode_resetDelayMs" value="1"/>
-                    <property name="PpEnterProgMode_resetDelayUs" value="0"/>
-                    <property name="PpLeaveProgMode_stabDelay" value="15"/>
-                    <property name="PpLeaveProgMode_resetDelay" value="15"/>
-                    <property name="PpChipErase_pulseWidth" value="0"/>
-                    <property name="PpChipErase_pollTimeout" value="10"/>
-                    <property name="PpProgramFlash_pollTimeout" value="5"/>
-                    <property name="PpProgramFlash_mode" value="0x0F"/>
-                    <property name="PpProgramFlash_blockSize" value="256"/>
-                    <property name="PpReadFlash_blockSize" value="256"/>
-                    <property name="PpProgramEeprom_pollTimeout" value="5"/>
-                    <property name="PpProgramEeprom_mode" value="0x05"/>
-                    <property name="PpProgramEeprom_blockSize" value="256"/>
-                    <property name="PpReadEeprom_blockSize" value="256"/>
-                    <property name="PpProgramFuse_pulseWidth" value="0"/>
-                    <property name="PpProgramFuse_pollTimeout" value="5"/>
-                    <property name="PpProgramLock_pulseWidth" value="0"/>
-                    <property name="PpProgramLock_pollTimeout" value="5"/>
-                </property-group>
-                <property-group name="ISP_INTERFACE_STK600">
-                    <property name="IspEnterProgMode_timeout" value="200"/>
-                    <property name="IspEnterProgMode_stabDelay" value="100"/>
-                    <property name="IspEnterProgMode_cmdexeDelay" value="25"/>
-                    <property name="IspEnterProgMode_synchLoops" value="32"/>
-                    <property name="IspEnterProgMode_byteDelay" value="0"/>
-                    <property name="IspEnterProgMode_pollIndex" value="3"/>
-                    <property name="IspEnterProgMode_pollValue" value="0x53"/>
-                    <property name="IspLeaveProgMode_preDelay" value="1"/>
-                    <property name="IspLeaveProgMode_postDelay" value="1"/>
-                    <property name="IspChipErase_eraseDelay" value="45"/>
-                    <property name="IspChipErase_pollMethod" value="1"/>
-                    <property name="IspProgramFlash_mode" value="0x41"/>
-                    <property name="IspProgramFlash_blockSize" value="128"/>
-                    <property name="IspProgramFlash_delay" value="6"/>
-                    <property name="IspProgramFlash_cmd1" value="0x40"/>
-                    <property name="IspProgramFlash_cmd2" value="0x4C"/>
-                    <property name="IspProgramFlash_cmd3" value="0x00"/>
-                    <property name="IspProgramFlash_pollVal1" value="0x00"/>
-                    <property name="IspProgramFlash_pollVal2" value="0x00"/>
-                    <property name="IspProgramEeprom_mode" value="0x41"/>
-                    <property name="IspProgramEeprom_blockSize" value="4"/>
-                    <property name="IspProgramEeprom_delay" value="5"/>
-                    <property name="IspProgramEeprom_cmd1" value="0xC1"/>
-                    <property name="IspProgramEeprom_cmd2" value="0xC2"/>
-                    <property name="IspProgramEeprom_cmd3" value="0x00"/>
-                    <property name="IspProgramEeprom_pollVal1" value="0x00"/>
-                    <property name="IspProgramEeprom_pollVal2" value="0x00"/>
-                    <property name="IspReadFlash_blockSize" value="256"/>
-                    <property name="IspReadEeprom_blockSize" value="256"/>
-                    <property name="IspReadFuse_pollIndex" value="4"/>
-                    <property name="IspReadLock_pollIndex" value="4"/>
-                    <property name="IspReadSign_pollIndex" value="4"/>
-                    <property name="IspReadOsccal_pollIndex" value="4"/>
-                </property-group>
-                <property-group name="PP_INTERFACE_STK600">
-                    <property name="PpControlStack"
-                              value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
-                    <property name="PpEnterProgMode_stabDelay" value="100"/>
-                    <property name="PpEnterProgMode_progModeDelay" value="0"/>
-                    <property name="PpEnterProgMode_latchCycles" value="5"/>
-                    <property name="PpEnterProgMode_toggleVtg" value="1"/>
-                    <property name="PpEnterProgMode_powerOffDelay" value="20"/>
-                    <property name="PpEnterProgMode_resetDelayMs" value="1"/>
-                    <property name="PpEnterProgMode_resetDelayUs" value="0"/>
-                    <property name="PpLeaveProgMode_stabDelay" value="15"/>
-                    <property name="PpLeaveProgMode_resetDelay" value="15"/>
-                    <property name="PpChipErase_pulseWidth" value="0"/>
-                    <property name="PpChipErase_pollTimeout" value="10"/>
-                    <property name="PpProgramFlash_pollTimeout" value="5"/>
-                    <property name="PpProgramFlash_mode" value="0x0F"/>
-                    <property name="PpProgramFlash_blockSize" value="256"/>
-                    <property name="PpReadFlash_blockSize" value="256"/>
-                    <property name="PpProgramEeprom_pollTimeout" value="5"/>
-                    <property name="PpProgramEeprom_mode" value="0x05"/>
-                    <property name="PpProgramEeprom_blockSize" value="256"/>
-                    <property name="PpReadEeprom_blockSize" value="256"/>
-                    <property name="PpProgramFuse_pulseWidth" value="0"/>
-                    <property name="PpProgramFuse_pollTimeout" value="5"/>
-                    <property name="PpProgramLock_pulseWidth" value="0"/>
-                    <property name="PpProgramLock_pollTimeout" value="5"/>
-                </property-group>
-                <property-group name="PP_INTERFACE_AVRDRAGON">
-                    <property name="PpControlStack"
-                              value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x0C 0x01 0x00 0x00 0x00 0x00"/>
-                    <property name="PpEnterProgMode_stabDelay" value="100"/>
-                    <property name="PpEnterProgMode_progModeDelay" value="0"/>
-                    <property name="PpEnterProgMode_latchCycles" value="5"/>
-                    <property name="PpEnterProgMode_toggleVtg" value="1"/>
-                    <property name="PpEnterProgMode_powerOffDelay" value="15"/>
-                    <property name="PpEnterProgMode_resetDelayMs" value="1"/>
-                    <property name="PpEnterProgMode_resetDelayUs" value="0"/>
-                    <property name="PpLeaveProgMode_stabDelay" value="15"/>
-                    <property name="PpLeaveProgMode_resetDelay" value="15"/>
-                    <property name="PpChipErase_pulseWidth" value="0"/>
-                    <property name="PpChipErase_pollTimeout" value="10"/>
-                    <property name="PpProgramFlash_pollTimeout" value="5"/>
-                    <property name="PpProgramFlash_mode" value="0x0F"/>
-                    <property name="PpProgramFlash_blockSize" value="256"/>
-                    <property name="PpReadFlash_blockSize" value="256"/>
-                    <property name="PpProgramEeprom_pollTimeout" value="5"/>
-                    <property name="PpProgramEeprom_mode" value="0x05"/>
-                    <property name="PpProgramEeprom_blockSize" value="256"/>
-                    <property name="PpReadEeprom_blockSize" value="256"/>
-                    <property name="PpProgramFuse_pulseWidth" value="0"/>
-                    <property name="PpProgramFuse_pollTimeout" value="5"/>
-                    <property name="PpProgramLock_pulseWidth" value="0"/>
-                    <property name="PpProgramLock_pollTimeout" value="5"/>
-                </property-group>
-            </property-groups>
-        </device>
-    </devices>
+    <device name="ATmega168" architecture="AVR8" family="megaAVR">
+        <address-spaces>
+            <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x4000">
+                <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="FLASH"
+                                pagesize="0x80"/>
+                <memory-segment start="0x3f00" size="0x0100" type="flash" rw="RW" exec="1" name="BOOT_SECTION_1"
+                                pagesize="0x80"/>
+                <memory-segment start="0x3e00" size="0x0200" type="flash" rw="RW" exec="1" name="BOOT_SECTION_2"
+                                pagesize="0x80"/>
+                <memory-segment start="0x3c00" size="0x0400" type="flash" rw="RW" exec="1" name="BOOT_SECTION_3"
+                                pagesize="0x80"/>
+                <memory-segment start="0x3800" size="0x0800" type="flash" rw="RW" exec="1" name="BOOT_SECTION_4"
+                                pagesize="0x80"/>
+            </address-space>
+            <address-space endianness="little" name="signatures" id="signatures" start="0" size="3">
+                <memory-segment start="0" size="3" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
+            </address-space>
+            <address-space endianness="little" name="fuses" id="fuses" start="0" size="0x0003">
+                <memory-segment start="0" size="0x0003" type="fuses" rw="RW" exec="0" name="FUSES"/>
+            </address-space>
+            <address-space endianness="little" name="lockbits" id="lockbits" start="0" size="0x0001">
+                <memory-segment start="0" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
+            </address-space>
+            <address-space endianness="little" name="data" id="data" start="0x0000" size="0x0500">
+                <memory-segment external="false" type="regs" size="0x0020" start="0x0000" name="REGISTERS"/>
+                <memory-segment name="MAPPED_IO" start="0x0020" size="0x00e0" type="io" external="false"/>
+                <memory-segment name="IRAM" start="0x0100" size="0x0400" type="ram" external="false"/>
+            </address-space>
+            <address-space endianness="little" name="eeprom" id="eeprom" start="0x0000" size="0x0200">
+                <memory-segment start="0x0000" size="0x0200" type="eeprom" rw="RW" exec="0" name="EEPROM"
+                                pagesize="0x04"/>
+            </address-space>
+            <address-space size="0x40" start="0x00" endianness="little" name="io" id="io"/>
+            <address-space endianness="little" name="osccal" id="osccal" start="0" size="1">
+                <memory-segment start="0" size="1" type="osccal" rw="R" exec="0" name="OSCCAL"/>
+            </address-space>
+        </address-spaces>
+        <peripherals>
+            <module name="USART">
+                <instance name="USART0" caption="USART">
+                    <register-group name="USART0" name-in-module="USART0" offset="0x00" address-space="data"
+                                    caption="USART"/>
+                    <signals>
+                        <signal group="TXD" function="default" pad="PD1"/>
+                        <signal group="RXD" function="default" pad="PD0"/>
+                        <signal group="XCK" function="default" pad="PD4"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="TWI">
+                <instance name="TWI" caption="Two Wire Serial Interface">
+                    <register-group name="TWI" name-in-module="TWI" offset="0x00" address-space="data"
+                                    caption="Two Wire Serial Interface"/>
+                    <signals>
+                        <signal group="SDA" function="default" pad="PC4"/>
+                        <signal group="SCL" function="default" pad="PC5"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="TC16">
+                <instance name="TC1" caption="Timer/Counter, 16-bit">
+                    <register-group name="TC1" name-in-module="TC1" offset="0x00" address-space="data"
+                                    caption="Timer/Counter, 16-bit"/>
+                    <signals>
+                        <signal group="T" function="default" pad="PD5"/>
+                        <signal group="ICP" function="default" pad="PB0"/>
+                        <signal group="OCA" function="default" pad="PB1"/>
+                        <signal group="OCB" function="default" pad="PB2"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="TC8_ASYNC">
+                <instance name="TC2" caption="Timer/Counter, 8-bit Async">
+                    <register-group name="TC2" name-in-module="TC2" offset="0x00" address-space="data"
+                                    caption="Timer/Counter, 8-bit Async"/>
+                    <signals>
+                        <signal group="OCA" function="default" pad="PB3"/>
+                        <signal group="OCB" function="default" pad="PD3"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="ADC">
+                <instance name="ADC" caption="Analog-to-Digital Converter">
+                    <register-group name="ADC" name-in-module="ADC" offset="0x00" address-space="data"
+                                    caption="Analog-to-Digital Converter"/>
+                    <signals>
+                        <signal group="ADC" index="0" function="default" pad="PC0"/>
+                        <signal group="ADC" index="1" function="default" pad="PC1"/>
+                        <signal group="ADC" index="2" function="default" pad="PC2"/>
+                        <signal group="ADC" index="3" function="default" pad="PC3"/>
+                        <signal group="ADC" index="4" function="default" pad="PC4"/>
+                        <signal group="ADC" index="5" function="default" pad="PC5"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="AC">
+                <instance name="AC" caption="Analog Comparator">
+                    <register-group name="AC" name-in-module="AC" offset="0x00" address-space="data"
+                                    caption="Analog Comparator"/>
+                    <signals>
+                        <signal group="AIN" index="0" function="default" pad="PD6"/>
+                        <signal group="AIN" index="1" function="default" pad="PD7"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="PORT">
+                <instance name="PORTB" caption="I/O Port">
+                    <register-group name="PORTB" name-in-module="PORTB" offset="0x00" address-space="data"
+                                    caption="I/O Port"/>
+                    <signals>
+                        <signal group="P" function="default" pad="PB0" index="0"/>
+                        <signal group="P" function="default" pad="PB1" index="1"/>
+                        <signal group="P" function="default" pad="PB2" index="2"/>
+                        <signal group="P" function="default" pad="PB3" index="3"/>
+                        <signal group="P" function="default" pad="PB4" index="4"/>
+                        <signal group="P" function="default" pad="PB5" index="5"/>
+                        <signal group="P" function="default" pad="PB6" index="6"/>
+                        <signal group="P" function="default" pad="PB7" index="7"/>
+                    </signals>
+                </instance>
+                <instance name="PORTC" caption="I/O Port">
+                    <register-group name="PORTC" name-in-module="PORTC" offset="0x00" address-space="data"
+                                    caption="I/O Port"/>
+                    <signals>
+                        <signal group="P" function="default" pad="PC0" index="0"/>
+                        <signal group="P" function="default" pad="PC1" index="1"/>
+                        <signal group="P" function="default" pad="PC2" index="2"/>
+                        <signal group="P" function="default" pad="PC3" index="3"/>
+                        <signal group="P" function="default" pad="PC4" index="4"/>
+                        <signal group="P" function="default" pad="PC5" index="5"/>
+                        <signal group="P" function="default" pad="PC6" index="6"/>
+                    </signals>
+                </instance>
+                <instance name="PORTD" caption="I/O Port">
+                    <register-group name="PORTD" name-in-module="PORTD" offset="0x00" address-space="data"
+                                    caption="I/O Port"/>
+                    <signals>
+                        <signal group="P" function="default" pad="PD0" index="0"/>
+                        <signal group="P" function="default" pad="PD1" index="1"/>
+                        <signal group="P" function="default" pad="PD2" index="2"/>
+                        <signal group="P" function="default" pad="PD3" index="3"/>
+                        <signal group="P" function="default" pad="PD4" index="4"/>
+                        <signal group="P" function="default" pad="PD5" index="5"/>
+                        <signal group="P" function="default" pad="PD6" index="6"/>
+                        <signal group="P" function="default" pad="PD7" index="7"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="TC8">
+                <instance name="TC0" caption="Timer/Counter, 8-bit">
+                    <register-group name="TC0" name-in-module="TC0" offset="0x00" address-space="data"
+                                    caption="Timer/Counter, 8-bit"/>
+                    <signals>
+                        <signal group="T" function="default" pad="PD4"/>
+                        <signal group="OCB" function="default" pad="PD5"/>
+                        <signal group="OCA" function="default" pad="PD6"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="EXINT">
+                <instance name="EXINT" caption="External Interrupts">
+                    <register-group name="EXINT" name-in-module="EXINT" offset="0x00" address-space="data"
+                                    caption="External Interrupts"/>
+                    <signals>
+                        <signal group="INT" index="1" function="default" pad="PD3"/>
+                        <signal group="PCINT" index="19" function="default" pad="PD3"/>
+                        <signal group="PCINT" index="20" function="default" pad="PD4"/>
+                        <signal group="PCINT" index="6" function="default" pad="PB6"/>
+                        <signal group="PCINT" index="7" function="default" pad="PB7"/>
+                        <signal group="PCINT" index="21" function="default" pad="PD5"/>
+                        <signal group="PCINT" index="22" function="default" pad="PD6"/>
+                        <signal group="PCINT" index="23" function="default" pad="PD7"/>
+                        <signal group="PCINT" index="0" function="default" pad="PB0"/>
+                        <signal group="PCINT" index="1" function="default" pad="PB1"/>
+                        <signal group="PCINT" index="2" function="default" pad="PB2"/>
+                        <signal group="PCINT" index="3" function="default" pad="PB3"/>
+                        <signal group="PCINT" index="4" function="default" pad="PB4"/>
+                        <signal group="PCINT" index="5" function="default" pad="PB5"/>
+                        <signal group="PCINT" index="8" function="default" pad="PC0"/>
+                        <signal group="PCINT" index="9" function="default" pad="PC1"/>
+                        <signal group="PCINT" index="10" function="default" pad="PC2"/>
+                        <signal group="PCINT" index="11" function="default" pad="PC3"/>
+                        <signal group="PCINT" index="12" function="default" pad="PC4"/>
+                        <signal group="PCINT" index="13" function="default" pad="PC5"/>
+                        <signal group="PCINT" index="14" function="default" pad="PC6"/>
+                        <signal group="PCINT" index="16" function="default" pad="PD0"/>
+                        <signal group="PCINT" index="17" function="default" pad="PD1"/>
+                        <signal group="PCINT" index="18" function="default" pad="PD2"/>
+                        <signal group="INT" index="0" function="default" pad="PD2"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="SPI">
+                <instance name="SPI" caption="Serial Peripheral Interface">
+                    <register-group name="SPI" name-in-module="SPI" offset="0x00" address-space="data"
+                                    caption="Serial Peripheral Interface"/>
+                    <signals>
+                        <signal group="SS" function="default" pad="PB2"/>
+                        <signal group="MOSI" function="default" pad="PB3"/>
+                        <signal group="MISO" function="default" pad="PB4"/>
+                        <signal group="SCK" function="default" pad="PB5"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="CPU">
+                <instance name="CPU" caption="CPU Registers">
+                    <register-group name="CPU" name-in-module="CPU" offset="0x00" address-space="data"
+                                    caption="CPU Registers"/>
+                    <signals>
+                        <signal group="CLK" index="0" function="default" pad="PB0"/>
+                    </signals>
+                    <parameters>
+                        <param name="CORE_VERSION" value="V2E"/>
+                    </parameters>
+                </instance>
+            </module>
+            <module name="WDT">
+                <instance name="WDT" caption="Watchdog Timer">
+                    <register-group name="WDT" name-in-module="WDT" offset="0x00" address-space="data"
+                                    caption="Watchdog Timer"/>
+                </instance>
+            </module>
+            <module name="EEPROM">
+                <instance name="EEPROM" caption="EEPROM">
+                    <register-group name="EEPROM" name-in-module="EEPROM" offset="0x00" address-space="data"
+                                    caption="EEPROM"/>
+                </instance>
+            </module>
+            <module name="FUSE">
+                <instance name="FUSE" caption="Fuses">
+                    <register-group name="FUSE" name-in-module="FUSE" offset="0" address-space="fuses"
+                                    caption="Fuses"/>
+                </instance>
+            </module>
+            <module name="LOCKBIT">
+                <instance name="LOCKBIT" caption="Lockbits">
+                    <register-group name="LOCKBIT" name-in-module="LOCKBIT" offset="0" address-space="lockbits"
+                                    caption="Lockbits"/>
+                </instance>
+            </module>
+        </peripherals>
+        <interrupts>
+            <interrupt index="0" name="RESET"
+                       caption="External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset"/>
+            <interrupt index="1" name="INT0" caption="External Interrupt Request 0"/>
+            <interrupt index="2" name="INT1" caption="External Interrupt Request 1"/>
+            <interrupt index="3" name="PCINT0" caption="Pin Change Interrupt Request 0"/>
+            <interrupt index="4" name="PCINT1" caption="Pin Change Interrupt Request 0"/>
+            <interrupt index="5" name="PCINT2" caption="Pin Change Interrupt Request 1"/>
+            <interrupt index="6" name="WDT" caption="Watchdog Time-out Interrupt"/>
+            <interrupt index="7" name="TIMER2_COMPA" caption="Timer/Counter2 Compare Match A"/>
+            <interrupt index="8" name="TIMER2_COMPB" caption="Timer/Counter2 Compare Match A"/>
+            <interrupt index="9" name="TIMER2_OVF" caption="Timer/Counter2 Overflow"/>
+            <interrupt index="10" name="TIMER1_CAPT" caption="Timer/Counter1 Capture Event"/>
+            <interrupt index="11" name="TIMER1_COMPA" caption="Timer/Counter1 Compare Match A"/>
+            <interrupt index="12" name="TIMER1_COMPB" caption="Timer/Counter1 Compare Match B"/>
+            <interrupt index="13" name="TIMER1_OVF" caption="Timer/Counter1 Overflow"/>
+            <interrupt index="14" name="TIMER0_COMPA" caption="TimerCounter0 Compare Match A"/>
+            <interrupt index="15" name="TIMER0_COMPB" caption="TimerCounter0 Compare Match B"/>
+            <interrupt index="16" name="TIMER0_OVF" caption="Timer/Couner0 Overflow"/>
+            <interrupt index="17" name="SPI_STC" caption="SPI Serial Transfer Complete"/>
+            <interrupt index="18" name="USART_RX" caption="USART Rx Complete"/>
+            <interrupt index="19" name="USART_UDRE" caption="USART, Data Register Empty"/>
+            <interrupt index="20" name="USART_TX" caption="USART Tx Complete"/>
+            <interrupt index="21" name="ADC" caption="ADC Conversion Complete"/>
+            <interrupt index="22" name="EE_READY" caption="EEPROM Ready"/>
+            <interrupt index="23" name="ANALOG_COMP" caption="Analog Comparator"/>
+            <interrupt index="24" name="TWI" caption="Two-wire Serial Interface"/>
+            <interrupt index="25" name="SPM_READY" caption="Store Program Memory Read"/>
+        </interrupts>
+        <interfaces>
+            <interface name="ISP" type="isp"/>
+            <interface name="HVPP" type="hvpp"/>
+            <interface name="debugWIRE" type="dw"/>
+        </interfaces>
+        <property-groups>
+            <property-group name="SIGNATURES">
+                <property name="JTAGID" value="0x9406"/>
+                <property name="SIGNATURE0" value="0x1e"/>
+                <property name="SIGNATURE1" value="0x94"/>
+                <property name="SIGNATURE2" value="0x06"/>
+            </property-group>
+            <property-group name="OCD">
+                <property name="OCD_REVISION" value="1"/>
+                <property name="OCD_DATAREG" value="0x31"/>
+                <property name="PROGBASE" value="0x0000"/>
+            </property-group>
+            <property-group name="JTAG_INTERFACE">
+                <property name="ALLOWFULLPAGESTREAM" value="0x00"/>
+            </property-group>
+            <property-group name="ISP_INTERFACE">
+                <property name="IspEnterProgMode_timeout" value="200"/>
+                <property name="IspEnterProgMode_stabDelay" value="100"/>
+                <property name="IspEnterProgMode_cmdexeDelay" value="25"/>
+                <property name="IspEnterProgMode_synchLoops" value="32"/>
+                <property name="IspEnterProgMode_byteDelay" value="0"/>
+                <property name="IspEnterProgMode_pollIndex" value="3"/>
+                <property name="IspEnterProgMode_pollValue" value="0x53"/>
+                <property name="IspLeaveProgMode_preDelay" value="1"/>
+                <property name="IspLeaveProgMode_postDelay" value="1"/>
+                <property name="IspChipErase_eraseDelay" value="45"/>
+                <property name="IspChipErase_pollMethod" value="1"/>
+                <property name="IspProgramFlash_mode" value="0x41"/>
+                <property name="IspProgramFlash_blockSize" value="128"/>
+                <property name="IspProgramFlash_delay" value="10"/>
+                <property name="IspProgramFlash_cmd1" value="0x40"/>
+                <property name="IspProgramFlash_cmd2" value="0x4C"/>
+                <property name="IspProgramFlash_cmd3" value="0x00"/>
+                <property name="IspProgramFlash_pollVal1" value="0x00"/>
+                <property name="IspProgramFlash_pollVal2" value="0x00"/>
+                <property name="IspProgramEeprom_mode" value="0x41"/>
+                <property name="IspProgramEeprom_blockSize" value="4"/>
+                <property name="IspProgramEeprom_delay" value="20"/>
+                <property name="IspProgramEeprom_cmd1" value="0xC1"/>
+                <property name="IspProgramEeprom_cmd2" value="0xC2"/>
+                <property name="IspProgramEeprom_cmd3" value="0x00"/>
+                <property name="IspProgramEeprom_pollVal1" value="0x00"/>
+                <property name="IspProgramEeprom_pollVal2" value="0x00"/>
+                <property name="IspReadFlash_blockSize" value="256"/>
+                <property name="IspReadEeprom_blockSize" value="256"/>
+                <property name="IspReadFuse_pollIndex" value="4"/>
+                <property name="IspReadLock_pollIndex" value="4"/>
+                <property name="IspReadSign_pollIndex" value="4"/>
+                <property name="IspReadOsccal_pollIndex" value="4"/>
+            </property-group>
+            <property-group name="PP_INTERFACE">
+                <property name="PpControlStack"
+                          value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
+                <property name="PpEnterProgMode_stabDelay" value="100"/>
+                <property name="PpEnterProgMode_progModeDelay" value="0"/>
+                <property name="PpEnterProgMode_latchCycles" value="5"/>
+                <property name="PpEnterProgMode_toggleVtg" value="1"/>
+                <property name="PpEnterProgMode_powerOffDelay" value="15"/>
+                <property name="PpEnterProgMode_resetDelayMs" value="1"/>
+                <property name="PpEnterProgMode_resetDelayUs" value="0"/>
+                <property name="PpLeaveProgMode_stabDelay" value="15"/>
+                <property name="PpLeaveProgMode_resetDelay" value="15"/>
+                <property name="PpChipErase_pulseWidth" value="0"/>
+                <property name="PpChipErase_pollTimeout" value="10"/>
+                <property name="PpProgramFlash_pollTimeout" value="5"/>
+                <property name="PpProgramFlash_mode" value="0x0F"/>
+                <property name="PpProgramFlash_blockSize" value="256"/>
+                <property name="PpReadFlash_blockSize" value="256"/>
+                <property name="PpProgramEeprom_pollTimeout" value="5"/>
+                <property name="PpProgramEeprom_mode" value="0x05"/>
+                <property name="PpProgramEeprom_blockSize" value="256"/>
+                <property name="PpReadEeprom_blockSize" value="256"/>
+                <property name="PpProgramFuse_pulseWidth" value="0"/>
+                <property name="PpProgramFuse_pollTimeout" value="5"/>
+                <property name="PpProgramLock_pulseWidth" value="0"/>
+                <property name="PpProgramLock_pollTimeout" value="5"/>
+            </property-group>
+            <property-group name="ISP_INTERFACE_STK600">
+                <property name="IspEnterProgMode_timeout" value="200"/>
+                <property name="IspEnterProgMode_stabDelay" value="100"/>
+                <property name="IspEnterProgMode_cmdexeDelay" value="25"/>
+                <property name="IspEnterProgMode_synchLoops" value="32"/>
+                <property name="IspEnterProgMode_byteDelay" value="0"/>
+                <property name="IspEnterProgMode_pollIndex" value="3"/>
+                <property name="IspEnterProgMode_pollValue" value="0x53"/>
+                <property name="IspLeaveProgMode_preDelay" value="1"/>
+                <property name="IspLeaveProgMode_postDelay" value="1"/>
+                <property name="IspChipErase_eraseDelay" value="45"/>
+                <property name="IspChipErase_pollMethod" value="1"/>
+                <property name="IspProgramFlash_mode" value="0x41"/>
+                <property name="IspProgramFlash_blockSize" value="128"/>
+                <property name="IspProgramFlash_delay" value="6"/>
+                <property name="IspProgramFlash_cmd1" value="0x40"/>
+                <property name="IspProgramFlash_cmd2" value="0x4C"/>
+                <property name="IspProgramFlash_cmd3" value="0x00"/>
+                <property name="IspProgramFlash_pollVal1" value="0x00"/>
+                <property name="IspProgramFlash_pollVal2" value="0x00"/>
+                <property name="IspProgramEeprom_mode" value="0x41"/>
+                <property name="IspProgramEeprom_blockSize" value="4"/>
+                <property name="IspProgramEeprom_delay" value="5"/>
+                <property name="IspProgramEeprom_cmd1" value="0xC1"/>
+                <property name="IspProgramEeprom_cmd2" value="0xC2"/>
+                <property name="IspProgramEeprom_cmd3" value="0x00"/>
+                <property name="IspProgramEeprom_pollVal1" value="0x00"/>
+                <property name="IspProgramEeprom_pollVal2" value="0x00"/>
+                <property name="IspReadFlash_blockSize" value="256"/>
+                <property name="IspReadEeprom_blockSize" value="256"/>
+                <property name="IspReadFuse_pollIndex" value="4"/>
+                <property name="IspReadLock_pollIndex" value="4"/>
+                <property name="IspReadSign_pollIndex" value="4"/>
+                <property name="IspReadOsccal_pollIndex" value="4"/>
+            </property-group>
+            <property-group name="PP_INTERFACE_STK600">
+                <property name="PpControlStack"
+                          value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
+                <property name="PpEnterProgMode_stabDelay" value="100"/>
+                <property name="PpEnterProgMode_progModeDelay" value="0"/>
+                <property name="PpEnterProgMode_latchCycles" value="5"/>
+                <property name="PpEnterProgMode_toggleVtg" value="1"/>
+                <property name="PpEnterProgMode_powerOffDelay" value="20"/>
+                <property name="PpEnterProgMode_resetDelayMs" value="1"/>
+                <property name="PpEnterProgMode_resetDelayUs" value="0"/>
+                <property name="PpLeaveProgMode_stabDelay" value="15"/>
+                <property name="PpLeaveProgMode_resetDelay" value="15"/>
+                <property name="PpChipErase_pulseWidth" value="0"/>
+                <property name="PpChipErase_pollTimeout" value="10"/>
+                <property name="PpProgramFlash_pollTimeout" value="5"/>
+                <property name="PpProgramFlash_mode" value="0x0F"/>
+                <property name="PpProgramFlash_blockSize" value="256"/>
+                <property name="PpReadFlash_blockSize" value="256"/>
+                <property name="PpProgramEeprom_pollTimeout" value="5"/>
+                <property name="PpProgramEeprom_mode" value="0x05"/>
+                <property name="PpProgramEeprom_blockSize" value="256"/>
+                <property name="PpReadEeprom_blockSize" value="256"/>
+                <property name="PpProgramFuse_pulseWidth" value="0"/>
+                <property name="PpProgramFuse_pollTimeout" value="5"/>
+                <property name="PpProgramLock_pulseWidth" value="0"/>
+                <property name="PpProgramLock_pollTimeout" value="5"/>
+            </property-group>
+            <property-group name="PP_INTERFACE_AVRDRAGON">
+                <property name="PpControlStack"
+                          value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x0C 0x01 0x00 0x00 0x00 0x00"/>
+                <property name="PpEnterProgMode_stabDelay" value="100"/>
+                <property name="PpEnterProgMode_progModeDelay" value="0"/>
+                <property name="PpEnterProgMode_latchCycles" value="5"/>
+                <property name="PpEnterProgMode_toggleVtg" value="1"/>
+                <property name="PpEnterProgMode_powerOffDelay" value="15"/>
+                <property name="PpEnterProgMode_resetDelayMs" value="1"/>
+                <property name="PpEnterProgMode_resetDelayUs" value="0"/>
+                <property name="PpLeaveProgMode_stabDelay" value="15"/>
+                <property name="PpLeaveProgMode_resetDelay" value="15"/>
+                <property name="PpChipErase_pulseWidth" value="0"/>
+                <property name="PpChipErase_pollTimeout" value="10"/>
+                <property name="PpProgramFlash_pollTimeout" value="5"/>
+                <property name="PpProgramFlash_mode" value="0x0F"/>
+                <property name="PpProgramFlash_blockSize" value="256"/>
+                <property name="PpReadFlash_blockSize" value="256"/>
+                <property name="PpProgramEeprom_pollTimeout" value="5"/>
+                <property name="PpProgramEeprom_mode" value="0x05"/>
+                <property name="PpProgramEeprom_blockSize" value="256"/>
+                <property name="PpReadEeprom_blockSize" value="256"/>
+                <property name="PpProgramFuse_pulseWidth" value="0"/>
+                <property name="PpProgramFuse_pollTimeout" value="5"/>
+                <property name="PpProgramLock_pulseWidth" value="0"/>
+                <property name="PpProgramLock_pollTimeout" value="5"/>
+            </property-group>
+        </property-groups>
+    </device>
     <modules>
         <module caption="Fuses" name="FUSE">
             <register-group caption="Fuses" name="FUSE">

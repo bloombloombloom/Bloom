@@ -32,10 +32,8 @@ class TargetDescriptionFile
 
         $this->xml = $xml;
 
-        /** @var SimpleXMLElement[] $devices */
-        $devices = (array) $xml->devices;
-        if (!empty($devices)) {
-            $device = reset($devices);
+        $device = $this->xml->device;
+        if (!empty($device)) {
             $deviceAttributes = $device->attributes();
 
             if (!empty($deviceAttributes['name'])) {

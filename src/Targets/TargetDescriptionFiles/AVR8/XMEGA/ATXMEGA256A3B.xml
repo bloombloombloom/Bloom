@@ -6,357 +6,355 @@
         <variant ordercode="ATXMEGA256A3B-MU" package="QFN64" speedmax="32000000" tempmax="0" tempmin="0" vccmax="3.6"
                  vccmin="1.6"/>
     </variants>
-    <devices>
-        <device name="ATxmega256A3B" architecture="AVR8_XMEGA" family="AVR XMEGA">
-            <address-spaces>
-                <address-space name="prog" id="prog" start="0x00000" size="0x42000" endianness="little">
-                    <memory-segment start="0x00000" size="0x40000" type="flash" rw="RW" exec="1" name="APP_SECTION"
-                                    pagesize="512"/>
-                    <memory-segment start="0x3E000" size="0x2000" type="flash" rw="RW" exec="1" name="APPTABLE_SECTION"
-                                    pagesize="512"/>
-                    <memory-segment start="0x40000" size="0x2000" type="flash" rw="RW" exec="1" name="BOOT_SECTION"
-                                    pagesize="512"/>
-                </address-space>
-                <address-space name="data" id="data" start="0x00000" size="0x6000" endianness="little">
-                    <memory-segment start="0x00000" size="0x1000" type="io" rw="RW" exec="0" name="IO"/>
-                    <memory-segment start="0x01000" size="0x1000" type="eeprom" rw="RW" exec="0" name="MAPPED_EEPROM"/>
-                    <memory-segment start="0x02000" size="0x4000" type="ram" rw="RW" exec="0" name="INTERNAL_SRAM"/>
-                </address-space>
-                <address-space name="eeprom" id="eeprom" start="0x00000" size="0x1000">
-                    <memory-segment start="0x00000" size="0x1000" type="eeprom" rw="RW" exec="0" name="EEPROM"
-                                    pagesize="32"/>
-                </address-space>
-                <address-space name="signatures" id="signatures" start="0x0000" size="0x0003">
-                    <memory-segment start="0x0000" size="0x0003" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
-                </address-space>
-                <address-space name="fuses" id="fuses" start="0x0000" size="0x0006">
-                    <memory-segment start="0x0000" size="0x0006" type="fuses" rw="RW" exec="0" name="FUSES"/>
-                </address-space>
-                <address-space name="lockbits" id="lockbits" start="0x00000" size="0x0001">
-                    <memory-segment start="0x0000" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
-                </address-space>
-                <address-space name="user_signatures" id="user_signatures" start="0x00000" size="0x0200">
-                    <memory-segment start="0x0000" size="0x0200" type="user_signatures" rw="RW" exec="0"
-                                    name="USER_SIGNATURES" pagesize="512"/>
-                </address-space>
-                <address-space name="prod_signatures" id="prod_signatures" start="0x00000" size="0x0034">
-                    <memory-segment start="0x0000" size="0x0034" type="other" rw="R" exec="0" name="PROD_SIGNATURES"
-                                    pagesize="512"/>
-                </address-space>
-            </address-spaces>
-            <peripherals>
-                <module name="GPIO" id="I6085">
-                    <instance name="GPIO">
-                        <register-group address-space="data" offset="0x0000" name-in-module="GPIO" name="GPIO"/>
-                    </instance>
-                </module>
-                <module name="XOCD" id="I6043">
-                    <instance name="OCD">
-                        <register-group address-space="data" offset="0x002E" name-in-module="OCD" name="OCD"/>
-                    </instance>
-                </module>
-                <module name="CPU" id="I6000">
-                    <instance name="CPU">
-                        <register-group address-space="data" offset="0x0030" name-in-module="CPU" name="CPU"/>
-                        <parameters>
-                            <param name="CORE_VERSION" value="V3X"/>
-                        </parameters>
-                    </instance>
-                </module>
-                <module name="CLK" id="I6073">
-                    <instance name="CLK">
-                        <register-group address-space="data" offset="0x0040" name-in-module="CLK" name="CLK"/>
-                    </instance>
-                    <instance name="PR">
-                        <register-group address-space="data" offset="0x0070" name-in-module="PR" name="PR"/>
-                    </instance>
-                </module>
-                <module name="SLEEP" id="I6081">
-                    <instance name="SLEEP">
-                        <register-group address-space="data" offset="0x0048" name-in-module="SLEEP" name="SLEEP"/>
-                    </instance>
-                </module>
-                <module name="OSC" id="I6079">
-                    <instance name="OSC">
-                        <register-group address-space="data" offset="0x0050" name-in-module="OSC" name="OSC"/>
-                    </instance>
-                </module>
-                <module name="DFLL" id="I6055">
-                    <instance name="DFLLRC32M">
-                        <register-group address-space="data" offset="0x0060" name-in-module="DFLL" name="DFLLRC32M"/>
-                    </instance>
-                    <instance name="DFLLRC2M">
-                        <register-group address-space="data" offset="0x0068" name-in-module="DFLL" name="DFLLRC2M"/>
-                    </instance>
-                </module>
-                <module name="RST" id="I6083">
-                    <instance name="RST">
-                        <register-group address-space="data" offset="0x0078" name-in-module="RST" name="RST"/>
-                    </instance>
-                </module>
-                <module name="WDT" id="I6078">
-                    <instance name="WDT">
-                        <register-group address-space="data" offset="0x0080" name-in-module="WDT" name="WDT"/>
-                    </instance>
-                </module>
-                <module name="MCU" id="I6091">
-                    <instance name="MCU">
-                        <register-group address-space="data" offset="0x0090" name-in-module="MCU" name="MCU"/>
-                    </instance>
-                </module>
-                <module name="PMIC" id="I6057">
-                    <instance name="PMIC">
-                        <register-group address-space="data" offset="0x00A0" name-in-module="PMIC" name="PMIC"/>
-                    </instance>
-                </module>
-                <module name="DMA" id="I3000">
-                    <instance name="DMA">
-                        <register-group address-space="data" offset="0x0100" name-in-module="DMA" name="DMA"/>
-                    </instance>
-                </module>
-                <module name="EVSYS" id="I6061">
-                    <instance name="EVSYS">
-                        <register-group address-space="data" offset="0x0180" name-in-module="EVSYS" name="EVSYS"/>
-                    </instance>
-                </module>
-                <module name="NVM" id="I6076">
-                    <instance name="NVM">
-                        <register-group address-space="data" offset="0x01C0" name-in-module="NVM" name="NVM"/>
-                    </instance>
-                    <instance name="FUSE">
-                        <register-group address-space="fuses" offset="0x00" name-in-module="NVM_FUSES" name="FUSE"/>
-                    </instance>
-                    <instance name="LOCKBIT">
-                        <register-group address-space="lockbits" offset="0x00" name-in-module="NVM_LOCKBITS"
-                                        name="LOCKBIT"/>
-                    </instance>
-                    <instance name="PROD_SIGNATURES">
-                        <register-group address-space="prod_signatures" offset="0x00"
-                                        name-in-module="NVM_PROD_SIGNATURES" name="PROD_SIGNATURES"/>
-                    </instance>
-                </module>
-                <module name="AC" id="I6077">
-                    <instance name="ACA">
-                        <register-group address-space="data" offset="0x0380" name-in-module="AC" name="ACA"/>
-                    </instance>
-                    <instance name="ACB">
-                        <register-group address-space="data" offset="0x0390" name-in-module="AC" name="ACB"/>
-                    </instance>
-                </module>
-                <module name="ADC" id="I6064">
-                    <instance name="ADCA">
-                        <register-group address-space="data" offset="0x0200" name-in-module="ADC" name="ADCA"/>
-                    </instance>
-                    <instance name="ADCB">
-                        <register-group address-space="data" offset="0x0240" name-in-module="ADC" name="ADCB"/>
-                    </instance>
-                </module>
-                <module name="DAC" id="I6059">
-                    <instance name="DACB">
-                        <register-group address-space="data" offset="0x0320" name-in-module="DAC" name="DACB"/>
-                    </instance>
-                </module>
-                <module name="RTC32" id="I6106">
-                    <instance name="RTC32">
-                        <register-group address-space="data" offset="0x0420" name-in-module="RTC32" name="RTC32"/>
-                    </instance>
-                </module>
-                <module name="TWI" id="I6089">
-                    <instance name="TWIC">
-                        <register-group address-space="data" offset="0x480" name-in-module="TWI" name="TWIC"/>
-                    </instance>
-                    <instance name="TWIE">
-                        <register-group address-space="data" offset="0x4A0" name-in-module="TWI" name="TWIE"/>
-                    </instance>
-                </module>
-                <module name="PORT" id="I6075">
-                    <instance name="PORT_CFG">
-                        <register-group address-space="data" offset="0x00B0" name-in-module="PORTCFG" name="PORTCFG"/>
-                    </instance>
-                    <instance name="VPORT0">
-                        <register-group address-space="data" offset="0x0010" name-in-module="VPORT" name="VPORT0"/>
-                    </instance>
-                    <instance name="VPORT1">
-                        <register-group address-space="data" offset="0x0014" name-in-module="VPORT" name="VPORT1"/>
-                    </instance>
-                    <instance name="VPORT2">
-                        <register-group address-space="data" offset="0x0018" name-in-module="VPORT" name="VPORT2"/>
-                    </instance>
-                    <instance name="VPORT3">
-                        <register-group address-space="data" offset="0x001C" name-in-module="VPORT" name="VPORT3"/>
-                    </instance>
-                    <instance name="PORTA">
-                        <register-group address-space="data" offset="0x0600" name-in-module="PORT" name="PORTA"/>
-                    </instance>
-                    <instance name="PORTB">
-                        <register-group address-space="data" offset="0x0620" name-in-module="PORT" name="PORTB"/>
-                    </instance>
-                    <instance name="PORTC">
-                        <register-group address-space="data" offset="0x0640" name-in-module="PORT" name="PORTC"/>
-                    </instance>
-                    <instance name="PORTD">
-                        <register-group address-space="data" offset="0x0660" name-in-module="PORT" name="PORTD"/>
-                    </instance>
-                    <instance name="PORTE">
-                        <register-group address-space="data" offset="0x0680" name-in-module="PORT" name="PORTE"/>
-                    </instance>
-                    <instance name="PORTF">
-                        <register-group address-space="data" offset="0x06A0" name-in-module="PORT" name="PORTF"/>
-                    </instance>
-                    <instance name="PORTR">
-                        <register-group address-space="data" offset="0x07E0" name-in-module="PORT" name="PORTR"/>
-                    </instance>
-                </module>
-                <module name="TC" id="I6090">
-                    <instance name="TCC0">
-                        <register-group address-space="data" offset="0x800" name-in-module="TC0" name="TCC0"/>
-                    </instance>
-                    <instance name="TCC1">
-                        <register-group address-space="data" offset="0x840" name-in-module="TC1" name="TCC1"/>
-                    </instance>
-                    <instance name="AWEXC">
-                        <register-group address-space="data" offset="0x880" name-in-module="AWEX" name="AWEXC"/>
-                    </instance>
-                    <instance name="HIRESC">
-                        <register-group address-space="data" offset="0x890" name-in-module="HIRES" name="HIRESC"/>
-                    </instance>
-                    <instance name="TCD0">
-                        <register-group address-space="data" offset="0x900" name-in-module="TC0" name="TCD0"/>
-                    </instance>
-                    <instance name="TCD1">
-                        <register-group address-space="data" offset="0x940" name-in-module="TC1" name="TCD1"/>
-                    </instance>
-                    <instance name="HIRESD">
-                        <register-group address-space="data" offset="0x990" name-in-module="HIRES" name="HIRESD"/>
-                    </instance>
-                    <instance name="TCE0">
-                        <register-group address-space="data" offset="0xA00" name-in-module="TC0" name="TCE0"/>
-                    </instance>
-                    <instance name="TCE1">
-                        <register-group address-space="data" offset="0xA40" name-in-module="TC1" name="TCE1"/>
-                    </instance>
-                    <instance name="AWEXE">
-                        <register-group address-space="data" offset="0xA80" name-in-module="AWEX" name="AWEXE"/>
-                    </instance>
-                    <instance name="HIRESE">
-                        <register-group address-space="data" offset="0xA90" name-in-module="HIRES" name="HIRESE"/>
-                    </instance>
-                    <instance name="TCF0">
-                        <register-group address-space="data" offset="0xB00" name-in-module="TC0" name="TCF0"/>
-                    </instance>
-                    <instance name="HIRESF">
-                        <register-group address-space="data" offset="0xB90" name-in-module="HIRES" name="HIRESF"/>
-                    </instance>
-                </module>
-                <module name="USART" id="I6090">
-                    <instance name="USARTC0">
-                        <register-group address-space="data" offset="0x8A0" name-in-module="USART" name="USARTC0"/>
-                    </instance>
-                    <instance name="USARTC1">
-                        <register-group address-space="data" offset="0x8B0" name-in-module="USART" name="USARTC1"/>
-                    </instance>
-                    <instance name="USARTD0">
-                        <register-group address-space="data" offset="0x9A0" name-in-module="USART" name="USARTD0"/>
-                    </instance>
-                    <instance name="USARTD1">
-                        <register-group address-space="data" offset="0x9B0" name-in-module="USART" name="USARTD1"/>
-                    </instance>
-                    <instance name="USARTE0">
-                        <register-group address-space="data" offset="0xAA0" name-in-module="USART" name="USARTE0"/>
-                    </instance>
-                    <instance name="USARTF0">
-                        <register-group address-space="data" offset="0xBA0" name-in-module="USART" name="USARTF0"/>
-                    </instance>
-                </module>
-                <module name="SPI" id="I6090">
-                    <instance name="SPIC">
-                        <register-group address-space="data" offset="0x8C0" name-in-module="SPI" name="SPIC"/>
-                    </instance>
-                    <instance name="SPID">
-                        <register-group address-space="data" offset="0x9C0" name-in-module="SPI" name="SPID"/>
-                    </instance>
-                    <instance name="SPIF">
-                        <register-group address-space="data" offset="0xBC0" name-in-module="SPI" name="SPIF"/>
-                    </instance>
-                </module>
-                <module name="IRCOM" id="I6090">
-                    <instance name="IRCOM">
-                        <register-group address-space="data" offset="0x8F8" name-in-module="IRCOM" name="IRCOM"/>
-                    </instance>
-                </module>
-                <module name="AES" id="I6096">
-                    <instance name="AES">
-                        <register-group address-space="data" offset="0x0C0" name-in-module="AES" name="AES"/>
-                    </instance>
-                </module>
-                <module name="VBAT" id="I6107">
-                    <instance name="VBAT">
-                        <register-group address-space="data" offset="0x0F0" name-in-module="VBAT" name="VBAT"/>
-                    </instance>
-                </module>
-            </peripherals>
+    <device name="ATxmega256A3B" architecture="AVR8_XMEGA" family="AVR XMEGA">
+        <address-spaces>
+            <address-space name="prog" id="prog" start="0x00000" size="0x42000" endianness="little">
+                <memory-segment start="0x00000" size="0x40000" type="flash" rw="RW" exec="1" name="APP_SECTION"
+                                pagesize="512"/>
+                <memory-segment start="0x3E000" size="0x2000" type="flash" rw="RW" exec="1" name="APPTABLE_SECTION"
+                                pagesize="512"/>
+                <memory-segment start="0x40000" size="0x2000" type="flash" rw="RW" exec="1" name="BOOT_SECTION"
+                                pagesize="512"/>
+            </address-space>
+            <address-space name="data" id="data" start="0x00000" size="0x6000" endianness="little">
+                <memory-segment start="0x00000" size="0x1000" type="io" rw="RW" exec="0" name="IO"/>
+                <memory-segment start="0x01000" size="0x1000" type="eeprom" rw="RW" exec="0" name="MAPPED_EEPROM"/>
+                <memory-segment start="0x02000" size="0x4000" type="ram" rw="RW" exec="0" name="INTERNAL_SRAM"/>
+            </address-space>
+            <address-space name="eeprom" id="eeprom" start="0x00000" size="0x1000">
+                <memory-segment start="0x00000" size="0x1000" type="eeprom" rw="RW" exec="0" name="EEPROM"
+                                pagesize="32"/>
+            </address-space>
+            <address-space name="signatures" id="signatures" start="0x0000" size="0x0003">
+                <memory-segment start="0x0000" size="0x0003" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
+            </address-space>
+            <address-space name="fuses" id="fuses" start="0x0000" size="0x0006">
+                <memory-segment start="0x0000" size="0x0006" type="fuses" rw="RW" exec="0" name="FUSES"/>
+            </address-space>
+            <address-space name="lockbits" id="lockbits" start="0x00000" size="0x0001">
+                <memory-segment start="0x0000" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
+            </address-space>
+            <address-space name="user_signatures" id="user_signatures" start="0x00000" size="0x0200">
+                <memory-segment start="0x0000" size="0x0200" type="user_signatures" rw="RW" exec="0"
+                                name="USER_SIGNATURES" pagesize="512"/>
+            </address-space>
+            <address-space name="prod_signatures" id="prod_signatures" start="0x00000" size="0x0034">
+                <memory-segment start="0x0000" size="0x0034" type="other" rw="R" exec="0" name="PROD_SIGNATURES"
+                                pagesize="512"/>
+            </address-space>
+        </address-spaces>
+        <peripherals>
+            <module name="GPIO" id="I6085">
+                <instance name="GPIO">
+                    <register-group address-space="data" offset="0x0000" name-in-module="GPIO" name="GPIO"/>
+                </instance>
+            </module>
+            <module name="XOCD" id="I6043">
+                <instance name="OCD">
+                    <register-group address-space="data" offset="0x002E" name-in-module="OCD" name="OCD"/>
+                </instance>
+            </module>
+            <module name="CPU" id="I6000">
+                <instance name="CPU">
+                    <register-group address-space="data" offset="0x0030" name-in-module="CPU" name="CPU"/>
+                    <parameters>
+                        <param name="CORE_VERSION" value="V3X"/>
+                    </parameters>
+                </instance>
+            </module>
+            <module name="CLK" id="I6073">
+                <instance name="CLK">
+                    <register-group address-space="data" offset="0x0040" name-in-module="CLK" name="CLK"/>
+                </instance>
+                <instance name="PR">
+                    <register-group address-space="data" offset="0x0070" name-in-module="PR" name="PR"/>
+                </instance>
+            </module>
+            <module name="SLEEP" id="I6081">
+                <instance name="SLEEP">
+                    <register-group address-space="data" offset="0x0048" name-in-module="SLEEP" name="SLEEP"/>
+                </instance>
+            </module>
+            <module name="OSC" id="I6079">
+                <instance name="OSC">
+                    <register-group address-space="data" offset="0x0050" name-in-module="OSC" name="OSC"/>
+                </instance>
+            </module>
+            <module name="DFLL" id="I6055">
+                <instance name="DFLLRC32M">
+                    <register-group address-space="data" offset="0x0060" name-in-module="DFLL" name="DFLLRC32M"/>
+                </instance>
+                <instance name="DFLLRC2M">
+                    <register-group address-space="data" offset="0x0068" name-in-module="DFLL" name="DFLLRC2M"/>
+                </instance>
+            </module>
+            <module name="RST" id="I6083">
+                <instance name="RST">
+                    <register-group address-space="data" offset="0x0078" name-in-module="RST" name="RST"/>
+                </instance>
+            </module>
+            <module name="WDT" id="I6078">
+                <instance name="WDT">
+                    <register-group address-space="data" offset="0x0080" name-in-module="WDT" name="WDT"/>
+                </instance>
+            </module>
+            <module name="MCU" id="I6091">
+                <instance name="MCU">
+                    <register-group address-space="data" offset="0x0090" name-in-module="MCU" name="MCU"/>
+                </instance>
+            </module>
+            <module name="PMIC" id="I6057">
+                <instance name="PMIC">
+                    <register-group address-space="data" offset="0x00A0" name-in-module="PMIC" name="PMIC"/>
+                </instance>
+            </module>
+            <module name="DMA" id="I3000">
+                <instance name="DMA">
+                    <register-group address-space="data" offset="0x0100" name-in-module="DMA" name="DMA"/>
+                </instance>
+            </module>
+            <module name="EVSYS" id="I6061">
+                <instance name="EVSYS">
+                    <register-group address-space="data" offset="0x0180" name-in-module="EVSYS" name="EVSYS"/>
+                </instance>
+            </module>
+            <module name="NVM" id="I6076">
+                <instance name="NVM">
+                    <register-group address-space="data" offset="0x01C0" name-in-module="NVM" name="NVM"/>
+                </instance>
+                <instance name="FUSE">
+                    <register-group address-space="fuses" offset="0x00" name-in-module="NVM_FUSES" name="FUSE"/>
+                </instance>
+                <instance name="LOCKBIT">
+                    <register-group address-space="lockbits" offset="0x00" name-in-module="NVM_LOCKBITS"
+                                    name="LOCKBIT"/>
+                </instance>
+                <instance name="PROD_SIGNATURES">
+                    <register-group address-space="prod_signatures" offset="0x00"
+                                    name-in-module="NVM_PROD_SIGNATURES" name="PROD_SIGNATURES"/>
+                </instance>
+            </module>
+            <module name="AC" id="I6077">
+                <instance name="ACA">
+                    <register-group address-space="data" offset="0x0380" name-in-module="AC" name="ACA"/>
+                </instance>
+                <instance name="ACB">
+                    <register-group address-space="data" offset="0x0390" name-in-module="AC" name="ACB"/>
+                </instance>
+            </module>
+            <module name="ADC" id="I6064">
+                <instance name="ADCA">
+                    <register-group address-space="data" offset="0x0200" name-in-module="ADC" name="ADCA"/>
+                </instance>
+                <instance name="ADCB">
+                    <register-group address-space="data" offset="0x0240" name-in-module="ADC" name="ADCB"/>
+                </instance>
+            </module>
+            <module name="DAC" id="I6059">
+                <instance name="DACB">
+                    <register-group address-space="data" offset="0x0320" name-in-module="DAC" name="DACB"/>
+                </instance>
+            </module>
+            <module name="RTC32" id="I6106">
+                <instance name="RTC32">
+                    <register-group address-space="data" offset="0x0420" name-in-module="RTC32" name="RTC32"/>
+                </instance>
+            </module>
+            <module name="TWI" id="I6089">
+                <instance name="TWIC">
+                    <register-group address-space="data" offset="0x480" name-in-module="TWI" name="TWIC"/>
+                </instance>
+                <instance name="TWIE">
+                    <register-group address-space="data" offset="0x4A0" name-in-module="TWI" name="TWIE"/>
+                </instance>
+            </module>
+            <module name="PORT" id="I6075">
+                <instance name="PORT_CFG">
+                    <register-group address-space="data" offset="0x00B0" name-in-module="PORTCFG" name="PORTCFG"/>
+                </instance>
+                <instance name="VPORT0">
+                    <register-group address-space="data" offset="0x0010" name-in-module="VPORT" name="VPORT0"/>
+                </instance>
+                <instance name="VPORT1">
+                    <register-group address-space="data" offset="0x0014" name-in-module="VPORT" name="VPORT1"/>
+                </instance>
+                <instance name="VPORT2">
+                    <register-group address-space="data" offset="0x0018" name-in-module="VPORT" name="VPORT2"/>
+                </instance>
+                <instance name="VPORT3">
+                    <register-group address-space="data" offset="0x001C" name-in-module="VPORT" name="VPORT3"/>
+                </instance>
+                <instance name="PORTA">
+                    <register-group address-space="data" offset="0x0600" name-in-module="PORT" name="PORTA"/>
+                </instance>
+                <instance name="PORTB">
+                    <register-group address-space="data" offset="0x0620" name-in-module="PORT" name="PORTB"/>
+                </instance>
+                <instance name="PORTC">
+                    <register-group address-space="data" offset="0x0640" name-in-module="PORT" name="PORTC"/>
+                </instance>
+                <instance name="PORTD">
+                    <register-group address-space="data" offset="0x0660" name-in-module="PORT" name="PORTD"/>
+                </instance>
+                <instance name="PORTE">
+                    <register-group address-space="data" offset="0x0680" name-in-module="PORT" name="PORTE"/>
+                </instance>
+                <instance name="PORTF">
+                    <register-group address-space="data" offset="0x06A0" name-in-module="PORT" name="PORTF"/>
+                </instance>
+                <instance name="PORTR">
+                    <register-group address-space="data" offset="0x07E0" name-in-module="PORT" name="PORTR"/>
+                </instance>
+            </module>
+            <module name="TC" id="I6090">
+                <instance name="TCC0">
+                    <register-group address-space="data" offset="0x800" name-in-module="TC0" name="TCC0"/>
+                </instance>
+                <instance name="TCC1">
+                    <register-group address-space="data" offset="0x840" name-in-module="TC1" name="TCC1"/>
+                </instance>
+                <instance name="AWEXC">
+                    <register-group address-space="data" offset="0x880" name-in-module="AWEX" name="AWEXC"/>
+                </instance>
+                <instance name="HIRESC">
+                    <register-group address-space="data" offset="0x890" name-in-module="HIRES" name="HIRESC"/>
+                </instance>
+                <instance name="TCD0">
+                    <register-group address-space="data" offset="0x900" name-in-module="TC0" name="TCD0"/>
+                </instance>
+                <instance name="TCD1">
+                    <register-group address-space="data" offset="0x940" name-in-module="TC1" name="TCD1"/>
+                </instance>
+                <instance name="HIRESD">
+                    <register-group address-space="data" offset="0x990" name-in-module="HIRES" name="HIRESD"/>
+                </instance>
+                <instance name="TCE0">
+                    <register-group address-space="data" offset="0xA00" name-in-module="TC0" name="TCE0"/>
+                </instance>
+                <instance name="TCE1">
+                    <register-group address-space="data" offset="0xA40" name-in-module="TC1" name="TCE1"/>
+                </instance>
+                <instance name="AWEXE">
+                    <register-group address-space="data" offset="0xA80" name-in-module="AWEX" name="AWEXE"/>
+                </instance>
+                <instance name="HIRESE">
+                    <register-group address-space="data" offset="0xA90" name-in-module="HIRES" name="HIRESE"/>
+                </instance>
+                <instance name="TCF0">
+                    <register-group address-space="data" offset="0xB00" name-in-module="TC0" name="TCF0"/>
+                </instance>
+                <instance name="HIRESF">
+                    <register-group address-space="data" offset="0xB90" name-in-module="HIRES" name="HIRESF"/>
+                </instance>
+            </module>
+            <module name="USART" id="I6090">
+                <instance name="USARTC0">
+                    <register-group address-space="data" offset="0x8A0" name-in-module="USART" name="USARTC0"/>
+                </instance>
+                <instance name="USARTC1">
+                    <register-group address-space="data" offset="0x8B0" name-in-module="USART" name="USARTC1"/>
+                </instance>
+                <instance name="USARTD0">
+                    <register-group address-space="data" offset="0x9A0" name-in-module="USART" name="USARTD0"/>
+                </instance>
+                <instance name="USARTD1">
+                    <register-group address-space="data" offset="0x9B0" name-in-module="USART" name="USARTD1"/>
+                </instance>
+                <instance name="USARTE0">
+                    <register-group address-space="data" offset="0xAA0" name-in-module="USART" name="USARTE0"/>
+                </instance>
+                <instance name="USARTF0">
+                    <register-group address-space="data" offset="0xBA0" name-in-module="USART" name="USARTF0"/>
+                </instance>
+            </module>
+            <module name="SPI" id="I6090">
+                <instance name="SPIC">
+                    <register-group address-space="data" offset="0x8C0" name-in-module="SPI" name="SPIC"/>
+                </instance>
+                <instance name="SPID">
+                    <register-group address-space="data" offset="0x9C0" name-in-module="SPI" name="SPID"/>
+                </instance>
+                <instance name="SPIF">
+                    <register-group address-space="data" offset="0xBC0" name-in-module="SPI" name="SPIF"/>
+                </instance>
+            </module>
+            <module name="IRCOM" id="I6090">
+                <instance name="IRCOM">
+                    <register-group address-space="data" offset="0x8F8" name-in-module="IRCOM" name="IRCOM"/>
+                </instance>
+            </module>
+            <module name="AES" id="I6096">
+                <instance name="AES">
+                    <register-group address-space="data" offset="0x0C0" name-in-module="AES" name="AES"/>
+                </instance>
+            </module>
+            <module name="VBAT" id="I6107">
+                <instance name="VBAT">
+                    <register-group address-space="data" offset="0x0F0" name-in-module="VBAT" name="VBAT"/>
+                </instance>
+            </module>
+        </peripherals>
 
 
-            <interrupts>
-                <interrupt-group index="1" module-instance="OSC" name-in-module="OSC"/>
-                <interrupt-group index="2" module-instance="PORTC" name-in-module="PORT"/>
-                <interrupt-group index="4" module-instance="PORTR" name-in-module="PORT"/>
-                <interrupt-group index="6" module-instance="DMA" name-in-module="DMA"/>
-                <interrupt-group index="10" module-instance="RTC32" name-in-module="RTC32"/>
-                <interrupt-group index="12" module-instance="TWIC" name-in-module="TWI"/>
-                <interrupt-group index="14" module-instance="TCC0" name-in-module="TC0"/>
-                <interrupt-group index="20" module-instance="TCC1" name-in-module="TC1"/>
-                <interrupt-group index="24" module-instance="SPIC" name-in-module="SPI"/>
-                <interrupt-group index="25" module-instance="USARTC0" name-in-module="USART"/>
-                <interrupt-group index="28" module-instance="USARTC1" name-in-module="USART"/>
-                <interrupt-group index="31" module-instance="AES" name-in-module="AES"/>
-                <interrupt-group index="32" module-instance="NVM" name-in-module="NVM"/>
-                <interrupt-group index="34" module-instance="PORTB" name-in-module="PORT"/>
-                <interrupt-group index="36" module-instance="ACB" name-in-module="AC"/>
-                <interrupt-group index="39" module-instance="ADCB" name-in-module="ADC"/>
-                <interrupt-group index="43" module-instance="PORTE" name-in-module="PORT"/>
-                <interrupt-group index="45" module-instance="TWIE" name-in-module="TWI"/>
-                <interrupt-group index="47" module-instance="TCE0" name-in-module="TC0"/>
-                <interrupt-group index="53" module-instance="TCE1" name-in-module="TC1"/>
-                <interrupt-group index="58" module-instance="USARTE0" name-in-module="USART"/>
-                <interrupt-group index="64" module-instance="PORTD" name-in-module="PORT"/>
-                <interrupt-group index="66" module-instance="PORTA" name-in-module="PORT"/>
-                <interrupt-group index="68" module-instance="ACA" name-in-module="AC"/>
-                <interrupt-group index="71" module-instance="ADCA" name-in-module="ADC"/>
-                <interrupt-group index="77" module-instance="TCD0" name-in-module="TC0"/>
-                <interrupt-group index="83" module-instance="TCD1" name-in-module="TC1"/>
-                <interrupt-group index="87" module-instance="SPID" name-in-module="SPI"/>
-                <interrupt-group index="88" module-instance="USARTD0" name-in-module="USART"/>
-                <interrupt-group index="91" module-instance="USARTD1" name-in-module="USART"/>
-                <interrupt-group index="104" module-instance="PORTF" name-in-module="PORT"/>
-                <interrupt-group index="108" module-instance="TCF0" name-in-module="TC0"/>
-                <interrupt-group index="119" module-instance="USARTF0" name-in-module="USART"/>
-            </interrupts>
-            <interfaces>
-                <interface type="pdi" name="PDI"/>
-                <interface type="xmegajtag" name="JTAG"/>
-            </interfaces>
-            <property-groups>
-                <property-group name="SIGNATURES">
-                    <property name="JTAGID" value="0x0984303F"/>
-                    <property name="SIGNATURE0" value="0x1E"/>
-                    <property name="SIGNATURE1" value="0x98"/>
-                    <property name="SIGNATURE2" value="0x43"/>
-                </property-group>
-                <property-group name="PDI_INTERFACE">
-                    <property name="APP_SECTION_OFFSET" value="0x00800000"/>
-                    <property name="APPTABLE_SECTION_OFFSET" value="0x0083E000"/>
-                    <property name="BOOT_SECTION_OFFSET" value="0x00840000"/>
-                    <property name="DATAMEM_OFFSET" value="0x01000000"/>
-                    <property name="EEPROM_OFFSET" value="0x008C0000"/>
-                    <property name="USER_SIGNATURES_OFFSET" value="0x008E0400"/>
-                    <property name="PROD_SIGNATURES_OFFSET" value="0x008E0200"/>
-                    <property name="FUSE_REGISTERS_OFFSET" value="0x008F0020"/>
-                    <property name="LOCK_REGISTERS_OFFSET" value="0x008F0027"/>
-                </property-group>
-            </property-groups>
-        </device>
-    </devices>
+        <interrupts>
+            <interrupt-group index="1" module-instance="OSC" name-in-module="OSC"/>
+            <interrupt-group index="2" module-instance="PORTC" name-in-module="PORT"/>
+            <interrupt-group index="4" module-instance="PORTR" name-in-module="PORT"/>
+            <interrupt-group index="6" module-instance="DMA" name-in-module="DMA"/>
+            <interrupt-group index="10" module-instance="RTC32" name-in-module="RTC32"/>
+            <interrupt-group index="12" module-instance="TWIC" name-in-module="TWI"/>
+            <interrupt-group index="14" module-instance="TCC0" name-in-module="TC0"/>
+            <interrupt-group index="20" module-instance="TCC1" name-in-module="TC1"/>
+            <interrupt-group index="24" module-instance="SPIC" name-in-module="SPI"/>
+            <interrupt-group index="25" module-instance="USARTC0" name-in-module="USART"/>
+            <interrupt-group index="28" module-instance="USARTC1" name-in-module="USART"/>
+            <interrupt-group index="31" module-instance="AES" name-in-module="AES"/>
+            <interrupt-group index="32" module-instance="NVM" name-in-module="NVM"/>
+            <interrupt-group index="34" module-instance="PORTB" name-in-module="PORT"/>
+            <interrupt-group index="36" module-instance="ACB" name-in-module="AC"/>
+            <interrupt-group index="39" module-instance="ADCB" name-in-module="ADC"/>
+            <interrupt-group index="43" module-instance="PORTE" name-in-module="PORT"/>
+            <interrupt-group index="45" module-instance="TWIE" name-in-module="TWI"/>
+            <interrupt-group index="47" module-instance="TCE0" name-in-module="TC0"/>
+            <interrupt-group index="53" module-instance="TCE1" name-in-module="TC1"/>
+            <interrupt-group index="58" module-instance="USARTE0" name-in-module="USART"/>
+            <interrupt-group index="64" module-instance="PORTD" name-in-module="PORT"/>
+            <interrupt-group index="66" module-instance="PORTA" name-in-module="PORT"/>
+            <interrupt-group index="68" module-instance="ACA" name-in-module="AC"/>
+            <interrupt-group index="71" module-instance="ADCA" name-in-module="ADC"/>
+            <interrupt-group index="77" module-instance="TCD0" name-in-module="TC0"/>
+            <interrupt-group index="83" module-instance="TCD1" name-in-module="TC1"/>
+            <interrupt-group index="87" module-instance="SPID" name-in-module="SPI"/>
+            <interrupt-group index="88" module-instance="USARTD0" name-in-module="USART"/>
+            <interrupt-group index="91" module-instance="USARTD1" name-in-module="USART"/>
+            <interrupt-group index="104" module-instance="PORTF" name-in-module="PORT"/>
+            <interrupt-group index="108" module-instance="TCF0" name-in-module="TC0"/>
+            <interrupt-group index="119" module-instance="USARTF0" name-in-module="USART"/>
+        </interrupts>
+        <interfaces>
+            <interface type="pdi" name="PDI"/>
+            <interface type="xmegajtag" name="JTAG"/>
+        </interfaces>
+        <property-groups>
+            <property-group name="SIGNATURES">
+                <property name="JTAGID" value="0x0984303F"/>
+                <property name="SIGNATURE0" value="0x1E"/>
+                <property name="SIGNATURE1" value="0x98"/>
+                <property name="SIGNATURE2" value="0x43"/>
+            </property-group>
+            <property-group name="PDI_INTERFACE">
+                <property name="APP_SECTION_OFFSET" value="0x00800000"/>
+                <property name="APPTABLE_SECTION_OFFSET" value="0x0083E000"/>
+                <property name="BOOT_SECTION_OFFSET" value="0x00840000"/>
+                <property name="DATAMEM_OFFSET" value="0x01000000"/>
+                <property name="EEPROM_OFFSET" value="0x008C0000"/>
+                <property name="USER_SIGNATURES_OFFSET" value="0x008E0400"/>
+                <property name="PROD_SIGNATURES_OFFSET" value="0x008E0200"/>
+                <property name="FUSE_REGISTERS_OFFSET" value="0x008F0020"/>
+                <property name="LOCK_REGISTERS_OFFSET" value="0x008F0027"/>
+            </property-group>
+        </property-groups>
+    </device>
     <modules>
         <module name="GPIO" id="I6085" caption="General Purpose IO">
             <register-group caption="General Purpose IO Registers" name="GPIO" size="16">

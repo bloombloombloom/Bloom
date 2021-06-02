@@ -24,8 +24,7 @@ void TargetDescriptionFile::init(const QString& xmlFilePath) {
 void TargetDescriptionFile::init(const QDomDocument& xml) {
     this->xml = xml;
 
-    auto device = xml.elementsByTagName("devices").item(0)
-        .toElement().elementsByTagName("device").item(0).toElement();
+    auto device = xml.elementsByTagName("device").item(0).toElement();
 
     if (!device.isElement()) {
         throw TargetDescriptionParsingFailureException("Device element not found.");

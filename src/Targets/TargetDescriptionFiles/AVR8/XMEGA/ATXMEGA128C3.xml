@@ -10,570 +10,568 @@
         <variant ordercode="ATxmega128C3-M7" package="QFN64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="105"
                  tempmin="-40" vccmax="3.6" vccmin="1.6"/>
     </variants>
-    <devices>
-        <device name="ATxmega128C3" architecture="AVR8_XMEGA" family="AVR XMEGA">
-            <address-spaces>
-                <address-space name="prog" id="prog" start="0x00000" size="0x22000" endianness="little">
-                    <memory-segment start="0x00000" size="0x20000" type="flash" rw="RW" exec="1" name="APP_SECTION"
-                                    pagesize="512"/>
-                    <memory-segment start="0x1E000" size="0x2000" type="flash" rw="RW" exec="1" name="APPTABLE_SECTION"
-                                    pagesize="512"/>
-                    <memory-segment start="0x20000" size="0x2000" type="flash" rw="RW" exec="1" name="BOOT_SECTION"
-                                    pagesize="512"/>
-                </address-space>
-                <address-space name="data" id="data" start="0x0000" size="0x4000" endianness="little">
-                    <memory-segment start="0x0000" size="0x1000" type="io" rw="RW" exec="0" name="IO"/>
-                    <memory-segment start="0x1000" size="0x0800" type="eeprom" rw="RW" exec="0" name="MAPPED_EEPROM"/>
-                    <memory-segment start="0x2000" size="0x2000" type="ram" rw="RW" exec="0" name="INTERNAL_SRAM"/>
-                </address-space>
-                <address-space name="eeprom" id="eeprom" start="0x00000" size="0x0800">
-                    <memory-segment start="0x00000" size="0x0800" type="eeprom" rw="RW" exec="0" name="EEPROM"
-                                    pagesize="32"/>
-                </address-space>
-                <address-space name="signatures" id="signatures" start="0x0000" size="0x0003">
-                    <memory-segment start="0x0000" size="0x0003" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
-                </address-space>
-                <address-space name="fuses" id="fuses" start="0x0000" size="0x0006">
-                    <memory-segment start="0x0000" size="0x0006" type="fuses" rw="RW" exec="0" name="FUSES"/>
-                </address-space>
-                <address-space name="lockbits" id="lockbits" start="0x0000" size="0x0001">
-                    <memory-segment start="0x0000" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
-                </address-space>
-                <address-space name="user_signatures" id="user_signatures" start="0x0000" size="0x0200">
-                    <memory-segment start="0x0000" size="0x0200" type="user_signatures" rw="RW" exec="0"
-                                    name="USER_SIGNATURES" pagesize="512"/>
-                </address-space>
-                <address-space name="prod_signatures" id="prod_signatures" start="0x0000" size="0x0040">
-                    <memory-segment start="0x0000" size="0x0040" type="other" rw="R" exec="0" name="PROD_SIGNATURES"
-                                    pagesize="512"/>
-                </address-space>
-            </address-spaces>
-            <peripherals>
-                <module name="GPIO" id="I6085" version="XMEGAD">
-                    <instance name="GPIO">
-                        <register-group address-space="data" offset="0x0000" name-in-module="GPIO" name="GPIO"/>
-                    </instance>
-                </module>
-                <module name="VPORT" id="I6075" version="XMEGAAU">
-                    <instance name="VPORT0">
-                        <register-group address-space="data" offset="0x0010" name-in-module="VPORT" name="VPORT0"/>
-                    </instance>
-                    <instance name="VPORT1">
-                        <register-group address-space="data" offset="0x0014" name-in-module="VPORT" name="VPORT1"/>
-                    </instance>
-                    <instance name="VPORT2">
-                        <register-group address-space="data" offset="0x0018" name-in-module="VPORT" name="VPORT2"/>
-                    </instance>
-                    <instance name="VPORT3">
-                        <register-group address-space="data" offset="0x001C" name-in-module="VPORT" name="VPORT3"/>
-                    </instance>
-                </module>
-                <module name="XOCD" id="I6043">
-                    <instance name="OCD">
-                        <register-group address-space="data" offset="0x002E" name-in-module="OCD" name="OCD"/>
-                    </instance>
-                </module>
-                <module name="CPU" id="I6000">
-                    <instance name="CPU">
-                        <register-group address-space="data" offset="0x0030" name-in-module="CPU" name="CPU"/>
-                        <parameters>
-                            <param name="CORE_VERSION" value="V3XJ"/>
-                        </parameters>
-                    </instance>
-                </module>
-                <module name="CLK" id="I6073" version="XMEGAC">
-                    <instance name="CLK">
-                        <register-group address-space="data" offset="0x0040" name-in-module="CLK" name="CLK"/>
-                    </instance>
-                </module>
-                <module name="PR" id="I6073" version="XMEGAC">
-                    <instance name="PR">
-                        <register-group address-space="data" offset="0x0070" name-in-module="PR" name="PR"/>
-                    </instance>
-                </module>
-                <module name="SLEEP" id="I6081">
-                    <instance name="SLEEP">
-                        <register-group address-space="data" offset="0x0048" name-in-module="SLEEP" name="SLEEP"/>
-                    </instance>
-                </module>
-                <module name="OSC" id="I6079" version="XMEGAAU">
-                    <instance name="OSC">
-                        <register-group address-space="data" offset="0x0050" name-in-module="OSC" name="OSC"/>
-                        <signals>
-                            <signal function="XTAL" group="XTAL2" pad="PR0"/>
-                            <signal function="XTAL" group="XTAL1" pad="PR1"/>
-                            <signal function="TOSC" group="TOSC2" pad="PE2"/>
-                            <signal function="TOSC" group="TOSC1" pad="PE3"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="DFLL" id="I6055" version="XMEGAAU">
-                    <instance name="DFLLRC32M">
-                        <register-group address-space="data" offset="0x0060" name-in-module="DFLL" name="DFLLRC32M"/>
-                    </instance>
-                    <instance name="DFLLRC2M">
-                        <register-group address-space="data" offset="0x0068" name-in-module="DFLL" name="DFLLRC2M"/>
-                    </instance>
-                </module>
-                <module name="RST" id="I6083" version="XMEGAAU">
-                    <instance name="RST">
-                        <register-group address-space="data" offset="0x0078" name-in-module="RST" name="RST"/>
-                    </instance>
-                </module>
-                <module name="WDT" id="I6078">
-                    <instance name="WDT">
-                        <register-group address-space="data" offset="0x0080" name-in-module="WDT" name="WDT"/>
-                    </instance>
-                </module>
-                <module name="MCU" id="I6091" version="XMEGAD">
-                    <instance name="MCU">
-                        <register-group address-space="data" offset="0x0090" name-in-module="MCU" name="MCU"/>
-                    </instance>
-                </module>
-                <module name="PMIC" id="I6057">
-                    <instance name="PMIC">
-                        <register-group address-space="data" offset="0x00A0" name-in-module="PMIC" name="PMIC"/>
-                    </instance>
-                </module>
-                <module name="PORTCFG" id="I6075" version="XMEGAD">
-                    <instance name="PORTCFG">
-                        <register-group address-space="data" offset="0x00B0" name-in-module="PORTCFG" name="PORTCFG"/>
-                        <signals>
-                            <signal field="CLKOUT" function="CLKOUT" group="CLKOUT" pad="PC7"/>
-                            <signal field="CLKEVPIN" function="CLKOUT_ALT" group="CLKOUT" pad="PC4"/>
-                            <signal field="EVOUT" function="EVOUT" group="EVOUT" pad="PC7"/>
-                            <signal field="CLKEVPIN" function="EVOUT_ALT" group="EVOUT" pad="PC4"/>
-                            <signal function="RTCOUTC" group="RTCOUT" pad="PC6"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="CRC" id="I6111" version="XMEGAD">
-                    <instance name="CRC">
-                        <register-group address-space="data" offset="0x0D0" name-in-module="CRC" name="CRC"/>
-                    </instance>
-                </module>
-                <module name="EVSYS" id="I6061" version="XMEGAC">
-                    <instance name="EVSYS">
-                        <register-group address-space="data" offset="0x0180" name-in-module="EVSYS" name="EVSYS"/>
-                    </instance>
-                </module>
-                <module name="NVM" id="I6076" version="XMEGAAU">
-                    <instance name="NVM">
-                        <register-group address-space="data" offset="0x01C0" name-in-module="NVM" name="NVM"/>
-                    </instance>
-                </module>
-                <module name="ADC" id="I6110">
-                    <instance name="ADCA">
-                        <register-group address-space="data" offset="0x0200" name-in-module="ADC" name="ADCA"/>
-                        <signals>
-                            <signal function="ADC" group="ADC" index="0" pad="PA0"/>
-                            <signal function="ADC" group="ADC" index="1" pad="PA1"/>
-                            <signal function="ADC" group="ADC" index="2" pad="PA2"/>
-                            <signal function="ADC" group="ADC" index="3" pad="PA3"/>
-                            <signal function="ADC" group="ADC" index="4" pad="PA4"/>
-                            <signal function="ADC" group="ADC" index="5" pad="PA5"/>
-                            <signal function="ADC" group="ADC" index="6" pad="PA6"/>
-                            <signal function="ADC" group="ADC" index="7" pad="PA7"/>
-                            <signal function="ADC" group="ADC" index="8" pad="PB0"/>
-                            <signal function="ADC" group="ADC" index="9" pad="PB1"/>
-                            <signal function="ADC" group="ADC" index="10" pad="PB2"/>
-                            <signal function="ADC" group="ADC" index="11" pad="PB3"/>
-                            <signal function="ADC" group="ADC" index="12" pad="PB4"/>
-                            <signal function="ADC" group="ADC" index="13" pad="PB5"/>
-                            <signal function="ADC" group="ADC" index="14" pad="PB6"/>
-                            <signal function="ADC" group="ADC" index="15" pad="PB7"/>
-                            <signal function="AREF" group="REFA" index="0" pad="PA0"/>
-                            <signal function="AREF" group="REFB" index="0" pad="PB0"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="AC" id="I6077" version="XMEGAD">
-                    <instance name="ACA">
-                        <register-group address-space="data" offset="0x0380" name-in-module="AC" name="ACA"/>
-                        <signals>
-                            <signal function="AC" group="AC" index="0" pad="PA0"/>
-                            <signal function="AC" group="AC" index="1" pad="PA1"/>
-                            <signal function="AC" group="AC" index="2" pad="PA2"/>
-                            <signal function="AC" group="AC" index="3" pad="PA3"/>
-                            <signal function="AC" group="AC" index="4" pad="PA4"/>
-                            <signal function="AC" group="AC" index="5" pad="PA5"/>
-                            <signal function="AC" group="AC" index="6" pad="PA6"/>
-                            <signal function="AC" group="AC" index="7" pad="PA7"/>
-                            <signal function="ACOUT" group="ACOUT" index="1" pad="PA6"/>
-                            <signal function="ACOUT" group="ACOUT" index="0" pad="PA7"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="RTC" id="I6093">
-                    <instance name="RTC">
-                        <register-group address-space="data" offset="0x0400" name-in-module="RTC" name="RTC"/>
-                    </instance>
-                </module>
-                <module name="TWI" id="I6089" version="XMEGAAU">
-                    <instance name="TWIC">
-                        <register-group address-space="data" offset="0x480" name-in-module="TWI" name="TWIC"/>
-                        <signals>
-                            <signal function="TWI" group="SDA" pad="PC0"/>
-                            <signal function="TWI" group="SCL" pad="PC1"/>
-                        </signals>
-                    </instance>
-                    <instance name="TWIE">
-                        <register-group address-space="data" offset="0x4A0" name-in-module="TWI" name="TWIE"/>
-                        <signals>
-                            <signal function="TWI" group="SDA" pad="PE0"/>
-                            <signal function="TWI" group="SCL" pad="PE1"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="USB" id="I3005" version="XMEGAAU">
-                    <instance name="USB">
-                        <register-group address-space="data" offset="0x4C0" name-in-module="USB" name="USB"/>
-                        <signals>
-                            <signal function="USB" group="DN" pad="PD6"/>
-                            <signal function="USB" group="DP" pad="PD7"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="PORT" id="I6075" version="XMEGAAU">
-                    <instance name="PORTA">
-                        <register-group address-space="data" offset="0x0600" name-in-module="PORT" name="PORTA"/>
-                        <signals>
-                            <signal function="PORTA" group="P" index="0" pad="PA0"/>
-                            <signal function="PORTA" group="P" index="1" pad="PA1"/>
-                            <signal function="PORTA" group="P" index="2" pad="PA2"/>
-                            <signal function="PORTA" group="P" index="3" pad="PA3"/>
-                            <signal function="PORTA" group="P" index="4" pad="PA4"/>
-                            <signal function="PORTA" group="P" index="5" pad="PA5"/>
-                            <signal function="PORTA" group="P" index="6" pad="PA6"/>
-                            <signal function="PORTA" group="P" index="7" pad="PA7"/>
-                        </signals>
-                    </instance>
-                    <instance name="PORTB">
-                        <register-group address-space="data" offset="0x0620" name-in-module="PORT" name="PORTB"/>
-                        <signals>
-                            <signal function="PORTB" group="P" index="0" pad="PB0"/>
-                            <signal function="PORTB" group="P" index="1" pad="PB1"/>
-                            <signal function="PORTB" group="P" index="2" pad="PB2"/>
-                            <signal function="PORTB" group="P" index="3" pad="PB3"/>
-                            <signal function="PORTB" group="P" index="4" pad="PB4"/>
-                            <signal function="PORTB" group="P" index="5" pad="PB5"/>
-                            <signal function="PORTB" group="P" index="6" pad="PB6"/>
-                            <signal function="PORTB" group="P" index="7" pad="PB7"/>
-                        </signals>
-                    </instance>
-                    <instance name="PORTC">
-                        <register-group address-space="data" offset="0x0640" name-in-module="PORT" name="PORTC"/>
-                        <signals>
-                            <signal function="PORTC" group="P" index="0" pad="PC0"/>
-                            <signal function="PORTC" group="P" index="1" pad="PC1"/>
-                            <signal function="PORTC" group="P" index="2" pad="PC2"/>
-                            <signal function="PORTC" group="P" index="3" pad="PC3"/>
-                            <signal function="PORTC" group="P" index="4" pad="PC4"/>
-                            <signal function="PORTC" group="P" index="5" pad="PC5"/>
-                            <signal function="PORTC" group="P" index="6" pad="PC6"/>
-                            <signal function="PORTC" group="P" index="7" pad="PC7"/>
-                        </signals>
-                    </instance>
-                    <instance name="PORTD">
-                        <register-group address-space="data" offset="0x0660" name-in-module="PORT" name="PORTD"/>
-                        <signals>
-                            <signal function="PORTD" group="P" index="0" pad="PD0"/>
-                            <signal function="PORTD" group="P" index="1" pad="PD1"/>
-                            <signal function="PORTD" group="P" index="2" pad="PD2"/>
-                            <signal function="PORTD" group="P" index="3" pad="PD3"/>
-                            <signal function="PORTD" group="P" index="4" pad="PD4"/>
-                            <signal function="PORTD" group="P" index="5" pad="PD5"/>
-                            <signal function="PORTD" group="P" index="6" pad="PD6"/>
-                            <signal function="PORTD" group="P" index="7" pad="PD7"/>
-                        </signals>
-                    </instance>
-                    <instance name="PORTE">
-                        <register-group address-space="data" offset="0x0680" name-in-module="PORT" name="PORTE"/>
-                        <signals>
-                            <signal function="PORTE" group="P" index="0" pad="PE0"/>
-                            <signal function="PORTE" group="P" index="1" pad="PE1"/>
-                            <signal function="PORTE" group="P" index="2" pad="PE2"/>
-                            <signal function="PORTE" group="P" index="3" pad="PE3"/>
-                            <signal function="PORTE" group="P" index="4" pad="PE4"/>
-                            <signal function="PORTE" group="P" index="5" pad="PE5"/>
-                            <signal function="PORTE" group="P" index="6" pad="PE6"/>
-                            <signal function="PORTE" group="P" index="7" pad="PE7"/>
-                        </signals>
-                    </instance>
-                    <instance name="PORTF">
-                        <register-group address-space="data" offset="0x06A0" name-in-module="PORT" name="PORTF"/>
-                        <signals>
-                            <signal function="PORTF" group="P" index="0" pad="PF0"/>
-                            <signal function="PORTF" group="P" index="1" pad="PF1"/>
-                            <signal function="PORTF" group="P" index="2" pad="PF2"/>
-                            <signal function="PORTF" group="P" index="3" pad="PF3"/>
-                            <signal function="PORTF" group="P" index="4" pad="PF4"/>
-                            <signal function="PORTF" group="P" index="5" pad="PF5"/>
-                            <signal function="PORTF" group="P" index="6" pad="PF6"/>
-                            <signal function="PORTF" group="P" index="7" pad="PF7"/>
-                        </signals>
-                    </instance>
-                    <instance name="PORTR">
-                        <register-group address-space="data" offset="0x07E0" name-in-module="PORT" name="PORTR"/>
-                        <signals>
-                            <signal function="PORTR" group="P" index="0" pad="PR0"/>
-                            <signal function="PORTR" group="P" index="1" pad="PR1"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="TC" id="I6090" version="XMEGAD">
-                    <instance name="TCC0">
-                        <register-group address-space="data" offset="0x800" name-in-module="TC0" name="TCC0"/>
-                        <signals>
-                            <signal field="TC0A" function="TC0" group="OC0A" pad="PC0"/>
-                            <signal field="TC0B" function="TC0" group="OC0B" pad="PC1"/>
-                            <signal field="TC0C" function="TC0" group="OC0C" pad="PC2"/>
-                            <signal field="TC0D" function="TC0" group="OC0D" pad="PC3"/>
-                            <signal field="TC0A" function="TC0_ALT" group="OC0A" pad="PC4"/>
-                            <signal field="TC0B" function="TC0_ALT" group="OC0B" pad="PC5"/>
-                            <signal field="TC0C" function="TC0_ALT" group="OC0C" pad="PC6"/>
-                            <signal field="TC0D" function="TC0_ALT" group="OC0D" pad="PC7"/>
-                        </signals>
-                    </instance>
-                    <instance name="TCC1">
-                        <register-group address-space="data" offset="0x840" name-in-module="TC1" name="TCC1"/>
-                        <signals>
-                            <signal function="TC1" group="OC1A" pad="PC4"/>
-                            <signal function="TC1" group="OC1B" pad="PC5"/>
-                        </signals>
-                    </instance>
-                    <instance name="TCD0">
-                        <register-group address-space="data" offset="0x900" name-in-module="TC0" name="TCD0"/>
-                        <signals>
-                            <signal function="TC0" group="OC0A" pad="PD0"/>
-                            <signal function="TC0" group="OC0B" pad="PD1"/>
-                            <signal function="TC0" group="OC0C" pad="PD2"/>
-                            <signal function="TC0" group="OC0D" pad="PD3"/>
-                        </signals>
-                    </instance>
-                    <instance name="TCE0">
-                        <register-group address-space="data" offset="0xA00" name-in-module="TC0" name="TCE0"/>
-                        <signals>
-                            <signal function="TC0" group="OC0A" pad="PE0"/>
-                            <signal function="TC0" group="OC0B" pad="PE1"/>
-                            <signal function="TC0" group="OC0C" pad="PE2"/>
-                            <signal function="TC0" group="OC0D" pad="PE3"/>
-                        </signals>
-                    </instance>
-                    <instance name="TCF0">
-                        <register-group address-space="data" offset="0xB00" name-in-module="TC0" name="TCF0"/>
-                        <signals>
-                            <signal function="TC0" group="OC0A" pad="PF0"/>
-                            <signal function="TC0" group="OC0B" pad="PF1"/>
-                            <signal function="TC0" group="OC0C" pad="PF2"/>
-                            <signal function="TC0" group="OC0D" pad="PF3"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="TC2" id="I6090" version="XMEGAD">
-                    <instance name="TCC2">
-                        <register-group address-space="data" offset="0x800" name-in-module="TC2" name="TCC2"/>
-                        <signals>
-                            <signal function="TC2" group="LOC2A" pad="PC0"/>
-                            <signal function="TC2" group="LOC2B" pad="PC1"/>
-                            <signal function="TC2" group="LOC2C" pad="PC2"/>
-                            <signal function="TC2" group="LOC2D" pad="PC3"/>
-                            <signal function="TC2" group="HOC2A" pad="PC4"/>
-                            <signal function="TC2" group="HOC2B" pad="PC5"/>
-                            <signal function="TC2" group="HOC2C" pad="PC6"/>
-                            <signal function="TC2" group="HOC2D" pad="PC7"/>
-                        </signals>
-                    </instance>
-                    <instance name="TCD2">
-                        <register-group address-space="data" offset="0x900" name-in-module="TC2" name="TCD2"/>
-                        <signals>
-                            <signal function="TC2" group="LOC2A" pad="PD0"/>
-                            <signal function="TC2" group="LOC2B" pad="PD1"/>
-                            <signal function="TC2" group="LOC2C" pad="PD2"/>
-                            <signal function="TC2" group="LOC2D" pad="PD3"/>
-                            <signal function="TC2" group="HOC2A" pad="PD4"/>
-                            <signal function="TC2" group="HOC2B" pad="PD5"/>
-                            <signal function="TC2" group="HOC2C" pad="PD6"/>
-                            <signal function="TC2" group="HOC2D" pad="PD7"/>
-                        </signals>
-                    </instance>
-                    <instance name="TCE2">
-                        <register-group address-space="data" offset="0xA00" name-in-module="TC2" name="TCE2"/>
-                        <signals>
-                            <signal function="TC2" group="LOC2A" pad="PE0"/>
-                            <signal function="TC2" group="LOC2B" pad="PE1"/>
-                            <signal function="TC2" group="LOC2C" pad="PE2"/>
-                            <signal function="TC2" group="LOC2D" pad="PE3"/>
-                            <signal function="TC2" group="HOC2A" pad="PE4"/>
-                            <signal function="TC2" group="HOC2B" pad="PE5"/>
-                            <signal function="TC2" group="HOC2C" pad="PE6"/>
-                            <signal function="TC2" group="HOC2D" pad="PE7"/>
-                        </signals>
-                    </instance>
-                    <instance name="TCF2">
-                        <register-group address-space="data" offset="0xB00" name-in-module="TC2" name="TCF2"/>
-                        <signals>
-                            <signal function="TC2" group="LOC2A" pad="PF0"/>
-                            <signal function="TC2" group="LOC2B" pad="PF1"/>
-                            <signal function="TC2" group="LOC2C" pad="PF2"/>
-                            <signal function="TC2" group="LOC2D" pad="PF3"/>
-                            <signal function="TC2" group="HOC2A" pad="PF4"/>
-                            <signal function="TC2" group="HOC2B" pad="PF5"/>
-                            <signal function="TC2" group="HOC2C" pad="PF6"/>
-                            <signal function="TC2" group="HOC2D" pad="PF7"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="AWEX" id="I6090" version="XMEGAAU">
-                    <instance name="AWEXC">
-                        <register-group address-space="data" offset="0x880" name-in-module="AWEX" name="AWEXC"/>
-                        <signals>
-                            <signal function="AWEX" group="OC0ALS" pad="PC0"/>
-                            <signal function="AWEX" group="OC0AHS" pad="PC1"/>
-                            <signal function="AWEX" group="OC0BLS" pad="PC2"/>
-                            <signal function="AWEX" group="OC0BHS" pad="PC3"/>
-                            <signal function="AWEX" group="OC0CLS" pad="PC4"/>
-                            <signal function="AWEX" group="OC0CHS" pad="PC5"/>
-                            <signal function="AWEX" group="OC0DLS" pad="PC6"/>
-                            <signal function="AWEX" group="OC0DHS" pad="PC7"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="HIRES" id="I6090" version="XMEGAAU">
-                    <instance name="HIRESC">
-                        <register-group address-space="data" offset="0x890" name-in-module="HIRES" name="HIRESC"/>
-                    </instance>
-                </module>
-                <module name="USART" id="I6090" version="XMEGAAU">
-                    <instance name="USARTC0">
-                        <register-group address-space="data" offset="0x8A0" name-in-module="USART" name="USARTC0"/>
-                        <signals>
-                            <signal field="USART0" function="USART" group="XCK" pad="PC1"/>
-                            <signal field="USART0" function="USART" group="RXD" pad="PC2"/>
-                            <signal field="USART0" function="USART" group="TXD" pad="PC3"/>
-                            <signal field="USART0" function="USART_ALT" group="XCK" pad="PC5"/>
-                            <signal field="USART0" function="USART_ALT" group="RXD" pad="PC6"/>
-                            <signal field="USART0" function="USART_ALT" group="TXD" pad="PC7"/>
-                        </signals>
-                    </instance>
-                    <instance name="USARTD0">
-                        <register-group address-space="data" offset="0x9A0" name-in-module="USART" name="USARTD0"/>
-                        <signals>
-                            <signal function="USART" group="XCK" pad="PD1"/>
-                            <signal function="USART" group="RXD" pad="PD2"/>
-                            <signal function="USART" group="TXD" pad="PD3"/>
-                        </signals>
-                    </instance>
-                    <instance name="USARTE0">
-                        <register-group address-space="data" offset="0xAA0" name-in-module="USART" name="USARTE0"/>
-                        <signals>
-                            <signal function="USART" group="XCK" pad="PE1"/>
-                            <signal function="USART" group="RXD" pad="PE2"/>
-                            <signal function="USART" group="TXD" pad="PE3"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="SPI" id="I6090" version="XMEGAAU">
-                    <instance name="SPIC">
-                        <register-group address-space="data" offset="0x8C0" name-in-module="SPI" name="SPIC"/>
-                        <signals>
-                            <signal field="SPI" function="SPI" group="SS" pad="PC4"/>
-                            <signal field="SPI" function="SPI" group="MOSI" pad="PC5"/>
-                            <signal field="SPI" function="SPI" group="MISO" pad="PC6"/>
-                            <signal field="SPI" function="SPI" group="SCK" pad="PC7"/>
-                            <signal field="SPI" function="SPI_ALT" group="SS" pad="PC4"/>
-                            <signal field="SPI" function="SPI_ALT" group="SCK" pad="PC5"/>
-                            <signal field="SPI" function="SPI_ALT" group="MISO" pad="PC6"/>
-                            <signal field="SPI" function="SPI_ALT" group="MOSI" pad="PC7"/>
-                        </signals>
-                    </instance>
-                    <instance name="SPID">
-                        <register-group address-space="data" offset="0x9C0" name-in-module="SPI" name="SPID"/>
-                        <signals>
-                            <signal function="SPI" group="SS" pad="PD4"/>
-                            <signal function="SPI" group="MOSI" pad="PD5"/>
-                            <signal function="SPI" group="MISO" pad="PD6"/>
-                            <signal function="SPI" group="SCK" pad="PD7"/>
-                        </signals>
-                    </instance>
-                </module>
-                <module name="IRCOM" id="I6090" version="XMEGAD">
-                    <instance name="IRCOM">
-                        <register-group address-space="data" offset="0x8F8" name-in-module="IRCOM" name="IRCOM"/>
-                    </instance>
-                </module>
-                <module name="FUSE" id="I6570" version="XMEGAD">
-                    <instance name="FUSE">
-                        <register-group address-space="fuses" offset="0x00" name-in-module="NVM_FUSES" name="FUSE"/>
-                    </instance>
-                </module>
-                <module name="LOCKBIT" id="I6570" version="XMEGAD">
-                    <instance name="LOCKBIT">
-                        <register-group address-space="lockbits" offset="0x00" name-in-module="NVM_LOCKBITS"
-                                        name="LOCKBIT"/>
-                    </instance>
-                </module>
-                <module name="SIGROW" id="I3610" version="XMEGAC">
-                    <instance name="PROD_SIGNATURES">
-                        <register-group address-space="prod_signatures" offset="0x00"
-                                        name-in-module="NVM_PROD_SIGNATURES" name="PROD_SIGNATURES"/>
-                    </instance>
-                </module>
-            </peripherals>
-            <interrupts>
-                <interrupt-group index="1" module-instance="OSC" name-in-module="OSC"/>
-                <interrupt-group index="2" module-instance="PORTC" name-in-module="PORT"/>
-                <interrupt-group index="4" module-instance="PORTR" name-in-module="PORT"/>
-                <interrupt-group index="10" module-instance="RTC" name-in-module="RTC"/>
-                <interrupt-group index="12" module-instance="TWIC" name-in-module="TWI"/>
-                <interrupt-group index="14" module-instance="TCC0" name-in-module="TC0"/>
-                <interrupt-group index="14" module-instance="TCC2" name-in-module="TC2"/>
-                <interrupt-group index="20" module-instance="TCC1" name-in-module="TC1"/>
-                <interrupt-group index="24" module-instance="SPIC" name-in-module="SPI"/>
-                <interrupt-group index="25" module-instance="USARTC0" name-in-module="USART"/>
-                <interrupt-group index="32" module-instance="NVM" name-in-module="NVM"/>
-                <interrupt-group index="34" module-instance="PORTB" name-in-module="PORT"/>
-                <interrupt-group index="43" module-instance="PORTE" name-in-module="PORT"/>
-                <interrupt-group index="45" module-instance="TWIE" name-in-module="TWI"/>
-                <interrupt-group index="47" module-instance="TCE0" name-in-module="TC0"/>
-                <interrupt-group index="47" module-instance="TCE2" name-in-module="TC2"/>
-                <interrupt-group index="58" module-instance="USARTE0" name-in-module="USART"/>
-                <interrupt-group index="64" module-instance="PORTD" name-in-module="PORT"/>
-                <interrupt-group index="66" module-instance="PORTA" name-in-module="PORT"/>
-                <interrupt-group index="68" module-instance="ACA" name-in-module="AC"/>
-                <interrupt-group index="71" module-instance="ADCA" name-in-module="ADC"/>
-                <interrupt-group index="77" module-instance="TCD0" name-in-module="TC0"/>
-                <interrupt-group index="77" module-instance="TCD2" name-in-module="TC2"/>
-                <interrupt-group index="87" module-instance="SPID" name-in-module="SPI"/>
-                <interrupt-group index="88" module-instance="USARTD0" name-in-module="USART"/>
-                <interrupt-group index="104" module-instance="PORTF" name-in-module="PORT"/>
-                <interrupt-group index="108" module-instance="TCF0" name-in-module="TC0"/>
-                <interrupt-group index="108" module-instance="TCF2" name-in-module="TC2"/>
-                <interrupt-group index="125" module-instance="USB" name-in-module="USB"/>
-            </interrupts>
-            <interfaces>
-                <interface type="pdi" name="PDI"/>
-            </interfaces>
-            <property-groups>
-                <property-group name="SIGNATURES">
-                    <property name="SIGNATURE0" value="0x1E"/>
-                    <property name="SIGNATURE1" value="0x97"/>
-                    <property name="SIGNATURE2" value="0x52"/>
-                </property-group>
-                <property-group name="PDI_INTERFACE">
-                    <property name="APP_SECTION_OFFSET" value="0x00800000"/>
-                    <property name="APPTABLE_SECTION_OFFSET" value="0x0081E000"/>
-                    <property name="BOOT_SECTION_OFFSET" value="0x00820000"/>
-                    <property name="DATAMEM_OFFSET" value="0x01000000"/>
-                    <property name="EEPROM_OFFSET" value="0x008C0000"/>
-                    <property name="USER_SIGNATURES_OFFSET" value="0x008E0400"/>
-                    <property name="PROD_SIGNATURES_OFFSET" value="0x008E0200"/>
-                    <property name="FUSE_REGISTERS_OFFSET" value="0x008F0020"/>
-                    <property name="LOCK_REGISTERS_OFFSET" value="0x008F0027"/>
-                </property-group>
-            </property-groups>
-        </device>
-    </devices>
+    <device name="ATxmega128C3" architecture="AVR8_XMEGA" family="AVR XMEGA">
+        <address-spaces>
+            <address-space name="prog" id="prog" start="0x00000" size="0x22000" endianness="little">
+                <memory-segment start="0x00000" size="0x20000" type="flash" rw="RW" exec="1" name="APP_SECTION"
+                                pagesize="512"/>
+                <memory-segment start="0x1E000" size="0x2000" type="flash" rw="RW" exec="1" name="APPTABLE_SECTION"
+                                pagesize="512"/>
+                <memory-segment start="0x20000" size="0x2000" type="flash" rw="RW" exec="1" name="BOOT_SECTION"
+                                pagesize="512"/>
+            </address-space>
+            <address-space name="data" id="data" start="0x0000" size="0x4000" endianness="little">
+                <memory-segment start="0x0000" size="0x1000" type="io" rw="RW" exec="0" name="IO"/>
+                <memory-segment start="0x1000" size="0x0800" type="eeprom" rw="RW" exec="0" name="MAPPED_EEPROM"/>
+                <memory-segment start="0x2000" size="0x2000" type="ram" rw="RW" exec="0" name="INTERNAL_SRAM"/>
+            </address-space>
+            <address-space name="eeprom" id="eeprom" start="0x00000" size="0x0800">
+                <memory-segment start="0x00000" size="0x0800" type="eeprom" rw="RW" exec="0" name="EEPROM"
+                                pagesize="32"/>
+            </address-space>
+            <address-space name="signatures" id="signatures" start="0x0000" size="0x0003">
+                <memory-segment start="0x0000" size="0x0003" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
+            </address-space>
+            <address-space name="fuses" id="fuses" start="0x0000" size="0x0006">
+                <memory-segment start="0x0000" size="0x0006" type="fuses" rw="RW" exec="0" name="FUSES"/>
+            </address-space>
+            <address-space name="lockbits" id="lockbits" start="0x0000" size="0x0001">
+                <memory-segment start="0x0000" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
+            </address-space>
+            <address-space name="user_signatures" id="user_signatures" start="0x0000" size="0x0200">
+                <memory-segment start="0x0000" size="0x0200" type="user_signatures" rw="RW" exec="0"
+                                name="USER_SIGNATURES" pagesize="512"/>
+            </address-space>
+            <address-space name="prod_signatures" id="prod_signatures" start="0x0000" size="0x0040">
+                <memory-segment start="0x0000" size="0x0040" type="other" rw="R" exec="0" name="PROD_SIGNATURES"
+                                pagesize="512"/>
+            </address-space>
+        </address-spaces>
+        <peripherals>
+            <module name="GPIO" id="I6085" version="XMEGAD">
+                <instance name="GPIO">
+                    <register-group address-space="data" offset="0x0000" name-in-module="GPIO" name="GPIO"/>
+                </instance>
+            </module>
+            <module name="VPORT" id="I6075" version="XMEGAAU">
+                <instance name="VPORT0">
+                    <register-group address-space="data" offset="0x0010" name-in-module="VPORT" name="VPORT0"/>
+                </instance>
+                <instance name="VPORT1">
+                    <register-group address-space="data" offset="0x0014" name-in-module="VPORT" name="VPORT1"/>
+                </instance>
+                <instance name="VPORT2">
+                    <register-group address-space="data" offset="0x0018" name-in-module="VPORT" name="VPORT2"/>
+                </instance>
+                <instance name="VPORT3">
+                    <register-group address-space="data" offset="0x001C" name-in-module="VPORT" name="VPORT3"/>
+                </instance>
+            </module>
+            <module name="XOCD" id="I6043">
+                <instance name="OCD">
+                    <register-group address-space="data" offset="0x002E" name-in-module="OCD" name="OCD"/>
+                </instance>
+            </module>
+            <module name="CPU" id="I6000">
+                <instance name="CPU">
+                    <register-group address-space="data" offset="0x0030" name-in-module="CPU" name="CPU"/>
+                    <parameters>
+                        <param name="CORE_VERSION" value="V3XJ"/>
+                    </parameters>
+                </instance>
+            </module>
+            <module name="CLK" id="I6073" version="XMEGAC">
+                <instance name="CLK">
+                    <register-group address-space="data" offset="0x0040" name-in-module="CLK" name="CLK"/>
+                </instance>
+            </module>
+            <module name="PR" id="I6073" version="XMEGAC">
+                <instance name="PR">
+                    <register-group address-space="data" offset="0x0070" name-in-module="PR" name="PR"/>
+                </instance>
+            </module>
+            <module name="SLEEP" id="I6081">
+                <instance name="SLEEP">
+                    <register-group address-space="data" offset="0x0048" name-in-module="SLEEP" name="SLEEP"/>
+                </instance>
+            </module>
+            <module name="OSC" id="I6079" version="XMEGAAU">
+                <instance name="OSC">
+                    <register-group address-space="data" offset="0x0050" name-in-module="OSC" name="OSC"/>
+                    <signals>
+                        <signal function="XTAL" group="XTAL2" pad="PR0"/>
+                        <signal function="XTAL" group="XTAL1" pad="PR1"/>
+                        <signal function="TOSC" group="TOSC2" pad="PE2"/>
+                        <signal function="TOSC" group="TOSC1" pad="PE3"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="DFLL" id="I6055" version="XMEGAAU">
+                <instance name="DFLLRC32M">
+                    <register-group address-space="data" offset="0x0060" name-in-module="DFLL" name="DFLLRC32M"/>
+                </instance>
+                <instance name="DFLLRC2M">
+                    <register-group address-space="data" offset="0x0068" name-in-module="DFLL" name="DFLLRC2M"/>
+                </instance>
+            </module>
+            <module name="RST" id="I6083" version="XMEGAAU">
+                <instance name="RST">
+                    <register-group address-space="data" offset="0x0078" name-in-module="RST" name="RST"/>
+                </instance>
+            </module>
+            <module name="WDT" id="I6078">
+                <instance name="WDT">
+                    <register-group address-space="data" offset="0x0080" name-in-module="WDT" name="WDT"/>
+                </instance>
+            </module>
+            <module name="MCU" id="I6091" version="XMEGAD">
+                <instance name="MCU">
+                    <register-group address-space="data" offset="0x0090" name-in-module="MCU" name="MCU"/>
+                </instance>
+            </module>
+            <module name="PMIC" id="I6057">
+                <instance name="PMIC">
+                    <register-group address-space="data" offset="0x00A0" name-in-module="PMIC" name="PMIC"/>
+                </instance>
+            </module>
+            <module name="PORTCFG" id="I6075" version="XMEGAD">
+                <instance name="PORTCFG">
+                    <register-group address-space="data" offset="0x00B0" name-in-module="PORTCFG" name="PORTCFG"/>
+                    <signals>
+                        <signal field="CLKOUT" function="CLKOUT" group="CLKOUT" pad="PC7"/>
+                        <signal field="CLKEVPIN" function="CLKOUT_ALT" group="CLKOUT" pad="PC4"/>
+                        <signal field="EVOUT" function="EVOUT" group="EVOUT" pad="PC7"/>
+                        <signal field="CLKEVPIN" function="EVOUT_ALT" group="EVOUT" pad="PC4"/>
+                        <signal function="RTCOUTC" group="RTCOUT" pad="PC6"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="CRC" id="I6111" version="XMEGAD">
+                <instance name="CRC">
+                    <register-group address-space="data" offset="0x0D0" name-in-module="CRC" name="CRC"/>
+                </instance>
+            </module>
+            <module name="EVSYS" id="I6061" version="XMEGAC">
+                <instance name="EVSYS">
+                    <register-group address-space="data" offset="0x0180" name-in-module="EVSYS" name="EVSYS"/>
+                </instance>
+            </module>
+            <module name="NVM" id="I6076" version="XMEGAAU">
+                <instance name="NVM">
+                    <register-group address-space="data" offset="0x01C0" name-in-module="NVM" name="NVM"/>
+                </instance>
+            </module>
+            <module name="ADC" id="I6110">
+                <instance name="ADCA">
+                    <register-group address-space="data" offset="0x0200" name-in-module="ADC" name="ADCA"/>
+                    <signals>
+                        <signal function="ADC" group="ADC" index="0" pad="PA0"/>
+                        <signal function="ADC" group="ADC" index="1" pad="PA1"/>
+                        <signal function="ADC" group="ADC" index="2" pad="PA2"/>
+                        <signal function="ADC" group="ADC" index="3" pad="PA3"/>
+                        <signal function="ADC" group="ADC" index="4" pad="PA4"/>
+                        <signal function="ADC" group="ADC" index="5" pad="PA5"/>
+                        <signal function="ADC" group="ADC" index="6" pad="PA6"/>
+                        <signal function="ADC" group="ADC" index="7" pad="PA7"/>
+                        <signal function="ADC" group="ADC" index="8" pad="PB0"/>
+                        <signal function="ADC" group="ADC" index="9" pad="PB1"/>
+                        <signal function="ADC" group="ADC" index="10" pad="PB2"/>
+                        <signal function="ADC" group="ADC" index="11" pad="PB3"/>
+                        <signal function="ADC" group="ADC" index="12" pad="PB4"/>
+                        <signal function="ADC" group="ADC" index="13" pad="PB5"/>
+                        <signal function="ADC" group="ADC" index="14" pad="PB6"/>
+                        <signal function="ADC" group="ADC" index="15" pad="PB7"/>
+                        <signal function="AREF" group="REFA" index="0" pad="PA0"/>
+                        <signal function="AREF" group="REFB" index="0" pad="PB0"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="AC" id="I6077" version="XMEGAD">
+                <instance name="ACA">
+                    <register-group address-space="data" offset="0x0380" name-in-module="AC" name="ACA"/>
+                    <signals>
+                        <signal function="AC" group="AC" index="0" pad="PA0"/>
+                        <signal function="AC" group="AC" index="1" pad="PA1"/>
+                        <signal function="AC" group="AC" index="2" pad="PA2"/>
+                        <signal function="AC" group="AC" index="3" pad="PA3"/>
+                        <signal function="AC" group="AC" index="4" pad="PA4"/>
+                        <signal function="AC" group="AC" index="5" pad="PA5"/>
+                        <signal function="AC" group="AC" index="6" pad="PA6"/>
+                        <signal function="AC" group="AC" index="7" pad="PA7"/>
+                        <signal function="ACOUT" group="ACOUT" index="1" pad="PA6"/>
+                        <signal function="ACOUT" group="ACOUT" index="0" pad="PA7"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="RTC" id="I6093">
+                <instance name="RTC">
+                    <register-group address-space="data" offset="0x0400" name-in-module="RTC" name="RTC"/>
+                </instance>
+            </module>
+            <module name="TWI" id="I6089" version="XMEGAAU">
+                <instance name="TWIC">
+                    <register-group address-space="data" offset="0x480" name-in-module="TWI" name="TWIC"/>
+                    <signals>
+                        <signal function="TWI" group="SDA" pad="PC0"/>
+                        <signal function="TWI" group="SCL" pad="PC1"/>
+                    </signals>
+                </instance>
+                <instance name="TWIE">
+                    <register-group address-space="data" offset="0x4A0" name-in-module="TWI" name="TWIE"/>
+                    <signals>
+                        <signal function="TWI" group="SDA" pad="PE0"/>
+                        <signal function="TWI" group="SCL" pad="PE1"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="USB" id="I3005" version="XMEGAAU">
+                <instance name="USB">
+                    <register-group address-space="data" offset="0x4C0" name-in-module="USB" name="USB"/>
+                    <signals>
+                        <signal function="USB" group="DN" pad="PD6"/>
+                        <signal function="USB" group="DP" pad="PD7"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="PORT" id="I6075" version="XMEGAAU">
+                <instance name="PORTA">
+                    <register-group address-space="data" offset="0x0600" name-in-module="PORT" name="PORTA"/>
+                    <signals>
+                        <signal function="PORTA" group="P" index="0" pad="PA0"/>
+                        <signal function="PORTA" group="P" index="1" pad="PA1"/>
+                        <signal function="PORTA" group="P" index="2" pad="PA2"/>
+                        <signal function="PORTA" group="P" index="3" pad="PA3"/>
+                        <signal function="PORTA" group="P" index="4" pad="PA4"/>
+                        <signal function="PORTA" group="P" index="5" pad="PA5"/>
+                        <signal function="PORTA" group="P" index="6" pad="PA6"/>
+                        <signal function="PORTA" group="P" index="7" pad="PA7"/>
+                    </signals>
+                </instance>
+                <instance name="PORTB">
+                    <register-group address-space="data" offset="0x0620" name-in-module="PORT" name="PORTB"/>
+                    <signals>
+                        <signal function="PORTB" group="P" index="0" pad="PB0"/>
+                        <signal function="PORTB" group="P" index="1" pad="PB1"/>
+                        <signal function="PORTB" group="P" index="2" pad="PB2"/>
+                        <signal function="PORTB" group="P" index="3" pad="PB3"/>
+                        <signal function="PORTB" group="P" index="4" pad="PB4"/>
+                        <signal function="PORTB" group="P" index="5" pad="PB5"/>
+                        <signal function="PORTB" group="P" index="6" pad="PB6"/>
+                        <signal function="PORTB" group="P" index="7" pad="PB7"/>
+                    </signals>
+                </instance>
+                <instance name="PORTC">
+                    <register-group address-space="data" offset="0x0640" name-in-module="PORT" name="PORTC"/>
+                    <signals>
+                        <signal function="PORTC" group="P" index="0" pad="PC0"/>
+                        <signal function="PORTC" group="P" index="1" pad="PC1"/>
+                        <signal function="PORTC" group="P" index="2" pad="PC2"/>
+                        <signal function="PORTC" group="P" index="3" pad="PC3"/>
+                        <signal function="PORTC" group="P" index="4" pad="PC4"/>
+                        <signal function="PORTC" group="P" index="5" pad="PC5"/>
+                        <signal function="PORTC" group="P" index="6" pad="PC6"/>
+                        <signal function="PORTC" group="P" index="7" pad="PC7"/>
+                    </signals>
+                </instance>
+                <instance name="PORTD">
+                    <register-group address-space="data" offset="0x0660" name-in-module="PORT" name="PORTD"/>
+                    <signals>
+                        <signal function="PORTD" group="P" index="0" pad="PD0"/>
+                        <signal function="PORTD" group="P" index="1" pad="PD1"/>
+                        <signal function="PORTD" group="P" index="2" pad="PD2"/>
+                        <signal function="PORTD" group="P" index="3" pad="PD3"/>
+                        <signal function="PORTD" group="P" index="4" pad="PD4"/>
+                        <signal function="PORTD" group="P" index="5" pad="PD5"/>
+                        <signal function="PORTD" group="P" index="6" pad="PD6"/>
+                        <signal function="PORTD" group="P" index="7" pad="PD7"/>
+                    </signals>
+                </instance>
+                <instance name="PORTE">
+                    <register-group address-space="data" offset="0x0680" name-in-module="PORT" name="PORTE"/>
+                    <signals>
+                        <signal function="PORTE" group="P" index="0" pad="PE0"/>
+                        <signal function="PORTE" group="P" index="1" pad="PE1"/>
+                        <signal function="PORTE" group="P" index="2" pad="PE2"/>
+                        <signal function="PORTE" group="P" index="3" pad="PE3"/>
+                        <signal function="PORTE" group="P" index="4" pad="PE4"/>
+                        <signal function="PORTE" group="P" index="5" pad="PE5"/>
+                        <signal function="PORTE" group="P" index="6" pad="PE6"/>
+                        <signal function="PORTE" group="P" index="7" pad="PE7"/>
+                    </signals>
+                </instance>
+                <instance name="PORTF">
+                    <register-group address-space="data" offset="0x06A0" name-in-module="PORT" name="PORTF"/>
+                    <signals>
+                        <signal function="PORTF" group="P" index="0" pad="PF0"/>
+                        <signal function="PORTF" group="P" index="1" pad="PF1"/>
+                        <signal function="PORTF" group="P" index="2" pad="PF2"/>
+                        <signal function="PORTF" group="P" index="3" pad="PF3"/>
+                        <signal function="PORTF" group="P" index="4" pad="PF4"/>
+                        <signal function="PORTF" group="P" index="5" pad="PF5"/>
+                        <signal function="PORTF" group="P" index="6" pad="PF6"/>
+                        <signal function="PORTF" group="P" index="7" pad="PF7"/>
+                    </signals>
+                </instance>
+                <instance name="PORTR">
+                    <register-group address-space="data" offset="0x07E0" name-in-module="PORT" name="PORTR"/>
+                    <signals>
+                        <signal function="PORTR" group="P" index="0" pad="PR0"/>
+                        <signal function="PORTR" group="P" index="1" pad="PR1"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="TC" id="I6090" version="XMEGAD">
+                <instance name="TCC0">
+                    <register-group address-space="data" offset="0x800" name-in-module="TC0" name="TCC0"/>
+                    <signals>
+                        <signal field="TC0A" function="TC0" group="OC0A" pad="PC0"/>
+                        <signal field="TC0B" function="TC0" group="OC0B" pad="PC1"/>
+                        <signal field="TC0C" function="TC0" group="OC0C" pad="PC2"/>
+                        <signal field="TC0D" function="TC0" group="OC0D" pad="PC3"/>
+                        <signal field="TC0A" function="TC0_ALT" group="OC0A" pad="PC4"/>
+                        <signal field="TC0B" function="TC0_ALT" group="OC0B" pad="PC5"/>
+                        <signal field="TC0C" function="TC0_ALT" group="OC0C" pad="PC6"/>
+                        <signal field="TC0D" function="TC0_ALT" group="OC0D" pad="PC7"/>
+                    </signals>
+                </instance>
+                <instance name="TCC1">
+                    <register-group address-space="data" offset="0x840" name-in-module="TC1" name="TCC1"/>
+                    <signals>
+                        <signal function="TC1" group="OC1A" pad="PC4"/>
+                        <signal function="TC1" group="OC1B" pad="PC5"/>
+                    </signals>
+                </instance>
+                <instance name="TCD0">
+                    <register-group address-space="data" offset="0x900" name-in-module="TC0" name="TCD0"/>
+                    <signals>
+                        <signal function="TC0" group="OC0A" pad="PD0"/>
+                        <signal function="TC0" group="OC0B" pad="PD1"/>
+                        <signal function="TC0" group="OC0C" pad="PD2"/>
+                        <signal function="TC0" group="OC0D" pad="PD3"/>
+                    </signals>
+                </instance>
+                <instance name="TCE0">
+                    <register-group address-space="data" offset="0xA00" name-in-module="TC0" name="TCE0"/>
+                    <signals>
+                        <signal function="TC0" group="OC0A" pad="PE0"/>
+                        <signal function="TC0" group="OC0B" pad="PE1"/>
+                        <signal function="TC0" group="OC0C" pad="PE2"/>
+                        <signal function="TC0" group="OC0D" pad="PE3"/>
+                    </signals>
+                </instance>
+                <instance name="TCF0">
+                    <register-group address-space="data" offset="0xB00" name-in-module="TC0" name="TCF0"/>
+                    <signals>
+                        <signal function="TC0" group="OC0A" pad="PF0"/>
+                        <signal function="TC0" group="OC0B" pad="PF1"/>
+                        <signal function="TC0" group="OC0C" pad="PF2"/>
+                        <signal function="TC0" group="OC0D" pad="PF3"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="TC2" id="I6090" version="XMEGAD">
+                <instance name="TCC2">
+                    <register-group address-space="data" offset="0x800" name-in-module="TC2" name="TCC2"/>
+                    <signals>
+                        <signal function="TC2" group="LOC2A" pad="PC0"/>
+                        <signal function="TC2" group="LOC2B" pad="PC1"/>
+                        <signal function="TC2" group="LOC2C" pad="PC2"/>
+                        <signal function="TC2" group="LOC2D" pad="PC3"/>
+                        <signal function="TC2" group="HOC2A" pad="PC4"/>
+                        <signal function="TC2" group="HOC2B" pad="PC5"/>
+                        <signal function="TC2" group="HOC2C" pad="PC6"/>
+                        <signal function="TC2" group="HOC2D" pad="PC7"/>
+                    </signals>
+                </instance>
+                <instance name="TCD2">
+                    <register-group address-space="data" offset="0x900" name-in-module="TC2" name="TCD2"/>
+                    <signals>
+                        <signal function="TC2" group="LOC2A" pad="PD0"/>
+                        <signal function="TC2" group="LOC2B" pad="PD1"/>
+                        <signal function="TC2" group="LOC2C" pad="PD2"/>
+                        <signal function="TC2" group="LOC2D" pad="PD3"/>
+                        <signal function="TC2" group="HOC2A" pad="PD4"/>
+                        <signal function="TC2" group="HOC2B" pad="PD5"/>
+                        <signal function="TC2" group="HOC2C" pad="PD6"/>
+                        <signal function="TC2" group="HOC2D" pad="PD7"/>
+                    </signals>
+                </instance>
+                <instance name="TCE2">
+                    <register-group address-space="data" offset="0xA00" name-in-module="TC2" name="TCE2"/>
+                    <signals>
+                        <signal function="TC2" group="LOC2A" pad="PE0"/>
+                        <signal function="TC2" group="LOC2B" pad="PE1"/>
+                        <signal function="TC2" group="LOC2C" pad="PE2"/>
+                        <signal function="TC2" group="LOC2D" pad="PE3"/>
+                        <signal function="TC2" group="HOC2A" pad="PE4"/>
+                        <signal function="TC2" group="HOC2B" pad="PE5"/>
+                        <signal function="TC2" group="HOC2C" pad="PE6"/>
+                        <signal function="TC2" group="HOC2D" pad="PE7"/>
+                    </signals>
+                </instance>
+                <instance name="TCF2">
+                    <register-group address-space="data" offset="0xB00" name-in-module="TC2" name="TCF2"/>
+                    <signals>
+                        <signal function="TC2" group="LOC2A" pad="PF0"/>
+                        <signal function="TC2" group="LOC2B" pad="PF1"/>
+                        <signal function="TC2" group="LOC2C" pad="PF2"/>
+                        <signal function="TC2" group="LOC2D" pad="PF3"/>
+                        <signal function="TC2" group="HOC2A" pad="PF4"/>
+                        <signal function="TC2" group="HOC2B" pad="PF5"/>
+                        <signal function="TC2" group="HOC2C" pad="PF6"/>
+                        <signal function="TC2" group="HOC2D" pad="PF7"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="AWEX" id="I6090" version="XMEGAAU">
+                <instance name="AWEXC">
+                    <register-group address-space="data" offset="0x880" name-in-module="AWEX" name="AWEXC"/>
+                    <signals>
+                        <signal function="AWEX" group="OC0ALS" pad="PC0"/>
+                        <signal function="AWEX" group="OC0AHS" pad="PC1"/>
+                        <signal function="AWEX" group="OC0BLS" pad="PC2"/>
+                        <signal function="AWEX" group="OC0BHS" pad="PC3"/>
+                        <signal function="AWEX" group="OC0CLS" pad="PC4"/>
+                        <signal function="AWEX" group="OC0CHS" pad="PC5"/>
+                        <signal function="AWEX" group="OC0DLS" pad="PC6"/>
+                        <signal function="AWEX" group="OC0DHS" pad="PC7"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="HIRES" id="I6090" version="XMEGAAU">
+                <instance name="HIRESC">
+                    <register-group address-space="data" offset="0x890" name-in-module="HIRES" name="HIRESC"/>
+                </instance>
+            </module>
+            <module name="USART" id="I6090" version="XMEGAAU">
+                <instance name="USARTC0">
+                    <register-group address-space="data" offset="0x8A0" name-in-module="USART" name="USARTC0"/>
+                    <signals>
+                        <signal field="USART0" function="USART" group="XCK" pad="PC1"/>
+                        <signal field="USART0" function="USART" group="RXD" pad="PC2"/>
+                        <signal field="USART0" function="USART" group="TXD" pad="PC3"/>
+                        <signal field="USART0" function="USART_ALT" group="XCK" pad="PC5"/>
+                        <signal field="USART0" function="USART_ALT" group="RXD" pad="PC6"/>
+                        <signal field="USART0" function="USART_ALT" group="TXD" pad="PC7"/>
+                    </signals>
+                </instance>
+                <instance name="USARTD0">
+                    <register-group address-space="data" offset="0x9A0" name-in-module="USART" name="USARTD0"/>
+                    <signals>
+                        <signal function="USART" group="XCK" pad="PD1"/>
+                        <signal function="USART" group="RXD" pad="PD2"/>
+                        <signal function="USART" group="TXD" pad="PD3"/>
+                    </signals>
+                </instance>
+                <instance name="USARTE0">
+                    <register-group address-space="data" offset="0xAA0" name-in-module="USART" name="USARTE0"/>
+                    <signals>
+                        <signal function="USART" group="XCK" pad="PE1"/>
+                        <signal function="USART" group="RXD" pad="PE2"/>
+                        <signal function="USART" group="TXD" pad="PE3"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="SPI" id="I6090" version="XMEGAAU">
+                <instance name="SPIC">
+                    <register-group address-space="data" offset="0x8C0" name-in-module="SPI" name="SPIC"/>
+                    <signals>
+                        <signal field="SPI" function="SPI" group="SS" pad="PC4"/>
+                        <signal field="SPI" function="SPI" group="MOSI" pad="PC5"/>
+                        <signal field="SPI" function="SPI" group="MISO" pad="PC6"/>
+                        <signal field="SPI" function="SPI" group="SCK" pad="PC7"/>
+                        <signal field="SPI" function="SPI_ALT" group="SS" pad="PC4"/>
+                        <signal field="SPI" function="SPI_ALT" group="SCK" pad="PC5"/>
+                        <signal field="SPI" function="SPI_ALT" group="MISO" pad="PC6"/>
+                        <signal field="SPI" function="SPI_ALT" group="MOSI" pad="PC7"/>
+                    </signals>
+                </instance>
+                <instance name="SPID">
+                    <register-group address-space="data" offset="0x9C0" name-in-module="SPI" name="SPID"/>
+                    <signals>
+                        <signal function="SPI" group="SS" pad="PD4"/>
+                        <signal function="SPI" group="MOSI" pad="PD5"/>
+                        <signal function="SPI" group="MISO" pad="PD6"/>
+                        <signal function="SPI" group="SCK" pad="PD7"/>
+                    </signals>
+                </instance>
+            </module>
+            <module name="IRCOM" id="I6090" version="XMEGAD">
+                <instance name="IRCOM">
+                    <register-group address-space="data" offset="0x8F8" name-in-module="IRCOM" name="IRCOM"/>
+                </instance>
+            </module>
+            <module name="FUSE" id="I6570" version="XMEGAD">
+                <instance name="FUSE">
+                    <register-group address-space="fuses" offset="0x00" name-in-module="NVM_FUSES" name="FUSE"/>
+                </instance>
+            </module>
+            <module name="LOCKBIT" id="I6570" version="XMEGAD">
+                <instance name="LOCKBIT">
+                    <register-group address-space="lockbits" offset="0x00" name-in-module="NVM_LOCKBITS"
+                                    name="LOCKBIT"/>
+                </instance>
+            </module>
+            <module name="SIGROW" id="I3610" version="XMEGAC">
+                <instance name="PROD_SIGNATURES">
+                    <register-group address-space="prod_signatures" offset="0x00"
+                                    name-in-module="NVM_PROD_SIGNATURES" name="PROD_SIGNATURES"/>
+                </instance>
+            </module>
+        </peripherals>
+        <interrupts>
+            <interrupt-group index="1" module-instance="OSC" name-in-module="OSC"/>
+            <interrupt-group index="2" module-instance="PORTC" name-in-module="PORT"/>
+            <interrupt-group index="4" module-instance="PORTR" name-in-module="PORT"/>
+            <interrupt-group index="10" module-instance="RTC" name-in-module="RTC"/>
+            <interrupt-group index="12" module-instance="TWIC" name-in-module="TWI"/>
+            <interrupt-group index="14" module-instance="TCC0" name-in-module="TC0"/>
+            <interrupt-group index="14" module-instance="TCC2" name-in-module="TC2"/>
+            <interrupt-group index="20" module-instance="TCC1" name-in-module="TC1"/>
+            <interrupt-group index="24" module-instance="SPIC" name-in-module="SPI"/>
+            <interrupt-group index="25" module-instance="USARTC0" name-in-module="USART"/>
+            <interrupt-group index="32" module-instance="NVM" name-in-module="NVM"/>
+            <interrupt-group index="34" module-instance="PORTB" name-in-module="PORT"/>
+            <interrupt-group index="43" module-instance="PORTE" name-in-module="PORT"/>
+            <interrupt-group index="45" module-instance="TWIE" name-in-module="TWI"/>
+            <interrupt-group index="47" module-instance="TCE0" name-in-module="TC0"/>
+            <interrupt-group index="47" module-instance="TCE2" name-in-module="TC2"/>
+            <interrupt-group index="58" module-instance="USARTE0" name-in-module="USART"/>
+            <interrupt-group index="64" module-instance="PORTD" name-in-module="PORT"/>
+            <interrupt-group index="66" module-instance="PORTA" name-in-module="PORT"/>
+            <interrupt-group index="68" module-instance="ACA" name-in-module="AC"/>
+            <interrupt-group index="71" module-instance="ADCA" name-in-module="ADC"/>
+            <interrupt-group index="77" module-instance="TCD0" name-in-module="TC0"/>
+            <interrupt-group index="77" module-instance="TCD2" name-in-module="TC2"/>
+            <interrupt-group index="87" module-instance="SPID" name-in-module="SPI"/>
+            <interrupt-group index="88" module-instance="USARTD0" name-in-module="USART"/>
+            <interrupt-group index="104" module-instance="PORTF" name-in-module="PORT"/>
+            <interrupt-group index="108" module-instance="TCF0" name-in-module="TC0"/>
+            <interrupt-group index="108" module-instance="TCF2" name-in-module="TC2"/>
+            <interrupt-group index="125" module-instance="USB" name-in-module="USB"/>
+        </interrupts>
+        <interfaces>
+            <interface type="pdi" name="PDI"/>
+        </interfaces>
+        <property-groups>
+            <property-group name="SIGNATURES">
+                <property name="SIGNATURE0" value="0x1E"/>
+                <property name="SIGNATURE1" value="0x97"/>
+                <property name="SIGNATURE2" value="0x52"/>
+            </property-group>
+            <property-group name="PDI_INTERFACE">
+                <property name="APP_SECTION_OFFSET" value="0x00800000"/>
+                <property name="APPTABLE_SECTION_OFFSET" value="0x0081E000"/>
+                <property name="BOOT_SECTION_OFFSET" value="0x00820000"/>
+                <property name="DATAMEM_OFFSET" value="0x01000000"/>
+                <property name="EEPROM_OFFSET" value="0x008C0000"/>
+                <property name="USER_SIGNATURES_OFFSET" value="0x008E0400"/>
+                <property name="PROD_SIGNATURES_OFFSET" value="0x008E0200"/>
+                <property name="FUSE_REGISTERS_OFFSET" value="0x008F0020"/>
+                <property name="LOCK_REGISTERS_OFFSET" value="0x008F0027"/>
+            </property-group>
+        </property-groups>
+    </device>
     <modules>
         <module name="GPIO" id="I6085" version="XMEGAD" caption="General Purpose IO">
             <register-group caption="General Purpose IO Registers" name="GPIO" size="4">
