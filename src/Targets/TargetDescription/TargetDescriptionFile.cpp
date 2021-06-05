@@ -595,11 +595,14 @@ std::optional<Register> TargetDescriptionFile::getOscillatorCalibrationRegister(
 std::optional<Register> TargetDescriptionFile::getSpmcsRegister() const {
     auto cpuRegisterGroup = this->getCpuRegisterGroup();
 
-    if (cpuRegisterGroup.has_value()) {
-        auto spmcsRegisterIt = cpuRegisterGroup->registersMappedByName.find("spmcsr");
+    if (cpuRegisterGroup.has_value() && cpuRegisterGroup->registersMappedByName.contains("spmcsr")) {
+        return cpuRegisterGroup->registersMappedByName.at("spmcsr");
 
-        if (spmcsRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
-            return spmcsRegisterIt->second;
+    } else {
+        auto bootLoadRegisterGroup = this->getBootLoadRegisterGroup();
+
+        if (bootLoadRegisterGroup.has_value() && bootLoadRegisterGroup->registersMappedByName.contains("spmcsr")) {
+            return bootLoadRegisterGroup->registersMappedByName.at("spmcsr");
         }
     }
 
@@ -609,11 +612,14 @@ std::optional<Register> TargetDescriptionFile::getSpmcsRegister() const {
 std::optional<Register> TargetDescriptionFile::getSpmcRegister() const {
     auto bootLoadRegisterGroup = this->getBootLoadRegisterGroup();
 
-    if (bootLoadRegisterGroup.has_value()) {
-        auto spmcRegisterIt = bootLoadRegisterGroup->registersMappedByName.find("spmcr");
+    if (bootLoadRegisterGroup.has_value() && bootLoadRegisterGroup->registersMappedByName.contains("spmcr")) {
+        return bootLoadRegisterGroup->registersMappedByName.at("spmcr");
 
-        if (spmcRegisterIt != bootLoadRegisterGroup->registersMappedByName.end()) {
-            return spmcRegisterIt->second;
+    } else {
+        auto cpuRegisterGroup = this->getCpuRegisterGroup();
+
+        if (cpuRegisterGroup.has_value() && cpuRegisterGroup->registersMappedByName.contains("spmcr")) {
+            return cpuRegisterGroup->registersMappedByName.at("spmcr");
         }
     }
 
