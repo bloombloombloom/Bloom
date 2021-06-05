@@ -1,4 +1,5 @@
 <?php
+namespace Bloom\BuildScripts\TargetDescriptionFiles;
 
 class Variant
 {
