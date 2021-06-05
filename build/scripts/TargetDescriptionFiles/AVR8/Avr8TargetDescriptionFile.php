@@ -18,7 +18,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     const AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE = 'debugWire';
 
     public ?string $family = null;
-    public ?string $debugPhysicalInterface = null;
+    public array $debugPhysicalInterface = [];
 
     // Target params
     public ?int $bootSectionStartAddress = null;
@@ -83,16 +83,18 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         }
 
         if (isset($this->physicalInterfacesByName['debugwire'])) {
-            $this->debugPhysicalInterface = self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE;
+            $this->debugPhysicalInterface[] = self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE;
+        }
 
-        } else if (isset($this->physicalInterfacesByName['jtag'])) {
-            $this->debugPhysicalInterface = self::AVR8_PHYSICAL_INTERFACE_JTAG;
-
-        } else if (isset($this->physicalInterfacesByName['updi'])) {
-            $this->debugPhysicalInterface = self::AVR8_PHYSICAL_INTERFACE_UPDI;
+        if (isset($this->physicalInterfacesByName['updi'])) {
+            $this->debugPhysicalInterface[] = self::AVR8_PHYSICAL_INTERFACE_UPDI;
 
         } else if (isset($this->physicalInterfacesByName['pdi'])) {
-            $this->debugPhysicalInterface = self::AVR8_PHYSICAL_INTERFACE_PDI;
+            $this->debugPhysicalInterface[] = self::AVR8_PHYSICAL_INTERFACE_PDI;
+        }
+
+        if (isset($this->physicalInterfacesByName['jtag'])) {
+            $this->debugPhysicalInterface[] = self::AVR8_PHYSICAL_INTERFACE_JTAG;
         }
 
         $progAddressSpace = $this->addressSpacesById['prog'] ?? null;
@@ -371,8 +373,11 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'Missing eeprom page size.';
         }
 
-        if ($this->debugPhysicalInterface == self::AVR8_PHYSICAL_INTERFACE_JTAG
-            || $this->debugPhysicalInterface == self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE
+        if (in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $this->debugPhysicalInterface)
+            || (
+                in_array(self::AVR8_PHYSICAL_INTERFACE_JTAG, $this->debugPhysicalInterface)
+                && $this->family == self::AVR8_FAMILY_MEGA
+            )
         ) {
             if (is_null($this->ocdRevision)) {
                 $failures[] = 'Missing OCD revision.';
