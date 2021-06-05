@@ -434,19 +434,21 @@ std::optional<MemorySegment> TargetDescriptionFile::getRegisterMemorySegment() c
 std::optional<MemorySegment> TargetDescriptionFile::getEepromMemorySegment() const {
     auto addressMapping = this->getAddressSpacesMappedById();
 
-    // EEPROM attributes are usually found in the data address space
-    auto eepromAddressSpaceIt = addressMapping.find("eeprom");
-
-    if (eepromAddressSpaceIt != addressMapping.end()) {
-        auto& eepromAddressSpace = eepromAddressSpaceIt->second;
+    if (addressMapping.contains("eeprom")) {
+        auto& eepromAddressSpace = addressMapping.at("eeprom");
         auto& eepromAddressSpaceSegments = eepromAddressSpace.memorySegmentsByTypeAndName;
 
-        if (eepromAddressSpaceSegments.find(MemorySegmentType::EEPROM) != eepromAddressSpaceSegments.end()) {
-            auto& eepromMemorySegments = eepromAddressSpaceSegments.find(MemorySegmentType::EEPROM)->second;
-            auto eepromMemorySegmentIt = eepromMemorySegments.begin();
+        if (eepromAddressSpaceSegments.contains(MemorySegmentType::EEPROM)) {
+            return eepromAddressSpaceSegments.at(MemorySegmentType::EEPROM).begin()->second;
+        }
 
-            if (eepromMemorySegmentIt != eepromMemorySegments.end()) {
-                return eepromMemorySegmentIt->second;
+    } else {
+        // The EEPROM memory segment may be part of the data address space
+        if (addressMapping.contains("data")) {
+            auto dataAddressSpace = addressMapping.at("data");
+
+            if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::EEPROM)) {
+                return dataAddressSpace.memorySegmentsByTypeAndName.at(MemorySegmentType::EEPROM).begin()->second;
             }
         }
     }

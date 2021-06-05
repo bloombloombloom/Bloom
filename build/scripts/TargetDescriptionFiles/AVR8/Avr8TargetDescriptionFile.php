@@ -131,10 +131,18 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 $this->gpRegisterSize = $registerMemorySegment->size;
                 $this->gpRegisterStartAddress = $registerMemorySegment->startAddress;
             }
+
+            if (isset($dataAddressSpace->memorySegmentsByTypeAndName['eeprom']['eeprom'])) {
+                $eepromMemorySegment = $dataAddressSpace->memorySegmentsByTypeAndName['eeprom']['eeprom'];
+                $this->eepromSize = $eepromMemorySegment->size;
+                $this->eepromPageSize = $eepromMemorySegment->pageSize;
+            }
         }
 
-        $eepromAddressSpace = $this->addressSpacesById['eeprom'] ?? null;
-        if (!empty($eepromAddressSpace)) {
+        if ((is_null($this->eepromSize) || is_null($this->eepromPageSize))
+            && isset($this->addressSpacesById['eeprom'])
+        ) {
+            $eepromAddressSpace = $this->addressSpacesById['eeprom'];
             $eepromMemorySegments = $eepromAddressSpace->memorySegmentsByTypeAndName['eeprom'] ?? null;
 
             if (!empty($eepromMemorySegments)) {
