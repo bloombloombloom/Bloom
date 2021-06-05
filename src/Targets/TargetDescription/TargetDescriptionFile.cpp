@@ -369,11 +369,12 @@ std::optional<MemorySegment> TargetDescriptionFile::getFlashMemorySegment() cons
             auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
 
             /*
-             * Some target descriptions describe the flash memory segments in the "APP_SECTION" segment, whereas
-             * others use the "FLASH" segment.
+             * In AVR8 TDFs, flash memory segments are typically named "APP_SECTION", "PROGMEM" or "FLASH".
              */
             auto flashSegmentIt = flashMemorySegments.find("app_section") != flashMemorySegments.end() ?
-                                  flashMemorySegments.find("app_section") : flashMemorySegments.find("flash");
+                flashMemorySegments.find("app_section")
+                : flashMemorySegments.find("progmem") != flashMemorySegments.end()
+                ? flashMemorySegments.find("progmem") : flashMemorySegments.find("flash");
 
             if (flashSegmentIt != flashMemorySegments.end()) {
                 return flashSegmentIt->second;

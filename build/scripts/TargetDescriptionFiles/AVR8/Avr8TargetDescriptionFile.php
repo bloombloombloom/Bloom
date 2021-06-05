@@ -10,6 +10,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     const AVR8_FAMILY_MEGA = 'MEGA';
     const AVR8_FAMILY_TINY = 'TINY';
     const AVR8_FAMILY_XMEGA = 'XMEGA';
+    const AVR8_FAMILY_OTHER = 'OTHER';
 
     const AVR8_PHYSICAL_INTERFACE_JTAG = 'JTAG';
     const AVR8_PHYSICAL_INTERFACE_PDI = 'PDI';
@@ -75,6 +76,9 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             } else if (stristr($deviceAttributes['family'], 'mega') !== false) {
                 $this->family = self::AVR8_FAMILY_MEGA;
+
+            } else {
+                $this->family = self::AVR8_FAMILY_OTHER;
             }
         }
 
@@ -94,7 +98,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         $progAddressSpace = $this->addressSpacesById['prog'] ?? null;
         if (!empty($progAddressSpace)) {
             $flashMemorySegment = $progAddressSpace->memorySegmentsByTypeAndName['flash']['flash']
-                ?? $progAddressSpace->memorySegmentsByTypeAndName['flash']['app_section'] ?? null;
+                ?? $progAddressSpace->memorySegmentsByTypeAndName['flash']['app_section']
+                ?? $progAddressSpace->memorySegmentsByTypeAndName['flash']['progmem'] ?? null;
             $bootSectionMemorySegment = $progAddressSpace->memorySegmentsByTypeAndName['flash']['boot_section_1']
                 ?? $progAddressSpace->memorySegmentsByTypeAndName['flash']['boot_section'] ?? null;
 
