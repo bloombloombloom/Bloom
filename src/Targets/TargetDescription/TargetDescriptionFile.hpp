@@ -121,6 +121,8 @@ namespace Bloom::Targets::TargetDescription
         std::optional<Register> getSpmcsRegister() const;
         std::optional<Register> getSpmcRegister() const;
         std::optional<Register> getEepromAddressRegister() const;
+        std::optional<Register> getEepromAddressLowRegister() const;
+        std::optional<Register> getEepromAddressHighRegister() const;
         std::optional<Register> getEepromDataRegister() const;
         std::optional<Register> getEepromControlRegister() const;
         std::vector<Variant> getVariants() const;

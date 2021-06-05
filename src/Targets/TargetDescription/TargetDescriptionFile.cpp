@@ -634,6 +634,34 @@ std::optional<Register> TargetDescriptionFile::getEepromAddressRegister() const 
     return std::nullopt;
 }
 
+std::optional<Register> TargetDescriptionFile::getEepromAddressLowRegister() const {
+    auto eepromRegisterGroup = this->getEepromRegisterGroup();
+
+    if (eepromRegisterGroup.has_value()) {
+        auto eepromAddressRegisterIt = eepromRegisterGroup->registersMappedByName.find("eearl");
+
+        if (eepromAddressRegisterIt != eepromRegisterGroup->registersMappedByName.end()) {
+            return eepromAddressRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getEepromAddressHighRegister() const {
+    auto eepromRegisterGroup = this->getEepromRegisterGroup();
+
+    if (eepromRegisterGroup.has_value()) {
+        auto eepromAddressRegisterIt = eepromRegisterGroup->registersMappedByName.find("eearh");
+
+        if (eepromAddressRegisterIt != eepromRegisterGroup->registersMappedByName.end()) {
+            return eepromAddressRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
 std::optional<Register> TargetDescriptionFile::getEepromDataRegister() const {
     auto eepromRegisterGroup = this->getEepromRegisterGroup();
 

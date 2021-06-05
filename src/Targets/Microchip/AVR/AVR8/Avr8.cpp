@@ -378,6 +378,20 @@ TargetParameters& Avr8::getTargetParameters() {
             this->targetParameters->eepromAddressRegisterLow = eepromAddressRegister->offset;
             this->targetParameters->eepromAddressRegisterHigh = (eepromAddressRegister->size == 2)
                 ? eepromAddressRegister->offset + 1 : eepromAddressRegister->offset;
+
+        } else {
+            auto eepromAddressLowRegister = this->targetDescriptionFile->getEepromAddressLowRegister();
+            if (eepromAddressLowRegister.has_value()) {
+                this->targetParameters->eepromAddressRegisterLow = eepromAddressLowRegister->offset;
+                auto eepromAddressHighRegister = this->targetDescriptionFile->getEepromAddressHighRegister();
+
+                if (eepromAddressHighRegister.has_value()) {
+                    this->targetParameters->eepromAddressRegisterHigh = eepromAddressHighRegister->offset;
+
+                } else {
+                    this->targetParameters->eepromAddressRegisterHigh = eepromAddressLowRegister->offset;
+                }
+            }
         }
 
         auto eepromDataRegister = this->targetDescriptionFile->getEepromDataRegister();
