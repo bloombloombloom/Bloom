@@ -405,45 +405,45 @@ TargetParameters& Avr8::getTargetParameters() {
         }
 
         if (propertyGroups.contains("pdi_interface")) {
-            auto& tdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
+            auto& pdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
 
-            if (tdiInterfaceProperties.contains("app_section_offset")) {
-                this->targetParameters->appSectionPdiOffset = tdiInterfaceProperties
+            if (pdiInterfaceProperties.contains("app_section_offset")) {
+                this->targetParameters->appSectionPdiOffset = pdiInterfaceProperties
                     .at("app_section_offset").value.toInt(nullptr, 16);
             }
 
-            if (tdiInterfaceProperties.contains("boot_section_offset")) {
-                this->targetParameters->bootSectionPdiOffset = tdiInterfaceProperties
+            if (pdiInterfaceProperties.contains("boot_section_offset")) {
+                this->targetParameters->bootSectionPdiOffset = pdiInterfaceProperties
                     .at("boot_section_offset").value.toInt(nullptr, 16);
             }
 
-            if (tdiInterfaceProperties.contains("datamem_offset")) {
-                this->targetParameters->ramPdiOffset = tdiInterfaceProperties
+            if (pdiInterfaceProperties.contains("datamem_offset")) {
+                this->targetParameters->ramPdiOffset = pdiInterfaceProperties
                     .at("datamem_offset").value.toInt(nullptr, 16);
             }
 
-            if (tdiInterfaceProperties.contains("eeprom_offset")) {
-                this->targetParameters->eepromPdiOffset = tdiInterfaceProperties
+            if (pdiInterfaceProperties.contains("eeprom_offset")) {
+                this->targetParameters->eepromPdiOffset = pdiInterfaceProperties
                     .at("eeprom_offset").value.toInt(nullptr, 16);
             }
 
-            if (tdiInterfaceProperties.contains("user_signatures_offset")) {
-                this->targetParameters->userSignaturesPdiOffset = tdiInterfaceProperties
+            if (pdiInterfaceProperties.contains("user_signatures_offset")) {
+                this->targetParameters->userSignaturesPdiOffset = pdiInterfaceProperties
                     .at("user_signatures_offset").value.toInt(nullptr, 16);
             }
 
-            if (tdiInterfaceProperties.contains("prod_signatures_offset")) {
-                this->targetParameters->productSignaturesPdiOffset = tdiInterfaceProperties
+            if (pdiInterfaceProperties.contains("prod_signatures_offset")) {
+                this->targetParameters->productSignaturesPdiOffset = pdiInterfaceProperties
                     .at("prod_signatures_offset").value.toInt(nullptr, 16);
             }
 
-            if (tdiInterfaceProperties.contains("fuse_registers_offset")) {
-                this->targetParameters->fuseRegistersPdiOffset = tdiInterfaceProperties
+            if (pdiInterfaceProperties.contains("fuse_registers_offset")) {
+                this->targetParameters->fuseRegistersPdiOffset = pdiInterfaceProperties
                     .at("fuse_registers_offset").value.toInt(nullptr, 16);
             }
 
-            if (tdiInterfaceProperties.contains("lock_registers_offset")) {
-                this->targetParameters->lockRegistersPdiOffset = tdiInterfaceProperties
+            if (pdiInterfaceProperties.contains("lock_registers_offset")) {
+                this->targetParameters->lockRegistersPdiOffset = pdiInterfaceProperties
                     .at("lock_registers_offset").value.toInt(nullptr, 16);
             }
 

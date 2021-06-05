@@ -463,7 +463,6 @@ std::optional<MemorySegment> TargetDescriptionFile::getFirstBootSectionMemorySeg
 
         if (programMemorySegments.find(MemorySegmentType::FLASH) != programMemorySegments.end()) {
             auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
-            auto firstBootSectionSegmentIt = flashMemorySegments.find("boot_section_1");
 
             if (flashMemorySegments.contains("boot_section_1")) {
                 return flashMemorySegments.at("boot_section_1");
