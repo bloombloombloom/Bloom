@@ -218,8 +218,13 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                     }
                 }
 
-                if (isset($cpuRegisterGroup->registersMappedByName['osccal'])) {
-                    $osccalRegister = $cpuRegisterGroup->registersMappedByName['osccal'];
+                $osccalRegister = $cpuRegisterGroup->registersMappedByName['osccal']
+                    ?? $cpuRegisterGroup->registersMappedByName['osccal0']
+                    ?? $cpuRegisterGroup->registersMappedByName['osccal1']
+                    ?? $cpuRegisterGroup->registersMappedByName['fosccal']
+                    ?? $cpuRegisterGroup->registersMappedByName['sosccala'] ?? null;
+
+                if (!is_null($osccalRegister)) {
                     $this->osccalAddress = $osccalRegister->offset;
                 }
             }

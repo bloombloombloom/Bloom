@@ -584,10 +584,22 @@ std::optional<Register> TargetDescriptionFile::getOscillatorCalibrationRegister(
     auto cpuRegisterGroup = this->getCpuRegisterGroup();
 
     if (cpuRegisterGroup.has_value()) {
-        auto osccalRegisterIt = cpuRegisterGroup->registersMappedByName.find("osccal");
+        auto& cpuRegisters = cpuRegisterGroup->registersMappedByName;
 
-        if (osccalRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
-            return osccalRegisterIt->second;
+        if (cpuRegisters.contains("oscall")) {
+            return cpuRegisters.at("oscall");
+
+        } else if (cpuRegisters.contains("osccal0")) {
+            return cpuRegisters.at("osccal0");
+
+        } else if (cpuRegisters.contains("osccal1")) {
+            return cpuRegisters.at("osccal1");
+
+        } else if (cpuRegisters.contains("fosccal")) {
+            return cpuRegisters.at("fosccal");
+
+        } else if (cpuRegisters.contains("sosccala")) {
+            return cpuRegisters.at("sosccala");
         }
     }
 
