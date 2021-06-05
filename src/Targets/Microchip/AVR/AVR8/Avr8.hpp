@@ -21,7 +21,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     class Avr8: public Target
     {
     protected:
-        DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* avr8Interface;
+        DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* avr8Interface = nullptr;
         std::string name = "";
         std::optional<Family> family;
         std::optional<TargetDescription::TargetDescriptionFile> targetDescriptionFile;

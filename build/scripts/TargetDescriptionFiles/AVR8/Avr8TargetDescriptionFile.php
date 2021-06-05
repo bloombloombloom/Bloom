@@ -415,17 +415,3 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         return $failures;
     }
 }
-
-//$j = new Avr8TargetDescriptionFile(
-//    "/home/nav/Projects/Bloom/build/resources/TargetDescriptionFiles/AVR/AVR8/MEGAAVR/ATMEGA48P.xml"
-//);
-//
-//$h = new Avr8TargetDescriptionFile(
-//    "/home/nav/Projects/Bloom/build/resources/TargetDescriptionFiles/AVR/AVR8_XMEGA/AVR_XMEGA/ATXMEGA16C4.xml"
-//);
-//
-//$jj = $j->validate();
-//
-//$hh = $h->validate();
-//
-//echo "Done\n";

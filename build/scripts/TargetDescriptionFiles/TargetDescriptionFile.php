@@ -317,16 +317,16 @@ class TargetDescriptionFile
         }
 
         if (empty($this->variants)) {
-//            $failures[] = 'Missing target variants';
+            $failures[] = 'Missing target variants';
         }
 
-//        foreach ($this->variants as $variant) {
-//            $variantValidationFailures = $variant->validate();
-//
-//            if (!empty($variantValidationFailures)) {
-//                $failures[] = 'Variant validation failures: ' . implode(", ", $variantValidationFailures);
-//            }
-//        }
+        foreach ($this->variants as $variant) {
+            $variantValidationFailures = $variant->validate();
+
+            if (!empty($variantValidationFailures)) {
+                $failures[] = 'Variant validation failures: ' . implode(", ", $variantValidationFailures);
+            }
+        }
 
         return $failures;
     }

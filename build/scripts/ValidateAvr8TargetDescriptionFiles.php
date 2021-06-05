@@ -4,6 +4,7 @@ namespace Bloom\BuildScripts;
 
 require_once __DIR__ . "/TargetDescriptionFiles/Factory.php";
 
+print "Loading AVR8 target description files.\n";
 $avr8Tdfs = TargetDescriptionFiles\Factory::loadAvr8Tdfs();
 $failedValidationCount = 0;
 

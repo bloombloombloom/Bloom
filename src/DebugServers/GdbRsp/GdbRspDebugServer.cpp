@@ -119,9 +119,10 @@ void GdbRspDebugServer::serve() {
         if (!this->clientConnection.has_value()) {
             Logger::info("Waiting for GDB RSP connection");
 
-            while (!this->clientConnection.has_value()) {
+            do {
                 this->waitForConnection();
-            }
+
+            } while (!this->clientConnection.has_value());
 
             this->clientConnection->accept(this->serverSocketFileDescriptor);
             Logger::info("Accepted GDP RSP connection from " + this->clientConnection->getIpAddress());
@@ -334,8 +335,8 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteGeneralRegisters& p
     try {
         auto registerDescriptor = this->getRegisterDescriptorFromNumber(packet.registerNumber);
         this->targetControllerConsole.writeGeneralRegisters({
-                                                                TargetRegister(registerDescriptor, packet.registerValue)
-                                                            });
+            TargetRegister(registerDescriptor, packet.registerValue)
+        });
         this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
 
     } catch (const Exception& exception) {

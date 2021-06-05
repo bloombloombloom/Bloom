@@ -162,7 +162,7 @@ namespace Bloom::Targets
          * Once at least one of the above conditions are met, the TargetController will break out of the loop and use
          * the last promoted target instance from there onwards.
          *
-         * See TargetController::startup() for more on this.
+         * See TargetController::acquireHardware() for more on this.
          *
          * @return
          */
