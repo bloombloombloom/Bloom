@@ -145,7 +145,7 @@
                                         <string>-</string>
                                     </property>
                                     <property name="toolTip">
-                                        <string>Program Counter Value</string>
+                                        <string>Program Counter Value (byte address)</string>
                                     </property>
                                 </widget>
                             </item>

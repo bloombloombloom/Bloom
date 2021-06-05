@@ -1,5 +1,4 @@
 #include <QPainter>
-#include <cmath>
 
 #include "BodyWidget.hpp"
 #include "src/Logger/Logger.hpp"
@@ -66,4 +65,3 @@ void BodyWidget::drawWidget(QPainter& painter) {
         30
     ));
 }
-
