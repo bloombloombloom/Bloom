@@ -4,6 +4,7 @@ namespace Bloom\BuildScripts\TargetDescriptionFiles\Avr8;
 use Bloom\BuildScripts\TargetDescriptionFiles\TargetDescriptionFile;
 
 require_once __DIR__ . "/../TargetDescriptionFile.php";
+require_once __DIR__ . "/Signature.php";
 
 class Avr8TargetDescriptionFile extends TargetDescriptionFile
 {
@@ -20,6 +21,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     const AVR8_PHYSICAL_INTERFACE_UPDI = 'UPDI';
     const AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE = 'debugWire';
 
+    public ?Signature $signature = null;
     public ?string $family = null;
     public array $debugPhysicalInterface = [];
 
@@ -107,6 +109,29 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
         if (isset($this->physicalInterfacesByName['jtag'])) {
             $this->debugPhysicalInterface[] = self::AVR8_PHYSICAL_INTERFACE_JTAG;
+        }
+
+        $signaturePropertyGroup = $this->propertyGroupsByName['signatures'] ?? null;
+        if (!empty($signaturePropertyGroup)) {
+            $this->signature = new Signature();
+
+            if (isset($signaturePropertyGroup->propertiesMappedByName['signature0'])) {
+                $this->signature->byteZero = $this->rawValueToInt(
+                    $signaturePropertyGroup->propertiesMappedByName['signature0']->value
+                );
+            }
+
+            if (isset($signaturePropertyGroup->propertiesMappedByName['signature1'])) {
+                $this->signature->byteOne = $this->rawValueToInt(
+                    $signaturePropertyGroup->propertiesMappedByName['signature1']->value
+                );
+            }
+
+            if (isset($signaturePropertyGroup->propertiesMappedByName['signature2'])) {
+                $this->signature->byteTwo = $this->rawValueToInt(
+                    $signaturePropertyGroup->propertiesMappedByName['signature2']->value
+                );
+            }
         }
 
         $progAddressSpace = $this->addressSpacesById['prog'] ?? null;
@@ -343,6 +368,14 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public function validate(): array
     {
         $failures = parent::validate();
+
+        if (is_null($this->signature)
+            || is_null($this->signature->byteZero)
+            || is_null($this->signature->byteOne)
+            || is_null($this->signature->byteTwo)
+        ) {
+            $failures[] = "Missing or incomplete AVR signature.";
+        }
 
         if (is_null($this->debugPhysicalInterface)) {
             $failures[] = 'Target does not support any known AVR8 debug interface - the TDF will need to be deleted.'
