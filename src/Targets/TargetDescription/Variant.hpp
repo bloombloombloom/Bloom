@@ -6,7 +6,7 @@ namespace Bloom::Targets::TargetDescription
 {
     struct Variant
     {
-        std::string orderCode;
+        std::string name;
         std::string pinoutName;
         std::string package;
         bool disabled = false;

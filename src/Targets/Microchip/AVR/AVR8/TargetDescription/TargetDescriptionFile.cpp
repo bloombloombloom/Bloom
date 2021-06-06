@@ -100,7 +100,7 @@ QJsonObject TargetDescriptionFile::getTargetDescriptionMapping() {
 }
 
 TargetSignature TargetDescriptionFile::getTargetSignature() const {
-    auto propertyGroups = this->getPropertyGroupsMappedByName();
+    auto& propertyGroups = this->propertyGroupsMappedByName;
     auto signaturePropertyGroupIt = propertyGroups.find("signatures");
 
     if (signaturePropertyGroupIt == propertyGroups.end()) {
@@ -154,7 +154,7 @@ Family TargetDescriptionFile::getFamily() const {
 }
 
 std::optional<MemorySegment> TargetDescriptionFile::getFlashMemorySegment() const {
-    auto addressMapping = this->getAddressSpacesMappedById();
+    auto& addressMapping = this->addressSpacesMappedById;
     auto programAddressSpaceIt = addressMapping.find("prog");
 
     // Flash memory attributes are typically found in memory segments within the program address space.
@@ -183,7 +183,7 @@ std::optional<MemorySegment> TargetDescriptionFile::getFlashMemorySegment() cons
 }
 
 std::optional<MemorySegment> TargetDescriptionFile::getRamMemorySegment() const {
-    auto addressMapping = this->getAddressSpacesMappedById();
+    auto& addressMapping = this->addressSpacesMappedById;
 
     // Internal RAM  &register attributes are usually found in the data address space
     auto dataAddressSpaceIt = addressMapping.find("data");
@@ -206,7 +206,7 @@ std::optional<MemorySegment> TargetDescriptionFile::getRamMemorySegment() const 
 }
 
 std::optional<MemorySegment> TargetDescriptionFile::getRegisterMemorySegment() const {
-    auto addressMapping = this->getAddressSpacesMappedById();
+    auto& addressMapping = this->addressSpacesMappedById;
 
     // Internal RAM  &register attributes are usually found in the data address space
     auto dataAddressSpaceIt = addressMapping.find("data");
@@ -229,7 +229,7 @@ std::optional<MemorySegment> TargetDescriptionFile::getRegisterMemorySegment() c
 }
 
 std::optional<MemorySegment> TargetDescriptionFile::getEepromMemorySegment() const {
-    auto addressMapping = this->getAddressSpacesMappedById();
+    auto& addressMapping = this->addressSpacesMappedById;
 
     if (addressMapping.contains("eeprom")) {
         auto& eepromAddressSpace = addressMapping.at("eeprom");
@@ -254,7 +254,7 @@ std::optional<MemorySegment> TargetDescriptionFile::getEepromMemorySegment() con
 }
 
 std::optional<MemorySegment> TargetDescriptionFile::getFirstBootSectionMemorySegment() const {
-    auto addressMapping = this->getAddressSpacesMappedById();
+    auto& addressMapping = this->addressSpacesMappedById;
     auto programAddressSpaceIt = addressMapping.find("prog");
 
     if (programAddressSpaceIt != addressMapping.end()) {
@@ -277,7 +277,7 @@ std::optional<MemorySegment> TargetDescriptionFile::getFirstBootSectionMemorySeg
 }
 
 std::optional<RegisterGroup> TargetDescriptionFile::getCpuRegisterGroup() const {
-    auto& modulesByName = this->getModulesMappedByName();
+    auto& modulesByName = this->modulesMappedByName;
 
     if (modulesByName.find("cpu") != modulesByName.end()) {
         auto cpuModule = modulesByName.find("cpu")->second;
@@ -292,7 +292,7 @@ std::optional<RegisterGroup> TargetDescriptionFile::getCpuRegisterGroup() const 
 }
 
 std::optional<RegisterGroup> TargetDescriptionFile::getBootLoadRegisterGroup() const {
-    auto& modulesByName = this->getModulesMappedByName();
+    auto& modulesByName = this->modulesMappedByName;
 
     if (modulesByName.contains("boot_load")) {
         auto& bootLoadModule = modulesByName.at("boot_load");
@@ -307,7 +307,7 @@ std::optional<RegisterGroup> TargetDescriptionFile::getBootLoadRegisterGroup() c
 }
 
 std::optional<RegisterGroup> TargetDescriptionFile::getEepromRegisterGroup() const {
-    auto& modulesByName = this->getModulesMappedByName();
+    auto& modulesByName = this->modulesMappedByName;
 
     if (modulesByName.find("eeprom") != modulesByName.end()) {
         auto eepromModule = modulesByName.find("eeprom")->second;

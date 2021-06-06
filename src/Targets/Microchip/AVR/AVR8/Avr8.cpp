@@ -231,7 +231,7 @@ void Avr8::loadTargetVariants() {
 
         auto targetVariant = TargetVariant();
         targetVariant.id = static_cast<int>(this->targetVariantsById.size());
-        targetVariant.name = tdVariant.orderCode;
+        targetVariant.name = tdVariant.name;
         targetVariant.packageName = tdVariant.package;
 
         if (tdVariant.package.find("QFP") == 0 || tdVariant.package.find("TQFP") == 0) {

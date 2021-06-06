@@ -36,15 +36,18 @@ namespace Bloom::Targets::TargetDescription
         QDomDocument xml;
         QDomElement deviceElement;
 
+        std::map<std::string, AddressSpace> addressSpacesMappedById;
+        std::map<std::string, PropertyGroup> propertyGroupsMappedByName;
+        std::map<std::string, Module> modulesMappedByName;
+        std::map<std::string, Module> peripheralModulesMappedByName;
+        std::vector<Variant> variants;
+        std::map<std::string, Pinout> pinoutsMappedByName;
+
+
         void init(const QDomDocument& xml);
         void init(const QString& xmlFilePath);
 
     private:
-        mutable std::optional<std::map<std::string, PropertyGroup>> cachedPropertyGroupMapping;
-        mutable std::optional<std::map<std::string, Module>> cachedModuleByNameMapping;
-        mutable std::optional<std::map<std::string, Module>> cachedPeripheralModuleByNameMapping;
-        mutable std::optional<std::map<std::string, Pinout>> cachedPinoutByNameMapping;
-
         /**
          * Constructs an AddressSpace object from an XML element.
          *
@@ -77,6 +80,36 @@ namespace Bloom::Targets::TargetDescription
          */
         static Register generateRegisterFromXml(const QDomElement& xmlElement);
 
+        /**
+         * Extracts all address spaces and loads them into this->addressSpacesMappedById.
+         */
+        void loadAddressSpaces();
+
+        /**
+         * Extracts all property groups and loads them into this->propertyGroupsMappedByName.
+         */
+        void loadPropertyGroups();
+
+        /**
+         * Extracts all modules and loads them into this->modulesMappedByName.
+         */
+        void loadModules();
+
+        /**
+         * Extracts all peripheral modules and loads them into this->peripheralModulesMappedByName.
+         */
+        void loadPeripheralModules();
+
+        /**
+         * Extracts all variants and loads them into this->variants.
+         */
+        void loadVariants();
+
+        /**
+         * Extracts all pinouts and loads them into this->pinoutsMappedByName.
+         */
+        void loadPinouts();
+
     public:
         TargetDescriptionFile() = default;
 
@@ -104,51 +137,51 @@ namespace Bloom::Targets::TargetDescription
          *
          * @return
          */
-        std::string getTargetName() const;
+        [[nodiscard]] std::string getTargetName() const;
 
         /**
-         * Extracts all address spaces for the target.
-         *
-         * Will return a mapping of the extracted address spaces, mapped by id.
+         * Returns a mapping of all property groups, with the property group name being the key.
          *
          * @return
          */
-        std::map<std::string, AddressSpace> getAddressSpacesMappedById() const;
+        [[nodiscard]] const std::map<std::string, PropertyGroup>& getPropertyGroupsMappedByName() const {
+            return this->propertyGroupsMappedByName;
+        }
 
         /**
-         * Extracts all property groups and returns a mapping of them, with the property group name being the key.
+         * Returns a mapping of all modules, with the module name being the key.
          *
          * @return
          */
-        const std::map<std::string, PropertyGroup>& getPropertyGroupsMappedByName() const;
+        [[nodiscard]] const std::map<std::string, Module>& getModulesMappedByName() const {
+            return this->modulesMappedByName;
+        }
 
         /**
-         * Extracts all modules and returns a mapping of them, with the module name being the key.
+         * Returns a mapping of all peripheral modules, with the peripheral module name being the key.
          *
          * @return
          */
-        const std::map<std::string, Module>& getModulesMappedByName() const;
+        [[nodiscard]] const std::map<std::string, Module>& getPeripheralModulesMappedByName() const {
+            return this->peripheralModulesMappedByName;
+        }
 
         /**
-         * Extracts all peripheral modules and returns a mapping of this, with the peripheral module name being
-         * the key.
+         * Returns all variants found in the TDF.
          *
          * @return
          */
-        const std::map<std::string, Module>& getPeripheralModulesMappedByName() const;
+        [[nodiscard]] const std::vector<Variant>& getVariants() const {
+            return this->variants;
+        }
 
         /**
-         * Extracts all variants.
+         * Returns a mapping of pinouts, with the pinout name being the key.
          *
          * @return
          */
-        std::vector<Variant> getVariants() const;
-
-        /**
-         * Extracts all pinouts and returns a mapping of them, with the pinout name being the key.
-         *
-         * @return
-         */
-        const std::map<std::string, Pinout>& getPinoutsMappedByName() const;
+        [[nodiscard]] const std::map<std::string, Pinout>& getPinoutsMappedByName() const {
+            return this->pinoutsMappedByName;
+        }
     };
 }

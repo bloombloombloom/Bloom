@@ -31,6 +31,13 @@ void TargetDescriptionFile::init(const QDomDocument& xml) {
     }
 
     this->deviceElement = device;
+
+    this->loadAddressSpaces();
+    this->loadPropertyGroups();
+    this->loadModules();
+    this->loadPeripheralModules();
+    this->loadVariants();
+    this->loadPinouts();
 }
 
 std::string TargetDescriptionFile::getTargetName() const {
@@ -208,147 +215,7 @@ Register TargetDescriptionFile::generateRegisterFromXml(const QDomElement& xmlEl
     return reg;
 }
 
-const std::map<std::string, PropertyGroup>& TargetDescriptionFile::getPropertyGroupsMappedByName() const {
-    if (!this->cachedPropertyGroupMapping.has_value()) {
-        if (!this->deviceElement.isElement()) {
-            throw TargetDescriptionParsingFailureException("Device element not found.");
-        }
-
-        std::map<std::string, PropertyGroup> output;
-        auto propertyGroupNodes = this->deviceElement.elementsByTagName("property-groups").item(0).toElement()
-            .elementsByTagName("property-group");
-
-        for (int propertyGroupIndex = 0; propertyGroupIndex < propertyGroupNodes.count(); propertyGroupIndex++) {
-            auto propertyGroupElement = propertyGroupNodes.item(propertyGroupIndex).toElement();
-            auto propertyGroupName = propertyGroupElement.attributes().namedItem("name").nodeValue().toLower().toStdString();
-            PropertyGroup propertyGroup;
-            propertyGroup.name = propertyGroupName;
-
-            auto propertyNodes = propertyGroupElement.elementsByTagName("property");
-            for (int propertyIndex = 0; propertyIndex < propertyNodes.count(); propertyIndex++) {
-                auto propertyElement = propertyNodes.item(propertyIndex).toElement();
-                auto propertyName = propertyElement.attributes().namedItem("name").nodeValue();
-
-                Property property;
-                property.name = propertyName.toStdString();
-                property.value = propertyElement.attributes().namedItem("value").nodeValue();
-
-                propertyGroup.propertiesMappedByName.insert(std::pair(propertyName.toLower().toStdString(), property));
-            }
-
-            output.insert(std::pair(propertyGroup.name, propertyGroup));
-        }
-
-        this->cachedPropertyGroupMapping.emplace(output);
-    }
-
-    return this->cachedPropertyGroupMapping.value();
-}
-
-const std::map<std::string, Module>& TargetDescriptionFile::getModulesMappedByName() const {
-    if (!this->cachedModuleByNameMapping.has_value()) {
-        std::map<std::string, Module> output;
-        auto moduleNodes = this->xml.elementsByTagName("modules").item(0).toElement()
-            .elementsByTagName("module");
-
-        for (int moduleIndex = 0; moduleIndex < moduleNodes.count(); moduleIndex++) {
-            auto moduleElement = moduleNodes.item(moduleIndex).toElement();
-            auto moduleName = moduleElement.attributes().namedItem("name").nodeValue().toLower().toStdString();
-            Module module;
-            module.name = moduleName;
-
-            auto registerGroupNodes = moduleElement.elementsByTagName("register-group");
-            for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
-                auto registerGroup = TargetDescriptionFile::generateRegisterGroupFromXml(
-                    registerGroupNodes.item(registerGroupIndex).toElement()
-                );
-
-                module.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
-            }
-
-            output.insert(std::pair(module.name, module));
-        }
-
-        this->cachedModuleByNameMapping.emplace(output);
-    }
-
-    return this->cachedModuleByNameMapping.value();
-}
-
-const std::map<std::string, Module>& TargetDescriptionFile::getPeripheralModulesMappedByName() const {
-    if (!this->cachedPeripheralModuleByNameMapping.has_value()) {
-        std::map<std::string, Module> output;
-        auto moduleNodes = this->deviceElement.elementsByTagName("peripherals").item(0).toElement()
-            .elementsByTagName("module");
-
-        for (int moduleIndex = 0; moduleIndex < moduleNodes.count(); moduleIndex++) {
-            auto moduleElement = moduleNodes.item(moduleIndex).toElement();
-            auto moduleName = moduleElement.attributes().namedItem("name").nodeValue().toLower().toStdString();
-            Module module;
-            module.name = moduleName;
-
-            auto registerGroupNodes = moduleElement.elementsByTagName("register-group");
-            for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
-                auto registerGroup = TargetDescriptionFile::generateRegisterGroupFromXml(
-                    registerGroupNodes.item(registerGroupIndex).toElement()
-                );
-
-                module.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
-            }
-
-            auto instanceNodes = moduleElement.elementsByTagName("instance");
-            for (int instanceIndex = 0; instanceIndex < instanceNodes.count(); instanceIndex++) {
-                auto instanceXml = instanceNodes.item(instanceIndex).toElement();
-                auto instance = ModuleInstance();
-                instance.name = instanceXml.attribute("name").toLower().toStdString();
-
-                auto registerGroupNodes = instanceXml.elementsByTagName("register-group");
-                for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
-                    auto registerGroup = TargetDescriptionFile::generateRegisterGroupFromXml(
-                        registerGroupNodes.item(registerGroupIndex).toElement()
-                    );
-
-                    instance.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
-                }
-
-                auto signalNodes = instanceXml.elementsByTagName("signals").item(0).toElement()
-                    .elementsByTagName("signal");
-                for (int signalIndex = 0; signalIndex < signalNodes.count(); signalIndex++) {
-                    auto signalXml = signalNodes.item(signalIndex).toElement();
-                    auto signal = Signal();
-
-                    if (!signalXml.hasAttribute("pad")) {
-                        continue;
-                    }
-
-                    signal.padName = signalXml.attribute("pad").toLower().toStdString();
-                    signal.function = signalXml.attribute("function").toStdString();
-                    signal.group = signalXml.attribute("group").toStdString();
-                    auto indexAttribute = signalXml.attribute("index");
-                    bool indexValid = false;
-                    auto indexValue = indexAttribute.toInt(&indexValid, 10);
-
-                    if (!indexAttribute.isEmpty() && indexValid) {
-                        signal.index = indexValue;
-                    }
-
-                    instance.instanceSignals.emplace_back(signal);
-                }
-
-                module.instancesMappedByName.insert(std::pair(instance.name, instance));
-            }
-
-            output.insert(std::pair(module.name, module));
-        }
-
-        this->cachedPeripheralModuleByNameMapping.emplace(output);
-    }
-
-    return this->cachedPeripheralModuleByNameMapping.value();
-}
-
-std::map<std::string, AddressSpace> TargetDescriptionFile::getAddressSpacesMappedById() const {
-    std::map<std::string, AddressSpace> output;
+void TargetDescriptionFile::loadAddressSpaces() {
 
     auto addressSpaceNodes = this->deviceElement.elementsByTagName("address-spaces").item(0).toElement()
         .elementsByTagName("address-space");
@@ -358,19 +225,133 @@ std::map<std::string, AddressSpace> TargetDescriptionFile::getAddressSpacesMappe
             auto addressSpace = TargetDescriptionFile::generateAddressSpaceFromXml(
                 addressSpaceNodes.item(addressSpaceIndex).toElement()
             );
-            output.insert(std::pair(addressSpace.id, addressSpace));
+            this->addressSpacesMappedById.insert(std::pair(addressSpace.id, addressSpace));
 
         } catch (const Exception& exception) {
             Logger::debug("Failed to extract address space from target description element - " + exception.getMessage());
         }
     }
-
-    return output;
 }
 
-std::vector<Variant> TargetDescriptionFile::getVariants() const {
-    std::vector<Variant> output;
+void TargetDescriptionFile::loadPropertyGroups() {
+    if (!this->deviceElement.isElement()) {
+        throw TargetDescriptionParsingFailureException("Device element not found.");
+    }
 
+    auto propertyGroupNodes = this->deviceElement.elementsByTagName("property-groups").item(0).toElement()
+        .elementsByTagName("property-group");
+
+    for (int propertyGroupIndex = 0; propertyGroupIndex < propertyGroupNodes.count(); propertyGroupIndex++) {
+        auto propertyGroupElement = propertyGroupNodes.item(propertyGroupIndex).toElement();
+        auto propertyGroupName = propertyGroupElement.attributes().namedItem("name").nodeValue().toLower().toStdString();
+        PropertyGroup propertyGroup;
+        propertyGroup.name = propertyGroupName;
+
+        auto propertyNodes = propertyGroupElement.elementsByTagName("property");
+        for (int propertyIndex = 0; propertyIndex < propertyNodes.count(); propertyIndex++) {
+            auto propertyElement = propertyNodes.item(propertyIndex).toElement();
+            auto propertyName = propertyElement.attributes().namedItem("name").nodeValue();
+
+            Property property;
+            property.name = propertyName.toStdString();
+            property.value = propertyElement.attributes().namedItem("value").nodeValue();
+
+            propertyGroup.propertiesMappedByName.insert(std::pair(propertyName.toLower().toStdString(), property));
+        }
+
+        this->propertyGroupsMappedByName.insert(std::pair(propertyGroup.name, propertyGroup));
+    }
+}
+
+void TargetDescriptionFile::loadModules() {
+    auto moduleNodes = this->xml.elementsByTagName("modules").item(0).toElement()
+        .elementsByTagName("module");
+
+    for (int moduleIndex = 0; moduleIndex < moduleNodes.count(); moduleIndex++) {
+        auto moduleElement = moduleNodes.item(moduleIndex).toElement();
+        auto moduleName = moduleElement.attributes().namedItem("name").nodeValue().toLower().toStdString();
+        Module module;
+        module.name = moduleName;
+
+        auto registerGroupNodes = moduleElement.elementsByTagName("register-group");
+        for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
+            auto registerGroup = TargetDescriptionFile::generateRegisterGroupFromXml(
+                registerGroupNodes.item(registerGroupIndex).toElement()
+            );
+
+            module.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
+        }
+
+        this->modulesMappedByName.insert(std::pair(module.name, module));
+    }
+}
+
+void TargetDescriptionFile::loadPeripheralModules() {
+    auto moduleNodes = this->deviceElement.elementsByTagName("peripherals").item(0).toElement()
+        .elementsByTagName("module");
+
+    for (int moduleIndex = 0; moduleIndex < moduleNodes.count(); moduleIndex++) {
+        auto moduleElement = moduleNodes.item(moduleIndex).toElement();
+        auto moduleName = moduleElement.attributes().namedItem("name").nodeValue().toLower().toStdString();
+        Module module;
+        module.name = moduleName;
+
+        auto registerGroupNodes = moduleElement.elementsByTagName("register-group");
+        for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
+            auto registerGroup = TargetDescriptionFile::generateRegisterGroupFromXml(
+                registerGroupNodes.item(registerGroupIndex).toElement()
+            );
+
+            module.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
+        }
+
+        auto instanceNodes = moduleElement.elementsByTagName("instance");
+        for (int instanceIndex = 0; instanceIndex < instanceNodes.count(); instanceIndex++) {
+            auto instanceXml = instanceNodes.item(instanceIndex).toElement();
+            auto instance = ModuleInstance();
+            instance.name = instanceXml.attribute("name").toLower().toStdString();
+
+            auto registerGroupNodes = instanceXml.elementsByTagName("register-group");
+            for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
+                auto registerGroup = TargetDescriptionFile::generateRegisterGroupFromXml(
+                    registerGroupNodes.item(registerGroupIndex).toElement()
+                );
+
+                instance.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
+            }
+
+            auto signalNodes = instanceXml.elementsByTagName("signals").item(0).toElement()
+                .elementsByTagName("signal");
+            for (int signalIndex = 0; signalIndex < signalNodes.count(); signalIndex++) {
+                auto signalXml = signalNodes.item(signalIndex).toElement();
+                auto signal = Signal();
+
+                if (!signalXml.hasAttribute("pad")) {
+                    continue;
+                }
+
+                signal.padName = signalXml.attribute("pad").toLower().toStdString();
+                signal.function = signalXml.attribute("function").toStdString();
+                signal.group = signalXml.attribute("group").toStdString();
+                auto indexAttribute = signalXml.attribute("index");
+                bool indexValid = false;
+                auto indexValue = indexAttribute.toInt(&indexValid, 10);
+
+                if (!indexAttribute.isEmpty() && indexValid) {
+                    signal.index = indexValue;
+                }
+
+                instance.instanceSignals.emplace_back(signal);
+            }
+
+            module.instancesMappedByName.insert(std::pair(instance.name, instance));
+        }
+
+        this->peripheralModulesMappedByName.insert(std::pair(module.name, module));
+    }
+}
+
+void TargetDescriptionFile::loadVariants() {
     auto variantNodes = this->xml.elementsByTagName("variants").item(0).toElement()
         .elementsByTagName("variant");
 
@@ -391,7 +372,7 @@ std::vector<Variant> TargetDescriptionFile::getVariants() const {
             }
 
             auto variant = Variant();
-            variant.orderCode = variantXml.attribute("ordercode").toStdString();
+            variant.name = variantXml.attribute("ordercode").toStdString();
             variant.pinoutName = variantXml.attribute("pinout").toLower().toStdString();
             variant.package = variantXml.attribute("package").toUpper().toStdString();
 
@@ -399,67 +380,59 @@ std::vector<Variant> TargetDescriptionFile::getVariants() const {
                 variant.disabled = (variantXml.attribute("disabled") == "1");
             }
 
-            output.push_back(variant);
+            this->variants.push_back(variant);
 
         } catch (const Exception& exception) {
             Logger::debug("Failed to extract variant from target description element - " + exception.getMessage());
         }
     }
-
-    return output;
 }
 
-const std::map<std::string, Pinout>& TargetDescriptionFile::getPinoutsMappedByName() const {
-    if (!this->cachedPinoutByNameMapping.has_value()) {
-        this->cachedPinoutByNameMapping = std::map<std::string, Pinout>();
+void TargetDescriptionFile::loadPinouts() {
+    auto pinoutNodes = this->xml.elementsByTagName("pinouts").item(0).toElement()
+        .elementsByTagName("pinout");
 
-        auto pinoutNodes = this->xml.elementsByTagName("pinouts").item(0).toElement()
-            .elementsByTagName("pinout");
+    for (int pinoutIndex = 0; pinoutIndex < pinoutNodes.count(); pinoutIndex++) {
+        try {
+            auto pinoutXml = pinoutNodes.item(pinoutIndex).toElement();
 
-        for (int pinoutIndex = 0; pinoutIndex < pinoutNodes.count(); pinoutIndex++) {
-            try {
-                auto pinoutXml = pinoutNodes.item(pinoutIndex).toElement();
-
-                if (!pinoutXml.hasAttribute("name")) {
-                    throw Exception("Missing name attribute");
-                }
-
-                auto pinout = Pinout();
-                pinout.name = pinoutXml.attribute("name").toLower().toStdString();
-
-                auto pinNodes = pinoutXml.elementsByTagName("pin");
-
-                for (int pinIndex = 0; pinIndex < pinNodes.count(); pinIndex++) {
-                    auto pinXml = pinNodes.item(pinIndex).toElement();
-
-                    if (!pinXml.hasAttribute("position")) {
-                        throw Exception("Missing position attribute on pin element " + std::to_string(pinIndex));
-                    }
-
-                    if (!pinXml.hasAttribute("pad")) {
-                        throw Exception("Missing pad attribute on pin element " + std::to_string(pinIndex));
-                    }
-
-                    auto pin = Pin();
-                    bool positionConversionSucceeded = true;
-                    pin.position = pinXml.attribute("position").toInt(&positionConversionSucceeded, 10);
-                    pin.pad = pinXml.attribute("pad").toLower().toStdString();
-
-                    if (!positionConversionSucceeded) {
-                        throw Exception("Failed to convert position attribute value to integer on pin element "
-                            + std::to_string(pinIndex));
-                    }
-
-                    pinout.pins.push_back(pin);
-                }
-
-                this->cachedPinoutByNameMapping->insert(std::pair(pinout.name, pinout));
-
-            } catch (const Exception& exception) {
-                Logger::debug("Failed to extract pinout from target description element - " + exception.getMessage());
+            if (!pinoutXml.hasAttribute("name")) {
+                throw Exception("Missing name attribute");
             }
+
+            auto pinout = Pinout();
+            pinout.name = pinoutXml.attribute("name").toLower().toStdString();
+
+            auto pinNodes = pinoutXml.elementsByTagName("pin");
+
+            for (int pinIndex = 0; pinIndex < pinNodes.count(); pinIndex++) {
+                auto pinXml = pinNodes.item(pinIndex).toElement();
+
+                if (!pinXml.hasAttribute("position")) {
+                    throw Exception("Missing position attribute on pin element " + std::to_string(pinIndex));
+                }
+
+                if (!pinXml.hasAttribute("pad")) {
+                    throw Exception("Missing pad attribute on pin element " + std::to_string(pinIndex));
+                }
+
+                auto pin = Pin();
+                bool positionConversionSucceeded = true;
+                pin.position = pinXml.attribute("position").toInt(&positionConversionSucceeded, 10);
+                pin.pad = pinXml.attribute("pad").toLower().toStdString();
+
+                if (!positionConversionSucceeded) {
+                    throw Exception("Failed to convert position attribute value to integer on pin element "
+                        + std::to_string(pinIndex));
+                }
+
+                pinout.pins.push_back(pin);
+            }
+
+            this->pinoutsMappedByName.insert(std::pair(pinout.name, pinout));
+
+        } catch (const Exception& exception) {
+            Logger::debug("Failed to extract pinout from target description element - " + exception.getMessage());
         }
     }
-
-    return this->cachedPinoutByNameMapping.value();
 }
