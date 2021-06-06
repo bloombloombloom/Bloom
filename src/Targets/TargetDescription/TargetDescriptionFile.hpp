@@ -10,8 +10,6 @@
 #include "Module.hpp"
 #include "Variant.hpp"
 #include "Pinout.hpp"
-#include "src/Targets/Microchip/AVR/TargetSignature.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 
 namespace Bloom::Targets::TargetDescription
 {
@@ -48,25 +46,36 @@ namespace Bloom::Targets::TargetDescription
         mutable std::optional<std::map<std::string, Pinout>> cachedPinoutByNameMapping;
 
         /**
-         * Constructs an AddressSpace object from an XML element (in the form of a QDomElement), taken from a target
-         * description file.
+         * Constructs an AddressSpace object from an XML element.
          *
          * @param xmlElement
          * @return
          */
-        AddressSpace generateAddressSpaceFromXml(const QDomElement& xmlElement) const;
+        static AddressSpace generateAddressSpaceFromXml(const QDomElement& xmlElement);
 
         /**
-         * Constructs a MemorySegment from an XML element (in the form of a QDomElement) taken from a target
-         * description file.
+         * Constructs a MemorySegment object from an XML element.
          *
          * @param xmlElement
          * @return
          */
-        MemorySegment generateMemorySegmentFromXml(const QDomElement& xmlElement) const;
-        RegisterGroup generateRegisterGroupFromXml(const QDomElement& xmlElement) const;
+        static MemorySegment generateMemorySegmentFromXml(const QDomElement& xmlElement);
 
-        Register generateRegisterFromXml(const QDomElement& xmlElement) const;
+        /**
+         * Constructs a RegisterGroup object from an XML element.
+         *
+         * @param xmlElement
+         * @return
+         */
+        static RegisterGroup generateRegisterGroupFromXml(const QDomElement& xmlElement);
+
+        /**
+         * Constructs a Register object from an XML element.
+         *
+         * @param xmlElement
+         * @return
+         */
+        static Register generateRegisterFromXml(const QDomElement& xmlElement);
 
     public:
         TargetDescriptionFile() = default;
@@ -77,7 +86,7 @@ namespace Bloom::Targets::TargetDescription
          *
          * @param xmlFilePath
          */
-        TargetDescriptionFile(const QString& xmlFilePath) {
+        explicit TargetDescriptionFile(const QString& xmlFilePath) {
             this->init(xmlFilePath);
         }
 
@@ -86,14 +95,19 @@ namespace Bloom::Targets::TargetDescription
          *
          * @param xml
          */
-        TargetDescriptionFile(const QDomDocument& xml) {
+        explicit TargetDescriptionFile(const QDomDocument& xml) {
             this->init(xml);
         }
 
+        /**
+         * Extracts target name.
+         *
+         * @return
+         */
         std::string getTargetName() const;
 
         /**
-         * Extracts all address spaces for the AVR8 target, from the target description XML.
+         * Extracts all address spaces for the target.
          *
          * Will return a mapping of the extracted address spaces, mapped by id.
          *
@@ -101,31 +115,40 @@ namespace Bloom::Targets::TargetDescription
          */
         std::map<std::string, AddressSpace> getAddressSpacesMappedById() const;
 
+        /**
+         * Extracts all property groups and returns a mapping of them, with the property group name being the key.
+         *
+         * @return
+         */
         const std::map<std::string, PropertyGroup>& getPropertyGroupsMappedByName() const;
+
+        /**
+         * Extracts all modules and returns a mapping of them, with the module name being the key.
+         *
+         * @return
+         */
         const std::map<std::string, Module>& getModulesMappedByName() const;
+
+        /**
+         * Extracts all peripheral modules and returns a mapping of this, with the peripheral module name being
+         * the key.
+         *
+         * @return
+         */
         const std::map<std::string, Module>& getPeripheralModulesMappedByName() const;
 
-        std::optional<MemorySegment> getFlashMemorySegment() const;
-        std::optional<MemorySegment> getRamMemorySegment() const;
-        std::optional<MemorySegment> getRegisterMemorySegment() const;
-        std::optional<MemorySegment> getEepromMemorySegment() const;
-        std::optional<MemorySegment> getFirstBootSectionMemorySegment() const;
-        std::optional<RegisterGroup> getCpuRegisterGroup() const;
-        std::optional<RegisterGroup> getBootLoadRegisterGroup() const;
-        std::optional<RegisterGroup> getEepromRegisterGroup() const;
-        std::optional<Register> getStatusRegister() const;
-        std::optional<Register> getStackPointerRegister() const;
-        std::optional<Register> getStackPointerHighRegister() const;
-        std::optional<Register> getStackPointerLowRegister() const;
-        std::optional<Register> getOscillatorCalibrationRegister() const;
-        std::optional<Register> getSpmcsRegister() const;
-        std::optional<Register> getSpmcRegister() const;
-        std::optional<Register> getEepromAddressRegister() const;
-        std::optional<Register> getEepromAddressLowRegister() const;
-        std::optional<Register> getEepromAddressHighRegister() const;
-        std::optional<Register> getEepromDataRegister() const;
-        std::optional<Register> getEepromControlRegister() const;
+        /**
+         * Extracts all variants.
+         *
+         * @return
+         */
         std::vector<Variant> getVariants() const;
+
+        /**
+         * Extracts all pinouts and returns a mapping of them, with the pinout name being the key.
+         *
+         * @return
+         */
         const std::map<std::string, Pinout>& getPinoutsMappedByName() const;
     };
 }

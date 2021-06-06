@@ -71,5 +71,26 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @return
          */
         Family getFamily() const;
+
+        std::optional<Targets::TargetDescription::MemorySegment> getFlashMemorySegment() const;
+        std::optional<Targets::TargetDescription::MemorySegment> getRamMemorySegment() const;
+        std::optional<Targets::TargetDescription::MemorySegment> getRegisterMemorySegment() const;
+        std::optional<Targets::TargetDescription::MemorySegment> getEepromMemorySegment() const;
+        std::optional<Targets::TargetDescription::MemorySegment> getFirstBootSectionMemorySegment() const;
+        std::optional<Targets::TargetDescription::RegisterGroup> getCpuRegisterGroup() const;
+        std::optional<Targets::TargetDescription::RegisterGroup> getBootLoadRegisterGroup() const;
+        std::optional<Targets::TargetDescription::RegisterGroup> getEepromRegisterGroup() const;
+        std::optional<Targets::TargetDescription::Register> getStatusRegister() const;
+        std::optional<Targets::TargetDescription::Register> getStackPointerRegister() const;
+        std::optional<Targets::TargetDescription::Register> getStackPointerHighRegister() const;
+        std::optional<Targets::TargetDescription::Register> getStackPointerLowRegister() const;
+        std::optional<Targets::TargetDescription::Register> getOscillatorCalibrationRegister() const;
+        std::optional<Targets::TargetDescription::Register> getSpmcsRegister() const;
+        std::optional<Targets::TargetDescription::Register> getSpmcRegister() const;
+        std::optional<Targets::TargetDescription::Register> getEepromAddressRegister() const;
+        std::optional<Targets::TargetDescription::Register> getEepromAddressLowRegister() const;
+        std::optional<Targets::TargetDescription::Register> getEepromAddressHighRegister() const;
+        std::optional<Targets::TargetDescription::Register> getEepromDataRegister() const;
+        std::optional<Targets::TargetDescription::Register> getEepromControlRegister() const;
     };
 }

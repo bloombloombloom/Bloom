@@ -12,6 +12,11 @@ using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
 using namespace Bloom::Targets::Microchip::Avr;
 using namespace Bloom::Exceptions;
 
+using Bloom::Targets::TargetDescription::RegisterGroup;
+using Bloom::Targets::TargetDescription::MemorySegment;
+using Bloom::Targets::TargetDescription::MemorySegmentType;
+using Bloom::Targets::TargetDescription::Register;
+
 TargetDescriptionFile::TargetDescriptionFile(
     const TargetSignature& targetSignature,
     std::optional<std::string> targetName
@@ -146,4 +151,358 @@ Family TargetDescriptionFile::getFamily() const {
     }
 
     return familyNameToEnums.at(familyName);
+}
+
+std::optional<MemorySegment> TargetDescriptionFile::getFlashMemorySegment() const {
+    auto addressMapping = this->getAddressSpacesMappedById();
+    auto programAddressSpaceIt = addressMapping.find("prog");
+
+    // Flash memory attributes are typically found in memory segments within the program address space.
+    if (programAddressSpaceIt != addressMapping.end()) {
+        auto& programAddressSpace = programAddressSpaceIt->second;
+        auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
+
+        if (programMemorySegments.find(MemorySegmentType::FLASH) != programMemorySegments.end()) {
+            auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
+
+            /*
+             * In AVR8 TDFs, flash memory segments are typically named "APP_SECTION", "PROGMEM" or "FLASH".
+             */
+            auto flashSegmentIt = flashMemorySegments.find("app_section") != flashMemorySegments.end() ?
+                flashMemorySegments.find("app_section")
+                : flashMemorySegments.find("progmem") != flashMemorySegments.end()
+                ? flashMemorySegments.find("progmem") : flashMemorySegments.find("flash");
+
+            if (flashSegmentIt != flashMemorySegments.end()) {
+                return flashSegmentIt->second;
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<MemorySegment> TargetDescriptionFile::getRamMemorySegment() const {
+    auto addressMapping = this->getAddressSpacesMappedById();
+
+    // Internal RAM  &register attributes are usually found in the data address space
+    auto dataAddressSpaceIt = addressMapping.find("data");
+
+    if (dataAddressSpaceIt != addressMapping.end()) {
+        auto& dataAddressSpace = dataAddressSpaceIt->second;
+        auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
+
+        if (dataMemorySegments.find(MemorySegmentType::RAM) != dataMemorySegments.end()) {
+            auto& ramMemorySegments = dataMemorySegments.find(MemorySegmentType::RAM)->second;
+            auto ramMemorySegmentIt = ramMemorySegments.begin();
+
+            if (ramMemorySegmentIt != ramMemorySegments.end()) {
+                return ramMemorySegmentIt->second;
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<MemorySegment> TargetDescriptionFile::getRegisterMemorySegment() const {
+    auto addressMapping = this->getAddressSpacesMappedById();
+
+    // Internal RAM  &register attributes are usually found in the data address space
+    auto dataAddressSpaceIt = addressMapping.find("data");
+
+    if (dataAddressSpaceIt != addressMapping.end()) {
+        auto& dataAddressSpace = dataAddressSpaceIt->second;
+        auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
+
+        if (dataMemorySegments.find(MemorySegmentType::REGISTERS) != dataMemorySegments.end()) {
+            auto& registerMemorySegments = dataMemorySegments.find(MemorySegmentType::REGISTERS)->second;
+            auto registerMemorySegmentIt = registerMemorySegments.begin();
+
+            if (registerMemorySegmentIt != registerMemorySegments.end()) {
+                return registerMemorySegmentIt->second;
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<MemorySegment> TargetDescriptionFile::getEepromMemorySegment() const {
+    auto addressMapping = this->getAddressSpacesMappedById();
+
+    if (addressMapping.contains("eeprom")) {
+        auto& eepromAddressSpace = addressMapping.at("eeprom");
+        auto& eepromAddressSpaceSegments = eepromAddressSpace.memorySegmentsByTypeAndName;
+
+        if (eepromAddressSpaceSegments.contains(MemorySegmentType::EEPROM)) {
+            return eepromAddressSpaceSegments.at(MemorySegmentType::EEPROM).begin()->second;
+        }
+
+    } else {
+        // The EEPROM memory segment may be part of the data address space
+        if (addressMapping.contains("data")) {
+            auto dataAddressSpace = addressMapping.at("data");
+
+            if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::EEPROM)) {
+                return dataAddressSpace.memorySegmentsByTypeAndName.at(MemorySegmentType::EEPROM).begin()->second;
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<MemorySegment> TargetDescriptionFile::getFirstBootSectionMemorySegment() const {
+    auto addressMapping = this->getAddressSpacesMappedById();
+    auto programAddressSpaceIt = addressMapping.find("prog");
+
+    if (programAddressSpaceIt != addressMapping.end()) {
+        auto& programAddressSpace = programAddressSpaceIt->second;
+        auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
+
+        if (programMemorySegments.find(MemorySegmentType::FLASH) != programMemorySegments.end()) {
+            auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
+
+            if (flashMemorySegments.contains("boot_section_1")) {
+                return flashMemorySegments.at("boot_section_1");
+
+            } else if (flashMemorySegments.contains("boot_section")) {
+                return flashMemorySegments.at("boot_section");
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<RegisterGroup> TargetDescriptionFile::getCpuRegisterGroup() const {
+    auto& modulesByName = this->getModulesMappedByName();
+
+    if (modulesByName.find("cpu") != modulesByName.end()) {
+        auto cpuModule = modulesByName.find("cpu")->second;
+        auto cpuRegisterGroupIt = cpuModule.registerGroupsMappedByName.find("cpu");
+
+        if (cpuRegisterGroupIt != cpuModule.registerGroupsMappedByName.end()) {
+            return cpuRegisterGroupIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<RegisterGroup> TargetDescriptionFile::getBootLoadRegisterGroup() const {
+    auto& modulesByName = this->getModulesMappedByName();
+
+    if (modulesByName.contains("boot_load")) {
+        auto& bootLoadModule = modulesByName.at("boot_load");
+        auto bootLoadRegisterGroupIt = bootLoadModule.registerGroupsMappedByName.find("boot_load");
+
+        if (bootLoadRegisterGroupIt != bootLoadModule.registerGroupsMappedByName.end()) {
+            return bootLoadRegisterGroupIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<RegisterGroup> TargetDescriptionFile::getEepromRegisterGroup() const {
+    auto& modulesByName = this->getModulesMappedByName();
+
+    if (modulesByName.find("eeprom") != modulesByName.end()) {
+        auto eepromModule = modulesByName.find("eeprom")->second;
+        auto eepromRegisterGroupIt = eepromModule.registerGroupsMappedByName.find("eeprom");
+
+        if (eepromRegisterGroupIt != eepromModule.registerGroupsMappedByName.end()) {
+            return eepromRegisterGroupIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getStatusRegister() const {
+    auto cpuRegisterGroup = this->getCpuRegisterGroup();
+
+    if (cpuRegisterGroup.has_value()) {
+        auto statusRegisterIt = cpuRegisterGroup->registersMappedByName.find("sreg");
+
+        if (statusRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
+            return statusRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getStackPointerRegister() const {
+    auto cpuRegisterGroup = this->getCpuRegisterGroup();
+
+    if (cpuRegisterGroup.has_value()) {
+        auto stackPointerRegisterIt = cpuRegisterGroup->registersMappedByName.find("sp");
+
+        if (stackPointerRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
+            return stackPointerRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getStackPointerHighRegister() const {
+    auto cpuRegisterGroup = this->getCpuRegisterGroup();
+
+    if (cpuRegisterGroup.has_value()) {
+        auto stackPointerHighRegisterIt = cpuRegisterGroup->registersMappedByName.find("sph");
+
+        if (stackPointerHighRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
+            return stackPointerHighRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getStackPointerLowRegister() const {
+    auto cpuRegisterGroup = this->getCpuRegisterGroup();
+
+    if (cpuRegisterGroup.has_value()) {
+        auto stackPointerLowRegisterIt = cpuRegisterGroup->registersMappedByName.find("spl");
+
+        if (stackPointerLowRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
+            return stackPointerLowRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getOscillatorCalibrationRegister() const {
+    auto cpuRegisterGroup = this->getCpuRegisterGroup();
+
+    if (cpuRegisterGroup.has_value()) {
+        auto& cpuRegisters = cpuRegisterGroup->registersMappedByName;
+
+        if (cpuRegisters.contains("osccal")) {
+            return cpuRegisters.at("osccal");
+
+        } else if (cpuRegisters.contains("osccal0")) {
+            return cpuRegisters.at("osccal0");
+
+        } else if (cpuRegisters.contains("osccal1")) {
+            return cpuRegisters.at("osccal1");
+
+        } else if (cpuRegisters.contains("fosccal")) {
+            return cpuRegisters.at("fosccal");
+
+        } else if (cpuRegisters.contains("sosccala")) {
+            return cpuRegisters.at("sosccala");
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getSpmcsRegister() const {
+    auto cpuRegisterGroup = this->getCpuRegisterGroup();
+
+    if (cpuRegisterGroup.has_value() && cpuRegisterGroup->registersMappedByName.contains("spmcsr")) {
+        return cpuRegisterGroup->registersMappedByName.at("spmcsr");
+
+    } else {
+        auto bootLoadRegisterGroup = this->getBootLoadRegisterGroup();
+
+        if (bootLoadRegisterGroup.has_value() && bootLoadRegisterGroup->registersMappedByName.contains("spmcsr")) {
+            return bootLoadRegisterGroup->registersMappedByName.at("spmcsr");
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getSpmcRegister() const {
+    auto bootLoadRegisterGroup = this->getBootLoadRegisterGroup();
+
+    if (bootLoadRegisterGroup.has_value() && bootLoadRegisterGroup->registersMappedByName.contains("spmcr")) {
+        return bootLoadRegisterGroup->registersMappedByName.at("spmcr");
+
+    } else {
+        auto cpuRegisterGroup = this->getCpuRegisterGroup();
+
+        if (cpuRegisterGroup.has_value() && cpuRegisterGroup->registersMappedByName.contains("spmcr")) {
+            return cpuRegisterGroup->registersMappedByName.at("spmcr");
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getEepromAddressRegister() const {
+    auto eepromRegisterGroup = this->getEepromRegisterGroup();
+
+    if (eepromRegisterGroup.has_value()) {
+        auto eepromAddressRegisterIt = eepromRegisterGroup->registersMappedByName.find("eear");
+
+        if (eepromAddressRegisterIt != eepromRegisterGroup->registersMappedByName.end()) {
+            return eepromAddressRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getEepromAddressLowRegister() const {
+    auto eepromRegisterGroup = this->getEepromRegisterGroup();
+
+    if (eepromRegisterGroup.has_value()) {
+        auto eepromAddressRegisterIt = eepromRegisterGroup->registersMappedByName.find("eearl");
+
+        if (eepromAddressRegisterIt != eepromRegisterGroup->registersMappedByName.end()) {
+            return eepromAddressRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getEepromAddressHighRegister() const {
+    auto eepromRegisterGroup = this->getEepromRegisterGroup();
+
+    if (eepromRegisterGroup.has_value()) {
+        auto eepromAddressRegisterIt = eepromRegisterGroup->registersMappedByName.find("eearh");
+
+        if (eepromAddressRegisterIt != eepromRegisterGroup->registersMappedByName.end()) {
+            return eepromAddressRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getEepromDataRegister() const {
+    auto eepromRegisterGroup = this->getEepromRegisterGroup();
+
+    if (eepromRegisterGroup.has_value()) {
+        auto eepromDataRegisterIt = eepromRegisterGroup->registersMappedByName.find("eedr");
+
+        if (eepromDataRegisterIt != eepromRegisterGroup->registersMappedByName.end()) {
+            return eepromDataRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<Register> TargetDescriptionFile::getEepromControlRegister() const {
+    auto eepromRegisterGroup = this->getEepromRegisterGroup();
+
+    if (eepromRegisterGroup.has_value()) {
+        auto eepromControlRegisterIt = eepromRegisterGroup->registersMappedByName.find("eecr");
+
+        if (eepromControlRegisterIt != eepromRegisterGroup->registersMappedByName.end()) {
+            return eepromControlRegisterIt->second;
+        }
+    }
+
+    return std::nullopt;
 }
