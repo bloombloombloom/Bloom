@@ -586,8 +586,8 @@ std::optional<Register> TargetDescriptionFile::getOscillatorCalibrationRegister(
     if (cpuRegisterGroup.has_value()) {
         auto& cpuRegisters = cpuRegisterGroup->registersMappedByName;
 
-        if (cpuRegisters.contains("oscall")) {
-            return cpuRegisters.at("oscall");
+        if (cpuRegisters.contains("osccal")) {
+            return cpuRegisters.at("osccal");
 
         } else if (cpuRegisters.contains("osccal0")) {
             return cpuRegisters.at("osccal0");
