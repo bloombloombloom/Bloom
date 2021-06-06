@@ -141,9 +141,9 @@ Family TargetDescriptionFile::getFamily() const {
         throw Exception("Could not find target family name in target description file.");
     }
 
-    if (familyNameToEnums.find(familyName) == familyNameToEnums.end()) {
+    if (!familyNameToEnums.contains(familyName)) {
         throw Exception("Unknown family name in target description file.");
     }
 
-    return familyNameToEnums.find(familyName)->second;
+    return familyNameToEnums.at(familyName);
 }

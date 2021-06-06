@@ -88,7 +88,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     enum class Avr8MemoryType: unsigned char
     {
         /**
-         * The SRAM memory type can be used to read  &write to internal memory on the target.
+         * The SRAM memory type can be used to read & write to internal memory on the target.
          *
          * It's available with all of the config variants in debugging mode.
          */
@@ -144,5 +144,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         DATA = 0x84,
         FAILED = 0xA0,
     };
-
 }

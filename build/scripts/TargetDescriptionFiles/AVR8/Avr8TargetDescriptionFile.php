@@ -10,6 +10,9 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     const AVR8_FAMILY_MEGA = 'MEGA';
     const AVR8_FAMILY_TINY = 'TINY';
     const AVR8_FAMILY_XMEGA = 'XMEGA';
+    const AVR8_FAMILY_DB = 'DB';
+    const AVR8_FAMILY_DA = 'DA';
+    const AVR8_FAMILY_DD = 'DD';
     const AVR8_FAMILY_OTHER = 'OTHER';
 
     const AVR8_PHYSICAL_INTERFACE_JTAG = 'JTAG';
@@ -76,6 +79,15 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             } else if (stristr($deviceAttributes['family'], 'mega') !== false) {
                 $this->family = self::AVR8_FAMILY_MEGA;
+
+            } else if (strtolower(trim($deviceAttributes['family'])) == 'avr da') {
+                $this->family = self::AVR8_FAMILY_DA;
+
+            } else if (strtolower(trim($deviceAttributes['family'])) == 'avr db') {
+                $this->family = self::AVR8_FAMILY_DB;
+
+            } else if (strtolower(trim($deviceAttributes['family'])) == 'avr dd') {
+                $this->family = self::AVR8_FAMILY_DD;
 
             } else {
                 $this->family = self::AVR8_FAMILY_OTHER;
@@ -336,6 +348,10 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'Target does not support any known AVR8 debug interface - the TDF will need to be deleted.'
                 . ' Aborting validation.';
             return $failures;
+        }
+
+        if (is_null($this->family) || $this->family == self::AVR8_FAMILY_OTHER) {
+            $failures[] = 'Unknown AVR8 family';
         }
 
         if (is_null($this->stackPointerRegisterStartAddress)) {

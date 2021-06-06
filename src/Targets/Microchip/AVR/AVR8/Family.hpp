@@ -7,5 +7,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         MEGA,
         XMEGA,
         TINY,
+        DB,
+        DA,
+        DD,
     };
 }

@@ -5,6 +5,7 @@
 
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
@@ -35,6 +36,13 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          * @param targetConfig
          */
         virtual void configure(const TargetConfig& targetConfig) = 0;
+
+        /**
+         * Sets the target family, independent of other configuration.
+         *
+         * @param family
+         */
+        virtual void setFamily(Targets::Microchip::Avr::Avr8Bit::Family family) = 0;
 
         /**
          * Should accept Avr8 target parameters for configuration of the interface.

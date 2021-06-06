@@ -10,8 +10,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
     struct TargetParameters
     {
-        std::optional<Family> family;
-
         std::optional<std::uint32_t> bootSectionStartAddress;
         std::optional<std::uint32_t> gpRegisterStartAddress;
         std::optional<std::uint32_t> gpRegisterSize;

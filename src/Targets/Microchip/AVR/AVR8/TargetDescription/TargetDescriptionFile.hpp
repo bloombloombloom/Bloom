@@ -36,6 +36,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 {"avr tiny", Family::TINY},
                 {"tinyavr", Family::TINY},
                 {"tinyavr 2", Family::TINY},
+                {"avr da", Family::DA},
+                {"avr db", Family::DB},
+                {"avr dd", Family::DD},
             };
         };
 

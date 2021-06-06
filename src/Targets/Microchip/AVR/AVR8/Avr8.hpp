@@ -62,6 +62,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         explicit Avr8() = default;
         Avr8(const std::string& name, const TargetSignature& signature): name(name) {
             this->id = signature;
+            this->loadTargetDescriptionFile();
         };
 
         /*

@@ -69,7 +69,6 @@ void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
     auto physicalInterface = targetConfig.jsonObject.find("physicalInterface")->toString().toLower().toStdString();
 
     auto availablePhysicalInterfaces = EdbgAvr8Interface::physicalInterfacesByName;
-    auto availableConfigVariants = EdbgAvr8Interface::configVariantsByPhysicalInterface;
 
     if (physicalInterface.empty()
         || availablePhysicalInterfaces.find(physicalInterface) == availablePhysicalInterfaces.end()
@@ -79,16 +78,18 @@ void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
 
     auto selectedPhysicalInterface = availablePhysicalInterfaces.find(physicalInterface)->second;
 
-    if (availableConfigVariants.find(selectedPhysicalInterface) == availableConfigVariants.end()) {
-        throw InvalidConfig("Invalid config variant deduced from physical interface.");
-    }
-
     if (selectedPhysicalInterface == Avr8PhysicalInterface::DEBUG_WIRE) {
         Logger::warning("AVR8 debugWire interface selected - the DWEN fuse will need to be enabled");
     }
 
     this->physicalInterface = selectedPhysicalInterface;
-    this->configVariant = availableConfigVariants.find(selectedPhysicalInterface)->second;
+
+    if (this->physicalInterface == Avr8PhysicalInterface::JTAG && !this->family.has_value()) {
+        throw InvalidConfig("Cannot use JTAG physical interface with ambiguous target name - please specify the"
+            " exact name of the target in your configuration file. See https://bloom.oscillate.io/docs/supported-targets");
+    }
+
+    this->configVariant = this->resolveConfigVariant().value_or(Avr8ConfigVariant::NONE);
 }
 
 void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& config) {
@@ -108,6 +109,18 @@ void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& con
 
     if (!config.statusRegisterSize.has_value()) {
         throw Exception("Failed to find status register size");
+    }
+
+    if (this->configVariant == Avr8ConfigVariant::NONE) {
+        auto configVariant = this->resolveConfigVariant();
+
+        if (!configVariant.has_value()) {
+            throw Exception("Failed to resolve config variant for the selected "
+                "physical interface and AVR8 family. The selected physical interface is not known to be supported "
+                "by the AVR8 family.");
+        }
+
+        this->configVariant = configVariant.value();
     }
 
     if (this->configVariant == Avr8ConfigVariant::XMEGA) {
@@ -850,7 +863,7 @@ TargetRegisters EdbgAvr8Interface::readGeneralPurposeRegisters(std::set<std::siz
     auto output = TargetRegisters();
 
     auto registers = this->readMemory(
-        this->targetParameters.family == Family::XMEGA ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
+        this->family == Family::XMEGA ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
         this->targetParameters.gpRegisterStartAddress.value_or(0x00),
         this->targetParameters.gpRegisterSize.value_or(32)
     );

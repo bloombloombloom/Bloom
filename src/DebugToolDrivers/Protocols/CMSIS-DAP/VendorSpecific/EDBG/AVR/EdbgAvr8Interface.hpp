@@ -42,6 +42,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         EdbgInterface& edbgInterface;
 
         /**
+         * The target family is taken into account when configuring the AVR8 Generic protocol on the EDBG device.
+         *
+         * We use this to determine which config variant to select.
+         * See EdbgAvr8Interface::resolveConfigVariant() for more.
+         */
+        std::optional<Targets::Microchip::Avr::Avr8Bit::Family> family;
+
+        /**
          * The AVR8 Generic protocol provides two functions: Debugging and programming. The desired function must be
          * configured via the setting of the "AVR8_CONFIG_FUNCTION" parameter.
          */
@@ -52,13 +60,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * The "AVR8_CONFIG_VARIANT" parameter allows us to determine which target parameters are required by the
          * debug tool.
          */
-        Avr8ConfigVariant configVariant;
+        Avr8ConfigVariant configVariant = Avr8ConfigVariant::NONE;
 
         /**
          * Currently, the AVR8 Generic protocol supports 4 physical interfaces: debugWire, JTAG, PDI and UPDI.
          * The desired physical interface must be selected by setting the "AVR8_PHY_PHYSICAL" parameter.
          */
-        Avr8PhysicalInterface physicalInterface;
+        Avr8PhysicalInterface physicalInterface = Avr8PhysicalInterface::NONE;
 
         /**
          * EDBG-based debug tools require target specific parameters such as memory locations, page sizes and
@@ -123,16 +131,99 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         };
 
         /**
-         * Although users can supply the desired config variant via their Bloom configuration, this is not required.
-         * This mapping allows us to determine which config variant to select, based on the selected physical
-         * interface.
+         * This mapping allows us to determine which config variant to select, based on the target family and the
+         * selected physical interface.
          */
-        static inline std::map<Avr8PhysicalInterface, Avr8ConfigVariant> configVariantsByPhysicalInterface = {
-            {Avr8PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-            {Avr8PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
-            {Avr8PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
-            {Avr8PhysicalInterface::PDI_1W, Avr8ConfigVariant::UPDI},
+        static inline auto getConfigVariantsByFamilyAndPhysicalInterface() {
+            using Targets::Microchip::Avr::Avr8Bit::Family;
+            return std::map<Family, std::map<Avr8PhysicalInterface, Avr8ConfigVariant>>({
+                {
+                    Family::MEGA,
+                    {
+                        {Avr8PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
+                        {Avr8PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                    }
+                },
+                {
+                    Family::TINY,
+                    {
+                        {Avr8PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
+                        {Avr8PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                    }
+                },
+                {
+                    Family::XMEGA,
+                    {
+                        {Avr8PhysicalInterface::JTAG, Avr8ConfigVariant::XMEGA},
+                        {Avr8PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
+                    }
+                },
+                {
+                    Family::DA,
+                    {
+                        {Avr8PhysicalInterface::PDI_1W, Avr8ConfigVariant::UPDI},
+                    }
+                },
+                {
+                    Family::DB,
+                    {
+                        {Avr8PhysicalInterface::PDI_1W, Avr8ConfigVariant::UPDI},
+                    }
+                },
+                {
+                    Family::DD,
+                    {
+                        {Avr8PhysicalInterface::PDI_1W, Avr8ConfigVariant::UPDI},
+                    }
+                },
+            });
         };
+
+        /**
+         * Will attempt to resolve the config variant with the information currently held.
+         *
+         * @return
+         */
+        std::optional<Avr8ConfigVariant> resolveConfigVariant() {
+            if (this->family.has_value()) {
+                auto configVariantsByFamily = EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface();
+
+                if (configVariantsByFamily.contains(this->family.value())) {
+                    auto configVariantsByPhysicalInterface = configVariantsByFamily
+                        .at(this->family.value());
+
+                    if (configVariantsByPhysicalInterface.contains(this->physicalInterface)) {
+                        return configVariantsByPhysicalInterface.at(this->physicalInterface);
+                    }
+                }
+
+            } else {
+                /*
+                 * If there is no family set, we may be able to resort to a simpler mapping of physical interfaces
+                 * to config variants. But this will only work if the selected physical interface is *NOT* JTAG.
+                 *
+                 * This is because JTAG is the only physical interface that could map to two different config
+                 * variants (MEGAJTAG and XMEGA). The only way we can figure out which config variant to use is if we
+                 * know the target family.
+                 *
+                 * This is why we don't allow users to use ambiguous target names (such as the generic "avr8" target
+                 * name), when using the JTAG physical interface. We won't be able to resolve the correct target
+                 * variant. Users are required to specify the exact target name in their config, when using the JTAG
+                 * physical interface. That way, this->family will be set by the time resolveConfigVariant() is called.
+                 */
+                static std::map<Avr8PhysicalInterface, Avr8ConfigVariant> physicalInterfacesToConfigVariants = {
+                    {Avr8PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                    {Avr8PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
+                    {Avr8PhysicalInterface::PDI_1W, Avr8ConfigVariant::UPDI},
+                };
+
+                if (physicalInterfacesToConfigVariants.contains(this->physicalInterface)) {
+                    return physicalInterfacesToConfigVariants.at(this->physicalInterface);
+                }
+            }
+
+            return std::nullopt;
+        }
 
         /**
          * Sets an AVR8 parameter on the debug tool. See the Avr8EdbgParameters class and protocol documentation
@@ -337,6 +428,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param targetConfig
          */
         virtual void configure(const TargetConfig& targetConfig) override;
+
+        /**
+         * Configures the target family. For some physical interfaces, the target family is required in order
+         * properly configure the EDBG tool. See EdbgAvr8Interface::resolveConfigVariant() for more.
+         *
+         * @param family
+         */
+        void setFamily(Targets::Microchip::Avr::Avr8Bit::Family family) override {
+            this->family = family;
+        }
 
         /**
          * Accepts target parameters from the AVR8 target instance and sends the necessary target parameters to the

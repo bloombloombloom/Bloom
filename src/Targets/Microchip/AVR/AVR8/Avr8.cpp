@@ -33,6 +33,10 @@ using namespace Exceptions;
 void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
     Target::preActivationConfigure(targetConfig);
 
+    if (this->family.has_value()) {
+        this->avr8Interface->setFamily(this->family.value());
+    }
+
     this->avr8Interface->configure(targetConfig);
 }
 
@@ -53,7 +57,7 @@ void Avr8::postActivationConfigure() {
 
     if (targetSignature != tdSignature) {
         throw Exception("Failed to validate connected target - target signature mismatch.\nThe target signature"
-            "(\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
+            " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
             + tdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the configuration file"
             + " (bloom.json)."
         );
@@ -61,6 +65,11 @@ void Avr8::postActivationConfigure() {
 }
 
 void Avr8::postPromotionConfigure() {
+    if (!this->family.has_value()) {
+        throw Exception("Failed to resolve AVR8 family");
+    }
+
+    this->avr8Interface->setFamily(this->family.value());
     this->avr8Interface->setTargetParameters(this->getTargetParameters());
 }
 
@@ -276,7 +285,6 @@ TargetParameters& Avr8::getTargetParameters() {
     if (!this->targetParameters.has_value()) {
         assert(this->targetDescriptionFile.has_value());
         this->targetParameters = TargetParameters();
-        this->targetParameters->family = this->family;
         auto& propertyGroups = this->targetDescriptionFile->getPropertyGroupsMappedByName();
 
         auto flashMemorySegment = this->targetDescriptionFile->getFlashMemorySegment();
