@@ -4,7 +4,7 @@
         <variant ordercode="AVR64DA48" package="QFN48" pinout="QFN48" speedmax="24000000" tempmax="125" tempmin="-40"
                  vccmax="5.5" vccmin="1.8"/>
     </variants>
-    <device architecture="AVR8X" family="AVR" name="AVR64DA48">
+    <device architecture="AVR8X" family="AVR DA" name="AVR64DA48">
         <address-spaces>
             <address-space endianness="little" id="data" name="data" size="0x10000" start="0x0000">
                 <memory-segment exec="0" name="EEPROM" pagesize="0x1" rw="RW" size="0x0200" start="0x00001400"
