@@ -130,8 +130,6 @@
                 </instance>
             </module>
         </peripherals>
-
-
         <interrupts>
             <interrupt index="0" name="RESET"
                        caption="External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset"/>
@@ -793,7 +791,6 @@
                 <value caption="Power Down" name="PDOWN" value="0x02"/>
                 <value caption="Standby" name="STDBY" value="0x03"/>
             </value-group>
-
         </module>
         <module caption="Universal Serial Interface" name="USI">
             <register-group caption="Universal Serial Interface" name="USI">

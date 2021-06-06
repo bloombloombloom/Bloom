@@ -1144,7 +1144,6 @@
                           mask="0xFFFF"/>
                 <register caption="Timer/Counter5 Interrupt Mask Register" name="TIMSK5" offset="0x73" size="1">
                     <bitfield caption="Timer/Counter5 Input Capture Interrupt Enable" mask="0x20" name="ICIE5"/>
-
                     <bitfield caption="Timer/Counter5 Output Compare C Match Interrupt Enable" mask="0x08"
                               name="OCIE5C"/>
                     <bitfield caption="Timer/Counter5 Output Compare B Match Interrupt Enable" mask="0x04"
@@ -2662,7 +2661,6 @@
             <value-group caption="Oscillator Calibration Values" name="OSCCAL_VALUE_ADDRESSES">
                 <value value="0x00" caption="16.0 MHz" name="16_0_MHz"/>
             </value-group>
-
         </module>
         <module caption="FLASH Controller" name="FLASH">
             <register-group caption="FLASH Controller" name="FLASH">

@@ -1056,7 +1056,6 @@
                 <value value="0x02" caption="4.0 MHz" name="4_0_MHz"/>
                 <value value="0x03" caption="8.0 MHz" name="8_0_MHz"/>
             </value-group>
-
         </module>
         <module caption="Bootloader" name="BOOT_LOAD">
             <register-group caption="Bootloader" name="BOOT_LOAD">

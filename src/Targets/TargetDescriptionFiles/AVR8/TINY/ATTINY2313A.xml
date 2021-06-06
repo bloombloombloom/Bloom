@@ -798,7 +798,6 @@
                 <value value="0x04" caption="Standby" name="STDBY"/>
                 <value value="0x05" caption="Power Down " name="PDOWN"/>
             </value-group>
-
         </module>
     </modules>
 </target-description-file>

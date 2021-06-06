@@ -278,8 +278,6 @@
                 </instance>
             </module>
         </peripherals>
-
-
         <interrupts>
             <interrupt-group index="1" module-instance="OSC" name-in-module="OSC"/>
             <interrupt-group index="2" module-instance="PORTC" name-in-module="PORT"/>
@@ -390,7 +388,6 @@
                 <value caption="SPM Instruction Protection" name="SPM" value="0x9D"/>
                 <value caption="IO Register Protection" name="IOREG" value="0xD8"/>
             </value-group>
-
         </module>
         <module name="CLK" id="I6073" version="XMEGAC" caption="Clock System">
             <register-group caption="Clock System" name="CLK" size="5">
@@ -461,7 +458,6 @@
                 <value caption="Internal 32 MHz RC Oscillator" name="RC32M" value="0x01"/>
             </value-group>
         </module>
-
         <module name="PR" id="I6073" version="XMEGAC" caption="Power Reduction">
             <register-group caption="Power Reduction" name="PR" size="7">
                 <register caption="General Power Reduction" name="PRGEN" offset="0x00" size="1">
@@ -500,7 +496,6 @@
                 </register>
             </register-group>
         </module>
-
         <module name="SLEEP" id="I6081" caption="Sleep Controller">
             <register-group caption="Sleep Controller" name="SLEEP" size="1">
                 <register caption="Control Register" name="CTRL" offset="0x00" size="1">

@@ -498,7 +498,6 @@
                 <value caption="Reserved" name="VAL_0x06" value="0x06"/>
                 <value caption="Reserved" name="VAL_0x07" value="0x07"/>
             </value-group>
-
         </module>
         <module caption="Battery Protection" name="BATTERY_PROTECTION">
             <register-group caption="Battery Protection" name="BATTERY_PROTECTION">

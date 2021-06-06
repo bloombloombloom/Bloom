@@ -984,7 +984,6 @@
                 <value caption="Standby" name="STDBY" value="0x06"/>
                 <value caption="Extended Standby" name="ESTDBY" value="0x07"/>
             </value-group>
-
         </module>
         <module caption="External Interrupts" name="EXINT">
             <register-group caption="External Interrupts" name="EXINT">

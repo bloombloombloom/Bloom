@@ -954,7 +954,6 @@
                 <value caption="Standby" name="STDBY" value="0x05"/>
                 <value caption="Extended Standby" name="ESTDBY" value="0x07"/>
             </value-group>
-
         </module>
         <module caption="Bootloader" name="BOOT_LOAD">
             <register-group caption="Bootloader" name="BOOT_LOAD">

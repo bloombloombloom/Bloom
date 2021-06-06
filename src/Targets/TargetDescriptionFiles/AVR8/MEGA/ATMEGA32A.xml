@@ -7,7 +7,6 @@
                  package="PDIP40" vccmin="2.7" vccmax="5.5"/>
         <variant ordercode="ATmega32A-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44"
                  package="QFN44" vccmin="2.7" vccmax="5.5"/>
-
         <variant ordercode="ATmega32A-AN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN44"
                  package="TQFP44" vccmin="2.7" vccmax="5.5"/>
         <variant ordercode="ATmega32A-MN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN44"
@@ -1028,7 +1027,6 @@
                 <value value="0x02" caption="4.0 MHz" name="4_0_MHz"/>
                 <value value="0x03" caption="8.0 MHz" name="8_0_MHz"/>
             </value-group>
-
         </module>
         <module caption="Bootloader" name="BOOT_LOAD">
             <register-group caption="Bootloader" name="BOOT_LOAD">

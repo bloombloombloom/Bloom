@@ -287,7 +287,6 @@
                         <signal group="X" index="13" function="default" pad="PB3"/>
                         <signal group="X" index="14" function="default" pad="PB4"/>
                         <signal group="X" index="15" function="default" pad="PB5"/>
-
                         <signal group="Y" index="00" function="default" pad="PC0"/>
                         <signal group="Y" index="01" function="default" pad="PC1"/>
                         <signal group="Y" index="02" function="default" pad="PC2"/>
@@ -1458,7 +1457,6 @@
             <value-group caption="Oscillator Calibration Values" name="OSCCAL_VALUE_ADDRESSES">
                 <value value="0x00" caption="8.0 MHz" name="8_0_MHz"/>
             </value-group>
-
         </module>
         <module caption="" name="EEPROM">
             <register-group caption="" name="EEPROM">

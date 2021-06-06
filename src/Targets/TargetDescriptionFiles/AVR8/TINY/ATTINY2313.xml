@@ -751,7 +751,6 @@
                 <value value="0x04" caption="Standby" name="STDBY"/>
                 <value value="0x05" caption="Power Down " name="PDOWN"/>
             </value-group>
-
         </module>
         <module caption="Universal Serial Interface" name="USI">
             <register-group caption="Universal Serial Interface" name="USI">

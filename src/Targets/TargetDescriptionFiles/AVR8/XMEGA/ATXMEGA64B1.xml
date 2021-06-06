@@ -687,7 +687,6 @@
                 <value caption="SPM Instruction Protection" name="SPM" value="0x9D"/>
                 <value caption="IO Register Protection" name="IOREG" value="0xD8"/>
             </value-group>
-
         </module>
         <module name="CLK" id="I6073" version="XMEGAB" caption="Clock System">
             <register-group caption="Clock System" name="CLK" size="5">

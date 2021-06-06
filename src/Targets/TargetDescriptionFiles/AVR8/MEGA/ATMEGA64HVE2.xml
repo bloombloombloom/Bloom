@@ -134,8 +134,6 @@
                 </instance>
             </module>
         </peripherals>
-
-
         <interrupts>
             <interrupt index="0" name="RESET"
                        caption="External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset"/>
@@ -855,7 +853,6 @@
                 <value caption="Standby" name="STDBY" value="0x06"/>
                 <value caption="Extended Standby" name="ESTDBY" value="0x07"/>
             </value-group>
-
         </module>
         <module caption="External Interrupts" name="EXINT">
             <register-group caption="External Interrupts" name="EXINT">

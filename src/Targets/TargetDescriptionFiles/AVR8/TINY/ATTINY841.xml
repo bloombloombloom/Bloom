@@ -1114,7 +1114,6 @@
                 <value caption="Power Down" name="PDOWN" value="0x02"/>
                 <value caption="Standby" name="STDBY" value="0x03"/>
             </value-group>
-
         </module>
         <module caption="Timer/Counter Output Compare Pin" name="TOCPM">
             <register-group caption="Timer/Counter Output Compare Pin" name="TOCPM">

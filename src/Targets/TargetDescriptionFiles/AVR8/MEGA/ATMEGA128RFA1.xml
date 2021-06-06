@@ -1088,7 +1088,6 @@
                 </register>
                 <register caption="Timer/Counter5 Interrupt Flag Register" name="TIFR5" offset="0x3A" size="1"
                           ocd-rw="">
-
                     <bitfield caption="Timer/Counter5 Input Capture Flag" mask="0x20" name="ICF5"/>
                     <bitfield caption="Timer/Counter5 Output Compare C Match Flag" mask="0x08" name="OCF5C"/>
                     <bitfield caption="Timer/Counter5 Output Compare B Match Flag" mask="0x04" name="OCF5B"/>
@@ -2359,7 +2358,6 @@
             <value-group caption="Oscillator Calibration Values" name="OSCCAL_VALUE_ADDRESSES">
                 <value value="0x00" caption="8.0 MHz" name="8_0_MHz"/>
             </value-group>
-
         </module>
         <module caption="FLASH Controller" name="FLASH">
             <register-group caption="FLASH Controller" name="FLASH">

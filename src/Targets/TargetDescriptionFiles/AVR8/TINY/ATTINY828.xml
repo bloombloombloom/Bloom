@@ -147,8 +147,6 @@
                 </instance>
             </module>
         </peripherals>
-
-
         <interrupts>
             <interrupt index="0" name="RESET"
                        caption="External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset"/>
@@ -569,7 +567,6 @@
                 <value caption="Power Down" name="PDOWN" value="0x02"/>
                 <value caption="Reserved" name="VAL_0x03" value="0x03"/>
             </value-group>
-
         </module>
         <module caption="Timer/Counter, 8-bit" name="TC8">
             <register-group caption="Timer/Counter, 8-bit" name="TC0">

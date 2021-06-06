@@ -849,7 +849,6 @@
                 <value value="0x00" caption="2.0 MHz" name="2_0_MHz"/>
                 <value value="0x01" caption="8.0 MHz" name="8_0_MHz"/>
             </value-group>
-
         </module>
         <module caption="EEPROM" name="EEPROM">
             <register-group caption="EEPROM" name="EEPROM">

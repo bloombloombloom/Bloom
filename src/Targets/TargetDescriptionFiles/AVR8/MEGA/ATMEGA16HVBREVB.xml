@@ -168,8 +168,6 @@
                 </instance>
             </module>
         </peripherals>
-
-
         <interrupts>
             <interrupt index="0" name="RESET"
                        caption="External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset"/>
@@ -942,7 +940,6 @@
                 <value caption="Reserved" name="VAL_0x06" value="0x06"/>
                 <value caption="Reserved" name="VAL_0x07" value="0x07"/>
             </value-group>
-
         </module>
         <module caption="I/O Port" name="PORT">
             <register-group caption="I/O Port" name="PORTA">

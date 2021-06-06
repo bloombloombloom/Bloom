@@ -5,7 +5,6 @@
                  package="TQFP64" vccmin="2.7" vccmax="5.5"/>
         <variant ordercode="ATmega64A-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN64"
                  package="QFN64" vccmin="2.7" vccmax="5.5"/>
-
         <variant ordercode="ATmega64A-AN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64"
                  package="TQFP64" vccmin="2.7" vccmax="5.5"/>
         <variant ordercode="ATmega64A-MN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64"
@@ -1010,7 +1009,6 @@
                 <value caption="Standby" name="STDBY" value="0x05"/>
                 <value caption="Extended Standby" name="ESTDBY" value="0x07"/>
             </value-group>
-
         </module>
         <module caption="Bootloader" name="BOOT_LOAD">
             <register-group caption="Bootloader" name="BOOT_LOAD">

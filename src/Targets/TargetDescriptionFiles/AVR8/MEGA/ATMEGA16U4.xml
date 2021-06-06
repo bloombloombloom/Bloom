@@ -1402,7 +1402,6 @@
             <value-group caption="Oscillator Calibration Values" name="OSCCAL_VALUE_ADDRESSES">
                 <value value="0x00" caption="8.0 MHz" name="8_0_MHz"/>
             </value-group>
-
         </module>
         <module caption="Phase Locked Loop" name="PLL">
             <register-group caption="Phase Locked Loop" name="PLL">

@@ -2676,7 +2676,6 @@
             <value-group caption="Oscillator Calibration Values" name="OSCCAL_VALUE_ADDRESSES">
                 <value value="0x00" caption="16.0 MHz" name="16_0_MHz"/>
             </value-group>
-
         </module>
         <module caption="FLASH Controller" name="FLASH">
             <register-group caption="FLASH Controller" name="FLASH">

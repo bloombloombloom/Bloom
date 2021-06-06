@@ -529,7 +529,6 @@
                 <value value="0x00" caption="9.6 MHz" name="9_6_MHz"/>
                 <value value="0x01" caption="4.8 MHz" name="4_8_MHz"/>
             </value-group>
-
         </module>
         <module caption="I/O Port" name="PORT">
             <register-group caption="I/O Port" name="PORTB">

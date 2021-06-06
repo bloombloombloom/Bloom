@@ -7,7 +7,6 @@
                  package="PDIP40" vccmin="2.7" vccmax="5.5"/>
         <variant ordercode="ATmega16L-8MU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFPQFN44"
                  package="QFN44" vccmin="2.7" vccmax="5.5"/>
-
         <variant ordercode="ATmega16-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44"
                  package="TQFP44" vccmin="4.5" vccmax="5.5"/>
         <variant ordercode="ATmega16-16PU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="PDIP40"
@@ -826,7 +825,6 @@
                 <value value="0x02" caption="4.0 MHz" name="4_0_MHz"/>
                 <value value="0x03" caption="8.0 MHz" name="8_0_MHz"/>
             </value-group>
-
         </module>
         <module caption="Timer/Counter, 8-bit Async" name="TC8_ASYNC">
             <register-group caption="Timer/Counter, 8-bit Async" name="TC2">

@@ -30,7 +30,6 @@
             </address-space>
             <address-space name="fuses" id="fuses" start="0x0000" size="0x0006">
                 <memory-segment start="0x0000" size="0x0006" type="fuses" rw="RW" exec="0" name="FUSES"/>
-
             </address-space>
             <address-space name="lockbits" id="lockbits" start="0x0000" size="0x0001">
                 <memory-segment start="0x0000" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
@@ -263,8 +262,6 @@
                 </instance>
             </module>
         </peripherals>
-
-
         <interrupts>
             <interrupt-group index="1" module-instance="OSC" name-in-module="OSC"/>
             <interrupt-group index="2" module-instance="PORTC" name-in-module="PORT"/>
@@ -376,7 +373,6 @@
                 <value caption="SPM Instruction Protection" name="SPM" value="0x9D"/>
                 <value caption="IO Register Protection" name="IOREG" value="0xD8"/>
             </value-group>
-
         </module>
         <module name="CLK" id="I6073" caption="Clock System">
             <register-group caption="Clock System" name="CLK" size="4">

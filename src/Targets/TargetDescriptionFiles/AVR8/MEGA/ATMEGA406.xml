@@ -655,7 +655,6 @@
                 <value caption="Reserved" name="VAL_0x06" value="0x06"/>
                 <value caption="Reserved" name="VAL_0x07" value="0x07"/>
             </value-group>
-
         </module>
         <module caption="Watchdog Timer" name="WDT">
             <register-group caption="Watchdog Timer" name="WDT">
