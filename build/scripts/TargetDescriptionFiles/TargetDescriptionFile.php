@@ -9,6 +9,7 @@ require_once __DIR__ . "/AddressSpace.php";
 require_once __DIR__ . "/PropertyGroup.php";
 require_once __DIR__ . "/Module.php";
 require_once __DIR__ . "/PhysicalInterface.php";
+require_once __DIR__ . "/Signal.php";
 
 class TargetDescriptionFile
 {
@@ -254,6 +255,18 @@ class TargetDescriptionFile
                 if ($registerGroup instanceof RegisterGroup) {
                     $moduleInstance->registerGroupsMappedByName[strtolower($registerGroup->name)] = $registerGroup;
                 }
+            }
+
+            $signalElements = $instanceElement->xpath('signals/signal');
+            foreach ($signalElements as $signalElement) {
+                $signalAttrs = $signalElement->attributes();
+                $signal = new Signal();
+
+                $signal->padName = isset($signalAttrs['pad']) ? $signalAttrs['pad'] : null;
+                $signal->function = isset($signalAttrs['function']) ? $signalAttrs['function'] : null;
+                $signal->index = isset($signalAttrs['index']) ? $this->rawValueToInt($signalAttrs['index']) : null;
+
+                $moduleInstance->signals[] = $signal;
             }
 
             $module->instancesMappedByName[strtolower($moduleInstance->name)] = $moduleInstance;

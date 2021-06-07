@@ -484,6 +484,18 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
+        $portPeripheralModule = $this->peripheralModulesByName['port'] ?? null;
+        if (empty($portPeripheralModule)) {
+            $failures[] = 'PORT peripheral module not found.';
+
+        } else {
+            foreach ($portPeripheralModule->instancesMappedByName as $portInstance) {
+                if (empty($portInstance->signals)) {
+                    $failures[] = 'No signals defined for port ' . $portInstance->name . ' in PORT peripheral module.';
+                }
+            }
+        }
+
         return $failures;
     }
 }
