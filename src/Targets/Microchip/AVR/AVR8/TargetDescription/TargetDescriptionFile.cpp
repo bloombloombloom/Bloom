@@ -23,7 +23,7 @@ TargetDescriptionFile::TargetDescriptionFile(
 ) {
     auto targetSignatureHex = targetSignature.toHex();
     auto mapping = TargetDescriptionFile::getTargetDescriptionMapping();
-    auto qTargetSignatureHex = QString::fromStdString(targetSignatureHex);
+    auto qTargetSignatureHex = QString::fromStdString(targetSignatureHex).toLower();
 
     if (mapping.contains(qTargetSignatureHex)) {
         // We have a match for the target signature.
