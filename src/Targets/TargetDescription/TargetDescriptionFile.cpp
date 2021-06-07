@@ -17,7 +17,11 @@ void TargetDescriptionFile::init(const QString& xmlFilePath) {
 
     file.open(QIODevice::ReadOnly);
     auto xml = QDomDocument();
-    xml.setContent(file.readAll());
+    if (!xml.setContent(file.readAll())) {
+        throw Exception("Failed to parse target description file - please report this error "
+            "to Bloom developers via https://bloom.oscillate.io/report-issue");
+    }
+
     this->init(xml);
 }
 
