@@ -123,15 +123,15 @@ add_executable(Bloom
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
 target_include_directories(Bloom PUBLIC ./)
 
-# Construct JSON mapping of target description files.
+# Copy AVR8 TDFs to build directory and construct JSON mapping of AVR8 target signatures to TDF paths.
 add_custom_command(
     OUTPUT
     ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/TargetDescriptionFiles/AVR/Mapping.json
     DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/CopyAvrPartFilesAndCreateMapping.php
+    ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/Avr8TargetDescriptionFiles.php
     COMMAND echo 'Processing AVR target description files.'
     COMMAND
-    php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/CopyAvrPartFilesAndCreateMapping.php
+    php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/Avr8TargetDescriptionFiles.php
 )
 
 # Compile resources
