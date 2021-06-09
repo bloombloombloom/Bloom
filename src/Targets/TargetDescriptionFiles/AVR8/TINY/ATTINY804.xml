@@ -183,9 +183,6 @@
                         <signal function="IOPORT" group="PIN" index="3" pad="PB3"/>
                     </signals>
                 </instance>
-                <instance name="PORTC">
-                    <register-group address-space="data" name="PORTC" name-in-module="PORT" offset="0x0440"/>
-                </instance>
             </module>
             <module id="I2603" name="PORTMUX">
                 <instance name="PORTMUX">

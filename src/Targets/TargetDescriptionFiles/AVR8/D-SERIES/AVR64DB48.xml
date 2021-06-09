@@ -4332,6 +4332,7 @@
             <pin pad="PF5" position="39"/>
             <pin pad="PF6" position="40"/>
             <pin pad="UPDI" position="41"/>
+            <pin pad="VDD" position="42"/>
             <pin pad="GND2" position="43"/>
             <pin pad="PA0" position="44"/>
             <pin pad="PA1" position="45"/>

@@ -2,21 +2,21 @@
 <target-description-file>
     <variants>
         <variant ordercode="ATtiny13V-10PU" speedmax="10000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="PDIP8" pinout="PDIP8_SOIC8"/>
+                 package="PDIP8" pinout="PDIP_SOIC_8"/>
         <variant ordercode="ATtiny13V-10SU" speedmax="10000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="SOIC8" pinout="PDIP8_SOIC8"/>
+                 package="SOIC8" pinout="PDIP_SOIC_8"/>
         <variant ordercode="ATtiny13V-10SSU" speedmax="10000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="SOIC8" pinout="PDIP8_SOIC8"/>
+                 package="SOIC8" pinout="PDIP_SOIC_8"/>
         <variant ordercode="ATtiny13V-10MU" speedmax="10000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
                  package="MLF20" pinout="MLF20"/>
         <variant ordercode="ATtiny13V-10MMU" speedmax="10000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
                  package="MLF10" pinout="MLF10"/>
         <variant ordercode="ATtiny13-20PU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="PDIP8" pinout="PDIP8_SOIC8"/>
+                 package="PDIP8" pinout="PDIP_SOIC_8"/>
         <variant ordercode="ATtiny13-20SU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="SOIC8" pinout="PDIP8_SOIC8"/>
+                 package="SOIC8" pinout="PDIP_SOIC_8"/>
         <variant ordercode="ATtiny13-20SSU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="SOIC8" pinout="PDIP8_SOIC8"/>
+                 package="SOIC8" pinout="PDIP_SOIC_8"/>
         <variant ordercode="ATtiny13-20MU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
                  package="MLF20" pinout="MLF20"/>
         <variant ordercode="ATtiny13-20MMU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
@@ -634,7 +634,7 @@
         </module>
     </modules>
     <pinouts>
-        <pinout name="PDIP8_SOIC8">
+        <pinout name="PDIP_SOIC_8">
             <pin pad="PB5" position="1"/>
             <pin pad="PB3" position="2"/>
             <pin pad="PB4" position="3"/>
@@ -647,20 +647,34 @@
         <pinout name="MLF20">
             <pin pad="PB5" position="1"/>
             <pin pad="PB3" position="2"/>
+            <pin pad="NC" position="3"/>
+            <pin pad="NC" position="4"/>
             <pin pad="PB4" position="5"/>
+            <pin pad="NC" position="6"/>
+            <pin pad="NC" position="7"/>
+            <pin pad="GND" position="8"/>
+            <pin pad="NC" position="9"/>
+            <pin pad="NC" position="10"/>
             <pin pad="PB0" position="11"/>
             <pin pad="PB1" position="12"/>
+            <pin pad="NC" position="13"/>
             <pin pad="PB2" position="14"/>
             <pin pad="VCC" position="15"/>
-            <pin pad="GND" position="21"/>
+            <pin pad="NC" position="16"/>
+            <pin pad="NC" position="17"/>
+            <pin pad="NC" position="18"/>
+            <pin pad="NC" position="19"/>
+            <pin pad="NC" position="20"/>
         </pinout>
         <pinout name="MLF10">
             <pin pad="PB5" position="1"/>
             <pin pad="PB3" position="2"/>
+            <pin pad="NC" position="3"/>
             <pin pad="PB4" position="4"/>
             <pin pad="GND" position="5"/>
             <pin pad="PB0" position="6"/>
             <pin pad="PB1" position="7"/>
+            <pin pad="NC" position="8"/>
             <pin pad="PB2" position="9"/>
             <pin pad="VCC" position="10"/>
         </pinout>

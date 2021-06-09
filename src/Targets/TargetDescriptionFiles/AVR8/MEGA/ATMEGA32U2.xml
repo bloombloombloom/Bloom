@@ -2,9 +2,9 @@
 <target-description-file>
     <variants>
         <variant ordercode="ATmega32U2-AU" speedmax="16000000" tempmin="-40" tempmax="85" vccmin="2.7" vccmax="5.5"
-                 package="TQFP32" pinout="QUAD"/>
+                 package="TQFP32" pinout="QFP32"/>
         <variant ordercode="ATmega32U2-MU" speedmax="16000000" tempmin="-40" tempmax="85" vccmin="2.7" vccmax="5.5"
-                 package="QFN32" pinout="QUAD"/>
+                 package="QFN32" pinout="QFP32"/>
     </variants>
     <device name="ATmega32U2" architecture="AVR8" family="megaAVR">
         <address-spaces>
@@ -1117,7 +1117,7 @@
         </module>
     </modules>
     <pinouts>
-        <pinout name="QUAD">
+        <pinout name="QFP32">
             <pin pad="XTAL1" position="1"/>
             <pin pad="PC0" position="2"/>
             <pin pad="GND" position="3"/>

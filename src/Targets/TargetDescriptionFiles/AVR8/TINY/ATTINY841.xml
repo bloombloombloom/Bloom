@@ -1194,14 +1194,20 @@
             <pin pad="PA2" position="3"/>
             <pin pad="PA1" position="4"/>
             <pin pad="PA0" position="5"/>
+            <pin pad="NC" position="6"/>
+            <pin pad="NC" position="7"/>
             <pin pad="GND" position="8"/>
             <pin pad="VCC" position="9"/>
+            <pin pad="NC" position="10"/>
             <pin pad="PB0" position="11"/>
             <pin pad="PB1" position="12"/>
             <pin pad="PB3" position="13"/>
             <pin pad="PB2" position="14"/>
             <pin pad="PA7" position="15"/>
             <pin pad="PA6" position="16"/>
+            <pin pad="NC" position="17"/>
+            <pin pad="NC" position="18"/>
+            <pin pad="NC" position="19"/>
             <pin pad="PA5" position="20"/>
         </pinout>
     </pinouts>

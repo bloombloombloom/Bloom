@@ -3,8 +3,6 @@
     <variants>
         <variant ordercode="ATmega48A-AU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP32"
                  package="TQFP32" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega48A-CCU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="UFBGA32"
-                 package="UFBGA32" vccmin="1.8" vccmax="5.5"/>
         <variant ordercode="ATmega48A-MMH" tempmin="-40" tempmax="85" speedmax="20000000" pinout="QFN28" package="QFN28"
                  vccmin="1.8" vccmax="5.5"/>
         <variant ordercode="ATmega48A-MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="QFN32" package="QFN32"
@@ -1280,39 +1278,6 @@
             <pin position="26" pad="PC3"/>
             <pin position="27" pad="PC4"/>
             <pin position="28" pad="PC5"/>
-        </pinout>
-        <pinout name="UFBGA32" caption="UFBGA32">
-            <pin position="B1" pad="PD3"/>
-            <pin position="B2" pad="PD4"/>
-            <pin position="C1" pad="GND"/>
-            <pin position="D1" pad="VDD"/>
-            <pin position="D2" pad="VDD"/>
-            <pin position="E1" pad="PB6"/>
-            <pin position="F1" pad="PB7"/>
-            <pin position="F2" pad="PD5"/>
-            <pin position="E2" pad="PD6"/>
-            <pin position="F3" pad="PD7"/>
-            <pin position="E3" pad="PB0"/>
-            <pin position="F4" pad="PB1"/>
-            <pin position="E4" pad="PB2"/>
-            <pin position="F5" pad="PB3"/>
-            <pin position="F6" pad="PB4"/>
-            <pin position="E6" pad="PB5"/>
-            <pin position="E5" pad="AVCC"/>
-            <pin position="D6" pad="ADC6"/>
-            <pin position="D5" pad="AREF"/>
-            <pin position="C6" pad="GND"/>
-            <pin position="C5" pad="ADC7"/>
-            <pin position="B6" pad="PC0"/>
-            <pin position="A6" pad="PC1"/>
-            <pin position="A5" pad="PC2"/>
-            <pin position="B5" pad="PC3"/>
-            <pin position="A4" pad="PC4"/>
-            <pin position="B4" pad="PC5"/>
-            <pin position="A3" pad="PC6"/>
-            <pin position="B3" pad="PD0"/>
-            <pin position="A2" pad="PD1"/>
-            <pin position="A1" pad="PD2"/>
         </pinout>
     </pinouts>
 </target-description-file>

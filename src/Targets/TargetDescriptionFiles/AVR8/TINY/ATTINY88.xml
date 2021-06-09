@@ -6,13 +6,13 @@
         <variant ordercode="ATtiny88-MMH" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
                  package="QFN28" pinout="QFN28"/>
         <variant ordercode="ATtiny88-PU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="PDIP28" pinout="PDIP"/>
+                 package="PDIP28" pinout="PDIP28"/>
         <variant ordercode="ATtiny88-AU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="TQFP32" pinout="TQFP32_QFN32"/>
+                 package="TQFP32" pinout="TQFP_QFN_32"/>
         <variant ordercode="ATtiny88-CCU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="UFBGA32" pinout="UFBGA"/>
+                 package="UFBGA32" pinout="UFBGA32"/>
         <variant ordercode="ATtiny88-MU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="QFN32" pinout="TQFP32_QFN32"/>
+                 package="QFN32" pinout="TQFP_QFN_32"/>
     </variants>
     <device name="ATtiny88" architecture="AVR8" family="tinyAVR">
         <address-spaces>
@@ -941,7 +941,7 @@
         </module>
     </modules>
     <pinouts>
-        <pinout name="TQFP32_QFN32">
+        <pinout name="TQFP_QFN_32">
             <pin pad="PD3" position="1"/>
             <pin pad="PD4" position="2"/>
             <pin pad="PA2" position="3"/>
@@ -975,7 +975,7 @@
             <pin pad="PD1" position="31"/>
             <pin pad="PD2" position="32"/>
         </pinout>
-        <pinout name="PDIP">
+        <pinout name="PDIP28">
             <pin pad="PC6" position="1"/>
             <pin pad="PD0" position="2"/>
             <pin pad="PD1" position="3"/>
@@ -1035,7 +1035,7 @@
             <pin pad="PD1" position="27"/>
             <pin pad="PD2" position="28"/>
         </pinout>
-        <pinout name="UFBGA">
+        <pinout name="UFBGA32">
             <pin pad="PD2" position="A1"/>
             <pin pad="PD3" position="B1"/>
             <pin pad="GND" position="C1"/>

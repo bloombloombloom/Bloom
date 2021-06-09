@@ -2,13 +2,13 @@
 <target-description-file>
     <variants>
         <variant ordercode="ATmega640V-8AU" speedmax="8000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="TQFP100" pinout="TQFP"/>
+                 package="TQFP100" pinout="TQFP100"/>
         <variant ordercode="ATmega640V-8CU" speedmax="8000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
-                 package="CBGA100" pinout="CBGA"/>
+                 package="CBGA100" pinout="CBGA100"/>
         <variant ordercode="ATmega640-16AU" speedmax="16000000" tempmin="-40" tempmax="85" vccmin="2.7" vccmax="5.5"
-                 package="TQFP100" pinout="TQFP"/>
+                 package="TQFP100" pinout="TQFP100"/>
         <variant ordercode="ATmega640-16CU" speedmax="16000000" tempmin="-40" tempmax="85" vccmin="2.7" vccmax="5.5"
-                 package="CBGA100" pinout="CBGA"/>
+                 package="CBGA100" pinout="CBGA100"/>
     </variants>
     <device name="ATmega640" architecture="AVR8" family="megaAVR">
         <address-spaces>
@@ -1851,7 +1851,7 @@
         </module>
     </modules>
     <pinouts>
-        <pinout name="TQFP">
+        <pinout name="TQFP100">
             <pin pad="PG5" position="1"/>
             <pin pad="PE0" position="2"/>
             <pin pad="PE1" position="3"/>
@@ -1953,7 +1953,7 @@
             <pin pad="GND" position="99"/>
             <pin pad="AVCC" position="100"/>
         </pinout>
-        <pinout name="CBGA">
+        <pinout name="CBGA100">
             <pin pad="GND" position="A1"/>
             <pin pad="AVCC" position="B1"/>
             <pin pad="PE2" position="C1"/>

@@ -999,27 +999,39 @@
             <pin pad="PA1" position="19"/>
             <pin pad="PA0" position="20"/>
         </pinout>
-        <pinout name="QFN_32">
-            <pin pad="PB3" position="2"/>
-            <pin pad="VCC" position="4"/>
-            <pin pad="GND" position="5"/>
-            <pin pad="PB4" position="7"/>
-            <pin pad="PB5" position="8"/>
-            <pin pad="PB6" position="10"/>
-            <pin pad="PB7" position="11"/>
-            <pin pad="PA7" position="13"/>
-            <pin pad="PA6" position="14"/>
-            <pin pad="PA5" position="15"/>
-            <pin pad="PA4" position="17"/>
-            <pin pad="AVCC" position="18"/>
-            <pin pad="AGND" position="21"/>
-            <pin pad="PA3" position="22"/>
-            <pin pad="PA2" position="23"/>
-            <pin pad="PA1" position="25"/>
-            <pin pad="PA0" position="26"/>
-            <pin pad="PB0" position="30"/>
-            <pin pad="PB1" position="31"/>
-            <pin pad="PB2" position="32"/>
+        <pinout name="QFN32">
+            <pin position="1" pad="NC"/>
+            <pin position="2" pad="PB3"/>
+            <pin position="3" pad="NC"/>
+            <pin position="4" pad="VCC"/>
+            <pin position="5" pad="GND"/>
+            <pin position="6" pad="NC"/>
+            <pin position="7" pad="PB4"/>
+            <pin position="8" pad="PB5"/>
+            <pin position="9" pad="NC"/>
+            <pin position="10" pad="PB6"/>
+            <pin position="11" pad="PB7"/>
+            <pin position="12" pad="NC"/>
+            <pin position="13" pad="PA7"/>
+            <pin position="14" pad="PA6"/>
+            <pin position="15" pad="PA5"/>
+            <pin position="16" pad="NC"/>
+            <pin position="17" pad="PA4"/>
+            <pin position="18" pad="AVCC"/>
+            <pin position="19" pad="NC"/>
+            <pin position="20" pad="NC"/>
+            <pin position="21" pad="AGND"/>
+            <pin position="22" pad="PA3"/>
+            <pin position="23" pad="PA2"/>
+            <pin position="24" pad="NC"/>
+            <pin position="25" pad="PA1"/>
+            <pin position="26" pad="PA0"/>
+            <pin position="27" pad="NC"/>
+            <pin position="28" pad="NC"/>
+            <pin position="29" pad="NC"/>
+            <pin position="30" pad="PB0"/>
+            <pin position="31" pad="PB1"/>
+            <pin position="32" pad="PB2"/>
         </pinout>
     </pinouts>
 </target-description-file>
