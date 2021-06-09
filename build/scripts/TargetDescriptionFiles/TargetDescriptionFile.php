@@ -10,10 +10,17 @@ require_once __DIR__ . "/PropertyGroup.php";
 require_once __DIR__ . "/Module.php";
 require_once __DIR__ . "/PhysicalInterface.php";
 require_once __DIR__ . "/Signal.php";
+require_once __DIR__ . "/Pinout.php";
 
 class TargetDescriptionFile
 {
     const ARCHITECTURE_AVR8 = 'AVR8';
+
+    public string $filePath;
+    public ?SimpleXMLElement $xml = null;
+
+    public ?string $targetName = null;
+    public ?string $targetArchitecture = null;
 
     /** @var AddressSpace[] */
     protected array $addressSpacesById = [];
@@ -30,14 +37,11 @@ class TargetDescriptionFile
     /** @var PhysicalInterface[] */
     protected array $physicalInterfacesByName = [];
 
-    public string $filePath;
-    public ?SimpleXMLElement $xml = null;
-
-    public ?string $targetName = null;
-    public ?string $targetArchitecture = null;
-
     /** @var Variant[] */
     public array $variants = [];
+
+    /** @var Pinout[] */
+    public array $pinoutsMappedByName = [];
 
     public function __construct(string $filePath)
     {
@@ -78,6 +82,7 @@ class TargetDescriptionFile
         $this->loadModules();
         $this->loadPeripheralModules();
         $this->loadPhysicalInterfaces();
+        $this->loadPinouts();
     }
 
     protected function rawValueToInt(string $value): ?int
@@ -317,6 +322,50 @@ class TargetDescriptionFile
         }
     }
 
+    private function loadPinouts(): void
+    {
+        $pinoutElements = $this->xml->xpath('pinouts/pinout');
+        foreach ($pinoutElements as $pinoutElement) {
+            $pinoutAttrs = $pinoutElement->attributes();
+            $pinout = new Pinout();
+
+            $pinout->name = isset($pinoutAttrs['name']) ? $pinoutAttrs['name'] : null;
+            $pinout->function = isset($pinoutAttrs['function']) ? $pinoutAttrs['function'] : null;
+
+            if (stristr($pinout->name, Pinout::TYPE_DIP) !== false) {
+                $pinout->type = Pinout::TYPE_DIP;
+
+            } else if (stristr($pinout->name, Pinout::TYPE_SOIC) !== false) {
+                $pinout->type = Pinout::TYPE_SOIC;
+
+            } else if (stristr($pinout->name, Pinout::TYPE_QFN) !== false) {
+                $pinout->type = Pinout::TYPE_QFN;
+
+            } else if (stristr($pinout->name, Pinout::TYPE_BGA) !== false) {
+                $pinout->type = Pinout::TYPE_BGA;
+            }
+
+            // Attempt to extract the number of expected pins for this pinout, from the pinout name
+            $expectedPinCount = filter_var($pinout->name, FILTER_SANITIZE_NUMBER_INT);
+            if (is_numeric($expectedPinCount)) {
+                $pinout->expectedPinCount = (int) $expectedPinCount;
+            }
+
+            $pinElements = $pinoutElement->xpath('pin');
+            foreach ($pinElements as $pinElement) {
+                $pinAttrs = $pinElement->attributes();
+                $pin = new Pin();
+
+                $pin->pad = isset($pinAttrs['pad']) ? $pinAttrs['pad'] : null;
+                $pin->position = isset($pinAttrs['position']) ? $this->rawValueToInt($pinAttrs['position']) : null;
+
+                $pinout->pins[] = $pin;
+            }
+
+            $this->pinoutsMappedByName[strtolower($pinout->name)] = $pinout;
+        }
+    }
+
     public function validate(): array
     {
         $failures = [];
@@ -338,6 +387,34 @@ class TargetDescriptionFile
 
             if (!empty($variantValidationFailures)) {
                 $failures[] = 'Variant validation failures: ' . implode(", ", $variantValidationFailures);
+            }
+        }
+
+        if (empty($this->pinoutsMappedByName)) {
+            $failures[] = 'No pinouts found';
+        }
+
+        foreach ($this->pinoutsMappedByName as $pinout) {
+            if (!is_null($pinout->expectedPinCount)) {
+                if ($pinout->expectedPinCount != count($pinout->pins)) {
+                    $failures[] = 'Pin count (' . count($pinout->pins) . ') for pinout "' . $pinout->name
+                        . '" does not match expected pin count (' . $pinout->expectedPinCount . ')';
+                }
+
+            } else {
+                $failures[] = 'Could not deduce expected pin count for pinout "' . $pinout->name . '"';
+            }
+
+            if (in_array($pinout->type, [Pinout::TYPE_DIP, Pinout::TYPE_QFN, Pinout::TYPE_SOIC])) {
+                foreach ($pinout->pins as $index => $pin) {
+                    if (is_null($pin->position)) {
+                        $failures[] = 'Missing/invalid pin position for pin (index: ' . $index . ').';
+                    }
+
+                    if (is_null($pin->pad)) {
+                        $failures[] = 'Missing/invalid pin pad for pin (index: ' . $index . ').';
+                    }
+                }
             }
         }
 

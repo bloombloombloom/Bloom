@@ -19,7 +19,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     const AVR8_PHYSICAL_INTERFACE_JTAG = 'JTAG';
     const AVR8_PHYSICAL_INTERFACE_PDI = 'PDI';
     const AVR8_PHYSICAL_INTERFACE_UPDI = 'UPDI';
-    const AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE = 'debugWire';
+    const AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE = 'DEBUG_WIRE';
 
     public ?Signature $signature = null;
     public ?string $family = null;
