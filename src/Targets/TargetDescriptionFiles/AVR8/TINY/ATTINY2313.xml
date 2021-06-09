@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant tempmin="0" tempmax="0" speedmax="0" package="" ordercode="standard" vccmin="1.8" vccmax="5.5"/>
+        <variant ordercode="ATtiny2313-20PU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="PDIP20"/>
+        <variant ordercode="ATtiny2313-20SU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="SOIC20"/>
+        <variant ordercode="ATtiny2313-20MUR" tempmin="-40" tempmax="85" pinout="QFN20" package="WQFN20"/>
     </variants>
     <device name="ATtiny2313" architecture="AVR8" family="tinyAVR">
         <address-spaces>
@@ -37,14 +39,38 @@
                 <instance name="PORTB" caption="I/O Port">
                     <register-group name="PORTB" name-in-module="PORTB" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal group="P" function="default" pad="PB0" index="0"/>
+                        <signal group="P" function="default" pad="PB1" index="1"/>
+                        <signal group="P" function="default" pad="PB2" index="2"/>
+                        <signal group="P" function="default" pad="PB3" index="3"/>
+                        <signal group="P" function="default" pad="PB4" index="4"/>
+                        <signal group="P" function="default" pad="PB5" index="5"/>
+                        <signal group="P" function="default" pad="PB6" index="6"/>
+                        <signal group="P" function="default" pad="PB7" index="7"/>
+                    </signals>
                 </instance>
                 <instance name="PORTD" caption="I/O Port">
                     <register-group name="PORTD" name-in-module="PORTD" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal group="P" function="default" pad="PD0" index="0"/>
+                        <signal group="P" function="default" pad="PD1" index="1"/>
+                        <signal group="P" function="default" pad="PD2" index="2"/>
+                        <signal group="P" function="default" pad="PD3" index="3"/>
+                        <signal group="P" function="default" pad="PD4" index="4"/>
+                        <signal group="P" function="default" pad="PD5" index="5"/>
+                        <signal group="P" function="default" pad="PD6" index="6"/>
+                    </signals>
                 </instance>
                 <instance name="PORTA" caption="I/O Port">
                     <register-group name="PORTA" name-in-module="PORTA" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal group="P" function="default" pad="PA0" index="0"/>
+                        <signal group="P" function="default" pad="PA1" index="1"/>
+                        <signal group="P" function="default" pad="PA2" index="2"/>
+                    </signals>
                 </instance>
             </module>
             <module name="TC8">
@@ -779,4 +805,50 @@
             </value-group>
         </module>
     </modules>
+    <pinouts>
+        <pinout name="PDIP_SOIC_20">
+            <pin position="1" pad="PA2"/>
+            <pin position="2" pad="PD0"/>
+            <pin position="3" pad="PD1"/>
+            <pin position="4" pad="PA1"/>
+            <pin position="5" pad="PA0"/>
+            <pin position="6" pad="PD2"/>
+            <pin position="7" pad="PD3"/>
+            <pin position="8" pad="PD4"/>
+            <pin position="9" pad="PD5"/>
+            <pin position="10" pad="GND"/>
+            <pin position="11" pad="PD6"/>
+            <pin position="12" pad="PB0"/>
+            <pin position="13" pad="PB1"/>
+            <pin position="14" pad="PB2"/>
+            <pin position="15" pad="PB3"/>
+            <pin position="16" pad="PB4"/>
+            <pin position="17" pad="PB5"/>
+            <pin position="18" pad="PB6"/>
+            <pin position="19" pad="PB7"/>
+            <pin position="20" pad="VCC"/>
+        </pinout>
+        <pinout name="QFN20">
+            <pin position="1" pad="PD1"/>
+            <pin position="2" pad="PA1"/>
+            <pin position="3" pad="PA0"/>
+            <pin position="4" pad="PD2"/>
+            <pin position="5" pad="PD3"/>
+            <pin position="6" pad="PD4"/>
+            <pin position="7" pad="PD5"/>
+            <pin position="8" pad="GND"/>
+            <pin position="9" pad="PD6"/>
+            <pin position="10" pad="PB0"/>
+            <pin position="11" pad="PB1"/>
+            <pin position="12" pad="PB2"/>
+            <pin position="13" pad="PB3"/>
+            <pin position="14" pad="PB4"/>
+            <pin position="15" pad="PB5"/>
+            <pin position="16" pad="PB6"/>
+            <pin position="17" pad="PB7"/>
+            <pin position="18" pad="VCC"/>
+            <pin position="19" pad="PA2"/>
+            <pin position="20" pad="PD0"/>
+        </pinout>
+    </pinouts>
 </target-description-file>
