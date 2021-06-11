@@ -22,13 +22,13 @@ void PowerDebugger::init() {
         usbHidInterface.init();
     }
 
-    /**
+    /*
      * The Power Debugger EDBG/CMSIS-DAP interface doesn't operate properly when sending commands too quickly.
      *
      * Because of this, we have to enforce a minimum time gap between commands. See comment in
      * CmsisDapInterface class declaration for more info.
      */
-    this->getEdbgInterface().setMinimumCommandTimeGap(35);
+    this->getEdbgInterface().setMinimumCommandTimeGap(std::chrono::milliseconds(35));
 
     // We don't need to claim the CMSISDAP interface here as the HIDAPI will have already done so.
     if (!this->sessionStarted) {

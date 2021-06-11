@@ -35,8 +35,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          * Setting msSendCommandDelay to any value above 0 will enforce an x millisecond gap between each command
          * being sent, where x is the value of msSendCommandDelay.
          */
-        int msSendCommandDelay = 0;
-        long lastCommandSentTimeStamp;
+        std::chrono::milliseconds msSendCommandDelay = std::chrono::milliseconds(0);
+        long lastCommandSentTimeStamp = 0;
 
     public:
         explicit CmsisDapInterface() = default;
@@ -45,16 +45,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
             return this->usbHidInterface;
         }
 
-        void setUsbHidInterface(Usb::HidInterface& usbHidInterface) {
-            this->usbHidInterface = usbHidInterface;
-        }
-
         size_t getUsbHidInputReportSize() {
             return this->usbHidInterface.getInputReportSize();
         }
 
-        void setMinimumCommandTimeGap(int millisecondTimeGap) {
-            this->msSendCommandDelay = millisecondTimeGap;
+        void setMinimumCommandTimeGap(std::chrono::milliseconds commandTimeGap) {
+            this->msSendCommandDelay = commandTimeGap;
         }
 
         /**

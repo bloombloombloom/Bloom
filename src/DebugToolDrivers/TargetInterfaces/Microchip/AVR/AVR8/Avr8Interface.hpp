@@ -94,8 +94,8 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
         /**
          * Should retrieve the AVR8 target signature of the AVR8 target.
          *
-         * This method may invoke stop(), as some interfaces are known to require the target to be in a stopped
-         * state before the signature can be read.
+         * This method may invoke stop(), as the target may be required to be in a halted state before the signature
+         * can be read.
          *
          * @return
          */

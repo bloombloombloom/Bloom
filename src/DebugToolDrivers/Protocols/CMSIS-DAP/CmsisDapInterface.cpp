@@ -11,13 +11,13 @@ using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap;
 using namespace Bloom::Exceptions;
 
 void CmsisDapInterface::sendCommand(const Command& cmsisDapCommand) {
-    if (this->msSendCommandDelay > 0) {
+    if (this->msSendCommandDelay.count() > 0) {
         using namespace std::chrono;
         long now = duration_cast<milliseconds>(high_resolution_clock::now().time_since_epoch()).count();
         long difference = (now - this->lastCommandSentTimeStamp);
 
-        if (difference < this->msSendCommandDelay) {
-            std::this_thread::sleep_for(milliseconds(this->msSendCommandDelay - difference));
+        if (difference < this->msSendCommandDelay.count()) {
+            std::this_thread::sleep_for(milliseconds(this->msSendCommandDelay.count() - difference));
         }
 
         this->lastCommandSentTimeStamp = now;

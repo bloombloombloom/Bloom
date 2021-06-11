@@ -20,7 +20,7 @@ void MplabSnap::init() {
         usbHidInterface.init();
     }
 
-    this->getEdbgInterface().setMinimumCommandTimeGap(35);
+    this->getEdbgInterface().setMinimumCommandTimeGap(std::chrono::milliseconds(35));
 
     // We don't need to claim the CMSISDAP interface here as the HIDAPI will have already done so.
     if (!this->sessionStarted) {

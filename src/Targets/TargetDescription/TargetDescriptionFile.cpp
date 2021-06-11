@@ -29,7 +29,6 @@ void TargetDescriptionFile::init(const QDomDocument& xml) {
     this->xml = xml;
 
     auto device = xml.elementsByTagName("device").item(0).toElement();
-
     if (!device.isElement()) {
         throw TargetDescriptionParsingFailureException("Device element not found.");
     }
@@ -51,9 +50,9 @@ std::string TargetDescriptionFile::getTargetName() const {
 AddressSpace TargetDescriptionFile::generateAddressSpaceFromXml(const QDomElement& xmlElement) {
     if (
         !xmlElement.hasAttribute("id")
-            || !xmlElement.hasAttribute("name")
-            || !xmlElement.hasAttribute("size")
-            || !xmlElement.hasAttribute("start")
+        || !xmlElement.hasAttribute("name")
+        || !xmlElement.hasAttribute("size")
+        || !xmlElement.hasAttribute("start")
     ) {
         throw Exception("Address space element missing id/name/size/start attributes.");
     }
@@ -88,7 +87,7 @@ AddressSpace TargetDescriptionFile::generateAddressSpaceFromXml(const QDomElemen
                 segmentNodes.item(segmentIndex).toElement()
             );
 
-            if (memorySegments.find(segment.type) == memorySegments.end()) {
+            if (!memorySegments.contains(segment.type)) {
                 memorySegments.insert(
                     std::pair<
                         MemorySegmentType,
@@ -110,9 +109,9 @@ AddressSpace TargetDescriptionFile::generateAddressSpaceFromXml(const QDomElemen
 MemorySegment TargetDescriptionFile::generateMemorySegmentFromXml(const QDomElement& xmlElement) {
     if (
         !xmlElement.hasAttribute("type")
-            || !xmlElement.hasAttribute("name")
-            || !xmlElement.hasAttribute("size")
-            || !xmlElement.hasAttribute("start")
+        || !xmlElement.hasAttribute("name")
+        || !xmlElement.hasAttribute("size")
+        || !xmlElement.hasAttribute("start")
     ) {
         throw Exception("Missing type/name/size/start attributes");
     }

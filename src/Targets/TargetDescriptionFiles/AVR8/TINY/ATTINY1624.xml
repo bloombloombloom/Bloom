@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<target-description-file schema-version="4.4">
+<target-description-file>
     <variants>
         <variant ordercode="ATtiny1624-SSFR" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="125"
                  tempmin="-40" vccmax="5.5" vccmin="1.8"/>
@@ -171,9 +171,6 @@
                         <signal function="IOPORT" group="PIN" index="2" pad="PB2"/>
                         <signal function="IOPORT" group="PIN" index="3" pad="PB3"/>
                     </signals>
-                </instance>
-                <instance name="PORTC">
-                    <register-group address-space="data" name="PORTC" name-in-module="PORT" offset="0x0440"/>
                 </instance>
             </module>
             <module id="chip" name="PORTMUX">
