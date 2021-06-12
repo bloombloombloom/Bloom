@@ -39,11 +39,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="572.14046"
-     inkscape:cy="121.65881"
+     inkscape:zoom="0.9899495"
+     inkscape:cx="548.63418"
+     inkscape:cy="133.11151"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer8"
      inkscape:document-rotation="0"
      showgrid="false"
      units="px"
@@ -51,7 +51,16 @@
      inkscape:window-height="1353"
      inkscape:window-x="2560"
      inkscape:window-y="34"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     inkscape:object-paths="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-intersection-paths="true"
+     inkscape:snap-object-midpoints="false"
+     inkscape:snap-midpoints="true"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true" />
   <metadata
      id="metadata4359">
     <rdf:RDF>
@@ -60,7 +69,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -83,8 +92,7 @@
   <g
      inkscape:label="DebugTool"
      inkscape:groupmode="layer"
-     id="layer1"
-     sodipodi:insensitive="true">
+     id="layer1">
     <rect
        style="display:inline;fill:#cbcbcb;fill-opacity:1;stroke:#939393;stroke-width:0.258924;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect1596"
@@ -687,7 +695,7 @@
        ry="0.63495314"
        transform="rotate(-90)" />
     <ellipse
-       style="display:inline;opacity:1;fill:none;fill-opacity:1;stroke:#795000;stroke-width:0.317595;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;opacity:1;fill:none;fill-opacity:1;stroke:#795000;stroke-width:0.3175;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path2085-2-3"
        cx="-49.569691"
        cy="93.464127"
@@ -766,6 +774,17 @@
        rx="0.6349532"
        ry="0.63495314"
        transform="rotate(-90)" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="76.988014"
+       y="78.145767"
+       id="text1292-8-62-1"><tspan
+         sodipodi:role="line"
+         x="76.988014"
+         y="78.145767"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
+         id="tspan2165">Debug Tool</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -1039,6 +1058,28 @@
        style="fill:none;stroke:#3f3f3f;stroke-width:0.150009;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 255.32515,47.168049 h 59.53022"
        id="path3915-1" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="269.73505"
+       y="63.419571"
+       id="text1292-8-6"><tspan
+         sodipodi:role="line"
+         x="269.73505"
+         y="63.419571"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
+         id="tspan1294-8-8">Client (IDE)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333px;line-height:1.25;font-family:sans-serif;display:inline;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="168.35991"
+       y="54.039192"
+       id="text1292-8-6-3"><tspan
+         sodipodi:role="line"
+         x="168.35991"
+         y="54.039192"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
+         id="tspan1285">Bloom</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -1181,100 +1222,94 @@
      id="layer4"
      inkscape:label="Target">
     <rect
-       style="fill:#aeaeae;fill-opacity:1;stroke-width:0.16914"
+       style="fill:#afafaf;fill-opacity:1;stroke-width:0.167134"
        id="rect3447-3"
-       width="19.278688"
-       height="19.278685"
-       x="8.4156485"
-       y="22.639828" />
+       width="19.050001"
+       height="19.050001"
+       x="8.0008259"
+       y="23.653879" />
     <rect
-       style="opacity:1;fill:#3d778c;fill-opacity:1;stroke-width:0.120786"
-       id="rect3462"
-       width="2.6458335"
-       height="2.6458335"
-       x="4.2966809"
-       y="24.099689" />
-    <rect
-       style="opacity:1;fill:#98763f;fill-opacity:1;stroke-width:0.120786"
-       id="rect3462-3"
-       width="2.6458335"
-       height="2.6458335"
-       x="4.2966809"
-       y="28.74785" />
-    <rect
-       style="opacity:1;fill:#aeaeae;fill-opacity:1;stroke-width:0.120786"
-       id="rect3462-6"
-       width="2.6458335"
-       height="2.6458335"
-       x="4.2966809"
-       y="33.396023" />
-    <rect
-       style="opacity:1;fill:#3d778c;fill-opacity:1;stroke-width:0.120786"
-       id="rect3462-7"
-       width="2.6458335"
-       height="2.6458335"
-       x="4.2966809"
-       y="38.044182" />
-    <rect
-       style="opacity:1;fill:#aeaeae;fill-opacity:1;stroke-width:0.120786"
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
        id="rect3462-2-67"
-       width="2.6458335"
-       height="2.6458335"
-       x="28.888275"
-       y="24.099689" />
+       width="3.175"
+       height="2.6596644"
+       x="28.109142"
+       y="25.638294" />
     <rect
-       style="opacity:1;fill:#3d778c;fill-opacity:1;stroke-width:0.120786"
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
        id="rect3462-3-7-5"
-       width="2.6458335"
-       height="2.6458335"
-       x="28.888275"
-       y="28.74785" />
+       width="3.175"
+       height="2.6596644"
+       x="28.109142"
+       y="29.77882" />
     <rect
-       style="opacity:1;fill:#3d778c;fill-opacity:1;stroke-width:0.120786"
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
        id="rect3462-6-0-35"
-       width="2.6458335"
-       height="2.6458335"
-       x="28.888275"
-       y="33.396023" />
+       width="3.175"
+       height="2.6596644"
+       x="28.109142"
+       y="33.919353" />
     <rect
-       style="opacity:1;fill:#aeaeae;fill-opacity:1;stroke-width:0.120786"
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
        id="rect3462-7-9"
-       width="2.6458335"
-       height="2.6458335"
-       x="28.888275"
-       y="38.044182" />
+       width="3.175"
+       height="2.6596644"
+       x="28.109142"
+       y="38.059875" />
+    <rect
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
+       id="rect3462-2-67-3"
+       width="3.175"
+       height="2.6596644"
+       x="3.7674885"
+       y="25.638294" />
+    <rect
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
+       id="rect3462-3-7-5-6"
+       width="3.175"
+       height="2.6596644"
+       x="3.7674885"
+       y="29.77882" />
+    <rect
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
+       id="rect3462-6-0-35-7"
+       width="3.175"
+       height="2.6596644"
+       x="3.7674885"
+       y="33.919353" />
+    <rect
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
+       id="rect3462-7-9-5"
+       width="3.175"
+       height="2.6596644"
+       x="3.7674885"
+       y="38.059875" />
+    <ellipse
+       style="fill:#3c3f41;fill-opacity:1;stroke:#919191;stroke-width:0.264583;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path1331"
+       cx="10.448216"
+       cy="26.101276"
+       rx="0.84849143"
+       ry="0.84849131" />
     <path
-       style="opacity:1;fill:#aeaeae;fill-opacity:1;stroke-width:0.120786"
-       d="M 12.407,43.11246 H 9.7611663 v 2.645833 H 12.407 Z"
-       id="path3628" />
+       id="rect3462-2-67-3-7"
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
+       d="m 25.066391,43.762212 h -2.659785 v 3.175 h 2.659785 z m -4.140832,0 h -2.65927 v 3.175 h 2.65927 z m -4.140317,0 h -2.659785 v 3.175 h 2.659785 z m -4.140314,0 H 9.9851403 v 3.175 h 2.6597877 z" />
     <path
-       style="opacity:1;fill:#46484a;fill-opacity:1;stroke-width:0.120786"
-       d="m 17.055159,43.11246 h -2.645833 v 2.645833 h 2.645833 z"
-       id="path3626" />
-    <path
-       style="opacity:1;fill:#883e42;fill-opacity:1;stroke-width:0.120786"
-       d="m 21.703319,43.11246 h -2.645833 v 2.645833 h 2.645833 z"
-       id="path3624" />
-    <path
-       style="opacity:1;fill:#aeaeae;fill-opacity:1;stroke-width:0.120786"
-       d="m 26.351479,43.11246 h -2.645833 v 2.645833 h 2.645833 z"
-       id="rect3462-2-6" />
-    <path
-       style="opacity:1;fill:#98763f;fill-opacity:1;stroke-width:0.120786"
-       d="M 12.407,18.520834 H 9.7611663 v 2.645833 H 12.407 Z"
-       id="path3638" />
-    <path
-       style="opacity:1;fill:#aeaeae;fill-opacity:1;stroke-width:0.120786"
-       d="m 17.055159,18.520834 h -2.645833 v 2.645833 h 2.645833 z"
-       id="path3636" />
-    <path
-       style="opacity:1;fill:#98763f;fill-opacity:1;stroke-width:0.120786"
-       d="m 21.703319,18.520834 h -2.645833 v 2.645833 h 2.645833 z"
-       id="path3634" />
-    <path
-       style="opacity:1;fill:#aeaeae;fill-opacity:1;stroke-width:0.120786"
-       d="m 26.351479,18.520834 h -2.645833 v 2.645833 h 2.645833 z"
-       id="rect3462-2-6-1" />
+       id="rect3462-2-67-3-7-6"
+       style="opacity:1;fill:#afafaf;fill-opacity:1;stroke-width:0.132659"
+       d="m 25.066392,19.420545 h -2.659786 v 3.175 h 2.659786 z m -4.140832,0 h -2.659271 v 3.175 h 2.659271 z m -4.140318,0 h -2.659785 v 3.175 h 2.659785 z m -4.140314,0 H 9.9851403 v 3.175 h 2.6597877 z" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="12.185435"
+       y="52.901978"
+       id="text1292-8-62"><tspan
+         sodipodi:role="line"
+         x="12.185435"
+         y="52.901978"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
+         id="tspan2125">Target</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -1294,72 +1329,39 @@
        style="font-style:normal;font-weight:normal;font-size:5.29167px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1286);fill:#000000;fill-opacity:1;stroke:none;" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:3.70417px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="132.92223"
-       y="24.669701"
+       style="font-style:normal;font-weight:normal;font-size:4.23333px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="133.28604"
+       y="23.547817"
        id="text1292"><tspan
          sodipodi:role="line"
-         x="132.92223"
-         y="24.669701"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.70417px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
+         x="133.28604"
+         y="23.547817"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
          id="tspan1294">TargetController</tspan><tspan
          sodipodi:role="line"
-         x="132.92223"
-         y="29.336086"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.70417px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
+         x="133.28604"
+         y="28.880821"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
          id="tspan1316">Debug Tool Driver</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:3.70417px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="213.71689"
-       y="24.669752"
+       style="font-style:normal;font-weight:normal;font-size:4.23333px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="214.68929"
+       y="24.474916"
        id="text1292-8"><tspan
          sodipodi:role="line"
-         x="213.71689"
-         y="24.669752"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.70417px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
+         x="214.68929"
+         y="24.474916"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
          id="tspan1294-8">DebugServer</tspan><tspan
          sodipodi:role="line"
-         x="213.71689"
-         y="29.336138"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.70417px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
+         x="214.68929"
+         y="29.80792"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';text-align:center;text-anchor:middle;fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
          id="tspan2169">GDB RSP</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:3.70417px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="271.95471"
-       y="64.005486"
-       id="text1292-8-6"><tspan
-         sodipodi:role="line"
-         x="271.95471"
-         y="64.005486"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.70417px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
-         id="tspan1294-8-8">Client (IDE)</tspan></text>
     <path
        style="fill:none;stroke:#7c7c7c;stroke-width:0.290241px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 36.046654,33.178879 H 63.396262"
        id="path2104" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:3.70417px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="13.761266"
-       y="51.903236"
-       id="text1292-8-62"><tspan
-         sodipodi:role="line"
-         x="13.761266"
-         y="51.903236"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.70417px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
-         id="tspan2125">Target</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:3.70417px;line-height:1.25;font-family:sans-serif;fill:#eaeaea;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="78.480011"
-       y="78.344849"
-       id="text1292-8-62-1"><tspan
-         sodipodi:role="line"
-         x="78.480011"
-         y="78.344849"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.70417px;font-family:'Source Sans Pro';-inkscape-font-specification:'Source Sans Pro';fill:#eaeaea;fill-opacity:1;stroke-width:0.264583"
-         id="tspan2165">Debug Tool</tspan></text>
   </g>
 </svg>
