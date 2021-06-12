@@ -489,8 +489,12 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'PORT peripheral module not found.';
 
         } else {
-            foreach ($portPeripheralModule->instancesMappedByName as $portInstance) {
-                if (empty($portInstance->signals)) {
+            foreach ($portPeripheralModule->instancesMappedByName as $portName => $portInstance) {
+                if (
+                    strlen($portName) == 5
+                    && strpos($portName, "port") === 0
+                    && empty($portInstance->signals)
+                ) {
                     $failures[] = 'No signals defined for port ' . $portInstance->name . ' in PORT peripheral module.';
                 }
             }
