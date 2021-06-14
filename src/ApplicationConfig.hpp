@@ -11,8 +11,8 @@ namespace Bloom
      * Currently, all user configuration is stored in a JSON file (bloom.json), in the user's project directory.
      *
      * The JSON config file should define debugging environment objects. A debugging environment object is just
-     * a user defined JSON object that holds parameters relating to a specific debugging environment (like the
-     * name of the DebugTool, Target configuration and any debug server config). Because a config file
+     * a user defined JSON object that holds parameters relating to a specific debugging environment (e.g config params
+     * for the DebugTool, Target configuration and any debug server config). Because a config file
      * can define multiple debugging environments, each object should be assigned a key in the config file. We use this
      * key to allow users to select different debugging environments between debugging sessions.
      *
