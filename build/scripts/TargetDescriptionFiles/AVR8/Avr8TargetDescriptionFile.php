@@ -489,13 +489,21 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'PORT peripheral module not found.';
 
         } else {
+            $portModule = $this->modulesByName['port'];
             foreach ($portPeripheralModule->instancesMappedByName as $portName => $portInstance) {
-                if (
-                    strlen($portName) == 5
-                    && strpos($portName, "port") === 0
-                    && empty($portInstance->signals)
-                ) {
-                    $failures[] = 'No signals defined for port ' . $portInstance->name . ' in PORT peripheral module.';
+                if (strlen($portName) === 5 && strpos($portName, "port") === 0) {
+                    $portSuffix = substr($portName, strlen($portName) - 1, 1);
+                    if (empty($portInstance->signals)) {
+                        $failures[] = 'No signals defined for port ' . $portInstance->name . ' in PORT peripheral module.';
+                    }
+
+                    if (empty($portModule->registerGroupsMappedByName['port' . $portSuffix])) {
+
+                        if (empty($portModule->registerGroupsMappedByName['port']->registersMappedByName['dir'])) {
+                            $failures[] = 'Could not find PORT register group in PORT module, for port '
+                                . $portName . ', using suffix ' . $portSuffix;
+                        }
+                    }
                 }
             }
         }
