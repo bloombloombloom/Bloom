@@ -999,7 +999,7 @@
             <pin pad="PA1" position="19"/>
             <pin pad="PA0" position="20"/>
         </pinout>
-        <pinout name="QFN32">
+        <pinout name="QFN_32">
             <pin position="1" pad="NC"/>
             <pin position="2" pad="PB3"/>
             <pin position="3" pad="NC"/>

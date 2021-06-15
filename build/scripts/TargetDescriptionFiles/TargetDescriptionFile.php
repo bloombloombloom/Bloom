@@ -388,6 +388,10 @@ class TargetDescriptionFile
             if (!empty($variantValidationFailures)) {
                 $failures[] = 'Variant validation failures: ' . implode(", ", $variantValidationFailures);
             }
+
+            if (empty($this->pinoutsMappedByName[strtolower($variant->pinout)])) {
+                $failures[] = 'Pinout ("' . $variant->pinout . '") for variant "' . $variant->name . '" not found.';
+            }
         }
 
         if (empty($this->pinoutsMappedByName)) {
