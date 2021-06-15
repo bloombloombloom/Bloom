@@ -1078,7 +1078,7 @@
     </modules>
     <pinouts>
         <pinout name="QFP_QFN_64">
-            <pin pad="DNC" position="1"/>
+            <pin pad="NC" position="1"/>
             <pin pad="PE0" position="2"/>
             <pin pad="PE1" position="3"/>
             <pin pad="PE2" position="4"/>
