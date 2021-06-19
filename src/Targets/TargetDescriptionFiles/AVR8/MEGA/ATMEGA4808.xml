@@ -184,7 +184,7 @@
                         <signal function="IOPORT" group="PIN" index="7" pad="PA7"/>
                     </signals>
                 </instance>
-                <instance name="PORTB">
+                <instance name="MISSING_PORTB">
                     <register-group address-space="data" name="PORTB" name-in-module="PORT" offset="0x0420"/>
                 </instance>
                 <instance name="PORTC">
@@ -209,7 +209,7 @@
                         <signal function="IOPORT" group="PIN" index="7" pad="PD7"/>
                     </signals>
                 </instance>
-                <instance name="PORTE">
+                <instance name="MISSING_PORTE">
                     <register-group address-space="data" name="PORTE" name-in-module="PORT" offset="0x0480"/>
                 </instance>
                 <instance name="PORTF">

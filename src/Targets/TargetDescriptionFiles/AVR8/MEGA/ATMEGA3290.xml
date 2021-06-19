@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant tempmin="0" tempmax="0" speedmax="0" package="" ordercode="standard" vccmin="1.8" vccmax="5.5"/>
+        <variant ordercode="ATmega3290-16AU" package="TQFP100" pinout="QFP100" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="ATmega3290" architecture="AVR8" family="megaAVR">
         <address-spaces>
@@ -81,38 +81,125 @@
                 <instance name="PORTA" caption="I/O Port">
                     <register-group name="PORTA" name-in-module="PORTA" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal function="PORTA" group="P" index="0" pad="PA0"/>
+                        <signal function="PORTA" group="P" index="1" pad="PA1"/>
+                        <signal function="PORTA" group="P" index="2" pad="PA2"/>
+                        <signal function="PORTA" group="P" index="3" pad="PA3"/>
+                        <signal function="PORTA" group="P" index="4" pad="PA4"/>
+                        <signal function="PORTA" group="P" index="5" pad="PA5"/>
+                        <signal function="PORTA" group="P" index="6" pad="PA6"/>
+                        <signal function="PORTA" group="P" index="7" pad="PA7"/>
+                    </signals>
                 </instance>
                 <instance name="PORTB" caption="I/O Port">
                     <register-group name="PORTB" name-in-module="PORTB" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal function="PORTB" group="P" index="0" pad="PB0"/>
+                        <signal function="PORTB" group="P" index="1" pad="PB1"/>
+                        <signal function="PORTB" group="P" index="2" pad="PB2"/>
+                        <signal function="PORTB" group="P" index="3" pad="PB3"/>
+                        <signal function="PORTB" group="P" index="4" pad="PB4"/>
+                        <signal function="PORTB" group="P" index="5" pad="PB5"/>
+                        <signal function="PORTB" group="P" index="6" pad="PB6"/>
+                        <signal function="PORTB" group="P" index="7" pad="PB7"/>
+                    </signals>
                 </instance>
                 <instance name="PORTC" caption="I/O Port">
                     <register-group name="PORTC" name-in-module="PORTC" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal function="PORTC" group="P" index="0" pad="PC0"/>
+                        <signal function="PORTC" group="P" index="1" pad="PC1"/>
+                        <signal function="PORTC" group="P" index="2" pad="PC2"/>
+                        <signal function="PORTC" group="P" index="3" pad="PC3"/>
+                        <signal function="PORTC" group="P" index="4" pad="PC4"/>
+                        <signal function="PORTC" group="P" index="5" pad="PC5"/>
+                        <signal function="PORTC" group="P" index="6" pad="PC6"/>
+                        <signal function="PORTC" group="P" index="7" pad="PC7"/>
+                    </signals>
                 </instance>
                 <instance name="PORTD" caption="I/O Port">
                     <register-group name="PORTD" name-in-module="PORTD" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal function="PORTD" group="P" index="0" pad="PD0"/>
+                        <signal function="PORTD" group="P" index="1" pad="PD1"/>
+                        <signal function="PORTD" group="P" index="2" pad="PD2"/>
+                        <signal function="PORTD" group="P" index="3" pad="PD3"/>
+                        <signal function="PORTD" group="P" index="4" pad="PD4"/>
+                        <signal function="PORTD" group="P" index="5" pad="PD5"/>
+                        <signal function="PORTD" group="P" index="6" pad="PD6"/>
+                        <signal function="PORTD" group="P" index="7" pad="PD7"/>
+                    </signals>
                 </instance>
                 <instance name="PORTE" caption="I/O Port">
                     <register-group name="PORTE" name-in-module="PORTE" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal function="PORTE" group="P" index="0" pad="PE0"/>
+                        <signal function="PORTE" group="P" index="1" pad="PE1"/>
+                        <signal function="PORTE" group="P" index="2" pad="PE2"/>
+                        <signal function="PORTE" group="P" index="3" pad="PE3"/>
+                        <signal function="PORTE" group="P" index="4" pad="PE4"/>
+                        <signal function="PORTE" group="P" index="5" pad="PE5"/>
+                        <signal function="PORTE" group="P" index="6" pad="PE6"/>
+                        <signal function="PORTE" group="P" index="7" pad="PE7"/>
+                    </signals>
                 </instance>
                 <instance name="PORTF" caption="I/O Port">
                     <register-group name="PORTF" name-in-module="PORTF" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal function="PORTF" group="P" index="0" pad="PF0"/>
+                        <signal function="PORTF" group="P" index="1" pad="PF1"/>
+                        <signal function="PORTF" group="P" index="2" pad="PF2"/>
+                        <signal function="PORTF" group="P" index="3" pad="PF3"/>
+                        <signal function="PORTF" group="P" index="4" pad="PF4"/>
+                        <signal function="PORTF" group="P" index="5" pad="PF5"/>
+                        <signal function="PORTF" group="P" index="6" pad="PF6"/>
+                        <signal function="PORTF" group="P" index="7" pad="PF7"/>
+                    </signals>
                 </instance>
                 <instance name="PORTG" caption="I/O Port">
                     <register-group name="PORTG" name-in-module="PORTG" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal function="PORTG" group="P" index="0" pad="PG0"/>
+                        <signal function="PORTG" group="P" index="1" pad="PG1"/>
+                        <signal function="PORTG" group="P" index="2" pad="PG2"/>
+                        <signal function="PORTG" group="P" index="3" pad="PG3"/>
+                        <signal function="PORTG" group="P" index="4" pad="PG4"/>
+                        <signal function="PORTG" group="P" index="5" pad="PG5"/>
+                    </signals>
                 </instance>
                 <instance name="PORTH" caption="I/O Port">
                     <register-group name="PORTH" name-in-module="PORTH" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal function="PORTH" group="P" index="0" pad="PH0"/>
+                        <signal function="PORTH" group="P" index="1" pad="PH1"/>
+                        <signal function="PORTH" group="P" index="2" pad="PH2"/>
+                        <signal function="PORTH" group="P" index="3" pad="PH3"/>
+                        <signal function="PORTH" group="P" index="4" pad="PH4"/>
+                        <signal function="PORTH" group="P" index="5" pad="PH5"/>
+                        <signal function="PORTH" group="P" index="6" pad="PH6"/>
+                        <signal function="PORTH" group="P" index="7" pad="PH7"/>
+                    </signals>
                 </instance>
                 <instance name="PORTJ" caption="I/O Port">
                     <register-group name="PORTJ" name-in-module="PORTJ" offset="0x00" address-space="data"
                                     caption="I/O Port"/>
+                    <signals>
+                        <signal function="PORTJ" group="P" index="0" pad="PJ0"/>
+                        <signal function="PORTJ" group="P" index="1" pad="PJ1"/>
+                        <signal function="PORTJ" group="P" index="2" pad="PJ2"/>
+                        <signal function="PORTJ" group="P" index="3" pad="PJ3"/>
+                        <signal function="PORTJ" group="P" index="4" pad="PJ4"/>
+                        <signal function="PORTJ" group="P" index="5" pad="PJ5"/>
+                        <signal function="PORTJ" group="P" index="6" pad="PJ6"/>
+                    </signals>
                 </instance>
             </module>
             <module name="AC">
@@ -1124,4 +1211,108 @@
             </value-group>
         </module>
     </modules>
+    <pinouts>
+        <pinout name="QFP100">
+            <pin pad="LCDCAP" position="1"/>
+            <pin pad="PE0" position="2"/>
+            <pin pad="PE1" position="3"/>
+            <pin pad="PE2" position="4"/>
+            <pin pad="PE3" position="5"/>
+            <pin pad="PE4" position="6"/>
+            <pin pad="PE5" position="7"/>
+            <pin pad="PE6" position="8"/>
+            <pin pad="PE7" position="9"/>
+            <pin pad="VCC" position="10"/>
+            <pin pad="GND" position="11"/>
+            <pin pad="NC" position="12"/>
+            <pin pad="PJ0" position="13"/>
+            <pin pad="PJ1" position="14"/>
+            <pin pad="NC" position="15"/>
+            <pin pad="NC" position="16"/>
+            <pin pad="NC" position="17"/>
+            <pin pad="NC" position="18"/>
+            <pin pad="PB0" position="19"/>
+            <pin pad="PB1" position="20"/>
+            <pin pad="PB2" position="21"/>
+            <pin pad="PB3" position="22"/>
+            <pin pad="PB4" position="23"/>
+            <pin pad="PB5" position="24"/>
+            <pin pad="PB6" position="25"/>
+            <pin pad="PB7" position="26"/>
+            <pin pad="NC" position="27"/>
+            <pin pad="PG3" position="28"/>
+            <pin pad="PG4" position="29"/>
+            <pin pad="PG5" position="30"/>
+            <pin pad="VCC" position="31"/>
+            <pin pad="GND" position="32"/>
+            <pin pad="XTAL2" position="33"/>
+            <pin pad="XTAL1" position="34"/>
+            <pin pad="NC" position="35"/>
+            <pin pad="NC" position="36"/>
+            <pin pad="PJ2" position="37"/>
+            <pin pad="PJ3" position="38"/>
+            <pin pad="PJ4" position="39"/>
+            <pin pad="PJ5" position="40"/>
+            <pin pad="PJ6" position="41"/>
+            <pin pad="NC" position="42"/>
+            <pin pad="PD0" position="43"/>
+            <pin pad="PD1" position="44"/>
+            <pin pad="PD2" position="45"/>
+            <pin pad="PD3" position="46"/>
+            <pin pad="PD4" position="47"/>
+            <pin pad="PD5" position="48"/>
+            <pin pad="PD6" position="49"/>
+            <pin pad="PD7" position="50"/>
+            <pin pad="PG0" position="51"/>
+            <pin pad="PG1" position="52"/>
+            <pin pad="PC0" position="53"/>
+            <pin pad="PC1" position="54"/>
+            <pin pad="PC2" position="55"/>
+            <pin pad="PC3" position="56"/>
+            <pin pad="PC4" position="57"/>
+            <pin pad="PC5" position="58"/>
+            <pin pad="NC" position="59"/>
+            <pin pad="NC" position="60"/>
+            <pin pad="NC" position="61"/>
+            <pin pad="NC" position="62"/>
+            <pin pad="PH0" position="63"/>
+            <pin pad="PH1" position="64"/>
+            <pin pad="PH2" position="65"/>
+            <pin pad="PH3" position="66"/>
+            <pin pad="NC" position="67"/>
+            <pin pad="PC6" position="68"/>
+            <pin pad="PC7" position="69"/>
+            <pin pad="PG2" position="70"/>
+            <pin pad="PA7" position="71"/>
+            <pin pad="PA6" position="72"/>
+            <pin pad="PA5" position="73"/>
+            <pin pad="PA4" position="74"/>
+            <pin pad="PA3" position="75"/>
+            <pin pad="PA2" position="76"/>
+            <pin pad="PA1" position="77"/>
+            <pin pad="PA0" position="78"/>
+            <pin pad="NC" position="79"/>
+            <pin pad="VCC" position="80"/>
+            <pin pad="GND" position="81"/>
+            <pin pad="NC" position="82"/>
+            <pin pad="NC" position="83"/>
+            <pin pad="PH4" position="84"/>
+            <pin pad="PH5" position="85"/>
+            <pin pad="PH6" position="86"/>
+            <pin pad="PH7" position="87"/>
+            <pin pad="NC" position="88"/>
+            <pin pad="NC" position="89"/>
+            <pin pad="PF7" position="90"/>
+            <pin pad="PF6" position="91"/>
+            <pin pad="PF5" position="92"/>
+            <pin pad="PF4" position="93"/>
+            <pin pad="PF3" position="94"/>
+            <pin pad="PF2" position="95"/>
+            <pin pad="PF1" position="96"/>
+            <pin pad="PF0" position="97"/>
+            <pin pad="AREF" position="98"/>
+            <pin pad="AGND" position="99"/>
+            <pin pad="AVCC" position="100"/>
+        </pinout>
+    </pinouts>
 </target-description-file>
