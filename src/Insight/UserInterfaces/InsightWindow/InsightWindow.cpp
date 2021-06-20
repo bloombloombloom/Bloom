@@ -220,15 +220,18 @@ void InsightWindow::deactivate() {
 }
 
 bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
-    if (variant.package == TargetPackage::DIP) {
-        // All DIP variants must have a pin count that is a multiple of two
+    if (variant.package == TargetPackage::DIP
+        || variant.package == TargetPackage::SOIC
+        || variant.package == TargetPackage::SSOP
+    ) {
+        // All DIP, SOIC and SSOP variants must have a pin count that is a multiple of two
         if (variant.pinDescriptorsByNumber.size() % 2 == 0) {
             return true;
         }
     }
 
-    if (variant.package == TargetPackage::QFP) {
-        // All QFP variants must have a pin count that is a multiple of four
+    if (variant.package == TargetPackage::QFP || variant.package == TargetPackage::QFN) {
+        // All QFP and QFN variants must have a pin count that is a multiple of four
         if (variant.pinDescriptorsByNumber.size() % 4 == 0) {
             return true;
         }
@@ -256,14 +259,17 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
     this->selectedVariant = variant;
     this->variantMenu->setTitle(QString::fromStdString(variant->name + " (" + variant->packageName + ")"));
 
-    if (variant->package == TargetPackage::DIP) {
+    if (variant->package == TargetPackage::DIP
+        || variant->package == TargetPackage::SOIC
+        || variant->package == TargetPackage::SSOP
+    ) {
         this->targetPackageWidget = new InsightTargetWidgets::Dip::DualInlinePackageWidget(
             *variant,
             this,
             this->ioContainerWidget
         );
 
-    } else if (variant->package == TargetPackage::QFP) {
+    } else if (variant->package == TargetPackage::QFP || variant->package == TargetPackage::QFN) {
         this->targetPackageWidget = new InsightTargetWidgets::Qfp::QuadFlatPackageWidget(
             *variant,
             this,

@@ -245,6 +245,9 @@ void Avr8::loadTargetVariants() {
 
         } else if (tdVariant.package.find("SOIC") == 0) {
             targetVariant.package = TargetPackage::SOIC;
+
+        } else if (tdVariant.package.find("SSOP") == 0) {
+            targetVariant.package = TargetPackage::SSOP;
         }
 
         if (!tdPinoutsByName.contains(tdVariant.pinoutName)) {

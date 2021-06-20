@@ -23,7 +23,7 @@ namespace Bloom::Targets
         DIP,
 
         /**
-         * Small outline integrated circuit (SOIC) package.
+         * "Small outline integrated circuit" package (SOIC).
          *
          * Because of the similarities between SOIC and DIP, Insight treats SOIC packages as DIP packages. That is,
          * it uses the same package widget.
@@ -31,7 +31,17 @@ namespace Bloom::Targets
         SOIC,
 
         /**
+         * "Shrink small outline" package (SSOP)
+         *
+         * Because of the similarities between this and DIP, Insight treats SSOP packages as DIP packages. That is,
+         * it uses the same package widget.
+         */
+        SSOP,
+
+        /**
          * Quad flat no-lead (QFN) package
+         *
+         * Because of the similarities between this and QFP, Insight treats QFN packages as QFP.
          */
         QFN,
     };
