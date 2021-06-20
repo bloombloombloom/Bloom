@@ -53,5 +53,12 @@ namespace Bloom::Targets
         std::string packageName;
         TargetPackage package = TargetPackage::UNKNOWN;
         std::map<int, TargetPinDescriptor> pinDescriptorsByNumber;
+
+        bool operator == (const TargetVariant& variant) const {
+            return this->name == variant.name
+                && this->packageName == variant.packageName
+                && this->package == variant.package
+                && this->pinDescriptorsByNumber == variant.pinDescriptorsByNumber;
+        }
     };
 }

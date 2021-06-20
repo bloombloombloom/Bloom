@@ -19,6 +19,7 @@ using Bloom::Targets::TargetState;
 using Bloom::Targets::TargetPinState;
 using Bloom::Targets::TargetVariant;
 using Bloom::Targets::TargetPackage;
+using Bloom::Targets::TargetPinDescriptor;
 
 void InsightWindow::init(
     QApplication& application,
@@ -126,7 +127,40 @@ void InsightWindow::activate() {
 
     this->supportedVariantsByName.clear();
 
+    /*
+     * We don't want to present the user with duplicate target variants.
+     *
+     * In the context of the Insight window, a variant that doesn't differ in package type or pinout
+     * configuration is considered a duplicate.
+     */
+    auto processedVariants = std::vector<TargetVariant>();
+    auto isDuplicateVariant = [&processedVariants] (const TargetVariant& variantA) {
+        return std::ranges::any_of(
+            processedVariants.begin(),
+            processedVariants.end(),
+            [&variantA, &processedVariants] (const TargetVariant& variantB) {
+                if (variantA.package != variantB.package) {
+                    return false;
+                }
+
+                if (variantA.pinDescriptorsByNumber.size() != variantB.pinDescriptorsByNumber.size()) {
+                    return false;
+                }
+
+                if (variantA.pinDescriptorsByNumber != variantB.pinDescriptorsByNumber) {
+                    return false;
+                }
+
+                return true;
+            }
+        );
+    };
+
     for (const auto& targetVariant: this->targetDescriptor.variants) {
+        if (isDuplicateVariant(targetVariant)) {
+            continue;
+        }
+
         auto variantAction = new QAction(this->variantMenu);
         variantAction->setText(
             QString::fromStdString(targetVariant.name + " (" + targetVariant.packageName + ")")
@@ -152,6 +186,7 @@ void InsightWindow::activate() {
         }
 
         this->variantMenu->addAction(variantAction);
+        processedVariants.push_back(targetVariant);
     }
 
     this->variantMenu->setEnabled(true);

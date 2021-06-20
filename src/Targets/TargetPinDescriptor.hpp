@@ -25,6 +25,16 @@ namespace Bloom::Targets
         std::vector<std::string> functions;
 
         TargetPinType type = TargetPinType::UNKNOWN;
+
+        bool operator == (const TargetPinDescriptor& pinDescriptor) const {
+            return this->number == pinDescriptor.number
+                && this->supportsGpio == pinDescriptor.supportsGpio
+                && this->name == pinDescriptor.name
+                && this->padName == pinDescriptor.padName
+                && this->functions == pinDescriptor.functions
+                && this->type == pinDescriptor.type
+            ;
+        }
     };
 
     struct TargetPinState
