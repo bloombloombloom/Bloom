@@ -1,25 +1,21 @@
 #include <QPainter>
 #include <QLayout>
-#include <cmath>
 #include <QEvent>
 #include <QMenu>
 #include <QContextMenuEvent>
 
 #include "PinBodyWidget.hpp"
 #include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::InsightTargetWidgets::Dip;
 using namespace Bloom::Targets;
-using namespace Bloom::Exceptions;
 
 void PinBodyWidget::paintEvent(QPaintEvent* event) {
     auto painter = QPainter(this);
     this->drawWidget(painter);
 }
 
-bool PinBodyWidget::event(QEvent* event)
-{
+bool PinBodyWidget::event(QEvent* event) {
     if (this->isEnabled() && this->pinState.has_value() && this->pinState->ioDirection == TargetPinState::IoDirection::OUTPUT) {
         switch (event->type()) {
             case QEvent::Enter: {

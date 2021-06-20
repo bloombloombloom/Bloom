@@ -28,7 +28,7 @@ namespace Bloom::InsightTargetWidgets::Qfp
         BodyWidget* bodyWidget = nullptr;
 
     protected:
-        void paintEvent(QPaintEvent* event);
+        void paintEvent(QPaintEvent* event) override;
         void drawWidget(QPainter& painter);
 
     public:

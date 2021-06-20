@@ -32,7 +32,6 @@ void BodyWidget::drawWidget(QPainter& painter) {
     painter.setPen(Qt::PenStyle::NoPen);
     painter.setBrush(targetBodyColor);
     auto parentContainerWidth = parentWidget->width();
-//    this->setFixedSize(parentContainerWidth, parentContainerHeight);
     auto targetBodyHeight = 150;
     auto targetBodyWidth = parentContainerWidth;
 

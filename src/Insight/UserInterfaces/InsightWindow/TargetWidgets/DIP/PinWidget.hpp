@@ -19,12 +19,8 @@ namespace Bloom::InsightTargetWidgets::Dip
         QLabel* pinDirectionLabel = nullptr;
         PinBodyWidget* bodyWidget = nullptr;
 
-        void setLabelColor(QString hexColor) {
+        void setLabelColor(const QString& hexColor) {
             auto style = QString("QLabel { color: " + hexColor + "; }");
-            if (this->pinNumberLabel != nullptr) {
-//                this->pinNumberLabel->setStyleSheet(style);
-            }
-
             if (this->pinNameLabel != nullptr) {
                 this->pinNameLabel->setStyleSheet(style);
             }
@@ -43,7 +39,7 @@ namespace Bloom::InsightTargetWidgets::Dip
             const Targets::TargetVariant& targetVariant
         );
 
-        virtual void updatePinState(const Targets::TargetPinState& pinState) override {
+        void updatePinState(const Targets::TargetPinState& pinState) override {
             TargetPinWidget::updatePinState(pinState);
 
             if (pinState.ioDirection.has_value()) {

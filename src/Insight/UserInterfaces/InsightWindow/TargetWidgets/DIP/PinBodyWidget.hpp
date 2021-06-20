@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QMouseEvent>
+#include <utility>
 
 #include "src/Targets/TargetPinDescriptor.hpp"
 
@@ -38,8 +39,8 @@ namespace Bloom::InsightTargetWidgets::Dip
 
         PinBodyWidget(
             QWidget* parent,
-            const Targets::TargetPinDescriptor& pinDescriptor
-        ): QWidget(parent), pinDescriptor(pinDescriptor) {
+            Targets::TargetPinDescriptor pinDescriptor
+        ): QWidget(parent), pinDescriptor(std::move(pinDescriptor)) {
             this->setFixedSize(PinBodyWidget::WIDTH, PinBodyWidget::HEIGHT);
             this->setObjectName("target-pin-body");
         }
@@ -52,7 +53,7 @@ namespace Bloom::InsightTargetWidgets::Dip
             return this->bodyColor;
         }
 
-        void setBodyColor(QColor color) {
+        void setBodyColor(const QColor& color) {
             this->bodyColor = color;
         }
 

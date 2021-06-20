@@ -29,7 +29,7 @@ namespace Bloom
 
         LogEntry(std::string message, LogLevel logLevel): message(std::move(message)), logLevel(logLevel) {
             // Get thread name
-            std::array<char, 16> threadNameBuf;
+            std::array<char, 16> threadNameBuf = {};
 
             if (pthread_getname_np(pthread_self(), threadNameBuf.data(), threadNameBuf.size()) == 0) {
                 /*

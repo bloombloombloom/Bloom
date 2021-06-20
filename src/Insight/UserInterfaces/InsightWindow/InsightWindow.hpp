@@ -48,7 +48,7 @@ namespace Bloom
         const Targets::TargetVariant* selectedVariant = nullptr;
         bool uiDisabled = false;
 
-        bool isVariantSupported(const Targets::TargetVariant& variant);
+        static bool isVariantSupported(const Targets::TargetVariant& variant);
 
         void selectVariant(const Targets::TargetVariant* variant);
 
@@ -84,7 +84,7 @@ namespace Bloom
         void onTargetIoPortsUpdate();
         void close();
         void openReportIssuesUrl();
-        void openGettingStartedUrl();
+        static void openGettingStartedUrl();
         void openAboutWindow();
         void togglePinIoState(InsightTargetWidgets::TargetPinWidget* pinWidget);
 

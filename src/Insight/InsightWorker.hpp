@@ -40,7 +40,7 @@ namespace Bloom
         void onTargetControllerStateReported(Events::EventPointer<Events::TargetControllerStateReported> event);
 
     public:
-        InsightWorker(EventManager& eventManager): eventManager(eventManager) {};
+        explicit InsightWorker(EventManager& eventManager): eventManager(eventManager) {};
 
         void dispatchEvents() {
             this->eventListener->dispatchCurrentEvents();

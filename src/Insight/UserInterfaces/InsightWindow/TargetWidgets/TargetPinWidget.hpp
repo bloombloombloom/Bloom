@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <utility>
 
 #include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"
@@ -19,9 +20,9 @@ namespace Bloom::InsightTargetWidgets
     public:
         TargetPinWidget(
             QWidget* parent,
-            const Targets::TargetPinDescriptor& pinDescriptor,
-            const Targets::TargetVariant& targetVariant
-        ): QWidget(parent), targetVariant(targetVariant), pinDescriptor(pinDescriptor) {
+            Targets::TargetPinDescriptor pinDescriptor,
+            Targets::TargetVariant targetVariant
+        ): QWidget(parent), targetVariant(std::move(targetVariant)), pinDescriptor(std::move(pinDescriptor)) {
             this->setDisabled(false);
         };
 

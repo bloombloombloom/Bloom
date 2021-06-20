@@ -14,7 +14,7 @@ namespace Bloom
         QWidget* windowWidget = nullptr;
 
     public:
-        AboutWindow(QWidget* parent);
+        explicit AboutWindow(QWidget* parent);
 
         void show() {
             if (this->windowWidget != nullptr) {

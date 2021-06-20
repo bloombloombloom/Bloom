@@ -16,23 +16,23 @@ namespace Bloom::InsightTargetWidgets::Dip
         int disableAlphaLevel = 100;
 
     protected:
-        void paintEvent(QPaintEvent* event);
+        void paintEvent(QPaintEvent* event) override;
         void drawWidget(QPainter& painter);
 
     public:
-        BodyWidget(QWidget* parent): QWidget(parent) {
+        explicit BodyWidget(QWidget* parent): QWidget(parent) {
             this->setObjectName("target-body");
         }
 
-        QColor getBodyColor() const {
+        [[nodiscard]] QColor getBodyColor() const {
             return this->bodyColor;
         }
 
-        void setBodyColor(QColor color) {
+        void setBodyColor(const QColor& color) {
             this->bodyColor = color;
         }
 
-        int getDisableAlphaLevel() const {
+        [[nodiscard]] int getDisableAlphaLevel() const {
             return this->disableAlphaLevel;
         }
 

@@ -1,5 +1,6 @@
 #include <QtUiTools>
 #include <QtSvg/QtSvg>
+#include <utility>
 
 #include "InsightWindow.hpp"
 #include "AboutWindow.hpp"
@@ -25,7 +26,7 @@ void InsightWindow::init(
     QApplication& application,
     TargetDescriptor targetDescriptor
 ) {
-    this->targetDescriptor = targetDescriptor;
+    this->targetDescriptor = std::move(targetDescriptor);
 
     auto mainWindowUiFile = QFile(
         QString::fromStdString(Paths::compiledResourcesPath()
@@ -50,7 +51,7 @@ void InsightWindow::init(
     this->mainWindowWidget = uiLoader.load(&mainWindowUiFile);
     this->mainWindowWidget->setStyleSheet(mainWindowStylesheet.readAll());
 
-    application.setWindowIcon(QIcon(
+    QApplication::setWindowIcon(QIcon(
         QString::fromStdString(Paths::compiledResourcesPath()
             + "/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg"
         )
@@ -166,7 +167,7 @@ void InsightWindow::activate() {
             QString::fromStdString(targetVariant.name + " (" + targetVariant.packageName + ")")
         );
 
-        if (this->isVariantSupported(targetVariant)) {
+        if (InsightWindow::isVariantSupported(targetVariant)) {
             auto supportedVariantPtr = &(this->supportedVariantsByName.insert(
                 std::pair(QString::fromStdString(targetVariant.name).toLower(), targetVariant)
             ).first->second);

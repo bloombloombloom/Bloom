@@ -15,8 +15,7 @@ void PinBodyWidget::paintEvent(QPaintEvent* event) {
     this->drawWidget(painter);
 }
 
-bool PinBodyWidget::event(QEvent* event)
-{
+bool PinBodyWidget::event(QEvent* event) {
     if (this->isEnabled() && this->pinState.has_value() && this->pinState->ioDirection == TargetPinState::IoDirection::OUTPUT) {
         switch (event->type()) {
             case QEvent::Enter: {

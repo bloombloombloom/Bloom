@@ -47,12 +47,12 @@ namespace Bloom
          * Insight consists of two threads - the main thread where the main Qt event loop runs (for the GUI), and
          * a single worker thread to handle any blocking/time-expensive operations.
          */
-        QThread* workerThread;
+        QThread* workerThread = nullptr;
 
         void startup();
 
     public:
-        Insight(EventManager& eventManager): eventManager(eventManager) {};
+        explicit Insight(EventManager& eventManager): eventManager(eventManager) {};
 
         void setApplicationConfig(const ApplicationConfig& applicationConfig) {
             this->applicationConfig = applicationConfig;
