@@ -29,6 +29,8 @@ namespace Bloom::Targets::TargetDescription
      * or target family. For example, the Targets::Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile
      * class inherits from this class, to represent TDFs for AVR8 targets. The derived class provides access to
      * additional data that is only found in AVR8 TDFs (such as AVR target signature, AVR Family, etc).
+     *
+     * For more information of TDFs, see src/Targets/TargetDescription/README.md
      */
     class TargetDescriptionFile
     {

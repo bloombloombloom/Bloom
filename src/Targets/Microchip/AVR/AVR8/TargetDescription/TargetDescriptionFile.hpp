@@ -15,6 +15,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
      * given a target signature. See directory "build/resources/TargetDescriptionFiles".
      * The generation of the JSON mapping, is done by a PHP script:
      * "build/scripts/CopyAvrPartFilesAndCreateMapping.php". This script is invoked via a custom command, at build time.
+     *
+     * For more information of TDFs, see src/Targets/TargetDescription/README.md
      */
     class TargetDescriptionFile: public Targets::TargetDescription::TargetDescriptionFile
     {
@@ -80,6 +82,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         std::optional<Targets::TargetDescription::RegisterGroup> getCpuRegisterGroup() const;
         std::optional<Targets::TargetDescription::RegisterGroup> getBootLoadRegisterGroup() const;
         std::optional<Targets::TargetDescription::RegisterGroup> getEepromRegisterGroup() const;
+
         std::optional<Targets::TargetDescription::Register> getStatusRegister() const;
         std::optional<Targets::TargetDescription::Register> getStackPointerRegister() const;
         std::optional<Targets::TargetDescription::Register> getStackPointerHighRegister() const;
