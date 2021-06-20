@@ -37,6 +37,14 @@ print "Processing " . count($avrTdfs) . " AVR8 TDFs...\n\n";
 foreach ($avrTdfs as $avrTdf) {
     print "Processing AVR8 TDF for target " . $avrTdf->targetName . "\n";
 
+    if (!empty(($validationFailures = $avrTdf->validate()))) {
+        print "\033[31m\n";
+        print "FATAL ERROR: AVR8 TDF failed validation - failure reasons:\n"
+            . implode("\n", $validationFailures) . "\n\nTDF Path: " . realpath($avrTdf->filePath);
+        print "\033[0m\n\n";
+        exit(1);
+    }
+
     $destinationFilePath = AVR_TDF_DEST_FILE_PATH;
     $relativeDestinationFilePath = AVR_TDF_DEST_RELATIVE_FILE_PATH;
 
