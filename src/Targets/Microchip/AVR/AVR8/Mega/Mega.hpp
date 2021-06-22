@@ -9,9 +9,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     protected:
 
     public:
-        Mega(const Avr8& avr8): Avr8(avr8) {};
+        explicit Mega(const Avr8& avr8): Avr8(avr8) {};
 
-        virtual bool supportsPromotion() override {
+        bool supportsPromotion() override {
             return false;
         }
     };

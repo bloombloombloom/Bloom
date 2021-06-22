@@ -8,7 +8,6 @@ using namespace Bloom::DebugServers::Gdb;
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 
 std::unique_ptr<CommandPacket> CommandPacketFactory::create(std::vector<unsigned char> rawPacket) {
-
     if (rawPacket.size() == 5 && rawPacket[1] == 0x03) {
         // This is an interrupt request - create a fake packet for it
         return std::make_unique<CommandPackets::InterruptExecution>(rawPacket);
@@ -27,8 +26,8 @@ std::unique_ptr<CommandPacket> CommandPacketFactory::create(std::vector<unsigned
         } else if (rawPacketString[1] == 'g' || rawPacketString[1] == 'p') {
             return std::make_unique<CommandPackets::ReadGeneralRegisters>(rawPacket);
 
-        } else if (rawPacketString[1] == 'G' || rawPacketString[1] == 'P') {
-            return std::make_unique<CommandPackets::WriteGeneralRegisters>(rawPacket);
+        } else if (rawPacketString[1] == 'P') {
+            return std::make_unique<CommandPackets::WriteGeneralRegister>(rawPacket);
 
         } else if (rawPacketString[1] == 'c') {
             return std::make_unique<CommandPackets::ContinueExecution>(rawPacket);

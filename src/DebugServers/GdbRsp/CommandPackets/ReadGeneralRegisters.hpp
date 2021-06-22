@@ -26,10 +26,10 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          */
         std::optional<int> registerNumber;
 
-        ReadGeneralRegisters(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
+        explicit ReadGeneralRegisters(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             init();
         };
 
-        virtual void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
     };
 }

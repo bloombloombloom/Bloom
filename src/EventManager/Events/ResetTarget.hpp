@@ -11,7 +11,7 @@ namespace Bloom::Events
     public:
         static inline const std::string name = "ResetTargetEvent";
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return ResetTarget::name;
         }
     };

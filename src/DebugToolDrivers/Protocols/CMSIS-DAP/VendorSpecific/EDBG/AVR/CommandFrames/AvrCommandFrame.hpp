@@ -28,7 +28,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         /**
          * Destination sub-protocol handler ID
          */
-        ProtocolHandlerId protocolHandlerID;
+        ProtocolHandlerId protocolHandlerID = ProtocolHandlerId::DISCOVERY;
 
         std::vector<unsigned char> payload;
 
@@ -36,16 +36,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         using ResponseFrameType = AvrResponseFrame;
 
         AvrCommandFrame() {
-            if (this->lastSequenceId < std::numeric_limits<decltype(this->lastSequenceId)>::max()) {
-                this->sequenceId = ++(this->lastSequenceId);
+            if (AvrCommandFrame::lastSequenceId < std::numeric_limits<decltype(AvrCommandFrame::lastSequenceId)>::max()) {
+                this->sequenceId = ++(AvrCommandFrame::lastSequenceId);
 
             } else {
                 this->sequenceId = 0;
-                this->lastSequenceId = 0;
+                AvrCommandFrame::lastSequenceId = 0;
             }
         };
 
-        unsigned char getProtocolVersion() const {
+        [[nodiscard]] unsigned char getProtocolVersion() const {
             return this->protocolVersion;
         }
 
@@ -53,11 +53,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->protocolVersion = protocolVersion;
         }
 
-        std::uint16_t getSequenceId() const {
+        [[nodiscard]] std::uint16_t getSequenceId() const {
             return this->sequenceId;
         }
 
-        ProtocolHandlerId getProtocolHandlerId() const {
+        [[nodiscard]] ProtocolHandlerId getProtocolHandlerId() const {
             return this->protocolHandlerID;
         }
 
@@ -69,7 +69,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->protocolHandlerID = static_cast<ProtocolHandlerId>(protocolHandlerId);
         }
 
-        virtual std::vector<unsigned char> getPayload() const {
+        [[nodiscard]] virtual std::vector<unsigned char> getPayload() const {
             return this->payload;
         }
 
@@ -94,7 +94,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @return
          *  A vector of sequenced AVRCommands, each containing a segment of the AvrCommandFrame.
          */
-        std::vector<AvrCommand> generateAvrCommands(std::size_t maximumCommandPacketSize) const;
+        [[nodiscard]] std::vector<AvrCommand> generateAvrCommands(std::size_t maximumCommandPacketSize) const;
 
         /**
          * Converts instance of a CMSIS Command to an unsigned char, for sending to the Atmel ICE device.

@@ -13,7 +13,7 @@ namespace Bloom::Events
         static inline const std::string name = "RegistersRetrievedFromTarget";
         Targets::TargetRegisters registers;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return RegistersRetrievedFromTarget::name;
         }
     };

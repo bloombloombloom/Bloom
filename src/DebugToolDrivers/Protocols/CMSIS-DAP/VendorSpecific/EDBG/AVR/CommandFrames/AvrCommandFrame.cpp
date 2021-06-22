@@ -7,7 +7,9 @@ using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
 std::vector<AvrCommand> AvrCommandFrame::generateAvrCommands(std::size_t maximumCommandPacketSize) const {
     auto rawCommandFrame = static_cast<std::vector<unsigned char>>(*this);
     std::size_t commandFrameSize = rawCommandFrame.size();
-    std::size_t commandsRequired = static_cast<std::size_t>(ceil(static_cast<float>(commandFrameSize) / static_cast<float>(maximumCommandPacketSize)));
+    auto commandsRequired = static_cast<std::size_t>(
+        ceil(static_cast<float>(commandFrameSize) / static_cast<float>(maximumCommandPacketSize))
+    );
 
     std::vector<AvrCommand> avrCommands;
     std::size_t copiedPacketSize = 0;

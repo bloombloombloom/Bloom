@@ -669,7 +669,7 @@ std::uint32_t Avr8::getProgramCounter() {
 TargetRegister Avr8::getProgramCounterRegister() {
     auto programCounter = this->getProgramCounter();
 
-    return TargetRegister(TargetRegisterType::PROGRAM_COUNTER, {
+    return TargetRegister(TargetRegisterDescriptor(TargetRegisterType::PROGRAM_COUNTER), {
         static_cast<unsigned char>(programCounter),
         static_cast<unsigned char>(programCounter >> 8),
         static_cast<unsigned char>(programCounter >> 16),

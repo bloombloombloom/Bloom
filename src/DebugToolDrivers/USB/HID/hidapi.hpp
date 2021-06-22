@@ -8,7 +8,8 @@
  *
  * https://github.com/signal11/hidapi
  */
-struct hid_device_ {
+struct hid_device_
+{
     // Handle to the actual device.
     libusb_device_handle* device_handle;
 

@@ -20,7 +20,7 @@ void AvrEvent::init(const std::vector<unsigned char>& rawResponse) {
     }
 
     // Response size is two bytes, MSB
-    size_t responsePacketSize = static_cast<size_t>((responseData[0] << 8) | responseData[1]);
+    auto responsePacketSize = static_cast<size_t>((responseData[0] << 8) | responseData[1]);
 
     if (responseData.size() < 2) {
         // All AVR_EVT responses should consist of at least two bytes (excluding the AVR_EVT ID)
@@ -42,8 +42,7 @@ void AvrEvent::init(const std::vector<unsigned char>& rawResponse) {
 
     this->setEventData(eventData);
 
-    if (eventData.size() >= 1) {
+    if (!eventData.empty()) {
         this->eventId = eventData[0];
     }
 }
-

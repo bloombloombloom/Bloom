@@ -13,7 +13,7 @@ namespace Bloom::Events
 
         TargetExecutionResumed() = default;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return TargetExecutionResumed::name;
         }
     };

@@ -22,14 +22,14 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          * Like with the ReadMemory command packet, the start address carries additional bits that indicate
          * the memory type.
          */
-        std::uint32_t startAddress;
+        std::uint32_t startAddress = 0;
 
         Targets::TargetMemoryBuffer buffer;
 
-        WriteMemory(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
+        explicit WriteMemory(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             init();
         };
 
-        virtual void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
     };
 }

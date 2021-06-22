@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Exception.hpp"
+
 namespace Bloom::Exceptions
 {
     class TargetControllerStartupFailure: public Exception

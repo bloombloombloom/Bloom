@@ -13,7 +13,7 @@ namespace Bloom::Events
 
         static inline const std::string name = "ReportTargetControllerState";
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return ReportTargetControllerState::name;
         }
     };

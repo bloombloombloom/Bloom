@@ -86,6 +86,7 @@ void EventListener::waitAndDispatch(int msTimeout) {
 
     if (msTimeout > 0) {
         this->eventQueueByEventTypeCV.wait_for(queueLock, std::chrono::milliseconds(msTimeout), eventsFound);
+
     } else {
         this->eventQueueByEventTypeCV.wait(queueLock, eventsFound);
     }

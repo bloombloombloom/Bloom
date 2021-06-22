@@ -12,11 +12,11 @@ namespace Bloom::Events
     private:
         ThreadState state;
     public:
-        InsightThreadStateChanged(ThreadState state): state(state) {};
+        explicit InsightThreadStateChanged(ThreadState state): state(state) {};
 
         static inline const std::string name = "InsightThreadStateChanged";
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return InsightThreadStateChanged::name;
         }
 

@@ -12,9 +12,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         std::uint32_t programCounter = 0;
 
     public:
-        SetProgramCounter(std::uint32_t programCounter): programCounter(programCounter) {}
+        explicit SetProgramCounter(std::uint32_t programCounter): programCounter(programCounter) {}
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The PC write command consists of 6 bytes:
              * 1. Command ID (0x01)

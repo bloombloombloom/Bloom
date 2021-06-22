@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 #include <netinet/in.h>
 #include <queue>
@@ -83,8 +84,8 @@ namespace Bloom::DebugServers::Gdb
          */
         bool waitingForBreak = false;
 
-        Connection(std::shared_ptr<EventNotifier> interruptEventNotifier)
-        : interruptEventNotifier(interruptEventNotifier) {};
+        explicit Connection(std::shared_ptr<EventNotifier> interruptEventNotifier)
+        : interruptEventNotifier(std::move(interruptEventNotifier)) {};
 
         /**
          * Accepts a connection on serverSocketFileDescriptor.
@@ -104,7 +105,7 @@ namespace Bloom::DebugServers::Gdb
          * @return
          */
         std::string getIpAddress() {
-            std::array<char, INET_ADDRSTRLEN> ipAddress;
+            std::array<char, INET_ADDRSTRLEN> ipAddress = {};
 
             if (::inet_ntop(AF_INET, &(socketAddress.sin_addr), ipAddress.data(), INET_ADDRSTRLEN) == nullptr) {
                 throw Exceptions::Exception("Failed to convert client IP address to text form.");
@@ -127,7 +128,7 @@ namespace Bloom::DebugServers::Gdb
          */
         void writePacket(const ResponsePackets::ResponsePacket& packet);
 
-        int getMaxPacketSize() {
+        [[nodiscard]] int getMaxPacketSize() const {
             return this->maxPacketSize;
         }
     };

@@ -9,18 +9,18 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class RunTo: public Avr8GenericCommandFrame
     {
     private:
-        std::uint32_t address;
+        std::uint32_t address = 0;
 
     public:
         RunTo() = default;
 
-        RunTo(const std::uint32_t& address): address(address) {}
+        explicit RunTo(const std::uint32_t& address): address(address) {}
 
         void setAddress(const std::uint32_t& address) {
             this->address = address;
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The run-to command consists of 6 bytes:
              *

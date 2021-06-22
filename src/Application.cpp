@@ -3,7 +3,6 @@
 #include <QtCore>
 #include <thread>
 #include <QJsonDocument>
-#include <QCoreApplication>
 #include <unistd.h>
 #include <filesystem>
 

@@ -224,7 +224,7 @@ namespace Bloom
         void emitErrorEvent(int correlationId);
 
     public:
-        TargetController(EventManager& eventManager): eventManager(eventManager) {};
+        explicit TargetController(EventManager& eventManager): eventManager(eventManager) {};
 
         void setApplicationConfig(const ApplicationConfig& applicationConfig) {
             this->applicationConfig = applicationConfig;

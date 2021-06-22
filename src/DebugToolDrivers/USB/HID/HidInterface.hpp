@@ -65,7 +65,7 @@ namespace Bloom::Usb
         }
 
     public:
-        std::size_t getInputReportSize() {
+        std::size_t getInputReportSize() const {
              return this->inputReportSize;
         }
 

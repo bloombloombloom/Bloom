@@ -31,13 +31,12 @@ namespace Bloom
          * files such as QT stylesheets and UI templates.
          * @return
          */
-        static inline const std::string compiledResourcesPath() {
+        static inline std::string compiledResourcesPath() {
 #ifdef BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE
             return std::string(BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE);
 #else
             return std::string(":/compiled");
 #endif
         }
-
     };
 }

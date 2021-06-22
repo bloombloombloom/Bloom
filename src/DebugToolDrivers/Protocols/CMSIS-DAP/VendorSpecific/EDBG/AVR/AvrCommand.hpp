@@ -24,9 +24,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * @return
          */
-        std::vector<unsigned char> getData() const override;
+        [[nodiscard]] std::vector<unsigned char> getData() const override;
 
-        size_t getFragmentNumber() const {
+        [[nodiscard]] size_t getFragmentNumber() const {
             return this->fragmentNumber;
         }
 
@@ -34,7 +34,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->fragmentNumber = fragmentNumber;
         }
 
-        size_t getFragmentCount() const {
+        [[nodiscard]] size_t getFragmentCount() const {
             return this->fragmentCount;
         }
 
@@ -42,7 +42,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->fragmentCount = fragmentCount;
         }
 
-        const std::vector<unsigned char>& getCommandPacket() const {
+        [[nodiscard]] const std::vector<unsigned char>& getCommandPacket() const {
             return this->commandPacket;
         }
 
@@ -50,5 +50,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->commandPacket = commandPacket;
         }
     };
-
 }

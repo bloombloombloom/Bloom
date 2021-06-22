@@ -13,11 +13,11 @@ namespace Bloom::Events
         static inline const std::string name = "ResumeTargetExecutionEvent";
         std::optional<std::uint32_t> fromProgramCounter;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return ResumeTargetExecution::name;
         }
 
         ResumeTargetExecution() = default;
-        ResumeTargetExecution(std::uint32_t fromProgramCounter): fromProgramCounter(fromProgramCounter) {};
+        explicit ResumeTargetExecution(std::uint32_t fromProgramCounter): fromProgramCounter(fromProgramCounter) {};
     };
 }

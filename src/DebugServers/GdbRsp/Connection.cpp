@@ -1,6 +1,6 @@
 #include <sys/socket.h>
 #include <sys/epoll.h>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 
 #include "src/Logger/Logger.hpp"
@@ -117,7 +117,7 @@ void Connection::writePacket(const ResponsePacket& packet) {
 std::vector<unsigned char> Connection::read(size_t bytes, bool interruptible, std::optional<int> msTimeout) {
     auto output = std::vector<unsigned char>();
     constexpr size_t bufferSize = 1024;
-    std::array<unsigned char, bufferSize> buffer;
+    std::array<unsigned char, bufferSize> buffer = {};
     ssize_t bytesRead;
 
     if (interruptible) {

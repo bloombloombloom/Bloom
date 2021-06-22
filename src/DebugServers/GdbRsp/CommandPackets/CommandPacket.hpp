@@ -37,7 +37,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
     class CommandPacket: public Packet
     {
     public:
-        CommandPacket(const std::vector<unsigned char>& rawPacket): Packet(rawPacket) {}
+        explicit CommandPacket(const std::vector<unsigned char>& rawPacket): Packet(rawPacket) {}
 
         /**
          * Double dispatches the packet to the appropriate overload of handleGdbPacket(), within the passed instance of

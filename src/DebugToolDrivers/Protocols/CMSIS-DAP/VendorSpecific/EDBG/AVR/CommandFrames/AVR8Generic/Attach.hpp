@@ -11,13 +11,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
     public:
         Attach() = default;
-        Attach(bool breakAfterAttach): breakAfterAttach(breakAfterAttach) {};
+        explicit Attach(bool breakAfterAttach): breakAfterAttach(breakAfterAttach) {};
 
         void setBreadAfterAttach(bool breakAfterAttach) {
             this->breakAfterAttach = breakAfterAttach;
         }
 
-        std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The attach command consists of 3 bytes:
              * 1. Command ID (0x13)

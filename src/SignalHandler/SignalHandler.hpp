@@ -36,7 +36,7 @@ namespace Bloom
          *
          * @return
          */
-        sigset_t getRegisteredSignalSet() const;
+        [[nodiscard]] sigset_t getRegisteredSignalSet() const;
 
         /**
          * Handler for SIGINT, SIGTERM, etc signals.
@@ -47,7 +47,7 @@ namespace Bloom
         void triggerApplicationShutdown();
 
     public:
-        SignalHandler(EventManager& eventManager): eventManager(eventManager) {};
+        explicit SignalHandler(EventManager& eventManager): eventManager(eventManager) {};
 
         /**
          * Entry point for SignalHandler thread.

@@ -24,7 +24,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         /**
          * Destination sub-protocol handler ID
          */
-        ProtocolHandlerId protocolHandlerID;
+        ProtocolHandlerId protocolHandlerID = ProtocolHandlerId::AVR8_GENERIC;
 
         std::vector<unsigned char> payload;
 
@@ -48,11 +48,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
     public:
+        explicit AvrResponseFrame() = default;
+
         explicit AvrResponseFrame(const std::vector<AvrResponse>& AVRResponses) {
             this->initFromAvrResponses(AVRResponses);
         }
-
-        explicit AvrResponseFrame() {}
 
         /**
          * An AVRResponse contains a single fragment of an AvrResponseFrame.
@@ -63,11 +63,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         void initFromAvrResponses(const std::vector<AvrResponse>& avrResponses);
 
-        std::uint16_t getSequenceId() const {
+        [[nodiscard]] std::uint16_t getSequenceId() const {
             return this->sequenceID;
         }
 
-        ProtocolHandlerId getProtocolHandlerId() const {
+        [[nodiscard]] ProtocolHandlerId getProtocolHandlerId() const {
             return this->protocolHandlerID;
         }
 
@@ -79,8 +79,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return this->payload[0];
         }
 
-        virtual std::vector<unsigned char> getPayloadData() {
-            return this->getPayload();
+        [[nodiscard]] virtual std::vector<unsigned char> getPayloadData() {
+            return this->payload;
         }
     };
 }

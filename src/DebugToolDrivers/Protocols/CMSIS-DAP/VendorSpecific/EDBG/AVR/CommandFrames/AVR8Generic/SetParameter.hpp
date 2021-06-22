@@ -13,7 +13,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         SetParameter() = default;
 
-        SetParameter(const Avr8EdbgParameter& parameter) {
+        explicit SetParameter(const Avr8EdbgParameter& parameter) {
             this->setParameter(parameter);
         }
 
@@ -37,7 +37,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->value.resize(1, value);
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The set param command consists of this->value.size() + 5 bytes. The first five bytes consist of:
              * 1. Command ID (0x01)
@@ -58,5 +58,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             return output;
         }
     };
-
 }

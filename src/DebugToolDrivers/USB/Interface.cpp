@@ -1,9 +1,7 @@
 #include <libusb-1.0/libusb.h>
 #include <chrono>
-#include <thread>
 
 #include "Interface.hpp"
-#include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::Usb;

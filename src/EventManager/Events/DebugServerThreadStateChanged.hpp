@@ -12,15 +12,15 @@ namespace Bloom::Events
     private:
         ThreadState state;
     public:
-        DebugServerThreadStateChanged(ThreadState state): state(state) {};
+        explicit DebugServerThreadStateChanged(ThreadState state): state(state) {};
 
         static inline const std::string name = "DebugServerThreadStateChanged";
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return DebugServerThreadStateChanged::name;
         }
 
-        ThreadState getState() const {
+        [[nodiscard]] ThreadState getState() const {
             return this->state;
         }
     };

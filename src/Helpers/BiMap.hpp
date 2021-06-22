@@ -20,8 +20,8 @@ namespace Bloom
     class BiMap
     {
     private:
-        std::unordered_map<TypeA, TypeB> map;
-        std::unordered_map<TypeB, typename std::unordered_map<TypeA, TypeB>::iterator> flippedMap;
+        std::unordered_map<TypeA, TypeB> map = {};
+        std::unordered_map<TypeB, typename std::unordered_map<TypeA, TypeB>::iterator> flippedMap = {};
 
     public:
         BiMap(std::initializer_list<std::pair<TypeA, TypeB>> elements) {

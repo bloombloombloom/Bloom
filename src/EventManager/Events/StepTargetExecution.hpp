@@ -13,11 +13,11 @@ namespace Bloom::Events
         static inline const std::string name = "StepTargetExecution";
         std::optional<std::uint32_t> fromProgramCounter;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return StepTargetExecution::name;
         }
 
         StepTargetExecution() = default;
-        StepTargetExecution(std::uint32_t fromProgramCounter): fromProgramCounter(fromProgramCounter) {};
+        explicit StepTargetExecution(std::uint32_t fromProgramCounter): fromProgramCounter(fromProgramCounter) {};
     };
 }

@@ -9,18 +9,18 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class SetXmegaSoftwareBreakpoint: public Avr8GenericCommandFrame
     {
     private:
-        std::uint32_t address;
+        std::uint32_t address = 0;
 
     public:
         SetXmegaSoftwareBreakpoint() = default;
 
-        SetXmegaSoftwareBreakpoint(std::uint32_t address): address(address) {}
+        explicit SetXmegaSoftwareBreakpoint(std::uint32_t address): address(address) {}
 
         void setAddress(std::uint32_t address) {
             this->address = address;
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The set software breakpoint command consists of 6 bytes bytes
              *
@@ -41,5 +41,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             return output;
         }
     };
-
 }

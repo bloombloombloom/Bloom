@@ -12,10 +12,10 @@ namespace Bloom::Events
     {
     public:
         static inline const std::string name = "TargetPinStatesRetrieved";
-        int variantId;
+        int variantId = 0;
         std::map<int, Targets::TargetPinState> pinSatesByNumber;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return TargetPinStatesRetrieved::name;
         }
     };

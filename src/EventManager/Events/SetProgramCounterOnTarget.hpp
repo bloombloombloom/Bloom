@@ -11,9 +11,9 @@ namespace Bloom::Events
     {
     public:
         static inline const std::string name = "SetProgramCounterOnTarget";
-        std::uint32_t address;
+        std::uint32_t address = 0;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return SetProgramCounterOnTarget::name;
         }
     };

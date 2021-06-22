@@ -11,7 +11,7 @@ namespace Bloom::Events
     public:
         static inline const std::string name = "ShutdownTargetControllerEvent";
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return ShutdownTargetController::name;
         }
     };

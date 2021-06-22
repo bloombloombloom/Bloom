@@ -139,7 +139,7 @@ TargetSignature TargetDescriptionFile::getTargetSignature() const {
 }
 
 Family TargetDescriptionFile::getFamily() const {
-    static auto familyNameToEnums = this->getFamilyNameToEnumMapping();
+    static auto familyNameToEnums = TargetDescriptionFile::getFamilyNameToEnumMapping();
     auto familyName = this->deviceElement.attributes().namedItem("family").nodeValue().toLower().toStdString();
 
     if (familyName.empty()) {

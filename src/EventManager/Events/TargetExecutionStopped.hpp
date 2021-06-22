@@ -18,7 +18,7 @@ namespace Bloom::Events
         TargetExecutionStopped(std::uint32_t programCounter, Targets::TargetBreakCause breakCause) :
         programCounter(programCounter), breakCause(breakCause) {}
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return TargetExecutionStopped::name;
         }
     };

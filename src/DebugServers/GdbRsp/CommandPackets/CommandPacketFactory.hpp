@@ -8,7 +8,7 @@
 #include "InterruptExecution.hpp"
 #include "SupportedFeaturesQuery.hpp"
 #include "ReadGeneralRegisters.hpp"
-#include "WriteGeneralRegisters.hpp"
+#include "WriteGeneralRegister.hpp"
 #include "ReadMemory.hpp"
 #include "WriteMemory.hpp"
 #include "StepExecution.hpp"

@@ -17,9 +17,8 @@ namespace Bloom::Targets
         /**
          * Byte address of the breakpoint.
          */
-        TargetBreakpointAddress address;
+        TargetBreakpointAddress address = 0;
 
         bool disabled = false;
     };
 }
-

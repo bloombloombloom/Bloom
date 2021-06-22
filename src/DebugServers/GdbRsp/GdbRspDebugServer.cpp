@@ -330,7 +330,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadGeneralRegisters& pa
     }
 }
 
-void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteGeneralRegisters& packet) {
+void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteGeneralRegister& packet) {
     Logger::debug("Handling WriteGeneralRegisters packet");
 
     try {

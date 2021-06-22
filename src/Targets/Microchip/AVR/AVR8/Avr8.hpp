@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <queue>
+#include <utility>
 
 #include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8Interface.hpp"
 #include "src/Targets/Microchip/AVR/Target.hpp"
@@ -22,7 +23,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     {
     protected:
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* avr8Interface = nullptr;
-        std::string name = "";
+        std::string name;
         std::optional<Family> family;
         std::optional<TargetDescription::TargetDescriptionFile> targetDescriptionFile;
         std::optional<TargetParameters> targetParameters;
@@ -60,7 +61,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
     public:
         explicit Avr8() = default;
-        Avr8(const std::string& name, const TargetSignature& signature): name(name) {
+        Avr8(std::string name, const TargetSignature& signature): name(std::move(name)) {
             this->id = signature;
             this->loadTargetDescriptionFile();
         };
@@ -74,7 +75,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         void preActivationConfigure(const TargetConfig& targetConfig) override;
         void postActivationConfigure() override;
-        virtual void postPromotionConfigure() override;
+        void postPromotionConfigure() override;
 
         void activate() override;
         void deactivate() override;
@@ -108,13 +109,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          *
          * @return
          */
-        virtual std::unique_ptr<Targets::Target> promote() override;
+        std::unique_ptr<Targets::Target> promote() override;
 
         std::string getName() const override {
             return this->name;
         }
 
-        virtual TargetDescriptor getDescriptor() override;
+        TargetDescriptor getDescriptor() override;
 
         void run() override;
         void stop() override;
@@ -125,38 +126,38 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         void removeBreakpoint(std::uint32_t address) override;
         void clearAllBreakpoints() override;
 
-        virtual TargetRegisters readGeneralPurposeRegisters(std::set<std::size_t> registerIds) override;
-        virtual void writeRegisters(const TargetRegisters& registers) override;
-        virtual TargetRegisters readRegisters(const TargetRegisterDescriptors& descriptors) override;
+        TargetRegisters readGeneralPurposeRegisters(std::set<std::size_t> registerIds) override;
+        void writeRegisters(const TargetRegisters& registers) override;
+        TargetRegisters readRegisters(const TargetRegisterDescriptors& descriptors) override;
 
-        virtual TargetMemoryBuffer readMemory(
+        TargetMemoryBuffer readMemory(
             TargetMemoryType memoryType,
             std::uint32_t startAddress,
             std::uint32_t bytes
         ) override;
-        virtual void writeMemory(
+        void writeMemory(
             TargetMemoryType memoryType,
             std::uint32_t startAddress,
             const TargetMemoryBuffer& buffer
         ) override;
 
-        virtual TargetState getState() override;
+        TargetState getState() override;
 
-        virtual std::uint32_t getProgramCounter() override;
-        virtual TargetRegister getProgramCounterRegister() override;
-        virtual void setProgramCounter(std::uint32_t programCounter) override;
+        std::uint32_t getProgramCounter() override;
+        TargetRegister getProgramCounterRegister() override;
+        void setProgramCounter(std::uint32_t programCounter) override;
 
-        virtual TargetRegister getStackPointerRegister() override;
-        virtual TargetRegister getStatusRegister() override;
+        TargetRegister getStackPointerRegister() override;
+        TargetRegister getStatusRegister() override;
 
-        virtual std::map<int, TargetPinState> getPinStates(int variantId) override;
-        virtual void setPinState(
+        std::map<int, TargetPinState> getPinStates(int variantId) override;
+        void setPinState(
             int variantId,
             const TargetPinDescriptor& pinDescriptor,
             const TargetPinState& state
         ) override;
 
-        virtual bool memoryAddressRangeClashesWithIoPortRegisters(
+        bool memoryAddressRangeClashesWithIoPortRegisters(
             TargetMemoryType memoryType,
             std::uint32_t startAddress,
             std::uint32_t endAddress

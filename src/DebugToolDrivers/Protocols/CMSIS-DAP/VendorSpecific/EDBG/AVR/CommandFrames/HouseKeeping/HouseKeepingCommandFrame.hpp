@@ -25,8 +25,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     {
     public:
         HouseKeepingCommandFrame() {
-            this->setProtocolHandlerId(ProtocolHandlerId::HouseKeeping);
+            this->setProtocolHandlerId(ProtocolHandlerId::HOUSE_KEEPING);
         }
     };
-
 }

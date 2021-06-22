@@ -26,14 +26,14 @@ namespace Bloom::Usb
         void close();
 
     public:
-        void init();
-
         UsbDevice(std::uint16_t vendorId, std::uint16_t productId) {
             this->vendorId = vendorId;
             this->productId = productId;
         };
 
         ~UsbDevice() = default;
+
+        void init();
 
         [[nodiscard]] libusb_device* getLibUsbDevice() const {
             return this->libUsbDevice;
@@ -43,11 +43,11 @@ namespace Bloom::Usb
             this->libUsbDevice = libUsbDevice;
         }
 
-        std::uint16_t getVendorId() const {
+        [[nodiscard]] std::uint16_t getVendorId() const {
             return this->vendorId;
         }
 
-        std::uint16_t getProductId() const {
+        [[nodiscard]] std::uint16_t getProductId() const {
             return this->productId;
         }
 

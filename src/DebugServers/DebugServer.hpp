@@ -98,7 +98,7 @@ namespace Bloom::DebugServers
         virtual void close() = 0;
 
     public:
-        DebugServer(EventManager& eventManager): eventManager(eventManager) {};
+        explicit DebugServer(EventManager& eventManager): eventManager(eventManager) {};
 
         void setApplicationConfig(const ApplicationConfig& applicationConfig) {
             this->applicationConfig = applicationConfig;

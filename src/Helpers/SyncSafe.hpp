@@ -20,11 +20,11 @@ namespace Bloom
     private:
         std::mutex mutex;
         Type value;
+
     public:
         SyncSafe() = default;
 
-        explicit SyncSafe(Type value): value(value) {
-        };
+        explicit SyncSafe(Type value): value(value) {};
 
         void setValue(Type value) {
             auto lock = std::unique_lock(this->mutex);

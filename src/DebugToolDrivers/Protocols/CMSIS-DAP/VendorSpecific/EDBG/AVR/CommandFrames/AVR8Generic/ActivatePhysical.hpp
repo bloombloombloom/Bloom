@@ -11,13 +11,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
     public:
         ActivatePhysical() = default;
-        ActivatePhysical(bool reset): reset(reset) {};
+        explicit ActivatePhysical(bool reset): reset(reset) {};
 
         void setReset(bool reset) {
             this->reset = reset;
         }
 
-        std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The activate physical command consists of 3 bytes:
              * 1. Command ID (0x10)

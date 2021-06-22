@@ -30,14 +30,14 @@ namespace Bloom::Targets::Microchip::Avr
         TargetSignature() = default;
         TargetSignature(unsigned char byteZero, unsigned char byteOne, unsigned char byteTwo) :
         byteZero(byteZero), byteOne(byteOne), byteTwo(byteTwo) {};
-        TargetSignature(std::string hex) {
+        explicit TargetSignature(const std::string& hex) {
             auto signature = static_cast<std::uint32_t>(std::stoul(hex, nullptr, 16));
             this->byteZero = static_cast<unsigned char>(signature >> 16);
             this->byteOne = static_cast<unsigned char>(signature >> 8);
             this->byteTwo = static_cast<unsigned char>(signature);
         }
 
-        std::string toHex() const {
+        [[nodiscard]] std::string toHex() const {
             std::stringstream stream;
             stream << std::hex << std::setfill('0');
             stream << std::setw(2) << static_cast<unsigned int>(this->byteZero);

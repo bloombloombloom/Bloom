@@ -12,7 +12,7 @@ namespace Bloom::Events
     public:
         static inline const std::string name = "MemoryWrittenToTarget";
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return MemoryWrittenToTarget::name;
         }
 

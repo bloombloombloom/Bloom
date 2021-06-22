@@ -18,10 +18,10 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
         std::optional<Targets::TargetRegisterMap> registerMap;
         std::optional<StopReason> stopReason;
 
-        TargetStopped(Signal signal): signal(signal) {}
+        explicit TargetStopped(Signal signal): signal(signal) {}
 
-        std::vector<unsigned char> getData() const override {
-            std::string output = "T" + this->dataToHex({static_cast<unsigned char>(this->signal)});
+        [[nodiscard]] std::vector<unsigned char> getData() const override {
+            std::string output = "T" + Packet::dataToHex({static_cast<unsigned char>(this->signal)});
 
             if (this->stopReason.has_value()) {
                 auto stopReasonMapping = getStopReasonToNameMapping();
@@ -34,8 +34,8 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
 
             if (this->registerMap.has_value()) {
                 for (const auto& [registerId, registerValue] : this->registerMap.value()) {
-                    output += this->dataToHex({static_cast<unsigned char>(registerId)});
-                    output += ":" + this->dataToHex(registerValue.value) + ";";
+                    output += Packet::dataToHex({static_cast<unsigned char>(registerId)});
+                    output += ":" + Packet::dataToHex(registerValue.value) + ";";
                 }
             }
 

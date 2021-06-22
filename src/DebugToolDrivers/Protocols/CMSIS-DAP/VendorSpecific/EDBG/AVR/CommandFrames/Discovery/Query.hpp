@@ -22,12 +22,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class Query: public DiscoveryCommandFrame
     {
     private:
-        QueryContext context;
+        QueryContext context = QueryContext::COMMAND_HANDLERS;
 
     public:
         Query(): DiscoveryCommandFrame() {}
 
-        Query(QueryContext context): DiscoveryCommandFrame() {
+        explicit Query(QueryContext context): DiscoveryCommandFrame() {
             this->setContext(context);
         }
 
@@ -35,7 +35,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->context = context;
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The payload for the Query command consists of three bytes. A command ID (0x00), version (0x00) and a
              * query context.

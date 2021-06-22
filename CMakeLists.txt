@@ -83,7 +83,6 @@ add_executable(Bloom
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.cpp
 
-    src/Targets/Target.cpp
     src/Targets/TargetDescription/TargetDescriptionFile.cpp
     src/Targets/Microchip/AVR/AVR8/Avr8.cpp
     src/Targets/Microchip/AVR/AVR8/Mega/Mega.cpp
@@ -96,7 +95,7 @@ add_executable(Bloom
     src/DebugServers/GdbRsp/CommandPackets/CommandPacketFactory.cpp
     src/DebugServers/GdbRsp/CommandPackets/SupportedFeaturesQuery.cpp
     src/DebugServers/GdbRsp/CommandPackets/ReadGeneralRegisters.cpp
-    src/DebugServers/GdbRsp/CommandPackets/WriteGeneralRegisters.cpp
+    src/DebugServers/GdbRsp/CommandPackets/WriteGeneralRegister.cpp
     src/DebugServers/GdbRsp/CommandPackets/ContinueExecution.cpp
     src/DebugServers/GdbRsp/CommandPackets/StepExecution.cpp
     src/DebugServers/GdbRsp/CommandPackets/InterruptExecution.cpp

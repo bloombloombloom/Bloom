@@ -44,15 +44,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         void init(const std::vector<unsigned char>& rawResponse) override;
 
-        std::uint8_t getFragmentNumber() const {
+        [[nodiscard]] std::uint8_t getFragmentNumber() const {
             return this->fragmentNumber;
         }
 
-        std::uint8_t getFragmentCount() const {
+        [[nodiscard]] std::uint8_t getFragmentCount() const {
             return this->fragmentCount;
         }
 
-        const std::vector<unsigned char>& getResponsePacket() const {
+        [[nodiscard]] const std::vector<unsigned char>& getResponsePacket() const {
             return this->responsePacket;
         }
     };

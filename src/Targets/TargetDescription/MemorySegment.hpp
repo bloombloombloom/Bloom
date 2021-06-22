@@ -7,7 +7,8 @@
 
 namespace Bloom::Targets::TargetDescription
 {
-    enum MemorySegmentType {
+    enum MemorySegmentType
+    {
         REGISTERS,
         IO,
         EEPROM,

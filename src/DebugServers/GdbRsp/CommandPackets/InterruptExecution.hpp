@@ -15,8 +15,8 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
     class InterruptExecution: public CommandPacket
     {
     public:
-        InterruptExecution(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {}
+        explicit InterruptExecution(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {}
 
-        virtual void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
     };
 }

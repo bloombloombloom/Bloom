@@ -11,13 +11,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
     public:
         Stop() = default;
-        Stop(bool stopImmediately): stopImmediately(stopImmediately) {};
+        explicit Stop(bool stopImmediately): stopImmediately(stopImmediately) {};
 
         void setStopImmediately(bool stopImmediately) {
             this->stopImmediately = stopImmediately;
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The stop command consists of 3 bytes:
              * 1. Command ID (0x31)
@@ -32,5 +32,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             return output;
         }
     };
-
 }

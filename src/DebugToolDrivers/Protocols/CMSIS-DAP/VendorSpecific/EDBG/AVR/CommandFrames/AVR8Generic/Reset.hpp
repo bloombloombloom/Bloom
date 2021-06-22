@@ -11,13 +11,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
     public:
         Reset() = default;
-        Reset(bool stopAtMainAddress): stopAtMainAddress(stopAtMainAddress) {};
+        explicit Reset(bool stopAtMainAddress): stopAtMainAddress(stopAtMainAddress) {};
 
         void setStopAtMainAddress(bool stopAtMainAddress) {
             this->stopAtMainAddress = stopAtMainAddress;
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The reset command consists of 3 bytes:
              * 1. Command ID (0x30)
@@ -32,5 +32,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             return output;
         }
     };
-
 }

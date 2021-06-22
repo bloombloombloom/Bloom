@@ -39,9 +39,9 @@ namespace Bloom::Targets
         bool activated = false;
 
     public:
-        explicit Target() {}
+        explicit Target() = default;
 
-        bool isActivated() {
+        bool isActivated() const {
             return this->activated;
         }
 

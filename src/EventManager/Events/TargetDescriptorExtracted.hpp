@@ -13,7 +13,7 @@ namespace Bloom::Events
         static inline const std::string name = "TargetDescriptorExtracted";
         Targets::TargetDescriptor targetDescriptor;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return TargetDescriptorExtracted::name;
         }
     };

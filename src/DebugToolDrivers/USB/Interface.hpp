@@ -18,7 +18,7 @@ namespace Bloom::Usb
         std::uint16_t productId = 0;
 
         std::uint8_t number = 0;
-        std::string name = "";
+        std::string name;
 
         bool initialised = false;
         bool claimed = false;
@@ -52,11 +52,11 @@ namespace Bloom::Usb
             this->name = name;
         }
 
-        bool isClaimed() {
+        bool isClaimed() const {
             return this->claimed;
         }
 
-        bool isInitialised() {
+        bool isInitialised() const {
             return this->initialised;
         }
 

@@ -42,6 +42,7 @@ using Bloom::Targets::TargetState;
 using Bloom::Targets::TargetMemoryType;
 using Bloom::Targets::TargetMemoryBuffer;
 using Bloom::Targets::TargetRegister;
+using Bloom::Targets::TargetRegisterDescriptor;
 using Bloom::Targets::TargetRegisterType;
 using Bloom::Targets::TargetRegisters;
 
@@ -554,7 +555,7 @@ std::uint32_t EdbgAvr8Interface::getProgramCounter() {
 }
 
 TargetRegister EdbgAvr8Interface::getStackPointerRegister() {
-    return TargetRegister(TargetRegisterType::STACK_POINTER, this->readMemory(
+    return TargetRegister(TargetRegisterDescriptor(TargetRegisterType::STACK_POINTER), this->readMemory(
         Avr8MemoryType::SRAM,
         this->targetParameters.stackPointerRegisterStartAddress.value(),
         this->targetParameters.stackPointerRegisterSize.value()
@@ -562,7 +563,7 @@ TargetRegister EdbgAvr8Interface::getStackPointerRegister() {
 }
 
 TargetRegister EdbgAvr8Interface::getStatusRegister() {
-    return TargetRegister(TargetRegisterType::STATUS_REGISTER, this->readMemory(
+    return TargetRegister(TargetRegisterDescriptor(TargetRegisterType::STATUS_REGISTER), this->readMemory(
         Avr8MemoryType::SRAM,
         this->targetParameters.statusRegisterStartAddress.value(),
         this->targetParameters.statusRegisterSize.value()
@@ -840,7 +841,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(Avr8MemoryType type, std::uint3
     return response.getMemoryBuffer();
 }
 
-void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, TargetMemoryBuffer buffer) {
+void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, const TargetMemoryBuffer& buffer) {
     if (type == Avr8MemoryType::FLASH_PAGE) {
         // TODO: Implement support for writing to flash
         throw Exception("Cannot write to flash");
@@ -855,8 +856,6 @@ void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, 
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
         throw Avr8CommandFailure("Write memory AVR8 from target command failed", response);
     }
-
-    return;
 }
 
 TargetRegisters EdbgAvr8Interface::readGeneralPurposeRegisters(std::set<std::size_t> registerIds) {

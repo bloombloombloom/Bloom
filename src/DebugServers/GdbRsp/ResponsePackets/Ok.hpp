@@ -18,7 +18,7 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
     public:
         Ok() = default;
 
-        std::vector<unsigned char> getData() const override {
+        [[nodiscard]] std::vector<unsigned char> getData() const override {
             return {'O', 'K'};
         }
     };

@@ -53,7 +53,6 @@ namespace Bloom
          *
          * @param event
          */
-        void triggerEvent(Events::SharedGenericEventPointer event);
+        void triggerEvent(const Events::SharedGenericEventPointer& event);
     };
-
 }

@@ -12,7 +12,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
         std::vector<unsigned char> data;
 
     public:
-        unsigned char getCommandId() const {
+        [[nodiscard]] unsigned char getCommandId() const {
             return this->commandId;
         }
 
@@ -20,7 +20,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
             this->commandId = commandId;
         }
 
-        virtual std::vector<unsigned char> getData() const {
+        [[nodiscard]] virtual std::vector<unsigned char> getData() const {
             return this->data;
         }
 
@@ -33,7 +33,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
             return (int) (1 + this->getData().size());
         }
 
-        std::uint16_t getDataSize() const {
+        [[nodiscard]] std::uint16_t getDataSize() const {
             return (std::uint16_t) this->getData().size();
         }
 
@@ -46,7 +46,5 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
         explicit virtual operator std::vector<unsigned char>() const;
 
         virtual ~Command() = default;
-
     };
-
 }

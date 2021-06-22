@@ -13,7 +13,7 @@ namespace Bloom::Events
         static inline const std::string name = "MemoryRetrievedFromTarget";
         Targets::TargetMemoryBuffer data;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return MemoryRetrievedFromTarget::name;
         }
     };

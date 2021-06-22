@@ -23,7 +23,7 @@ namespace Bloom
         }
 
     public:
-        bool isInitialised() const {
+        [[nodiscard]] bool isInitialised() const {
             return this->initialised;
         }
 

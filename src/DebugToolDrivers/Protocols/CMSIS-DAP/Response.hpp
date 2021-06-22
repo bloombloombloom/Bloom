@@ -24,11 +24,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
         Response() = default;
         virtual void init(const std::vector<unsigned char>& rawResponse);
 
-        unsigned char getResponseId() const {
+        [[nodiscard]] unsigned char getResponseId() const {
             return this->responseId;
         }
 
-        virtual const std::vector<unsigned char>& getData() const {
+        [[nodiscard]] virtual const std::vector<unsigned char>& getData() const {
             return this->data;
         }
 

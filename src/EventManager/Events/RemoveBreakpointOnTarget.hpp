@@ -12,10 +12,9 @@ namespace Bloom::Events
     {
     public:
         static inline const std::string name = "RemoveBreakpointOnTarget";
-        std::uint32_t address;
         Targets::TargetBreakpoint breakpoint;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return RemoveBreakpointOnTarget::name;
         }
     };

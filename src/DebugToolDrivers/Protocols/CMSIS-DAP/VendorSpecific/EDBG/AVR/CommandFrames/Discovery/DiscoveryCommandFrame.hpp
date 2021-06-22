@@ -40,7 +40,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         using ResponseFrameType = ResponseFrames::DiscoveryResponseFrame;
 
         DiscoveryCommandFrame() {
-            this->setProtocolHandlerId(ProtocolHandlerId::Discovery);
+            this->setProtocolHandlerId(ProtocolHandlerId::DISCOVERY);
         }
     };
 }

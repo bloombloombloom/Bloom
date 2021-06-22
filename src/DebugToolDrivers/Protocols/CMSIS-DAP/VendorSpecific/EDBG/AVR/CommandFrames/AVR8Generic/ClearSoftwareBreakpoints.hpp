@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <utility>
 
 #include "Avr8GenericCommandFrame.hpp"
 
@@ -14,13 +15,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         ClearSoftwareBreakpoints() = default;
 
-        ClearSoftwareBreakpoints(const std::vector<std::uint32_t>& addresses): addresses(addresses) {}
+        explicit ClearSoftwareBreakpoints(std::vector<std::uint32_t>  addresses): addresses(std::move(addresses)) {}
 
         void setAddresses(const std::vector<std::uint32_t>& addresses) {
             this->addresses = addresses;
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The clear software breakpoints command consists of 2 bytes + 4*n bytes, where n is the number
              * of breakpoints to clear:
@@ -43,5 +44,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             return output;
         }
     };
-
 }

@@ -10,7 +10,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class ReadMemory: public Avr8GenericCommandFrame
     {
     private:
-        Avr8MemoryType type;
+        Avr8MemoryType type = Avr8MemoryType::SRAM;
         std::uint32_t address = 0;
         std::uint32_t bytes = 0;
 
@@ -31,7 +31,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->bytes = bytes;
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The read memory command consists of 11 bytes:
              * 1. Command ID (0x21)
@@ -56,5 +56,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             return output;
         }
     };
-
 }

@@ -2,8 +2,7 @@
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
 
-std::vector<unsigned char> AvrCommand::getData() const
-{
+std::vector<unsigned char> AvrCommand::getData() const {
     std::vector<unsigned char> data;
     auto commandPacket = this->getCommandPacket();
     std::size_t commandPacketSize = commandPacket.size();
@@ -21,4 +20,3 @@ std::vector<unsigned char> AvrCommand::getData() const
 
     return data;
 }
-

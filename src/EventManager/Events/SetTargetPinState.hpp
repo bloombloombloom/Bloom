@@ -11,11 +11,11 @@ namespace Bloom::Events
     {
     public:
         static inline const std::string name = "SetTargetPinState";
-        int variantId;
+        int variantId = 0;
         Targets::TargetPinDescriptor pinDescriptor;
         Targets::TargetPinState pinState;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return SetTargetPinState::name;
         }
     };

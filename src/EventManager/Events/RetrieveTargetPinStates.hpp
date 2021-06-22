@@ -10,9 +10,9 @@ namespace Bloom::Events
     {
     public:
         static inline const std::string name = "RetrieveTargetPinStates";
-        int variantId;
+        int variantId = 0;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return RetrieveTargetPinStates::name;
         }
     };

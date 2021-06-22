@@ -8,8 +8,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     class ReadMemory: public Avr8GenericResponseFrame
     {
     public:
-        ReadMemory(const std::vector<AvrResponse>& AVRResponses): Avr8GenericResponseFrame(AVRResponses) {}
-        ReadMemory() {}
+        ReadMemory() = default;
+        explicit ReadMemory(const std::vector<AvrResponse>& AVRResponses): Avr8GenericResponseFrame(AVRResponses) {}
 
         Targets::TargetMemoryBuffer getMemoryBuffer() {
             /*
@@ -24,5 +24,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
             return data;
         }
     };
-
 }

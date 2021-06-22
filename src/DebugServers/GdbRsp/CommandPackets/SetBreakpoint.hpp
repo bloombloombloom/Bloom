@@ -32,12 +32,12 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         /**
          * Address at which the breakpoint should be located.
          */
-        std::uint32_t address;
+        std::uint32_t address = 0;
 
-        SetBreakpoint(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
+        explicit SetBreakpoint(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             this->init();
         };
 
-        virtual void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
     };
 }

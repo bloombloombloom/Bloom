@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 
 #include "Event.hpp"
 #include "src/Targets/TargetMemory.hpp"
@@ -12,11 +13,11 @@ namespace Bloom::Events
     {
     public:
         static inline const std::string name = "WriteMemoryToTarget";
-        Targets::TargetMemoryType memoryType;
-        std::uint32_t startAddress;
+        Targets::TargetMemoryType memoryType = Targets::TargetMemoryType::RAM;
+        std::uint32_t startAddress = 0;
         Targets::TargetMemoryBuffer buffer;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return WriteMemoryToTarget::name;
         }
 
@@ -24,7 +25,7 @@ namespace Bloom::Events
         WriteMemoryToTarget(
             Targets::TargetMemoryType memoryType,
             std::uint32_t startAddress,
-            const Targets::TargetMemoryBuffer& buffer
-        ): memoryType(memoryType), startAddress(startAddress), buffer(buffer) {};
+            Targets::TargetMemoryBuffer buffer
+        ): memoryType(memoryType), startAddress(startAddress), buffer(std::move(buffer)) {};
     };
 }

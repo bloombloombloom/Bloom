@@ -65,35 +65,35 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          *
          * @return
          */
-        TargetSignature getTargetSignature() const;
+        [[nodiscard]] TargetSignature getTargetSignature() const;
 
         /**
          * Extracts the AVR8 target family from the target description XML.
          *
          * @return
          */
-        Family getFamily() const;
+        [[nodiscard]] Family getFamily() const;
 
-        std::optional<Targets::TargetDescription::MemorySegment> getFlashMemorySegment() const;
-        std::optional<Targets::TargetDescription::MemorySegment> getRamMemorySegment() const;
-        std::optional<Targets::TargetDescription::MemorySegment> getRegisterMemorySegment() const;
-        std::optional<Targets::TargetDescription::MemorySegment> getEepromMemorySegment() const;
-        std::optional<Targets::TargetDescription::MemorySegment> getFirstBootSectionMemorySegment() const;
-        std::optional<Targets::TargetDescription::RegisterGroup> getCpuRegisterGroup() const;
-        std::optional<Targets::TargetDescription::RegisterGroup> getBootLoadRegisterGroup() const;
-        std::optional<Targets::TargetDescription::RegisterGroup> getEepromRegisterGroup() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFlashMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRamMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRegisterMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getEepromMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFirstBootSectionMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::RegisterGroup> getCpuRegisterGroup() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::RegisterGroup> getBootLoadRegisterGroup() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::RegisterGroup> getEepromRegisterGroup() const;
 
-        std::optional<Targets::TargetDescription::Register> getStatusRegister() const;
-        std::optional<Targets::TargetDescription::Register> getStackPointerRegister() const;
-        std::optional<Targets::TargetDescription::Register> getStackPointerHighRegister() const;
-        std::optional<Targets::TargetDescription::Register> getStackPointerLowRegister() const;
-        std::optional<Targets::TargetDescription::Register> getOscillatorCalibrationRegister() const;
-        std::optional<Targets::TargetDescription::Register> getSpmcsRegister() const;
-        std::optional<Targets::TargetDescription::Register> getSpmcRegister() const;
-        std::optional<Targets::TargetDescription::Register> getEepromAddressRegister() const;
-        std::optional<Targets::TargetDescription::Register> getEepromAddressLowRegister() const;
-        std::optional<Targets::TargetDescription::Register> getEepromAddressHighRegister() const;
-        std::optional<Targets::TargetDescription::Register> getEepromDataRegister() const;
-        std::optional<Targets::TargetDescription::Register> getEepromControlRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getStatusRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getStackPointerRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getStackPointerHighRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getStackPointerLowRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getOscillatorCalibrationRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getSpmcsRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getSpmcRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getEepromAddressRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getEepromAddressLowRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getEepromAddressHighRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getEepromDataRegister() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::Register> getEepromControlRegister() const;
     };
 }

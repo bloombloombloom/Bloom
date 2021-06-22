@@ -1,6 +1,7 @@
 #pragma once
 
 #include <set>
+#include <utility>
 
 #include "ResponsePacket.hpp"
 #include "../Feature.hpp"
@@ -17,9 +18,9 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
 
     public:
         SupportedFeaturesResponse() = default;
-        SupportedFeaturesResponse(const std::set<std::pair<Feature, std::optional<std::string>>>& supportedFeatures)
-        : supportedFeatures(supportedFeatures) {};
+        explicit SupportedFeaturesResponse(std::set<std::pair<Feature, std::optional<std::string>>> supportedFeatures)
+        : supportedFeatures(std::move(supportedFeatures)) {};
 
-        std::vector<unsigned char> getData() const override;
+        [[nodiscard]] std::vector<unsigned char> getData() const override;
     };
 }

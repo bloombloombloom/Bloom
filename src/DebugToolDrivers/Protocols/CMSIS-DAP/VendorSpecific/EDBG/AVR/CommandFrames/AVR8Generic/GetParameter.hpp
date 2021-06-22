@@ -10,12 +10,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     {
     private:
         Avr8EdbgParameter parameter;
-        std::uint8_t size;
+        std::uint8_t size = 0;
 
     public:
         GetParameter() = default;
 
-        GetParameter(const Avr8EdbgParameter& parameter) {
+        explicit GetParameter(const Avr8EdbgParameter& parameter) {
             this->setParameter(parameter);
         }
 
@@ -31,7 +31,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->size = size;
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The get param command consists of 5 bytes:
              * 1. Command ID (0x02)
@@ -50,5 +50,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             return output;
         }
     };
-
 }

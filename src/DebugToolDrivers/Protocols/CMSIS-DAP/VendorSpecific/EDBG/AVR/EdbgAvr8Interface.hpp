@@ -350,7 +350,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          * @param buffer
          */
-        void writeMemory(Avr8MemoryType type, std::uint32_t address, Targets::TargetMemoryBuffer buffer);
+        void writeMemory(Avr8MemoryType type, std::uint32_t address, const Targets::TargetMemoryBuffer& buffer);
 
         /**
          * Fetches the current target state.
@@ -413,7 +413,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         void waitForStoppedEvent();
 
     public:
-        EdbgAvr8Interface(EdbgInterface& edbgInterface)
+        explicit EdbgAvr8Interface(EdbgInterface& edbgInterface)
         : edbgInterface(edbgInterface) {};
 
         /*
@@ -427,7 +427,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * @param targetConfig
          */
-        virtual void configure(const TargetConfig& targetConfig) override;
+        void configure(const TargetConfig& targetConfig) override;
 
         /**
          * Configures the target family. For some physical interfaces, the target family is required in order
@@ -445,22 +445,22 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * @param config
          */
-        virtual void setTargetParameters(const Targets::Microchip::Avr::Avr8Bit::TargetParameters& config) override;
+        void setTargetParameters(const Targets::Microchip::Avr::Avr8Bit::TargetParameters& config) override;
 
         /**
          * Initialises the AVR8 Generic protocol interface by setting the appropriate parameters on the debug tool.
          */
-        virtual void init() override;
+        void init() override;
 
         /**
          * Issues the "stop" command to the debug tool, halting target execution.
          */
-        virtual void stop() override;
+        void stop() override;
 
         /**
          * Issues the "run" command to the debug tool, resuming execution on the target.
          */
-        virtual void run() override;
+        void run() override;
 
         /**
          * Issues the "run to" command to the debug tool, resuming execution on the target, up to a specific byte
@@ -469,65 +469,65 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          *  The (byte) address to run to.
          */
-        virtual void runTo(std::uint32_t address) override;
+        void runTo(std::uint32_t address) override;
 
         /**
          * Issues the "step" command to the debug tool, stepping the execution on the target. The stepping can be
          * configured to step in, out or over. But currently we only support stepping in. The target will dispatch
          * an AVR BREAK event once it reaches the next instruction.
          */
-        virtual void step() override;
+        void step() override;
 
         /**
          * Issues the "reset" command to the debug tool, resetting target execution.
          */
-        virtual void reset() override;
+        void reset() override;
 
         /**
          * Activates the physical interface and starts a debug session on the target (via attach()).
          */
-        virtual void activate() override;
+        void activate() override;
 
         /**
          * Terminates any active debug session on the target and severs the connection between the debug tool and
          * the target (by deactivating the physical interface).
          */
-        virtual void deactivate() override;
+        void deactivate() override;
 
         /**
          * Issues the "PC Read" command to the debug tool, to extract the current program counter.
          *
          * @return
          */
-        virtual std::uint32_t getProgramCounter() override;
+        std::uint32_t getProgramCounter() override;
 
         /**
          * Reads the stack pointer register from the target.
          *
          * @return
          */
-        virtual Targets::TargetRegister getStackPointerRegister() override;
+        Targets::TargetRegister getStackPointerRegister() override;
 
         /**
          * Reads the status register from the target.
          *
          * @return
          */
-        virtual Targets::TargetRegister getStatusRegister() override;
+        Targets::TargetRegister getStatusRegister() override;
 
         /**
          * Updates the stack pointer register on ther target.
          *
          * @param stackPointerRegister
          */
-        virtual void setStackPointerRegister(const Targets::TargetRegister& stackPointerRegister) override;
+        void setStackPointerRegister(const Targets::TargetRegister& stackPointerRegister) override;
 
         /**
          * Updates the status register on the target.
          *
          * @param statusRegister
          */
-        virtual void setStatusRegister(const Targets::TargetRegister& statusRegister) override;
+        void setStatusRegister(const Targets::TargetRegister& statusRegister) override;
 
         /**
          * Issues the "PC Write" command to the debug tool, setting the program counter on the target.
@@ -535,14 +535,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param programCounter
          *  The byte address to set as the program counter.
          */
-        virtual void setProgramCounter(std::uint32_t programCounter) override;
+        void setProgramCounter(std::uint32_t programCounter) override;
 
         /**
          * Issues the "Get ID" command to the debug tool, to extract the signature from the target.
          *
          * @return
          */
-        virtual Targets::Microchip::Avr::TargetSignature getDeviceId() override;
+        Targets::Microchip::Avr::TargetSignature getDeviceId() override;
 
         /**
          * Issues the "Software Breakpoint Set" command to the debug tool, setting a software breakpoint at the given
@@ -551,7 +551,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          *  The byte address to position the breakpoint.
          */
-        virtual void setBreakpoint(std::uint32_t address) override;
+        void setBreakpoint(std::uint32_t address) override;
 
         /**
          * Issues the "Software Breakpoint Clear" command to the debug tool, clearing any breakpoint at the given
@@ -560,7 +560,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          *  The byte address of the breakpoint to clear.
          */
-        virtual void clearBreakpoint(std::uint32_t address) override;
+        void clearBreakpoint(std::uint32_t address) override;
 
         /**
          * Issues the "Software Breakpoint Clear All" command to the debug tool, clearing all software breakpoints
@@ -568,7 +568,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * If the debug session ended before any of the set breakpoints were cleared, this will *not* clear them.
          */
-        virtual void clearAllBreakpoints() override;
+        void clearAllBreakpoints() override;
 
         /**
          * Reads gernal purpose registers from the target.
@@ -576,14 +576,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param registerIds
          * @return
          */
-        virtual Targets::TargetRegisters readGeneralPurposeRegisters(std::set<std::size_t> registerIds) override;
+        Targets::TargetRegisters readGeneralPurposeRegisters(std::set<std::size_t> registerIds) override;
 
         /**
          * Writes general purpose registers to target.
          *
          * @param registers
          */
-        virtual void writeGeneralPurposeRegisters(const Targets::TargetRegisters& registers) override;
+        void writeGeneralPurposeRegisters(const Targets::TargetRegisters& registers) override;
 
         /**
          * This is an overloaded method.
@@ -595,7 +595,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param bytes
          * @return
          */
-        virtual Targets::TargetMemoryBuffer readMemory(
+        Targets::TargetMemoryBuffer readMemory(
             Targets::TargetMemoryType memoryType,
             std::uint32_t startAddress,
             std::uint32_t bytes
@@ -610,7 +610,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param startAddress
          * @param buffer
          */
-        virtual void writeMemory(
+        void writeMemory(
             Targets::TargetMemoryType memoryType,
             std::uint32_t startAddress,
             const Targets::TargetMemoryBuffer& buffer
@@ -621,6 +621,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * @return
          */
-        virtual Targets::TargetState getTargetState() override;
+        Targets::TargetState getTargetState() override;
     };
 }

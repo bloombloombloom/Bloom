@@ -24,17 +24,17 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          *
          * For an example of where GDB does this, see the AvrGdbRsp class.
          */
-        std::uint32_t startAddress;
+        std::uint32_t startAddress = 0;
 
         /**
          * Number of bytes to read.
          */
-        std::uint32_t bytes;
+        std::uint32_t bytes = 0;
 
-        ReadMemory(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
+        explicit ReadMemory(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             init();
         };
 
-        virtual void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
     };
 }

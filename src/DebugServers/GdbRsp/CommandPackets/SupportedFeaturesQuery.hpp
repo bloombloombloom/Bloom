@@ -27,18 +27,18 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         void init();
 
     public:
-        SupportedFeaturesQuery(std::vector<unsigned char> rawPacket): CommandPacket(rawPacket) {
+        explicit SupportedFeaturesQuery(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             this->init();
         };
 
-        bool isFeatureSupported(const Feature& feature) const {
+        [[nodiscard]] bool isFeatureSupported(const Feature& feature) const {
             return this->supportedFeatures.find(feature) != this->supportedFeatures.end();
         }
 
-        const std::set<Feature>& getSupportedFeatures() const {
+        [[nodiscard]] const std::set<Feature>& getSupportedFeatures() const {
             return this->supportedFeatures;
         }
 
-        virtual void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
     };
 }

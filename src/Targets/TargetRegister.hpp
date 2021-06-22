@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utility>
 #include <vector>
 #include <map>
 
@@ -19,8 +20,8 @@ namespace Bloom::Targets
         std::optional<IdType> id;
         TargetRegisterType type = TargetRegisterType::GENERAL_PURPOSE_REGISTER;
 
-        TargetRegisterDescriptor() {};
-        TargetRegisterDescriptor(TargetRegisterType type): type(type) {};
+        TargetRegisterDescriptor() = default;
+        explicit TargetRegisterDescriptor(TargetRegisterType type): type(type) {};
         TargetRegisterDescriptor(IdType id, TargetRegisterType type): id(id), type(type) {};
 
         bool operator==(const TargetRegisterDescriptor& other) const {
@@ -30,27 +31,25 @@ namespace Bloom::Targets
 
     struct TargetRegister
     {
-        using IdType = size_t;
-        using ValueType = std::vector<unsigned char>;
-        std::optional<IdType> id;
-        ValueType value;
+        std::optional<size_t> id;
+        std::vector<unsigned char> value;
         TargetRegisterDescriptor descriptor;
 
-        TargetRegister(const ValueType& value): value(value) {};
+        explicit TargetRegister(std::vector<unsigned char> value): value(std::move(value)) {};
 
-        TargetRegister(TargetRegisterDescriptor descriptor, const ValueType& value): value(value),
+        TargetRegister(TargetRegisterDescriptor descriptor, std::vector<unsigned char> value): value(std::move(value)),
         descriptor(descriptor) {};
 
-        TargetRegister(IdType id, const ValueType& value): id(id), value(value) {
+        TargetRegister(size_t id, std::vector<unsigned char> value): id(id), value(std::move(value)) {
             this->descriptor.id = id;
         };
 
-        IdType size() const {
+        [[nodiscard]] size_t size() const {
             return this->value.size();
         }
     };
 
-    using TargetRegisterMap = std::map<TargetRegister::IdType, TargetRegister>;
+    using TargetRegisterMap = std::map<size_t, TargetRegister>;
     using TargetRegisters = std::vector<TargetRegister>;
     using TargetRegisterDescriptors = std::vector<TargetRegisterDescriptor>;
 }

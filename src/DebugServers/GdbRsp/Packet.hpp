@@ -28,11 +28,11 @@ namespace Bloom::DebugServers::Gdb
         }
     public:
         Packet() = default;
-        Packet(const std::vector<unsigned char>& rawPacket) {
+        explicit Packet(const std::vector<unsigned char>& rawPacket) {
             this->init(rawPacket);
         }
 
-        virtual std::vector<unsigned char> getData() const {
+        [[nodiscard]] virtual std::vector<unsigned char> getData() const {
             return this->data;
         }
 
@@ -45,7 +45,7 @@ namespace Bloom::DebugServers::Gdb
          *
          * @return
          */
-        std::vector<unsigned char> toRawPacket() const {
+        [[nodiscard]] std::vector<unsigned char> toRawPacket() const {
             std::vector<unsigned char> packet = {'$'};
             auto data = this->getData();
 
@@ -90,7 +90,7 @@ namespace Bloom::DebugServers::Gdb
          * @param data
          * @return
          */
-        static std::string dataToHex(std::vector<unsigned char> data) {
+        static std::string dataToHex(const std::vector<unsigned char>& data) {
             std::stringstream stream;
             stream << std::hex << std::setfill('0');
 

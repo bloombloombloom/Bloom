@@ -200,11 +200,11 @@ namespace Bloom::DebugServers::Gdb
         virtual void handleGdbPacket(CommandPackets::ReadGeneralRegisters& packet);
 
         /**
-         * Handles the write general registers ("G" and "P") command packet.
+         * Handles the write general register ("P") command packet.
          *
          * @param packet
          */
-        virtual void handleGdbPacket(CommandPackets::WriteGeneralRegisters& packet);
+        virtual void handleGdbPacket(CommandPackets::WriteGeneralRegister& packet);
 
         /**
          * Handles the continue execution ("c") command packet.

@@ -6,10 +6,10 @@ Bloom will have an associated TDF in Bloom's codebase. They can be found in `src
 The data held by TDFs is fundamental to Bloom's operation. The following is an incomplete list of some of the
 data extracted from TDFs:
 
-- Target signatures
-- Parameters for debug interfaces
 - Memory address space descriptions (including sections, offsets and sizes)
 - Register descriptions (including offsets and sizes)
+- Parameters for debug interfaces
+- Target signatures
 - Package variant descriptions
 - Package pinouts
 

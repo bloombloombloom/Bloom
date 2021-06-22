@@ -13,8 +13,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         using ResponseFrameType = ResponseFrames::Avr8Generic::Avr8GenericResponseFrame;
 
         Avr8GenericCommandFrame() {
-            this->setProtocolHandlerId(ProtocolHandlerId::Avr8Generic);
+            this->setProtocolHandlerId(ProtocolHandlerId::AVR8_GENERIC);
         }
     };
-
 }

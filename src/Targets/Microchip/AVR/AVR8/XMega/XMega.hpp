@@ -7,9 +7,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     class XMega: public Avr8
     {
     public:
-        XMega(const Avr8& avr8): Avr8(avr8) {};
+        explicit XMega(const Avr8& avr8): Avr8(avr8) {};
 
-        virtual bool supportsPromotion() override {
+        bool supportsPromotion() override {
             return false;
         }
     };

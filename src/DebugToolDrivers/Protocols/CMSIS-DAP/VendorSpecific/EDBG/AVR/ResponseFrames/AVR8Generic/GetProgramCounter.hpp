@@ -10,8 +10,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     class GetProgramCounter: public Avr8GenericResponseFrame
     {
     public:
-        GetProgramCounter(const std::vector<AvrResponse>& AVRResponses): Avr8GenericResponseFrame(AVRResponses) {}
-        GetProgramCounter() {}
+        GetProgramCounter() = default;
+        explicit GetProgramCounter(const std::vector<AvrResponse>& AVRResponses): Avr8GenericResponseFrame(AVRResponses) {}
 
         std::uint32_t extractProgramCounter() {
             /*

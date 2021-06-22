@@ -12,11 +12,11 @@ namespace Bloom::Events
     public:
         TargetControllerState state;
 
-        TargetControllerStateReported(TargetControllerState state): state(state) {};
+        explicit TargetControllerStateReported(TargetControllerState state): state(state) {};
 
         static inline const std::string name = "TargetControllerStateReported";
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return TargetControllerStateReported::name;
         }
     };

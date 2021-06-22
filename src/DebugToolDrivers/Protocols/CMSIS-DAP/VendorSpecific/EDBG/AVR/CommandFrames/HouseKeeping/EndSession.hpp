@@ -27,5 +27,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->init();
         }
     };
-
 }

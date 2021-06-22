@@ -1,5 +1,4 @@
 #include <variant>
-#include <cstdint>
 
 #include "DebugServer.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"

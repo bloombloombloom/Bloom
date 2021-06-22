@@ -10,7 +10,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class WriteMemory: public Avr8GenericCommandFrame
     {
     private:
-        Avr8MemoryType type;
+        Avr8MemoryType type = Avr8MemoryType::SRAM;
         std::uint32_t address = 0;
         Targets::TargetMemoryBuffer buffer;
 
@@ -29,7 +29,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->buffer = buffer;
         }
 
-        virtual std::vector<unsigned char> getPayload() const override {
+        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
             /*
              * The write memory command consists of 12 bytes + the buffer size:
              * 1. Command ID (0x23)
@@ -63,5 +63,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             return output;
         }
     };
-
 }

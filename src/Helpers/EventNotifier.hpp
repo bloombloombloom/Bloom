@@ -56,7 +56,7 @@ namespace Bloom
             }
         }
 
-        int getFileDescriptor() {
+        int getFileDescriptor() const {
             return this->fileDescriptor;
         }
 

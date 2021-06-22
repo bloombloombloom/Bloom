@@ -40,7 +40,7 @@ void WriteMemory::init() {
         throw Exception("Failed to parse write length from write memory packet data");
     }
 
-    this->buffer = this->hexToData(lengthAndBufferSegments.at(1).toStdString());
+    this->buffer = Packet::hexToData(lengthAndBufferSegments.at(1).toStdString());
 
     if (this->buffer.size() != bufferSize) {
         throw Exception("Buffer size does not match length value given in write memory packet");

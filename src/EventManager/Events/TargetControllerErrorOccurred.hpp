@@ -13,7 +13,7 @@ namespace Bloom::Events
 
         TargetControllerErrorOccurred() = default;
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return TargetControllerErrorOccurred::name;
         }
     };
