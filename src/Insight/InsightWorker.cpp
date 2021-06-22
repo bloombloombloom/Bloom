@@ -60,7 +60,7 @@ void InsightWorker::requestPinStateUpdate(
     this->targetControllerConsole.setPinState(variantId, pinDescriptor, pinState);
 }
 
-void InsightWorker::onTargetStoppedEvent(EventPointer<TargetExecutionStopped> event) {
+void InsightWorker::onTargetStoppedEvent(EventRef<TargetExecutionStopped> event) {
     /*
      * When we report a target halt to Insight, Insight will immediately seek more data from the target (such as GPIO
      * pin states). This can be problematic for cases where the target had halted due to a conditional breakpoint.
@@ -88,30 +88,30 @@ void InsightWorker::onTargetStoppedEvent(EventPointer<TargetExecutionStopped> ev
 
     if (!resumedEvent.has_value()) {
         emit this->targetStateUpdated(TargetState::STOPPED);
-        emit this->targetProgramCounterUpdated(event->programCounter);
+        emit this->targetProgramCounterUpdated(event.programCounter);
     }
 }
 
-void InsightWorker::onTargetResumedEvent(EventPointer<TargetExecutionResumed> event) {
+void InsightWorker::onTargetResumedEvent(EventRef<TargetExecutionResumed> event) {
     emit this->targetStateUpdated(TargetState::RUNNING);
 }
 
-void InsightWorker::onTargetPinStatesRetrievedEvent(EventPointer<TargetPinStatesRetrieved> event) {
-    emit this->targetPinStatesUpdated(event->variantId, event->pinSatesByNumber);
+void InsightWorker::onTargetPinStatesRetrievedEvent(EventRef<TargetPinStatesRetrieved> event) {
+    emit this->targetPinStatesUpdated(event.variantId, event.pinSatesByNumber);
 }
 
-void InsightWorker::onTargetIoPortsUpdatedEvent(EventPointer<TargetIoPortsUpdated> event) {
+void InsightWorker::onTargetIoPortsUpdatedEvent(EventRef<TargetIoPortsUpdated> event) {
     emit this->targetIoPortsUpdated();
 }
 
-void InsightWorker::onTargetControllerStateReported(EventPointer<TargetControllerStateReported> event) {
+void InsightWorker::onTargetControllerStateReported(EventRef<TargetControllerStateReported> event) {
     if (this->lastTargetControllerState == TargetControllerState::ACTIVE
-        && event->state == TargetControllerState::SUSPENDED
+        && event.state == TargetControllerState::SUSPENDED
     ) {
         emit this->targetControllerSuspended();
 
     } else if (this->lastTargetControllerState == TargetControllerState::SUSPENDED
-        && event->state == TargetControllerState::ACTIVE
+        && event.state == TargetControllerState::ACTIVE
     ) {
         try {
             emit this->targetControllerResumed(this->targetControllerConsole.getTargetDescriptor());
@@ -120,5 +120,5 @@ void InsightWorker::onTargetControllerStateReported(EventPointer<TargetControlle
             Logger::error("Insight resume failed - " + exception.getMessage());
         }
     }
-    this->lastTargetControllerState = event->state;
+    this->lastTargetControllerState = event.state;
 }

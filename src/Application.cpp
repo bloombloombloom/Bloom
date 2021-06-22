@@ -323,20 +323,20 @@ void Application::stopDebugServer() {
     }
 }
 
-void Application::onTargetControllerThreadStateChanged(EventPointer<Events::TargetControllerThreadStateChanged> event) {
-    if (event->getState() == ThreadState::STOPPED || event->getState() == ThreadState::SHUTDOWN_INITIATED) {
+void Application::onTargetControllerThreadStateChanged(EventRef<Events::TargetControllerThreadStateChanged> event) {
+    if (event.getState() == ThreadState::STOPPED || event.getState() == ThreadState::SHUTDOWN_INITIATED) {
         // TargetController has unexpectedly shutdown - it must have encountered a fatal error.
         this->shutdown();
     }
 }
 
-void Application::onShutdownApplicationRequest(EventPointer<Events::ShutdownApplication>) {
+void Application::onShutdownApplicationRequest(EventRef<Events::ShutdownApplication>) {
     Logger::debug("ShutdownApplication event received.");
     this->shutdown();
 }
 
-void Application::onDebugServerThreadStateChanged(EventPointer<Events::DebugServerThreadStateChanged> event) {
-    if (event->getState() == ThreadState::STOPPED || event->getState() == ThreadState::SHUTDOWN_INITIATED) {
+void Application::onDebugServerThreadStateChanged(EventRef<Events::DebugServerThreadStateChanged> event) {
+    if (event.getState() == ThreadState::STOPPED || event.getState() == ThreadState::SHUTDOWN_INITIATED) {
         // DebugServer has unexpectedly shutdown - it must have encountered a fatal error.
         this->shutdown();
     }

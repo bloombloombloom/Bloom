@@ -233,7 +233,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onTargetControllerThreadStateChanged(Events::EventPointer<Events::TargetControllerThreadStateChanged> event);
+        void onTargetControllerThreadStateChanged(Events::EventRef<Events::TargetControllerThreadStateChanged> event);
 
         /**
          * Same goes for the DebugServer - it should never shutdown unless a shutdown request was issued. If it does,
@@ -241,12 +241,12 @@ namespace Bloom
          *
          * @param event
          */
-        void onDebugServerThreadStateChanged(Events::EventPointer<Events::DebugServerThreadStateChanged> event);
+        void onDebugServerThreadStateChanged(Events::EventRef<Events::DebugServerThreadStateChanged> event);
 
         /**
          * Triggers a shutdown of Bloom and all of its components.
          */
-        void onShutdownApplicationRequest(Events::EventPointer<Events::ShutdownApplication>);
+        void onShutdownApplicationRequest(Events::EventRef<Events::ShutdownApplication>);
 
         /**
          * Checks if the current effective user running Bloom has root privileges.

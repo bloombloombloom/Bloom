@@ -14,21 +14,17 @@ namespace Bloom::Events
     class Event
     {
     private:
-        QDateTime createdTimestamp = DateTime::currentDateTime();
         static inline std::atomic<int> lastEventId = 0;
 
     public:
-        int id = ++(this->lastEventId);
+        int id = ++(Event::lastEventId);
+        QDateTime createdTimestamp = DateTime::currentDateTime();
         std::optional<int> correlationId;
 
         static inline const std::string name = "GenericEvent";
 
-        virtual std::string getName() const {
+        [[nodiscard]] virtual std::string getName() const {
             return Event::name;
-        }
-
-        long getCreatedEpochTimestamp() const {
-            return this->createdTimestamp.toMSecsSinceEpoch();
         }
     };
 }

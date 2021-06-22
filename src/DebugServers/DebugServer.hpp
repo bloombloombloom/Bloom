@@ -59,7 +59,7 @@ namespace Bloom::DebugServers
          *
          * @param event
          */
-        void onShutdownDebugServerEvent(Events::EventPointer<Events::ShutdownDebugServer> event);
+        void onShutdownDebugServerEvent(Events::EventRef<Events::ShutdownDebugServer> event);
 
     protected:
         /**

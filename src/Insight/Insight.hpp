@@ -81,7 +81,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onShutdownApplicationEvent(Events::EventPointer<Events::ShutdownApplication> event);
+        void onShutdownApplicationEvent(Events::EventRef<Events::ShutdownApplication> event);
 
         /**
          * If the something horrible was to happen and the TC dies unexpectedly, Insight will shutdown in response.
@@ -89,7 +89,7 @@ namespace Bloom
          * @param event
          */
         void onTargetControllerThreadStateChangedEvent(
-            Events::EventPointer<Events::TargetControllerThreadStateChanged> event
+            Events::EventRef<Events::TargetControllerThreadStateChanged> event
         );
 
         /**

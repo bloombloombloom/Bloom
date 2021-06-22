@@ -201,8 +201,8 @@ void GdbRspDebugServer::waitForConnection() {
     }
 }
 
-void GdbRspDebugServer::onTargetControllerStateReported(Events::EventPointer<Events::TargetControllerStateReported> event) {
-    if (event->state == TargetControllerState::SUSPENDED && this->clientConnection.has_value()) {
+void GdbRspDebugServer::onTargetControllerStateReported(Events::EventRef<Events::TargetControllerStateReported> event) {
+    if (event.state == TargetControllerState::SUSPENDED && this->clientConnection.has_value()) {
         Logger::warning("Terminating debug session - TargetController suspended unexpectedly");
         this->closeClientConnection();
     }
@@ -232,7 +232,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPacket& packet) {
     }
 }
 
-void GdbRspDebugServer::onTargetExecutionStopped(EventPointer<Events::TargetExecutionStopped>) {
+void GdbRspDebugServer::onTargetExecutionStopped(EventRef<Events::TargetExecutionStopped>) {
     if (this->clientConnection.has_value() && this->clientConnection->waitingForBreak) {
         this->clientConnection->writePacket(TargetStopped(Signal::TRAP));
         this->clientConnection->waitingForBreak = false;
@@ -243,7 +243,8 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::SupportedFeaturesQuery& 
     Logger::debug("Handling QuerySupport packet");
 
     if (!packet.isFeatureSupported(Feature::HARDWARE_BREAKPOINTS)
-        && !packet.isFeatureSupported(Feature::SOFTWARE_BREAKPOINTS)) {
+        && !packet.isFeatureSupported(Feature::SOFTWARE_BREAKPOINTS)
+    ) {
         // All GDB clients are expected to support breakpoints!
         throw ClientNotSupported("GDB client does not support HW or SW breakpoints");
     }

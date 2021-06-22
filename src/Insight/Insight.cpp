@@ -119,7 +119,7 @@ void Insight::shutdown() {
     this->setThreadState(ThreadState::STOPPED);
 }
 
-void Insight::onShutdownApplicationEvent(EventPointer<ShutdownApplication>) {
+void Insight::onShutdownApplicationEvent(EventRef<ShutdownApplication>) {
     /*
      * Once Insight shuts down, control of the main thread will be returned to Application::run(), which
      * will pickup the ShutdownApplication event and proceed with the shutdown.
@@ -127,8 +127,8 @@ void Insight::onShutdownApplicationEvent(EventPointer<ShutdownApplication>) {
     this->shutdown();
 }
 
-void Insight::onTargetControllerThreadStateChangedEvent(EventPointer<TargetControllerThreadStateChanged> event) {
-    if (event->getState() == ThreadState::STOPPED) {
+void Insight::onTargetControllerThreadStateChangedEvent(EventRef<TargetControllerThreadStateChanged> event) {
+    if (event.getState() == ThreadState::STOPPED) {
         // Something horrible has happened with the TargetController - Insight is useless without the TargetController
         this->shutdown();
     }

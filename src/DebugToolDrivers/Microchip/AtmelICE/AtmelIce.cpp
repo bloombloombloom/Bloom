@@ -18,7 +18,7 @@ void AtmelIce::init() {
 
     if (!usbHidInterface.isInitialised()) {
         usbHidInterface.detachKernelDriver();
-        UsbDevice::setConfiguration(0);
+        this->setConfiguration(0);
         usbHidInterface.init();
     }
 

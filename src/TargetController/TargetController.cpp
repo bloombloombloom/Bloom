@@ -68,7 +68,7 @@ void TargetController::startup() {
     this->eventManager.registerListener(this->eventListener);
 
     // Install Bloom's udev rules if not already installed
-    this->checkUdevRules();
+    TargetController::checkUdevRules();
 
     // Register event handlers
     this->eventListener->registerCallbackForEventType<Events::ReportTargetControllerState>(
@@ -303,7 +303,7 @@ void TargetController::acquireHardware() {
             break;
         }
 
-        this->target.reset(promotedTarget.release());
+        this->target = std::move(promotedTarget);
         this->target->postPromotionConfigure();
     }
 
@@ -360,17 +360,17 @@ void TargetController::emitErrorEvent(int correlationId) {
     this->eventManager.triggerEvent(errorEvent);
 }
 
-void TargetController::onShutdownTargetControllerEvent(EventPointer<Events::ShutdownTargetController>) {
+void TargetController::onShutdownTargetControllerEvent(EventRef<Events::ShutdownTargetController>) {
     this->shutdown();
 }
 
-void TargetController::onStateReportRequest(EventPointer<Events::ReportTargetControllerState> event) {
+void TargetController::onStateReportRequest(EventRef<Events::ReportTargetControllerState> event) {
     auto stateEvent = std::make_shared<TargetControllerStateReported>(this->state);
-    stateEvent->correlationId = event->id;
+    stateEvent->correlationId = event.id;
     this->eventManager.triggerEvent(stateEvent);
 }
 
-void TargetController::onDebugSessionStartedEvent(EventPointer<Events::DebugSessionStarted>) {
+void TargetController::onDebugSessionStartedEvent(EventRef<Events::DebugSessionStarted>) {
     if (this->state == TargetControllerState::SUSPENDED) {
         Logger::debug("Waking TargetController");
 
@@ -385,7 +385,7 @@ void TargetController::onDebugSessionStartedEvent(EventPointer<Events::DebugSess
     }
 }
 
-void TargetController::onDebugSessionFinishedEvent(EventPointer<DebugSessionFinished>) {
+void TargetController::onDebugSessionFinishedEvent(EventRef<DebugSessionFinished>) {
     if (this->target->getState() != TargetState::RUNNING) {
         this->target->run();
         this->fireTargetEvents();
@@ -396,7 +396,7 @@ void TargetController::onDebugSessionFinishedEvent(EventPointer<DebugSessionFini
     }
 }
 
-void TargetController::onExtractTargetDescriptor(EventPointer<Events::ExtractTargetDescriptor> event) {
+void TargetController::onExtractTargetDescriptor(EventRef<Events::ExtractTargetDescriptor> event) {
     if (!this->cachedTargetDescriptor.has_value()) {
         this->cachedTargetDescriptor = this->target->getDescriptor();
     }
@@ -404,11 +404,11 @@ void TargetController::onExtractTargetDescriptor(EventPointer<Events::ExtractTar
     auto targetDescriptorExtracted = std::make_shared<TargetDescriptorExtracted>();
     targetDescriptorExtracted->targetDescriptor = this->cachedTargetDescriptor.value();
 
-    targetDescriptorExtracted->correlationId = event->id;
+    targetDescriptorExtracted->correlationId = event.id;
     this->eventManager.triggerEvent(targetDescriptorExtracted);
 }
 
-void TargetController::onStopTargetExecutionEvent(EventPointer<Events::StopTargetExecution> event) {
+void TargetController::onStopTargetExecutionEvent(EventRef<Events::StopTargetExecution> event) {
     if (this->target->getState() != TargetState::STOPPED) {
         this->target->stop();
         this->lastTargetState = TargetState::STOPPED;
@@ -419,39 +419,39 @@ void TargetController::onStopTargetExecutionEvent(EventPointer<Events::StopTarge
         TargetBreakCause::UNKNOWN
     );
 
-    executionStoppedEvent->correlationId = event->id;
+    executionStoppedEvent->correlationId = event.id;
     this->eventManager.triggerEvent(executionStoppedEvent);
 }
 
-void TargetController::onStepTargetExecutionEvent(EventPointer<Events::StepTargetExecution> event) {
+void TargetController::onStepTargetExecutionEvent(EventRef<Events::StepTargetExecution> event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
             // We can't step the target if it's already running.
             throw Exception("Target is already running");
         }
 
-        if (event->fromProgramCounter.has_value()) {
-            this->target->setProgramCounter(event->fromProgramCounter.value());
+        if (event.fromProgramCounter.has_value()) {
+            this->target->setProgramCounter(event.fromProgramCounter.value());
         }
 
         this->target->step();
         this->lastTargetState = TargetState::RUNNING;
 
         auto executionResumedEvent = std::make_shared<TargetExecutionResumed>();
-        executionResumedEvent->correlationId = event->id;
+        executionResumedEvent->correlationId = event.id;
         this->eventManager.triggerEvent(executionResumedEvent);
 
     } catch (const Exception& exception) {
         Logger::error("Failed to step execution on target - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
-void TargetController::onResumeTargetExecutionEvent(EventPointer<Events::ResumeTargetExecution> event) {
+void TargetController::onResumeTargetExecutionEvent(EventRef<Events::ResumeTargetExecution> event) {
     try {
         if (this->target->getState() != TargetState::RUNNING) {
-            if (event->fromProgramCounter.has_value()) {
-                this->target->setProgramCounter(event->fromProgramCounter.value());
+            if (event.fromProgramCounter.has_value()) {
+                this->target->setProgramCounter(event.fromProgramCounter.value());
             }
 
             this->target->run();
@@ -459,72 +459,72 @@ void TargetController::onResumeTargetExecutionEvent(EventPointer<Events::ResumeT
         }
 
         auto executionResumedEvent = std::make_shared<Events::TargetExecutionResumed>();
-        executionResumedEvent->correlationId = event->id;
+        executionResumedEvent->correlationId = event.id;
         this->eventManager.triggerEvent(executionResumedEvent);
 
     } catch (const Exception& exception) {
         Logger::error("Failed to resume execution on target - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
-void TargetController::onReadRegistersEvent(EventPointer<Events::RetrieveRegistersFromTarget> event) {
+void TargetController::onReadRegistersEvent(EventRef<Events::RetrieveRegistersFromTarget> event) {
     try {
-        auto registers = this->target->readRegisters(event->descriptors);
+        auto registers = this->target->readRegisters(event.descriptors);
 
         if (registers.size() > 0) {
             auto registersRetrievedEvent = std::make_shared<Events::RegistersRetrievedFromTarget>();
-            registersRetrievedEvent->correlationId = event->id;
+            registersRetrievedEvent->correlationId = event.id;
             registersRetrievedEvent->registers = registers;
             this->eventManager.triggerEvent(registersRetrievedEvent);
         }
 
     } catch (const Exception& exception) {
         Logger::error("Failed to read general registers from target - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
-void TargetController::onWriteRegistersEvent(EventPointer<Events::WriteRegistersToTarget> event) {
+void TargetController::onWriteRegistersEvent(EventRef<Events::WriteRegistersToTarget> event) {
     try {
-        this->target->writeRegisters(event->registers);
+        this->target->writeRegisters(event.registers);
 
         auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
-        registersWrittenEvent->correlationId = event->id;
+        registersWrittenEvent->correlationId = event.id;
         this->eventManager.triggerEvent(registersWrittenEvent);
 
     } catch (const Exception& exception) {
         Logger::error("Failed to write registers to target - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
-void TargetController::onReadMemoryEvent(EventPointer<Events::RetrieveMemoryFromTarget> event) {
+void TargetController::onReadMemoryEvent(EventRef<Events::RetrieveMemoryFromTarget> event) {
     try {
         auto memoryReadEvent = std::make_shared<Events::MemoryRetrievedFromTarget>();
-        memoryReadEvent->correlationId = event->id;
-        memoryReadEvent->data = this->target->readMemory(event->memoryType, event->startAddress, event->bytes);
+        memoryReadEvent->correlationId = event.id;
+        memoryReadEvent->data = this->target->readMemory(event.memoryType, event.startAddress, event.bytes);
 
         this->eventManager.triggerEvent(memoryReadEvent);
 
     } catch (const Exception& exception) {
         Logger::error("Failed to read memory from target - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
-void TargetController::onWriteMemoryEvent(EventPointer<Events::WriteMemoryToTarget> event) {
+void TargetController::onWriteMemoryEvent(EventRef<Events::WriteMemoryToTarget> event) {
     try {
-        this->target->writeMemory(event->memoryType, event->startAddress, event->buffer);
+        this->target->writeMemory(event.memoryType, event.startAddress, event.buffer);
 
         auto memoryWrittenEvent = std::make_shared<Events::MemoryWrittenToTarget>();
-        memoryWrittenEvent->correlationId = event->id;
+        memoryWrittenEvent->correlationId = event.id;
         this->eventManager.triggerEvent(memoryWrittenEvent);
 
         if (this->target->memoryAddressRangeClashesWithIoPortRegisters(
-            event->memoryType,
-            event->startAddress,
-            static_cast<std::uint32_t>(event->startAddress + (event->buffer.size() - 1))
+            event.memoryType,
+            event.startAddress,
+            static_cast<std::uint32_t>(event.startAddress + (event.buffer.size() - 1))
         )) {
             // This memory write has affected the target's IO port values
             this->eventManager.triggerEvent(std::make_shared<Events::TargetIoPortsUpdated>());
@@ -532,59 +532,59 @@ void TargetController::onWriteMemoryEvent(EventPointer<Events::WriteMemoryToTarg
 
     } catch (const Exception& exception) {
         Logger::error("Failed to write memory to target - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
-void TargetController::onSetBreakpointEvent(EventPointer<Events::SetBreakpointOnTarget> event) {
+void TargetController::onSetBreakpointEvent(EventRef<Events::SetBreakpointOnTarget> event) {
     try {
-        this->target->setBreakpoint(event->breakpoint.address);
+        this->target->setBreakpoint(event.breakpoint.address);
         auto breakpointSetEvent = std::make_shared<Events::BreakpointSetOnTarget>();
-        breakpointSetEvent->correlationId = event->id;
+        breakpointSetEvent->correlationId = event.id;
 
         this->eventManager.triggerEvent(breakpointSetEvent);
 
     } catch (const Exception& exception) {
         Logger::error("Failed to set breakpoint on target - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
-void TargetController::onRemoveBreakpointEvent(EventPointer<Events::RemoveBreakpointOnTarget> event) {
+void TargetController::onRemoveBreakpointEvent(EventRef<Events::RemoveBreakpointOnTarget> event) {
     try {
-        this->target->removeBreakpoint(event->breakpoint.address);
+        this->target->removeBreakpoint(event.breakpoint.address);
         auto breakpointRemovedEvent = std::make_shared<Events::BreakpointRemovedOnTarget>();
-        breakpointRemovedEvent->correlationId = event->id;
+        breakpointRemovedEvent->correlationId = event.id;
 
         this->eventManager.triggerEvent(breakpointRemovedEvent);
 
     } catch (const Exception& exception) {
         Logger::error("Failed to remove breakpoint on target - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
-void TargetController::onSetProgramCounterEvent(EventPointer<Events::SetProgramCounterOnTarget> event) {
+void TargetController::onSetProgramCounterEvent(EventRef<Events::SetProgramCounterOnTarget> event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
             throw Exception("Invalid target state - target must be stopped before the program counter can be updated");
         }
 
-        this->target->setProgramCounter(event->address);
+        this->target->setProgramCounter(event.address);
         auto programCounterSetEvent = std::make_shared<Events::ProgramCounterSetOnTarget>();
-        programCounterSetEvent->correlationId = event->id;
+        programCounterSetEvent->correlationId = event.id;
 
         this->eventManager.triggerEvent(programCounterSetEvent);
 
     } catch (const Exception& exception) {
         Logger::error("Failed to set program counter on target - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
 // TODO: remove this
-void TargetController::onInsightStateChangedEvent(EventPointer<Events::InsightThreadStateChanged> event) {
-    if (event->getState() == ThreadState::READY) {
+void TargetController::onInsightStateChangedEvent(EventRef<Events::InsightThreadStateChanged> event) {
+    if (event.getState() == ThreadState::READY) {
         /*
          * Insight has just started up.
          *
@@ -595,45 +595,45 @@ void TargetController::onInsightStateChangedEvent(EventPointer<Events::InsightTh
     }
 }
 
-void TargetController::onRetrieveTargetPinStatesEvent(EventPointer<Events::RetrieveTargetPinStates> event) {
+void TargetController::onRetrieveTargetPinStatesEvent(EventRef<Events::RetrieveTargetPinStates> event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
             throw Exception("Invalid target state - target must be stopped before pin states can be retrieved");
         }
 
         auto pinStatesRetrieved = std::make_shared<Events::TargetPinStatesRetrieved>();
-        pinStatesRetrieved->correlationId = event->id;
-        pinStatesRetrieved->variantId = event->variantId;
-        pinStatesRetrieved->pinSatesByNumber = this->target->getPinStates(event->variantId);
+        pinStatesRetrieved->correlationId = event.id;
+        pinStatesRetrieved->variantId = event.variantId;
+        pinStatesRetrieved->pinSatesByNumber = this->target->getPinStates(event.variantId);
 
         this->eventManager.triggerEvent(pinStatesRetrieved);
 
     } catch (const Exception& exception) {
         Logger::error("Failed to retrieve target pin states - " + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }
 
-void TargetController::onSetPinStateEvent(EventPointer<Events::SetTargetPinState> event) {
+void TargetController::onSetPinStateEvent(EventRef<Events::SetTargetPinState> event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
             throw Exception("Invalid target state - target must be stopped before pin state can be set");
         }
 
-        this->target->setPinState(event->variantId, event->pinDescriptor, event->pinState);
+        this->target->setPinState(event.variantId, event.pinDescriptor, event.pinState);
 
         auto pinStatesUpdateEvent = std::make_shared<Events::TargetPinStatesRetrieved>();
-        pinStatesUpdateEvent->correlationId = event->id;
-        pinStatesUpdateEvent->variantId = event->variantId;
+        pinStatesUpdateEvent->correlationId = event.id;
+        pinStatesUpdateEvent->variantId = event.variantId;
         pinStatesUpdateEvent->pinSatesByNumber = {
-            {event->pinDescriptor.number, event->pinState}
+            {event.pinDescriptor.number, event.pinState}
         };
 
         this->eventManager.triggerEvent(pinStatesUpdateEvent);
 
     } catch (const Exception& exception) {
-        Logger::error("Failed to set target pin state for pin " + event->pinDescriptor.name + " - "
+        Logger::error("Failed to set target pin state for pin " + event.pinDescriptor.name + " - "
             + exception.getMessage());
-        this->emitErrorEvent(event->id);
+        this->emitErrorEvent(event.id);
     }
 }

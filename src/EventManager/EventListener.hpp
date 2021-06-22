@@ -5,6 +5,7 @@
 #include <functional>
 #include <queue>
 #include <memory>
+#include <utility>
 #include <variant>
 #include <optional>
 #include <mutex>
@@ -50,7 +51,7 @@ namespace Bloom
         std::string name;
 
         static inline std::atomic<std::size_t> lastId = 0;
-        std::size_t id = ++(this->lastId);
+        std::size_t id = ++(EventListener::lastId);
 
         /**
          * Holds all events registered to this listener.
@@ -58,26 +59,26 @@ namespace Bloom
          * Events are grouped by event type name, and removed from their queue just *before* the dispatching to
          * registered handlers begins.
          */
-        SyncSafe<std::map<std::string, std::queue<Events::GenericEventPointer>>> eventQueueByEventType;
+        SyncSafe<std::map<std::string, std::queue<Events::SharedGenericEventPointer>>> eventQueueByEventType;
         std::condition_variable eventQueueByEventTypeCV;
 
         /**
          * A mapping of event type names to a vector of callback functions. Events will be dispatched to these
          * callback functions, during a call to EventListener::dispatchEvent().
          *
-         * Each callback will be passed an std::shared_ptr<const EventType> of the event (we wrap all registered
-         * callbacks in a lambda, where we perform a downcast before invoking the callback.
-         * See EventListener::registerCallbackForEventType() for more)
+         * Each callback will be passed a reference to the event (we wrap all registered callbacks in a lambda, where
+         * we perform a downcast before invoking the callback. See EventListener::registerCallbackForEventType()
+         * for more)
          */
-        SyncSafe<std::map<std::string, std::vector<std::function<void(Events::GenericEventPointer)>>>> eventTypeToCallbacksMapping;
+        SyncSafe<std::map<std::string, std::vector<std::function<void(Events::GenericEventRef)>>>> eventTypeToCallbacksMapping;
         SyncSafe<std::set<std::string>> registeredEventTypes;
 
         std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
 
-        std::vector<Events::GenericEventPointer> getEvents();
+        std::vector<Events::SharedGenericEventPointer> getEvents();
 
     public:
-        explicit EventListener(const std::string& name): name(name) {};
+        explicit EventListener(std::string name): name(std::move(name)) {};
 
         std::size_t getId() const {
             return this->id;
@@ -95,10 +96,10 @@ namespace Bloom
          *
          * @param event
          */
-        void registerEvent(Events::GenericEventPointer event);
+        void registerEvent(Events::SharedGenericEventPointer event);
 
         void setInterruptEventNotifier(std::shared_ptr<EventNotifier> interruptEventNotifier) {
-            this->interruptEventNotifier = interruptEventNotifier;
+            this->interruptEventNotifier = std::move(interruptEventNotifier);
         }
 
         /**
@@ -109,32 +110,17 @@ namespace Bloom
          * @param callback
          */
         template<class EventType>
-        void registerCallbackForEventType(std::function<void(std::shared_ptr<const EventType>)> callback) {
+        void registerCallbackForEventType(std::function<void(Events::EventRef<EventType>)> callback) {
             // We encapsulate the callback in a lambda to handle the downcasting.
-            std::function<void(Events::GenericEventPointer)> parentCallback =
-                [callback] (Events::GenericEventPointer event) {
+            std::function<void(Events::GenericEventRef)> parentCallback =
+                [callback] (Events::GenericEventRef event) {
                     // Downcast the event to the expected type
-                    callback(std::dynamic_pointer_cast<const EventType>(event));
+                    callback(dynamic_cast<Events::EventRef<EventType>>(event));
                 }
             ;
 
             auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
             auto& mapping = this->eventTypeToCallbacksMapping.getReference();
-
-            if (mapping.find(EventType::name) == mapping.end()) {
-                /*
-                 * Multiple callbacks can be registered for a single event type.
-                 *
-                 * We have no callbacks for this event type registered in this listener, so setup
-                 * the type name to callback vector mapping.
-                 */
-                mapping.insert(
-                    std::pair<std::string, std::vector<std::function<void(Events::GenericEventPointer)>>>(
-                        EventType::name,
-                        std::vector<std::function<void(Events::GenericEventPointer)>>()
-                    )
-                );
-            }
 
             mapping[EventType::name].push_back(parentCallback);
             auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
@@ -201,20 +187,20 @@ namespace Bloom
             std::optional<int> correlationId = std::nullopt
         ) {
             // Different return types, depending on how many event type arguments are passed in.
-            using MonoType = std::optional<Events::EventPointer<EventTypeA>>;
+            using MonoType = std::optional<Events::SharedEventPointer<EventTypeA>>;
             using BiVariantType = std::optional<
                 std::variant<
                     std::monostate,
-                    Events::EventPointer<EventTypeA>,
-                    Events::EventPointer<EventTypeB>
+                    Events::SharedEventPointer<EventTypeA>,
+                    Events::SharedEventPointer<EventTypeB>
                 >
             >;
             using TriVariantType = std::optional<
                 std::variant<
                     std::monostate,
-                    Events::EventPointer<EventTypeA>,
-                    Events::EventPointer<EventTypeB>,
-                    Events::EventPointer<EventTypeC>
+                    Events::SharedEventPointer<EventTypeA>,
+                    Events::SharedEventPointer<EventTypeB>,
+                    Events::SharedEventPointer<EventTypeC>
                 >
             >;
             using ReturnType = typename std::conditional<
@@ -262,14 +248,14 @@ namespace Bloom
                 }
             }
 
-            Events::GenericEventPointer foundEvent = nullptr;
+            Events::SharedGenericEventPointer foundEvent = nullptr;
             auto eventsFound = [&eventTypeNames, &eventQueueByType, &correlationId, &foundEvent]() -> bool {
                 for (const auto& eventTypeName : eventTypeNames) {
                     if (eventQueueByType.find(eventTypeName) != eventQueueByType.end()
-                        && eventQueueByType.find(eventTypeName)->second.size() > 0
+                        && !eventQueueByType.find(eventTypeName)->second.empty()
                     ) {
                         auto& queue = eventQueueByType.find(eventTypeName)->second;
-                        while (queue.size() > 0) {
+                        while (!queue.empty()) {
                             auto event = queue.front();
 
                             if (!correlationId.has_value()
@@ -347,7 +333,7 @@ namespace Bloom
          */
         void waitAndDispatch(int msTimeout = 0);
 
-        void dispatchEvent(Events::GenericEventPointer event);
+        void dispatchEvent(const Events::SharedGenericEventPointer& event);
 
         void dispatchCurrentEvents();
 

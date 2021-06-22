@@ -67,7 +67,7 @@ namespace Bloom
 
         /**
          * Constructs a mapping of supported debug tool names to lambdas. The lambdas should *only* instantiate
-         * and return an instance to the derived DebugTool class. They should never attempt to establish
+         * and return an instance to the derived DebugTool class. They should not attempt to establish
          * a connection to the device.
          *
          * @return
@@ -173,7 +173,7 @@ namespace Bloom
          * to /etc/udev/rules.d/. This method will report an error if Bloom isn't running as root (as root privileges
          * are required for writing to files in /etc/udev).
          */
-        void checkUdevRules();
+        static void checkUdevRules();
 
         /**
          * Because the TargetController hogs the thread, this method must be called in a dedicated thread.
@@ -244,70 +244,70 @@ namespace Bloom
          *
          * @param event
          */
-        void onStateReportRequest(Events::EventPointer<Events::ReportTargetControllerState> event);
+        void onStateReportRequest(Events::EventRef<Events::ReportTargetControllerState> event);
 
         /**
          * Obtains a TargetDescriptor from the target and includes it in a TargetDescriptorExtracted event.
          *
          * @param event
          */
-        void onExtractTargetDescriptor(Events::EventPointer<Events::ExtractTargetDescriptor> event);
+        void onExtractTargetDescriptor(Events::EventRef<Events::ExtractTargetDescriptor> event);
 
         /**
          * Will attempt to stop execution on the target and emit a TargetExecutionStopped event.
          *
          * @param event
          */
-        void onStopTargetExecutionEvent(Events::EventPointer<Events::StopTargetExecution> event);
+        void onStopTargetExecutionEvent(Events::EventRef<Events::StopTargetExecution> event);
 
         /**
          * Will attempt to step execution on the target and emit a TargetExecutionResumed event.
          *
          * @param event
          */
-        void onStepTargetExecutionEvent(Events::EventPointer<Events::StepTargetExecution> event);
+        void onStepTargetExecutionEvent(Events::EventRef<Events::StepTargetExecution> event);
 
         /**
          * Will attempt to resume execution on the target and emit a TargetExecutionResumed event.
          *
          * @param event
          */
-        void onResumeTargetExecutionEvent(Events::EventPointer<Events::ResumeTargetExecution> event);
+        void onResumeTargetExecutionEvent(Events::EventRef<Events::ResumeTargetExecution> event);
 
         /**
          * Invokes a shutdown.
          *
          * @param event
          */
-        void onShutdownTargetControllerEvent(Events::EventPointer<Events::ShutdownTargetController> event);
+        void onShutdownTargetControllerEvent(Events::EventRef<Events::ShutdownTargetController> event);
 
         /**
          * Will attempt to read the requested registers and emit a RegistersRetrievedFromTarget event.
          *
          * @param event
          */
-        void onReadRegistersEvent(Events::EventPointer<Events::RetrieveRegistersFromTarget> event);
+        void onReadRegistersEvent(Events::EventRef<Events::RetrieveRegistersFromTarget> event);
 
         /**
          * Will attempt to write the specified register values and emit a RegistersWrittenToTarget event.
          *
          * @param event
          */
-        void onWriteRegistersEvent(Events::EventPointer<Events::WriteRegistersToTarget> event);
+        void onWriteRegistersEvent(Events::EventRef<Events::WriteRegistersToTarget> event);
 
         /**
          * Will attempt to read memory from the target and include the data in a MemoryRetrievedFromTarget event.
          *
          * @param event
          */
-        void onReadMemoryEvent(Events::EventPointer<Events::RetrieveMemoryFromTarget> event);
+        void onReadMemoryEvent(Events::EventRef<Events::RetrieveMemoryFromTarget> event);
 
         /**
          * Will attempt to write memory to the target. On success, a MemoryWrittenToTarget event is emitted.
          *
          * @param event
          */
-        void onWriteMemoryEvent(Events::EventPointer<Events::WriteMemoryToTarget> event);
+        void onWriteMemoryEvent(Events::EventRef<Events::WriteMemoryToTarget> event);
 
         /**
          * Will attempt to set the specific breakpoint on the target. On success, the BreakpointSetOnTarget event will
@@ -315,7 +315,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onSetBreakpointEvent(Events::EventPointer<Events::SetBreakpointOnTarget> event);
+        void onSetBreakpointEvent(Events::EventRef<Events::SetBreakpointOnTarget> event);
 
         /**
          * Will attempt to remove a breakpoint at the specified address, on the target. On success, the
@@ -323,21 +323,21 @@ namespace Bloom
          *
          * @param event
          */
-        void onRemoveBreakpointEvent(Events::EventPointer<Events::RemoveBreakpointOnTarget> event);
+        void onRemoveBreakpointEvent(Events::EventRef<Events::RemoveBreakpointOnTarget> event);
 
         /**
          * Will hold the target stopped at it's current state.
          *
          * @param event
          */
-        void onDebugSessionStartedEvent(Events::EventPointer<Events::DebugSessionStarted> event);
+        void onDebugSessionStartedEvent(Events::EventRef<Events::DebugSessionStarted> event);
 
         /**
          * Will simply kick off execution on the target.
          *
          * @param event
          */
-        void onDebugSessionFinishedEvent(Events::EventPointer<Events::DebugSessionFinished> event);
+        void onDebugSessionFinishedEvent(Events::EventRef<Events::DebugSessionFinished> event);
 
         /**
          * Will update the program counter value on the target. On success, a ProgramCounterSetOnTarget event is
@@ -345,7 +345,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onSetProgramCounterEvent(Events::EventPointer<Events::SetProgramCounterOnTarget> event);
+        void onSetProgramCounterEvent(Events::EventRef<Events::SetProgramCounterOnTarget> event);
 
         /**
          * Will automatically fire a target state update event.
@@ -353,14 +353,14 @@ namespace Bloom
          *
          * @param event
          */
-        void onInsightStateChangedEvent(Events::EventPointer<Events::InsightThreadStateChanged> event);
+        void onInsightStateChangedEvent(Events::EventRef<Events::InsightThreadStateChanged> event);
 
         /**
          * Will attempt to obtain the pin states from the target. Will emit a TargetPinStatesRetrieved event on success.
          *
          * @param event
          */
-        void onRetrieveTargetPinStatesEvent(Events::EventPointer<Events::RetrieveTargetPinStates> event);
+        void onRetrieveTargetPinStatesEvent(Events::EventRef<Events::RetrieveTargetPinStates> event);
 
         /**
          * Will update a pin state for a particular pin. Will emit a TargetPinStatesRetrieved with the new pin
@@ -368,6 +368,6 @@ namespace Bloom
          *
          * @param event
          */
-        void onSetPinStateEvent(Events::EventPointer<Events::SetTargetPinState> event);
+        void onSetPinStateEvent(Events::EventRef<Events::SetTargetPinState> event);
     };
 }
