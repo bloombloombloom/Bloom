@@ -33,11 +33,11 @@ namespace Bloom
 
         QTimer* eventDispatchTimer = nullptr;
 
-        void onTargetStoppedEvent(Events::EventRef<Events::TargetExecutionStopped> event);
-        void onTargetResumedEvent(Events::EventRef<Events::TargetExecutionResumed> event);
-        void onTargetPinStatesRetrievedEvent(Events::EventRef<Events::TargetPinStatesRetrieved> event);
-        void onTargetIoPortsUpdatedEvent(Events::EventRef<Events::TargetIoPortsUpdated> event);
-        void onTargetControllerStateReported(Events::EventRef<Events::TargetControllerStateReported> event);
+        void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
+        void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
+        void onTargetPinStatesRetrievedEvent(const Events::TargetPinStatesRetrieved& event);
+        void onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event);
+        void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
 
     public:
         explicit InsightWorker(EventManager& eventManager): eventManager(eventManager) {};

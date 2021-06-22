@@ -70,7 +70,7 @@ namespace Bloom
          * we perform a downcast before invoking the callback. See EventListener::registerCallbackForEventType()
          * for more)
          */
-        SyncSafe<std::map<std::string, std::vector<std::function<void(Events::GenericEventRef)>>>> eventTypeToCallbacksMapping;
+        SyncSafe<std::map<std::string, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
         SyncSafe<std::set<std::string>> registeredEventTypes;
 
         std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
@@ -110,12 +110,12 @@ namespace Bloom
          * @param callback
          */
         template<class EventType>
-        void registerCallbackForEventType(std::function<void(Events::EventRef<EventType>)> callback) {
+        void registerCallbackForEventType(std::function<void(const EventType&)> callback) {
             // We encapsulate the callback in a lambda to handle the downcasting.
-            std::function<void(Events::GenericEventRef)> parentCallback =
-                [callback] (Events::GenericEventRef event) {
+            std::function<void(const Events::Event&)> parentCallback =
+                [callback] (const Events::Event& event) {
                     // Downcast the event to the expected type
-                    callback(dynamic_cast<Events::EventRef<EventType>>(event));
+                    callback(dynamic_cast<const EventType&>(event));
                 }
             ;
 

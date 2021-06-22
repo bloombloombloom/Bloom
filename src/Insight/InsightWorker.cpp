@@ -10,7 +10,6 @@
 #include "src/Exceptions/InvalidConfig.hpp"
 
 using namespace Bloom;
-using namespace Bloom::Events;
 using namespace Bloom::Exceptions;
 
 using Bloom::Targets::TargetState;
@@ -19,23 +18,23 @@ void InsightWorker::startup() {
     Logger::debug("Starting InsightWorker thread");
     this->eventManager.registerListener(this->eventListener);
 
-    this->eventListener->registerCallbackForEventType<TargetControllerStateReported>(
+    this->eventListener->registerCallbackForEventType<Events::TargetControllerStateReported>(
         std::bind(&InsightWorker::onTargetControllerStateReported, this, std::placeholders::_1)
     );
 
-    this->eventListener->registerCallbackForEventType<TargetExecutionStopped>(
+    this->eventListener->registerCallbackForEventType<Events::TargetExecutionStopped>(
         std::bind(&InsightWorker::onTargetStoppedEvent, this, std::placeholders::_1)
     );
 
-    this->eventListener->registerCallbackForEventType<TargetExecutionResumed>(
+    this->eventListener->registerCallbackForEventType<Events::TargetExecutionResumed>(
         std::bind(&InsightWorker::onTargetResumedEvent, this, std::placeholders::_1)
     );
 
-    this->eventListener->registerCallbackForEventType<TargetPinStatesRetrieved>(
+    this->eventListener->registerCallbackForEventType<Events::TargetPinStatesRetrieved>(
         std::bind(&InsightWorker::onTargetPinStatesRetrievedEvent, this, std::placeholders::_1)
     );
 
-    this->eventListener->registerCallbackForEventType<TargetIoPortsUpdated>(
+    this->eventListener->registerCallbackForEventType<Events::TargetIoPortsUpdated>(
         std::bind(&InsightWorker::onTargetIoPortsUpdatedEvent, this, std::placeholders::_1)
     );
 
@@ -60,7 +59,7 @@ void InsightWorker::requestPinStateUpdate(
     this->targetControllerConsole.setPinState(variantId, pinDescriptor, pinState);
 }
 
-void InsightWorker::onTargetStoppedEvent(EventRef<TargetExecutionStopped> event) {
+void InsightWorker::onTargetStoppedEvent(const Events::TargetExecutionStopped& event) {
     /*
      * When we report a target halt to Insight, Insight will immediately seek more data from the target (such as GPIO
      * pin states). This can be problematic for cases where the target had halted due to a conditional breakpoint.
@@ -82,7 +81,7 @@ void InsightWorker::onTargetStoppedEvent(EventRef<TargetExecutionStopped> event)
      * only way. It would be nice if the debug client gave us some form of indication of whether the breakpoint is a
      * conditional one.
      */
-    auto resumedEvent = this->eventListener->waitForEvent<TargetExecutionResumed>(
+    auto resumedEvent = this->eventListener->waitForEvent<Events::TargetExecutionResumed>(
         std::chrono::milliseconds(650)
     );
 
@@ -92,19 +91,19 @@ void InsightWorker::onTargetStoppedEvent(EventRef<TargetExecutionStopped> event)
     }
 }
 
-void InsightWorker::onTargetResumedEvent(EventRef<TargetExecutionResumed> event) {
+void InsightWorker::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
     emit this->targetStateUpdated(TargetState::RUNNING);
 }
 
-void InsightWorker::onTargetPinStatesRetrievedEvent(EventRef<TargetPinStatesRetrieved> event) {
+void InsightWorker::onTargetPinStatesRetrievedEvent(const Events::TargetPinStatesRetrieved& event) {
     emit this->targetPinStatesUpdated(event.variantId, event.pinSatesByNumber);
 }
 
-void InsightWorker::onTargetIoPortsUpdatedEvent(EventRef<TargetIoPortsUpdated> event) {
+void InsightWorker::onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event) {
     emit this->targetIoPortsUpdated();
 }
 
-void InsightWorker::onTargetControllerStateReported(EventRef<TargetControllerStateReported> event) {
+void InsightWorker::onTargetControllerStateReported(const Events::TargetControllerStateReported& event) {
     if (this->lastTargetControllerState == TargetControllerState::ACTIVE
         && event.state == TargetControllerState::SUSPENDED
     ) {

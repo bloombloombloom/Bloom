@@ -169,13 +169,13 @@ namespace Bloom::DebugServers::Gdb
             return "GDB Remote Serial Protocol DebugServer";
         };
 
-        void onTargetControllerStateReported(Events::EventRef<Events::TargetControllerStateReported> event);
+        void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
 
         /**
          * If the GDB client is currently waiting for the target execution to stop, this event handler will issue
          * a "stop reply" packet to the client once the target execution stops.
          */
-        void onTargetExecutionStopped(Events::EventRef<Events::TargetExecutionStopped>);
+        void onTargetExecutionStopped(const Events::TargetExecutionStopped&);
 
         /**
          * Handles any other GDB command packet that has not been promoted to a more specific type.

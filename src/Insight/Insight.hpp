@@ -81,16 +81,14 @@ namespace Bloom
          *
          * @param event
          */
-        void onShutdownApplicationEvent(Events::EventRef<Events::ShutdownApplication> event);
+        void onShutdownApplicationEvent(const Events::ShutdownApplication& event);
 
         /**
          * If the something horrible was to happen and the TC dies unexpectedly, Insight will shutdown in response.
          *
          * @param event
          */
-        void onTargetControllerThreadStateChangedEvent(
-            Events::EventRef<Events::TargetControllerThreadStateChanged> event
-        );
+        void onTargetControllerThreadStateChangedEvent(const Events::TargetControllerThreadStateChanged& event);
 
         /**
          * Dispatches any events currently in the queue.

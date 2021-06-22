@@ -55,6 +55,6 @@ void DebugServer::shutdown() {
     this->eventManager.deregisterListener(this->eventListener->getId());
 }
 
-void DebugServer::onShutdownDebugServerEvent(EventRef<Events::ShutdownDebugServer> event) {
+void DebugServer::onShutdownDebugServerEvent(const Events::ShutdownDebugServer& event) {
     this->shutdown();
 }

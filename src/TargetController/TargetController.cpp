@@ -360,17 +360,17 @@ void TargetController::emitErrorEvent(int correlationId) {
     this->eventManager.triggerEvent(errorEvent);
 }
 
-void TargetController::onShutdownTargetControllerEvent(EventRef<Events::ShutdownTargetController>) {
+void TargetController::onShutdownTargetControllerEvent(const Events::ShutdownTargetController&) {
     this->shutdown();
 }
 
-void TargetController::onStateReportRequest(EventRef<Events::ReportTargetControllerState> event) {
-    auto stateEvent = std::make_shared<TargetControllerStateReported>(this->state);
+void TargetController::onStateReportRequest(const Events::ReportTargetControllerState& event) {
+    auto stateEvent = std::make_shared<Events::TargetControllerStateReported>(this->state);
     stateEvent->correlationId = event.id;
     this->eventManager.triggerEvent(stateEvent);
 }
 
-void TargetController::onDebugSessionStartedEvent(EventRef<Events::DebugSessionStarted>) {
+void TargetController::onDebugSessionStartedEvent(const Events::DebugSessionStarted&) {
     if (this->state == TargetControllerState::SUSPENDED) {
         Logger::debug("Waking TargetController");
 
@@ -385,7 +385,7 @@ void TargetController::onDebugSessionStartedEvent(EventRef<Events::DebugSessionS
     }
 }
 
-void TargetController::onDebugSessionFinishedEvent(EventRef<DebugSessionFinished>) {
+void TargetController::onDebugSessionFinishedEvent(const DebugSessionFinished&) {
     if (this->target->getState() != TargetState::RUNNING) {
         this->target->run();
         this->fireTargetEvents();
@@ -396,7 +396,7 @@ void TargetController::onDebugSessionFinishedEvent(EventRef<DebugSessionFinished
     }
 }
 
-void TargetController::onExtractTargetDescriptor(EventRef<Events::ExtractTargetDescriptor> event) {
+void TargetController::onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event) {
     if (!this->cachedTargetDescriptor.has_value()) {
         this->cachedTargetDescriptor = this->target->getDescriptor();
     }
@@ -408,13 +408,13 @@ void TargetController::onExtractTargetDescriptor(EventRef<Events::ExtractTargetD
     this->eventManager.triggerEvent(targetDescriptorExtracted);
 }
 
-void TargetController::onStopTargetExecutionEvent(EventRef<Events::StopTargetExecution> event) {
+void TargetController::onStopTargetExecutionEvent(const Events::StopTargetExecution& event) {
     if (this->target->getState() != TargetState::STOPPED) {
         this->target->stop();
         this->lastTargetState = TargetState::STOPPED;
     }
 
-    auto executionStoppedEvent = std::make_shared<TargetExecutionStopped>(
+    auto executionStoppedEvent = std::make_shared<Events::TargetExecutionStopped>(
         this->target->getProgramCounter(),
         TargetBreakCause::UNKNOWN
     );
@@ -423,7 +423,7 @@ void TargetController::onStopTargetExecutionEvent(EventRef<Events::StopTargetExe
     this->eventManager.triggerEvent(executionStoppedEvent);
 }
 
-void TargetController::onStepTargetExecutionEvent(EventRef<Events::StepTargetExecution> event) {
+void TargetController::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
             // We can't step the target if it's already running.
@@ -437,7 +437,7 @@ void TargetController::onStepTargetExecutionEvent(EventRef<Events::StepTargetExe
         this->target->step();
         this->lastTargetState = TargetState::RUNNING;
 
-        auto executionResumedEvent = std::make_shared<TargetExecutionResumed>();
+        auto executionResumedEvent = std::make_shared<Events::TargetExecutionResumed>();
         executionResumedEvent->correlationId = event.id;
         this->eventManager.triggerEvent(executionResumedEvent);
 
@@ -447,7 +447,7 @@ void TargetController::onStepTargetExecutionEvent(EventRef<Events::StepTargetExe
     }
 }
 
-void TargetController::onResumeTargetExecutionEvent(EventRef<Events::ResumeTargetExecution> event) {
+void TargetController::onResumeTargetExecutionEvent(const Events::ResumeTargetExecution& event) {
     try {
         if (this->target->getState() != TargetState::RUNNING) {
             if (event.fromProgramCounter.has_value()) {
@@ -468,7 +468,7 @@ void TargetController::onResumeTargetExecutionEvent(EventRef<Events::ResumeTarge
     }
 }
 
-void TargetController::onReadRegistersEvent(EventRef<Events::RetrieveRegistersFromTarget> event) {
+void TargetController::onReadRegistersEvent(const Events::RetrieveRegistersFromTarget& event) {
     try {
         auto registers = this->target->readRegisters(event.descriptors);
 
@@ -485,7 +485,7 @@ void TargetController::onReadRegistersEvent(EventRef<Events::RetrieveRegistersFr
     }
 }
 
-void TargetController::onWriteRegistersEvent(EventRef<Events::WriteRegistersToTarget> event) {
+void TargetController::onWriteRegistersEvent(const Events::WriteRegistersToTarget& event) {
     try {
         this->target->writeRegisters(event.registers);
 
@@ -499,7 +499,7 @@ void TargetController::onWriteRegistersEvent(EventRef<Events::WriteRegistersToTa
     }
 }
 
-void TargetController::onReadMemoryEvent(EventRef<Events::RetrieveMemoryFromTarget> event) {
+void TargetController::onReadMemoryEvent(const Events::RetrieveMemoryFromTarget& event) {
     try {
         auto memoryReadEvent = std::make_shared<Events::MemoryRetrievedFromTarget>();
         memoryReadEvent->correlationId = event.id;
@@ -513,7 +513,7 @@ void TargetController::onReadMemoryEvent(EventRef<Events::RetrieveMemoryFromTarg
     }
 }
 
-void TargetController::onWriteMemoryEvent(EventRef<Events::WriteMemoryToTarget> event) {
+void TargetController::onWriteMemoryEvent(const Events::WriteMemoryToTarget& event) {
     try {
         this->target->writeMemory(event.memoryType, event.startAddress, event.buffer);
 
@@ -536,7 +536,7 @@ void TargetController::onWriteMemoryEvent(EventRef<Events::WriteMemoryToTarget> 
     }
 }
 
-void TargetController::onSetBreakpointEvent(EventRef<Events::SetBreakpointOnTarget> event) {
+void TargetController::onSetBreakpointEvent(const Events::SetBreakpointOnTarget& event) {
     try {
         this->target->setBreakpoint(event.breakpoint.address);
         auto breakpointSetEvent = std::make_shared<Events::BreakpointSetOnTarget>();
@@ -550,7 +550,7 @@ void TargetController::onSetBreakpointEvent(EventRef<Events::SetBreakpointOnTarg
     }
 }
 
-void TargetController::onRemoveBreakpointEvent(EventRef<Events::RemoveBreakpointOnTarget> event) {
+void TargetController::onRemoveBreakpointEvent(const Events::RemoveBreakpointOnTarget& event) {
     try {
         this->target->removeBreakpoint(event.breakpoint.address);
         auto breakpointRemovedEvent = std::make_shared<Events::BreakpointRemovedOnTarget>();
@@ -564,7 +564,7 @@ void TargetController::onRemoveBreakpointEvent(EventRef<Events::RemoveBreakpoint
     }
 }
 
-void TargetController::onSetProgramCounterEvent(EventRef<Events::SetProgramCounterOnTarget> event) {
+void TargetController::onSetProgramCounterEvent(const Events::SetProgramCounterOnTarget& event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
             throw Exception("Invalid target state - target must be stopped before the program counter can be updated");
@@ -583,7 +583,7 @@ void TargetController::onSetProgramCounterEvent(EventRef<Events::SetProgramCount
 }
 
 // TODO: remove this
-void TargetController::onInsightStateChangedEvent(EventRef<Events::InsightThreadStateChanged> event) {
+void TargetController::onInsightStateChangedEvent(const Events::InsightThreadStateChanged& event) {
     if (event.getState() == ThreadState::READY) {
         /*
          * Insight has just started up.
@@ -595,7 +595,7 @@ void TargetController::onInsightStateChangedEvent(EventRef<Events::InsightThread
     }
 }
 
-void TargetController::onRetrieveTargetPinStatesEvent(EventRef<Events::RetrieveTargetPinStates> event) {
+void TargetController::onRetrieveTargetPinStatesEvent(const Events::RetrieveTargetPinStates& event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
             throw Exception("Invalid target state - target must be stopped before pin states can be retrieved");
@@ -614,7 +614,7 @@ void TargetController::onRetrieveTargetPinStatesEvent(EventRef<Events::RetrieveT
     }
 }
 
-void TargetController::onSetPinStateEvent(EventRef<Events::SetTargetPinState> event) {
+void TargetController::onSetPinStateEvent(const Events::SetTargetPinState& event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
             throw Exception("Invalid target state - target must be stopped before pin state can be set");

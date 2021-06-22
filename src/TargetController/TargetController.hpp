@@ -244,70 +244,70 @@ namespace Bloom
          *
          * @param event
          */
-        void onStateReportRequest(Events::EventRef<Events::ReportTargetControllerState> event);
+        void onStateReportRequest(const Events::ReportTargetControllerState& event);
 
         /**
          * Obtains a TargetDescriptor from the target and includes it in a TargetDescriptorExtracted event.
          *
          * @param event
          */
-        void onExtractTargetDescriptor(Events::EventRef<Events::ExtractTargetDescriptor> event);
+        void onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event);
 
         /**
          * Will attempt to stop execution on the target and emit a TargetExecutionStopped event.
          *
          * @param event
          */
-        void onStopTargetExecutionEvent(Events::EventRef<Events::StopTargetExecution> event);
+        void onStopTargetExecutionEvent(const Events::StopTargetExecution& event);
 
         /**
          * Will attempt to step execution on the target and emit a TargetExecutionResumed event.
          *
          * @param event
          */
-        void onStepTargetExecutionEvent(Events::EventRef<Events::StepTargetExecution> event);
+        void onStepTargetExecutionEvent(const Events::StepTargetExecution& event);
 
         /**
          * Will attempt to resume execution on the target and emit a TargetExecutionResumed event.
          *
          * @param event
          */
-        void onResumeTargetExecutionEvent(Events::EventRef<Events::ResumeTargetExecution> event);
+        void onResumeTargetExecutionEvent(const Events::ResumeTargetExecution& event);
 
         /**
          * Invokes a shutdown.
          *
          * @param event
          */
-        void onShutdownTargetControllerEvent(Events::EventRef<Events::ShutdownTargetController> event);
+        void onShutdownTargetControllerEvent(const Events::ShutdownTargetController& event);
 
         /**
          * Will attempt to read the requested registers and emit a RegistersRetrievedFromTarget event.
          *
          * @param event
          */
-        void onReadRegistersEvent(Events::EventRef<Events::RetrieveRegistersFromTarget> event);
+        void onReadRegistersEvent(const Events::RetrieveRegistersFromTarget& event);
 
         /**
          * Will attempt to write the specified register values and emit a RegistersWrittenToTarget event.
          *
          * @param event
          */
-        void onWriteRegistersEvent(Events::EventRef<Events::WriteRegistersToTarget> event);
+        void onWriteRegistersEvent(const Events::WriteRegistersToTarget& event);
 
         /**
          * Will attempt to read memory from the target and include the data in a MemoryRetrievedFromTarget event.
          *
          * @param event
          */
-        void onReadMemoryEvent(Events::EventRef<Events::RetrieveMemoryFromTarget> event);
+        void onReadMemoryEvent(const Events::RetrieveMemoryFromTarget& event);
 
         /**
          * Will attempt to write memory to the target. On success, a MemoryWrittenToTarget event is emitted.
          *
          * @param event
          */
-        void onWriteMemoryEvent(Events::EventRef<Events::WriteMemoryToTarget> event);
+        void onWriteMemoryEvent(const Events::WriteMemoryToTarget& event);
 
         /**
          * Will attempt to set the specific breakpoint on the target. On success, the BreakpointSetOnTarget event will
@@ -315,7 +315,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onSetBreakpointEvent(Events::EventRef<Events::SetBreakpointOnTarget> event);
+        void onSetBreakpointEvent(const Events::SetBreakpointOnTarget& event);
 
         /**
          * Will attempt to remove a breakpoint at the specified address, on the target. On success, the
@@ -323,21 +323,21 @@ namespace Bloom
          *
          * @param event
          */
-        void onRemoveBreakpointEvent(Events::EventRef<Events::RemoveBreakpointOnTarget> event);
+        void onRemoveBreakpointEvent(const Events::RemoveBreakpointOnTarget& event);
 
         /**
          * Will hold the target stopped at it's current state.
          *
          * @param event
          */
-        void onDebugSessionStartedEvent(Events::EventRef<Events::DebugSessionStarted> event);
+        void onDebugSessionStartedEvent(const Events::DebugSessionStarted& event);
 
         /**
          * Will simply kick off execution on the target.
          *
          * @param event
          */
-        void onDebugSessionFinishedEvent(Events::EventRef<Events::DebugSessionFinished> event);
+        void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
         /**
          * Will update the program counter value on the target. On success, a ProgramCounterSetOnTarget event is
@@ -345,7 +345,7 @@ namespace Bloom
          *
          * @param event
          */
-        void onSetProgramCounterEvent(Events::EventRef<Events::SetProgramCounterOnTarget> event);
+        void onSetProgramCounterEvent(const Events::SetProgramCounterOnTarget& event);
 
         /**
          * Will automatically fire a target state update event.
@@ -353,14 +353,14 @@ namespace Bloom
          *
          * @param event
          */
-        void onInsightStateChangedEvent(Events::EventRef<Events::InsightThreadStateChanged> event);
+        void onInsightStateChangedEvent(const Events::InsightThreadStateChanged& event);
 
         /**
          * Will attempt to obtain the pin states from the target. Will emit a TargetPinStatesRetrieved event on success.
          *
          * @param event
          */
-        void onRetrieveTargetPinStatesEvent(Events::EventRef<Events::RetrieveTargetPinStates> event);
+        void onRetrieveTargetPinStatesEvent(const Events::RetrieveTargetPinStates& event);
 
         /**
          * Will update a pin state for a particular pin. Will emit a TargetPinStatesRetrieved with the new pin
@@ -368,6 +368,6 @@ namespace Bloom
          *
          * @param event
          */
-        void onSetPinStateEvent(Events::EventRef<Events::SetTargetPinState> event);
+        void onSetPinStateEvent(const Events::SetTargetPinState& event);
     };
 }

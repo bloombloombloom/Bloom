@@ -9,7 +9,6 @@
 #include "src/Targets/TargetState.hpp"
 
 using namespace Bloom;
-using namespace Bloom::Events;
 using namespace Bloom::Exceptions;
 
 void Insight::run() {
@@ -38,11 +37,11 @@ void Insight::startup() {
     this->setThreadState(ThreadState::STARTING);
     this->eventManager.registerListener(this->eventListener);
 
-    this->eventListener->registerCallbackForEventType<ShutdownApplication>(
+    this->eventListener->registerCallbackForEventType<Events::ShutdownApplication>(
         std::bind(&Insight::onShutdownApplicationEvent, this, std::placeholders::_1)
     );
 
-    this->eventListener->registerCallbackForEventType<TargetControllerThreadStateChanged>(
+    this->eventListener->registerCallbackForEventType<Events::TargetControllerThreadStateChanged>(
         std::bind(&Insight::onTargetControllerThreadStateChangedEvent, this, std::placeholders::_1)
     );
 
@@ -119,7 +118,7 @@ void Insight::shutdown() {
     this->setThreadState(ThreadState::STOPPED);
 }
 
-void Insight::onShutdownApplicationEvent(EventRef<ShutdownApplication>) {
+void Insight::onShutdownApplicationEvent(const Events::ShutdownApplication&) {
     /*
      * Once Insight shuts down, control of the main thread will be returned to Application::run(), which
      * will pickup the ShutdownApplication event and proceed with the shutdown.
@@ -127,7 +126,7 @@ void Insight::onShutdownApplicationEvent(EventRef<ShutdownApplication>) {
     this->shutdown();
 }
 
-void Insight::onTargetControllerThreadStateChangedEvent(EventRef<TargetControllerThreadStateChanged> event) {
+void Insight::onTargetControllerThreadStateChangedEvent(const Events::TargetControllerThreadStateChanged& event) {
     if (event.getState() == ThreadState::STOPPED) {
         // Something horrible has happened with the TargetController - Insight is useless without the TargetController
         this->shutdown();

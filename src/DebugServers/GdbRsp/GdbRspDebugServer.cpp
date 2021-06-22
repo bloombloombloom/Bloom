@@ -201,7 +201,7 @@ void GdbRspDebugServer::waitForConnection() {
     }
 }
 
-void GdbRspDebugServer::onTargetControllerStateReported(Events::EventRef<Events::TargetControllerStateReported> event) {
+void GdbRspDebugServer::onTargetControllerStateReported(const Events::TargetControllerStateReported& event) {
     if (event.state == TargetControllerState::SUSPENDED && this->clientConnection.has_value()) {
         Logger::warning("Terminating debug session - TargetController suspended unexpectedly");
         this->closeClientConnection();
@@ -232,7 +232,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPacket& packet) {
     }
 }
 
-void GdbRspDebugServer::onTargetExecutionStopped(EventRef<Events::TargetExecutionStopped>) {
+void GdbRspDebugServer::onTargetExecutionStopped(const Events::TargetExecutionStopped&) {
     if (this->clientConnection.has_value() && this->clientConnection->waitingForBreak) {
         this->clientConnection->writePacket(TargetStopped(Signal::TRAP));
         this->clientConnection->waitingForBreak = false;
