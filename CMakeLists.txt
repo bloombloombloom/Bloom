@@ -6,6 +6,12 @@ set(CMAKE_VERBOSE_MAKEFILE off)
 # Create directory for generated sources
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/Generated)
 
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/udevrules/99-bloom.rules
+    ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/UDevRules/99-bloom.rules
+    COPYONLY
+)
+
 set(CMAKE_CXX_STANDARD 20)
 set(ENABLE_SANITIZERS off)
 

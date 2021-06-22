@@ -1,0 +1,33 @@
+# Linux udev rules for Bloom - see https://bloom.oscillate.io.
+# THIS IS AN AUTOMATICALLY GENERATED FILE - ANY CHANGES MADE WILL LIKELY BE LOST!
+
+SUBSYSTEM=="usb_device", GOTO="bloom_add_usb_device_rules"
+SUBSYSTEM!="usb", GOTO="bloom_end"
+
+LABEL="bloom_add_usb_device_rules"
+
+# Microchip Atmel-ICE
+ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2141", MODE="0666"
+
+# Microchip Power Debugger
+ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2144", MODE="0666"
+
+# JTAGICE3
+ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2140", MODE="0666"
+
+# EDBG - debugger on Xplained Pro
+ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2111", MODE="0666"
+
+# mEDBG - debugger on Xplained Mini
+ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2145", MODE="0666"
+
+# PKOB nano (nEDBG) - debugger on Curiosity Nano
+ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2175", MODE="0666"
+
+# MPLAB PICkit 4 In-Circuit Debugger
+ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2177", MODE="0666"
+
+# MPLAB Snap In-Circuit Debugger
+ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2180", MODE="0666"
+
+LABEL="bloom_end"
