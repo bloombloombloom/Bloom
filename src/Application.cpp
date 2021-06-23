@@ -227,7 +227,9 @@ void Application::shutdown() {
     this->stopDebugServer();
     this->stopTargetController();
 
-    if (this->signalHandler.getThreadState() != ThreadState::STOPPED) {
+    if (this->signalHandler.getThreadState() != ThreadState::STOPPED
+        && this->signalHandler.getThreadState() != ThreadState::UNINITIALISED
+    ) {
         // Signal handler is still running
         this->signalHandler.triggerShutdown();
 
