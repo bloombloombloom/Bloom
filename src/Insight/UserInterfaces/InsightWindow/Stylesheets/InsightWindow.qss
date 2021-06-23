@@ -191,4 +191,5 @@ QToolTip {
 
 #io-inspection-unavailable {
     color: #838386;
+    font-size: 14px;
 }
