@@ -496,6 +496,7 @@
                 <property name="FUSE_ENABLED_VALUE" value="1"/>
             </property-group>
             <property-group name="UPDI_INTERFACE">
+                <property name="OCD_BASE_ADDR" value="0x00000F80"/>
                 <property name="PROGMEM_OFFSET" value="0x00008000"/>
             </property-group>
             <property-group name="SIGNATURES">

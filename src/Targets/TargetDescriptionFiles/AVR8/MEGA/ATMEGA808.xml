@@ -463,6 +463,7 @@
                 <property name="INTERRUPT_VECTOR_SIZE" value="4"/>
             </property-group>
             <property-group name="UPDI_INTERFACE">
+                <property name="OCD_BASE_ADDR" value="0x00000F80"/>
                 <property name="PROGMEM_OFFSET" value="0x00004000"/>
             </property-group>
             <property-group name="SIGNATURES">
