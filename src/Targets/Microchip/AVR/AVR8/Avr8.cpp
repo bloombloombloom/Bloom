@@ -292,6 +292,8 @@ void Avr8::loadTargetVariants() {
 TargetParameters& Avr8::getTargetParameters() {
     if (!this->targetParameters.has_value()) {
         assert(this->targetDescriptionFile.has_value());
+        auto supportedPhysicalInterfaces = this->targetDescriptionFile->getSupportedDebugPhysicalInterfaces();
+        auto& peripheralModules = this->targetDescriptionFile->getPeripheralModulesMappedByName();
         this->targetParameters = TargetParameters();
         auto& propertyGroups = this->targetDescriptionFile->getPropertyGroupsMappedByName();
 
@@ -425,45 +427,44 @@ TargetParameters& Avr8::getTargetParameters() {
 
             if (pdiInterfaceProperties.contains("app_section_offset")) {
                 this->targetParameters->appSectionPdiOffset = pdiInterfaceProperties
-                    .at("app_section_offset").value.toInt(nullptr, 16);
+                    .at("app_section_offset").value.toUInt(nullptr, 16);
             }
 
             if (pdiInterfaceProperties.contains("boot_section_offset")) {
                 this->targetParameters->bootSectionPdiOffset = pdiInterfaceProperties
-                    .at("boot_section_offset").value.toInt(nullptr, 16);
+                    .at("boot_section_offset").value.toUInt(nullptr, 16);
             }
 
             if (pdiInterfaceProperties.contains("datamem_offset")) {
                 this->targetParameters->ramPdiOffset = pdiInterfaceProperties
-                    .at("datamem_offset").value.toInt(nullptr, 16);
+                    .at("datamem_offset").value.toUInt(nullptr, 16);
             }
 
             if (pdiInterfaceProperties.contains("eeprom_offset")) {
                 this->targetParameters->eepromPdiOffset = pdiInterfaceProperties
-                    .at("eeprom_offset").value.toInt(nullptr, 16);
+                    .at("eeprom_offset").value.toUInt(nullptr, 16);
             }
 
             if (pdiInterfaceProperties.contains("user_signatures_offset")) {
                 this->targetParameters->userSignaturesPdiOffset = pdiInterfaceProperties
-                    .at("user_signatures_offset").value.toInt(nullptr, 16);
+                    .at("user_signatures_offset").value.toUInt(nullptr, 16);
             }
 
             if (pdiInterfaceProperties.contains("prod_signatures_offset")) {
                 this->targetParameters->productSignaturesPdiOffset = pdiInterfaceProperties
-                    .at("prod_signatures_offset").value.toInt(nullptr, 16);
+                    .at("prod_signatures_offset").value.toUInt(nullptr, 16);
             }
 
             if (pdiInterfaceProperties.contains("fuse_registers_offset")) {
                 this->targetParameters->fuseRegistersPdiOffset = pdiInterfaceProperties
-                    .at("fuse_registers_offset").value.toInt(nullptr, 16);
+                    .at("fuse_registers_offset").value.toUInt(nullptr, 16);
             }
 
             if (pdiInterfaceProperties.contains("lock_registers_offset")) {
                 this->targetParameters->lockRegistersPdiOffset = pdiInterfaceProperties
-                    .at("lock_registers_offset").value.toInt(nullptr, 16);
+                    .at("lock_registers_offset").value.toUInt(nullptr, 16);
             }
 
-            auto& peripheralModules = this->targetDescriptionFile->getPeripheralModulesMappedByName();
 
             if (peripheralModules.contains("nvm")) {
                 auto& nvmModule = peripheralModules.at("nvm");
