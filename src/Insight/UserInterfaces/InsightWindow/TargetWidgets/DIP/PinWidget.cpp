@@ -27,9 +27,15 @@ PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, 
     this->pinDirectionLabel->setObjectName("target-pin-direction");
     this->pinDirectionLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
+    auto pinName = QString::fromStdString(pinDescriptor.name).toUpper();
     this->pinNameLabel = new QLabel(this);
     this->pinNameLabel->setObjectName("target-pin-name");
-    this->pinNameLabel->setText(QString::fromStdString(pinDescriptor.name).toUpper());
+    this->pinNameLabel->setToolTip(pinName);
+    if (pinName.size() > 4) {
+        pinName.truncate(4);
+        pinName.append('.');
+    }
+    this->pinNameLabel->setText(pinName);
     this->pinNameLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
     this->pinNumberLabel = new QLabel(this);
@@ -56,4 +62,3 @@ PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, 
 
     connect(this->bodyWidget, &PinBodyWidget::clicked, this, &TargetPinWidget::onWidgetBodyClicked);
 }
-
