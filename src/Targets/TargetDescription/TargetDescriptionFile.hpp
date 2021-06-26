@@ -10,6 +10,7 @@
 #include "Module.hpp"
 #include "Variant.hpp"
 #include "Pinout.hpp"
+#include "Interface.hpp"
 
 namespace Bloom::Targets::TargetDescription
 {
@@ -44,9 +45,10 @@ namespace Bloom::Targets::TargetDescription
         std::map<std::string, Module> peripheralModulesMappedByName;
         std::vector<Variant> variants;
         std::map<std::string, Pinout> pinoutsMappedByName;
+        std::map<std::string, Interface> interfacesByName;
 
 
-        void init(const QDomDocument& xml);
+        virtual void init(const QDomDocument& xml);
         void init(const QString& xmlFilePath);
 
     private:
@@ -111,6 +113,11 @@ namespace Bloom::Targets::TargetDescription
          * Extracts all pinouts and loads them into this->pinoutsMappedByName.
          */
         void loadPinouts();
+
+        /**
+         * Extracts all interfaces and loads them into this->interfacesByName
+         */
+        void loadInterfaces();
 
     public:
         TargetDescriptionFile() = default;

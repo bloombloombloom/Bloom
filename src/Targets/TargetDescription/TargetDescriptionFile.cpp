@@ -41,6 +41,7 @@ void TargetDescriptionFile::init(const QDomDocument& xml) {
     this->loadPeripheralModules();
     this->loadVariants();
     this->loadPinouts();
+    this->loadInterfaces();
 }
 
 std::string TargetDescriptionFile::getTargetName() const {
@@ -62,13 +63,13 @@ AddressSpace TargetDescriptionFile::generateAddressSpaceFromXml(const QDomElemen
     addressSpace.id = xmlElement.attribute("id").toStdString();
 
     bool conversionStatus;
-    addressSpace.startAddress = xmlElement.attribute("start").toUShort(&conversionStatus, 16);
+    addressSpace.startAddress = xmlElement.attribute("start").toUInt(&conversionStatus, 16);
 
     if (!conversionStatus) {
         throw Exception("Failed to convert start address hex value to integer.");
     }
 
-    addressSpace.size = xmlElement.attribute("size").toUShort(&conversionStatus, 16);
+    addressSpace.size = xmlElement.attribute("size").toUInt(&conversionStatus, 16);
 
     if (!conversionStatus) {
         throw Exception("Failed to convert size hex value to integer.");
@@ -436,6 +437,34 @@ void TargetDescriptionFile::loadPinouts() {
 
         } catch (const Exception& exception) {
             Logger::debug("Failed to extract pinout from target description element - " + exception.getMessage());
+        }
+    }
+}
+
+
+void TargetDescriptionFile::loadInterfaces() {
+    auto interfaceNodes = this->deviceElement.elementsByTagName("interfaces").item(0).toElement()
+        .elementsByTagName("interface");
+
+    for (int interfaceIndex = 0; interfaceIndex < interfaceNodes.count(); interfaceIndex++) {
+        try {
+            auto interfaceXml = interfaceNodes.item(interfaceIndex).toElement();
+
+            if (!interfaceXml.hasAttribute("name")) {
+                throw Exception("Missing name attribute");
+            }
+
+            auto interface = Interface();
+            interface.name = interfaceXml.attribute("name").toLower().toStdString();
+
+            if (interfaceXml.hasAttribute("type")) {
+                interface.type = interfaceXml.attribute("type").toStdString();
+            }
+
+            this->interfacesByName.insert(std::pair(interface.name, interface));
+
+        } catch (const Exception& exception) {
+            Logger::debug("Failed to extract interface from target description element - " + exception.getMessage());
         }
     }
 }
