@@ -483,6 +483,21 @@ TargetParameters& Avr8::getTargetParameters() {
     return this->targetParameters.value();
 }
 
+void Avr8::activate() {
+    if (this->isActivated()) {
+        return;
+    }
+
+    this->avr8Interface->init();
+
+    if (this->targetDescriptionFile.has_value()) {
+        this->avr8Interface->setTargetParameters(this->getTargetParameters());
+    }
+
+    this->avr8Interface->activate();
+    this->activated = true;
+}
+
 std::unique_ptr<Targets::Target> Avr8::promote() {
     std::unique_ptr<Targets::Target> promoted = nullptr;
 
@@ -511,16 +526,6 @@ std::unique_ptr<Targets::Target> Avr8::promote() {
     }
 
     return promoted;
-}
-
-void Avr8::activate() {
-    if (this->isActivated()) {
-        return;
-    }
-
-    this->avr8Interface->init();
-    this->avr8Interface->activate();
-    this->activated = true;
 }
 
 void Avr8::deactivate() {
