@@ -10,8 +10,8 @@ namespace Bloom::Targets::TargetDescription
     {
         std::string id;
         std::string name;
-        std::uint16_t startAddress;
-        std::uint16_t size;
+        std::uint32_t startAddress;
+        std::uint32_t size;
         bool littleEndian = true;
         std::map<MemorySegmentType, std::map<std::string, MemorySegment>> memorySegmentsByTypeAndName;
     };
