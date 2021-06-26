@@ -17,8 +17,14 @@ QMainWindow {
     image-position: center;
 }
 
-#author-label, #os-link-label {
-    font-size: 14px;
-    color: #adadb1;
+#version-label {
+    font-size: 15px;
+}
 
+#author-label, #os-link-label, #link-label, #author-label {
+    font-size: 14px;
+}
+
+#author-label, #os-link-label {
+    color: #adadb1;
 }
