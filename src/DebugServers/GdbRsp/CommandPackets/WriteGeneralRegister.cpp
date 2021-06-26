@@ -9,7 +9,7 @@ void WriteGeneralRegister::init() {
     // The P packet updates a single register
     auto packet = std::string(this->data.begin(), this->data.end());
 
-    if (packet.size() < 6) {
+    if (packet.size() < 4) {
         throw Exception("Invalid P command packet - insufficient data in packet.");
     }
 
