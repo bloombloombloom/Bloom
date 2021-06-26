@@ -1,5 +1,7 @@
 #pragma once
 
+#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
+
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     struct Avr8EdbgParameter
@@ -76,14 +78,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         DEBUGGING = 0x02,
     };
 
-    enum class Avr8PhysicalInterface: unsigned char
-    {
-        NONE = 0x00,
-        JTAG = 0x04,
-        DEBUG_WIRE = 0x05,
-        PDI = 0x06,
-        PDI_1W = 0x08,
-    };
+    static inline auto getAvr8PhysicalInterfaceToIdMapping() {
+        using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
+
+        return std::map<PhysicalInterface, unsigned char>({
+            {PhysicalInterface::DEBUG_WIRE, 0x05},
+            {PhysicalInterface::PDI, 0x06},
+            {PhysicalInterface::JTAG, 0x04},
+            {PhysicalInterface::UPDI, 0x08},
+        });
+    }
 
     enum class Avr8MemoryType: unsigned char
     {

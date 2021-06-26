@@ -69,7 +69,7 @@ std::vector<unsigned char> EdbgAvr8Interface::getParameter(const Avr8EdbgParamet
 void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
     auto physicalInterface = targetConfig.jsonObject.find("physicalInterface")->toString().toLower().toStdString();
 
-    auto availablePhysicalInterfaces = EdbgAvr8Interface::physicalInterfacesByName;
+    auto availablePhysicalInterfaces = this->getPhysicalInterfacesByName();
 
     if (physicalInterface.empty()
         || availablePhysicalInterfaces.find(physicalInterface) == availablePhysicalInterfaces.end()
@@ -79,13 +79,13 @@ void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
 
     auto selectedPhysicalInterface = availablePhysicalInterfaces.find(physicalInterface)->second;
 
-    if (selectedPhysicalInterface == Avr8PhysicalInterface::DEBUG_WIRE) {
+    if (selectedPhysicalInterface == PhysicalInterface::DEBUG_WIRE) {
         Logger::warning("AVR8 debugWire interface selected - the DWEN fuse will need to be enabled");
     }
 
     this->physicalInterface = selectedPhysicalInterface;
 
-    if (this->physicalInterface == Avr8PhysicalInterface::JTAG && !this->family.has_value()) {
+    if (this->physicalInterface == PhysicalInterface::JTAG && !this->family.has_value()) {
         throw InvalidConfig("Cannot use JTAG physical interface with ambiguous target name - please specify the"
             " exact name of the target in your configuration file. See https://bloom.oscillate.io/docs/supported-targets");
     }
@@ -327,7 +327,7 @@ void EdbgAvr8Interface::init() {
 
     this->setParameter(
         Avr8EdbgParameters::PHYSICAL_INTERFACE,
-        static_cast<unsigned char>(this->physicalInterface)
+        getAvr8PhysicalInterfaceToIdMapping().at(this->physicalInterface)
     );
 }
 
@@ -438,7 +438,7 @@ void EdbgAvr8Interface::activate() {
 
 void EdbgAvr8Interface::deactivate() {
     if (this->targetAttached) {
-        if (this->physicalInterface == Avr8PhysicalInterface::DEBUG_WIRE && this->disableDebugWireOnDeactivate) {
+        if (this->physicalInterface == PhysicalInterface::DEBUG_WIRE && this->disableDebugWireOnDeactivate) {
             try {
                 this->disableDebugWire();
                 Logger::warning("Successfully disabled debugWire on the AVR8 target - this is only temporary - "

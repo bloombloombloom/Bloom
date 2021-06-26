@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Avr8GenericResponseFrame.hpp"
-#include "src/Targets/Microchip/AVR/Target.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
 {
@@ -11,25 +11,28 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
         GetDeviceId() = default;
         explicit GetDeviceId(const std::vector<AvrResponse>& AvrResponses): Avr8GenericResponseFrame(AvrResponses) {}
 
-        Targets::Microchip::Avr::TargetSignature extractSignature(Avr8PhysicalInterface physicalInterface) {
+        Targets::Microchip::Avr::TargetSignature extractSignature(
+            Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface
+        ) {
+            using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
             auto payloadData = this->getPayloadData();
 
             switch (physicalInterface) {
-                case Avr8PhysicalInterface::DEBUG_WIRE: {
+                case PhysicalInterface::DEBUG_WIRE: {
                     /*
                      * When using the DebugWire physical interface, the get device ID command will return
                      * four bytes, where the first can be ignored.
                      */
                     return Targets::Microchip::Avr::TargetSignature(payloadData[1], payloadData[2], payloadData[3]);
                 }
-                case Avr8PhysicalInterface::PDI:
-                case Avr8PhysicalInterface::PDI_1W: {
+                case PhysicalInterface::PDI:
+                case PhysicalInterface::UPDI: {
                     /*
                      * When using the PDI physical interface, the signature is returned in LSB format.
                      */
                     return Targets::Microchip::Avr::TargetSignature(payloadData[3], payloadData[2], payloadData[1]);
                 }
-                case Avr8PhysicalInterface::JTAG: {
+                case PhysicalInterface::JTAG: {
                     /*
                      * When using the JTAG interface, the get device ID command returns a 32 bit JTAG ID. This takes
                      * the following form:

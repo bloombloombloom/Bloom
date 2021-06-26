@@ -10,6 +10,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
 #include "src/Targets/Microchip/AVR/Target.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
@@ -66,7 +67,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * Currently, the AVR8 Generic protocol supports 4 physical interfaces: debugWire, JTAG, PDI and UPDI.
          * The desired physical interface must be selected by setting the "AVR8_PHY_PHYSICAL" parameter.
          */
-        Avr8PhysicalInterface physicalInterface = Avr8PhysicalInterface::NONE;
+        Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface =
+            Targets::Microchip::Avr::Avr8Bit::PhysicalInterface::DEBUG_WIRE;
 
         /**
          * EDBG-based debug tools require target specific parameters such as memory locations, page sizes and
@@ -123,11 +125,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * Users are required to set their desired physical interface in their Bloom configuration. This would take
          * the form of a string, so we map the available options to the appropriate enums.
          */
-        static inline std::map<std::string, Avr8PhysicalInterface> physicalInterfacesByName = {
-            {"debugwire", Avr8PhysicalInterface::DEBUG_WIRE},
-            {"pdi", Avr8PhysicalInterface::PDI},
-            {"jtag", Avr8PhysicalInterface::JTAG},
-//            {"updi", Avr8PhysicalInterface::PDI_1W}, // Disabled for now - will add support later
+        static inline auto getPhysicalInterfacesByName() {
+            using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
+
+            return std::map<std::string, PhysicalInterface>({
+                {"debugwire", PhysicalInterface::DEBUG_WIRE},
+                {"pdi", PhysicalInterface::PDI},
+                {"jtag", PhysicalInterface::JTAG},
+                {"updi", PhysicalInterface::UPDI},
+            });
         };
 
         /**
@@ -136,44 +142,45 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         static inline auto getConfigVariantsByFamilyAndPhysicalInterface() {
             using Targets::Microchip::Avr::Avr8Bit::Family;
-            return std::map<Family, std::map<Avr8PhysicalInterface, Avr8ConfigVariant>>({
+            using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
+            return std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>({
                 {
                     Family::MEGA,
                     {
-                        {Avr8PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
-                        {Avr8PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                        {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
+                        {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
                     }
                 },
                 {
                     Family::TINY,
                     {
-                        {Avr8PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
-                        {Avr8PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                        {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
+                        {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
                     }
                 },
                 {
                     Family::XMEGA,
                     {
-                        {Avr8PhysicalInterface::JTAG, Avr8ConfigVariant::XMEGA},
-                        {Avr8PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
+                        {PhysicalInterface::JTAG, Avr8ConfigVariant::XMEGA},
+                        {PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
                     }
                 },
                 {
                     Family::DA,
                     {
-                        {Avr8PhysicalInterface::PDI_1W, Avr8ConfigVariant::UPDI},
+                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                     }
                 },
                 {
                     Family::DB,
                     {
-                        {Avr8PhysicalInterface::PDI_1W, Avr8ConfigVariant::UPDI},
+                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                     }
                 },
                 {
                     Family::DD,
                     {
-                        {Avr8PhysicalInterface::PDI_1W, Avr8ConfigVariant::UPDI},
+                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                     }
                 },
             });
@@ -211,10 +218,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                  * variant. Users are required to specify the exact target name in their config, when using the JTAG
                  * physical interface. That way, this->family will be set by the time resolveConfigVariant() is called.
                  */
-                static std::map<Avr8PhysicalInterface, Avr8ConfigVariant> physicalInterfacesToConfigVariants = {
-                    {Avr8PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-                    {Avr8PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
-                    {Avr8PhysicalInterface::PDI_1W, Avr8ConfigVariant::UPDI},
+                using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
+                static std::map<PhysicalInterface, Avr8ConfigVariant> physicalInterfacesToConfigVariants = {
+                    {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                    {PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
+                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                 };
 
                 if (physicalInterfacesToConfigVariants.contains(this->physicalInterface)) {

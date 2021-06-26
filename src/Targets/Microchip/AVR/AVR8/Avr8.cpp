@@ -7,6 +7,7 @@
 
 #include "Avr8.hpp"
 #include "PadDescriptor.hpp"
+#include "PhysicalInterface.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Targets/TargetRegister.hpp"
