@@ -24,50 +24,6 @@ using namespace Bloom::Targets::Microchip::Avr;
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
 using namespace Exceptions;
 
-void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
-    Target::preActivationConfigure(targetConfig);
-
-    if (this->family.has_value()) {
-        this->avr8Interface->setFamily(this->family.value());
-    }
-
-    this->avr8Interface->configure(targetConfig);
-}
-
-void Avr8::postActivationConfigure() {
-    if (!this->targetDescriptionFile.has_value()) {
-        this->loadTargetDescriptionFile();
-        this->initFromTargetDescriptionFile();
-    }
-
-    /*
-     * The signature obtained from the device should match what is in the target description file
-     *
-     * We don't use this->getId() here as that could return the ID that was extracted from the target description file
-     * (which it would, if the user specified the exact target name in their project config - see Avr8::getId() and
-     * TargetController::getSupportedTargets() for more).
-     */
-    auto targetSignature = this->avr8Interface->getDeviceId();
-    auto tdSignature = this->targetDescriptionFile->getTargetSignature();
-
-    if (targetSignature != tdSignature) {
-        throw Exception("Failed to validate connected target - target signature mismatch.\nThe target signature"
-            " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
-            + tdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the configuration file"
-            + " (bloom.json)."
-        );
-    }
-}
-
-void Avr8::postPromotionConfigure() {
-    if (!this->family.has_value()) {
-        throw Exception("Failed to resolve AVR8 family");
-    }
-
-    this->avr8Interface->setFamily(this->family.value());
-    this->avr8Interface->setTargetParameters(this->targetParameters.value());
-}
-
 void Avr8::loadTargetDescriptionFile() {
     this->targetDescriptionFile = TargetDescription::TargetDescriptionFile(
         this->getId(),
@@ -151,8 +107,8 @@ void Avr8::loadTargetParameters() {
 
         if (stackPointerHighRegister.has_value()) {
             this->targetParameters->stackPointerRegisterSize = (this->targetParameters->stackPointerRegisterSize.has_value()) ?
-                                                               this->targetParameters->stackPointerRegisterSize.value() + stackPointerHighRegister->size :
-                                                               stackPointerHighRegister->size;
+                this->targetParameters->stackPointerRegisterSize.value() + stackPointerHighRegister->size :
+                stackPointerHighRegister->size;
         }
     }
 
@@ -554,6 +510,50 @@ TargetSignature Avr8::getId() {
     }
 
     return this->id.value();
+}
+
+void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
+    Target::preActivationConfigure(targetConfig);
+
+    if (this->family.has_value()) {
+        this->avr8Interface->setFamily(this->family.value());
+    }
+
+    this->avr8Interface->configure(targetConfig);
+}
+
+void Avr8::postActivationConfigure() {
+    if (!this->targetDescriptionFile.has_value()) {
+        this->loadTargetDescriptionFile();
+        this->initFromTargetDescriptionFile();
+    }
+
+    /*
+     * The signature obtained from the device should match what is in the target description file
+     *
+     * We don't use this->getId() here as that could return the ID that was extracted from the target description file
+     * (which it would, if the user specified the exact target name in their project config - see Avr8::getId() and
+     * TargetController::getSupportedTargets() for more).
+     */
+    auto targetSignature = this->avr8Interface->getDeviceId();
+    auto tdSignature = this->targetDescriptionFile->getTargetSignature();
+
+    if (targetSignature != tdSignature) {
+        throw Exception("Failed to validate connected target - target signature mismatch.\nThe target signature"
+            " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
+            + tdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the configuration file"
+            + " (bloom.json)."
+        );
+    }
+}
+
+void Avr8::postPromotionConfigure() {
+    if (!this->family.has_value()) {
+        throw Exception("Failed to resolve AVR8 family");
+    }
+
+    this->avr8Interface->setFamily(this->family.value());
+    this->avr8Interface->setTargetParameters(this->targetParameters.value());
 }
 
 void Avr8::activate() {
