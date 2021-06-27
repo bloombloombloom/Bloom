@@ -14,14 +14,6 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    inline bool operator==(unsigned char rawId, Avr8ResponseId id) {
-        return static_cast<unsigned char>(id) == rawId;
-    }
-
-    inline bool operator==(Avr8ResponseId id, unsigned char rawId) {
-        return rawId == id;
-    }
-
     /**
      * The EdbgAvr8Interface implements the AVR8 Generic EDBG/CMSIS-DAP protocol, as an Avr8Interface.
      *
@@ -290,6 +282,27 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @return
          */
         std::vector<unsigned char> getParameter(const Avr8EdbgParameter& parameter, std::uint8_t size);
+
+        /**
+         * EDBG-based debug tools require target specific parameters such as memory locations, page sizes and
+         * register addresses. These parameters can be sent to the tool before and during a session.
+         *
+         * What parameters we need to send depend on the physical interface (and config variant) selected by the user.
+         * For target parameters, the address (ID) of the parameter also varies across config variants. This is why
+         * we sometimes have separate parameters for sending the same data, where they differ only in parameter IDs.
+         * For example, the Avr8EdbgParameters::DEVICE_FLASH_BASE parameter is used to send the base address for
+         * the target's flash memory segment. The parameter is assigned an address (ID) of 0x06. But the
+         * Avr8EdbgParameters::DEVICE_UPDI_PROG_BASE is used to send the same data (base address of the target's flash
+         * segment), but only for sessions with the UPDI physical interface. The address is 0x00.
+         *
+         * - The setDebugWireAndJtagParameters() function sends the required target parameters for debugWire and JTAG
+         *   sessions. Both sessions are covered in a single function because they require the same parameters.
+         * - The setPdiParameters() function sends the required target parameters for PDI sessions.
+         * - The setUpdiParameters() function sends the required target parameters for UPDI sessions.
+         */
+        void setDebugWireAndJtagParameters();
+        void setPdiParameters();
+        void setUpdiParameters();
 
         /**
          * Sends the "Activate Physical" command to the debug tool, activating the physical interface and thus enabling

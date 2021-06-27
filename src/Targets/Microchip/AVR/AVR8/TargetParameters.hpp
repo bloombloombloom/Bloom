@@ -18,6 +18,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<std::uint32_t> flashStartAddress;
         std::optional<std::uint16_t> ramStartAddress;
         std::optional<std::uint32_t> ramSize;
+        std::optional<std::uint16_t> eepromStartAddress;
         std::optional<std::uint16_t> eepromSize;
         std::optional<std::uint16_t> eepromPageSize;
         std::optional<std::uint8_t> eepromAddressRegisterHigh;
@@ -44,6 +45,17 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<std::uint32_t> userSignaturesPdiOffset;
         std::optional<std::uint32_t> productSignaturesPdiOffset;
         std::optional<std::uint16_t> nvmBaseAddress;
+
+        // UPDI specific target params
+        std::optional<std::uint16_t> ocdModuleAddress;
+        std::optional<std::uint32_t> programMemoryUpdiStartAddress;
+        std::optional<std::uint16_t> signatureSegmentStartAddress;
+        std::optional<std::uint16_t> signatureSegmentSize;
+        std::optional<std::uint16_t> userSignatureSegmentStartAddress;
+        std::optional<std::uint16_t> userSignatureSegmentSize;
+        std::optional<std::uint16_t> fuseSegmentStartAddress;
+        std::optional<std::uint16_t> fuseSegmentSize;
+        std::optional<std::uint16_t> lockbitsSegmentStartAddress;
 
         std::optional<std::uint32_t> ioPortAddressRangeStart;
         std::optional<std::uint32_t> ioPortAddressRangeEnd;

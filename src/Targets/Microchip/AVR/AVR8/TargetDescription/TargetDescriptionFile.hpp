@@ -1,9 +1,12 @@
 #pragma once
 
+#include <set>
+
 #include "src/Targets/TargetDescription/TargetDescriptionFile.hpp"
 
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 {
@@ -44,6 +47,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             };
         };
 
+        std::set<PhysicalInterface> supportedDebugPhysicalInterfaces;
+
+        /**
+         * Populates this->supportedDebugPhysicalInterfaces with physical interfaces defined in the TDF.
+         */
+        void loadDebugPhysicalInterfaces();
+
     public:
         /**
          * Will resolve the target description file using the target description JSON mapping and a given target signature.
@@ -52,6 +62,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @param targetName
          */
         TargetDescriptionFile(const TargetSignature& targetSignature, std::optional<std::string> targetName);
+
+        /**
+         * Extends TDF initialisation to include the loading of physical interfaces for debugging AVR8 targets, among
+         * other things.
+         *
+         * @param xml
+         */
+        void init(const QDomDocument& xml) override;
 
         /**
          * Loads the AVR8 target description JSON mapping file.
@@ -79,6 +97,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRegisterMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getEepromMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFirstBootSectionMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getSignatureMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFuseMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getLockbitsMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::RegisterGroup> getCpuRegisterGroup() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::RegisterGroup> getBootLoadRegisterGroup() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::RegisterGroup> getEepromRegisterGroup() const;
@@ -95,5 +116,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         [[nodiscard]] std::optional<Targets::TargetDescription::Register> getEepromAddressHighRegister() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::Register> getEepromDataRegister() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::Register> getEepromControlRegister() const;
+
+        /**
+         * Returns a set of all supported physical interfaces for debugging.
+         *
+         * @return
+         */
+        const auto& getSupportedDebugPhysicalInterfaces() {
+            return this->supportedDebugPhysicalInterfaces;
+        };
     };
 }

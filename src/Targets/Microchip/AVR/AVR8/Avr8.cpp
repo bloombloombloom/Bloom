@@ -24,13 +24,6 @@ using namespace Bloom::Targets::Microchip::Avr;
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
 using namespace Exceptions;
 
-/**
- * Initialises the target from config parameters extracted from user's config file.
- *
- * @see Application::extractConfig(); for more on config extraction.
- *
- * @param targetConfig
- */
 void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
     Target::preActivationConfigure(targetConfig);
 
@@ -44,6 +37,7 @@ void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
 void Avr8::postActivationConfigure() {
     if (!this->targetDescriptionFile.has_value()) {
         this->loadTargetDescriptionFile();
+        this->initFromTargetDescriptionFile();
     }
 
     /*
@@ -71,27 +65,291 @@ void Avr8::postPromotionConfigure() {
     }
 
     this->avr8Interface->setFamily(this->family.value());
-    this->avr8Interface->setTargetParameters(this->getTargetParameters());
+    this->avr8Interface->setTargetParameters(this->targetParameters.value());
 }
 
 void Avr8::loadTargetDescriptionFile() {
-    auto targetSignature = this->getId();
-    auto targetDescriptionFile = TargetDescription::TargetDescriptionFile(
-        targetSignature,
+    this->targetDescriptionFile = TargetDescription::TargetDescriptionFile(
+        this->getId(),
         (!this->name.empty()) ? std::optional(this->name) : std::nullopt
     );
+}
 
-    this->targetDescriptionFile = targetDescriptionFile;
-    this->name = targetDescriptionFile.getTargetName();
-    this->family = targetDescriptionFile.getFamily();
+void Avr8::initFromTargetDescriptionFile() {
+    this->name = this->targetDescriptionFile->getTargetName();
+    this->family = this->targetDescriptionFile->getFamily();
 
+    this->loadTargetParameters();
     this->loadPadDescriptors();
     this->loadTargetVariants();
 }
 
-void Avr8::loadPadDescriptors() {
-    auto& targetParameters = this->getTargetParameters();
+void Avr8::loadTargetParameters() {
+    assert(this->targetDescriptionFile.has_value());
+    auto& peripheralModules = this->targetDescriptionFile->getPeripheralModulesMappedByName();
+    this->targetParameters = TargetParameters();
+    auto& propertyGroups = this->targetDescriptionFile->getPropertyGroupsMappedByName();
 
+    auto flashMemorySegment = this->targetDescriptionFile->getFlashMemorySegment();
+    if (flashMemorySegment.has_value()) {
+        this->targetParameters->flashSize = flashMemorySegment->size;
+        this->targetParameters->flashStartAddress = flashMemorySegment->startAddress;
+
+        if (flashMemorySegment->pageSize.has_value()) {
+            this->targetParameters->flashPageSize = flashMemorySegment->pageSize.value();
+        }
+    }
+
+    auto ramMemorySegment = this->targetDescriptionFile->getRamMemorySegment();
+    if (ramMemorySegment.has_value()) {
+        this->targetParameters->ramSize = ramMemorySegment->size;
+        this->targetParameters->ramStartAddress = ramMemorySegment->startAddress;
+    }
+
+    auto registerMemorySegment = this->targetDescriptionFile->getRegisterMemorySegment();
+    if (registerMemorySegment.has_value()) {
+        this->targetParameters->gpRegisterSize = registerMemorySegment->size;
+        this->targetParameters->gpRegisterStartAddress = registerMemorySegment->startAddress;
+    }
+
+    auto eepromMemorySegment = this->targetDescriptionFile->getEepromMemorySegment();
+    if (eepromMemorySegment.has_value()) {
+        this->targetParameters->eepromSize = eepromMemorySegment->size;
+        this->targetParameters->eepromStartAddress = eepromMemorySegment->startAddress;
+
+        if (eepromMemorySegment->pageSize.has_value()) {
+            this->targetParameters->eepromPageSize = eepromMemorySegment->pageSize.value();
+        }
+    }
+
+    auto firstBootSectionMemorySegment = this->targetDescriptionFile->getFirstBootSectionMemorySegment();
+    if (firstBootSectionMemorySegment.has_value()) {
+        this->targetParameters->bootSectionStartAddress = firstBootSectionMemorySegment->startAddress / 2;
+        this->targetParameters->bootSectionSize = firstBootSectionMemorySegment->size;
+    }
+
+    auto statusRegister = this->targetDescriptionFile->getStatusRegister();
+    if (statusRegister.has_value()) {
+        this->targetParameters->statusRegisterStartAddress = statusRegister->offset;
+        this->targetParameters->statusRegisterSize = statusRegister->size;
+    }
+
+    auto stackPointerRegister = this->targetDescriptionFile->getStackPointerRegister();
+    if (stackPointerRegister.has_value()) {
+        this->targetParameters->stackPointerRegisterStartAddress = stackPointerRegister->offset;
+        this->targetParameters->stackPointerRegisterSize = stackPointerRegister->size;
+
+    } else {
+        // Sometimes the SP register is split into two register nodes, one for low, the other for high
+        auto stackPointerLowRegister = this->targetDescriptionFile->getStackPointerLowRegister();
+        auto stackPointerHighRegister = this->targetDescriptionFile->getStackPointerHighRegister();
+
+        if (stackPointerLowRegister.has_value()) {
+            this->targetParameters->stackPointerRegisterStartAddress = stackPointerLowRegister->offset;
+            this->targetParameters->stackPointerRegisterSize = stackPointerLowRegister->size;
+        }
+
+        if (stackPointerHighRegister.has_value()) {
+            this->targetParameters->stackPointerRegisterSize = (this->targetParameters->stackPointerRegisterSize.has_value()) ?
+                                                               this->targetParameters->stackPointerRegisterSize.value() + stackPointerHighRegister->size :
+                                                               stackPointerHighRegister->size;
+        }
+    }
+
+    auto supportedPhysicalInterfaces = this->targetDescriptionFile->getSupportedDebugPhysicalInterfaces();
+
+    if (supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)
+        || supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)) {
+        this->loadDebugWireAndJtagTargetParameters();
+    }
+
+    if (supportedPhysicalInterfaces.contains(PhysicalInterface::PDI)) {
+        this->loadPdiTargetParameters();
+    }
+
+    if (supportedPhysicalInterfaces.contains(PhysicalInterface::UPDI)) {
+        this->loadUpdiTargetParameters();
+    }
+}
+
+void Avr8::loadDebugWireAndJtagTargetParameters() {
+    auto& peripheralModules = this->targetDescriptionFile->getPeripheralModulesMappedByName();
+    auto& propertyGroups = this->targetDescriptionFile->getPropertyGroupsMappedByName();
+
+    // OCD attributes can be found in property groups
+    if (propertyGroups.contains("ocd")) {
+        auto& ocdProperties = propertyGroups.at("ocd").propertiesMappedByName;
+
+        if (ocdProperties.find("ocd_revision") != ocdProperties.end()) {
+            this->targetParameters->ocdRevision = ocdProperties.find("ocd_revision")
+                ->second.value.toUShort(nullptr, 10);
+        }
+
+        if (ocdProperties.find("ocd_datareg") != ocdProperties.end()) {
+            this->targetParameters->ocdDataRegister = ocdProperties.find("ocd_datareg")
+                ->second.value.toUShort(nullptr, 16);
+        }
+    }
+
+    auto spmcsRegister = this->targetDescriptionFile->getSpmcsRegister();
+    if (spmcsRegister.has_value()) {
+        this->targetParameters->spmcRegisterStartAddress = spmcsRegister->offset;
+
+    } else {
+        auto spmcRegister = this->targetDescriptionFile->getSpmcRegister();
+        if (spmcRegister.has_value()) {
+            this->targetParameters->spmcRegisterStartAddress = spmcRegister->offset;
+        }
+    }
+
+    auto osccalRegister = this->targetDescriptionFile->getOscillatorCalibrationRegister();
+    if (osccalRegister.has_value()) {
+        this->targetParameters->osccalAddress = osccalRegister->offset;
+    }
+
+    auto eepromAddressRegister = this->targetDescriptionFile->getEepromAddressRegister();
+    if (eepromAddressRegister.has_value()) {
+        this->targetParameters->eepromAddressRegisterLow = eepromAddressRegister->offset;
+        this->targetParameters->eepromAddressRegisterHigh = (eepromAddressRegister->size == 2)
+                                                            ? eepromAddressRegister->offset + 1 : eepromAddressRegister->offset;
+
+    } else {
+        auto eepromAddressLowRegister = this->targetDescriptionFile->getEepromAddressLowRegister();
+        if (eepromAddressLowRegister.has_value()) {
+            this->targetParameters->eepromAddressRegisterLow = eepromAddressLowRegister->offset;
+            auto eepromAddressHighRegister = this->targetDescriptionFile->getEepromAddressHighRegister();
+
+            if (eepromAddressHighRegister.has_value()) {
+                this->targetParameters->eepromAddressRegisterHigh = eepromAddressHighRegister->offset;
+
+            } else {
+                this->targetParameters->eepromAddressRegisterHigh = eepromAddressLowRegister->offset;
+            }
+        }
+    }
+
+    auto eepromDataRegister = this->targetDescriptionFile->getEepromDataRegister();
+    if (eepromDataRegister.has_value()) {
+        this->targetParameters->eepromDataRegisterAddress = eepromDataRegister->offset;
+    }
+
+    auto eepromControlRegister = this->targetDescriptionFile->getEepromControlRegister();
+    if (eepromControlRegister.has_value()) {
+        this->targetParameters->eepromControlRegisterAddress = eepromControlRegister->offset;
+    }
+}
+
+void Avr8::loadPdiTargetParameters() {
+    auto& peripheralModules = this->targetDescriptionFile->getPeripheralModulesMappedByName();
+    auto& propertyGroups = this->targetDescriptionFile->getPropertyGroupsMappedByName();
+
+    if (propertyGroups.contains("pdi_interface")) {
+        auto& pdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
+
+        if (pdiInterfaceProperties.contains("app_section_offset")) {
+            this->targetParameters->appSectionPdiOffset = pdiInterfaceProperties
+                .at("app_section_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("boot_section_offset")) {
+            this->targetParameters->bootSectionPdiOffset = pdiInterfaceProperties
+                .at("boot_section_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("datamem_offset")) {
+            this->targetParameters->ramPdiOffset = pdiInterfaceProperties
+                .at("datamem_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("eeprom_offset")) {
+            this->targetParameters->eepromPdiOffset = pdiInterfaceProperties
+                .at("eeprom_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("user_signatures_offset")) {
+            this->targetParameters->userSignaturesPdiOffset = pdiInterfaceProperties
+                .at("user_signatures_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("prod_signatures_offset")) {
+            this->targetParameters->productSignaturesPdiOffset = pdiInterfaceProperties
+                .at("prod_signatures_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("fuse_registers_offset")) {
+            this->targetParameters->fuseRegistersPdiOffset = pdiInterfaceProperties
+                .at("fuse_registers_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("lock_registers_offset")) {
+            this->targetParameters->lockRegistersPdiOffset = pdiInterfaceProperties
+                .at("lock_registers_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (peripheralModules.contains("nvm")) {
+            auto& nvmModule = peripheralModules.at("nvm");
+
+            if (nvmModule.instancesMappedByName.contains("nvm")) {
+                auto& nvmInstance = nvmModule.instancesMappedByName.at("nvm");
+
+                if (nvmInstance.registerGroupsMappedByName.contains("nvm")) {
+                    this->targetParameters->nvmBaseAddress = nvmInstance.registerGroupsMappedByName.at("nvm").offset;
+                }
+            }
+        }
+    }
+}
+
+void Avr8::loadUpdiTargetParameters() {
+    auto& propertyGroups = this->targetDescriptionFile->getPropertyGroupsMappedByName();
+    auto& peripheralModules = this->targetDescriptionFile->getPeripheralModulesMappedByName();
+    auto modulesByName = this->targetDescriptionFile->getModulesMappedByName();
+
+    if (peripheralModules.contains("nvmctrl")) {
+        auto& nvmCtrlModule = peripheralModules.at("nvmctrl");
+
+        if (nvmCtrlModule.instancesMappedByName.contains("nvmctrl")) {
+            auto& nvmCtrlInstance = nvmCtrlModule.instancesMappedByName.at("nvmctrl");
+
+            if (nvmCtrlInstance.registerGroupsMappedByName.contains("nvmctrl")) {
+                this->targetParameters->nvmBaseAddress = nvmCtrlInstance.registerGroupsMappedByName.at("nvmctrl").offset;
+            }
+        }
+    }
+
+    if (propertyGroups.contains("updi_interface")) {
+        auto& updiInterfaceProperties = propertyGroups.at("updi_interface").propertiesMappedByName;
+
+        if (updiInterfaceProperties.contains("ocd_base_addr")) {
+            this->targetParameters->ocdModuleAddress = updiInterfaceProperties
+                .at("ocd_base_addr").value.toUShort(nullptr, 16);
+        }
+
+        if (updiInterfaceProperties.contains("progmem_offset")) {
+            this->targetParameters->programMemoryUpdiStartAddress = updiInterfaceProperties
+                .at("progmem_offset").value.toUInt(nullptr, 16);
+        }
+    }
+
+    auto signatureMemorySegment = this->targetDescriptionFile->getSignatureMemorySegment();
+    if (signatureMemorySegment.has_value()) {
+        this->targetParameters->signatureSegmentStartAddress = signatureMemorySegment->startAddress;
+        this->targetParameters->signatureSegmentSize = signatureMemorySegment->size;
+    }
+
+    auto fuseMemorySegment = this->targetDescriptionFile->getFuseMemorySegment();
+    if (fuseMemorySegment.has_value()) {
+        this->targetParameters->fuseSegmentStartAddress = fuseMemorySegment->startAddress;
+        this->targetParameters->fuseSegmentSize = fuseMemorySegment->size;
+    }
+
+    auto lockbitsMemorySegment = this->targetDescriptionFile->getLockbitsMemorySegment();
+    if (lockbitsMemorySegment.has_value()) {
+        this->targetParameters->lockbitsSegmentStartAddress = lockbitsMemorySegment->startAddress;
+    }
+}
+
+void Avr8::loadPadDescriptors() {
     /*
      * Every port address we extract from the target description will be stored in portAddresses, so that
      * we can extract the start (min) and end (max) for the target's IO port address
@@ -215,8 +473,8 @@ void Avr8::loadPadDescriptors() {
 
     // TODO: Move this into getTargetParameters()
     if (!portAddresses.empty()) {
-        targetParameters.ioPortAddressRangeStart = *std::min_element(portAddresses.begin(), portAddresses.end());
-        targetParameters.ioPortAddressRangeEnd = *std::max_element(portAddresses.begin(), portAddresses.end());
+        this->targetParameters->ioPortAddressRangeStart = *std::min_element(portAddresses.begin(), portAddresses.end());
+        this->targetParameters->ioPortAddressRangeEnd = *std::max_element(portAddresses.begin(), portAddresses.end());
     }
 }
 
@@ -290,198 +548,12 @@ void Avr8::loadTargetVariants() {
     }
 }
 
-TargetParameters& Avr8::getTargetParameters() {
-    if (!this->targetParameters.has_value()) {
-        assert(this->targetDescriptionFile.has_value());
-        auto supportedPhysicalInterfaces = this->targetDescriptionFile->getSupportedDebugPhysicalInterfaces();
-        auto& peripheralModules = this->targetDescriptionFile->getPeripheralModulesMappedByName();
-        this->targetParameters = TargetParameters();
-        auto& propertyGroups = this->targetDescriptionFile->getPropertyGroupsMappedByName();
-
-        auto flashMemorySegment = this->targetDescriptionFile->getFlashMemorySegment();
-        if (flashMemorySegment.has_value()) {
-            this->targetParameters->flashSize = flashMemorySegment->size;
-            this->targetParameters->flashStartAddress = flashMemorySegment->startAddress;
-
-            if (flashMemorySegment->pageSize.has_value()) {
-                this->targetParameters->flashPageSize = flashMemorySegment->pageSize.value();
-            }
-        }
-
-        auto ramMemorySegment = this->targetDescriptionFile->getRamMemorySegment();
-        if (ramMemorySegment.has_value()) {
-            this->targetParameters->ramSize = ramMemorySegment->size;
-            this->targetParameters->ramStartAddress = ramMemorySegment->startAddress;
-        }
-
-        auto registerMemorySegment = this->targetDescriptionFile->getRegisterMemorySegment();
-        if (registerMemorySegment.has_value()) {
-            this->targetParameters->gpRegisterSize = registerMemorySegment->size;
-            this->targetParameters->gpRegisterStartAddress = registerMemorySegment->startAddress;
-        }
-
-        auto eepromMemorySegment = this->targetDescriptionFile->getEepromMemorySegment();
-        if (eepromMemorySegment.has_value()) {
-            this->targetParameters->eepromSize = eepromMemorySegment->size;
-
-            if (eepromMemorySegment->pageSize.has_value()) {
-                this->targetParameters->eepromPageSize = eepromMemorySegment->pageSize.value();
-            }
-        }
-
-        auto firstBootSectionMemorySegment = this->targetDescriptionFile->getFirstBootSectionMemorySegment();
-        if (firstBootSectionMemorySegment.has_value()) {
-            this->targetParameters->bootSectionStartAddress = firstBootSectionMemorySegment->startAddress / 2;
-            this->targetParameters->bootSectionSize = firstBootSectionMemorySegment->size;
-        }
-
-        // OCD attributes can be found in property groups
-        if (propertyGroups.contains("ocd")) {
-            auto& ocdProperties = propertyGroups.at("ocd").propertiesMappedByName;
-
-            if (ocdProperties.find("ocd_revision") != ocdProperties.end()) {
-                this->targetParameters->ocdRevision = ocdProperties.find("ocd_revision")->second.value.toUShort(nullptr, 10);
-            }
-
-            if (ocdProperties.find("ocd_datareg") != ocdProperties.end()) {
-                this->targetParameters->ocdDataRegister = ocdProperties.find("ocd_datareg")->second.value.toUShort(nullptr, 16);
-            }
-        }
-
-        auto statusRegister = this->targetDescriptionFile->getStatusRegister();
-        if (statusRegister.has_value()) {
-            this->targetParameters->statusRegisterStartAddress = statusRegister->offset;
-            this->targetParameters->statusRegisterSize = statusRegister->size;
-        }
-
-        auto stackPointerRegister = this->targetDescriptionFile->getStackPointerRegister();
-        if (stackPointerRegister.has_value()) {
-            this->targetParameters->stackPointerRegisterStartAddress = stackPointerRegister->offset;
-            this->targetParameters->stackPointerRegisterSize = stackPointerRegister->size;
-
-        } else {
-            // Sometimes the SP register is split into two register nodes, one for low, the other for high
-            auto stackPointerLowRegister = this->targetDescriptionFile->getStackPointerLowRegister();
-            auto stackPointerHighRegister = this->targetDescriptionFile->getStackPointerHighRegister();
-
-            if (stackPointerLowRegister.has_value()) {
-                this->targetParameters->stackPointerRegisterStartAddress = stackPointerLowRegister->offset;
-                this->targetParameters->stackPointerRegisterSize = stackPointerLowRegister->size;
-            }
-
-            if (stackPointerHighRegister.has_value()) {
-                this->targetParameters->stackPointerRegisterSize = (this->targetParameters->stackPointerRegisterSize.has_value()) ?
-                   this->targetParameters->stackPointerRegisterSize.value() + stackPointerHighRegister->size :
-                   stackPointerHighRegister->size;
-            }
-        }
-
-        auto spmcsRegister = this->targetDescriptionFile->getSpmcsRegister();
-        if (spmcsRegister.has_value()) {
-            this->targetParameters->spmcRegisterStartAddress = spmcsRegister->offset;
-
-        } else {
-            auto spmcRegister = this->targetDescriptionFile->getSpmcRegister();
-            if (spmcRegister.has_value()) {
-                this->targetParameters->spmcRegisterStartAddress = spmcRegister->offset;
-            }
-        }
-
-        auto osccalRegister = this->targetDescriptionFile->getOscillatorCalibrationRegister();
-        if (osccalRegister.has_value()) {
-            this->targetParameters->osccalAddress = osccalRegister->offset;
-        }
-
-        auto eepromAddressRegister = this->targetDescriptionFile->getEepromAddressRegister();
-        if (eepromAddressRegister.has_value()) {
-            this->targetParameters->eepromAddressRegisterLow = eepromAddressRegister->offset;
-            this->targetParameters->eepromAddressRegisterHigh = (eepromAddressRegister->size == 2)
-                ? eepromAddressRegister->offset + 1 : eepromAddressRegister->offset;
-
-        } else {
-            auto eepromAddressLowRegister = this->targetDescriptionFile->getEepromAddressLowRegister();
-            if (eepromAddressLowRegister.has_value()) {
-                this->targetParameters->eepromAddressRegisterLow = eepromAddressLowRegister->offset;
-                auto eepromAddressHighRegister = this->targetDescriptionFile->getEepromAddressHighRegister();
-
-                if (eepromAddressHighRegister.has_value()) {
-                    this->targetParameters->eepromAddressRegisterHigh = eepromAddressHighRegister->offset;
-
-                } else {
-                    this->targetParameters->eepromAddressRegisterHigh = eepromAddressLowRegister->offset;
-                }
-            }
-        }
-
-        auto eepromDataRegister = this->targetDescriptionFile->getEepromDataRegister();
-        if (eepromDataRegister.has_value()) {
-            this->targetParameters->eepromDataRegisterAddress = eepromDataRegister->offset;
-        }
-
-        auto eepromControlRegister = this->targetDescriptionFile->getEepromControlRegister();
-        if (eepromControlRegister.has_value()) {
-            this->targetParameters->eepromControlRegisterAddress = eepromControlRegister->offset;
-        }
-
-        if (propertyGroups.contains("pdi_interface")) {
-            auto& pdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
-
-            if (pdiInterfaceProperties.contains("app_section_offset")) {
-                this->targetParameters->appSectionPdiOffset = pdiInterfaceProperties
-                    .at("app_section_offset").value.toUInt(nullptr, 16);
-            }
-
-            if (pdiInterfaceProperties.contains("boot_section_offset")) {
-                this->targetParameters->bootSectionPdiOffset = pdiInterfaceProperties
-                    .at("boot_section_offset").value.toUInt(nullptr, 16);
-            }
-
-            if (pdiInterfaceProperties.contains("datamem_offset")) {
-                this->targetParameters->ramPdiOffset = pdiInterfaceProperties
-                    .at("datamem_offset").value.toUInt(nullptr, 16);
-            }
-
-            if (pdiInterfaceProperties.contains("eeprom_offset")) {
-                this->targetParameters->eepromPdiOffset = pdiInterfaceProperties
-                    .at("eeprom_offset").value.toUInt(nullptr, 16);
-            }
-
-            if (pdiInterfaceProperties.contains("user_signatures_offset")) {
-                this->targetParameters->userSignaturesPdiOffset = pdiInterfaceProperties
-                    .at("user_signatures_offset").value.toUInt(nullptr, 16);
-            }
-
-            if (pdiInterfaceProperties.contains("prod_signatures_offset")) {
-                this->targetParameters->productSignaturesPdiOffset = pdiInterfaceProperties
-                    .at("prod_signatures_offset").value.toUInt(nullptr, 16);
-            }
-
-            if (pdiInterfaceProperties.contains("fuse_registers_offset")) {
-                this->targetParameters->fuseRegistersPdiOffset = pdiInterfaceProperties
-                    .at("fuse_registers_offset").value.toUInt(nullptr, 16);
-            }
-
-            if (pdiInterfaceProperties.contains("lock_registers_offset")) {
-                this->targetParameters->lockRegistersPdiOffset = pdiInterfaceProperties
-                    .at("lock_registers_offset").value.toUInt(nullptr, 16);
-            }
-
-
-            if (peripheralModules.contains("nvm")) {
-                auto& nvmModule = peripheralModules.at("nvm");
-
-                if (nvmModule.instancesMappedByName.contains("nvm")) {
-                    auto& nvmInstance = nvmModule.instancesMappedByName.at("nvm");
-
-                    if (nvmInstance.registerGroupsMappedByName.contains("nvm")) {
-                        this->targetParameters->nvmBaseAddress = nvmInstance.registerGroupsMappedByName.at("nvm").offset;
-                    }
-                }
-            }
-        }
+TargetSignature Avr8::getId() {
+    if (!this->id.has_value()) {
+        this->id = this->avr8Interface->getDeviceId();
     }
 
-    return this->targetParameters.value();
+    return this->id.value();
 }
 
 void Avr8::activate() {
@@ -492,7 +564,7 @@ void Avr8::activate() {
     this->avr8Interface->init();
 
     if (this->targetDescriptionFile.has_value()) {
-        this->avr8Interface->setTargetParameters(this->getTargetParameters());
+        this->avr8Interface->setTargetParameters(this->targetParameters.value());
     }
 
     this->avr8Interface->activate();
@@ -539,21 +611,11 @@ void Avr8::deactivate() {
     }
 }
 
-TargetSignature Avr8::getId() {
-    if (!this->id.has_value()) {
-        this->id = this->avr8Interface->getDeviceId();
-    }
-
-    return this->id.value();
-}
-
 TargetDescriptor Avr8Bit::Avr8::getDescriptor() {
-    auto parameters = this->getTargetParameters();
-
     auto descriptor = TargetDescriptor();
     descriptor.id = this->getHumanReadableId();
     descriptor.name = this->getName();
-    descriptor.ramSize = parameters.ramSize.value_or(0);
+    descriptor.ramSize = this->targetParameters.value().ramSize.value_or(0);
 
     std::transform(
         this->targetVariantsById.begin(),
@@ -843,25 +905,38 @@ void Avr8::setPinState(int variantId, const TargetPinDescriptor& pinDescriptor, 
 
     if (ioState.has_value()) {
         auto portSetAddress = padDescriptor.gpioPortSetAddress.value();
-        auto portSetRegisterValue = this->readMemory(TargetMemoryType::RAM, portSetAddress, 1);
 
-        if (portSetRegisterValue.empty()) {
-            throw Exception("Failed to read PORT register value");
+        if (ioState == TargetPinState::IoState::HIGH
+            || !padDescriptor.gpioPortClearAddress.has_value()
+            || padDescriptor.gpioPortClearAddress == portSetAddress
+        ) {
+            auto portSetRegisterValue = this->readMemory(TargetMemoryType::RAM, portSetAddress, 1);
+
+            if (portSetRegisterValue.empty()) {
+                throw Exception("Failed to read PORT register value");
+            }
+
+            auto portSetBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(portSetRegisterValue.front());
+            if (portSetBitset.test(pinNumber) != (ioState == TargetPinState::IoState::HIGH)) {
+                // PORT set register needs updating
+                portSetBitset.set(pinNumber, (ioState == TargetPinState::IoState::HIGH));
+
+                this->writeMemory(
+                    TargetMemoryType::RAM,
+                    portSetAddress,
+                    {static_cast<unsigned char>(portSetBitset.to_ulong())}
+                );
+            }
         }
 
-        auto portSetBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(portSetRegisterValue.front());
-        if (portSetBitset.test(pinNumber) != (ioState == TargetPinState::IoState::HIGH)) {
-            // PORT set register needs updating
-            portSetBitset.set(pinNumber, (ioState == TargetPinState::IoState::HIGH));
-
-            this->writeMemory(
-                TargetMemoryType::RAM,
-                portSetAddress,
-                {static_cast<unsigned char>(portSetBitset.to_ulong())}
-            );
-        }
-
-        if (padDescriptor.gpioPortClearAddress.has_value() && padDescriptor.gpioPortClearAddress != portSetAddress) {
+        /*
+         * We only need to update the PORT clear register if the IO state was set to LOW, and the clear register is
+         * not the same register as the set register.
+         */
+        if (ioState == TargetPinState::IoState::LOW
+            && padDescriptor.gpioPortClearAddress.has_value()
+            && padDescriptor.gpioPortClearAddress != portSetAddress
+        ) {
             // We also need to ensure the PORT clear register value is correct
             auto portClearAddress = padDescriptor.gpioPortClearAddress.value();
             auto portClearRegisterValue = this->readMemory(TargetMemoryType::RAM, portClearAddress, 1);
@@ -886,7 +961,7 @@ void Avr8::setPinState(int variantId, const TargetPinDescriptor& pinDescriptor, 
 }
 
 bool Avr8::memoryAddressRangeClashesWithIoPortRegisters(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t endAddress) {
-    auto& targetParameters = this->getTargetParameters();
+    auto& targetParameters = this->targetParameters.value();
 
     /*
      * We're making an assumption here; that all IO port addresses for all AVR8 targets are aligned. I have no idea

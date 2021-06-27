@@ -20,7 +20,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         constexpr static Avr8EdbgParameter CONFIG_FUNCTION {0x00, 0x01};
         constexpr static Avr8EdbgParameter PHYSICAL_INTERFACE {0x01, 0x00};
         constexpr static Avr8EdbgParameter DW_CLOCK_DIVISION_FACTOR {0x01, 0x10};
-        constexpr static Avr8EdbgParameter XMEGA_PDI_CLOCK {0x01, 0x31};
+        constexpr static Avr8EdbgParameter PDI_CLOCK_SPEED {0x01, 0x31};
         constexpr static Avr8EdbgParameter MEGA_DEBUG_CLOCK {0x01, 0x21};
         constexpr static Avr8EdbgParameter JTAG_DAISY_CHAIN_SETTINGS {0x01, 0x01};
 
@@ -58,7 +58,28 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         constexpr static Avr8EdbgParameter DEVICE_XMEGA_EEPROM_SIZE {0x02, 0x28};
         constexpr static Avr8EdbgParameter DEVICE_XMEGA_EEPROM_PAGE_SIZE {0x02, 0x2A};
 
+        // UPDI device parameters
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_PROGMEM_BASE_ADDR {0x02, 0x00};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_FLASH_PAGE_SIZE {0x02, 0x02};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_EEPROM_PAGE_SIZE {0x02, 0x03};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_NVMCTRL_ADDR {0x02, 0x04};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_OCD_ADDR {0x02, 0x06};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_FLASH_SIZE {0x02, 0x12};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_EEPROM_SIZE {0x02, 0x16};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_USER_SIG_SIZE {0x02, 0x18};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_FUSE_SIZE {0x02, 0x1A};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_EEPROM_BASE_ADDR {0x02, 0x20};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_USER_SIG_BASE_ADDR {0x02, 0x22};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_SIG_BASE_ADDR {0x02, 0x24};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_FUSE_BASE_ADDR {0x02, 0x26};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_LOCK_BASE_ADDR {0x02, 0x28};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_DEVICE_ID {0x02, 0x2A};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB {0x02, 0x2C};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_FLASH_PAGE_SIZE_MSB {0x02, 0x2D};
+        constexpr static Avr8EdbgParameter DEVICE_UPDI_24_BIT_ADDRESSING_ENABLE {0x02, 0x2E};
+
         constexpr static Avr8EdbgParameter RUN_TIMERS_WHILST_STOPPED {0x03, 0x00};
+        constexpr static Avr8EdbgParameter ENABLE_HIGH_VOLTAGE_UPDI {0x03, 0x06};
     };
 
     enum class Avr8ConfigVariant: unsigned char
@@ -148,4 +169,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         DATA = 0x84,
         FAILED = 0xA0,
     };
+
+    inline bool operator == (unsigned char rawId, Avr8ResponseId id) {
+        return static_cast<unsigned char>(id) == rawId;
+    }
+
+    inline bool operator == (Avr8ResponseId id, unsigned char rawId) {
+        return rawId == id;
+    }
 }

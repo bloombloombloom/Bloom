@@ -51,7 +51,7 @@ TargetDescriptionFile::TargetDescriptionFile(
                 + matchingDescriptionFiles.front().toObject().find("targetDescriptionFilePath")->toString();
 
             Logger::debug("Loading AVR8 target description file: " + descriptionFilePath.toStdString());
-            this->init(descriptionFilePath);
+            Targets::TargetDescription::TargetDescriptionFile::init(descriptionFilePath);
 
         } else if (matchingDescriptionFiles.size() > 1) {
             /*
@@ -83,6 +83,27 @@ TargetDescriptionFile::TargetDescriptionFile(
     } else {
         throw Exception("Failed to resolve target description file for target \""
             + targetSignatureHex + "\" - unknown target signature.");
+    }
+}
+
+void TargetDescriptionFile::init(const QDomDocument& xml) {
+    Targets::TargetDescription::TargetDescriptionFile::init(xml);
+
+    this->loadDebugPhysicalInterfaces();
+}
+
+void TargetDescriptionFile::loadDebugPhysicalInterfaces() {
+    auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
+        {"updi", PhysicalInterface::UPDI},
+        {"debugwire", PhysicalInterface::DEBUG_WIRE},
+        {"jtag", PhysicalInterface::DEBUG_WIRE},
+        {"pdi", PhysicalInterface::PDI},
+    });
+
+    for (const auto& [interfaceName, interface]: this->interfacesByName) {
+        if (interfaceNamesToInterfaces.contains(interfaceName)) {
+            this->supportedDebugPhysicalInterfaces.insert(interfaceNamesToInterfaces.at(interfaceName));
+        }
     }
 }
 
@@ -270,6 +291,63 @@ std::optional<MemorySegment> TargetDescriptionFile::getFirstBootSectionMemorySeg
             } else if (flashMemorySegments.contains("boot_section")) {
                 return flashMemorySegments.at("boot_section");
             }
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<MemorySegment> TargetDescriptionFile::getSignatureMemorySegment() const {
+    if (this->addressSpacesMappedById.contains("signatures")) {
+        auto& signaturesAddressSpace = this->addressSpacesMappedById.at("signatures");
+        auto& signaturesAddressSpaceSegments = signaturesAddressSpace.memorySegmentsByTypeAndName;
+
+        if (signaturesAddressSpaceSegments.contains(MemorySegmentType::SIGNATURES)) {
+            return signaturesAddressSpaceSegments.at(MemorySegmentType::SIGNATURES).begin()->second;
+        }
+
+    } else {
+        // The signatures memory segment may be part of the data address space
+        if (this->addressSpacesMappedById.contains("data")) {
+            auto dataAddressSpace = this->addressSpacesMappedById.at("data");
+
+            if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::SIGNATURES)) {
+                auto& signatureSegmentsByName = dataAddressSpace.memorySegmentsByTypeAndName.at(
+                    MemorySegmentType::SIGNATURES
+                );
+
+                if (signatureSegmentsByName.contains("signatures")) {
+                    return signatureSegmentsByName.at("signatures");
+                }
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<MemorySegment> TargetDescriptionFile::getFuseMemorySegment() const {
+    if (this->addressSpacesMappedById.contains("data")) {
+        auto dataAddressSpace = this->addressSpacesMappedById.at("data");
+
+        if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::FUSES)) {
+            return dataAddressSpace.memorySegmentsByTypeAndName.at(
+                MemorySegmentType::SIGNATURES
+            ).begin()->second;
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<MemorySegment> TargetDescriptionFile::getLockbitsMemorySegment() const {
+    if (this->addressSpacesMappedById.contains("data")) {
+        auto dataAddressSpace = this->addressSpacesMappedById.at("data");
+
+        if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::LOCKBITS)) {
+            return dataAddressSpace.memorySegmentsByTypeAndName.at(
+                MemorySegmentType::LOCKBITS
+            ).begin()->second;
         }
     }
 

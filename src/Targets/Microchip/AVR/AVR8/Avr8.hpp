@@ -31,20 +31,34 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<int, TargetVariant> targetVariantsById;
 
         /**
-         * Extracts the ID from the target's memory.
-         *
-         * This function will cache the ID value and use the cached version for any subsequent calls.
-         *
-         * @return
+         * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.
          */
-        TargetSignature getId() override;
+        void loadTargetDescriptionFile();
 
         /**
-         * Extracts the AVR8 target parameters from the loaded target description file.
-         *
-         * @return
+         * Initiates the AVR8 instance from data extracted from the TDF.
          */
-        virtual TargetParameters& getTargetParameters();
+        void initFromTargetDescriptionFile();
+
+        /**
+         * Populates this->targetParameters with AVR8 target parameters from the loaded target description file.
+         */
+        virtual void loadTargetParameters();
+
+        /**
+         * Loads target parameters that are specific to debugWire and mega JTAG sessions.
+         */
+        virtual void loadDebugWireAndJtagTargetParameters();
+
+        /**
+         * Loads target parameters that are specific to PDI sessions.
+         */
+        virtual void loadPdiTargetParameters();
+
+        /**
+         * Loads target parameters that are specific to UPDI sessions.
+         */
+        virtual void loadUpdiTargetParameters();
 
         /**
          * Generates a collection of PadDescriptor object from data in the loaded target description file and
@@ -57,13 +71,21 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          */
         virtual void loadTargetVariants();
 
-        void loadTargetDescriptionFile();
+        /**
+         * Extracts the ID from the target's memory.
+         *
+         * This function will cache the ID value and use the cached version for any subsequent calls.
+         *
+         * @return
+         */
+        TargetSignature getId() override;
 
     public:
         explicit Avr8() = default;
         Avr8(std::string name, const TargetSignature& signature): name(std::move(name)) {
             this->id = signature;
             this->loadTargetDescriptionFile();
+            this->initFromTargetDescriptionFile();
         };
 
         /*
