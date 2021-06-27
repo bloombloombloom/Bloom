@@ -876,6 +876,31 @@ void EdbgAvr8Interface::setProgramCounter(std::uint32_t programCounter) {
 }
 
 TargetSignature EdbgAvr8Interface::getDeviceId() {
+    if (this->configVariant == Avr8ConfigVariant::UPDI) {
+        /*
+         * When using the UPDI physical interface, the 'Get device ID' command behaves in an odd manner, where it
+         * doesn't actually return the target signature, but instead a fixed four byte string reading:
+         * 'A', 'V', 'R' and ' ' (white space).
+         *
+         * So it appears we cannot use that command for UPDI sessions. As an alternative, we will just read the
+         * signature from memory using the signature base address.
+         *
+         * TODO: Currently, we're assuming the signature will always only ever be three bytes in size, but we may
+         *       want to consider pulling the size from the TDF.
+         */
+        auto signatureMemory = this->readMemory(
+            Avr8MemoryType::SRAM,
+            this->targetParameters.signatureSegmentStartAddress.value(),
+            3
+        );
+
+        if (signatureMemory.size() != 3) {
+            throw Exception("Failed to read AVR8 signature from target - unexpected response size");
+        }
+
+        return TargetSignature(signatureMemory[0], signatureMemory[1], signatureMemory[2]);
+    }
+
     auto commandFrame = CommandFrames::Avr8Generic::GetDeviceId();
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
