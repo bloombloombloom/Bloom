@@ -9,6 +9,6 @@ If no such environment exists, Bloom will exit.
 Commands:
   --help, -h      Displays this help text.
   --version, -v   Displays the current version number.
-  init            Creates a new Bloom project configuration file (bloom.json) in the working directory.
+  init            Creates a new Bloom project configuration file (bloom.json), in the working directory.
 
 For more information on getting started with Bloom, please visit https://bloom.oscillate.io/docs/getting-started.

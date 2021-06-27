@@ -33,7 +33,6 @@ PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, 
     this->pinNameLabel->setToolTip(pinName);
     if (pinName.size() > 4) {
         pinName.truncate(4);
-        pinName.append('.');
     }
     this->pinNameLabel->setText(pinName);
     this->pinNameLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
