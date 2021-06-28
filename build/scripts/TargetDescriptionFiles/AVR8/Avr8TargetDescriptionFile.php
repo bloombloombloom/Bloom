@@ -450,7 +450,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
-        if ($this->debugPhysicalInterface == self::AVR8_PHYSICAL_INTERFACE_PDI) {
+        if (in_array(self::AVR8_PHYSICAL_INTERFACE_PDI, $this->debugPhysicalInterface)) {
             if (is_null($this->appSectionPdiOffset)) {
                 $failures[] = 'Missing app section PDI offset.';
             }
