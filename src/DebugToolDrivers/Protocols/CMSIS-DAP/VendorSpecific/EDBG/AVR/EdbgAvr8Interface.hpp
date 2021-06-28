@@ -289,11 +289,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * What parameters we need to send depend on the physical interface (and config variant) selected by the user.
          * For target parameters, the address (ID) of the parameter also varies across config variants. This is why
-         * we sometimes have separate parameters for sending the same data, where they differ only in parameter IDs.
-         * For example, the Avr8EdbgParameters::DEVICE_FLASH_BASE parameter is used to send the base address for
-         * the target's flash memory segment. The parameter is assigned an address (ID) of 0x06. But the
-         * Avr8EdbgParameters::DEVICE_UPDI_PROG_BASE is used to send the same data (base address of the target's flash
-         * segment), but only for sessions with the UPDI physical interface. The address is 0x00.
+         * we sometimes have separate parameters for sending the same data, where they differ only in parameter IDs
+         * (and sometimes size constraints). For example, the Avr8EdbgParameters::FLASH_PAGE_BYTES parameter is used
+         * to specify the size of a single page in flash memory. The parameter is assigned an address (ID) of 0x00. But
+         * the Avr8EdbgParameters::DEVICE_XMEGA_FLASH_PAGE_BYTES parameter is used to send the same data (flash page
+         * size), but only for sessions with the PDI physical interface. The address is 0x26.
          *
          * - The setDebugWireAndJtagParameters() function sends the required target parameters for debugWire and JTAG
          *   sessions. Both sessions are covered in a single function because they require the same parameters.
