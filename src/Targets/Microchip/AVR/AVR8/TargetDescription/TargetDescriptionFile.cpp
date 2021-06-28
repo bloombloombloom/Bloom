@@ -332,7 +332,7 @@ std::optional<MemorySegment> TargetDescriptionFile::getFuseMemorySegment() const
 
         if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::FUSES)) {
             return dataAddressSpace.memorySegmentsByTypeAndName.at(
-                MemorySegmentType::SIGNATURES
+                MemorySegmentType::FUSES
             ).begin()->second;
         }
     }
