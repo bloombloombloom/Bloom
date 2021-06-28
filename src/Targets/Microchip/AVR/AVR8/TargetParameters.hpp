@@ -51,8 +51,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<std::uint32_t> programMemoryUpdiStartAddress;
         std::optional<std::uint16_t> signatureSegmentStartAddress;
         std::optional<std::uint16_t> signatureSegmentSize;
-        std::optional<std::uint16_t> userSignatureSegmentStartAddress;
-        std::optional<std::uint16_t> userSignatureSegmentSize;
         std::optional<std::uint16_t> fuseSegmentStartAddress;
         std::optional<std::uint16_t> fuseSegmentSize;
         std::optional<std::uint16_t> lockbitsSegmentStartAddress;
