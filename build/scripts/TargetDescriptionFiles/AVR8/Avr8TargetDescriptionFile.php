@@ -61,6 +61,15 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $productSignaturesPdiOffset = null;
     public ?int $nvmBaseAddress = null;
 
+    // UPDI specific target params
+    public ?int $ocdBaseAddress = null;
+    public ?int $programMemoryUpdiStartAddress = null;
+    public ?int $signatureSegmentStartAddress = null;
+    public ?int $signatureSegmentSize = null;
+    public ?int $fuseSegmentStartAddress = null;
+    public ?int $fuseSegmentSize = null;
+    public ?int $lockbitsSegmentStartAddress = null;
+
     protected function init()
     {
         parent::init();
@@ -363,6 +372,61 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 }
             }
         }
+
+        if (in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterface)) {
+            if (isset($this->peripheralModulesByName['nvmctrl'])) {
+                $nvmModule = $this->peripheralModulesByName['nvmctrl'];
+
+                if (isset($nvmModule->instancesMappedByName['nvmctrl'])) {
+                    $nvmInstance = $nvmModule->instancesMappedByName['nvmctrl'];
+
+                    if (isset($nvmInstance->registerGroupsMappedByName['nvmctrl'])) {
+                        $this->nvmBaseAddress = $nvmInstance->registerGroupsMappedByName['nvmctrl']->offset;
+                    }
+                }
+            }
+
+            if (isset($this->propertyGroupsByName['updi_interface'])) {
+                $updiInterfacePropertyGroup = $this->propertyGroupsByName['updi_interface'];
+                $updiInterfacePropertiesByName = $updiInterfacePropertyGroup->propertiesMappedByName;
+
+                if (isset($updiInterfacePropertiesByName['ocd_base_addr'])) {
+                    $this->ocdBaseAddress = isset($updiInterfacePropertiesByName['ocd_base_addr']->value)
+                        ? $this->rawValueToInt($updiInterfacePropertiesByName['ocd_base_addr']->value) : null;
+                }
+
+                if (isset($updiInterfacePropertiesByName['progmem_offset'])) {
+                    $this->programMemoryUpdiStartAddress = isset($updiInterfacePropertiesByName['progmem_offset']->value)
+                        ? $this->rawValueToInt($updiInterfacePropertiesByName['progmem_offset']->value) : null;
+                }
+            }
+
+            if (!is_null($dataAddressSpace)) {
+                if (isset($dataAddressSpace->memorySegmentsByTypeAndName['signatures']['signatures'])) {
+                    $signatureMemSegment = $dataAddressSpace->memorySegmentsByTypeAndName['signatures']['signatures'];
+                    $this->signatureSegmentSize = isset($signatureMemSegment->size)
+                        ? $this->rawValueToInt($signatureMemSegment->size) : null;
+
+                    $this->signatureSegmentStartAddress = isset($signatureMemSegment->startAddress)
+                        ? $this->rawValueToInt($signatureMemSegment->startAddress) : null;
+                }
+
+                if (isset($dataAddressSpace->memorySegmentsByTypeAndName['fuses']['fuses'])) {
+                    $fusesMemSegment = $dataAddressSpace->memorySegmentsByTypeAndName['fuses']['fuses'];
+                    $this->fuseSegmentSize = isset($fusesMemSegment->size)
+                        ? $this->rawValueToInt($fusesMemSegment->size) : null;
+
+                    $this->fuseSegmentStartAddress = isset($fusesMemSegment->startAddress)
+                        ? $this->rawValueToInt($fusesMemSegment->startAddress) : null;
+                }
+
+                if (isset($dataAddressSpace->memorySegmentsByTypeAndName['lockbits']['lockbits'])) {
+                    $lockbitsMemSegment = $dataAddressSpace->memorySegmentsByTypeAndName['lockbits']['lockbits'];
+                    $this->lockbitsSegmentStartAddress = isset($lockbitsMemSegment->startAddress)
+                        ? $this->rawValueToInt($lockbitsMemSegment->startAddress) : null;
+                }
+            }
+        }
     }
 
     public function validate(): array
@@ -480,7 +544,55 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
 
             if (is_null($this->nvmBaseAddress)) {
-                $failures[] = 'Missing nvm start address.';
+                $failures[] = 'Missing NVM start address.';
+            }
+        }
+
+        if (in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterface)) {
+            if (is_null($this->nvmBaseAddress)) {
+                $failures[] = 'Missing NVM base address.';
+            }
+
+            if (is_null($this->programMemoryUpdiStartAddress)) {
+                $failures[] = 'Missing UPDI program memory offset.';
+
+            } else if ($this->programMemoryUpdiStartAddress > 0xFFFFFF) {
+                /*
+                 * Due to size constraints of EDBG AVR8 parameters for UPDI sessions, the program memory offset must
+                 * fit into a 24-bit integer.
+                 */
+                $failures[] = 'UPDI program memory offset exceeds maximum value for 24-bit unsigned integer.';
+            }
+
+            if (!is_null($this->flashPageSize) && $this->flashPageSize > 0xFFFF) {
+                $failures[] = 'Flash page size exceeds maximum value for 16-bit unsigned integer.';
+            }
+
+            if (is_null($this->ocdBaseAddress)) {
+                $failures[] = 'Missing OCD base address.';
+
+            } else if ($this->ocdBaseAddress > 0xFFFF) {
+                $failures[] = 'UPDI OCD base address exceeds maximum value for 16-bit unsigned integer.';
+            }
+
+            if (is_null($this->signatureSegmentStartAddress)) {
+                $failures[] = 'Missing signature segment start address.';
+            }
+
+            if (is_null($this->fuseSegmentSize)) {
+                $failures[] = 'Missing fuse segment size.';
+            }
+
+            if (is_null($this->fuseSegmentStartAddress)) {
+                $failures[] = 'Missing fuses segment start address.';
+            }
+
+            if (is_null($this->fuseSegmentSize)) {
+                $failures[] = 'Missing fuses segment size.';
+            }
+
+            if (is_null($this->lockbitsSegmentStartAddress)) {
+                $failures[] = 'Missing lockbits segment start address.';
             }
         }
 
