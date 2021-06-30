@@ -1145,7 +1145,8 @@ TargetRegisters EdbgAvr8Interface::readGeneralPurposeRegisters(std::set<std::siz
     auto output = TargetRegisters();
 
     auto registers = this->readMemory(
-        this->family == Family::XMEGA ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
+        this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
+                ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
         this->targetParameters.gpRegisterStartAddress.value_or(0x00),
         this->targetParameters.gpRegisterSize.value_or(32)
     );
@@ -1185,7 +1186,8 @@ void EdbgAvr8Interface::writeGeneralPurposeRegisters(const TargetRegisters& regi
 
         // TODO: This can be inefficient when updating many registers, maybe do something a little smarter here.
         this->writeMemory(
-            this->configVariant == Avr8ConfigVariant::XMEGA ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
+            this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
+                    ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
             static_cast<std::uint32_t>(gpStartAddress + descriptor.id.value()),
             gpRegister.value
         );
