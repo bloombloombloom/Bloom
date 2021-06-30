@@ -84,15 +84,30 @@ void Avr8::loadTargetParameters() {
         this->targetParameters->bootSectionSize = firstBootSectionMemorySegment->size;
     }
 
+    std::uint32_t cpuRegistersOffset = 0;
+
+    if (peripheralModules.contains("cpu")) {
+        auto cpuPeripheralModule = peripheralModules.at("cpu");
+
+        if (cpuPeripheralModule.instancesMappedByName.contains("cpu")) {
+            auto cpuInstance = cpuPeripheralModule.instancesMappedByName.at("cpu");
+
+            if (cpuInstance.registerGroupsMappedByName.contains("cpu")) {
+                auto cpuRegisterGroup = cpuInstance.registerGroupsMappedByName.at("cpu");
+                cpuRegistersOffset = cpuRegisterGroup.offset.value_or(0);
+            }
+        }
+    }
+
     auto statusRegister = this->targetDescriptionFile->getStatusRegister();
     if (statusRegister.has_value()) {
-        this->targetParameters->statusRegisterStartAddress = statusRegister->offset;
+        this->targetParameters->statusRegisterStartAddress = cpuRegistersOffset + statusRegister->offset;
         this->targetParameters->statusRegisterSize = statusRegister->size;
     }
 
     auto stackPointerRegister = this->targetDescriptionFile->getStackPointerRegister();
     if (stackPointerRegister.has_value()) {
-        this->targetParameters->stackPointerRegisterStartAddress = stackPointerRegister->offset;
+        this->targetParameters->stackPointerRegisterStartAddress = cpuRegistersOffset + stackPointerRegister->offset;
         this->targetParameters->stackPointerRegisterSize = stackPointerRegister->size;
 
     } else {
@@ -101,12 +116,14 @@ void Avr8::loadTargetParameters() {
         auto stackPointerHighRegister = this->targetDescriptionFile->getStackPointerHighRegister();
 
         if (stackPointerLowRegister.has_value()) {
-            this->targetParameters->stackPointerRegisterStartAddress = stackPointerLowRegister->offset;
+            this->targetParameters->stackPointerRegisterStartAddress = cpuRegistersOffset
+                + stackPointerLowRegister->offset;
             this->targetParameters->stackPointerRegisterSize = stackPointerLowRegister->size;
         }
 
         if (stackPointerHighRegister.has_value()) {
-            this->targetParameters->stackPointerRegisterSize = (this->targetParameters->stackPointerRegisterSize.has_value()) ?
+            this->targetParameters->stackPointerRegisterSize =
+                this->targetParameters->stackPointerRegisterSize.has_value() ?
                 this->targetParameters->stackPointerRegisterSize.value() + stackPointerHighRegister->size :
                 stackPointerHighRegister->size;
         }
