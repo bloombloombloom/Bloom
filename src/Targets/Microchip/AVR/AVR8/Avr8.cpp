@@ -93,8 +93,7 @@ void Avr8::loadTargetParameters() {
             auto cpuInstance = cpuPeripheralModule.instancesMappedByName.at("cpu");
 
             if (cpuInstance.registerGroupsMappedByName.contains("cpu")) {
-                auto cpuRegisterGroup = cpuInstance.registerGroupsMappedByName.at("cpu");
-                cpuRegistersOffset = cpuRegisterGroup.offset.value_or(0);
+                cpuRegistersOffset = cpuInstance.registerGroupsMappedByName.at("cpu").offset.value_or(0);
             }
         }
     }

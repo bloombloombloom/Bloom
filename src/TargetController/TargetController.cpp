@@ -237,7 +237,6 @@ void TargetController::resume() {
         std::bind(&TargetController::onSetPinStateEvent, this, std::placeholders::_1)
     );
 
-    Logger::debug("TC resumed");
     this->state = TargetControllerState::ACTIVE;
     this->eventManager.triggerEvent(
         std::make_shared<TargetControllerStateReported>(this->state)

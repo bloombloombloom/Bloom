@@ -155,7 +155,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         SPM = 0xA0,
 
         /**
-         * The REGISTER_FILE memory type can be used to read  &write to general purpose registers.
+         * The REGISTER_FILE memory type can be used to read & write to general purpose registers.
          *
          * Only available in debugging mode and with XMEGA and UPDI config variants. The SRAM memory type can be used
          * to access general purpose registers when other variants are in use.

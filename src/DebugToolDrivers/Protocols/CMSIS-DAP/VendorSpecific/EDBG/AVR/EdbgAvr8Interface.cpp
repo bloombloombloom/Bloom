@@ -489,13 +489,16 @@ void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
 
     if (!this->family.has_value()) {
         if (this->physicalInterface == PhysicalInterface::JTAG) {
-            throw InvalidConfig("Cannot use JTAG physical interface with ambiguous target name - please specify the"
-                " exact name of the target in your configuration file. See https://bloom.oscillate.io/docs/supported-targets");
+            throw InvalidConfig("The JTAG physical interface cannot be used with an ambiguous target name"
+                " - please specify the exact name of the target in your configuration file. "
+                "See https://bloom.oscillate.io/docs/supported-targets"
+            );
 
         } else if (this->physicalInterface == PhysicalInterface::UPDI) {
-            throw InvalidConfig("Cannot use UPDI physical interface with ambiguous target name - please "
-                "specify the exact name of the target in your configuration file. "
-                "See https://bloom.oscillate.io/docs/supported-targets");
+            throw InvalidConfig("The UPDI physical interface cannot be used with an ambiguous target name"
+                " - please specify the exact name of the target in your configuration file. "
+                "See https://bloom.oscillate.io/docs/supported-targets"
+            );
         }
     }
 
