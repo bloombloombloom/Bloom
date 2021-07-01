@@ -320,7 +320,7 @@ void EdbgAvr8Interface::setPdiParameters() {
     Logger::debug("Setting EEPROM_PAGE_SIZE AVR8 parameter");
     this->setParameter(
         Avr8EdbgParameters::DEVICE_XMEGA_EEPROM_PAGE_SIZE,
-        static_cast<unsigned char>(this->targetParameters.eepromPageSize.value())
+        static_cast<std::uint8_t>(this->targetParameters.eepromPageSize.value())
     );
 
     Logger::debug("Setting NVM_BASE AVR8 parameter");
@@ -566,7 +566,7 @@ void EdbgAvr8Interface::init() {
     if (this->configVariant == Avr8ConfigVariant::UPDI) {
         // Default UPDI clock to 1.8MHz
         this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(0x0708));
-        this->setParameter(Avr8EdbgParameters::ENABLE_HIGH_VOLTAGE_UPDI, static_cast<unsigned char>(0x00));
+        this->setParameter(Avr8EdbgParameters::ENABLE_HIGH_VOLTAGE_UPDI, static_cast<std::uint8_t>(0x00));
     }
 
     if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
@@ -578,12 +578,12 @@ void EdbgAvr8Interface::init() {
 
     this->setParameter(
         Avr8EdbgParameters::CONFIG_VARIANT,
-        static_cast<unsigned char>(this->configVariant)
+        static_cast<std::uint8_t>(this->configVariant)
     );
 
     this->setParameter(
         Avr8EdbgParameters::CONFIG_FUNCTION,
-        static_cast<unsigned char>(this->configFunction)
+        static_cast<std::uint8_t>(this->configFunction)
     );
 
     this->setParameter(

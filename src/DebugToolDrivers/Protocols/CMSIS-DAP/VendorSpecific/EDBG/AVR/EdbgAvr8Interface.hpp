@@ -240,7 +240,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param parameter
          * @param value
          */
-        void setParameter(const Avr8EdbgParameter& parameter, unsigned char value) {
+        void setParameter(const Avr8EdbgParameter& parameter, std::uint8_t value) {
             this->setParameter(parameter, std::vector<unsigned char>(1, value));
         }
 
