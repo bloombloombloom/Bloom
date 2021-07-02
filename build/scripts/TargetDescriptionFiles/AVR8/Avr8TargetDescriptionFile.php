@@ -465,6 +465,9 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
         if (is_null($this->statusRegisterSize)) {
             $failures[] = 'Missing status register size.';
+
+        } else if ($this->statusRegisterSize > 1) {
+            $failures[] = 'Status register size exceeds 1';
         }
 
         if (is_null($this->flashSize)) {
