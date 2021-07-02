@@ -508,7 +508,7 @@ void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
 void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& config) {
     this->targetParameters = config;
 
-    if (!config.stackPointerRegisterStartAddress.has_value()) {
+    if (!config.stackPointerRegisterLowAddress.has_value()) {
         throw Exception("Failed to find stack pointer register start address");
     }
 
@@ -816,11 +816,19 @@ std::uint32_t EdbgAvr8Interface::getProgramCounter() {
 }
 
 TargetRegister EdbgAvr8Interface::getStackPointerRegister() {
-    return TargetRegister(TargetRegisterDescriptor(TargetRegisterType::STACK_POINTER), this->readMemory(
+    auto stackPointerValue = this->readMemory(
         Avr8MemoryType::SRAM,
-        this->targetParameters.stackPointerRegisterStartAddress.value(),
+        this->targetParameters.stackPointerRegisterLowAddress.value(),
         this->targetParameters.stackPointerRegisterSize.value()
-    ));
+    );
+
+    /*
+     * The SP low byte comes before the high byte, so the SP is stored in LSB form. We use std::reverse() here to
+     * convert it to MSB.
+     */
+    std::reverse(stackPointerValue.begin(), stackPointerValue.end());
+
+    return TargetRegister(TargetRegisterDescriptor(TargetRegisterType::STACK_POINTER), stackPointerValue);
 }
 
 TargetRegister EdbgAvr8Interface::getStatusRegister() {
@@ -843,9 +851,12 @@ void EdbgAvr8Interface::setStackPointerRegister(const TargetRegister& stackPoint
         registerValue.insert(registerValue.begin(), maximumStackPointerRegisterSize - registerValue.size(), 0x00);
     }
 
+    // Convert SP to LSB
+    std::reverse(registerValue.begin(), registerValue.end());
+
     this->writeMemory(
         Avr8MemoryType::SRAM,
-        this->targetParameters.stackPointerRegisterStartAddress.value(),
+        this->targetParameters.stackPointerRegisterLowAddress.value(),
         registerValue
     );
 }

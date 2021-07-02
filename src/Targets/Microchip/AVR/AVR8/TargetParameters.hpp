@@ -29,7 +29,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<std::uint8_t> ocdDataRegister;
         std::optional<std::uint16_t> statusRegisterStartAddress;
         std::optional<std::uint16_t> statusRegisterSize;
-        std::optional<std::uint16_t> stackPointerRegisterStartAddress;
+        std::optional<std::uint16_t> stackPointerRegisterLowAddress;
         std::optional<std::uint16_t> stackPointerRegisterSize;
         std::optional<std::uint8_t> spmcRegisterStartAddress;
         std::optional<std::uint8_t> osccalAddress;

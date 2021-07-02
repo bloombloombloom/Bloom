@@ -312,10 +312,12 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadGeneralRegisters& pa
         );
 
         /*
-         * Finally, implode the register values, convert to hexadecimal form and send to the GDB client.
+         * Finally, reverse the register values (as they're all currently in MSB, but GDB expects them in LSB), implode
+         * the register values, convert to hexadecimal form and send to the GDB client.
          */
         auto registers = std::vector<unsigned char>();
-        for (const auto& reg : registerSet) {
+        for (auto& reg : registerSet) {
+            std::reverse(reg.value.begin(), reg.value.end());
             registers.insert(registers.end(), reg.value.begin(), reg.value.end());
         }
 

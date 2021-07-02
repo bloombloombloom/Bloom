@@ -44,7 +44,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $ocdDataRegister = null;
     public ?int $statusRegisterStartAddress = null;
     public ?int $statusRegisterSize = null;
-    public ?int $stackPointerRegisterStartAddress = null;
+    public ?int $stackPointerRegisterLowAddress = null;
     public ?int $stackPointerRegisterSize = null;
     public ?int $spmcRegisterStartAddress = null;
     public ?int $osccalAddress = null;
@@ -223,13 +223,13 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 if (isset($cpuRegisterGroup->registersMappedByName['sp'])) {
                     $stackPointerRegister = $cpuRegisterGroup->registersMappedByName['sp'];
                     $this->stackPointerRegisterSize = $stackPointerRegister->size;
-                    $this->stackPointerRegisterStartAddress = $stackPointerRegister->offset;
+                    $this->stackPointerRegisterLowAddress = $stackPointerRegister->offset;
 
                 } else {
                     if (isset($cpuRegisterGroup->registersMappedByName['spl'])) {
                         $stackPointerLowRegister = $cpuRegisterGroup->registersMappedByName['spl'];
                         $this->stackPointerRegisterSize = $stackPointerLowRegister->size;
-                        $this->stackPointerRegisterStartAddress = $stackPointerLowRegister->offset;
+                        $this->stackPointerRegisterLowAddress = $stackPointerLowRegister->offset;
 
                         if (isset($cpuRegisterGroup->registersMappedByName['sph'])) {
                             $stackPointerHighRegister = $cpuRegisterGroup->registersMappedByName['sph'];
@@ -451,7 +451,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'Unknown AVR8 family';
         }
 
-        if (is_null($this->stackPointerRegisterStartAddress)) {
+        if (is_null($this->stackPointerRegisterLowAddress)) {
             $failures[] = 'Missing stack pointer register start address.';
         }
 

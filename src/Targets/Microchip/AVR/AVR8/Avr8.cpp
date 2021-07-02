@@ -106,7 +106,7 @@ void Avr8::loadTargetParameters() {
 
     auto stackPointerRegister = this->targetDescriptionFile->getStackPointerRegister();
     if (stackPointerRegister.has_value()) {
-        this->targetParameters->stackPointerRegisterStartAddress = cpuRegistersOffset + stackPointerRegister->offset;
+        this->targetParameters->stackPointerRegisterLowAddress = cpuRegistersOffset + stackPointerRegister->offset;
         this->targetParameters->stackPointerRegisterSize = stackPointerRegister->size;
 
     } else {
@@ -115,7 +115,7 @@ void Avr8::loadTargetParameters() {
         auto stackPointerHighRegister = this->targetDescriptionFile->getStackPointerHighRegister();
 
         if (stackPointerLowRegister.has_value()) {
-            this->targetParameters->stackPointerRegisterStartAddress = cpuRegistersOffset
+            this->targetParameters->stackPointerRegisterLowAddress = cpuRegistersOffset
                 + stackPointerLowRegister->offset;
             this->targetParameters->stackPointerRegisterSize = stackPointerLowRegister->size;
         }
@@ -760,10 +760,10 @@ TargetRegister Avr8::getProgramCounterRegister() {
     auto programCounter = this->getProgramCounter();
 
     return TargetRegister(TargetRegisterDescriptor(TargetRegisterType::PROGRAM_COUNTER), {
-        static_cast<unsigned char>(programCounter),
-        static_cast<unsigned char>(programCounter >> 8),
-        static_cast<unsigned char>(programCounter >> 16),
         static_cast<unsigned char>(programCounter >> 24),
+        static_cast<unsigned char>(programCounter >> 16),
+        static_cast<unsigned char>(programCounter >> 8),
+        static_cast<unsigned char>(programCounter),
     });
 }
 
