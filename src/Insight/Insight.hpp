@@ -91,8 +91,8 @@ namespace Bloom
         void onTargetControllerThreadStateChangedEvent(const Events::TargetControllerThreadStateChanged& event);
 
         /**
-         * If the something horrible was to happen and the DebugServer dies unexpectedly, Insight will shutdown
-         * in response.
+         * If something horrible was to happen and the DebugServer dies unexpectedly, Insight will shutdown in
+         * response.
          *
          * @param event
          */
