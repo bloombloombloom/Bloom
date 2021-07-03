@@ -123,6 +123,23 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
         );
     }
 
+    /*
+     * All addresses for registers that reside in the mapped IO memory segment include the mapped IO segment offset
+     * (start address). But the EDBG protocol requires *some* of these addresses to be stripped of this offset before
+     * sending them as target parameters.
+     *
+     * This applies to the following addresses:
+     *
+     *  - OSCALL Address
+     *  - EEARL Address
+     *  - EEARH Address
+     *  - EECR Address
+     *  - EEDR Address
+     *
+     * It *doesn't* seem to apply to the SPMCR address.
+     */
+    auto mappedIoStartAddress = this->targetParameters.mappedIoStartAddress.value_or(0);
+
     if (this->targetParameters.ocdDataRegister.has_value()) {
         Logger::debug("Setting DEVICE_OCD_DATA_REGISTER AVR8 parameter");
         this->setParameter(
@@ -143,7 +160,9 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
         Logger::debug("Setting DEVICE_OSCCAL_ADDR AVR8 parameter");
         this->setParameter(
             Avr8EdbgParameters::DEVICE_OSCCAL_ADDR,
-            this->targetParameters.osccalAddress.value()
+            static_cast<std::uint8_t>(
+                    this->targetParameters.osccalAddress.value() - mappedIoStartAddress
+                )
         );
     }
 
@@ -151,7 +170,9 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
         Logger::debug("Setting DEVICE_EEARL_ADDR AVR8 parameter");
         this->setParameter(
             Avr8EdbgParameters::DEVICE_EEARL_ADDR,
-            this->targetParameters.eepromAddressRegisterLow.value()
+            static_cast<std::uint8_t>(
+                    this->targetParameters.eepromAddressRegisterLow.value() - mappedIoStartAddress
+                )
         );
     }
 
@@ -159,7 +180,9 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
         Logger::debug("Setting DEVICE_EEARH_ADDR AVR8 parameter");
         this->setParameter(
             Avr8EdbgParameters::DEVICE_EEARH_ADDR,
-            this->targetParameters.eepromAddressRegisterHigh.value()
+            static_cast<std::uint8_t>(
+                    this->targetParameters.eepromAddressRegisterHigh.value() - mappedIoStartAddress
+                )
         );
     }
 
@@ -167,7 +190,9 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
         Logger::debug("Setting DEVICE_EECR_ADDR AVR8 parameter");
         this->setParameter(
             Avr8EdbgParameters::DEVICE_EECR_ADDR,
-            this->targetParameters.eepromControlRegisterAddress.value()
+            static_cast<std::uint8_t>(
+                    this->targetParameters.eepromControlRegisterAddress.value() - mappedIoStartAddress
+                )
         );
     }
 
@@ -175,7 +200,9 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
         Logger::debug("Setting DEVICE_EEDR_ADDR AVR8 parameter");
         this->setParameter(
             Avr8EdbgParameters::DEVICE_EEDR_ADDR,
-            this->targetParameters.eepromDataRegisterAddress.value()
+            static_cast<std::uint8_t>(
+                    this->targetParameters.eepromDataRegisterAddress.value() - mappedIoStartAddress
+                )
         );
     }
 

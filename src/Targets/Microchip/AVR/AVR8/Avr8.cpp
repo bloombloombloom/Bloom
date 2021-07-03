@@ -62,6 +62,11 @@ void Avr8::loadTargetParameters() {
         this->targetParameters->ramStartAddress = ramMemorySegment->startAddress;
     }
 
+    auto ioMemorySegment = this->targetDescriptionFile->getIoMemorySegment();
+    if (ioMemorySegment.has_value()) {
+        this->targetParameters->mappedIoStartAddress = ioMemorySegment->startAddress;
+    }
+
     auto registerMemorySegment = this->targetDescriptionFile->getRegisterMemorySegment();
     if (registerMemorySegment.has_value()) {
         this->targetParameters->gpRegisterSize = registerMemorySegment->size;
@@ -183,7 +188,7 @@ void Avr8::loadDebugWireAndJtagTargetParameters() {
     if (eepromAddressRegister.has_value()) {
         this->targetParameters->eepromAddressRegisterLow = eepromAddressRegister->offset;
         this->targetParameters->eepromAddressRegisterHigh = (eepromAddressRegister->size == 2)
-                                                            ? eepromAddressRegister->offset + 1 : eepromAddressRegister->offset;
+            ? eepromAddressRegister->offset + 1 : eepromAddressRegister->offset;
 
     } else {
         auto eepromAddressLowRegister = this->targetDescriptionFile->getEepromAddressLowRegister();

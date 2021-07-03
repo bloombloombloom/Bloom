@@ -94,6 +94,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFlashMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRamMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getIoMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRegisterMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getEepromMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFirstBootSectionMemorySegment() const;

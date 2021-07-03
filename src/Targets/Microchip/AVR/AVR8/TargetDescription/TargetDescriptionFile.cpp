@@ -226,6 +226,26 @@ std::optional<MemorySegment> TargetDescriptionFile::getRamMemorySegment() const 
     return std::nullopt;
 }
 
+std::optional<MemorySegment> TargetDescriptionFile::getIoMemorySegment() const {
+    auto& addressMapping = this->addressSpacesMappedById;
+
+    if (addressMapping.contains("data")) {
+        auto& dataAddressSpace = addressMapping.at("data");
+        auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
+
+        if (dataMemorySegments.contains(MemorySegmentType::IO)) {
+            auto& ramMemorySegments = dataMemorySegments.at(MemorySegmentType::IO);
+            auto ramMemorySegmentIt = ramMemorySegments.begin();
+
+            if (ramMemorySegmentIt != ramMemorySegments.end()) {
+                return ramMemorySegmentIt->second;
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
 std::optional<MemorySegment> TargetDescriptionFile::getRegisterMemorySegment() const {
     auto& addressMapping = this->addressSpacesMappedById;
 

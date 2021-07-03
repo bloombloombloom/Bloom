@@ -10,6 +10,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
     struct TargetParameters
     {
+        std::optional<std::uint32_t> mappedIoStartAddress;
         std::optional<std::uint32_t> bootSectionStartAddress;
         std::optional<std::uint32_t> gpRegisterStartAddress;
         std::optional<std::uint32_t> gpRegisterSize;
@@ -20,7 +21,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<std::uint32_t> ramSize;
         std::optional<std::uint16_t> eepromStartAddress;
         std::optional<std::uint16_t> eepromSize;
-        std::optional<std::uint16_t> eepromPageSize;
+        std::optional<std::uint8_t> eepromPageSize;
         std::optional<std::uint8_t> eepromAddressRegisterHigh;
         std::optional<std::uint8_t> eepromAddressRegisterLow;
         std::optional<std::uint8_t> eepromDataRegisterAddress;
