@@ -91,6 +91,14 @@ namespace Bloom
         void onTargetControllerThreadStateChangedEvent(const Events::TargetControllerThreadStateChanged& event);
 
         /**
+         * If the something horrible was to happen and the DebugServer dies unexpectedly, Insight will shutdown
+         * in response.
+         *
+         * @param event
+         */
+        void onDebugServerThreadStateChangedEvent(const Events::DebugServerThreadStateChanged& event);
+
+        /**
          * Dispatches any events currently in the queue.
          *
          * Because Insight is effectively a Qt application, we cannot use our own event loop. We must use Qt's event

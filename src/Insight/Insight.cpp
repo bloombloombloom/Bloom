@@ -45,6 +45,10 @@ void Insight::startup() {
         std::bind(&Insight::onTargetControllerThreadStateChangedEvent, this, std::placeholders::_1)
     );
 
+    this->eventListener->registerCallbackForEventType<Events::DebugServerThreadStateChanged>(
+        std::bind(&Insight::onDebugServerThreadStateChangedEvent, this, std::placeholders::_1)
+    );
+
     auto targetDescriptor = this->targetControllerConsole.getTargetDescriptor();
 
 #ifndef BLOOM_DEBUG_BUILD
@@ -129,6 +133,13 @@ void Insight::onShutdownApplicationEvent(const Events::ShutdownApplication&) {
 void Insight::onTargetControllerThreadStateChangedEvent(const Events::TargetControllerThreadStateChanged& event) {
     if (event.getState() == ThreadState::STOPPED) {
         // Something horrible has happened with the TargetController - Insight is useless without the TargetController
+        this->shutdown();
+    }
+}
+
+void Insight::onDebugServerThreadStateChangedEvent(const Events::DebugServerThreadStateChanged& event) {
+    if (event.getState() == ThreadState::STOPPED) {
+        // Something horrible has happened with the DebugServer
         this->shutdown();
     }
 }
