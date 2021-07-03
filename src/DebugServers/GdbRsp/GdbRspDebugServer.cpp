@@ -447,6 +447,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::InterruptExecution& pack
     try {
         this->targetControllerConsole.stopTargetExecution();
         this->clientConnection->writePacket(TargetStopped(Signal::INTERRUPTED));
+        this->clientConnection->waitingForBreak = false;
 
     } catch (const Exception& exception) {
         Logger::error("Failed to interrupt execution - " + exception.getMessage());
