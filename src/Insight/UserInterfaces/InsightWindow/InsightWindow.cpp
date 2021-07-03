@@ -436,7 +436,7 @@ void InsightWindow::onTargetPinStatesUpdate(int variantId, Bloom::Targets::Targe
         && this->selectedVariant->id == variantId
     ) {
         this->targetPackageWidget->updatePinStates(pinStatesByNumber);
-        if (this->uiDisabled) {
+        if (this->targetState == TargetState::STOPPED && this->uiDisabled) {
             this->toggleUi(false);
 
         } else {
