@@ -14,4 +14,4 @@ cd build/cmake-build-release/ && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_CO
 cd /home/nav/Projects/Bloom/ && cmake --build /home/nav/Projects/Bloom/build/cmake-build-release --target clean
 
 cmake --build /home/nav/Projects/Bloom/build/cmake-build-release --target Bloom
-cmake --install /home/nav/Projects/Bloom/build/cmake-build-release --target Bloom
+cmake --install /home/nav/Projects/Bloom/build/cmake-build-release
