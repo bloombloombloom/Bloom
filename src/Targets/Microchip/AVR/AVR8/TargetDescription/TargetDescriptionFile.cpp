@@ -16,6 +16,7 @@ using Bloom::Targets::TargetDescription::RegisterGroup;
 using Bloom::Targets::TargetDescription::MemorySegment;
 using Bloom::Targets::TargetDescription::MemorySegmentType;
 using Bloom::Targets::TargetDescription::Register;
+using Bloom::Targets::TargetVariant;
 
 TargetDescriptionFile::TargetDescriptionFile(
     const TargetSignature& targetSignature,
@@ -90,21 +91,8 @@ void TargetDescriptionFile::init(const QDomDocument& xml) {
     Targets::TargetDescription::TargetDescriptionFile::init(xml);
 
     this->loadDebugPhysicalInterfaces();
-}
-
-void TargetDescriptionFile::loadDebugPhysicalInterfaces() {
-    auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
-        {"updi", PhysicalInterface::UPDI},
-        {"debugwire", PhysicalInterface::DEBUG_WIRE},
-        {"jtag", PhysicalInterface::DEBUG_WIRE},
-        {"pdi", PhysicalInterface::PDI},
-    });
-
-    for (const auto& [interfaceName, interface]: this->interfacesByName) {
-        if (interfaceNamesToInterfaces.contains(interfaceName)) {
-            this->supportedDebugPhysicalInterfaces.insert(interfaceNamesToInterfaces.at(interfaceName));
-        }
-    }
+    this->loadPadDescriptors();
+    this->loadTargetVariants();
 }
 
 QJsonObject TargetDescriptionFile::getTargetDescriptionMapping() {
@@ -173,6 +161,305 @@ Family TargetDescriptionFile::getFamily() const {
 
     return familyNameToEnums.at(familyName);
 }
+
+TargetParameters TargetDescriptionFile::getTargetParameters() const {
+    TargetParameters targetParameters;
+
+    auto& peripheralModules = this->getPeripheralModulesMappedByName();
+    auto& propertyGroups = this->getPropertyGroupsMappedByName();
+
+    auto flashMemorySegment = this->getFlashMemorySegment();
+    if (flashMemorySegment.has_value()) {
+        targetParameters.flashSize = flashMemorySegment->size;
+        targetParameters.flashStartAddress = flashMemorySegment->startAddress;
+
+        if (flashMemorySegment->pageSize.has_value()) {
+            targetParameters.flashPageSize = flashMemorySegment->pageSize.value();
+        }
+    }
+
+    auto ramMemorySegment = this->getRamMemorySegment();
+    if (ramMemorySegment.has_value()) {
+        targetParameters.ramSize = ramMemorySegment->size;
+        targetParameters.ramStartAddress = ramMemorySegment->startAddress;
+    }
+
+    auto ioMemorySegment = this->getIoMemorySegment();
+    if (ioMemorySegment.has_value()) {
+        targetParameters.mappedIoSegmentSize = ioMemorySegment->size;
+        targetParameters.mappedIoSegmentStartAddress = ioMemorySegment->startAddress;
+    }
+
+    auto registerMemorySegment = this->getRegisterMemorySegment();
+    if (registerMemorySegment.has_value()) {
+        targetParameters.gpRegisterSize = registerMemorySegment->size;
+        targetParameters.gpRegisterStartAddress = registerMemorySegment->startAddress;
+    }
+
+    auto eepromMemorySegment = this->getEepromMemorySegment();
+    if (eepromMemorySegment.has_value()) {
+        targetParameters.eepromSize = eepromMemorySegment->size;
+        targetParameters.eepromStartAddress = eepromMemorySegment->startAddress;
+
+        if (eepromMemorySegment->pageSize.has_value()) {
+            targetParameters.eepromPageSize = eepromMemorySegment->pageSize.value();
+        }
+    }
+
+    auto firstBootSectionMemorySegment = this->getFirstBootSectionMemorySegment();
+    if (firstBootSectionMemorySegment.has_value()) {
+        targetParameters.bootSectionStartAddress = firstBootSectionMemorySegment->startAddress / 2;
+        targetParameters.bootSectionSize = firstBootSectionMemorySegment->size;
+    }
+
+    std::uint32_t cpuRegistersOffset = 0;
+
+    if (peripheralModules.contains("cpu")) {
+        auto cpuPeripheralModule = peripheralModules.at("cpu");
+
+        if (cpuPeripheralModule.instancesMappedByName.contains("cpu")) {
+            auto cpuInstance = cpuPeripheralModule.instancesMappedByName.at("cpu");
+
+            if (cpuInstance.registerGroupsMappedByName.contains("cpu")) {
+                cpuRegistersOffset = cpuInstance.registerGroupsMappedByName.at("cpu").offset.value_or(0);
+            }
+        }
+    }
+
+    auto statusRegister = this->getStatusRegister();
+    if (statusRegister.has_value()) {
+        targetParameters.statusRegisterStartAddress = cpuRegistersOffset + statusRegister->offset;
+        targetParameters.statusRegisterSize = statusRegister->size;
+    }
+
+    auto stackPointerRegister = this->getStackPointerRegister();
+    if (stackPointerRegister.has_value()) {
+        targetParameters.stackPointerRegisterLowAddress = cpuRegistersOffset + stackPointerRegister->offset;
+        targetParameters.stackPointerRegisterSize = stackPointerRegister->size;
+
+    } else {
+        // Sometimes the SP register is split into two register nodes, one for low, the other for high
+        auto stackPointerLowRegister = this->getStackPointerLowRegister();
+        auto stackPointerHighRegister = this->getStackPointerHighRegister();
+
+        if (stackPointerLowRegister.has_value()) {
+            targetParameters.stackPointerRegisterLowAddress = cpuRegistersOffset
+                + stackPointerLowRegister->offset;
+            targetParameters.stackPointerRegisterSize = stackPointerLowRegister->size;
+        }
+
+        if (stackPointerHighRegister.has_value()) {
+            targetParameters.stackPointerRegisterSize =
+                targetParameters.stackPointerRegisterSize.has_value() ?
+                targetParameters.stackPointerRegisterSize.value() + stackPointerHighRegister->size :
+                stackPointerHighRegister->size;
+        }
+    }
+
+    auto supportedPhysicalInterfaces = this->getSupportedDebugPhysicalInterfaces();
+
+    if (supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)
+        || supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)
+        ) {
+        this->loadDebugWireAndJtagTargetParameters(targetParameters);
+    }
+
+    if (supportedPhysicalInterfaces.contains(PhysicalInterface::PDI)) {
+        this->loadPdiTargetParameters(targetParameters);
+    }
+
+    if (supportedPhysicalInterfaces.contains(PhysicalInterface::UPDI)) {
+        this->loadUpdiTargetParameters(targetParameters);
+    }
+
+    return targetParameters;
+}
+
+void TargetDescriptionFile::loadDebugPhysicalInterfaces() {
+    auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
+       {"updi", PhysicalInterface::UPDI},
+       {"debugwire", PhysicalInterface::DEBUG_WIRE},
+       {"jtag", PhysicalInterface::DEBUG_WIRE},
+       {"pdi", PhysicalInterface::PDI},
+    });
+
+    for (const auto& [interfaceName, interface]: this->interfacesByName) {
+        if (interfaceNamesToInterfaces.contains(interfaceName)) {
+            this->supportedDebugPhysicalInterfaces.insert(interfaceNamesToInterfaces.at(interfaceName));
+        }
+    }
+}
+
+void TargetDescriptionFile::loadPadDescriptors() {
+    auto& modules = this->getModulesMappedByName();
+    auto portModule = (modules.contains("port")) ? std::optional(modules.find("port")->second) : std::nullopt;
+    auto& peripheralModules = this->getPeripheralModulesMappedByName();
+
+    if (peripheralModules.contains("port")) {
+        auto portPeripheralModule = peripheralModules.find("port")->second;
+
+        for (const auto& [instanceName, instance] : portPeripheralModule.instancesMappedByName) {
+            if (instanceName.find("port") == 0) {
+                auto portPeripheralRegisterGroup = (portPeripheralModule.registerGroupsMappedByName.contains(instanceName)) ?
+                    std::optional(portPeripheralModule.registerGroupsMappedByName.find(instanceName)->second) :
+                    std::nullopt;
+
+                for (const auto& signal : instance.instanceSignals) {
+                    if (!signal.index.has_value()) {
+                        continue;
+                    }
+
+                    auto padDescriptor = PadDescriptor();
+                    padDescriptor.name = signal.padName;
+                    padDescriptor.gpioPinNumber = signal.index.value();
+
+                    if (portModule.has_value() && portModule->registerGroupsMappedByName.contains(instanceName)) {
+                        // We have register information for this port
+                        auto registerGroup = portModule->registerGroupsMappedByName.find(instanceName)->second;
+
+                        for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
+                            if (registerName.find("port") == 0) {
+                                // This is the data register for the port
+                                padDescriptor.gpioPortSetAddress = portRegister.offset;
+                                padDescriptor.gpioPortClearAddress = portRegister.offset;
+
+                            } else if (registerName.find("pin") == 0) {
+                                // This is the input data register for the port
+                                padDescriptor.gpioPortInputAddress = portRegister.offset;
+
+                            } else if (registerName.find("ddr") == 0) {
+                                // This is the data direction register for the port
+                                padDescriptor.ddrSetAddress = portRegister.offset;
+                                padDescriptor.ddrClearAddress = portRegister.offset;
+                            }
+                        }
+
+                    } else if (portModule.has_value() && portModule->registerGroupsMappedByName.contains("port")) {
+                        // We have generic register information for all ports on the target
+                        auto registerGroup = portModule->registerGroupsMappedByName.find("port")->second;
+
+                        for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
+                            if (registerName.find("outset") == 0) {
+                                // Include the port register offset
+                                padDescriptor.gpioPortSetAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
+                                    portPeripheralRegisterGroup->offset.value_or(0) : 0;
+
+                                padDescriptor.gpioPortSetAddress = padDescriptor.gpioPortSetAddress.value()
+                                    + portRegister.offset;
+
+                            } else if (registerName.find("outclr") == 0) {
+                                padDescriptor.gpioPortClearAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
+                                    portPeripheralRegisterGroup->offset.value_or(0) : 0;
+
+                                padDescriptor.gpioPortClearAddress = padDescriptor.gpioPortClearAddress.value()
+                                    + portRegister.offset;
+
+                            } else if (registerName.find("dirset") == 0) {
+                                padDescriptor.ddrSetAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
+                                    portPeripheralRegisterGroup->offset.value_or(0) : 0;
+
+                                padDescriptor.ddrSetAddress = padDescriptor.ddrSetAddress.value()
+                                    + portRegister.offset;
+
+                            } else if (registerName.find("dirclr") == 0) {
+                                padDescriptor.ddrClearAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
+                                    portPeripheralRegisterGroup->offset.value_or(0) : 0;
+
+                                padDescriptor.ddrClearAddress = padDescriptor.ddrClearAddress.value()
+                                    + portRegister.offset;
+
+                            } else if (registerName == "in") {
+                                padDescriptor.gpioPortInputAddress = (portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()) ?
+                                    portPeripheralRegisterGroup->offset.value_or(0) : 0;
+
+                                padDescriptor.gpioPortInputAddress = padDescriptor.gpioPortInputAddress.value()
+                                    + portRegister.offset;
+                            }
+                        }
+                    }
+
+                    this->padDescriptorsByName.insert(std::pair(padDescriptor.name, padDescriptor));
+                }
+            }
+        }
+    }
+}
+
+void TargetDescriptionFile::loadTargetVariants() {
+    auto tdVariants = this->getVariants();
+    auto tdPinoutsByName = this->getPinoutsMappedByName();
+    auto& modules = this->getModulesMappedByName();
+
+    for (const auto& tdVariant : tdVariants) {
+        if (tdVariant.disabled) {
+            continue;
+        }
+
+        auto targetVariant = TargetVariant();
+        targetVariant.id = static_cast<int>(variants.size());
+        targetVariant.name = tdVariant.name;
+        targetVariant.packageName = tdVariant.package;
+
+        if (tdVariant.package.find("QFP") == 0 || tdVariant.package.find("TQFP") == 0) {
+            targetVariant.package = TargetPackage::QFP;
+
+        } else if (tdVariant.package.find("PDIP") == 0 || tdVariant.package.find("DIP") == 0) {
+            targetVariant.package = TargetPackage::DIP;
+
+        } else if (tdVariant.package.find("QFN") == 0 || tdVariant.package.find("VQFN") == 0) {
+            targetVariant.package = TargetPackage::QFN;
+
+        } else if (tdVariant.package.find("SOIC") == 0) {
+            targetVariant.package = TargetPackage::SOIC;
+
+        } else if (tdVariant.package.find("SSOP") == 0) {
+            targetVariant.package = TargetPackage::SSOP;
+        }
+
+        if (!tdPinoutsByName.contains(tdVariant.pinoutName)) {
+            // Missing pinouts in the target description file
+            continue;
+        }
+
+        auto tdPinout = tdPinoutsByName.find(tdVariant.pinoutName)->second;
+        for (const auto& tdPin : tdPinout.pins) {
+            auto targetPin = TargetPinDescriptor();
+            targetPin.name = tdPin.pad;
+            targetPin.padName = tdPin.pad;
+            targetPin.number = tdPin.position;
+
+            // TODO: REMOVE THIS:
+            if (tdPin.pad.find("vcc") == 0
+                || tdPin.pad.find("avcc") == 0
+                || tdPin.pad.find("aref") == 0
+                || tdPin.pad.find("avdd") == 0
+                || tdPin.pad.find("vdd") == 0
+                ) {
+                targetPin.type = TargetPinType::VCC;
+
+            } else if (tdPin.pad.find("gnd") == 0) {
+                targetPin.type = TargetPinType::GND;
+            }
+
+            if (this->padDescriptorsByName.contains(targetPin.padName)) {
+                auto& pad = this->padDescriptorsByName.at(targetPin.padName);
+                if (pad.gpioPortSetAddress.has_value() && pad.ddrSetAddress.has_value()) {
+                    targetPin.type = TargetPinType::GPIO;
+                }
+            }
+
+            targetVariant.pinDescriptorsByNumber.insert(std::pair(targetPin.number, targetPin));
+        }
+
+        this->targetVariantsById.insert(std::pair(targetVariant.id, targetVariant));
+    }
+}
+
 
 std::optional<MemorySegment> TargetDescriptionFile::getFlashMemorySegment() const {
     auto& addressMapping = this->addressSpacesMappedById;
@@ -603,4 +890,181 @@ std::optional<Register> TargetDescriptionFile::getEepromControlRegister() const 
     }
 
     return std::nullopt;
+}
+
+void TargetDescriptionFile::loadDebugWireAndJtagTargetParameters(TargetParameters& targetParameters) const {
+    auto& peripheralModules = this->getPeripheralModulesMappedByName();
+    auto& propertyGroups = this->getPropertyGroupsMappedByName();
+
+    // OCD attributes can be found in property groups
+    if (propertyGroups.contains("ocd")) {
+        auto& ocdProperties = propertyGroups.at("ocd").propertiesMappedByName;
+
+        if (ocdProperties.find("ocd_revision") != ocdProperties.end()) {
+            targetParameters.ocdRevision = ocdProperties.find("ocd_revision")
+                ->second.value.toUShort(nullptr, 10);
+        }
+
+        if (ocdProperties.find("ocd_datareg") != ocdProperties.end()) {
+            targetParameters.ocdDataRegister = ocdProperties.find("ocd_datareg")
+                ->second.value.toUShort(nullptr, 16);
+        }
+    }
+
+    auto spmcsRegister = this->getSpmcsRegister();
+    if (spmcsRegister.has_value()) {
+        targetParameters.spmcRegisterStartAddress = spmcsRegister->offset;
+
+    } else {
+        auto spmcRegister = this->getSpmcRegister();
+        if (spmcRegister.has_value()) {
+            targetParameters.spmcRegisterStartAddress = spmcRegister->offset;
+        }
+    }
+
+    auto osccalRegister = this->getOscillatorCalibrationRegister();
+    if (osccalRegister.has_value()) {
+        targetParameters.osccalAddress = osccalRegister->offset;
+    }
+
+    auto eepromAddressRegister = this->getEepromAddressRegister();
+    if (eepromAddressRegister.has_value()) {
+        targetParameters.eepromAddressRegisterLow = eepromAddressRegister->offset;
+        targetParameters.eepromAddressRegisterHigh = (eepromAddressRegister->size == 2)
+                                                            ? eepromAddressRegister->offset + 1 : eepromAddressRegister->offset;
+
+    } else {
+        auto eepromAddressLowRegister = this->getEepromAddressLowRegister();
+        if (eepromAddressLowRegister.has_value()) {
+            targetParameters.eepromAddressRegisterLow = eepromAddressLowRegister->offset;
+            auto eepromAddressHighRegister = this->getEepromAddressHighRegister();
+
+            if (eepromAddressHighRegister.has_value()) {
+                targetParameters.eepromAddressRegisterHigh = eepromAddressHighRegister->offset;
+
+            } else {
+                targetParameters.eepromAddressRegisterHigh = eepromAddressLowRegister->offset;
+            }
+        }
+    }
+
+    auto eepromDataRegister = this->getEepromDataRegister();
+    if (eepromDataRegister.has_value()) {
+        targetParameters.eepromDataRegisterAddress = eepromDataRegister->offset;
+    }
+
+    auto eepromControlRegister = this->getEepromControlRegister();
+    if (eepromControlRegister.has_value()) {
+        targetParameters.eepromControlRegisterAddress = eepromControlRegister->offset;
+    }
+}
+
+void TargetDescriptionFile::loadPdiTargetParameters(TargetParameters& targetParameters) const {
+    auto& peripheralModules = this->getPeripheralModulesMappedByName();
+    auto& propertyGroups = this->getPropertyGroupsMappedByName();
+
+    if (propertyGroups.contains("pdi_interface")) {
+        auto& pdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
+
+        if (pdiInterfaceProperties.contains("app_section_offset")) {
+            targetParameters.appSectionPdiOffset = pdiInterfaceProperties
+                .at("app_section_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("boot_section_offset")) {
+            targetParameters.bootSectionPdiOffset = pdiInterfaceProperties
+                .at("boot_section_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("datamem_offset")) {
+            targetParameters.ramPdiOffset = pdiInterfaceProperties
+                .at("datamem_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("eeprom_offset")) {
+            targetParameters.eepromPdiOffset = pdiInterfaceProperties
+                .at("eeprom_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("user_signatures_offset")) {
+            targetParameters.userSignaturesPdiOffset = pdiInterfaceProperties
+                .at("user_signatures_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("prod_signatures_offset")) {
+            targetParameters.productSignaturesPdiOffset = pdiInterfaceProperties
+                .at("prod_signatures_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("fuse_registers_offset")) {
+            targetParameters.fuseRegistersPdiOffset = pdiInterfaceProperties
+                .at("fuse_registers_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (pdiInterfaceProperties.contains("lock_registers_offset")) {
+            targetParameters.lockRegistersPdiOffset = pdiInterfaceProperties
+                .at("lock_registers_offset").value.toUInt(nullptr, 16);
+        }
+
+        if (peripheralModules.contains("nvm")) {
+            auto& nvmModule = peripheralModules.at("nvm");
+
+            if (nvmModule.instancesMappedByName.contains("nvm")) {
+                auto& nvmInstance = nvmModule.instancesMappedByName.at("nvm");
+
+                if (nvmInstance.registerGroupsMappedByName.contains("nvm")) {
+                    targetParameters.nvmBaseAddress = nvmInstance.registerGroupsMappedByName.at("nvm").offset;
+                }
+            }
+        }
+    }
+}
+
+void TargetDescriptionFile::loadUpdiTargetParameters(TargetParameters& targetParameters) const {
+    auto& propertyGroups = this->getPropertyGroupsMappedByName();
+    auto& peripheralModules = this->getPeripheralModulesMappedByName();
+    auto modulesByName = this->getModulesMappedByName();
+
+    if (peripheralModules.contains("nvmctrl")) {
+        auto& nvmCtrlModule = peripheralModules.at("nvmctrl");
+
+        if (nvmCtrlModule.instancesMappedByName.contains("nvmctrl")) {
+            auto& nvmCtrlInstance = nvmCtrlModule.instancesMappedByName.at("nvmctrl");
+
+            if (nvmCtrlInstance.registerGroupsMappedByName.contains("nvmctrl")) {
+                targetParameters.nvmBaseAddress = nvmCtrlInstance.registerGroupsMappedByName.at("nvmctrl").offset;
+            }
+        }
+    }
+
+    if (propertyGroups.contains("updi_interface")) {
+        auto& updiInterfaceProperties = propertyGroups.at("updi_interface").propertiesMappedByName;
+
+        if (updiInterfaceProperties.contains("ocd_base_addr")) {
+            targetParameters.ocdModuleAddress = updiInterfaceProperties
+                .at("ocd_base_addr").value.toUShort(nullptr, 16);
+        }
+
+        if (updiInterfaceProperties.contains("progmem_offset")) {
+            targetParameters.programMemoryUpdiStartAddress = updiInterfaceProperties
+                .at("progmem_offset").value.toUInt(nullptr, 16);
+        }
+    }
+
+    auto signatureMemorySegment = this->getSignatureMemorySegment();
+    if (signatureMemorySegment.has_value()) {
+        targetParameters.signatureSegmentStartAddress = signatureMemorySegment->startAddress;
+        targetParameters.signatureSegmentSize = signatureMemorySegment->size;
+    }
+
+    auto fuseMemorySegment = this->getFuseMemorySegment();
+    if (fuseMemorySegment.has_value()) {
+        targetParameters.fuseSegmentStartAddress = fuseMemorySegment->startAddress;
+        targetParameters.fuseSegmentSize = fuseMemorySegment->size;
+    }
+
+    auto lockbitsMemorySegment = this->getLockbitsMemorySegment();
+    if (lockbitsMemorySegment.has_value()) {
+        targetParameters.lockbitsSegmentStartAddress = lockbitsMemorySegment->startAddress;
+    }
 }

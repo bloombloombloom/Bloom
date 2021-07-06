@@ -41,37 +41,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         void initFromTargetDescriptionFile();
 
         /**
-         * Populates this->targetParameters with AVR8 target parameters from the loaded target description file.
-         */
-        virtual void loadTargetParameters();
-
-        /**
-         * Loads target parameters that are specific to debugWire and mega JTAG sessions.
-         */
-        virtual void loadDebugWireAndJtagTargetParameters();
-
-        /**
-         * Loads target parameters that are specific to PDI sessions.
-         */
-        virtual void loadPdiTargetParameters();
-
-        /**
-         * Loads target parameters that are specific to UPDI sessions.
-         */
-        virtual void loadUpdiTargetParameters();
-
-        /**
-         * Generates a collection of PadDescriptor object from data in the loaded target description file and
-         * populates this->padDescriptorsByName.
-         */
-        virtual void loadPadDescriptors();
-
-        /**
-         * Loads all variants for the AVR8 target, from the TDF.
-         */
-        virtual void loadTargetVariants();
-
-        /**
          * Extracts the ID from the target's memory.
          *
          * This function will cache the ID value and use the cached version for any subsequent calls.

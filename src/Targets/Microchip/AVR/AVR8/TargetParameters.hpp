@@ -8,9 +8,16 @@
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
+    /**
+     * Holds all parameters that would be required for configuring a debug tool, for an AVR8 target.
+     *
+     * This can usually be extracted from the AVR8 TDF.
+     * See Targets::Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile::getTargetParameters();
+     */
     struct TargetParameters
     {
-        std::optional<std::uint32_t> mappedIoStartAddress;
+        std::optional<std::uint32_t> mappedIoSegmentStartAddress;
+        std::optional<std::uint16_t> mappedIoSegmentSize;
         std::optional<std::uint32_t> bootSectionStartAddress;
         std::optional<std::uint32_t> gpRegisterStartAddress;
         std::optional<std::uint32_t> gpRegisterSize;
@@ -55,8 +62,5 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<std::uint16_t> fuseSegmentStartAddress;
         std::optional<std::uint16_t> fuseSegmentSize;
         std::optional<std::uint16_t> lockbitsSegmentStartAddress;
-
-        std::optional<std::uint32_t> ioPortAddressRangeStart;
-        std::optional<std::uint32_t> ioPortAddressRangeEnd;
     };
 }

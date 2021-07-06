@@ -138,7 +138,7 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
      *
      * It *doesn't* seem to apply to the SPMCR address.
      */
-    auto mappedIoStartAddress = this->targetParameters.mappedIoStartAddress.value_or(0);
+    auto mappedIoStartAddress = this->targetParameters.mappedIoSegmentStartAddress.value_or(0);
 
     if (this->targetParameters.ocdDataRegister.has_value()) {
         Logger::debug("Setting DEVICE_OCD_DATA_REGISTER AVR8 parameter");
