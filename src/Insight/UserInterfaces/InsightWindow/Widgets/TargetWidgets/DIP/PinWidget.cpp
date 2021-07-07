@@ -8,7 +8,7 @@
 #include "PinBodyWidget.hpp"
 #include "src/Logger/Logger.hpp"
 
-using namespace Bloom::InsightTargetWidgets::Dip;
+using namespace Bloom::Widgets::InsightTargetWidgets::Dip;
 using namespace Bloom::Targets;
 
 PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, const TargetVariant& targetVariant):

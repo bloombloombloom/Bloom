@@ -2,7 +2,7 @@
 
 #include <QWidget>
 
-namespace Bloom::InsightTargetWidgets::Dip
+namespace Bloom::Widgets::InsightTargetWidgets::Dip
 {
     class BodyWidget: public QWidget
     {

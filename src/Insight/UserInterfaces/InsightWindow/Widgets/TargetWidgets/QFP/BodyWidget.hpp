@@ -2,7 +2,7 @@
 
 #include <QWidget>
 
-namespace Bloom::InsightTargetWidgets::Qfp
+namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 {
     class BodyWidget: public QWidget
     {

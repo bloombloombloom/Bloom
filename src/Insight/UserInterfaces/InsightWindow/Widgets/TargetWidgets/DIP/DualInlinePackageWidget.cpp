@@ -5,7 +5,7 @@
 #include <QEvent>
 #include <QFile>
 
-#include "../../InsightWindow.hpp"
+#include "../../../InsightWindow.hpp"
 #include "DualInlinePackageWidget.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
@@ -13,7 +13,7 @@
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 
-using namespace Bloom::InsightTargetWidgets::Dip;
+using namespace Bloom::Widgets::InsightTargetWidgets::Dip;
 using namespace Bloom::Exceptions;
 
 using Bloom::Targets::TargetVariant;
@@ -25,7 +25,7 @@ DualInlinePackageWidget::DualInlinePackageWidget(
 ): TargetPackageWidget(targetVariant, insightWindowObj, parent) {
     auto stylesheetFile = QFile(QString::fromStdString(
             Paths::compiledResourcesPath()
-            + "/src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss"
+            + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss"
         )
     );
     stylesheetFile.open(QFile::ReadOnly);

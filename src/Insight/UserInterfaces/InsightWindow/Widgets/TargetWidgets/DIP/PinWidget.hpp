@@ -7,7 +7,7 @@
 #include "PinBodyWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
-namespace Bloom::InsightTargetWidgets::Qfp
+namespace Bloom::Widgets::InsightTargetWidgets::Dip
 {
     class PinWidget: public TargetPinWidget
     {
@@ -19,31 +19,19 @@ namespace Bloom::InsightTargetWidgets::Qfp
         QLabel* pinDirectionLabel = nullptr;
         PinBodyWidget* bodyWidget = nullptr;
 
-        bool isLeftLayout = false;
-        bool isBottomLayout = false;
-        bool isRightLayout = false;
-        bool isTopLayout = false;
-
         void setLabelColor(const QString& hexColor) {
             auto style = QString("QLabel { color: " + hexColor + "; }");
-
             if (this->pinNameLabel != nullptr) {
                 this->pinNameLabel->setStyleSheet(style);
             }
         }
 
     public:
-        static const int MAXIMUM_SPACING = 8;
+        static const int MINIMUM_WIDTH = 30;
         static const int MAXIMUM_LABEL_COUNT = 3;
         static const int LABEL_HEIGHT = 20;
-        static const int MAXIMUM_LABEL_WIDTH = PinBodyWidget::WIDTH;
-        static const int MAXIMUM_LABEL_HEIGHT = 20;
-        static const int MAXIMUM_HORIZONTAL_WIDTH = PinBodyWidget::HEIGHT
-            + (PinWidget::MAXIMUM_LABEL_WIDTH * PinWidget::MAXIMUM_LABEL_COUNT);
-        static const int MAXIMUM_HORIZONTAL_HEIGHT = PinBodyWidget::WIDTH;
-        static const int MAXIMUM_VERTICAL_HEIGHT = PinBodyWidget::HEIGHT
-            + (PinWidget::MAXIMUM_LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT);
-        static const int MAXIMUM_VERTICAL_WIDTH = PinBodyWidget::WIDTH;
+        static const int MAXIMUM_HEIGHT = PinBodyWidget::HEIGHT
+            + (PinWidget::LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT);
 
         PinWidget(
             QWidget* parent,

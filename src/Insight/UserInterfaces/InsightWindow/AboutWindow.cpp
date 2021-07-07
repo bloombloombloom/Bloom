@@ -1,14 +1,13 @@
 #include <QtUiTools>
 
 #include "AboutWindow.hpp"
-#include "TargetWidgets/DIP/DualInlinePackageWidget.hpp"
+#include "Widgets/TargetWidgets/DIP/DualInlinePackageWidget.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Application.hpp"
 #include "src/Helpers/Paths.hpp"
 
 using namespace Bloom;
-using namespace InsightTargetWidgets;
 using namespace Exceptions;
 
 AboutWindow::AboutWindow(QWidget* parent): QObject(parent) {

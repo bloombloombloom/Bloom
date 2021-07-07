@@ -10,26 +10,30 @@
 #include "BodyWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
-namespace Bloom::InsightTargetWidgets::Dip
+namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 {
     /**
-     * The DualInlinePackageWidget implements a custom Qt widget for the Dual-inline package target variants.
+     * QuadFlatPackageWidget implements a custom Qt widget for Quad-flat package variants.
      */
-    class DualInlinePackageWidget: public TargetPackageWidget
+    class QuadFlatPackageWidget: public TargetPackageWidget
     {
     Q_OBJECT
     private:
         QVBoxLayout* layout = nullptr;
+        QHBoxLayout* horizontalLayout = nullptr;
         QHBoxLayout* topPinLayout = nullptr;
+        QVBoxLayout* rightPinLayout = nullptr;
         QHBoxLayout* bottomPinLayout = nullptr;
+        QVBoxLayout* leftPinLayout = nullptr;
         BodyWidget* bodyWidget = nullptr;
 
     protected:
         void paintEvent(QPaintEvent* event) override;
-        void resizeEvent(QResizeEvent* event) override;
         void drawWidget(QPainter& painter);
 
     public:
-        DualInlinePackageWidget(const Targets::TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent);
+        static const int PIN_WIDGET_LAYOUT_PADDING = 46;
+        static const int PIN_WIDGET_SPACING = 8;
+        QuadFlatPackageWidget(const Targets::TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent);
     };
 }

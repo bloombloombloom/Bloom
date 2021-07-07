@@ -113,16 +113,16 @@ add_executable(Bloom
 
     src/Insight/UserInterfaces/InsightWindow/InsightWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/AboutWindow.cpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/TargetPackageWidget.hpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/TargetPinWidget.hpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/DualInlinePackageWidget.cpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/PinWidget.cpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/PinBodyWidget.cpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/DIP/BodyWidget.cpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/QuadFlatPackageWidget.cpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/PinWidget.cpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/PinBodyWidget.cpp
-    src/Insight/UserInterfaces/InsightWindow/TargetWidgets/QFP/BodyWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidget.hpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinWidget.hpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/DualInlinePackageWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/PinWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/PinBodyWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/BodyWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/QuadFlatPackageWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/PinWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/PinBodyWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/BodyWidget.cpp
 )
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)

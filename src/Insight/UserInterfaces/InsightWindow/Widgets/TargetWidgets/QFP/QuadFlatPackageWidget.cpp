@@ -5,13 +5,13 @@
 #include <QEvent>
 #include <QFile>
 
-#include "../../InsightWindow.hpp"
+#include "../../../InsightWindow.hpp"
 #include "QuadFlatPackageWidget.hpp"
 #include "src/Helpers/Paths.hpp"
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 
-using namespace Bloom::InsightTargetWidgets::Qfp;
+using namespace Bloom::Widgets::InsightTargetWidgets::Qfp;
 using namespace Bloom::Targets;
 
 QuadFlatPackageWidget::QuadFlatPackageWidget(
@@ -23,7 +23,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
 
     auto stylesheetFile = QFile(QString::fromStdString(
             Paths::compiledResourcesPath()
-            + "/src/Insight/UserInterfaces/InsightWindow/TargetWidgets//QFP/Stylesheets/QuadFlatPackage.qss"
+            + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets//QFP/Stylesheets/QuadFlatPackage.qss"
         )
     );
     stylesheetFile.open(QFile::ReadOnly);
@@ -118,7 +118,7 @@ void QuadFlatPackageWidget::drawWidget(QPainter& painter) {
 
     auto parentContainerHeight = parentWidget->height();
     auto parentContainerWidth = parentWidget->width();
-    
+
     auto verticalPinWidgetHeight = PinWidget::MAXIMUM_VERTICAL_HEIGHT;
     auto verticalPinWidgetWidth = PinWidget::MAXIMUM_VERTICAL_WIDTH;
     auto horizontalPinWidgetHeight = PinWidget::MAXIMUM_HORIZONTAL_HEIGHT;

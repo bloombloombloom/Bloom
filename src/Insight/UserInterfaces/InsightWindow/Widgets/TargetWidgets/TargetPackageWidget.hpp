@@ -9,7 +9,7 @@
 #include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 
-namespace Bloom::InsightTargetWidgets
+namespace Bloom::Widgets::InsightTargetWidgets
 {
     /**
      * Each custom target package widget should be derived from this class.

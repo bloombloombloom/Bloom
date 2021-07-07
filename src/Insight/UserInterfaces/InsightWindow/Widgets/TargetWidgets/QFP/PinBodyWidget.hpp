@@ -6,7 +6,7 @@
 
 #include "src/Targets/TargetPinDescriptor.hpp"
 
-namespace Bloom::InsightTargetWidgets::Qfp
+namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 {
     class PinBodyWidget: public QWidget
     {

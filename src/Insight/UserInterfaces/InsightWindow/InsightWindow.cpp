@@ -4,8 +4,8 @@
 
 #include "InsightWindow.hpp"
 #include "AboutWindow.hpp"
-#include "TargetWidgets/DIP/DualInlinePackageWidget.hpp"
-#include "TargetWidgets/QFP/QuadFlatPackageWidget.hpp"
+#include "Widgets/TargetWidgets/DIP/DualInlinePackageWidget.hpp"
+#include "Widgets/TargetWidgets/QFP/QuadFlatPackageWidget.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
@@ -13,7 +13,7 @@
 
 using namespace Bloom;
 using namespace Bloom::Exceptions;
-using namespace Bloom::InsightTargetWidgets;
+using namespace Bloom::Widgets;
 
 using Bloom::Targets::TargetDescriptor;
 using Bloom::Targets::TargetState;
@@ -445,7 +445,7 @@ void InsightWindow::onTargetPinStatesUpdate(int variantId, Bloom::Targets::Targe
     }
 }
 
-void InsightWindow::togglePinIoState(TargetPinWidget* pinWidget) {
+void InsightWindow::togglePinIoState(InsightTargetWidgets::TargetPinWidget* pinWidget) {
     auto pinState = pinWidget->getPinState();
 
     // Currently, we only allow users to toggle the IO state of output pins

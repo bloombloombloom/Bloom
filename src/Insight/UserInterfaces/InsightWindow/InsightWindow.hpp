@@ -8,7 +8,7 @@
 
 #include "AboutWindow.hpp"
 #include "src/ApplicationConfig.hpp"
-#include "TargetWidgets/TargetPackageWidget.hpp"
+#include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetVariant.hpp"
@@ -38,7 +38,7 @@ namespace Bloom
 
         QWidget* ioContainerWidget = nullptr;
         QLabel* ioUnavailableWidget = nullptr;
-        InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
+        Widgets::InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
 
         QWidget* footer = nullptr;
         QLabel* targetStatusLabel = nullptr;
@@ -86,7 +86,7 @@ namespace Bloom
         void openReportIssuesUrl();
         static void openGettingStartedUrl();
         void openAboutWindow();
-        void togglePinIoState(InsightTargetWidgets::TargetPinWidget* pinWidget);
+        void togglePinIoState(Widgets::InsightTargetWidgets::TargetPinWidget* pinWidget);
 
     signals:
         void refreshTargetPinStates(int variantId);
