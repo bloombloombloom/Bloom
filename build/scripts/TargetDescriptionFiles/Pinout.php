@@ -6,8 +6,10 @@ require_once __DIR__ . "/Pin.php";
 class Pinout
 {
     const TYPE_SOIC = 'SOIC';
+    const TYPE_SSOP = 'SSOP';
     const TYPE_DIP = 'DIP';
     const TYPE_QFN = 'QFN';
+    const TYPE_QFP = 'QFP';
     const TYPE_BGA = 'BGA';
 
     public ?string $name = null;

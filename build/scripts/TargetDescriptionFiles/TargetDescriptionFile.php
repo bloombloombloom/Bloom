@@ -338,8 +338,14 @@ class TargetDescriptionFile
             } else if (stristr($pinout->name, Pinout::TYPE_SOIC) !== false) {
                 $pinout->type = Pinout::TYPE_SOIC;
 
+            } else if (stristr($pinout->name, Pinout::TYPE_SSOP) !== false) {
+                $pinout->type = Pinout::TYPE_SSOP;
+
             } else if (stristr($pinout->name, Pinout::TYPE_QFN) !== false) {
                 $pinout->type = Pinout::TYPE_QFN;
+
+            } else if (stristr($pinout->name, Pinout::TYPE_QFP) !== false) {
+                $pinout->type = Pinout::TYPE_QFP;
 
             } else if (stristr($pinout->name, Pinout::TYPE_BGA) !== false) {
                 $pinout->type = Pinout::TYPE_BGA;
