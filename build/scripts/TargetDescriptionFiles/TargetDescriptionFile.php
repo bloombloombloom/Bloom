@@ -426,6 +426,16 @@ class TargetDescriptionFile
                     }
                 }
             }
+
+            if (in_array($pinout->type, [Pinout::TYPE_SOIC, Pinout::TYPE_DIP, Pinout::TYPE_SSOP])
+                && count($pinout->pins) % 2 != 0
+            ) {
+                $failures[] = 'DIP/SOIC/SSOP pinout (' . $pinout->name . ') pin count is not a multiple of two.';
+            }
+
+            if (in_array($pinout->type, [Pinout::TYPE_QFN, Pinout::TYPE_QFP]) && count($pinout->pins) % 4 != 0) {
+                $failures[] = 'QFP/QFN pinout (' . $pinout->name . ') pin count is not a multiple of four.';
+            }
         }
 
         return $failures;
