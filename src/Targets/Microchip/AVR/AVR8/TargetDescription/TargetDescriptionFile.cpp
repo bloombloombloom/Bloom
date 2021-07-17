@@ -401,7 +401,7 @@ void TargetDescriptionFile::loadTargetVariants() {
         }
 
         auto targetVariant = TargetVariant();
-        targetVariant.id = static_cast<int>(variants.size());
+        targetVariant.id = static_cast<int>(this->targetVariantsById.size());
         targetVariant.name = tdVariant.name;
         targetVariant.packageName = tdVariant.package;
 
