@@ -447,22 +447,37 @@ void Avr8::setPinState(int variantId, const TargetPinDescriptor& pinDescriptor, 
             || !padDescriptor.gpioPortClearAddress.has_value()
             || padDescriptor.gpioPortClearAddress == portSetAddress
         ) {
-            auto portSetRegisterValue = this->readMemory(TargetMemoryType::RAM, portSetAddress, 1);
-
-            if (portSetRegisterValue.empty()) {
-                throw Exception("Failed to read PORT register value");
-            }
-
-            auto portSetBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(portSetRegisterValue.front());
-            if (portSetBitset.test(pinNumber) != (ioState == TargetPinState::IoState::HIGH)) {
-                // PORT set register needs updating
-                portSetBitset.set(pinNumber, (ioState == TargetPinState::IoState::HIGH));
-
+            if (padDescriptor.gpioPortClearAddress != portSetAddress) {
+                /*
+                 * We don't need to read the register if the SET and CLEAR operations are performed via different
+                 * registers.
+                 *
+                 * Instead, we can just set the appropriate bit against the SET register.
+                 */
                 this->writeMemory(
                     TargetMemoryType::RAM,
                     portSetAddress,
-                    {static_cast<unsigned char>(portSetBitset.to_ulong())}
+                    {static_cast<unsigned char>(0x01 << pinNumber)}
                 );
+
+            } else {
+                auto portSetRegisterValue = this->readMemory(TargetMemoryType::RAM, portSetAddress, 1);
+
+                if (portSetRegisterValue.empty()) {
+                    throw Exception("Failed to read PORT register value");
+                }
+
+                auto portSetBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(portSetRegisterValue.front());
+                if (portSetBitset.test(pinNumber) != (ioState == TargetPinState::IoState::HIGH)) {
+                    // PORT set register needs updating
+                    portSetBitset.set(pinNumber, (ioState == TargetPinState::IoState::HIGH));
+
+                    this->writeMemory(
+                        TargetMemoryType::RAM,
+                        portSetAddress,
+                        {static_cast<unsigned char>(portSetBitset.to_ulong())}
+                    );
+                }
             }
         }
 
@@ -476,23 +491,12 @@ void Avr8::setPinState(int variantId, const TargetPinDescriptor& pinDescriptor, 
         ) {
             // We also need to ensure the PORT clear register value is correct
             auto portClearAddress = padDescriptor.gpioPortClearAddress.value();
-            auto portClearRegisterValue = this->readMemory(TargetMemoryType::RAM, portClearAddress, 1);
 
-            if (portClearRegisterValue.empty()) {
-                throw Exception("Failed to read PORT (OUTSET) register value");
-            }
-
-            auto portClearBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(portClearRegisterValue.front());
-            if (portClearBitset.test(pinNumber) == (ioState == TargetPinState::IoState::LOW)) {
-                // PORT clear register needs updating
-                portClearBitset.set(pinNumber, (ioState == TargetPinState::IoState::LOW));
-
-                this->writeMemory(
-                    TargetMemoryType::RAM,
-                    portClearAddress,
-                    {static_cast<unsigned char>(portClearBitset.to_ulong())}
-                );
-            }
+            this->writeMemory(
+                TargetMemoryType::RAM,
+                portClearAddress,
+                {static_cast<unsigned char>(0x01 << pinNumber)}
+            );
         }
     }
 }
