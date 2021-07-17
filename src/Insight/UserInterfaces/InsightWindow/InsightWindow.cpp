@@ -205,14 +205,18 @@ void InsightWindow::activate() {
             if (this->supportedVariantsByName.contains(selectedVariantName)) {
                 // The user has specified a valid variant name in their config file, so use that as the default
                 this->selectVariant(&(this->supportedVariantsByName.at(selectedVariantName)));
-            }
 
-        } else {
-            if (this->targetConfig.variantName.has_value()) {
+            } else {
                 Logger::error("Invalid target variant name \"" + this->targetConfig.variantName.value()
                     + "\" - no such variant with the given name was found.");
             }
+        }
 
+        if (this->selectedVariant == nullptr) {
+            /*
+             * Given that we haven't been able to select a variant at this point, we will just fallback to the first
+             * one that is available.
+             */
             this->selectVariant(&(this->supportedVariantsByName.begin()->second));
         }
 
