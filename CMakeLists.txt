@@ -115,6 +115,7 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/AboutWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidget.hpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinWidget.hpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinBodyWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/DualInlinePackageWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/PinWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/PinBodyWidget.cpp

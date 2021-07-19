@@ -47,10 +47,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
         }
 
         void setDisabled(bool disabled) {
-            if (pinDescriptor.type != Targets::TargetPinType::GND
-                && pinDescriptor.type != Targets::TargetPinType::VCC
-                && pinDescriptor.type != Targets::TargetPinType::UNKNOWN
-            ) {
+            if (pinDescriptor.type != Targets::TargetPinType::UNKNOWN) {
                 QWidget::setDisabled(disabled);
 
             } else {
