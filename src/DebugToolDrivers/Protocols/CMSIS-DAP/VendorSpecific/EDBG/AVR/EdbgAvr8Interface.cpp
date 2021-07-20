@@ -1197,7 +1197,12 @@ TargetRegisters EdbgAvr8Interface::readGeneralPurposeRegisters(std::set<std::siz
             continue;
         }
 
-        output.push_back(TargetRegister(registerIndex, {registers[registerIndex]}));
+        output.push_back(
+            TargetRegister(
+                {registerIndex, TargetRegisterType::GENERAL_PURPOSE_REGISTER},
+                {registers[registerIndex]}
+            )
+        );
     }
 
     return output;

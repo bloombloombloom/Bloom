@@ -12,17 +12,17 @@ namespace Bloom::Targets
         PROGRAM_COUNTER,
         STACK_POINTER,
         STATUS_REGISTER,
+        OTHER,
     };
 
     struct TargetRegisterDescriptor
     {
-        using IdType = size_t;
-        std::optional<IdType> id;
-        TargetRegisterType type = TargetRegisterType::GENERAL_PURPOSE_REGISTER;
+        std::optional<size_t> id;
+        TargetRegisterType type = TargetRegisterType::OTHER;
 
         TargetRegisterDescriptor() = default;
         explicit TargetRegisterDescriptor(TargetRegisterType type): type(type) {};
-        TargetRegisterDescriptor(IdType id, TargetRegisterType type): id(id), type(type) {};
+        TargetRegisterDescriptor(size_t id, TargetRegisterType type): id(id), type(type) {};
 
         bool operator==(const TargetRegisterDescriptor& other) const {
             return this->id == other.id && this->type == other.type;
@@ -31,18 +31,11 @@ namespace Bloom::Targets
 
     struct TargetRegister
     {
-        std::optional<size_t> id;
-        std::vector<unsigned char> value;
         TargetRegisterDescriptor descriptor;
-
-        explicit TargetRegister(std::vector<unsigned char> value): value(std::move(value)) {};
+        std::vector<unsigned char> value;
 
         TargetRegister(TargetRegisterDescriptor descriptor, std::vector<unsigned char> value): value(std::move(value)),
         descriptor(descriptor) {};
-
-        TargetRegister(size_t id, std::vector<unsigned char> value): id(id), value(std::move(value)) {
-            this->descriptor.id = id;
-        };
 
         [[nodiscard]] size_t size() const {
             return this->value.size();

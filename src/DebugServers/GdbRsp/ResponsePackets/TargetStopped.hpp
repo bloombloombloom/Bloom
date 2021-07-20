@@ -15,7 +15,6 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
     {
     public:
         Signal signal;
-        std::optional<Targets::TargetRegisterMap> registerMap;
         std::optional<StopReason> stopReason;
 
         explicit TargetStopped(Signal signal): signal(signal) {}
@@ -29,13 +28,6 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
 
                 if (stopReasonName.has_value()) {
                     output += stopReasonName.value() + ":;";
-                }
-            }
-
-            if (this->registerMap.has_value()) {
-                for (const auto& [registerId, registerValue] : this->registerMap.value()) {
-                    output += Packet::dataToHex({static_cast<unsigned char>(registerId)});
-                    output += ":" + Packet::dataToHex(registerValue.value) + ";";
                 }
             }
 
