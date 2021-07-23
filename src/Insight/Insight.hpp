@@ -35,7 +35,7 @@ namespace Bloom
         EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightEventListener");
 
-        QApplication* application = nullptr;
+        QApplication application =  QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data());
         InsightWindow mainWindow;
 
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(

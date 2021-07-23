@@ -18,7 +18,7 @@ void Insight::run() {
         this->workerThread->start();
         this->setThreadState(ThreadState::READY);
         Logger::info("Insight ready");
-        this->application->exec();
+        this->application.exec();
 
     } catch (const Exception& exception) {
         Logger::error("Insight encountered a fatal error. See below for errors:");
@@ -56,8 +56,7 @@ void Insight::startup() {
 #endif
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 
-    this->application = new QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data());
-    this->application->setQuitOnLastWindowClosed(true);
+    this->application.setQuitOnLastWindowClosed(true);
     qRegisterMetaType<Bloom::Targets::TargetDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinState>();
@@ -68,7 +67,7 @@ void Insight::startup() {
     this->mainWindow.setEnvironmentConfig(this->environmentConfig);
 
     this->mainWindow.init(
-        *(this->application),
+        this->application,
         targetDescriptor
     );
 
@@ -80,7 +79,7 @@ void Insight::startup() {
      *
      * This allows us to use Qt's event loop whilst still being able to process our own events.
      */
-    auto eventDispatchTimer = new QTimer(this->application);
+    auto eventDispatchTimer = new QTimer(&(this->application));
     connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
     eventDispatchTimer->start(100);
 
@@ -115,9 +114,7 @@ void Insight::shutdown() {
         this->workerThread->quit();
     }
 
-    if (this->application != nullptr) {
-        this->application->exit(0);
-    }
+    this->application.exit(0);
 
     this->setThreadState(ThreadState::STOPPED);
 }
