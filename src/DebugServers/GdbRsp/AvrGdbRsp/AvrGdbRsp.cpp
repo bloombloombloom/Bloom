@@ -27,11 +27,20 @@ void AvrGdbRsp::loadRegisterNumberToDescriptorMapping() {
         throw Exception("Unexpected general purpose register count");
     }
 
+
     auto& gpRegisterDescriptors = registerDescriptorsByType.at(TargetRegisterType::GENERAL_PURPOSE_REGISTER);
-    for (const auto& gpRegisterDescriptor : gpRegisterDescriptors) {
+    std::sort(
+        gpRegisterDescriptors.begin(),
+        gpRegisterDescriptors.end(),
+        [](const TargetRegisterDescriptor& descriptorA, const TargetRegisterDescriptor& descriptorB) {
+            return descriptorA.startAddress.value() < descriptorB.startAddress.value();
+        }
+    );
+
+    for (std::size_t descriptorIndex = 0; descriptorIndex < gpRegisterDescriptors.size(); descriptorIndex++) {
         this->registerNumberToDescriptorMapping.insert(std::pair(
-            static_cast<GdbRegisterNumber>(gpRegisterDescriptor.id.value()),
-            gpRegisterDescriptor
+            static_cast<GdbRegisterNumber>(descriptorIndex),
+            gpRegisterDescriptors[descriptorIndex]
         ));
     }
 

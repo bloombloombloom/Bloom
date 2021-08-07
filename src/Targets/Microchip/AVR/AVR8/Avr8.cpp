@@ -58,11 +58,10 @@ void Avr8::loadTargetRegisterDescriptors() {
      * All AVR8 targets possess 32 general purpose CPU registers. These are not described in the TDF, so we
      * construct the descriptors for them here.
      */
+    auto gpRegisterStartAddress = this->targetParameters->gpRegisterStartAddress.value_or(0);
     for (std::uint8_t i = 0; i <= 31; i++) {
         auto generalPurposeRegisterDescriptor = TargetRegisterDescriptor();
-        generalPurposeRegisterDescriptor.id = i;
-        generalPurposeRegisterDescriptor.startAddress =
-            this->targetParameters->gpRegisterStartAddress.value_or(0) + i;
+        generalPurposeRegisterDescriptor.startAddress = gpRegisterStartAddress + i;
         generalPurposeRegisterDescriptor.size = 1;
         generalPurposeRegisterDescriptor.type = TargetRegisterType::GENERAL_PURPOSE_REGISTER;
         generalPurposeRegisterDescriptor.name = "R" + std::to_string(i);

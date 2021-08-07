@@ -26,17 +26,15 @@ namespace Bloom::Targets
         std::uint32_t size = 0;
         TargetRegisterType type = TargetRegisterType::OTHER;
 
-        std::optional<std::size_t> id;
         std::optional<std::string> name = "";
         std::optional<std::string> groupName;
         std::optional<std::string> description;
 
         TargetRegisterDescriptor() = default;
         explicit TargetRegisterDescriptor(TargetRegisterType type): type(type) {};
-        TargetRegisterDescriptor(std::size_t id, TargetRegisterType type): id(id), type(type) {};
 
         bool operator == (const TargetRegisterDescriptor& other) const {
-            return this->id == other.id && this->type == other.type;
+            return this->startAddress.value_or(0) == other.startAddress.value_or(0) && this->type == other.type;
         }
     };
 
@@ -53,7 +51,6 @@ namespace Bloom::Targets
         }
     };
 
-    using TargetRegisterMap = std::map<std::size_t, TargetRegister>;
     using TargetRegisters = std::vector<TargetRegister>;
     using TargetRegisterDescriptors = std::vector<TargetRegisterDescriptor>;
 }
