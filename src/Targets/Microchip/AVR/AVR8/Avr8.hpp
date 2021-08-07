@@ -124,9 +124,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         void removeBreakpoint(std::uint32_t address) override;
         void clearAllBreakpoints() override;
 
-        TargetRegisters readGeneralPurposeRegisters(std::set<std::size_t> registerIds) override;
-        void writeRegisters(const TargetRegisters& registers) override;
-        TargetRegisters readRegisters(const TargetRegisterDescriptors& descriptors) override;
+        void writeRegisters(TargetRegisters registers) override;
+        TargetRegisters readRegisters(TargetRegisterDescriptors descriptors) override;
 
         TargetMemoryBuffer readMemory(
             TargetMemoryType memoryType,
@@ -142,11 +141,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         TargetState getState() override;
 
         std::uint32_t getProgramCounter() override;
-        TargetRegister getProgramCounterRegister() override;
+        TargetRegister getProgramCounterRegister();
         void setProgramCounter(std::uint32_t programCounter) override;
-
-        TargetRegister getStackPointerRegister() override;
-        TargetRegister getStatusRegister() override;
 
         std::map<int, TargetPinState> getPinStates(int variantId) override;
         void setPinState(

@@ -128,20 +128,6 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
         virtual std::uint32_t getProgramCounter() = 0;
 
         /**
-         * Should retrieve the current stack pointer register value from the target.
-         *
-         * @return
-         */
-        virtual Targets::TargetRegister getStackPointerRegister() = 0;
-
-        /**
-         * Should retrieve the current status register value from the target.
-         *
-         * @return
-         */
-        virtual Targets::TargetRegister getStatusRegister() = 0;
-
-        /**
          * Should update the program counter value on the target.
          *
          * @param programCounter
@@ -149,35 +135,21 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
         virtual void setProgramCounter(std::uint32_t programCounter) = 0;
 
         /**
-         * SHould update the stack pointer register value on the target.
+         * Should read the requested registers from the target.
          *
-         * @param stackPointerRegister
-         */
-        virtual void setStackPointerRegister(const Targets::TargetRegister& stackPointerRegister) = 0;
-
-        /**
-         * Should update the status register value on the target.
-         *
-         * @param statusRegister
-         */
-        virtual void setStatusRegister(const Targets::TargetRegister& statusRegister) = 0;
-
-        /**
-         * Should read the requested general purpose register from the target.
-         *
-         * @param registerIds
-         *  A set of register IDs: 0 -> 31
+         * @param descriptors
+         *  A collection of register descriptors, for the registers to be read.
          *
          * @return
          */
-        virtual Targets::TargetRegisters readGeneralPurposeRegisters(std::set<size_t> registerIds) = 0;
+        virtual Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors) = 0;
 
         /**
-         * Should update the value of general purpose registers.
+         * Should update the value of the given registers.
          *
          * @param registers
          */
-        virtual void writeGeneralPurposeRegisters(const Targets::TargetRegisters& registers) = 0;
+        virtual void writeRegisters(const Targets::TargetRegisters& registers) = 0;
 
         /**
          * Should read memory from the target, for the given memory type.

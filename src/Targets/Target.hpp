@@ -224,20 +224,11 @@ namespace Bloom::Targets
         virtual void clearAllBreakpoints() = 0;
 
         /**
-         * Should read general purpose register values, for the given general purpose register ids.
-         *
-         * @param registerIds
-         *
-         * @return
-         */
-        virtual TargetRegisters readGeneralPurposeRegisters(std::set<std::size_t> registerIds) = 0;
-
-        /**
          * Should update the value of the given registers.
          *
          * @param registers
          */
-        virtual void writeRegisters(const TargetRegisters& registers) = 0;
+        virtual void writeRegisters(TargetRegisters registers) = 0;
 
         /**
          * Should read register values of the registers described by the given descriptors.
@@ -246,7 +237,7 @@ namespace Bloom::Targets
          *
          * @return
          */
-        virtual TargetRegisters readRegisters(const TargetRegisterDescriptors& descriptors) = 0;
+        virtual TargetRegisters readRegisters(TargetRegisterDescriptors descriptors) = 0;
 
         /**
          * Should read memory from the target.
@@ -283,32 +274,11 @@ namespace Bloom::Targets
         virtual std::uint32_t getProgramCounter() = 0;
 
         /**
-         * Same as Target::getProgramCounter() but in the form of a TargetRegister.
-         *
-         * @return
-         */
-        virtual TargetRegister getProgramCounterRegister() = 0;
-
-        /**
          * Should update the program counter on the target.
          *
          * @param programCounter
          */
         virtual void setProgramCounter(std::uint32_t programCounter) = 0;
-
-        /**
-         * Should fetch the status register value.
-         *
-         * @return
-         */
-        virtual TargetRegister getStatusRegister() = 0;
-
-        /**
-         * Should fetch the stack pointer register value.
-         *
-         * @return
-         */
-        virtual TargetRegister getStackPointerRegister() = 0;
 
         /**
          * Should get the current pin states for each pin on the target, mapped by pin number

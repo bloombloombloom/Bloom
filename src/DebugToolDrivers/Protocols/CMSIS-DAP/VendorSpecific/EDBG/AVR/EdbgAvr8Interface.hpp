@@ -433,6 +433,20 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         void waitForStoppedEvent();
 
+        /**
+         * Reads the requested general purpose registers.
+         *
+         * When reading numerous GP registers, this function should be used as it reads all 32 registers in a single
+         * call and then returns what's needed. This is much faster than reading each individual GP register.
+         *
+         * readRegisters() will use this when there are numerous GP registers to read.
+         *
+         * @param descriptors
+         *  A collection of GP register descriptors to read. *Do not include non GP register descriptors.*
+         * @return
+         */
+        Targets::TargetRegisters readGeneralPurposeRegisters(const Targets::TargetRegisterDescriptors& descriptors);
+
     public:
         explicit EdbgAvr8Interface(EdbgInterface& edbgInterface)
         : edbgInterface(edbgInterface) {};
@@ -523,34 +537,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         std::uint32_t getProgramCounter() override;
 
         /**
-         * Reads the stack pointer register from the target.
-         *
-         * @return
-         */
-        Targets::TargetRegister getStackPointerRegister() override;
-
-        /**
-         * Reads the status register from the target.
-         *
-         * @return
-         */
-        Targets::TargetRegister getStatusRegister() override;
-
-        /**
-         * Updates the stack pointer register on ther target.
-         *
-         * @param stackPointerRegister
-         */
-        void setStackPointerRegister(const Targets::TargetRegister& stackPointerRegister) override;
-
-        /**
-         * Updates the status register on the target.
-         *
-         * @param statusRegister
-         */
-        void setStatusRegister(const Targets::TargetRegister& statusRegister) override;
-
-        /**
          * Issues the "PC Write" command to the debug tool, setting the program counter on the target.
          *
          * @param programCounter
@@ -592,19 +578,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         void clearAllBreakpoints() override;
 
         /**
-         * Reads gernal purpose registers from the target.
+         * Reads registers from the target.
          *
-         * @param registerIds
+         * @param descriptors
          * @return
          */
-        Targets::TargetRegisters readGeneralPurposeRegisters(std::set<std::size_t> registerIds) override;
+        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors) override;
 
         /**
-         * Writes general purpose registers to target.
+         * Writes registers to target.
          *
          * @param registers
          */
-        void writeGeneralPurposeRegisters(const Targets::TargetRegisters& registers) override;
+        void writeRegisters(const Targets::TargetRegisters& registers) override;
 
         /**
          * This is an overloaded method.

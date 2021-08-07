@@ -43,6 +43,7 @@ using Bloom::Targets::TargetMemoryType;
 using Bloom::Targets::TargetMemoryBuffer;
 using Bloom::Targets::TargetRegister;
 using Bloom::Targets::TargetRegisterDescriptor;
+using Bloom::Targets::TargetRegisterDescriptors;
 using Bloom::Targets::TargetRegisterType;
 using Bloom::Targets::TargetRegisters;
 
@@ -714,6 +715,37 @@ void EdbgAvr8Interface::detach() {
     this->targetAttached = false;
 }
 
+TargetRegisters EdbgAvr8Interface::readGeneralPurposeRegisters(const TargetRegisterDescriptors& descriptors) {
+    auto output = TargetRegisters();
+
+    auto gpRegisterStartAddress = this->targetParameters.gpRegisterStartAddress.value_or(0x00);
+    auto registers = this->readMemory(
+        this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
+        ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
+        gpRegisterStartAddress,
+        this->targetParameters.gpRegisterSize.value_or(32)
+    );
+
+    for (const auto& descriptor : descriptors) {
+        assert(descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER);
+
+        /*
+         * All 32 single-byte AVR8 GP registers will be sorted from R0 to R31, so registers[0] == R0,
+         * registers[5] == R5, registers[31] == R31, etc.
+         *
+         * We use the register address to calculate the index.
+         */
+        auto registerIndex = static_cast<std::uint8_t>(descriptor.startAddress.value() - gpRegisterStartAddress);
+        if (registerIndex > (registers.size() - 1)) {
+            throw Exception("Invalid register index deduced from register start address");
+        }
+
+        output.emplace_back(TargetRegister(descriptor,{registers[registerIndex]}));
+    }
+
+    return output;
+}
+
 void EdbgAvr8Interface::activate() {
     if (!this->physicalInterfaceActivated) {
         this->activatePhysical();
@@ -788,7 +820,7 @@ void EdbgAvr8Interface::waitForStoppedEvent() {
     auto breakEvent = this->waitForAvrEvent<BreakEvent>();
 
     if (breakEvent == nullptr) {
-        throw Exception("Failed to receive break event for AVR8 target.");
+        throw Exception("Failed to receive break event for AVR8 target");
     }
 
     this->targetState = TargetState::STOPPED;
@@ -840,71 +872,6 @@ std::uint32_t EdbgAvr8Interface::getProgramCounter() {
     }
 
     return response.extractProgramCounter();
-}
-
-TargetRegister EdbgAvr8Interface::getStackPointerRegister() {
-    auto stackPointerValue = this->readMemory(
-        Avr8MemoryType::SRAM,
-        this->targetParameters.stackPointerRegisterLowAddress.value(),
-        this->targetParameters.stackPointerRegisterSize.value()
-    );
-
-    /*
-     * The SP low byte comes before the high byte, so the SP is stored in LSB form. We use std::reverse() here to
-     * convert it to MSB.
-     */
-    std::reverse(stackPointerValue.begin(), stackPointerValue.end());
-
-    return TargetRegister(TargetRegisterDescriptor(TargetRegisterType::STACK_POINTER), stackPointerValue);
-}
-
-TargetRegister EdbgAvr8Interface::getStatusRegister() {
-    return TargetRegister(TargetRegisterDescriptor(TargetRegisterType::STATUS_REGISTER), this->readMemory(
-        Avr8MemoryType::SRAM,
-        this->targetParameters.statusRegisterStartAddress.value(),
-        this->targetParameters.statusRegisterSize.value()
-    ));
-}
-
-void EdbgAvr8Interface::setStackPointerRegister(const TargetRegister& stackPointerRegister) {
-    auto maximumStackPointerRegisterSize = this->targetParameters.stackPointerRegisterSize.value();
-    auto registerValue = stackPointerRegister.value;
-
-    if (registerValue.size() > maximumStackPointerRegisterSize) {
-        throw Exception("Provided stack pointer register value exceeds maximum size.");
-
-    } else if (registerValue.size() < maximumStackPointerRegisterSize) {
-        // Fill the missing most-significant bytes with 0x00
-        registerValue.insert(registerValue.begin(), maximumStackPointerRegisterSize - registerValue.size(), 0x00);
-    }
-
-    // Convert SP to LSB
-    std::reverse(registerValue.begin(), registerValue.end());
-
-    this->writeMemory(
-        Avr8MemoryType::SRAM,
-        this->targetParameters.stackPointerRegisterLowAddress.value(),
-        registerValue
-    );
-}
-
-void EdbgAvr8Interface::setStatusRegister(const TargetRegister& statusRegister) {
-    auto maximumStatusRegisterSize = this->targetParameters.statusRegisterSize.value();
-    auto registerValue = statusRegister.value;
-
-    if (registerValue.size() > maximumStatusRegisterSize) {
-        throw Exception("Provided status register value exceeds maximum size.");
-
-    } else if (registerValue.size() < maximumStatusRegisterSize) {
-        // Fill the missing most-significant bytes with 0x00
-        registerValue.insert(registerValue.begin(), maximumStatusRegisterSize - registerValue.size(), 0x00);
-    }
-
-    this->writeMemory(
-        Avr8MemoryType::SRAM,
-        this->targetParameters.statusRegisterStartAddress.value(),
-        registerValue
-    );
 }
 
 void EdbgAvr8Interface::setProgramCounter(std::uint32_t programCounter) {
@@ -1182,60 +1149,87 @@ void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, 
     }
 }
 
-TargetRegisters EdbgAvr8Interface::readGeneralPurposeRegisters(std::set<std::size_t> registerIds) {
-    auto output = TargetRegisters();
-
-    auto registers = this->readMemory(
-        this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
-                ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
-        this->targetParameters.gpRegisterStartAddress.value_or(0x00),
-        this->targetParameters.gpRegisterSize.value_or(32)
+TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors& descriptors) {
+    auto gpRegisterDescriptors = TargetRegisterDescriptors();
+    std::copy_if(
+        descriptors.begin(),
+        descriptors.end(),
+        std::back_inserter(gpRegisterDescriptors),
+        [](const TargetRegisterDescriptor& descriptor) {
+            return descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER;
+        }
     );
 
-    for (std::size_t registerIndex = 0; registerIndex < registers.size(); registerIndex++) {
-        if (!registerIds.empty() && registerIds.find(registerIndex) == registerIds.end()) {
+    /*
+     * If there is more than one GP register to load, we load them via this->readGeneralPurposeRegisters(), in order
+     * to avoid issuing a read call for each GP register.
+     */
+    auto loadGpRegistersSeparately = gpRegisterDescriptors.size() > 1;
+    auto output = loadGpRegistersSeparately ?
+        this->readGeneralPurposeRegisters(gpRegisterDescriptors) : TargetRegisters();
+
+    for (const auto& descriptor : descriptors) {
+        if (loadGpRegistersSeparately && descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER) {
             continue;
         }
 
-        output.push_back(
-            TargetRegister(
-                {registerIndex, TargetRegisterType::GENERAL_PURPOSE_REGISTER},
-                {registers[registerIndex]}
-            )
+        auto registerValue = this->readMemory(
+            (descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER && (
+                    this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
+                )
+            ) ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
+            descriptor.startAddress.value(),
+            descriptor.size
         );
+
+        if (registerValue.size() > 1) {
+            // AVR8 registers are stored in LSB form - TargetRegister values should always be MSB
+            std::reverse(registerValue.begin(), registerValue.end());
+        }
+
+        output.emplace_back(TargetRegister(
+            descriptor,
+            registerValue
+        ));
     }
 
     return output;
 }
 
-void EdbgAvr8Interface::writeGeneralPurposeRegisters(const TargetRegisters& registers) {
-    auto gpRegisterSize = this->targetParameters.gpRegisterSize.value_or(32);
-    auto gpStartAddress = this->targetParameters.gpRegisterStartAddress.value_or(0x00);
+void EdbgAvr8Interface::writeRegisters(const Targets::TargetRegisters& registers) {
+    for (const auto& reg : registers) {
+        const auto& registerDescriptor = reg.descriptor;
+        auto registerValue = reg.value;
 
-    for (const auto& gpRegister : registers) {
-        auto descriptor = gpRegister.descriptor;
-        if (gpRegister.descriptor.type != TargetRegisterType::GENERAL_PURPOSE_REGISTER) {
-            // We are only to update GP registers here
-            throw Exception("Cannot write non GP register");
+        if (registerValue.empty()) {
+            throw Exception("Cannot write empty register value");
         }
 
-        if (!descriptor.id.has_value()) {
-            throw Exception("Missing GP register ID");
+        if (registerValue.size() > registerDescriptor.size) {
+            throw Exception("Register value exceeds size specified by register descriptor.");
 
-        } else if ((descriptor.id.value() + 1) > gpRegisterSize || (descriptor.id.value() + 1) < 0) {
-            throw Exception("Invalid GP register ID: " + std::to_string(descriptor.id.value()));
+        } else if (registerValue.size() < registerDescriptor.size) {
+            // Fill the missing most-significant bytes with 0x00
+            registerValue.insert(registerValue.begin(), registerDescriptor.size - registerValue.size(), 0x00);
         }
 
-        if (gpRegister.value.size() != 1) {
-            throw Exception("Invalid GP register value size");
+        if (registerValue.size() > 1) {
+            // AVR8 registers are stored in LSB
+            std::reverse(registerValue.begin(), registerValue.end());
+        }
+
+        auto memoryType = Avr8MemoryType::SRAM;
+        if (registerDescriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER
+            && (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI)
+        ) {
+            memoryType = Avr8MemoryType::REGISTER_FILE;
         }
 
         // TODO: This can be inefficient when updating many registers, maybe do something a little smarter here.
         this->writeMemory(
-            this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
-                    ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
-            static_cast<std::uint32_t>(gpStartAddress + descriptor.id.value()),
-            gpRegister.value
+            memoryType,
+            registerDescriptor.startAddress.value(),
+            registerValue
         );
     }
 }

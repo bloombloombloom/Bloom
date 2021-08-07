@@ -267,20 +267,10 @@ void Avr8::clearAllBreakpoints() {
     this->avr8Interface->clearAllBreakpoints();
 }
 
-TargetRegisters Avr8::readGeneralPurposeRegisters(std::set<std::size_t> registerIds) {
-    return this->avr8Interface->readGeneralPurposeRegisters(registerIds);
-}
-
-void Avr8::writeRegisters(const TargetRegisters& registers) {
-    TargetRegisters gpRegisters;
-
-    for (const auto& targetRegister : registers) {
-        if (targetRegister.descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER
-            && targetRegister.descriptor.id.has_value()) {
-            gpRegisters.push_back(targetRegister);
-
-        } else if (targetRegister.descriptor.type == TargetRegisterType::PROGRAM_COUNTER) {
-            auto programCounterBytes = targetRegister.value;
+void Avr8::writeRegisters(TargetRegisters registers) {
+    for (auto registerIt = registers.begin(); registerIt != registers.end();) {
+        if (registerIt->descriptor.type == TargetRegisterType::PROGRAM_COUNTER) {
+            auto programCounterBytes = registerIt->value;
 
             if (programCounterBytes.size() < 4) {
                 // All PC register values should be at least 4 bytes in size
@@ -294,41 +284,37 @@ void Avr8::writeRegisters(const TargetRegisters& registers) {
                 | programCounterBytes[3]
             ));
 
-        } else if (targetRegister.descriptor.type == TargetRegisterType::STATUS_REGISTER) {
-            this->avr8Interface->setStatusRegister(targetRegister);
+            registerIt = registers.erase(registerIt);
 
-        } else if (targetRegister.descriptor.type == TargetRegisterType::STACK_POINTER) {
-            this->avr8Interface->setStackPointerRegister(targetRegister);
+        } else {
+            registerIt++;
         }
     }
 
-    if (!gpRegisters.empty()) {
-        this->avr8Interface->writeGeneralPurposeRegisters(gpRegisters);
+    if (!registers.empty()) {
+        this->avr8Interface->writeRegisters(registers);
     }
 }
 
-TargetRegisters Avr8::readRegisters(const TargetRegisterDescriptors& descriptors) {
+TargetRegisters Avr8::readRegisters(TargetRegisterDescriptors descriptors) {
     TargetRegisters registers;
-    std::set<std::size_t> gpRegisterIds;
 
-    for (const auto& descriptor : descriptors) {
-        if (descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER && descriptor.id.has_value()) {
-            gpRegisterIds.insert(descriptor.id.value());
+    for (auto registerDescriptorIt = descriptors.begin(); registerDescriptorIt != descriptors.end();) {
+        auto& descriptor = *registerDescriptorIt;
 
-        } else if (descriptor.type == TargetRegisterType::PROGRAM_COUNTER) {
+        if (descriptor.type == TargetRegisterType::PROGRAM_COUNTER) {
             registers.push_back(this->getProgramCounterRegister());
 
-        } else if (descriptor.type == TargetRegisterType::STATUS_REGISTER) {
-            registers.push_back(this->getStatusRegister());
+            registerDescriptorIt = descriptors.erase(registerDescriptorIt);
 
-        } else if (descriptor.type == TargetRegisterType::STACK_POINTER) {
-            registers.push_back(this->getStackPointerRegister());
+        } else {
+            registerDescriptorIt++;
         }
     }
 
-    if (!gpRegisterIds.empty()) {
-        auto gpRegisters = this->readGeneralPurposeRegisters(gpRegisterIds);
-        registers.insert(registers.end(), gpRegisters.begin(), gpRegisters.end());
+    if (!descriptors.empty()) {
+        auto otherRegisters = this->avr8Interface->readRegisters(descriptors);
+        registers.insert(registers.end(), otherRegisters.begin(), otherRegisters.end());
     }
 
     return registers;
@@ -359,14 +345,6 @@ TargetRegister Avr8::getProgramCounterRegister() {
         static_cast<unsigned char>(programCounter >> 8),
         static_cast<unsigned char>(programCounter),
     });
-}
-
-TargetRegister Avr8::getStackPointerRegister() {
-    return this->avr8Interface->getStackPointerRegister();
-}
-
-TargetRegister Avr8::getStatusRegister() {
-    return this->avr8Interface->getStatusRegister();
 }
 
 void Avr8::setProgramCounter(std::uint32_t programCounter) {
