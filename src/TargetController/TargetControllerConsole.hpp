@@ -75,14 +75,14 @@ namespace Bloom
          *
          * @return
          */
-        Targets::TargetRegisters readGeneralRegisters(Targets::TargetRegisterDescriptors descriptors);
+        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors);
 
         /**
          * Requests the TargetController to write register values to the target.
          *
          * @param registers
          */
-        void writeGeneralRegisters(Targets::TargetRegisters registers);
+        void writeRegisters(const Targets::TargetRegisters& registers);
 
         /**
          * Requests the TargetController to read memory from the target.

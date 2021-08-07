@@ -1,11 +1,11 @@
-#include "WriteGeneralRegister.hpp"
+#include "WriteRegister.hpp"
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 using namespace Bloom::Exceptions;
 
-void WriteGeneralRegister::init() {
+void WriteRegister::init() {
     // The P packet updates a single register
     auto packet = std::string(this->data.begin(), this->data.end());
 
@@ -23,6 +23,6 @@ void WriteGeneralRegister::init() {
     std::reverse(this->registerValue.begin(), this->registerValue.end());
 }
 
-void WriteGeneralRegister::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
+void WriteRegister::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
     gdbRspDebugServer.handleGdbPacket(*this);
 }

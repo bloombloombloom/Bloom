@@ -8,10 +8,10 @@
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
     /**
-     * The WriteGeneralRegisters class implements the structure for "P" packets. Upon receiving this packet,
+     * The WriteRegisters class implements the structure for "P" packets. Upon receiving this packet,
      * server is expected to update a register value to the target.
      */
-    class WriteGeneralRegister: public CommandPacket
+    class WriteRegister: public CommandPacket
     {
     private:
         void init();
@@ -20,7 +20,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         int registerNumber = 0;
         std::vector<unsigned char> registerValue;
 
-        explicit WriteGeneralRegister(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
+        explicit WriteRegister(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             init();
         };
 

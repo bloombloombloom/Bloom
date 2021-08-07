@@ -140,10 +140,10 @@ namespace Bloom::DebugServers::Gdb
          *
          * @return
          */
-        virtual BiMap<
+        virtual const BiMap<
             GdbRegisterNumber,
             Targets::TargetRegisterDescriptor
-        > getRegisterNumberToDescriptorMapping() = 0;
+        >& getRegisterNumberToDescriptorMapping() = 0;
 
         /**
          * Obtains the appropriate register descriptor from a register number.
@@ -197,14 +197,14 @@ namespace Bloom::DebugServers::Gdb
          *
          * @param packet
          */
-        virtual void handleGdbPacket(CommandPackets::ReadGeneralRegisters& packet);
+        virtual void handleGdbPacket(CommandPackets::ReadRegisters& packet);
 
         /**
          * Handles the write general register ("P") command packet.
          *
          * @param packet
          */
-        virtual void handleGdbPacket(CommandPackets::WriteGeneralRegister& packet);
+        virtual void handleGdbPacket(CommandPackets::WriteRegister& packet);
 
         /**
          * Handles the continue execution ("c") command packet.

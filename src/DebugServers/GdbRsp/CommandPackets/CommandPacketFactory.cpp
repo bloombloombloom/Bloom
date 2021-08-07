@@ -24,10 +24,10 @@ std::unique_ptr<CommandPacket> CommandPacketFactory::create(std::vector<unsigned
             return std::make_unique<CommandPackets::SupportedFeaturesQuery>(rawPacket);
 
         } else if (rawPacketString[1] == 'g' || rawPacketString[1] == 'p') {
-            return std::make_unique<CommandPackets::ReadGeneralRegisters>(rawPacket);
+            return std::make_unique<CommandPackets::ReadRegisters>(rawPacket);
 
         } else if (rawPacketString[1] == 'P') {
-            return std::make_unique<CommandPackets::WriteGeneralRegister>(rawPacket);
+            return std::make_unique<CommandPackets::WriteRegister>(rawPacket);
 
         } else if (rawPacketString[1] == 'c') {
             return std::make_unique<CommandPackets::ContinueExecution>(rawPacket);

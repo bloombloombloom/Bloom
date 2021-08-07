@@ -54,19 +54,20 @@ void GdbRspDebugServer::init() {
     }
 
     if (::setsockopt(
-        socketFileDescriptor,
-        SOL_SOCKET,
-        SO_REUSEADDR,
-       &this->enableReuseAddressSocketOption,
-        sizeof(this->enableReuseAddressSocketOption)) < 0
+            socketFileDescriptor,
+            SOL_SOCKET,
+            SO_REUSEADDR,
+            &(this->enableReuseAddressSocketOption),
+            sizeof(this->enableReuseAddressSocketOption)
+        ) < 0
     ) {
         Logger::error("Failed to set socket SO_REUSEADDR option.");
     }
 
     if (::bind(
-        socketFileDescriptor,
-        reinterpret_cast<const sockaddr*>(&(this->socketAddress)),
-        sizeof(this->socketAddress)
+            socketFileDescriptor,
+            reinterpret_cast<const sockaddr*>(&(this->socketAddress)),
+            sizeof(this->socketAddress)
         ) < 0
     ) {
         throw Exception("Failed to bind address. The selected port number ("
@@ -258,11 +259,12 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::SupportedFeaturesQuery& 
     this->clientConnection->writePacket(response);
 }
 
-void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadGeneralRegisters& packet) {
-    Logger::debug("Handling ReadGeneralRegisters packet");
+void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadRegisters& packet) {
+    Logger::debug("Handling ReadRegisters packet");
 
     try {
         auto descriptors = TargetRegisterDescriptors();
+        auto registerNumberToDescriptorMapping = this->getRegisterNumberToDescriptorMapping();
 
         if (packet.registerNumber.has_value()) {
             Logger::debug("Reading register number: " + std::to_string(packet.registerNumber.value()));
@@ -270,14 +272,12 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadGeneralRegisters& pa
 
         } else {
             // Read all descriptors
-            auto descriptorMapping = this->getRegisterNumberToDescriptorMapping();
-            for (auto& descriptor : descriptorMapping.getMap()) {
+            for (auto& descriptor : registerNumberToDescriptorMapping.getMap()) {
                 descriptors.push_back(descriptor.second);
             }
         }
 
-        auto registerSet = this->targetControllerConsole.readGeneralRegisters(descriptors);
-        auto registerNumberToDescriptorMapping = this->getRegisterNumberToDescriptorMapping();
+        auto registerSet = this->targetControllerConsole.readRegisters(descriptors);
 
         /*
          * Remove any registers that are not mapped to GDB register numbers (as we won't know where to place
@@ -332,14 +332,14 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadGeneralRegisters& pa
     }
 }
 
-void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteGeneralRegister& packet) {
-    Logger::debug("Handling WriteGeneralRegisters packet");
+void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteRegister& packet) {
+    Logger::debug("Handling WriteRegister packet");
 
     try {
         auto registerDescriptor = this->getRegisterDescriptorFromNumber(packet.registerNumber);
-        this->targetControllerConsole.writeGeneralRegisters({
-            TargetRegister(registerDescriptor, packet.registerValue)
-        });
+        this->targetControllerConsole.writeRegisters({
+                                                         TargetRegister(registerDescriptor, packet.registerValue)
+                                                     });
         this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
 
     } catch (const Exception& exception) {

@@ -10,20 +10,20 @@ using namespace Bloom::Events;
 using namespace Bloom::Exceptions;
 
 TargetControllerState TargetControllerConsole::getTargetControllerState() {
-    auto getStateEvent = std::make_shared<Events::ReportTargetControllerState>();
+    auto getStateEvent = std::make_shared<ReportTargetControllerState>();
     this->eventManager.triggerEvent(getStateEvent);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::TargetControllerStateReported,
-        Events::TargetControllerErrorOccurred
+        TargetControllerStateReported,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, getStateEvent->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::TargetControllerStateReported>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<TargetControllerStateReported>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 
-    auto stateReportedEvent = std::get<SharedEventPointer<Events::TargetControllerStateReported>>(responseEvent.value());
+    auto stateReportedEvent = std::get<SharedEventPointer<TargetControllerStateReported>>(responseEvent.value());
     return stateReportedEvent->state;
 }
 
@@ -37,41 +37,41 @@ bool TargetControllerConsole::isTargetControllerInService() noexcept {
 }
 
 Targets::TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
-    auto extractEvent = std::make_shared<Events::ExtractTargetDescriptor>();
+    auto extractEvent = std::make_shared<ExtractTargetDescriptor>();
     this->eventManager.triggerEvent(extractEvent);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::TargetDescriptorExtracted,
-        Events::TargetControllerErrorOccurred
+        TargetDescriptorExtracted,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, extractEvent->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::TargetDescriptorExtracted>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<TargetDescriptorExtracted>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 
-    auto descriptorExtracted = std::get<SharedEventPointer<Events::TargetDescriptorExtracted>>(responseEvent.value());
+    auto descriptorExtracted = std::get<SharedEventPointer<TargetDescriptorExtracted>>(responseEvent.value());
     return descriptorExtracted->targetDescriptor;
 }
 
 void TargetControllerConsole::stopTargetExecution() {
-    auto stopTargetEvent = std::make_shared<Events::StopTargetExecution>();
+    auto stopTargetEvent = std::make_shared<StopTargetExecution>();
     this->eventManager.triggerEvent(stopTargetEvent);
 
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::TargetExecutionStopped,
-        Events::TargetControllerErrorOccurred
+        TargetExecutionStopped,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, stopTargetEvent->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::TargetExecutionStopped>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<TargetExecutionStopped>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 }
 
 void TargetControllerConsole::continueTargetExecution(std::optional<std::uint32_t> fromAddress) {
-    auto resumeExecutionEvent = std::make_shared<Events::ResumeTargetExecution>();
+    auto resumeExecutionEvent = std::make_shared<ResumeTargetExecution>();
 
     if (fromAddress.has_value()) {
         resumeExecutionEvent->fromProgramCounter = fromAddress.value();
@@ -79,19 +79,19 @@ void TargetControllerConsole::continueTargetExecution(std::optional<std::uint32_
 
     this->eventManager.triggerEvent(resumeExecutionEvent);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::TargetExecutionResumed,
-        Events::TargetControllerErrorOccurred
+        TargetExecutionResumed,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, resumeExecutionEvent->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::TargetExecutionResumed>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<TargetExecutionResumed>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 }
 
 void TargetControllerConsole::stepTargetExecution(std::optional<std::uint32_t> fromAddress) {
-    auto stepExecutionEvent = std::make_shared<Events::StepTargetExecution>();
+    auto stepExecutionEvent = std::make_shared<StepTargetExecution>();
 
     if (fromAddress.has_value()) {
         stepExecutionEvent->fromProgramCounter = fromAddress.value();
@@ -99,51 +99,51 @@ void TargetControllerConsole::stepTargetExecution(std::optional<std::uint32_t> f
 
     this->eventManager.triggerEvent(stepExecutionEvent);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::TargetExecutionResumed,
-        Events::TargetControllerErrorOccurred
+        TargetExecutionResumed,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, stepExecutionEvent->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::TargetExecutionResumed>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<TargetExecutionResumed>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 }
 
-TargetRegisters TargetControllerConsole::readGeneralRegisters(TargetRegisterDescriptors descriptors) {
-    auto readRegistersEvent = std::make_shared<Events::RetrieveRegistersFromTarget>();
+TargetRegisters TargetControllerConsole::readRegisters(const TargetRegisterDescriptors& descriptors) {
+    auto readRegistersEvent = std::make_shared<RetrieveRegistersFromTarget>();
     readRegistersEvent->descriptors = descriptors;
 
     this->eventManager.triggerEvent(readRegistersEvent);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::RegistersRetrievedFromTarget,
-        Events::TargetControllerErrorOccurred
+        RegistersRetrievedFromTarget,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, readRegistersEvent->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::RegistersRetrievedFromTarget>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<RegistersRetrievedFromTarget>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 
-    auto retrievedRegistersEvent = std::get<SharedEventPointer<Events::RegistersRetrievedFromTarget>>(
+    auto retrievedRegistersEvent = std::get<SharedEventPointer<RegistersRetrievedFromTarget>>(
         responseEvent.value()
     );
     return retrievedRegistersEvent->registers;
 }
 
-void TargetControllerConsole::writeGeneralRegisters(TargetRegisters registers) {
-    auto event = std::make_shared<Events::WriteRegistersToTarget>();
-    event->registers = registers;
+void TargetControllerConsole::writeRegisters(const TargetRegisters& registers) {
+    auto event = std::make_shared<WriteRegistersToTarget>();
+    event->registers = std::move(registers);
 
     this->eventManager.triggerEvent(event);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::RegistersWrittenToTarget,
-        Events::TargetControllerErrorOccurred
+        RegistersWrittenToTarget,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, event->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::RegistersWrittenToTarget>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<RegistersWrittenToTarget>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
@@ -154,24 +154,24 @@ TargetMemoryBuffer TargetControllerConsole::readMemory(
     std::uint32_t startAddress,
     std::uint32_t bytes
 ) {
-    auto readMemoryEvent = std::make_shared<Events::RetrieveMemoryFromTarget>();
+    auto readMemoryEvent = std::make_shared<RetrieveMemoryFromTarget>();
     readMemoryEvent->memoryType = memoryType;
     readMemoryEvent->startAddress = startAddress;
     readMemoryEvent->bytes = bytes;
 
     this->eventManager.triggerEvent(readMemoryEvent);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::MemoryRetrievedFromTarget,
-        Events::TargetControllerErrorOccurred
+        MemoryRetrievedFromTarget,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, readMemoryEvent->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::MemoryRetrievedFromTarget>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<MemoryRetrievedFromTarget>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 
-    auto retrievedRegistersEvent = std::get<SharedEventPointer<Events::MemoryRetrievedFromTarget>>(
+    auto retrievedRegistersEvent = std::get<SharedEventPointer<MemoryRetrievedFromTarget>>(
         responseEvent.value()
     );
     return retrievedRegistersEvent->data;
@@ -182,67 +182,67 @@ void TargetControllerConsole::writeMemory(
     std::uint32_t startAddress,
     const TargetMemoryBuffer& buffer
 ) {
-    auto writeMemoryEvent = std::make_shared<Events::WriteMemoryToTarget>();
+    auto writeMemoryEvent = std::make_shared<WriteMemoryToTarget>();
     writeMemoryEvent->memoryType = memoryType;
     writeMemoryEvent->startAddress = startAddress;
     writeMemoryEvent->buffer = buffer;
 
     this->eventManager.triggerEvent(writeMemoryEvent);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::MemoryWrittenToTarget,
-        Events::TargetControllerErrorOccurred
+        MemoryWrittenToTarget,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, writeMemoryEvent->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::MemoryWrittenToTarget>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<MemoryWrittenToTarget>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 }
 
 void TargetControllerConsole::setBreakpoint(TargetBreakpoint breakpoint) {
-    auto event = std::make_shared<Events::SetBreakpointOnTarget>();
+    auto event = std::make_shared<SetBreakpointOnTarget>();
     event->breakpoint = breakpoint;
 
     this->eventManager.triggerEvent(event);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::BreakpointSetOnTarget,
-        Events::TargetControllerErrorOccurred
+        BreakpointSetOnTarget,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, event->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::BreakpointSetOnTarget>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<BreakpointSetOnTarget>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 }
 
 void TargetControllerConsole::removeBreakpoint(TargetBreakpoint breakpoint) {
-    auto event = std::make_shared<Events::RemoveBreakpointOnTarget>();
+    auto event = std::make_shared<RemoveBreakpointOnTarget>();
     event->breakpoint = breakpoint;
 
     this->eventManager.triggerEvent(event);
     auto responseEvent = this->eventListener.waitForEvent<
-        Events::BreakpointRemovedOnTarget,
-        Events::TargetControllerErrorOccurred
+        BreakpointRemovedOnTarget,
+        TargetControllerErrorOccurred
     >(this->defaultTimeout, event->id);
 
     if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<Events::BreakpointRemovedOnTarget>>(responseEvent.value())
+        || !std::holds_alternative<SharedEventPointer<BreakpointRemovedOnTarget>>(responseEvent.value())
     ) {
         throw Exception("Unexpected response from TargetController");
     }
 }
 
 void TargetControllerConsole::requestPinStates(int variantId) {
-    auto requestEvent = std::make_shared<Events::RetrieveTargetPinStates>();
+    auto requestEvent = std::make_shared<RetrieveTargetPinStates>();
     requestEvent->variantId = variantId;
 
     this->eventManager.triggerEvent(requestEvent);
 }
 
 void TargetControllerConsole::setPinState(int variantId, TargetPinDescriptor pinDescriptor, TargetPinState pinState) {
-    auto updateEvent = std::make_shared<Events::SetTargetPinState>();
+    auto updateEvent = std::make_shared<SetTargetPinState>();
     updateEvent->variantId = variantId;
     updateEvent->pinDescriptor = std::move(pinDescriptor);
     updateEvent->pinState = pinState;

@@ -100,8 +100,8 @@ add_executable(Bloom
     src/DebugServers/GdbRsp/CommandPackets/CommandPacket.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacketFactory.cpp
     src/DebugServers/GdbRsp/CommandPackets/SupportedFeaturesQuery.cpp
-    src/DebugServers/GdbRsp/CommandPackets/ReadGeneralRegisters.cpp
-    src/DebugServers/GdbRsp/CommandPackets/WriteGeneralRegister.cpp
+    src/DebugServers/GdbRsp/CommandPackets/ReadRegisters.cpp
+    src/DebugServers/GdbRsp/CommandPackets/WriteRegister.cpp
     src/DebugServers/GdbRsp/CommandPackets/ContinueExecution.cpp
     src/DebugServers/GdbRsp/CommandPackets/StepExecution.cpp
     src/DebugServers/GdbRsp/CommandPackets/InterruptExecution.cpp

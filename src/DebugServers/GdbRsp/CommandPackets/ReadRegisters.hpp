@@ -7,11 +7,11 @@
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
     /**
-     * The ReadGeneralRegisters class implements a structure for "g" and "p" command packets. In response to these
+     * The ReadRegisters class implements a structure for "g" and "p" command packets. In response to these
      * packets, the server is expected to send register values for all registers (for "g" packets) or for a single
      * register (for "p" packets).
      */
-    class ReadGeneralRegisters: public CommandPacket
+    class ReadRegisters: public CommandPacket
     {
     private:
         void init();
@@ -26,7 +26,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          */
         std::optional<int> registerNumber;
 
-        explicit ReadGeneralRegisters(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
+        explicit ReadRegisters(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             init();
         };
 
