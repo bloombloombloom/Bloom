@@ -1,10 +1,10 @@
 * {
-    color: #c2c4c6;
+    color: #afb1b3;
     font-family: 'Ubuntu', sans-serif;
 }
 
 QMainWindow {
-    background-color: #3C3F41;
+    background-color: #343532;
 }
 
 #header {
@@ -12,8 +12,9 @@ QMainWindow {
     background-color: transparent;
     max-height: 25px;
     width: auto;
-    border-top: 1px solid #515151;
-    border-bottom: 1px solid #515151;
+    border-top: 1px solid #41423f;
+    border-top: 1px solid #41423f;
+    border-bottom: 1px solid #312d28;
 }
 
 QMenuBar::item {
@@ -31,7 +32,7 @@ QMenuBar::item {
 }
 
 QMenuBar::item:pressed {
-    background-color: #2F65CA;
+    background-color: #335883;
 }
 
 QMenuBar {
@@ -41,16 +42,16 @@ QMenuBar {
     min-height: 24px;
     background-color: transparent;
     spacing: 0;
-    color: #c2c4c6;
+    color: #afb1b3;
     font-size: 14px;
 }
 
 QMenu {
     margin: 0;
     padding: 0;
-    background-color: #3C3F41;
-    color: #c2c4c6;
-    border: 1px solid #515151;
+    background-color: #343532;
+    color: #afb1b3;
+    border: 1px solid #41423f;
     min-width: 200px;
     font-size: 14px;
 }
@@ -61,7 +62,8 @@ QMenu::item {
 }
 
 QMenu::item:selected {
-    background-color: #2F65CA;
+    background-color: #4d7bba;
+    background-color: #335883;
 }
 
 QMenu::item:disabled {
@@ -69,7 +71,7 @@ QMenu::item:disabled {
 }
 
 QMenu#help-menu::separator {
-    border-top: 1px solid #515151;
+    border-top: 1px solid #41423f;
     height: 1px;
     margin: 1px 0;
 }
@@ -115,7 +117,7 @@ QMenu#help-menu::separator {
 }
 
 #header-tool-bar QToolButton:hover {
-    background-color: #505353;
+    background-color: #454541;
     border: none;
     padding: 0;
 }
@@ -123,7 +125,7 @@ QMenu#help-menu::separator {
 QToolTip {
     background-color: #474949;
     border: 1px solid #616365;
-    color: #c2c4c6;
+    color: #afb1b3;
     padding: 1px 2px;
     font-size: 13px;
 }
@@ -135,7 +137,7 @@ QToolTip {
     padding: 0 3px 0 30px;
     max-height: 25px;
     width: auto;
-    border-top: 1px solid #515151;
+    border-top: 1px solid #41423f;
 
 }
 
@@ -147,12 +149,12 @@ QToolTip {
 
 #target-variant-menu-bar::item {
     padding: 0 10px 0 4px;
-    border-left: 1px solid #515151;
+    border-left: 1px solid #41423f;
     margin-bottom: 0;
 }
 
 #target-variant-menu-bar::item:selected {
-    background-color: #4d4e50;
+    background-color: #454541;
 }
 
 #footer QLabel {
@@ -160,7 +162,7 @@ QToolTip {
 }
 
 #target-program-counter-value {
-    border-color: #515151;
+    border-color: #41423f;
     border-style: solid;
     border-width: 0 1px 0 0;
     padding-right: 5px;

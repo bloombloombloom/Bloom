@@ -23,7 +23,7 @@ void BodyWidget::drawWidget(QPainter& painter) {
 
     // Draw target body
     auto targetBodyColor = this->getBodyColor();
-    auto backgroundColor = QColor("#3C3F41");
+    auto backgroundColor = QColor("#343532");
 
     if (!this->isEnabled()) {
         targetBodyColor.setAlpha(this->getDisableAlphaLevel());

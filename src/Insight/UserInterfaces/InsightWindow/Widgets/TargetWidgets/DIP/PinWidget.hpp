@@ -55,7 +55,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
                 this->bodyWidget->setPinState(pinState);
             }
 
-            this->setLabelColor(this->pinStateChanged ? "#6FA0FF" : "#a6a7aa");
+            this->setLabelColor(this->pinStateChanged ? "#4d7bba" : "#a6a7aa");
         }
     };
 }

@@ -12,7 +12,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
 
     private:
         // These properties can be modified via Qt style sheets (see Stylesheets/DualInlinePackage.qss)
-        QColor bodyColor = QColor("#AFB1B3");
+        QColor bodyColor = QColor("#918E86");
         int disableAlphaLevel = 100;
 
     protected:

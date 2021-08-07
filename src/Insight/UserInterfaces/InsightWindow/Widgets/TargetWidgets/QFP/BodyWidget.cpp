@@ -14,7 +14,7 @@ void BodyWidget::drawWidget(QPainter& painter) {
     painter.setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
 
     auto targetBodyColor = this->getBodyColor();
-    auto backgroundColor = QColor("#3C3F41");
+    auto backgroundColor = QColor("#343532");
 
     if (!this->isEnabled()) {
         targetBodyColor.setAlpha(this->getDisableAlphaLevel());
