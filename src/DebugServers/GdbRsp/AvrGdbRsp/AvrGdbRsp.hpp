@@ -32,6 +32,8 @@ namespace Bloom::DebugServers::Gdb
          */
         unsigned int gdbInternalMemoryMask = 0xFE0000u;
 
+        BiMap<GdbRegisterNumber, Targets::TargetRegisterDescriptor> registerNumberToDescriptorMapping = {};
+
     protected:
         /**
          * For AVR targets, avr-gdb defines 35 registers in total:
@@ -45,50 +47,11 @@ namespace Bloom::DebugServers::Gdb
          *
          * @return
          */
-        BiMap<GdbRegisterNumber, Targets::TargetRegisterDescriptor> getRegisterNumberToDescriptorMapping() override {
-            using Targets::TargetRegisterDescriptor;
-            using Targets::TargetRegisterType;
-
-            static BiMap<GdbRegisterNumber, TargetRegisterDescriptor> mapping = {
-                {0, TargetRegisterDescriptor(0, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {1, TargetRegisterDescriptor(1, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {2, TargetRegisterDescriptor(2, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {3, TargetRegisterDescriptor(3, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {4, TargetRegisterDescriptor(4, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {5, TargetRegisterDescriptor(5, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {6, TargetRegisterDescriptor(6, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {7, TargetRegisterDescriptor(7, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {8, TargetRegisterDescriptor(8, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {9, TargetRegisterDescriptor(9, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {10, TargetRegisterDescriptor(10, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {11, TargetRegisterDescriptor(11, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {12, TargetRegisterDescriptor(12, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {13, TargetRegisterDescriptor(13, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {14, TargetRegisterDescriptor(14, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {15, TargetRegisterDescriptor(15, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {16, TargetRegisterDescriptor(16, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {17, TargetRegisterDescriptor(17, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {18, TargetRegisterDescriptor(18, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {19, TargetRegisterDescriptor(19, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {20, TargetRegisterDescriptor(20, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {21, TargetRegisterDescriptor(21, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {22, TargetRegisterDescriptor(22, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {23, TargetRegisterDescriptor(23, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {24, TargetRegisterDescriptor(24, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {25, TargetRegisterDescriptor(25, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {26, TargetRegisterDescriptor(26, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {27, TargetRegisterDescriptor(27, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {28, TargetRegisterDescriptor(28, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {29, TargetRegisterDescriptor(29, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {30, TargetRegisterDescriptor(30, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {31, TargetRegisterDescriptor(31, TargetRegisterType::GENERAL_PURPOSE_REGISTER)},
-                {32, TargetRegisterDescriptor(TargetRegisterType::STATUS_REGISTER)},
-                {33, TargetRegisterDescriptor(TargetRegisterType::STACK_POINTER)},
-                {34, TargetRegisterDescriptor(TargetRegisterType::PROGRAM_COUNTER)},
-            };
-
-            return mapping;
+        const BiMap<GdbRegisterNumber,Targets::TargetRegisterDescriptor>& getRegisterNumberToDescriptorMapping() override {
+            return this->registerNumberToDescriptorMapping;
         };
+
+        void loadRegisterNumberToDescriptorMapping();
 
         /**
          * avr-gdb uses the most significant 15 bits in memory addresses to indicate the type of memory being
@@ -114,6 +77,8 @@ namespace Bloom::DebugServers::Gdb
         std::uint32_t removeMemoryTypeIndicatorFromGdbAddress(std::uint32_t address) override {
             return address & this->gdbInternalMemoryMask ? (address & ~(this->gdbInternalMemoryMask)) : address;
         };
+
+        void init() override;
 
     public:
         explicit AvrGdbRsp(EventManager& eventManager): GdbRspDebugServer(eventManager) {};

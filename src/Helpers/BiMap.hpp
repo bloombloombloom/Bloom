@@ -67,5 +67,13 @@ namespace Bloom
         std::unordered_map<TypeA, TypeB> getMap() {
             return this->map;
         }
+
+        void insert(const std::pair<TypeA, TypeB>& pair) {
+            auto insertResultPair = this->map.insert(pair);
+            this->flippedMap.insert(std::pair<TypeB, typename std::unordered_map<TypeA, TypeB>::iterator>(
+                pair.second,
+                insertResultPair.first
+            ));
+        }
     };
 }

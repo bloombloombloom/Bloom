@@ -10,6 +10,7 @@
 #include "src/Exceptions/DebugServerInterrupted.hpp"
 #include "src/ApplicationConfig.hpp"
 #include "src/Helpers/Thread.hpp"
+#include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
 
@@ -81,6 +82,8 @@ namespace Bloom::DebugServers
         ApplicationConfig applicationConfig;
         EnvironmentConfig environmentConfig;
         DebugServerConfig debugServerConfig;
+
+        Targets::TargetDescriptor targetDescriptor;
 
         /**
          * Called on startup of the DebugServer thread. Derived classes should implement any initialisation work here.

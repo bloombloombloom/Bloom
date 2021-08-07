@@ -38,6 +38,8 @@ void DebugServer::startup() {
         std::bind(&DebugServer::onShutdownDebugServerEvent, this, std::placeholders::_1)
     );
 
+    this->targetDescriptor = this->targetControllerConsole.getTargetDescriptor();
+
     this->init();
     this->setThreadStateAndEmitEvent(ThreadState::READY);
 }

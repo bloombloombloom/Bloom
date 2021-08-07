@@ -96,6 +96,7 @@ add_executable(Bloom
     build/resources/TargetDescriptionFiles/AVR/Mapping.json
 
     src/DebugServers/GdbRsp/GdbRspDebugServer.cpp
+    src/DebugServers/GdbRsp/AvrGdbRsp/AvrGdbRsp.cpp
     src/DebugServers/GdbRsp/Connection.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacket.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacketFactory.cpp
