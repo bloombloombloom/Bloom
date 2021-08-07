@@ -1,8 +1,13 @@
 #pragma once
 
+#include <string>
+#include <optional>
+#include <cstdint>
 #include <utility>
 #include <vector>
 #include <map>
+
+#include "TargetMemory.hpp"
 
 namespace Bloom::Targets
 {
@@ -17,14 +22,20 @@ namespace Bloom::Targets
 
     struct TargetRegisterDescriptor
     {
-        std::optional<size_t> id;
+        std::optional<std::uint32_t> startAddress;
+        std::uint32_t size = 0;
         TargetRegisterType type = TargetRegisterType::OTHER;
+
+        std::optional<std::size_t> id;
+        std::optional<std::string> name = "";
+        std::optional<std::string> groupName;
+        std::optional<std::string> description;
 
         TargetRegisterDescriptor() = default;
         explicit TargetRegisterDescriptor(TargetRegisterType type): type(type) {};
-        TargetRegisterDescriptor(size_t id, TargetRegisterType type): id(id), type(type) {};
+        TargetRegisterDescriptor(std::size_t id, TargetRegisterType type): id(id), type(type) {};
 
-        bool operator==(const TargetRegisterDescriptor& other) const {
+        bool operator == (const TargetRegisterDescriptor& other) const {
             return this->id == other.id && this->type == other.type;
         }
     };
@@ -32,22 +43,23 @@ namespace Bloom::Targets
     struct TargetRegister
     {
         TargetRegisterDescriptor descriptor;
-        std::vector<unsigned char> value;
+        TargetMemoryBuffer value;
 
         TargetRegister(TargetRegisterDescriptor descriptor, std::vector<unsigned char> value): value(std::move(value)),
-        descriptor(descriptor) {};
+        descriptor(std::move(descriptor)) {};
 
-        [[nodiscard]] size_t size() const {
+        [[nodiscard]] std::size_t size() const {
             return this->value.size();
         }
     };
 
-    using TargetRegisterMap = std::map<size_t, TargetRegister>;
+    using TargetRegisterMap = std::map<std::size_t, TargetRegister>;
     using TargetRegisters = std::vector<TargetRegister>;
     using TargetRegisterDescriptors = std::vector<TargetRegisterDescriptor>;
 }
 
-namespace std {
+namespace std
+{
     /**
      * Hashing function for TargetRegisterDescriptor type.
      *
@@ -55,10 +67,11 @@ namespace std {
      * class)
      */
     template<>
-    class hash<Bloom::Targets::TargetRegisterDescriptor> {
+    class hash<Bloom::Targets::TargetRegisterDescriptor>
+    {
     public:
-        size_t operator()(const Bloom::Targets::TargetRegisterDescriptor& descriptor) const {
-            return descriptor.id.value_or(0) + static_cast<size_t>(descriptor.type);
+        std::size_t operator()(const Bloom::Targets::TargetRegisterDescriptor& descriptor) const {
+            return descriptor.startAddress.value_or(0) + static_cast<std::size_t>(descriptor.type);
         }
     };
 }

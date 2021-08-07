@@ -169,6 +169,10 @@ RegisterGroup TargetDescriptionFile::generateRegisterGroupFromXml(const QDomElem
         throw Exception("Empty register group name");
     }
 
+    registerGroup.moduleName = xmlElement.hasAttribute("name-in-module")
+        ? xmlElement.attribute("name-in-module").toLower().toStdString()
+        : registerGroup.name;
+
     if (xmlElement.hasAttribute("offset")) {
         registerGroup.offset = xmlElement.attribute("offset").toInt(nullptr, 16);
     }
@@ -205,6 +209,10 @@ Register TargetDescriptionFile::generateRegisterFromXml(const QDomElement& xmlEl
 
     if (reg.name.empty()) {
         throw Exception("Empty register name");
+    }
+
+    if (xmlElement.hasAttribute("caption")) {
+        reg.caption = xmlElement.attribute("caption").toStdString();
     }
 
     bool conversionStatus;

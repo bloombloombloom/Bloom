@@ -55,6 +55,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
 
+        std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
+
         /**
          * Populates this->supportedDebugPhysicalInterfaces with physical interfaces defined in the TDF.
          */
@@ -69,6 +71,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * Loads all variants for the AVR8 target, from the TDF, and populates this->targetVariantsById.
          */
         void loadTargetVariants();
+
+        /**
+         * Loads all register descriptors from the TDF, and populates this->targetRegisterDescriptorsByType.
+         */
+        void loadTargetRegisterDescriptors();
 
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFlashMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRamMemorySegment() const;
@@ -116,6 +123,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @param targetParameters
          */
         virtual void loadUpdiTargetParameters(TargetParameters& targetParameters) const;
+
+        /**
+         * Extracts the register address offset, for registers from a particular module.
+         *
+         * @param moduleName
+         * @return
+         */
+        [[nodiscard]] virtual std::uint32_t getRegisterAddressOffsetByModuleName(const std::string& moduleName) const;
 
     public:
         /**
@@ -177,6 +192,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
         [[nodiscard]] const auto& getVariantsMappedById() const {
             return this->targetVariantsById;
-        };
+        }
+
+        /**
+         * Returns a mapping of all target register descriptors extracted from the TDF, by type.
+         *
+         * @return
+         */
+        [[nodiscard]] const auto& getRegisterDescriptorsMappedByType() const {
+            return this->targetRegisterDescriptorsByType;
+        }
     };
 }

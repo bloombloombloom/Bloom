@@ -39,6 +39,78 @@ void Avr8::initFromTargetDescriptionFile() {
     this->targetParameters = this->targetDescriptionFile->getTargetParameters();
     this->padDescriptorsByName = this->targetDescriptionFile->getPadDescriptorsMappedByName();
     this->targetVariantsById = this->targetDescriptionFile->getVariantsMappedById();
+
+    if (!this->targetParameters->stackPointerRegisterLowAddress.has_value()) {
+        throw Exception("Failed to load sufficient AVR8 target paramters - missting stack pointer start address");
+    }
+
+    if (!this->targetParameters->statusRegisterStartAddress.has_value()) {
+        throw Exception("Failed to load sufficient AVR8 target parameters - missting status register start address");
+    }
+
+    this->loadTargetRegisterDescriptors();
+}
+
+void Avr8::loadTargetRegisterDescriptors() {
+    this->targetRegisterDescriptorsByType = this->targetDescriptionFile->getRegisterDescriptorsMappedByType();
+
+    /*
+     * All AVR8 targets possess 32 general purpose CPU registers. These are not described in the TDF, so we
+     * construct the descriptors for them here.
+     */
+    for (std::uint8_t i = 0; i <= 31; i++) {
+        auto generalPurposeRegisterDescriptor = TargetRegisterDescriptor();
+        generalPurposeRegisterDescriptor.id = i;
+        generalPurposeRegisterDescriptor.startAddress =
+            this->targetParameters->gpRegisterStartAddress.value_or(0) + i;
+        generalPurposeRegisterDescriptor.size = 1;
+        generalPurposeRegisterDescriptor.type = TargetRegisterType::GENERAL_PURPOSE_REGISTER;
+        generalPurposeRegisterDescriptor.name = "R" + std::to_string(i);
+        generalPurposeRegisterDescriptor.groupName = "General Purpose CPU Registers";
+
+        this->targetRegisterDescriptorsByType[generalPurposeRegisterDescriptor.type].emplace_back(
+            generalPurposeRegisterDescriptor
+        );
+    }
+
+    /*
+     * The SP and SREG registers are described in the TDF, so we could just use the descriptors extracted from the
+     * TDF. The problem with that is, sometimes the SP register consists of two bytes; an SPL and an SPH. These need
+     * to be combined into one register descriptor. This is why we just use what we already have in
+     * this->targetParameters.
+     */
+    auto stackPointerRegisterDescriptor = TargetRegisterDescriptor();
+    stackPointerRegisterDescriptor.type = TargetRegisterType::STACK_POINTER;
+    stackPointerRegisterDescriptor.startAddress = this->targetParameters->stackPointerRegisterLowAddress.value();
+    stackPointerRegisterDescriptor.size = this->targetParameters->stackPointerRegisterSize.value();
+    stackPointerRegisterDescriptor.name = "SP";
+    stackPointerRegisterDescriptor.groupName = "CPU";
+    stackPointerRegisterDescriptor.description = "Stack Pointer Register";
+
+    auto statusRegisterDescriptor = TargetRegisterDescriptor();
+    statusRegisterDescriptor.type = TargetRegisterType::STATUS_REGISTER;
+    statusRegisterDescriptor.startAddress = this->targetParameters->statusRegisterStartAddress.value();
+    statusRegisterDescriptor.size = this->targetParameters->statusRegisterSize.value();
+    statusRegisterDescriptor.name = "SREG";
+    statusRegisterDescriptor.groupName = "CPU";
+    statusRegisterDescriptor.description = "Status Register";
+
+    auto programCounterRegisterDescriptor = TargetRegisterDescriptor();
+    programCounterRegisterDescriptor.type = TargetRegisterType::PROGRAM_COUNTER;
+    programCounterRegisterDescriptor.size = 4;
+    programCounterRegisterDescriptor.name = "PC";
+    programCounterRegisterDescriptor.groupName = "CPU";
+    programCounterRegisterDescriptor.description = "Program Counter";
+
+    this->targetRegisterDescriptorsByType[stackPointerRegisterDescriptor.type].emplace_back(
+        stackPointerRegisterDescriptor
+    );
+    this->targetRegisterDescriptorsByType[statusRegisterDescriptor.type].emplace_back(
+        statusRegisterDescriptor
+    );
+    this->targetRegisterDescriptorsByType[programCounterRegisterDescriptor.type].emplace_back(
+        programCounterRegisterDescriptor
+    );
 }
 
 TargetSignature Avr8::getId() {
@@ -153,6 +225,7 @@ TargetDescriptor Avr8Bit::Avr8::getDescriptor() {
     descriptor.id = this->getHumanReadableId();
     descriptor.name = this->getName();
     descriptor.ramSize = this->targetParameters.value().ramSize.value_or(0);
+    descriptor.registerDescriptorsByType = this->targetRegisterDescriptorsByType;
 
     std::transform(
         this->targetVariantsById.begin(),
