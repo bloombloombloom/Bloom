@@ -54,23 +54,29 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 endif()
 
 add_executable(Bloom
-    src/Generated/resources.cpp
-
     src/main.cpp
     src/Application.cpp
-    src/TargetController/TargetController.cpp
-    src/DebugServers/DebugServer.cpp
-    src/Insight/Insight.cpp
-    src/Insight/InsightWorker.cpp
-    src/SignalHandler/SignalHandler.cpp
 
-    src/EventManager/EventListener.cpp
-    src/EventManager/EventManager.cpp
-    src/ApplicationConfig.cpp
-    src/TargetController/TargetControllerConsole.cpp
+    # Helpers & other
     src/Logger/Logger.cpp
     src/Helpers/Paths.cpp
+    src/Generated/resources.cpp
 
+    # Project & application configuration
+    src/ApplicationConfig.cpp
+
+    # Events
+    src/EventManager/EventListener.cpp
+    src/EventManager/EventManager.cpp
+
+    # Signal handler
+    src/SignalHandler/SignalHandler.cpp
+
+    # Target controller
+    src/TargetController/TargetController.cpp
+    src/TargetController/TargetControllerConsole.cpp
+
+    # Debug tool drivers
     src/DebugToolDrivers/USB/UsbDevice.cpp
     src/DebugToolDrivers/USB/Interface.cpp
     src/DebugToolDrivers/USB/HID/HidInterface.cpp
@@ -89,12 +95,14 @@ add_executable(Bloom
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.cpp
 
+    # Targets
     src/Targets/TargetDescription/TargetDescriptionFile.cpp
     src/Targets/Microchip/AVR/AVR8/Avr8.cpp
-    src/Targets/Microchip/AVR/AVR8/Mega/Mega.cpp
     src/Targets/Microchip/AVR/AVR8/TargetDescription/TargetDescriptionFile.cpp
     build/resources/TargetDescriptionFiles/AVR/Mapping.json
 
+    # Debug servers
+    src/DebugServers/DebugServer.cpp
     src/DebugServers/GdbRsp/GdbRspDebugServer.cpp
     src/DebugServers/GdbRsp/AvrGdbRsp/AvrGdbRsp.cpp
     src/DebugServers/GdbRsp/Connection.cpp
@@ -112,8 +120,13 @@ add_executable(Bloom
     src/DebugServers/GdbRsp/CommandPackets/RemoveBreakpoint.cpp
     src/DebugServers/GdbRsp/ResponsePackets/SupportedFeaturesResponse.cpp
 
+    # Insight
+    src/Insight/Insight.cpp
+    src/Insight/InsightWorker.cpp
     src/Insight/UserInterfaces/InsightWindow/InsightWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/AboutWindow.cpp
+
+    # Target package widgets
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidget.hpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinWidget.hpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinBodyWidget.cpp
