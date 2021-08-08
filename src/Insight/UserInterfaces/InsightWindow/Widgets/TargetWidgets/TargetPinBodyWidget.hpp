@@ -33,7 +33,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
         QColor vccBodyColor = QColor("#703736");
         QColor gndBodyColor = QColor("#46484A");
         QColor outputHighBodyColor = QColor("#3B6469");
-        QColor inputHighBodyColor = QColor("#806231");
+        QColor inputHighBodyColor = QColor("#7B5F31");
 
         int disableAlphaLevel = 100;
 

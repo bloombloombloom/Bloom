@@ -43,14 +43,17 @@ QColor TargetPinBodyWidget::getBodyColor() {
         if (this->pinState.has_value()
             && this->pinState->ioState.has_value()
             && this->pinState->ioDirection.has_value()
-            && this->pinState->ioState.value() == TargetPinState::IoState::HIGH
         ) {
-            pinColor = this->pinState->ioDirection.value() == TargetPinState::IoDirection::OUTPUT ?
-                this->outputHighBodyColor : this->inputHighBodyColor;
-        }
+            const auto ioDirection = this->pinState->ioDirection.value();
 
-        if (!this->hoverActive) {
-            pinColor.setAlpha(225);
+            if (this->pinState->ioState.value() == TargetPinState::IoState::HIGH) {
+                pinColor = ioDirection == TargetPinState::IoDirection::OUTPUT ?
+                    this->outputHighBodyColor : this->inputHighBodyColor;
+            }
+
+            if (ioDirection == TargetPinState::IoDirection::OUTPUT && !this->hoverActive) {
+                pinColor.setAlpha(200);
+            }
         }
     }
 
