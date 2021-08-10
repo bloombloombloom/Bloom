@@ -14,7 +14,7 @@ QMainWindow {
     width: auto;
     border-top: 1px solid #41423f;
     border-top: 1px solid #41423f;
-    border-bottom: 1px solid #312d28;
+    border-bottom: 1px solid #2a2a2a;
 }
 
 QMenuBar::item {
