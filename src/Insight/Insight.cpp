@@ -1,7 +1,8 @@
+#include "Insight.hpp"
+
 #include <typeindex>
 #include <QTimer>
 
-#include "Insight.hpp"
 #include "InsightWorker.hpp"
 #include "src/Helpers/Paths.hpp"
 #include "src/Logger/Logger.hpp"
@@ -54,8 +55,6 @@ void Insight::startup() {
 #ifndef BLOOM_DEBUG_BUILD
     QCoreApplication::addLibraryPath(QString::fromStdString(Paths::applicationDirPath() + "/plugins"));
 #endif
-    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
-
     this->application.setQuitOnLastWindowClosed(true);
     qRegisterMetaType<Bloom::Targets::TargetDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinDescriptor>();

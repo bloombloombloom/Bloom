@@ -52,7 +52,22 @@ namespace Bloom
         void startup();
 
     public:
-        explicit Insight(EventManager& eventManager): eventManager(eventManager) {};
+        /**
+         * Insight constructor.
+         *
+         * Note: We use the comma operator in the application() initializer to set the Qt::AA_ShareOpenGLContexts
+         * attribute, as this is required by Qt before creating a QCoreApplication instance.
+         *
+         * @param eventManager
+         */
+        explicit Insight(EventManager& eventManager):
+        eventManager(eventManager),
+        application(
+            (
+                QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true),
+                QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
+            )
+        ) {};
 
         void setApplicationConfig(const ApplicationConfig& applicationConfig) {
             this->applicationConfig = applicationConfig;

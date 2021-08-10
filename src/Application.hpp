@@ -73,12 +73,19 @@ namespace Bloom
          * Insight is, effectively, a small Qt application that serves a GUI to the user. It occupies the main thread,
          * as well as a single worker thread, and possibly other threads created by Qt.
          *
+         * Insight is optional - users can disable it via their project configuration.
+         *
          * When the user closes the Insight GUI, control of the main thread is returned to Application::run(). How we
          * deal with the GUI being closed at this point depends on user configuration.
          *
          * See the Insight class for more on this.
+         *
+         * Because Insight is optional, we only construct the Insight object when we need it. We can't use
+         * std::optional here because the Insight class extends QObject, which disables the copy constructor and
+         * the assignment operator. So we use an std::unique_ptr instead, which is perfectly fine for this use case,
+         * as we want to manage the lifetime of the object here.
          */
-        Insight insight = Insight(this->eventManager);
+        std::unique_ptr<Insight> insight = nullptr;
 
         /**
          * Configuration extracted from the user's project configuration file.

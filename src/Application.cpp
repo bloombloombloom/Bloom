@@ -44,10 +44,11 @@ int Application::run(const std::vector<std::string>& arguments) {
         this->startup();
 
         if (this->insightConfig.insightEnabled) {
-            this->insight.setApplicationConfig(this->applicationConfig);
-            this->insight.setEnvironmentConfig(this->environmentConfig);
-            this->insight.setInsightConfig(this->insightConfig);
-            this->insight.run();
+            this->insight = std::make_unique<Insight>(this->eventManager);
+            this->insight->setApplicationConfig(this->applicationConfig);
+            this->insight->setEnvironmentConfig(this->environmentConfig);
+            this->insight->setInsightConfig(this->insightConfig);
+            this->insight->run();
             Logger::debug("Insight closed");
             this->shutdown();
             return EXIT_SUCCESS;
