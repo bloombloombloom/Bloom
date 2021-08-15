@@ -1,13 +1,16 @@
+#include "TargetController.hpp"
+
 #include <thread>
 #include <filesystem>
 #include <typeindex>
 
-#include "TargetController.hpp"
-#include "src/Exceptions/InvalidConfig.hpp"
-#include "src/Exceptions/TargetControllerStartupFailure.hpp"
-#include "src/Exceptions/DeviceCommunicationFailure.hpp"
 #include "src/Application.hpp"
 #include "src/Helpers/Paths.hpp"
+
+#include "src/TargetController/Exceptions/DeviceFailure.hpp"
+#include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
+#include "src/Exceptions/TargetControllerStartupFailure.hpp"
+#include "src/Exceptions/InvalidConfig.hpp"
 
 using namespace Bloom;
 using namespace Bloom::Targets;
@@ -29,17 +32,19 @@ void TargetController::run() {
 
                 this->eventListener->waitAndDispatch(60);
 
-            } catch (const DeviceCommunicationFailure& exception) {
+            } catch (const DeviceFailure& exception) {
                 /*
-                 * Upon a device communication failure, we assume Bloom has lost control of the debug tool. This could
-                 * be the result of the user disconnecting the debug tool, or issuing a soft reset.
-                 * The soft reset could have been issued via another application, without the user's knowledge.
+                 * Upon a device failure, we assume Bloom has lost control of the debug tool. This could be the result
+                 * of the user disconnecting the debug tool, or issuing a soft reset. The soft reset could have been
+                 * issued via another application, without the user's knowledge.
                  * See https://github.com/navnavnav/Bloom/issues/3 for more on that.
                  *
                  * The TC will go into a suspended state and the DebugServer should terminate any active debug
                  * session. When the user attempts to start another debug session, we will try to re-connect to the
                  * debug tool.
                  */
+                Logger::error("Device failure detected - " + exception.getMessage());
+                Logger::error("Suspending TargetController");
                 this->suspend();
             }
         }
@@ -298,7 +303,7 @@ void TargetController::acquireHardware() {
 
         if (promotedTarget == nullptr
             || std::type_index(typeid(*promotedTarget)) == std::type_index(typeid(*this->target))
-            ) {
+        ) {
             break;
         }
 
@@ -426,7 +431,7 @@ void TargetController::onStepTargetExecutionEvent(const Events::StepTargetExecut
     try {
         if (this->target->getState() != TargetState::STOPPED) {
             // We can't step the target if it's already running.
-            throw Exception("Target is already running");
+            throw TargetOperationFailure("Target is already running");
         }
 
         if (event.fromProgramCounter.has_value()) {
@@ -440,7 +445,7 @@ void TargetController::onStepTargetExecutionEvent(const Events::StepTargetExecut
         executionResumedEvent->correlationId = event.id;
         this->eventManager.triggerEvent(executionResumedEvent);
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to step execution on target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -461,7 +466,7 @@ void TargetController::onResumeTargetExecutionEvent(const Events::ResumeTargetEx
         executionResumedEvent->correlationId = event.id;
         this->eventManager.triggerEvent(executionResumedEvent);
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to resume execution on target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -478,7 +483,7 @@ void TargetController::onReadRegistersEvent(const Events::RetrieveRegistersFromT
             this->eventManager.triggerEvent(registersRetrievedEvent);
         }
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to read general registers from target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -492,7 +497,7 @@ void TargetController::onWriteRegistersEvent(const Events::WriteRegistersToTarge
         registersWrittenEvent->correlationId = event.id;
         this->eventManager.triggerEvent(registersWrittenEvent);
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to write registers to target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -506,7 +511,7 @@ void TargetController::onReadMemoryEvent(const Events::RetrieveMemoryFromTarget&
 
         this->eventManager.triggerEvent(memoryReadEvent);
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to read memory from target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -529,7 +534,7 @@ void TargetController::onWriteMemoryEvent(const Events::WriteMemoryToTarget& eve
             this->eventManager.triggerEvent(std::make_shared<Events::TargetIoPortsUpdated>());
         }
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to write memory to target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -543,7 +548,7 @@ void TargetController::onSetBreakpointEvent(const Events::SetBreakpointOnTarget&
 
         this->eventManager.triggerEvent(breakpointSetEvent);
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to set breakpoint on target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -557,7 +562,7 @@ void TargetController::onRemoveBreakpointEvent(const Events::RemoveBreakpointOnT
 
         this->eventManager.triggerEvent(breakpointRemovedEvent);
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to remove breakpoint on target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -566,7 +571,9 @@ void TargetController::onRemoveBreakpointEvent(const Events::RemoveBreakpointOnT
 void TargetController::onSetProgramCounterEvent(const Events::SetProgramCounterOnTarget& event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
-            throw Exception("Invalid target state - target must be stopped before the program counter can be updated");
+            throw TargetOperationFailure(
+                "Invalid target state - target must be stopped before the program counter can be updated"
+            );
         }
 
         this->target->setProgramCounter(event.address);
@@ -575,7 +582,7 @@ void TargetController::onSetProgramCounterEvent(const Events::SetProgramCounterO
 
         this->eventManager.triggerEvent(programCounterSetEvent);
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to set program counter on target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -597,7 +604,9 @@ void TargetController::onInsightStateChangedEvent(const Events::InsightThreadSta
 void TargetController::onRetrieveTargetPinStatesEvent(const Events::RetrieveTargetPinStates& event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
-            throw Exception("Invalid target state - target must be stopped before pin states can be retrieved");
+            throw TargetOperationFailure(
+                "Invalid target state - target must be stopped before pin states can be retrieved"
+            );
         }
 
         auto pinStatesRetrieved = std::make_shared<Events::TargetPinStatesRetrieved>();
@@ -607,7 +616,7 @@ void TargetController::onRetrieveTargetPinStatesEvent(const Events::RetrieveTarg
 
         this->eventManager.triggerEvent(pinStatesRetrieved);
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to retrieve target pin states - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
@@ -616,7 +625,9 @@ void TargetController::onRetrieveTargetPinStatesEvent(const Events::RetrieveTarg
 void TargetController::onSetPinStateEvent(const Events::SetTargetPinState& event) {
     try {
         if (this->target->getState() != TargetState::STOPPED) {
-            throw Exception("Invalid target state - target must be stopped before pin state can be set");
+            throw TargetOperationFailure(
+                "Invalid target state - target must be stopped before pin state can be set"
+            );
         }
 
         this->target->setPinState(event.variantId, event.pinDescriptor, event.pinState);
@@ -630,7 +641,7 @@ void TargetController::onSetPinStateEvent(const Events::SetTargetPinState& event
 
         this->eventManager.triggerEvent(pinStatesUpdateEvent);
 
-    } catch (const Exception& exception) {
+    } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to set target pin state for pin " + event.pinDescriptor.name + " - "
             + exception.getMessage());
         this->emitErrorEvent(event.id);

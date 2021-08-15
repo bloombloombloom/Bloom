@@ -1,9 +1,11 @@
+#include "EdbgAvr8Interface.hpp"
+
 #include <cstdint>
 #include <thread>
 #include <math.h>
 
-#include "EdbgAvr8Interface.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
+#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Exceptions/Avr8CommandFailure.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -218,59 +220,59 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
 
 void EdbgAvr8Interface::setPdiParameters() {
     if (!this->targetParameters.appSectionPdiOffset.has_value()) {
-        throw Exception("Missing required parameter: APPL_BASE_ADDR");
+        throw DeviceInitializationFailure("Missing required parameter: APPL_BASE_ADDR");
     }
 
     if (!this->targetParameters.bootSectionPdiOffset.has_value()) {
-        throw Exception("Missing required parameter: BOOT_BASE_ADDR");
+        throw DeviceInitializationFailure("Missing required parameter: BOOT_BASE_ADDR");
     }
 
     if (!this->targetParameters.bootSectionSize.has_value()) {
-        throw Exception("Missing required parameter: BOOT_BYTES");
+        throw DeviceInitializationFailure("Missing required parameter: BOOT_BYTES");
     }
 
     if (!this->targetParameters.flashSize.has_value()) {
-        throw Exception("Missing required parameter: APPLICATION_BYTES");
+        throw DeviceInitializationFailure("Missing required parameter: APPLICATION_BYTES");
     }
 
     if (!this->targetParameters.eepromPdiOffset.has_value()) {
-        throw Exception("Missing required parameter: EEPROM_BASE_ADDR");
+        throw DeviceInitializationFailure("Missing required parameter: EEPROM_BASE_ADDR");
     }
 
     if (!this->targetParameters.fuseRegistersPdiOffset.has_value()) {
-        throw Exception("Missing required parameter: FUSE_BASE_ADDR");
+        throw DeviceInitializationFailure("Missing required parameter: FUSE_BASE_ADDR");
     }
 
     if (!this->targetParameters.lockRegistersPdiOffset.has_value()) {
-        throw Exception("Missing required parameter: LOCKBIT_BASE_ADDR");
+        throw DeviceInitializationFailure("Missing required parameter: LOCKBIT_BASE_ADDR");
     }
 
     if (!this->targetParameters.userSignaturesPdiOffset.has_value()) {
-        throw Exception("Missing required parameter: USER_SIGN_BASE_ADDR");
+        throw DeviceInitializationFailure("Missing required parameter: USER_SIGN_BASE_ADDR");
     }
 
     if (!this->targetParameters.productSignaturesPdiOffset.has_value()) {
-        throw Exception("Missing required parameter: PROD_SIGN_BASE_ADDR");
+        throw DeviceInitializationFailure("Missing required parameter: PROD_SIGN_BASE_ADDR");
     }
 
     if (!this->targetParameters.ramPdiOffset.has_value()) {
-        throw Exception("Missing required parameter: DATA_BASE_ADDR");
+        throw DeviceInitializationFailure("Missing required parameter: DATA_BASE_ADDR");
     }
 
     if (!this->targetParameters.flashPageSize.has_value()) {
-        throw Exception("Missing required parameter: FLASH_PAGE_BYTES");
+        throw DeviceInitializationFailure("Missing required parameter: FLASH_PAGE_BYTES");
     }
 
     if (!this->targetParameters.eepromSize.has_value()) {
-        throw Exception("Missing required parameter: EEPROM_SIZE");
+        throw DeviceInitializationFailure("Missing required parameter: EEPROM_SIZE");
     }
 
     if (!this->targetParameters.eepromPageSize.has_value()) {
-        throw Exception("Missing required parameter: EEPROM_PAGE_SIZE");
+        throw DeviceInitializationFailure("Missing required parameter: EEPROM_PAGE_SIZE");
     }
 
     if (!this->targetParameters.nvmBaseAddress.has_value()) {
-        throw Exception("Missing required parameter: NVM_BASE");
+        throw DeviceInitializationFailure("Missing required parameter: NVM_BASE");
     }
 
     Logger::debug("Setting APPL_BASE_ADDR AVR8 parameter");
@@ -360,7 +362,7 @@ void EdbgAvr8Interface::setPdiParameters() {
 
 void EdbgAvr8Interface::setUpdiParameters() {
     if (!this->targetParameters.signatureSegmentStartAddress.has_value()) {
-        throw Exception("Missing required parameter: SIGNATURE BASE ADDRESS");
+        throw DeviceInitializationFailure("Missing required parameter: SIGNATURE BASE ADDRESS");
     }
 
     if (this->targetParameters.programMemoryUpdiStartAddress.has_value()) {
@@ -537,28 +539,29 @@ void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& con
     this->targetParameters = config;
 
     if (!config.stackPointerRegisterLowAddress.has_value()) {
-        throw Exception("Failed to find stack pointer register start address");
+        throw DeviceInitializationFailure("Failed to find stack pointer register start address");
     }
 
     if (!config.stackPointerRegisterSize.has_value()) {
-        throw Exception("Failed to find stack pointer register size");
+        throw DeviceInitializationFailure("Failed to find stack pointer register size");
     }
 
     if (!config.statusRegisterStartAddress.has_value()) {
-        throw Exception("Failed to find status register start address");
+        throw DeviceInitializationFailure("Failed to find status register start address");
     }
 
     if (!config.statusRegisterSize.has_value()) {
-        throw Exception("Failed to find status register size");
+        throw DeviceInitializationFailure("Failed to find status register size");
     }
 
     if (this->configVariant == Avr8ConfigVariant::NONE) {
         auto configVariant = this->resolveConfigVariant();
 
         if (!configVariant.has_value()) {
-            throw Exception("Failed to resolve config variant for the selected "
+            throw DeviceInitializationFailure("Failed to resolve config variant for the selected "
                 "physical interface and AVR8 family. The selected physical interface is not known to be supported "
-                "by the AVR8 family.");
+                "by the AVR8 family."
+            );
         }
 
         this->configVariant = configVariant.value();

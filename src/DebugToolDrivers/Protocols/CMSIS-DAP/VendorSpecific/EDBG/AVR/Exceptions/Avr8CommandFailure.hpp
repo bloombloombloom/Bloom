@@ -1,11 +1,11 @@
 #pragma once
 
-#include "src/Exceptions/Exception.hpp"
+#include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVR8Generic/Avr8GenericResponseFrame.hpp"
 
 namespace Bloom::Exceptions
 {
-    class Avr8CommandFailure: public Exception
+    class Avr8CommandFailure: public TargetOperationFailure
     {
     private:
         static inline auto failureCodeToDescription = std::map<unsigned char, std::string>({
@@ -59,18 +59,18 @@ namespace Bloom::Exceptions
         });
 
     public:
-        explicit Avr8CommandFailure(const std::string& message): Exception(message) {
+        explicit Avr8CommandFailure(const std::string& message): TargetOperationFailure(message) {
             this->message = message;
         }
 
-        explicit Avr8CommandFailure(const char* message): Exception(message) {
+        explicit Avr8CommandFailure(const char* message): TargetOperationFailure(message) {
             this->message = std::string(message);
         }
 
         explicit Avr8CommandFailure(
             const std::string& message,
             DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic::Avr8GenericResponseFrame& responseFrame
-        ): Exception(message) {
+        ): TargetOperationFailure(message) {
             this->message = message;
 
             auto responsePayload = responseFrame.getPayload();

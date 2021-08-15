@@ -1,5 +1,7 @@
 #include "MplabSnap.hpp"
-#include "src/Exceptions/Exception.hpp"
+
+#include "src/TargetController/Exceptions/DeviceFailure.hpp"
+#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 using namespace Bloom::DebugToolDrivers;
 using namespace Protocols::CmsisDap::Edbg::Avr;
@@ -46,7 +48,9 @@ std::string MplabSnap::getSerialNumber() {
     );
 
     if (response.getResponseId() != CommandFrames::Discovery::ResponseId::OK) {
-        throw Exception("Failed to fetch serial number from device - invalid Discovery Protocol response ID.");
+        throw DeviceInitializationFailure(
+            "Failed to fetch serial number from device - invalid Discovery Protocol response ID."
+        );
     }
 
     auto data = response.getPayloadData();
@@ -60,7 +64,7 @@ void MplabSnap::startSession() {
 
     if (response.getResponseId() == CommandFrames::HouseKeeping::ResponseId::FAILED) {
         // Failed response returned!
-        throw Exception("Failed to start session with MPLAB Snap!");
+        throw DeviceInitializationFailure("Failed to start session with MPLAB Snap!");
     }
 
     this->sessionStarted = true;
@@ -73,7 +77,7 @@ void MplabSnap::endSession() {
 
     if (response.getResponseId() == CommandFrames::HouseKeeping::ResponseId::FAILED) {
         // Failed response returned!
-        throw Exception("Failed to end session with MPLAB Snap!");
+        throw DeviceFailure("Failed to end session with MPLAB Snap!");
     }
 
     this->sessionStarted = false;

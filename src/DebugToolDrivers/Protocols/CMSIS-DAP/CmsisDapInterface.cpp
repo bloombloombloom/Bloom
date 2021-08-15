@@ -1,11 +1,12 @@
+#include "CmsisDapInterface.hpp"
+
 #include <memory>
 #include <chrono>
 #include <thread>
 
-#include "CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Response.hpp"
-#include "src/Exceptions/Exception.hpp"
+#include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap;
 using namespace Bloom::Exceptions;
@@ -30,7 +31,7 @@ std::unique_ptr<Response> CmsisDapInterface::getResponse() {
     auto rawResponse = this->getUsbHidInterface().read(10000);
 
     if (rawResponse.size() == 0) {
-        throw Exception("Empty CMSIS-DAP response received");
+        throw DeviceCommunicationFailure("Empty CMSIS-DAP response received");
     }
 
     auto response = std::make_unique<Response>(Response());
@@ -44,7 +45,7 @@ std::unique_ptr<Response> CmsisDapInterface::sendCommandAndWaitForResponse(const
 
     if (response->getResponseId() != cmsisDapCommand.getCommandId()) {
         // This response is not what we were expecting
-        throw Exception("Unexpected response to CMSIS-DAP command.");
+        throw DeviceCommunicationFailure("Unexpected response to CMSIS-DAP command.");
     }
 
     return response;

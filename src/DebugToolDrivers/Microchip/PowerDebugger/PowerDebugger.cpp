@@ -1,5 +1,7 @@
 #include "PowerDebugger.hpp"
-#include "src/Exceptions/Exception.hpp"
+
+#include "src/TargetController/Exceptions/DeviceFailure.hpp"
+#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 using namespace Bloom::DebugToolDrivers;
 using namespace Protocols::CmsisDap::Edbg::Avr;
@@ -54,7 +56,9 @@ std::string PowerDebugger::getSerialNumber() {
     );
 
     if (response.getResponseId() != CommandFrames::Discovery::ResponseId::OK) {
-        throw Exception("Failed to fetch serial number from device - invalid Discovery Protocol response ID.");
+        throw DeviceInitializationFailure(
+            "Failed to fetch serial number from device - invalid Discovery Protocol response ID."
+        );
     }
 
     auto data = response.getPayloadData();
@@ -68,7 +72,9 @@ void PowerDebugger::startSession() {
 
     if (response.getResponseId() == CommandFrames::HouseKeeping::ResponseId::FAILED) {
         // Failed response returned!
-        throw Exception("Failed to start session with the Power Debugger - device returned failed response ID");
+        throw DeviceInitializationFailure(
+            "Failed to start session with the Power Debugger - device returned failed response ID"
+        );
     }
 
     this->sessionStarted = true;
@@ -81,7 +87,7 @@ void PowerDebugger::endSession() {
 
     if (response.getResponseId() == CommandFrames::HouseKeeping::ResponseId::FAILED) {
         // Failed response returned!
-        throw Exception("Failed to end session with the Power Debugger - device returned failed response ID");
+        throw DeviceFailure("Failed to end session with the Power Debugger - device returned failed response ID");
     }
 
     this->sessionStarted = false;

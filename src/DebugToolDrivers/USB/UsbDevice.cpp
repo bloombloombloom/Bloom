@@ -1,9 +1,10 @@
+#include "UsbDevice.hpp"
+
 #include <cstdint>
 #include <libusb-1.0/libusb.h>
 
-#include "UsbDevice.hpp"
 #include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
+#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 using Bloom::Usb::UsbDevice;
 using namespace Bloom::Exceptions;
@@ -21,8 +22,9 @@ std::vector<libusb_device*> UsbDevice::findMatchingDevices(
     auto productIdToMatch = productId.value_or(this->productId);
 
     if ((libUsbStatusCode = libusb_get_device_list(libUsbContext, &devices)) < 0) {
-        throw Exception("Failed to retrieve USB devices - return code: '" + std::to_string(libUsbStatusCode)
-            + "'");
+        throw DeviceInitializationFailure(
+            "Failed to retrieve USB devices - return code: '" + std::to_string(libUsbStatusCode) + "'"
+        );
     }
 
     while ((device = devices[i++]) != nullptr) {
@@ -30,7 +32,7 @@ std::vector<libusb_device*> UsbDevice::findMatchingDevices(
 
         if ((libUsbStatusCode = libusb_get_device_descriptor(device, &desc)) < 0) {
             Logger::warning("Failed to retrieve USB device descriptor - return code: '"
-                                         + std::to_string(libUsbStatusCode) + "'");
+                + std::to_string(libUsbStatusCode) + "'");
             continue;
         }
 
@@ -49,14 +51,14 @@ void UsbDevice::init() {
     auto devices = this->findMatchingDevices();
 
     if (devices.empty()) {
-        throw Exception("Failed to find USB device with matching vendor & product ID.");
+        throw DeviceInitializationFailure("Failed to find USB device with matching vendor & product ID.");
 
     } else if (devices.size() > 1) {
         // TODO: implement support for multiple devices (maybe via serial number?)
-        throw Exception("Multiple devices of matching vendor & product ID found.\n"
-             "Yes, as a program I really am too stupid to figure out what to do "
-             "here, so I'm just going to quit.\n Please ensure that only one debug tool "
-             "is connected and then try again.");
+        throw DeviceInitializationFailure(
+            "Numerous devices of matching vendor & product ID found.\n"
+            "Please ensure that only one debug tool is connected and then try again."
+        );
     }
 
     // For now, just use the first device found.
@@ -67,8 +69,9 @@ void UsbDevice::init() {
 
     // Obtain a device handle from libusb
     if ((libUsbStatusCode = libusb_open(libUsbDevice, &this->libUsbDeviceHandle)) < 0) {
-        throw Exception("Failed to open USB device - error code " + std::to_string(libUsbStatusCode)
-            + " returned.");
+        throw DeviceInitializationFailure(
+            "Failed to open USB device - error code " + std::to_string(libUsbStatusCode) + " returned."
+        );
     }
 }
 
@@ -88,13 +91,16 @@ void UsbDevice::setConfiguration(int configIndex) {
     int libUsbStatusCode;
 
     if ((libUsbStatusCode = libusb_get_config_descriptor(this->libUsbDevice, 0, &configDescriptor))) {
-        throw Exception("Failed to obtain USB configuration descriptor - error code "
-                            + std::to_string(libUsbStatusCode) + " returned.");
+        throw DeviceInitializationFailure(
+            "Failed to obtain USB configuration descriptor - error code " + std::to_string(libUsbStatusCode)
+            + " returned."
+        );
     }
 
     if ((libUsbStatusCode = libusb_set_configuration(this->libUsbDeviceHandle, configDescriptor->bConfigurationValue))) {
-        throw Exception("Failed to set USB configuration - error code "
-                            + std::to_string(libUsbStatusCode) + " returned.");
+        throw DeviceInitializationFailure(
+            "Failed to set USB configuration - error code " + std::to_string(libUsbStatusCode) + " returned."
+        );
     }
 
     libusb_free_config_descriptor(configDescriptor);

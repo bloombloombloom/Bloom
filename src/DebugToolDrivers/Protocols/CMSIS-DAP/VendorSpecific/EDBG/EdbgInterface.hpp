@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "src/Exceptions/Exception.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrEventCommand.hpp"
@@ -11,6 +10,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrResponseCommand.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AvrResponseFrame.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrame.hpp"
+#include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 {
@@ -62,8 +62,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 
             if (response.getData()[0] != 0x01) {
                 // The last response packet should always acknowledge receipt of the AvrCommandFrame
-                throw Exceptions::Exception("Failed to send AvrCommandFrame to device "
-                    "- device did not acknowledge receipt.");
+                throw Exceptions::DeviceCommunicationFailure(
+                    "Failed to send AvrCommandFrame to device - device did not acknowledge receipt."
+                );
             }
 
             auto responses = this->requestAvrResponses();

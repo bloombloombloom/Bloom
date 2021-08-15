@@ -1,11 +1,12 @@
+#include "HidInterface.hpp"
+
 #include <cstdint>
 #include <string>
 
-#include "HidInterface.hpp"
 #include "hidapi.hpp"
 #include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
-#include "src/Exceptions/DeviceCommunicationFailure.hpp"
+#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
+#include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
 using namespace Bloom::Usb;
 using namespace Bloom::Exceptions;
@@ -22,7 +23,7 @@ std::string HidInterface::getDevicePathByInterfaceNumber(const std::uint16_t& in
     }
 
     if (hidDeviceInfoList == nullptr) {
-        throw Exception("Failed to match interface number with HID interface.");
+        throw DeviceInitializationFailure("Failed to match interface number with HID interface.");
     }
 
     auto path = std::string(hidDeviceInfoList->path);
@@ -32,7 +33,7 @@ std::string HidInterface::getDevicePathByInterfaceNumber(const std::uint16_t& in
 
 void HidInterface::init() {
     if (this->libUsbDevice == nullptr) {
-        throw Exception("Cannot initialise interface without libusb device pointer.");
+        throw DeviceInitializationFailure("Cannot initialise interface without libusb device pointer.");
     }
 
     hid_init();
@@ -42,11 +43,13 @@ void HidInterface::init() {
     Logger::debug("HID device path: " + hidInterfacePath);
 
     if ((hidDevice = hid_open_path(hidInterfacePath.c_str())) == nullptr) {
-        throw Exception("Failed to open HID device via hidapi.");
+        throw DeviceInitializationFailure("Failed to open HID device via hidapi.");
     }
 
     if (hidDevice->input_ep_max_packet_size < 1) {
-        throw Exception("Invalid max packet size for USB endpoint, on interface " + std::to_string(this->getNumber()));
+        throw DeviceInitializationFailure(
+            "Invalid max packet size for USB endpoint, on interface " + std::to_string(this->getNumber())
+        );
     }
 
     this->setHidDevice(hidDevice);
@@ -87,7 +90,9 @@ std::size_t HidInterface::read(unsigned char* buffer, std::size_t maxLength, uns
 
 void HidInterface::write(std::vector<unsigned char> buffer) {
     if (buffer.size() > this->getInputReportSize()) {
-        throw Exception("Cannot send data via HID interface - data exceeds maximum packet size.");
+        throw DeviceCommunicationFailure(
+            "Cannot send data via HID interface - data exceeds maximum packet size."
+        );
 
     } else if (buffer.size() < this->getInputReportSize()) {
         /*

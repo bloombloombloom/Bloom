@@ -1,20 +1,22 @@
+#include "Interface.hpp"
+
 #include <libusb-1.0/libusb.h>
 #include <chrono>
 
-#include "Interface.hpp"
-#include "src/Exceptions/Exception.hpp"
+#include "src/TargetController/Exceptions/DeviceFailure.hpp"
+#include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
+#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 using namespace Bloom::Usb;
 using namespace Bloom::Exceptions;
 
-
 void Interface::init() {
     if (this->libUsbDevice == nullptr) {
-        throw Exception("Cannot initialise interface without libusb device pointer.");
+        throw DeviceInitializationFailure("Cannot initialise interface without libusb device pointer.");
     }
 
     if (this->libUsbDeviceHandle == nullptr) {
-        throw Exception("Cannot initialise interface without libusb device handle.");
+        throw DeviceInitializationFailure("Cannot initialise interface without libusb device handle.");
     }
 
     this->initialised = true;
@@ -34,7 +36,9 @@ void Interface::claim() {
     this->detachKernelDriver();
 
     if (libusb_claim_interface(this->libUsbDeviceHandle, interfaceNumber) != 0) {
-        throw Exception("Failed to claim interface {" + std::to_string(interfaceNumber) + "} on USB device\n");
+        throw DeviceInitializationFailure(
+            "Failed to claim interface {" + std::to_string(interfaceNumber) + "} on USB device\n"
+        );
     }
 
     this->claimed = true;
@@ -48,11 +52,11 @@ void Interface::detachKernelDriver() {
         if (libUsbStatusCode == 1) {
             // A kernel driver is active on this interface. Attempt to detach it
             if (libusb_detach_kernel_driver(this->libUsbDeviceHandle, interfaceNumber) != 0) {
-                throw Exception("Failed to detach kernel driver from interface " +
+                throw DeviceInitializationFailure("Failed to detach kernel driver from interface " +
                     std::to_string(interfaceNumber) + "\n");
             }
         } else {
-            throw Exception("Failed to check for active kernel driver on USB interface.");
+            throw DeviceInitializationFailure("Failed to check for active kernel driver on USB interface.");
         }
     }
 }
@@ -60,7 +64,9 @@ void Interface::detachKernelDriver() {
 void Interface::release() {
     if (this->isClaimed()) {
         if (libusb_release_interface(this->libUsbDeviceHandle, this->getNumber()) != 0) {
-            throw Exception("Failed to release interface {" + std::to_string(this->getNumber()) + "} on USB device\n");
+            throw DeviceFailure(
+                "Failed to release interface {" + std::to_string(this->getNumber()) + "} on USB device\n"
+            );
         }
 
         this->claimed = false;
@@ -83,7 +89,9 @@ int Interface::read(unsigned char* buffer, unsigned char endPoint, size_t length
         );
 
         if (libUsbStatusCode != 0 && libUsbStatusCode != -7) {
-            throw Exception("Failed to read from USB device. Error code returned: " + std::to_string(libUsbStatusCode));
+            throw DeviceCommunicationFailure(
+                "Failed to read from USB device. Error code returned: " + std::to_string(libUsbStatusCode)
+            );
         }
 
         totalTransferred += transferred;
@@ -106,6 +114,8 @@ void Interface::write(unsigned char* buffer, unsigned char endPoint, int length)
     );
 
     if (libUsbStatusCode != 0) {
-        throw Exception("Failed to read from USB device. Error code returned: " + std::to_string(libUsbStatusCode));
+        throw DeviceCommunicationFailure(
+            "Failed to read from USB device. Error code returned: " + std::to_string(libUsbStatusCode)
+        );
     }
 }

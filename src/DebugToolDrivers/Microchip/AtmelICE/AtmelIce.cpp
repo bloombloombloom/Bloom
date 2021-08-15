@@ -1,5 +1,7 @@
 #include "AtmelIce.hpp"
-#include "src/Exceptions/Exception.hpp"
+
+#include "src/TargetController/Exceptions/DeviceFailure.hpp"
+#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 using namespace Bloom::DebugToolDrivers;
 using namespace Protocols::CmsisDap::Edbg::Avr;
@@ -54,7 +56,9 @@ std::string AtmelIce::getSerialNumber() {
     );
 
     if (response.getResponseId() != CommandFrames::Discovery::ResponseId::OK) {
-        throw Exception("Failed to fetch serial number from device - invalid Discovery Protocol response ID.");
+        throw DeviceInitializationFailure(
+            "Failed to fetch serial number from device - invalid Discovery Protocol response ID."
+        );
     }
 
     auto data = response.getPayloadData();
@@ -68,7 +72,7 @@ void AtmelIce::startSession() {
 
     if (response.getResponseId() == CommandFrames::HouseKeeping::ResponseId::FAILED) {
         // Failed response returned!
-        throw Exception("Failed to start session with Atmel-ICE!");
+        throw DeviceInitializationFailure("Failed to start session with Atmel-ICE!");
     }
 
     this->sessionStarted = true;
@@ -81,7 +85,7 @@ void AtmelIce::endSession() {
 
     if (response.getResponseId() == CommandFrames::HouseKeeping::ResponseId::FAILED) {
         // Failed response returned!
-        throw Exception("Failed to end session with Atmel-ICE!");
+        throw DeviceFailure("Failed to end session with Atmel-ICE!");
     }
 
     this->sessionStarted = false;

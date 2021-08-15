@@ -1,12 +1,15 @@
+#include "EdbgInterface.hpp"
+
 #include <cstdint>
 #include <cstring>
 #include <memory>
 
-#include "EdbgInterface.hpp"
+#include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
 using namespace Bloom::DebugToolDrivers;
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg;
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
+using namespace Bloom::Exceptions;
 using namespace Bloom::Exceptions;
 
 Protocols::CmsisDap::Response EdbgInterface::sendAvrCommandFrameAndWaitForResponse(
@@ -30,7 +33,9 @@ Protocols::CmsisDap::Response EdbgInterface::sendAvrCommandFrameAndWaitForRespon
     }
 
     // This should never happen
-    throw Exception("Cannot send AVR command frame - failed to generate CMSIS-DAP Vendor (AVR) commands");
+    throw DeviceCommunicationFailure(
+        "Cannot send AVR command frame - failed to generate CMSIS-DAP Vendor (AVR) commands"
+    );
 }
 
 Protocols::CmsisDap::Edbg::Avr::AvrResponse EdbgInterface::getAvrResponse() {
@@ -42,7 +47,7 @@ Protocols::CmsisDap::Edbg::Avr::AvrResponse EdbgInterface::getAvrResponse() {
         avrResponse.init(*cmsisResponse);
         return avrResponse;
     } else {
-        throw Exception("Unexpected response to AvrResponseCommand from device");
+        throw DeviceCommunicationFailure("Unexpected response to AvrResponseCommand from device");
     }
 }
 
@@ -56,7 +61,7 @@ std::optional<Protocols::CmsisDap::Edbg::Avr::AvrEvent> EdbgInterface::requestAv
         avrEvent.init(*cmsisResponse);
         return avrEvent.getEventDataSize() > 0 ? std::optional(avrEvent): std::nullopt;
     } else {
-        throw Exception("Unexpected response to AvrEventCommand from device");
+        throw DeviceCommunicationFailure("Unexpected response to AvrEventCommand from device");
     }
 }
 
@@ -75,11 +80,14 @@ std::vector<Protocols::CmsisDap::Edbg::Avr::AvrResponse> EdbgInterface::requestA
         response = this->getAvrResponse();
 
         if (response.getFragmentCount() != fragmentCount) {
-            throw Exception("Failed to fetch AVRResponse objects - invalid fragment count returned.");
+            throw DeviceCommunicationFailure(
+                "Failed to fetch AVRResponse objects - invalid fragment count returned."
+            );
         }
 
         if (response.getFragmentCount() == 0 && response.getFragmentNumber() == 0) {
-            throw Exception("Failed to fetch AVRResponse objects - unexpected empty response");
+            throw DeviceCommunicationFailure("Failed to fetch AVRResponse objects - unexpected empty response");
+
         } else if (response.getFragmentNumber() == 0) {
             // End of response data ( &this packet can be ignored)
             break;
