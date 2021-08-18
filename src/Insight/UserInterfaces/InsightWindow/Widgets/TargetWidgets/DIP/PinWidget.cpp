@@ -14,7 +14,7 @@ using namespace Bloom::Targets;
 PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, const TargetVariant& targetVariant):
     TargetPinWidget(parent, pinDescriptor, targetVariant) {
     this->layout = new QVBoxLayout();
-    this->layout->setMargin(0);
+    this->layout->setContentsMargins(0, 0, 0, 0);
     this->layout->setSpacing(0);
 
     this->bodyWidget = new PinBodyWidget(this, this->pinDescriptor);

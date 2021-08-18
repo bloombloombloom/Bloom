@@ -18,7 +18,7 @@ void WriteRegister::init() {
     }
 
     auto packetSegments = QString::fromStdString(packet).split("=");
-    this->registerNumber = static_cast<int>(packetSegments.front().midRef(1).toUInt(nullptr, 16));
+    this->registerNumber = static_cast<int>(packetSegments.front().mid(1).toUInt(nullptr, 16));
     this->registerValue = Packet::hexToData(packetSegments.back().toStdString());
     std::reverse(this->registerValue.begin(), this->registerValue.end());
 }

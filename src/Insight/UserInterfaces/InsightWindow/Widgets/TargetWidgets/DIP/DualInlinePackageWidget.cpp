@@ -34,7 +34,7 @@ DualInlinePackageWidget::DualInlinePackageWidget(
     this->pinWidgets.reserve(targetVariant.pinDescriptorsByNumber.size());
     this->layout = new QVBoxLayout();
     this->layout->setSpacing(8);
-    this->layout->setMargin(0);
+    this->layout->setContentsMargins(0, 0, 0, 0);
 
     this->topPinLayout = new QHBoxLayout();
     this->topPinLayout->setSpacing(8);

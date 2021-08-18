@@ -25,8 +25,8 @@ void SupportedFeaturesQuery::init() {
             auto featureString = featureList.at(i);
 
             // We only care about supported features. Supported features will precede a '+' character.
-            if (featureString[featureString.size() - 1] == "+") {
-                featureString.remove("+");
+            if (featureString[featureString.size() - 1] == '+') {
+                featureString.remove('+');
 
                 auto feature = gdbFeatureMapping.valueAt(featureString.toStdString());
                 if (feature.has_value()) {

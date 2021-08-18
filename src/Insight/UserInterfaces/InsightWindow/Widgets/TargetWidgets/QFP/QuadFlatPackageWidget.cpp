@@ -32,7 +32,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     this->pinWidgets.reserve(targetVariant.pinDescriptorsByNumber.size());
     this->layout = new QVBoxLayout();
     this->layout->setSpacing(0);
-    this->layout->setMargin(0);
+    this->layout->setContentsMargins(0, 0, 0, 0);
 
     this->horizontalLayout = new QHBoxLayout();
     this->horizontalLayout->setSpacing(0);

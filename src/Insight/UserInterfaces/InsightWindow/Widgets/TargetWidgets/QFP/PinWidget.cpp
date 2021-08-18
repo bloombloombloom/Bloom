@@ -13,8 +13,8 @@ using namespace Bloom::Targets;
 
 PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, const TargetVariant& targetVariant):
     TargetPinWidget(parent, pinDescriptor, targetVariant) {
-    this->layout = new QVBoxLayout();
-    this->layout->setMargin(0);
+    this->layout = new QBoxLayout(QBoxLayout::TopToBottom);
+    this->layout->setContentsMargins(0, 0, 0, 0);
     this->layout->setSpacing(0);
 
     auto pinCountPerLayout = (targetVariant.pinDescriptorsByNumber.size() / 4);
@@ -68,14 +68,14 @@ PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, 
     }
 
     this->layout->addWidget(this->bodyWidget);
-    this->layout->insertSpacing(1, 3);
+    this->layout->addSpacing(3);
 
     if (this->isLeftLayout || this->isRightLayout) {
         auto stackedLabelLayout = new QVBoxLayout();
         stackedLabelLayout->addWidget(this->pinNameLabel);
-        stackedLabelLayout->insertSpacing(3, 2);
+        stackedLabelLayout->addSpacing(2);
         stackedLabelLayout->addWidget(this->pinNumberLabel);
-        this->layout->insertSpacing(2, 4);
+        this->layout->addSpacing(4);
         this->layout->addLayout(stackedLabelLayout);
 
         // Adjust the pin name label width for horizontal pins to accommodate for pin names up to 5 characters in length
@@ -84,15 +84,16 @@ PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, 
 
     } else if (this-isTopLayout || this->isBottomLayout) {
         this->layout->addWidget(this->pinNumberLabel);
-        this->layout->insertSpacing(3, 2);
+        this->layout->addSpacing(2);
         this->layout->addWidget(this->pinNameLabel);
 
         this->pinNameLabel->setFixedSize(PinBodyWidget::WIDTH, PinWidget::LABEL_HEIGHT - 2);
         this->pinNumberLabel->setFixedSize(PinBodyWidget::WIDTH, PinWidget::LABEL_HEIGHT - 2);
     }
 
-    this->layout->insertSpacing(5, 2);
+    this->layout->addSpacing(2);
     this->layout->addWidget(this->pinDirectionLabel);
+    this->layout->addStretch(1);
 
     this->setLayout(this->layout);
 

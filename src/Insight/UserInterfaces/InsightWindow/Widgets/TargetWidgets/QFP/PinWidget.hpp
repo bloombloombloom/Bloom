@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QBoxLayout>
 #include <QLabel>
 
 #include "../TargetPinWidget.hpp"
@@ -13,7 +14,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
     {
     Q_OBJECT
     private:
-        QVBoxLayout* layout = nullptr;
+        QBoxLayout* layout = nullptr;
         QLabel* pinNumberLabel = nullptr;
         QLabel* pinNameLabel = nullptr;
         QLabel* pinDirectionLabel = nullptr;
