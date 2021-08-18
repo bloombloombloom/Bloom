@@ -25,12 +25,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(AUTOGEN_BUILD_DIR ../build/)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/bin")
 
-find_package(Qt5Core)
-find_package(Qt5Gui)
-find_package(Qt5Widgets)
-find_package(Qt5Xml)
-find_package(Qt5Svg)
-find_package(Qt5UiTools)
+find_package(Qt6Core)
+find_package(Qt6Gui)
+find_package(Qt6Widgets)
+find_package(Qt6Xml)
+find_package(Qt6Svg)
+find_package(Qt6UiTools)
 
 set(CMAKE_SKIP_BUILD_RPATH false)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
@@ -50,7 +50,7 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 
     # CMAKE_SKIP_BUILD_RPATH needs to be set to true to use Gammaray during development.
     # This is because the distributed Qt binaries may not be compatible with the local installation of Gammaray
-    set(CMAKE_SKIP_BUILD_RPATH true)
+    set(CMAKE_BUILD_RPATH /opt/Qt/6.1.2/gcc_64/lib/)
 endif()
 
 add_executable(Bloom
@@ -172,12 +172,12 @@ target_link_libraries(Bloom -lstdc++fs)
 target_link_libraries(Bloom -lpthread)
 target_link_libraries(Bloom -lusb-1.0)
 target_link_libraries(Bloom -lhidapi-libusb)
-target_link_libraries(Bloom Qt5::Core)
-target_link_libraries(Bloom Qt5::Gui)
-target_link_libraries(Bloom Qt5::UiTools)
-target_link_libraries(Bloom Qt5::Widgets)
-target_link_libraries(Bloom Qt5::Xml)
-target_link_libraries(Bloom Qt5::Svg)
+target_link_libraries(Bloom Qt6::Core)
+target_link_libraries(Bloom Qt6::Gui)
+target_link_libraries(Bloom Qt6::UiTools)
+target_link_libraries(Bloom Qt6::Widgets)
+target_link_libraries(Bloom Qt6::Xml)
+target_link_libraries(Bloom Qt6::Svg)
 
 target_compile_options(
     Bloom
