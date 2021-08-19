@@ -3,7 +3,7 @@
 using namespace Bloom;
 using namespace Bloom::Events;
 
-std::set<std::string> EventListener::getRegisteredEventTypeNames() {
+std::set<Events::EventType> EventListener::getRegisteredEventTypes() {
     return this->registeredEventTypes.getValue();
 }
 
@@ -13,13 +13,12 @@ void EventListener::clearAllCallbacks() {
 }
 
 void EventListener::registerEvent(SharedGenericEventPointer event) {
-    auto eventType = event->getName();
-    Logger::debug("Event \"" + eventType + "\" (" + std::to_string(event->id)
-    + ") registered for listener " + this->name);
+    Logger::debug("Event \"" + event->getName() + "\" (" + std::to_string(event->id)
+        + ") registered for listener " + this->name);
     auto queueLock = this->eventQueueByEventType.acquireLock();
     auto& eventQueueByType = this->eventQueueByEventType.getReference();
 
-    eventQueueByType[eventType].push(std::move(event));
+    eventQueueByType[event->getType()].push(std::move(event));
     this->eventQueueByEventTypeCV.notify_all();
 
     if (this->interruptEventNotifier != nullptr && this->interruptEventNotifier->isInitialised()) {
@@ -47,11 +46,10 @@ std::vector<SharedGenericEventPointer> EventListener::getEvents() {
 }
 
 void EventListener::dispatchEvent(const SharedGenericEventPointer& event) {
-    auto eventName = event->getName();
-    Logger::debug("Dispatching event " + eventName + " (" + std::to_string(event->id) + ").");
+    Logger::debug("Dispatching event " + event->getName() + " (" + std::to_string(event->id) + ").");
     // Dispatch the event to all registered handlers
     auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
-    auto& callbacks = this->eventTypeToCallbacksMapping.getReference().find(eventName)->second;
+    auto& callbacks = this->eventTypeToCallbacksMapping.getReference().find(event->getType())->second;
     mappingLock.unlock();
 
     for (auto& callback : callbacks) {
@@ -70,14 +68,12 @@ void EventListener::dispatchCurrentEvents() {
 void EventListener::waitAndDispatch(int msTimeout) {
     auto queueLock = this->eventQueueByEventType.acquireLock();
     auto& eventQueueByType = this->eventQueueByEventType.getReference();
-    auto registeredEventTypes = this->getRegisteredEventTypeNames();
+    auto registeredEventTypes = this->getRegisteredEventTypes();
     std::optional<SharedGenericEventPointer> event;
 
     auto eventsFound = [&registeredEventTypes, &event, &eventQueueByType]() -> bool {
         for (auto& eventQueue: eventQueueByType) {
-            if (registeredEventTypes.find(eventQueue.first) != registeredEventTypes.end()
-                && !eventQueue.second.empty()
-            ) {
+            if (registeredEventTypes.contains(eventQueue.first) && !eventQueue.second.empty()) {
                 return true;
             }
         }

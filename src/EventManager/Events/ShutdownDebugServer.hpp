@@ -9,7 +9,12 @@ namespace Bloom::Events
     class ShutdownDebugServer: public Event
     {
     public:
+        static inline EventType type = EventType::SHUTDOWN_DEBUG_SERVER;
         static inline const std::string name = "ShutdownDebugServer";
+
+        [[nodiscard]] EventType getType() const override {
+            return ShutdownDebugServer::type;
+        }
 
         [[nodiscard]] std::string getName() const override {
             return ShutdownDebugServer::name;

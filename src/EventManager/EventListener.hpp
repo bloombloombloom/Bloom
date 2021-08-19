@@ -56,22 +56,22 @@ namespace Bloom
         /**
          * Holds all events registered to this listener.
          *
-         * Events are grouped by event type name, and removed from their queue just *before* the dispatching to
+         * Events are grouped by event type, and removed from their queue just *before* the dispatching to
          * registered handlers begins.
          */
-        SyncSafe<std::map<std::string, std::queue<Events::SharedGenericEventPointer>>> eventQueueByEventType;
+        SyncSafe<std::map<Events::EventType, std::queue<Events::SharedGenericEventPointer>>> eventQueueByEventType;
         std::condition_variable eventQueueByEventTypeCV;
 
         /**
-         * A mapping of event type names to a vector of callback functions. Events will be dispatched to these
+         * A mapping of event types to a vector of callback functions. Events will be dispatched to these
          * callback functions, during a call to EventListener::dispatchEvent().
          *
          * Each callback will be passed a reference to the event (we wrap all registered callbacks in a lambda, where
          * we perform a downcast before invoking the callback. See EventListener::registerCallbackForEventType()
          * for more)
          */
-        SyncSafe<std::map<std::string, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
-        SyncSafe<std::set<std::string>> registeredEventTypes;
+        SyncSafe<std::map<Events::EventType, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
+        SyncSafe<std::set<Events::EventType>> registeredEventTypes;
 
         std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
 
@@ -85,11 +85,41 @@ namespace Bloom
         };
 
         /**
-         * Generates a list of event types names currently registered in the listener.
+         * Generates a list of event types currently registered in the listener.
          *
          * @return
          */
-        std::set<std::string> getRegisteredEventTypeNames();
+        std::set<Events::EventType> getRegisteredEventTypes();
+
+        template <class EventType>
+        bool isEventTypeRegistered() {
+            return this->registeredEventTypes.getReference().contains(EventType::type);
+        }
+
+        bool isEventTypeRegistered(Events::EventType eventType) {
+            return this->registeredEventTypes.getReference().contains(eventType);
+        };
+
+        /**
+         * Registers an event type for the listener.
+         *
+         * Any events of EventType that are triggered from the point of calling this function, will be stored in
+         * listener queue until they are dispatched to a callback, or retrieved via a call to this->waitForEvent() or
+         * similar.
+         *
+         * @tparam EventType
+         */
+        template<class EventType>
+        void registerEventType() {
+            auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
+            this->registeredEventTypes.getReference().insert(EventType::type);
+        }
+
+        template<class EventType>
+        void deRegisterEventType() {
+            auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
+            this->registeredEventTypes.getReference().erase(EventType::type);
+        }
 
         /**
          * Registers an event with the event listener
@@ -122,9 +152,8 @@ namespace Bloom
             auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
             auto& mapping = this->eventTypeToCallbacksMapping.getReference();
 
-            mapping[EventType::name].push_back(parentCallback);
-            auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-            this->registeredEventTypes.getReference().insert(EventType::name);
+            mapping[EventType::type].push_back(parentCallback);
+            this->template registerEventType<EventType>();
         }
 
         /**
@@ -143,21 +172,21 @@ namespace Bloom
                 auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
                 auto& mapping = this->eventTypeToCallbacksMapping.getReference();
 
-                if (mapping.contains(EventType::name)) {
-                    mapping.at(EventType::name).clear();
+                if (mapping.contains(EventType::type)) {
+                    mapping.at(EventType::type).clear();
                 }
             }
 
             {
                 auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-                this->registeredEventTypes.getReference().erase(EventType::name);
+                this->registeredEventTypes.getReference().erase(EventType::type);
             }
 
             auto queueLock = this->eventQueueByEventType.acquireLock();
             auto& eventQueueByType = this->eventQueueByEventType.getReference();
 
-            if (eventQueueByType.contains(EventType::name)) {
-                eventQueueByType.erase(EventType::name);
+            if (eventQueueByType.contains(EventType::type)) {
+                eventQueueByType.erase(EventType::type);
             }
         }
 
@@ -217,15 +246,15 @@ namespace Bloom
             auto queueLock = this->eventQueueByEventType.acquireLock();
             auto& eventQueueByType = this->eventQueueByEventType.getReference();
 
-            auto eventTypeNames = std::set<std::string>({EventTypeA::name});
-            auto eventTypeNamesToDeRegister = std::set<std::string>();
+            auto eventTypes = std::set<Events::EventType>({EventTypeA::type});
+            auto eventTypesToDeRegister = std::set<Events::EventType>();
 
             if constexpr (!std::is_same_v<EventTypeA, EventTypeB>) {
                 static_assert(
                     std::is_base_of_v<Events::Event, EventTypeB>,
                     "All event types must be derived from the Event base class."
                 );
-                eventTypeNames.insert(EventTypeB::name);
+                eventTypes.insert(EventTypeB::type);
             }
 
             if constexpr (!std::is_same_v<EventTypeB, EventTypeC>) {
@@ -233,28 +262,28 @@ namespace Bloom
                     std::is_base_of_v<Events::Event, EventTypeC>,
                     "All event types must be derived from the Event base class."
                 );
-                eventTypeNames.insert(EventTypeC::name);
+                eventTypes.insert(EventTypeC::type);
             }
 
             {
                 auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
                 auto& registeredEventTypes = this->registeredEventTypes.getReference();
 
-                for (const auto& eventTypeName : eventTypeNames) {
-                    if (registeredEventTypes.find(eventTypeName) == registeredEventTypes.end()) {
-                        registeredEventTypes.insert(eventTypeName);
-                        eventTypeNamesToDeRegister.insert(eventTypeName);
+                for (const auto& eventType : eventTypes) {
+                    if (!registeredEventTypes.contains(eventType)) {
+                        registeredEventTypes.insert(eventType);
+                        eventTypesToDeRegister.insert(eventType);
                     }
                 }
             }
 
             Events::SharedGenericEventPointer foundEvent = nullptr;
-            auto eventsFound = [&eventTypeNames, &eventQueueByType, &correlationId, &foundEvent]() -> bool {
-                for (const auto& eventTypeName : eventTypeNames) {
-                    if (eventQueueByType.find(eventTypeName) != eventQueueByType.end()
-                        && !eventQueueByType.find(eventTypeName)->second.empty()
+            auto eventsFound = [&eventTypes, &eventQueueByType, &correlationId, &foundEvent]() -> bool {
+                for (const auto& eventType : eventTypes) {
+                    if (eventQueueByType.find(eventType) != eventQueueByType.end()
+                        && !eventQueueByType.find(eventType)->second.empty()
                     ) {
-                        auto& queue = eventQueueByType.find(eventTypeName)->second;
+                        auto& queue = eventQueueByType.find(eventType)->second;
                         while (!queue.empty()) {
                             auto event = queue.front();
 
@@ -266,7 +295,7 @@ namespace Bloom
                                 return true;
                             }
 
-                            // Events that match in type but not correlation ID are disregarded
+                            // Events that match in type but not correlation ID are discarded
                             queue.pop();
                         }
                     }
@@ -282,25 +311,25 @@ namespace Bloom
                 this->eventQueueByEventTypeCV.wait(queueLock, eventsFound);
             }
 
-            if (!eventTypeNamesToDeRegister.empty()) {
+            if (!eventTypesToDeRegister.empty()) {
                 auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
                 auto& registeredEventTypes = this->registeredEventTypes.getReference();
 
-                for (const auto& eventTypeName : eventTypeNamesToDeRegister) {
-                    registeredEventTypes.erase(eventTypeName);
+                for (const auto& eventType : eventTypesToDeRegister) {
+                    registeredEventTypes.erase(eventType);
                 }
             }
 
             if (foundEvent != nullptr) {
                 // If we're looking for multiple event types, use an std::variant.
                 if constexpr (!std::is_same_v<EventTypeA, EventTypeB> || !std::is_same_v<EventTypeB, EventTypeC>) {
-                    if (foundEvent->getName() == EventTypeA::name) {
+                    if (foundEvent->getType() == EventTypeA::type) {
                         output = std::optional<typename decltype(output)::value_type>(
                             std::dynamic_pointer_cast<const EventTypeA>(foundEvent)
                         );
 
                     } else if constexpr (!std::is_same_v<EventTypeA, EventTypeB>) {
-                        if (foundEvent->getName() == EventTypeB::name) {
+                        if (foundEvent->getType() == EventTypeB::type) {
                             output = std::optional<typename decltype(output)::value_type>(
                                 std::dynamic_pointer_cast<const EventTypeB>(foundEvent)
                             );
@@ -308,7 +337,7 @@ namespace Bloom
                     }
 
                     if constexpr (!std::is_same_v<EventTypeB, EventTypeC>) {
-                        if (foundEvent->getName() == EventTypeC::name) {
+                        if (foundEvent->getType() == EventTypeC::type) {
                             output = std::optional<typename decltype(output)::value_type>(
                                 std::dynamic_pointer_cast<const EventTypeC>(foundEvent)
                             );
@@ -316,7 +345,7 @@ namespace Bloom
                     }
 
                 } else {
-                    if (foundEvent->getName() == EventTypeA::name) {
+                    if (foundEvent->getType() == EventTypeA::type) {
                         output = std::dynamic_pointer_cast<const EventTypeA>(foundEvent);
                     }
                 }

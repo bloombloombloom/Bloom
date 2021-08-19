@@ -12,9 +12,14 @@ namespace Bloom::Events
     private:
         ThreadState state;
     public:
+        static inline EventType type = EventType::DEBUG_SERVER_THREAD_STATE_CHANGED;
+        static inline const std::string name = "DebugServerThreadStateChanged";
+
         explicit DebugServerThreadStateChanged(ThreadState state): state(state) {};
 
-        static inline const std::string name = "DebugServerThreadStateChanged";
+        [[nodiscard]] EventType getType() const override {
+            return DebugServerThreadStateChanged::type;
+        }
 
         [[nodiscard]] std::string getName() const override {
             return DebugServerThreadStateChanged::name;

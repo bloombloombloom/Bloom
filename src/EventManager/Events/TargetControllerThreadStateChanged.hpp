@@ -13,9 +13,14 @@ namespace Bloom::Events
         ThreadState state;
 
     public:
+        static inline EventType type = EventType::TARGET_CONTROLLER_THREAD_STATE_CHANGED;
+        static inline const std::string name = "TargetControllerThreadStateChanged";
+
         explicit TargetControllerThreadStateChanged(ThreadState state): state(state) {};
 
-        static inline const std::string name = "TargetControllerThreadStateChanged";
+        [[nodiscard]] EventType getType() const override {
+            return TargetControllerThreadStateChanged::type;
+        }
 
         [[nodiscard]] std::string getName() const override {
             return TargetControllerThreadStateChanged::name;

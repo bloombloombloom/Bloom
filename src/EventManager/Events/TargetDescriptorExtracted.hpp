@@ -10,8 +10,13 @@ namespace Bloom::Events
     class TargetDescriptorExtracted: public Event
     {
     public:
+        static inline EventType type = EventType::TARGET_DESCRIPTOR_EXTRACTED;
         static inline const std::string name = "TargetDescriptorExtracted";
         Targets::TargetDescriptor targetDescriptor;
+
+        [[nodiscard]] EventType getType() const override {
+            return TargetDescriptorExtracted::type;
+        }
 
         [[nodiscard]] std::string getName() const override {
             return TargetDescriptorExtracted::name;

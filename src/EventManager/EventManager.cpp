@@ -14,10 +14,9 @@ void EventManager::deregisterListener(size_t listenerId) {
 
 void EventManager::triggerEvent(const std::shared_ptr<const Events::Event>& event) {
     auto registerListenersLock = std::unique_lock(this->registerListenerMutex);
-    for(auto const& [listenerId, listener] : this->registeredListeners) {
-        auto registeredEventTypes = listener->getRegisteredEventTypeNames();
 
-        if (registeredEventTypes.contains(event->getName())) {
+    for(auto const& [listenerId, listener] : this->registeredListeners) {
+        if (listener->isEventTypeRegistered(event->getType())) {
             listener->registerEvent(event);
         }
     }

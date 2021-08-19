@@ -10,8 +10,13 @@ namespace Bloom::Events
     class RetrieveRegistersFromTarget: public Event
     {
     public:
+        static inline EventType type = EventType::RETRIEVE_REGISTERS_FROM_TARGET;
         static inline const std::string name = "RetrieveRegistersFromTarget";
         Targets::TargetRegisterDescriptors descriptors;
+
+        [[nodiscard]] EventType getType() const override {
+            return RetrieveRegistersFromTarget::type;
+        }
 
         [[nodiscard]] std::string getName() const override {
             return RetrieveRegistersFromTarget::name;
