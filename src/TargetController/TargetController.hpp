@@ -104,7 +104,7 @@ namespace Bloom
          * @return
          */
         static auto getSupportedTargets() {
-            static std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>> mapping;
+            static auto mapping = std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>>();
 
             if (mapping.empty()) {
                 mapping = {

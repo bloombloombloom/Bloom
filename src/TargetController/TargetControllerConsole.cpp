@@ -1,6 +1,8 @@
-#include <cstdint>
-
 #include "TargetControllerConsole.hpp"
+
+#include <cstdint>
+#include <thread>
+
 #include "src/EventManager/Events/Events.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -37,21 +39,10 @@ bool TargetControllerConsole::isTargetControllerInService() noexcept {
 }
 
 Targets::TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
-    auto extractEvent = std::make_shared<ExtractTargetDescriptor>();
-    this->eventManager.triggerEvent(extractEvent);
-    auto responseEvent = this->eventListener.waitForEvent<
-        TargetDescriptorExtracted,
-        TargetControllerErrorOccurred
-    >(this->defaultTimeout, extractEvent->id);
-
-    if (!responseEvent.has_value()
-        || !std::holds_alternative<SharedEventPointer<TargetDescriptorExtracted>>(responseEvent.value())
-    ) {
-        throw Exception("Unexpected response from TargetController");
-    }
-
-    auto descriptorExtracted = std::get<SharedEventPointer<TargetDescriptorExtracted>>(responseEvent.value());
-    return descriptorExtracted->targetDescriptor;
+    auto descriptorExtractedEvent = this->triggerTargetControllerEventAndWaitForResponse(
+        std::make_shared<ExtractTargetDescriptor>()
+    );
+    return descriptorExtractedEvent->targetDescriptor;
 }
 
 void TargetControllerConsole::stopTargetExecution() {
