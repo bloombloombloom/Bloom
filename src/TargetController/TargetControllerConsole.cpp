@@ -1,7 +1,6 @@
 #include "TargetControllerConsole.hpp"
 
 #include <cstdint>
-#include <thread>
 
 #include "src/EventManager/Events/Events.hpp"
 #include "src/Logger/Logger.hpp"
