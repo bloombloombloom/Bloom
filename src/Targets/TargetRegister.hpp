@@ -11,7 +11,7 @@
 
 namespace Bloom::Targets
 {
-    enum class TargetRegisterType: int
+    enum class TargetRegisterType: std::uint8_t
     {
         GENERAL_PURPOSE_REGISTER,
         PROGRAM_COUNTER,
@@ -68,7 +68,7 @@ namespace std
     {
     public:
         std::size_t operator()(const Bloom::Targets::TargetRegisterDescriptor& descriptor) const {
-            return descriptor.startAddress.value_or(0) + static_cast<std::size_t>(descriptor.type);
+            return descriptor.startAddress.value_or(0) + static_cast<std::uint8_t>(descriptor.type);
         }
     };
 }
