@@ -9,12 +9,12 @@ void Logger::log(const std::string& message, LogLevel logLevel, bool print) {
     auto logEntry = LogEntry(message, logLevel);
     Logger::logEntries.push_back(logEntry);
     auto index = Logger::logEntries.size();
+    static auto timezoneAbbreviation = DateTime::getTimeZoneAbbreviation(logEntry.timestamp).toStdString();
 
     if (print) {
         // Print the timestamp and index in a green font color:
         std::cout << "\033[32m";
-        std::cout << logEntry.timestamp.toString("yyyy-MM-dd hh:mm:ss ").toStdString() +
-            DateTime::getTimeZoneAbbreviation(logEntry.timestamp).toStdString();
+        std::cout << logEntry.timestamp.toString("yyyy-MM-dd hh:mm:ss ").toStdString() + timezoneAbbreviation;
 
         if (!logEntry.threadName.empty()) {
             std::cout << " [" << logEntry.threadName << "]";
