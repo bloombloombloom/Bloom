@@ -31,6 +31,7 @@ find_package(Qt6Widgets)
 find_package(Qt6Xml)
 find_package(Qt6Svg)
 find_package(Qt6UiTools)
+find_package(Qt6SvgWidgets)
 
 set(CMAKE_SKIP_BUILD_RPATH false)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
@@ -178,6 +179,7 @@ target_link_libraries(Bloom Qt6::UiTools)
 target_link_libraries(Bloom Qt6::Widgets)
 target_link_libraries(Bloom Qt6::Xml)
 target_link_libraries(Bloom Qt6::Svg)
+target_link_libraries(Bloom Qt6::SvgWidgets)
 
 target_compile_options(
     Bloom
