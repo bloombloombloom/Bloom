@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "Event.hpp"
+#include "RegistersWrittenToTarget.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
 namespace Bloom::Events
@@ -11,6 +12,8 @@ namespace Bloom::Events
     class WriteRegistersToTarget: public Event
     {
     public:
+        using TargetControllerResponseType = RegistersWrittenToTarget;
+
         static inline EventType type = EventType::WRITE_REGISTERS_TO_TARGET;
         static inline const std::string name = "WriteRegistersToTarget";
         Targets::TargetRegisters registers;

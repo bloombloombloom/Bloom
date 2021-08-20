@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "Event.hpp"
+#include "MemoryWrittenToTarget.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::Events
@@ -12,6 +13,8 @@ namespace Bloom::Events
     class WriteMemoryToTarget: public Event
     {
     public:
+        using TargetControllerResponseType = MemoryWrittenToTarget;
+
         static inline EventType type = EventType::WRITE_MEMORY_TO_TARGET;
         static inline const std::string name = "WriteMemoryToTarget";
         Targets::TargetMemoryType memoryType = Targets::TargetMemoryType::RAM;

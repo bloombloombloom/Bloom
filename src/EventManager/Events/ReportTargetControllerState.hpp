@@ -3,12 +3,15 @@
 #include <string>
 
 #include "Event.hpp"
+#include "TargetControllerStateReported.hpp"
 
 namespace Bloom::Events
 {
     class ReportTargetControllerState: public Event
     {
     public:
+        using TargetControllerResponseType = TargetControllerStateReported;
+
         static inline EventType type = EventType::REPORT_TARGET_CONTROLLER_STATE;
         static inline const std::string name = "ReportTargetControllerState";
 

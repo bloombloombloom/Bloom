@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Event.hpp"
+#include "BreakpointRemovedOnTarget.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
 
 namespace Bloom::Events
@@ -11,6 +12,8 @@ namespace Bloom::Events
     class RemoveBreakpointOnTarget: public Event
     {
     public:
+        using TargetControllerResponseType = BreakpointRemovedOnTarget;
+
         static inline EventType type = EventType::REMOVE_BREAKPOINT_ON_TARGET;
         static inline const std::string name = "RemoveBreakpointOnTarget";
         Targets::TargetBreakpoint breakpoint;

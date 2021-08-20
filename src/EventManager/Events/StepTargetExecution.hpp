@@ -4,12 +4,15 @@
 #include <string>
 
 #include "Event.hpp"
+#include "TargetExecutionResumed.hpp"
 
 namespace Bloom::Events
 {
     class StepTargetExecution: public Event
     {
     public:
+        using TargetControllerResponseType = TargetExecutionResumed;
+
         static inline EventType type = EventType::STEP_TARGET_EXECUTION;
         static inline const std::string name = "StepTargetExecution";
         std::optional<std::uint32_t> fromProgramCounter;
