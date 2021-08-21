@@ -36,6 +36,15 @@ namespace Bloom::Targets
         bool operator == (const TargetRegisterDescriptor& other) const {
             return this->startAddress.value_or(0) == other.startAddress.value_or(0) && this->type == other.type;
         }
+
+        bool operator < (const TargetRegisterDescriptor& other) const {
+            if (this->startAddress.has_value() && other.startAddress.has_value()) {
+                return this->startAddress.value_or(0) < other.startAddress.value_or(0);
+
+            } else {
+                return this->name.value_or("") < other.name.value_or("");
+            }
+        }
     };
 
     struct TargetRegister
