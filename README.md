@@ -80,7 +80,7 @@ sudo add-apt-repository ppa:ondrej/php;
 sudo apt-get install php8.0-cli php8.0-xml;
 ```
 
-#### Qt Version 5.12.10 or later
+#### Qt Version 6.1.2 or later
 It's best to install this via the Qt installer: https://www.qt.io/download
 
 You may also need to install mesa-common-dev and libglu1-mesa-dev (Qt dependencies):
@@ -97,7 +97,7 @@ sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
 #### Notes on compiling:
 
 - If CMake fails to find the Qt packages, you may need to tell it where to look:
-`export CMAKE_PREFIX_PATH=/path/to/Qt-installation/5.12.10/gcc_64/`
+`export CMAKE_PREFIX_PATH=/path/to/Qt-installation/6.1.2/gcc_64/`
 - Use the build directory build/cmake-build-debug, when generating the build system for the debug build as it's already 
   gitingored. (You'll have to create it)
 - Use the build directory build/cmake-build-release, when generating the build system for the release build as it's 
@@ -123,6 +123,8 @@ sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
 - To use Gammaray for GUI debugging, be sure to build Bloom with the debug configuration. Your local installation of
   Gammaray will likely be incompatible with the distributed Qt binaries, which ld will use if you've built with the
   release config. Building with the debug config will disable the RPATH and prevent Qt from loading any plugins from 
-  the distribution directory.
+  the distribution directory. NOTE: Since upgrading to Qt6, Gammaray has not been of much use. It doesn't currently
+  support Qt6, but I've tried building the `work/qt6-support` branch from https://github.com/KDAB/GammaRay and it 
+  *kind of* works. It crashes a lot.
 
 More documentation to follow.
