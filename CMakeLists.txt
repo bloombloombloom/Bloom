@@ -124,6 +124,7 @@ add_executable(Bloom
     # Insight
     src/Insight/Insight.cpp
     src/Insight/InsightWorker.cpp
+    src/Insight/UserInterfaces/InsightWindow/UiLoader.cpp
     src/Insight/UserInterfaces/InsightWindow/InsightWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/AboutWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/SvgWidget.cpp
