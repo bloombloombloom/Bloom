@@ -1,3 +1,5 @@
+#include "Application.hpp"
+
 #include <iostream>
 #include <csignal>
 #include <QtCore>
@@ -6,7 +8,6 @@
 #include <unistd.h>
 #include <filesystem>
 
-#include "Application.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"
 #include "SignalHandler/SignalHandler.hpp"

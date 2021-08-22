@@ -3,7 +3,6 @@
 #include <QtCore>
 #include <QApplication>
 
-#include "UserInterfaces/InsightWindow/InsightWindow.hpp"
 #include "src/Helpers/Thread.hpp"
 #include "src/ApplicationConfig.hpp"
 #include "src/EventManager/EventManager.hpp"

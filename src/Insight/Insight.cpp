@@ -62,16 +62,6 @@ void Insight::startup() {
     qRegisterMetaType<Bloom::Targets::TargetState>();
     qRegisterMetaType<std::map<int, Bloom::Targets::TargetPinState>>();
 
-    this->mainWindow.setInsightConfig(this->insightConfig);
-    this->mainWindow.setEnvironmentConfig(this->environmentConfig);
-
-    this->mainWindow.init(
-        this->application,
-        targetDescriptor
-    );
-
-    this->mainWindow.show();
-
     /*
      * We can't run our own event loop here - we have to use Qt's event loop. But we still need to be able to
      * process our events. To address this, we use a QTimer to dispatch our events on an interval.
@@ -83,22 +73,32 @@ void Insight::startup() {
     eventDispatchTimer->start(100);
 
     // Prepare worker thread
-    auto worker = new InsightWorker(this->eventManager);
     this->workerThread = new QThread();
     this->workerThread->setObjectName("IW");
-    worker->moveToThread(this->workerThread);
-    connect(this->workerThread, &QThread::started, worker, &InsightWorker::startup);
-    connect(this->workerThread, &QThread::finished, worker, &QObject::deleteLater);
+    this->insightWorker->moveToThread(this->workerThread);
+    connect(this->workerThread, &QThread::started, this->insightWorker, &InsightWorker::startup);
+    connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);
     connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
 
-    connect(worker, &InsightWorker::targetControllerSuspended, &(this->mainWindow), &InsightWindow::onTargetControllerSuspended);
-    connect(worker, &InsightWorker::targetControllerResumed, &(this->mainWindow), &InsightWindow::onTargetControllerResumed);
-    connect(worker, &InsightWorker::targetStateUpdated, &(this->mainWindow), &InsightWindow::onTargetStateUpdate);
-    connect(worker, &InsightWorker::targetProgramCounterUpdated, &(this->mainWindow), &InsightWindow::onTargetProgramCounterUpdate);
-    connect(worker, &InsightWorker::targetPinStatesUpdated, &(this->mainWindow), &InsightWindow::onTargetPinStatesUpdate);
-    connect(worker, &InsightWorker::targetIoPortsUpdated, &(this->mainWindow), &InsightWindow::onTargetIoPortsUpdate);
-    connect(&(this->mainWindow), &InsightWindow::refreshTargetPinStates, worker, &InsightWorker::requestPinStates);
-    connect(&(this->mainWindow), &InsightWindow::setTargetPinState, worker, &InsightWorker::requestPinStateUpdate);
+    connect(this->insightWorker, &InsightWorker::targetControllerSuspended, &(this->mainWindow), &InsightWindow::onTargetControllerSuspended);
+    connect(this->insightWorker, &InsightWorker::targetControllerResumed, &(this->mainWindow), &InsightWindow::onTargetControllerResumed);
+    connect(this->insightWorker, &InsightWorker::targetStateUpdated, &(this->mainWindow), &InsightWindow::onTargetStateUpdate);
+    connect(this->insightWorker, &InsightWorker::targetProgramCounterUpdated, &(this->mainWindow), &InsightWindow::onTargetProgramCounterUpdate);
+    connect(this->insightWorker, &InsightWorker::targetPinStatesUpdated, &(this->mainWindow), &InsightWindow::onTargetPinStatesUpdate);
+    connect(this->insightWorker, &InsightWorker::targetIoPortsUpdated, &(this->mainWindow), &InsightWindow::onTargetIoPortsUpdate);
+    connect(&(this->mainWindow), &InsightWindow::refreshTargetPinStates, this->insightWorker, &InsightWorker::requestPinStates);
+    connect(&(this->mainWindow), &InsightWindow::setTargetPinState, this->insightWorker, &InsightWorker::requestPinStateUpdate);
+
+    this->mainWindow.setInsightConfig(this->insightConfig);
+    this->mainWindow.setEnvironmentConfig(this->environmentConfig);
+
+    this->mainWindow.init(
+        this->application,
+        *(this->insightWorker),
+        targetDescriptor
+    );
+
+    this->mainWindow.show();
 }
 
 void Insight::shutdown() {

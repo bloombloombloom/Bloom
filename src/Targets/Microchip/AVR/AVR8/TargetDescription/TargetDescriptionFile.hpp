@@ -10,6 +10,7 @@
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PadDescriptor.hpp"
 #include "src/Targets/TargetVariant.hpp"
+#include "src/Targets/TargetRegister.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 {
@@ -184,12 +185,22 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          */
         [[nodiscard]] const auto& getSupportedDebugPhysicalInterfaces() const {
             return this->supportedDebugPhysicalInterfaces;
-        };
+        }
 
+        /**
+         * Returns a mapping of all pad descriptors extracted from TDF, mapped by name.
+         *
+         * @return
+         */
         [[nodiscard]] const auto& getPadDescriptorsMappedByName() const {
             return this->padDescriptorsByName;
-        };
+        }
 
+        /**
+         * Returns a mapping of all target variants extracted from the TDF, mapped by ID.
+         *
+         * @return
+         */
         [[nodiscard]] const auto& getVariantsMappedById() const {
             return this->targetVariantsById;
         }

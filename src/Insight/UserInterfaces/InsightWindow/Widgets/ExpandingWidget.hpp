@@ -3,8 +3,6 @@
 #include <QWidget>
 #include <QSize>
 
-#include "src/Logger/Logger.hpp"
-
 namespace Bloom::Widgets
 {
     class Q_WIDGETS_EXPORT ExpandingWidget: public QWidget
@@ -25,8 +23,8 @@ namespace Bloom::Widgets
             return this->minimumSizeHint();
         };
 
-
     public:
         explicit ExpandingWidget(QWidget* parent): QWidget(parent) {};
+
     };
 }

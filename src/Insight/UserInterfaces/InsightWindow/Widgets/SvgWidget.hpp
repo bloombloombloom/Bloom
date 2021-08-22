@@ -5,8 +5,6 @@
 #include <QString>
 #include <QSize>
 
-#include "src/Logger/Logger.hpp"
-
 namespace Bloom::Widgets
 {
     class SvgWidget: public QFrame
@@ -63,8 +61,5 @@ namespace Bloom::Widgets
             return this->angle;
         }
 
-//        [[nodiscard]] QSize sizeHint() const override {
-//            return QSize(this->containerWidth, this->containerHeight);
-//        };
     };
 }

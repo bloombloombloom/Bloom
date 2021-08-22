@@ -4,7 +4,6 @@
 #include <QString>
 
 #include "SvgWidget.hpp"
-#include "src/Logger/Logger.hpp"
 
 namespace Bloom::Widgets
 {

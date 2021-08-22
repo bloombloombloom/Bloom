@@ -4,8 +4,6 @@
 #include <QEvent>
 #include <QMouseEvent>
 
-#include "src/Logger/Logger.hpp"
-
 namespace Bloom::Widgets
 {
     class Q_WIDGETS_EXPORT ClickableWidget: public QFrame

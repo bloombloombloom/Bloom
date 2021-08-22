@@ -124,21 +124,21 @@ TargetSignature TargetDescriptionFile::getTargetSignature() const {
     std::optional<unsigned char> signatureByteOne;
     std::optional<unsigned char> signatureByteTwo;
 
-    if (signatureProperties.find("signature0") != signatureProperties.end()) {
+    if (signatureProperties.contains("signature0")) {
         signatureByteZero = static_cast<unsigned char>(
-            signatureProperties.find("signature0")->second.value.toShort(nullptr, 16)
+            signatureProperties.at("signature0").value.toShort(nullptr, 16)
         );
     }
 
-    if (signatureProperties.find("signature1") != signatureProperties.end()) {
+    if (signatureProperties.contains("signature1")) {
         signatureByteOne = static_cast<unsigned char>(
-            signatureProperties.find("signature1")->second.value.toShort(nullptr, 16)
+            signatureProperties.at("signature1").value.toShort(nullptr, 16)
         );
     }
 
-    if (signatureProperties.find("signature2") != signatureProperties.end()) {
+    if (signatureProperties.contains("signature2")) {
         signatureByteTwo = static_cast<unsigned char>(
-            signatureProperties.find("signature2")->second.value.toShort(nullptr, 16)
+            signatureProperties.at("signature2").value.toShort(nullptr, 16)
         );
     }
 
@@ -262,7 +262,7 @@ TargetParameters TargetDescriptionFile::getTargetParameters() const {
 
     if (supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)
         || supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)
-        ) {
+    ) {
         this->loadDebugWireAndJtagTargetParameters(targetParameters);
     }
 

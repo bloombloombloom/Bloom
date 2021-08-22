@@ -6,8 +6,6 @@
 #include <QMouseEvent>
 #include <QEnterEvent>
 
-#include "src/Logger/Logger.hpp"
-
 namespace Bloom::Widgets
 {
     class Q_WIDGETS_EXPORT SlidingHandleWidget: public QFrame

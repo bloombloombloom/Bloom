@@ -2,8 +2,6 @@
 
 #include <QPainter>
 
-#include "src/Logger/Logger.hpp"
-
 using namespace Bloom::Widgets;
 
 void RotatableLabel::paintEvent(QPaintEvent* event) {

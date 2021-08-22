@@ -2,12 +2,12 @@
 
 #include <QtCore>
 #include <QApplication>
-#include "UserInterfaces/InsightWindow/InsightWindow.hpp"
 
 #include "src/Helpers/Thread.hpp"
 #include "src/ApplicationConfig.hpp"
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
+#include "UserInterfaces/InsightWindow/InsightWindow.hpp"
 #include "src/TargetController/TargetControllerConsole.hpp"
 
 namespace Bloom
@@ -36,6 +36,7 @@ namespace Bloom
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightEventListener");
 
         QApplication application;
+        InsightWorker* insightWorker = new InsightWorker(this->eventManager);
         InsightWindow mainWindow;
 
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(

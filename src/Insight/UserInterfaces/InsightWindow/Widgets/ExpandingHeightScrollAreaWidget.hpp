@@ -4,8 +4,6 @@
 #include <QScrollArea>
 #include <QSize>
 
-#include "src/Logger/Logger.hpp"
-
 namespace Bloom::Widgets
 {
     class Q_WIDGETS_EXPORT ExpandingHeightScrollAreaWidget: public QScrollArea
@@ -37,8 +35,8 @@ namespace Bloom::Widgets
             return this->scrollAreaSize();
         };
 
-
     public:
         explicit ExpandingHeightScrollAreaWidget(QWidget* parent): QScrollArea(parent) {};
+
     };
 }

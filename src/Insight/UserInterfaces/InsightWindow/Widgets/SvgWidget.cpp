@@ -2,7 +2,6 @@
 
 #include <QPainter>
 #include <cmath>
-#include "src/Logger/Logger.hpp"
 
 using namespace Bloom::Widgets;
 
