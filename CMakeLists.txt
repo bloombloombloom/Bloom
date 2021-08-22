@@ -127,6 +127,7 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/UiLoader.cpp
     src/Insight/UserInterfaces/InsightWindow/InsightWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/AboutWindow.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/RotatableLabel.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/SvgWidget.cpp
 
     # Target package widgets
