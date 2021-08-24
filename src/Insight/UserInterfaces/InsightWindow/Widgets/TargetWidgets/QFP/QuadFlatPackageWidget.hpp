@@ -32,8 +32,6 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         void drawWidget(QPainter& painter);
 
     public:
-        static const int PIN_WIDGET_LAYOUT_PADDING = 46;
-        static const int PIN_WIDGET_SPACING = 8;
         QuadFlatPackageWidget(const Targets::TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent);
     };
 }

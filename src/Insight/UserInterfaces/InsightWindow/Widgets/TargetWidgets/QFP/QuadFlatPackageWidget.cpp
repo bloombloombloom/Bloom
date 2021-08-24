@@ -39,19 +39,19 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     this->horizontalLayout->setDirection(QBoxLayout::Direction::LeftToRight);
 
     this->topPinLayout = new QHBoxLayout();
-    this->topPinLayout->setSpacing(QuadFlatPackageWidget::PIN_WIDGET_SPACING);
+    this->topPinLayout->setSpacing(PinWidget::PIN_WIDGET_SPACING);
     this->topPinLayout->setDirection(QBoxLayout::Direction::RightToLeft);
 
     this->rightPinLayout = new QVBoxLayout();
-    this->rightPinLayout->setSpacing(QuadFlatPackageWidget::PIN_WIDGET_SPACING);
+    this->rightPinLayout->setSpacing(PinWidget::PIN_WIDGET_SPACING);
     this->rightPinLayout->setDirection(QBoxLayout::Direction::BottomToTop);
 
     this->bottomPinLayout = new QHBoxLayout();
-    this->bottomPinLayout->setSpacing(QuadFlatPackageWidget::PIN_WIDGET_SPACING);
+    this->bottomPinLayout->setSpacing(PinWidget::PIN_WIDGET_SPACING);
     this->bottomPinLayout->setDirection(QBoxLayout::Direction::LeftToRight);
 
     this->leftPinLayout = new QVBoxLayout();
-    this->leftPinLayout->setSpacing(QuadFlatPackageWidget::PIN_WIDGET_SPACING);
+    this->leftPinLayout->setSpacing(PinWidget::PIN_WIDGET_SPACING);
     this->leftPinLayout->setDirection(QBoxLayout::Direction::TopToBottom);
 
     auto insightWindow = qobject_cast<InsightWindow*>(insightWindowObj);
@@ -101,8 +101,8 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     insightWindowWidget->setMinimumWidth(
         std::max(
             1000,
-            static_cast<int>((PinWidget::MAXIMUM_VERTICAL_WIDTH * pinCountPerLayout)
-                + (PinWidget::MAXIMUM_VERTICAL_WIDTH * 2)) + 300
+            static_cast<int>(((PinWidget::MAXIMUM_VERTICAL_WIDTH + PinWidget::PIN_WIDGET_SPACING)  * pinCountPerLayout)
+                + (PinWidget::MAXIMUM_VERTICAL_WIDTH * 2)) + 600
         )
     );
 }
@@ -130,11 +130,11 @@ void QuadFlatPackageWidget::drawWidget(QPainter& painter) {
      * Horizontal layouts are the right and left pin layouts - the ones that hold horizontal pin widgets.
      * The bottom and top layouts are vertical layouts, as they hold the vertical pin widgets.
      */
-    auto horizontalLayoutHeight = ((horizontalPinWidgetHeight + QuadFlatPackageWidget::PIN_WIDGET_SPACING) * pinCountPerLayout
-        + QuadFlatPackageWidget::PIN_WIDGET_LAYOUT_PADDING - QuadFlatPackageWidget::PIN_WIDGET_SPACING);
+    auto horizontalLayoutHeight = ((horizontalPinWidgetHeight + PinWidget::PIN_WIDGET_SPACING) * pinCountPerLayout
+        + PinWidget::PIN_WIDGET_LAYOUT_PADDING - PinWidget::PIN_WIDGET_SPACING);
 
-    auto verticalLayoutWidth = ((verticalPinWidgetWidth + QuadFlatPackageWidget::PIN_WIDGET_SPACING) * pinCountPerLayout
-        + QuadFlatPackageWidget::PIN_WIDGET_LAYOUT_PADDING - QuadFlatPackageWidget::PIN_WIDGET_SPACING);
+    auto verticalLayoutWidth = ((verticalPinWidgetWidth + PinWidget::PIN_WIDGET_SPACING) * pinCountPerLayout
+        + PinWidget::PIN_WIDGET_LAYOUT_PADDING - PinWidget::PIN_WIDGET_SPACING);
 
     auto containerWidth = verticalLayoutWidth + (horizontalPinWidgetWidth * 2);
 
@@ -180,7 +180,7 @@ void QuadFlatPackageWidget::drawWidget(QPainter& painter) {
         verticalPinWidgetHeight
     ));
 
-    auto pinWidgetLayoutMargin = QuadFlatPackageWidget::PIN_WIDGET_LAYOUT_PADDING / 2;
+    auto pinWidgetLayoutMargin = PinWidget::PIN_WIDGET_LAYOUT_PADDING / 2;
 
     this->topPinLayout->setContentsMargins(
         pinWidgetLayoutMargin,
