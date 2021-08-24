@@ -260,6 +260,16 @@ void InsightWindow::deactivate() {
 }
 
 bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
+    /*
+     * Because the size of the pin body widget is fixed, for all of our target package widgets, we run out of screen
+     * estate for target variants with more than 100 pins.
+     *
+     * This will be addressed at some point, but for now, we just won't support variants with more than 100 pins.
+     */
+    if (variant.pinDescriptorsByNumber.size() > 100) {
+        return false;
+    }
+
     if (variant.package == TargetPackage::DIP
         || variant.package == TargetPackage::SOIC
         || variant.package == TargetPackage::SSOP
