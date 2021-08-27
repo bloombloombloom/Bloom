@@ -43,6 +43,7 @@ namespace Bloom::Targets::TargetDescription
         std::map<std::string, PropertyGroup> propertyGroupsMappedByName;
         std::map<std::string, Module> modulesMappedByName;
         std::map<std::string, Module> peripheralModulesMappedByName;
+        std::map<std::string, std::vector<RegisterGroup>> peripheralRegisterGroupsMappedByModuleRegisterGroupName;
         std::vector<Variant> variants;
         std::map<std::string, Pinout> pinoutsMappedByName;
         std::map<std::string, Interface> interfacesByName;

@@ -1,11 +1,12 @@
+#include "TargetDescriptionFile.hpp"
+
 #include <QJsonDocument>
 #include <QJsonArray>
 
-#include "TargetDescriptionFile.hpp"
+#include "src/Helpers/Paths.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Targets/TargetDescription/Exceptions/TargetDescriptionParsingFailureException.hpp"
 #include "src/Logger/Logger.hpp"
-#include "src/Helpers/Paths.hpp"
 
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription;
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
@@ -467,25 +468,31 @@ void TargetDescriptionFile::loadTargetRegisterDescriptors() {
     auto& peripheralModulesByName = this->peripheralModulesMappedByName;
 
     for (const auto& [moduleName, module] : modulesByName) {
-        auto moduleRegisterAddressOffset = this->getRegisterAddressOffsetByModuleName(moduleName);
         for (const auto& [registerGroupName, registerGroup] : module.registerGroupsMappedByName) {
-            for (const auto& [moduleRegisterName, moduleRegister] : registerGroup.registersMappedByName) {
-                if (moduleRegister.size < 1) {
-                    continue;
+            if (this->peripheralRegisterGroupsMappedByModuleRegisterGroupName.contains(registerGroupName)) {
+                auto& peripheralRegisterGroups = this->peripheralRegisterGroupsMappedByModuleRegisterGroupName
+                    .at(registerGroupName);
+                for (const auto& peripheralRegisterGroup : peripheralRegisterGroups) {
+                    for (const auto& [moduleRegisterName, moduleRegister] : registerGroup.registersMappedByName) {
+                        if (moduleRegister.size < 1) {
+                            continue;
+                        }
+
+                        auto registerDescriptor = TargetRegisterDescriptor();
+                        registerDescriptor.type = TargetRegisterType::OTHER;
+                        registerDescriptor.name = moduleRegisterName;
+                        registerDescriptor.groupName = peripheralRegisterGroup.name;
+                        registerDescriptor.size = moduleRegister.size;
+                        registerDescriptor.startAddress = moduleRegister.offset
+                            + peripheralRegisterGroup.offset.value_or(0);
+
+                        if (moduleRegister.caption.has_value() && !moduleRegister.caption->empty()) {
+                            registerDescriptor.description = moduleRegister.caption;
+                        }
+
+                        this->targetRegisterDescriptorsByType[registerDescriptor.type].emplace_back(registerDescriptor);
+                    }
                 }
-
-                auto registerDescriptor = TargetRegisterDescriptor();
-                registerDescriptor.type = TargetRegisterType::OTHER;
-                registerDescriptor.name = moduleRegisterName;
-                registerDescriptor.groupName = registerGroupName;
-                registerDescriptor.size = moduleRegister.size;
-                registerDescriptor.startAddress = moduleRegister.offset + moduleRegisterAddressOffset;
-
-                if (moduleRegister.caption.has_value() && !moduleRegister.caption->empty()) {
-                    registerDescriptor.description = moduleRegister.caption;
-                }
-
-                this->targetRegisterDescriptorsByType[registerDescriptor.type].emplace_back(registerDescriptor);
             }
         }
     }

@@ -169,9 +169,9 @@ RegisterGroup TargetDescriptionFile::generateRegisterGroupFromXml(const QDomElem
         throw Exception("Empty register group name");
     }
 
-    registerGroup.moduleName = xmlElement.hasAttribute("name-in-module")
-        ? xmlElement.attribute("name-in-module").toLower().toStdString()
-        : registerGroup.name;
+    if (xmlElement.hasAttribute("name-in-module")) {
+        registerGroup.moduleName = xmlElement.attribute("name-in-module").toLower().toStdString();
+    }
 
     if (xmlElement.hasAttribute("offset")) {
         registerGroup.offset = xmlElement.attribute("offset").toInt(nullptr, 16);
@@ -315,6 +315,11 @@ void TargetDescriptionFile::loadPeripheralModules() {
             );
 
             module.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
+
+            if (registerGroup.moduleName.has_value()) {
+                this->peripheralRegisterGroupsMappedByModuleRegisterGroupName[registerGroup.moduleName.value()]
+                    .emplace_back(registerGroup);
+            }
         }
 
         auto instanceNodes = moduleElement.elementsByTagName("instance");
