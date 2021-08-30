@@ -15,7 +15,7 @@ namespace Bloom::Targets
         std::string name;
         std::string id;
         std::uint32_t ramSize;
-        std::map<TargetRegisterType, std::vector<TargetRegisterDescriptor>> registerDescriptorsByType;
+        std::map<TargetRegisterType, TargetRegisterDescriptors> registerDescriptorsByType;
         std::vector<TargetVariant> variants;
     };
 }

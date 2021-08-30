@@ -29,7 +29,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<TargetParameters> targetParameters;
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
-        std::map<TargetRegisterType, std::vector<TargetRegisterDescriptor>> targetRegisterDescriptorsByType;
+        std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
 
         /**
          * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.

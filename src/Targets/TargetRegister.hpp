@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 #include <map>
+#include <set>
 
 #include "TargetMemory.hpp"
 
@@ -76,7 +77,7 @@ namespace Bloom::Targets
     };
 
     using TargetRegisters = std::vector<TargetRegister>;
-    using TargetRegisterDescriptors = std::vector<TargetRegisterDescriptor>;
+    using TargetRegisterDescriptors = std::set<TargetRegisterDescriptor>;
 }
 
 namespace std

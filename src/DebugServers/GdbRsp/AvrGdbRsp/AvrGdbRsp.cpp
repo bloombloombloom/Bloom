@@ -27,36 +27,31 @@ void AvrGdbRsp::loadRegisterNumberToDescriptorMapping() {
         throw Exception("Unexpected general purpose register count");
     }
 
-
     auto& gpRegisterDescriptors = registerDescriptorsByType.at(TargetRegisterType::GENERAL_PURPOSE_REGISTER);
-    std::sort(
-        gpRegisterDescriptors.begin(),
-        gpRegisterDescriptors.end(),
-        [](const TargetRegisterDescriptor& descriptorA, const TargetRegisterDescriptor& descriptorB) {
-            return descriptorA.startAddress.value() < descriptorB.startAddress.value();
-        }
-    );
 
-    for (std::size_t descriptorIndex = 0; descriptorIndex < gpRegisterDescriptors.size(); descriptorIndex++) {
+    std::size_t descriptorIndex = 0;
+    for (auto& descriptor : gpRegisterDescriptors) {
         this->registerNumberToDescriptorMapping.insert(std::pair(
             static_cast<GdbRegisterNumber>(descriptorIndex),
-            gpRegisterDescriptors[descriptorIndex]
+            descriptor
         ));
+
+        descriptorIndex++;
     }
 
     this->registerNumberToDescriptorMapping.insert(std::pair(
         static_cast<GdbRegisterNumber>(32),
-        registerDescriptorsByType.at(TargetRegisterType::STATUS_REGISTER).front()
+        *(registerDescriptorsByType.at(TargetRegisterType::STATUS_REGISTER).begin())
     ));
 
     this->registerNumberToDescriptorMapping.insert(std::pair(
         static_cast<GdbRegisterNumber>(33),
-        registerDescriptorsByType.at(TargetRegisterType::STACK_POINTER).front()
+        *(registerDescriptorsByType.at(TargetRegisterType::STACK_POINTER).begin())
     ));
 
     this->registerNumberToDescriptorMapping.insert(std::pair(
         static_cast<GdbRegisterNumber>(34),
-        registerDescriptorsByType.at(TargetRegisterType::PROGRAM_COUNTER).front()
+        *(registerDescriptorsByType.at(TargetRegisterType::PROGRAM_COUNTER).begin())
     ));
 }
 

@@ -268,12 +268,12 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadRegisters& packet) {
 
         if (packet.registerNumber.has_value()) {
             Logger::debug("Reading register number: " + std::to_string(packet.registerNumber.value()));
-            descriptors.push_back(this->getRegisterDescriptorFromNumber(packet.registerNumber.value()));
+            descriptors.insert(this->getRegisterDescriptorFromNumber(packet.registerNumber.value()));
 
         } else {
             // Read all descriptors
             for (auto& descriptor : registerNumberToDescriptorMapping.getMap()) {
-                descriptors.push_back(descriptor.second);
+                descriptors.insert(descriptor.second);
             }
         }
 

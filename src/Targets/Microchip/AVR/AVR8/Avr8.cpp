@@ -67,7 +67,7 @@ void Avr8::loadTargetRegisterDescriptors() {
         generalPurposeRegisterDescriptor.name = "R" + std::to_string(i);
         generalPurposeRegisterDescriptor.groupName = "General Purpose CPU Registers";
 
-        this->targetRegisterDescriptorsByType[generalPurposeRegisterDescriptor.type].emplace_back(
+        this->targetRegisterDescriptorsByType[generalPurposeRegisterDescriptor.type].insert(
             generalPurposeRegisterDescriptor
         );
     }
@@ -101,13 +101,13 @@ void Avr8::loadTargetRegisterDescriptors() {
     programCounterRegisterDescriptor.groupName = "CPU";
     programCounterRegisterDescriptor.description = "Program Counter";
 
-    this->targetRegisterDescriptorsByType[stackPointerRegisterDescriptor.type].emplace_back(
+    this->targetRegisterDescriptorsByType[stackPointerRegisterDescriptor.type].insert(
         stackPointerRegisterDescriptor
     );
-    this->targetRegisterDescriptorsByType[statusRegisterDescriptor.type].emplace_back(
+    this->targetRegisterDescriptorsByType[statusRegisterDescriptor.type].insert(
         statusRegisterDescriptor
     );
-    this->targetRegisterDescriptorsByType[programCounterRegisterDescriptor.type].emplace_back(
+    this->targetRegisterDescriptorsByType[programCounterRegisterDescriptor.type].insert(
         programCounterRegisterDescriptor
     );
 }
