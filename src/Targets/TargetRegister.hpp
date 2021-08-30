@@ -22,6 +22,14 @@ namespace Bloom::Targets
 
     struct TargetRegisterDescriptor
     {
+        friend std::hash<Bloom::Targets::TargetRegisterDescriptor>;
+
+    private:
+        mutable std::optional<std::size_t> cachedHash;
+
+        std::size_t getHash() const;
+
+    public:
         std::optional<std::uint32_t> startAddress;
         std::uint32_t size = 0;
         TargetRegisterType type = TargetRegisterType::OTHER;
@@ -30,19 +38,26 @@ namespace Bloom::Targets
         std::optional<std::string> groupName;
         std::optional<std::string> description;
 
+        bool readable = false;
+        bool writable = false;
+
         TargetRegisterDescriptor() = default;
         explicit TargetRegisterDescriptor(TargetRegisterType type): type(type) {};
 
         bool operator == (const TargetRegisterDescriptor& other) const {
-            return this->startAddress.value_or(0) == other.startAddress.value_or(0) && this->type == other.type;
+            return this->getHash() == other.getHash();
         }
 
         bool operator < (const TargetRegisterDescriptor& other) const {
-            if (this->startAddress.has_value() && other.startAddress.has_value()) {
+            if (this->type == other.type) {
                 return this->startAddress.value_or(0) < other.startAddress.value_or(0);
 
             } else {
-                return this->name.value_or("") < other.name.value_or("");
+                /*
+                 * If the registers are of different type, there is no meaningful way to sort them, so we just use
+                 * the unique hash.
+                 */
+                return this->getHash() < other.getHash();
             }
         }
     };
@@ -77,7 +92,7 @@ namespace std
     {
     public:
         std::size_t operator()(const Bloom::Targets::TargetRegisterDescriptor& descriptor) const {
-            return descriptor.startAddress.value_or(0) + static_cast<std::uint8_t>(descriptor.type);
+            return descriptor.getHash();
         }
     };
 }
