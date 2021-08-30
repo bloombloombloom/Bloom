@@ -66,7 +66,7 @@ TargetDescriptionFile::TargetDescriptionFile(
                 matchingDescriptionFiles.begin(),
                 matchingDescriptionFiles.end(),
                 std::back_inserter(targetNames),
-                [](const QJsonValue& descriptionFile) {
+                [] (const QJsonValue& descriptionFile) {
                     return QString("\"" + descriptionFile.toObject().find("targetName")->toString().toLower() + "\"");
                 }
             );
@@ -473,6 +473,11 @@ void TargetDescriptionFile::loadTargetRegisterDescriptors() {
                 auto& peripheralRegisterGroups = this->peripheralRegisterGroupsMappedByModuleRegisterGroupName
                     .at(registerGroupName);
                 for (const auto& peripheralRegisterGroup : peripheralRegisterGroups) {
+                    if (peripheralRegisterGroup.addressSpaceId.value_or("") != "data") {
+                        // Currently, we only deal with registers in the data address space.
+                        continue;
+                    }
+
                     for (const auto& [moduleRegisterName, moduleRegister] : registerGroup.registersMappedByName) {
                         if (moduleRegister.size < 1) {
                             continue;

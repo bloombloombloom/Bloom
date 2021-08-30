@@ -173,6 +173,10 @@ RegisterGroup TargetDescriptionFile::generateRegisterGroupFromXml(const QDomElem
         registerGroup.moduleName = xmlElement.attribute("name-in-module").toLower().toStdString();
     }
 
+    if (xmlElement.hasAttribute("address-space")) {
+        registerGroup.addressSpaceId = xmlElement.attribute("address-space").toLower().toStdString();
+    }
+
     if (xmlElement.hasAttribute("offset")) {
         registerGroup.offset = xmlElement.attribute("offset").toInt(nullptr, 16);
     }

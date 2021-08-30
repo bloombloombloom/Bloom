@@ -20,6 +20,7 @@ namespace Bloom::Targets::TargetDescription
         std::string name;
         std::optional<std::string> moduleName;
         std::optional<std::uint16_t> offset;
+        std::optional<std::string> addressSpaceId;
         std::map<std::string, Register> registersMappedByName;
     };
 }
