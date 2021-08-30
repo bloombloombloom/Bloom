@@ -219,6 +219,10 @@ Register TargetDescriptionFile::generateRegisterFromXml(const QDomElement& xmlEl
         reg.caption = xmlElement.attribute("caption").toStdString();
     }
 
+    if (xmlElement.hasAttribute("ocd-rw")) {
+        reg.readWriteAccess = xmlElement.attribute("ocd-rw").toLower().toStdString();
+    }
+
     bool conversionStatus;
     reg.size = xmlElement.attribute("size").toUShort(nullptr, 10);
     reg.offset = xmlElement.attribute("offset").toUShort(&conversionStatus, 16);

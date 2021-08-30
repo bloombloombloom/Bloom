@@ -495,7 +495,21 @@ void TargetDescriptionFile::loadTargetRegisterDescriptors() {
                             registerDescriptor.description = moduleRegister.caption;
                         }
 
-                        this->targetRegisterDescriptorsByType[registerDescriptor.type].emplace_back(registerDescriptor);
+                        if (moduleRegister.readWriteAccess.has_value()) {
+                            auto& readWriteAccess = moduleRegister.readWriteAccess.value();
+                            registerDescriptor.readable = readWriteAccess.find('r') != std::string::npos;
+                            registerDescriptor.writable = readWriteAccess.find('w') != std::string::npos;
+
+                        } else {
+                            /*
+                             * If the TDF doesn't specify the OCD read/write access for a register, we assume both
+                             * are permitted.
+                             */
+                            registerDescriptor.readable = true;
+                            registerDescriptor.writable = true;
+                        }
+
+                        this->targetRegisterDescriptorsByType[registerDescriptor.type].insert(registerDescriptor);
                     }
                 }
             }

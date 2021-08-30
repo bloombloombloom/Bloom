@@ -13,6 +13,7 @@ namespace Bloom::Targets::TargetDescription
         std::optional<std::string> caption;
         std::uint16_t offset;
         std::uint16_t size;
+        std::optional<std::string> readWriteAccess;
     };
 
     struct RegisterGroup

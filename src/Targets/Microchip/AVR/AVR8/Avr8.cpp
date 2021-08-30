@@ -64,8 +64,10 @@ void Avr8::loadTargetRegisterDescriptors() {
         generalPurposeRegisterDescriptor.startAddress = gpRegisterStartAddress + i;
         generalPurposeRegisterDescriptor.size = 1;
         generalPurposeRegisterDescriptor.type = TargetRegisterType::GENERAL_PURPOSE_REGISTER;
-        generalPurposeRegisterDescriptor.name = "R" + std::to_string(i);
-        generalPurposeRegisterDescriptor.groupName = "General Purpose CPU Registers";
+        generalPurposeRegisterDescriptor.name = "r" + std::to_string(i);
+        generalPurposeRegisterDescriptor.groupName = "general purpose cpu";
+        generalPurposeRegisterDescriptor.readable = true;
+        generalPurposeRegisterDescriptor.writable = true;
 
         this->targetRegisterDescriptorsByType[generalPurposeRegisterDescriptor.type].insert(
             generalPurposeRegisterDescriptor
@@ -85,6 +87,8 @@ void Avr8::loadTargetRegisterDescriptors() {
     stackPointerRegisterDescriptor.name = "SP";
     stackPointerRegisterDescriptor.groupName = "CPU";
     stackPointerRegisterDescriptor.description = "Stack Pointer Register";
+    stackPointerRegisterDescriptor.readable = true;
+    stackPointerRegisterDescriptor.writable = true;
 
     auto statusRegisterDescriptor = TargetRegisterDescriptor();
     statusRegisterDescriptor.type = TargetRegisterType::STATUS_REGISTER;
@@ -93,6 +97,8 @@ void Avr8::loadTargetRegisterDescriptors() {
     statusRegisterDescriptor.name = "SREG";
     statusRegisterDescriptor.groupName = "CPU";
     statusRegisterDescriptor.description = "Status Register";
+    statusRegisterDescriptor.readable = true;
+    statusRegisterDescriptor.writable = true;
 
     auto programCounterRegisterDescriptor = TargetRegisterDescriptor();
     programCounterRegisterDescriptor.type = TargetRegisterType::PROGRAM_COUNTER;
@@ -100,6 +106,8 @@ void Avr8::loadTargetRegisterDescriptors() {
     programCounterRegisterDescriptor.name = "PC";
     programCounterRegisterDescriptor.groupName = "CPU";
     programCounterRegisterDescriptor.description = "Program Counter";
+    programCounterRegisterDescriptor.readable = true;
+    programCounterRegisterDescriptor.writable = true;
 
     this->targetRegisterDescriptorsByType[stackPointerRegisterDescriptor.type].insert(
         stackPointerRegisterDescriptor
