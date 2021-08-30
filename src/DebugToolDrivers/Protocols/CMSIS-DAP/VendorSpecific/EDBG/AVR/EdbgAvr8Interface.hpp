@@ -356,9 +356,18 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param bytes
          *  Number of bytes to access.
          *
+         * @param excludedAddresses
+         *  A set of addresses to exclude from the read operation. This is used to read memory ranges that could
+         *  involve accessing an illegal address, like the OCDDR address.
+         *
          * @return
          */
-        Targets::TargetMemoryBuffer readMemory(Avr8MemoryType type, std::uint32_t address, std::uint32_t bytes);
+        Targets::TargetMemoryBuffer readMemory(
+            Avr8MemoryType type,
+            std::uint32_t address,
+            std::uint32_t bytes,
+            std::set<std::uint32_t> excludedAddresses = {}
+        );
 
         /**
          * Writes memory to the target.

@@ -126,23 +126,6 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
         );
     }
 
-    /*
-     * All addresses for registers that reside in the mapped IO memory segment include the mapped IO segment offset
-     * (start address). But the EDBG protocol requires *some* of these addresses to be stripped of this offset before
-     * sending them as target parameters.
-     *
-     * This applies to the following addresses:
-     *
-     *  - OSCALL Address
-     *  - EEARL Address
-     *  - EEARH Address
-     *  - EECR Address
-     *  - EEDR Address
-     *
-     * It *doesn't* seem to apply to the SPMCR address.
-     */
-    auto mappedIoStartAddress = this->targetParameters.mappedIoSegmentStartAddress.value_or(0);
-
     if (this->targetParameters.ocdDataRegister.has_value()) {
         Logger::debug("Setting DEVICE_OCD_DATA_REGISTER AVR8 parameter");
         this->setParameter(
@@ -158,6 +141,31 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
             this->targetParameters.spmcRegisterStartAddress.value()
         );
     }
+
+    if (this->targetParameters.bootSectionStartAddress.has_value()) {
+        Logger::debug("Setting DEVICE_BOOT_START_ADDR AVR8 parameter");
+        this->setParameter(
+            Avr8EdbgParameters::DEVICE_BOOT_START_ADDR,
+            this->targetParameters.bootSectionStartAddress.value()
+        );
+    }
+
+    /*
+     * All addresses for registers that reside in the mapped IO memory segment include the mapped IO segment offset
+     * (start address). But the EDBG protocol requires *some* of these addresses to be stripped of this offset before
+     * sending them as target parameters.
+     *
+     * This applies to the following addresses:
+     *
+     *  - OSCALL Address
+     *  - EEARL Address
+     *  - EEARH Address
+     *  - EECR Address
+     *  - EEDR Address
+     *
+     * It *doesn't* seem to apply to the SPMCR or OCDDR address.
+     */
+    auto mappedIoStartAddress = this->targetParameters.mappedIoSegmentStartAddress.value_or(0);
 
     if (this->targetParameters.osccalAddress.has_value()) {
         Logger::debug("Setting DEVICE_OSCCAL_ADDR AVR8 parameter");
@@ -206,14 +214,6 @@ void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
             static_cast<std::uint8_t>(
                     this->targetParameters.eepromDataRegisterAddress.value() - mappedIoStartAddress
                 )
-        );
-    }
-
-    if (this->targetParameters.bootSectionStartAddress.has_value()) {
-        Logger::debug("Setting DEVICE_BOOT_START_ADDR AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_BOOT_START_ADDR,
-            this->targetParameters.bootSectionStartAddress.value()
         );
     }
 }
@@ -988,7 +988,12 @@ TargetState EdbgAvr8Interface::getTargetState() {
     return this->targetState;
 }
 
-TargetMemoryBuffer EdbgAvr8Interface::readMemory(Avr8MemoryType type, std::uint32_t address, std::uint32_t bytes) {
+TargetMemoryBuffer EdbgAvr8Interface::readMemory(
+    Avr8MemoryType type,
+    std::uint32_t address,
+    std::uint32_t bytes,
+    std::set<std::uint32_t> excludedAddresses
+) {
     if (type == Avr8MemoryType::FLASH_PAGE) {
         if (this->targetParameters.flashPageSize.value_or(0) < 1) {
             throw Exception("Missing/invalid flash page size parameter");
@@ -1064,7 +1069,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(Avr8MemoryType type, std::uint3
              * Now that the start address and bytes to read have been aligned, we can simply invoke this function
              * for a second time, with the aligned values. Then, return the requested data and discard the rest.
              */
-            auto memoryBuffer = this->readMemory(type, alignedAddress, alignedBytesToRead);
+            auto memoryBuffer = this->readMemory(type, alignedAddress, alignedBytesToRead, excludedAddresses);
             return TargetMemoryBuffer(
                 memoryBuffer.begin() + (address - alignedAddress),
                 memoryBuffer.begin() + (address - alignedAddress) + bytes
@@ -1113,8 +1118,13 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(Avr8MemoryType type, std::uint3
 
             for (float i = 1; i <= totalReadsRequired; i++) {
                 auto bytesToRead = static_cast<std::uint32_t>((bytes - output.size()) > (singlePacketSize * 2) ?
-                                                              (singlePacketSize * 2) : bytes - output.size());
-                auto data = this->readMemory(type, static_cast<std::uint32_t>(address + output.size()), bytesToRead);
+                    (singlePacketSize * 2) : bytes - output.size());
+                auto data = this->readMemory(
+                    type,
+                    static_cast<std::uint32_t>(address + output.size()),
+                    bytesToRead,
+                    excludedAddresses
+                );
                 output.insert(output.end(), data.begin(), data.end());
             }
 
@@ -1126,6 +1136,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(Avr8MemoryType type, std::uint3
     commandFrame.setType(type);
     commandFrame.setAddress(address);
     commandFrame.setBytes(bytes);
+    commandFrame.setExcludedAddresses(excludedAddresses);
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
@@ -1153,47 +1164,116 @@ void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, 
 }
 
 TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors& descriptors) {
-    auto gpRegisterDescriptors = TargetRegisterDescriptors();
-    std::copy_if(
-        descriptors.begin(),
-        descriptors.end(),
-        std::back_inserter(gpRegisterDescriptors),
-        [](const TargetRegisterDescriptor& descriptor) {
-            return descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER;
-        }
-    );
+    auto output = TargetRegisters();
+
+    // Group descriptors by type and resolve the address range for each type
+    auto descriptorsByType = std::map<TargetRegisterType, std::set<const TargetRegisterDescriptor*>>();
 
     /*
-     * If there is more than one GP register to load, we load them via this->readGeneralPurposeRegisters(), in order
-     * to avoid issuing a read call for each GP register.
+     * An address range is just an std::pair of integers - the first being the start address, the second being the
+     * end address.
      */
-    auto loadGpRegistersSeparately = gpRegisterDescriptors.size() > 1;
-    auto output = loadGpRegistersSeparately ?
-        this->readGeneralPurposeRegisters(gpRegisterDescriptors) : TargetRegisters();
+    using AddressRange = std::pair<std::uint32_t, std::uint32_t>;
+    auto addressRangeByType = std::map<TargetRegisterType, AddressRange>();
 
     for (const auto& descriptor : descriptors) {
-        if (loadGpRegistersSeparately && descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER) {
+        if (!descriptor.startAddress.has_value()) {
+            Logger::debug(
+                "Attempted to read register in the absence of a start address - register name: "
+                    + descriptor.name.value_or("unknown")
+            );
             continue;
         }
 
-        auto registerValue = this->readMemory(
-            (descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER && (
-                    this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
-                )
-            ) ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
-            descriptor.startAddress.value(),
-            descriptor.size
+        descriptorsByType[descriptor.type].insert(&descriptor);
+
+        const auto startAddress = descriptor.startAddress.value();
+        const auto endAddress = startAddress + (descriptor.size - 1);
+
+        if (!addressRangeByType.contains(descriptor.type)) {
+            auto addressRange = AddressRange();
+            addressRange.first = startAddress;
+            addressRange.second = endAddress;
+            addressRangeByType[descriptor.type] = addressRange;
+
+        } else {
+            auto& addressRange = addressRangeByType[descriptor.type];
+
+            if (startAddress < addressRange.first) {
+                addressRange.first = startAddress;
+            }
+
+            if (endAddress > addressRange.second) {
+                addressRange.second = endAddress;
+            }
+        }
+    }
+
+    /*
+     * Now that we have our address ranges and grouped descriptors, we can perform a single read call
+     * for each register type.
+     */
+    for (const auto& [registerType, descriptors] : descriptorsByType) {
+        const auto& addressRange = addressRangeByType[registerType];
+        const auto startAddress = addressRange.first;
+        const auto endAddress = addressRange.second;
+        const auto bufferSize = (endAddress - startAddress) + 1;
+
+        const auto memoryType = (registerType != TargetRegisterType::GENERAL_PURPOSE_REGISTER) ? Avr8MemoryType::SRAM : (
+            this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
+                ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM
         );
 
-        if (registerValue.size() > 1) {
-            // AVR8 registers are stored in LSB form - TargetRegister values should always be MSB
-            std::reverse(registerValue.begin(), registerValue.end());
+        /*
+         * When reading the entire range, we must avoid any attempts to access the OCD data register (OCDDR), as the
+         * debug tool will reject the command and respond with a 0x36 error code (invalid address error).
+         *
+         * For this reason, we specify the OCDDR address as an excluded address. This will mean
+         * the EdbgAvr8Interface::readMemory() function will employ the masked read memory command, as opposed to the
+         * general read memory command. The masked read memory command allows us to specify which addresses to
+         * read and which ones to ignore. For ignored addresses, the debug tool will just return a 0x00 byte.
+         * For more info, see section 7.1.22 titled 'Memory Read Masked', in the EDBG protocol document.
+         *
+         * Interestingly, the masked read memory command doesn't seem to require us to explicitly specify the OCDDR
+         * address as an excluded address. It seems to exclude the OCDDR automatically, even if we've not
+         * instructed it to do so. This is plausible, as we send the OCDDR address to the debug tool during target
+         * initialisation (see EdbgAvr8Interface::setDebugWireAndJtagParameters()). So this means we don't have to
+         * specify the OCDDR address as an excluded address, but the EdbgAvr8Interface::readMemory() function will
+         * only employ the masked read memory command when we supply at least one excluded address. For this reason,
+         * we still pass the OCDDR address to EdbgAvr8Interface::readMemory(), as an excluded address (provided we
+         * have it).
+         *
+         * See CommandFrames::Avr8Generic::ReadMemory(); and the Microchip EDBG documentation for more.
+         */
+        auto excludedAddresses = std::set<std::uint32_t>();
+        if (this->targetParameters.ocdDataRegister.has_value()) {
+            excludedAddresses.insert(this->targetParameters.ocdDataRegister.value());
         }
 
-        output.emplace_back(TargetRegister(
-            descriptor,
-            registerValue
-        ));
+        auto flatMemoryBuffer = this->readMemory(
+            memoryType,
+            startAddress,
+            bufferSize,
+            excludedAddresses
+        );
+
+        if (flatMemoryBuffer.size() != bufferSize) {
+            throw Exception(
+                "Failed to read memory within register type address range (" + std::to_string(startAddress)
+                    + " - " + std::to_string(endAddress) +"). Expected " + std::to_string(bufferSize)
+                    + " bytes, got " + std::to_string(flatMemoryBuffer.size())
+            );
+        }
+
+        // Construct our TargetRegister objects directly from the flat memory buffer
+        for (const auto& descriptor : descriptors) {
+            const auto bufferStartIt = flatMemoryBuffer.begin() + (descriptor->startAddress.value() - startAddress);
+
+            output.emplace_back(
+                TargetRegister(*descriptor,
+                TargetMemoryBuffer(bufferStartIt, bufferStartIt + descriptor->size))
+            );
+        }
     }
 
     return output;
