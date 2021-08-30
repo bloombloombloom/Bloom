@@ -4,11 +4,13 @@
 #include <QApplication>
 
 #include "src/Helpers/Thread.hpp"
+#include "src/Helpers/SyncSafe.hpp"
 #include "src/ApplicationConfig.hpp"
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
 #include "src/TargetController/TargetControllerConsole.hpp"
 #include "src/TargetController/TargetControllerState.hpp"
+#include "Tasks/InsightWorkerTask.hpp"
 
 namespace Bloom
 {
@@ -27,10 +29,13 @@ namespace Bloom
             this->eventManager,
             *(this->eventListener)
         );
-
         TargetControllerState lastTargetControllerState = TargetControllerState::ACTIVE;
 
         QTimer* eventDispatchTimer = nullptr;
+
+        SyncSafe<std::queue<InsightWorkerTask*>> queuedTasks;
+
+        std::optional<InsightWorkerTask*> getQueuedTask();
 
         void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
@@ -38,12 +43,17 @@ namespace Bloom
         void onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event);
         void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
 
+    private slots:
+        void executeTasks();
+
     public:
         explicit InsightWorker(EventManager& eventManager): eventManager(eventManager) {};
 
         void dispatchEvents() {
             this->eventListener->dispatchCurrentEvents();
         }
+
+        void queueTask(InsightWorkerTask* task);
 
     public slots:
         void startup();
@@ -55,6 +65,7 @@ namespace Bloom
         );
 
     signals:
+        void taskQueued();
         void targetStateUpdated(Bloom::Targets::TargetState newState);
         void targetProgramCounterUpdated(quint32 programCounter);
         void targetPinStatesUpdated(int variantId, Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);

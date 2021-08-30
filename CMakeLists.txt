@@ -123,7 +123,7 @@ add_executable(Bloom
 
     # Insight
     src/Insight/Insight.cpp
-    src/Insight/InsightWorker.cpp
+    src/Insight/InsightWorker/InsightWorker.cpp
     src/Insight/UserInterfaces/InsightWindow/UiLoader.cpp
     src/Insight/UserInterfaces/InsightWindow/InsightWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/AboutWindow.cpp
@@ -134,6 +134,10 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/Widgets/SlidingHandleWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/ExpandingWidget.hpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/ExpandingHeightScrollAreaWidget.hpp
+
+    # Insight worker tasks
+    src/Insight/InsightWorker/Tasks/InsightWorkerTask.cpp
+    src/Insight/InsightWorker/Tasks/ReadTargetRegisters.cpp
 
     # Target package widgets
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidget.hpp

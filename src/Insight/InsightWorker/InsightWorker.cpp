@@ -1,13 +1,11 @@
-#include <thread>
+#include "InsightWorker.hpp"
+
 #include <filesystem>
-#include <typeindex>
 #include <QObject>
 #include <QTimer>
 
-#include "InsightWorker.hpp"
-#include "src/Logger/Logger.hpp"
 #include "src/Helpers/Thread.hpp"
-#include "src/Exceptions/InvalidConfig.hpp"
+#include "src/Logger/Logger.hpp"
 
 using namespace Bloom;
 using namespace Bloom::Exceptions;
@@ -39,12 +37,44 @@ void InsightWorker::startup() {
     );
 
     this->eventDispatchTimer = new QTimer(this);
-    QTimer::connect(this->eventDispatchTimer, &QTimer::timeout, this, &InsightWorker::dispatchEvents);
+    this->connect(this->eventDispatchTimer, &QTimer::timeout, this, &InsightWorker::dispatchEvents);
     this->eventDispatchTimer->start(5);
+
+    this->connect(this, &InsightWorker::taskQueued, this, &InsightWorker::executeTasks);
 
     this->eventManager.triggerEvent(
         std::make_shared<Events::InsightThreadStateChanged>(ThreadState::READY)
     );
+}
+
+void InsightWorker::queueTask(InsightWorkerTask* task) {
+    auto taskQueueLock = this->queuedTasks.acquireLock();
+    task->moveToThread(this->thread());
+    task->setParent(this);
+    this->queuedTasks.getReference().push(task);
+    emit this->taskQueued();
+}
+
+std::optional<InsightWorkerTask*> InsightWorker::getQueuedTask() {
+    auto task = std::optional<InsightWorkerTask*>();
+
+    auto& queuedTasks = this->queuedTasks.getReference();
+    auto taskQueueLock = this->queuedTasks.acquireLock();
+
+    if (!queuedTasks.empty()) {
+        task = queuedTasks.front();
+        queuedTasks.pop();
+    }
+
+    return task;
+}
+
+void InsightWorker::executeTasks() {
+    auto task = std::optional<InsightWorkerTask*>();
+
+    while ((task = this->getQueuedTask()).has_value()) {
+        task.value()->execute(this->targetControllerConsole);
+    }
 }
 
 void InsightWorker::requestPinStates(int variantId) {
