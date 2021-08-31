@@ -1133,6 +1133,22 @@ void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, 
 }
 
 TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors& descriptors) {
+    /*
+     * This function needs to be fast. Insight eagerly requests the values of all known registers that it can present
+     * to the user. It does this on numerous occasions (target stopped, user clicked refresh, etc). This means we will
+     * be frequently loading over 100 register values in a single instance.
+     *
+     * For the above reason, we do not read each register value individually. That would take far too long if we have
+     * over 100 registers to read. Instead, we group the register descriptors into collections by register type, and
+     * resolve the address range for each collection. We then perform a single read operation for each collection
+     * and hold the memory buffer in a random access container (std::vector). Finally, we extract the data for
+     * each register descriptor, from the memory buffer, and construct the relevant TargetRegister object.
+     *
+     * TODO: We should be grouping the register descriptors by memory type, as opposed to register type. This
+     *       isn't much of a problem ATM, as currently, we only work with registers that are stored in the data
+     *       address space or the register file. This will need to be addressed before we can work with any other
+     *       registers stored elsewhere.
+     */
     auto output = TargetRegisters();
 
     // Group descriptors by type and resolve the address range for each type
@@ -1179,8 +1195,8 @@ TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors
     }
 
     /*
-     * Now that we have our address ranges and grouped descriptors, we can perform a single read call
-     * for each register type.
+     * Now that we have our address ranges and grouped descriptors, we can perform a single read call for each
+     * register type.
      */
     for (const auto& [registerType, descriptors] : descriptorsByType) {
         const auto& addressRange = addressRangeByType[registerType];
