@@ -1,18 +1,19 @@
 #include "ReadMemory.hpp"
 
 #include <bitset>
+#include <cmath>
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic;
 
 std::vector<unsigned char> ReadMemory::getPayload() const {
     /*
      * The read memory command consists of 11/11 + (this->bytes / 8) bytes:
-     * 1. Command ID (0x21 or 0x22, for reading with a mask)
+     * 1. Command ID (0x21 for the general read memory command, 0x22 for reading with a mask)
      * 2. Version (0x00)
      * 3. Memory type (Avr8MemoryType)
      * 4. Start address (4 bytes)
      * 5. Number of bytes to read (4 bytes)
-     * 6. Mask to apply (this->bytes / 8)
+     * 6. Mask to apply (this->bytes / 8) - only required if we're using the masked read command (command ID 0x22).
      */
     auto output = std::vector<unsigned char>(11, 0x00);
     output[0] = this->excludedAddresses.empty() ? 0x21 : 0x22;
