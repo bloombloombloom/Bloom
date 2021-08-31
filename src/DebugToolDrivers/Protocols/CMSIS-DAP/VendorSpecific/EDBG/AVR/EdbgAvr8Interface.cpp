@@ -1215,8 +1215,11 @@ TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors
          * See CommandFrames::Avr8Generic::ReadMemory(); and the Microchip EDBG documentation for more.
          */
         auto excludedAddresses = std::set<std::uint32_t>();
-        if (this->targetParameters.ocdDataRegister.has_value()) {
-            excludedAddresses.insert(this->targetParameters.ocdDataRegister.value());
+        if (memoryType == Avr8MemoryType::SRAM && this->targetParameters.ocdDataRegister.has_value()) {
+            excludedAddresses.insert(
+                this->targetParameters.ocdDataRegister.value()
+                    + this->targetParameters.mappedIoSegmentStartAddress.value_or(0)
+            );
         }
 
         auto flatMemoryBuffer = this->readMemory(
