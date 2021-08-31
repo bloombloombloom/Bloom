@@ -1239,11 +1239,21 @@ TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors
 
         // Construct our TargetRegister objects directly from the flat memory buffer
         for (const auto& descriptor : descriptors) {
-            const auto bufferStartIt = flatMemoryBuffer.begin() + (descriptor->startAddress.value() - startAddress);
+            /*
+             * Multi-byte AVR8 registers are stored in LSB form.
+             *
+             * This is why we use reverse iterators when extracting our data from flatMemoryBuffer. Doing so allows
+             * us to extract the data in MSB form (as is expected for all register values held in TargetRegister
+             * objects).
+             */
+            const auto bufferStartIt = flatMemoryBuffer.rend() - (descriptor->startAddress.value() - startAddress)
+                - descriptor->size;
 
             output.emplace_back(
-                TargetRegister(*descriptor,
-                TargetMemoryBuffer(bufferStartIt, bufferStartIt + descriptor->size))
+                TargetRegister(
+                    *descriptor,
+                    TargetMemoryBuffer(bufferStartIt, bufferStartIt + descriptor->size)
+                )
             );
         }
     }
