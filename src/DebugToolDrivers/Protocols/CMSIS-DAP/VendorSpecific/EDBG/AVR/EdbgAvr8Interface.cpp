@@ -718,37 +718,6 @@ void EdbgAvr8Interface::detach() {
     this->targetAttached = false;
 }
 
-TargetRegisters EdbgAvr8Interface::readGeneralPurposeRegisters(const TargetRegisterDescriptors& descriptors) {
-    auto output = TargetRegisters();
-
-    auto gpRegisterStartAddress = this->targetParameters.gpRegisterStartAddress.value_or(0x00);
-    auto registers = this->readMemory(
-        this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
-        ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM,
-        gpRegisterStartAddress,
-        this->targetParameters.gpRegisterSize.value_or(32)
-    );
-
-    for (const auto& descriptor : descriptors) {
-        assert(descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER);
-
-        /*
-         * All 32 single-byte AVR8 GP registers will be sorted from R0 to R31, so registers[0] == R0,
-         * registers[5] == R5, registers[31] == R31, etc.
-         *
-         * We use the register address to calculate the index.
-         */
-        auto registerIndex = static_cast<std::uint8_t>(descriptor.startAddress.value() - gpRegisterStartAddress);
-        if (registerIndex > (registers.size() - 1)) {
-            throw Exception("Invalid register index deduced from register start address");
-        }
-
-        output.emplace_back(TargetRegister(descriptor,{registers[registerIndex]}));
-    }
-
-    return output;
-}
-
 void EdbgAvr8Interface::activate() {
     if (!this->physicalInterfaceActivated) {
         this->activatePhysical();

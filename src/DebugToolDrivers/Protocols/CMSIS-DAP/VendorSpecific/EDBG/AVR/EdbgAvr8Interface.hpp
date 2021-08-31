@@ -442,20 +442,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         void waitForStoppedEvent();
 
-        /**
-         * Reads the requested general purpose registers.
-         *
-         * When reading numerous GP registers, this function should be used as it reads all 32 registers in a single
-         * call and then returns what's needed. This is much faster than reading each individual GP register.
-         *
-         * readRegisters() will use this when there are numerous GP registers to read.
-         *
-         * @param descriptors
-         *  A collection of GP register descriptors to read. *Do not include non GP register descriptors.*
-         * @return
-         */
-        Targets::TargetRegisters readGeneralPurposeRegisters(const Targets::TargetRegisterDescriptors& descriptors);
-
     public:
         explicit EdbgAvr8Interface(EdbgInterface& edbgInterface)
         : edbgInterface(edbgInterface) {};
