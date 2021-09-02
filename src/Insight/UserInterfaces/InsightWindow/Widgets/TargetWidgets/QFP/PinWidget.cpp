@@ -99,3 +99,30 @@ PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, 
 
     connect(this->bodyWidget, &PinBodyWidget::clicked, this, &TargetPinWidget::onWidgetBodyClicked);
 }
+
+void PinWidget::updatePinState(const Targets::TargetPinState& pinState) {
+    TargetPinWidget::updatePinState(pinState);
+
+    if (pinState.ioDirection.has_value()) {
+        this->pinDirectionLabel->setText(
+            pinState.ioDirection.value() == Targets::TargetPinState::IoDirection::INPUT ? "IN" : "OUT"
+        );
+
+    } else {
+        this->pinDirectionLabel->setText("");
+    }
+
+    if (this->bodyWidget != nullptr) {
+        this->bodyWidget->setPinState(pinState);
+    }
+
+    this->setLabelColor(this->pinStateChanged ? "#4d7bba" : "#a6a7aa");
+}
+
+void PinWidget::setLabelColor(const QString& hexColor) {
+    auto style = QString("QLabel { color: " + hexColor + "; }");
+
+    if (this->pinNameLabel != nullptr) {
+        this->pinNameLabel->setStyleSheet(style);
+    }
+}

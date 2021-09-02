@@ -25,13 +25,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         bool isRightLayout = false;
         bool isTopLayout = false;
 
-        void setLabelColor(const QString& hexColor) {
-            auto style = QString("QLabel { color: " + hexColor + "; }");
-
-            if (this->pinNameLabel != nullptr) {
-                this->pinNameLabel->setStyleSheet(style);
-            }
-        }
+        void setLabelColor(const QString& hexColor);
 
     public:
         static const int PIN_WIDGET_LAYOUT_PADDING = 46;
@@ -53,23 +47,6 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
             const Targets::TargetVariant& targetVariant
         );
 
-        void updatePinState(const Targets::TargetPinState& pinState) override {
-            TargetPinWidget::updatePinState(pinState);
-
-            if (pinState.ioDirection.has_value()) {
-                this->pinDirectionLabel->setText(
-                    pinState.ioDirection.value() == Targets::TargetPinState::IoDirection::INPUT ? "IN" : "OUT"
-                );
-
-            } else {
-                this->pinDirectionLabel->setText("");
-            }
-
-            if (this->bodyWidget != nullptr) {
-                this->bodyWidget->setPinState(pinState);
-            }
-
-            this->setLabelColor(this->pinStateChanged ? "#4d7bba" : "#a6a7aa");
-        }
+        void updatePinState(const Targets::TargetPinState& pinState) override;
     };
 }
