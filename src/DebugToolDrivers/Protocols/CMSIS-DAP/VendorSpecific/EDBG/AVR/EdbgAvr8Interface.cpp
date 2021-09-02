@@ -1118,7 +1118,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
 void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, const TargetMemoryBuffer& buffer) {
     if (type == Avr8MemoryType::FLASH_PAGE) {
         // TODO: Implement support for writing to flash
-        throw Exception("Cannot write to flash");
+        throw Exception("Writing to flash memory is not supported.");
     }
 
     auto commandFrame = CommandFrames::Avr8Generic::WriteMemory();
@@ -1238,7 +1238,7 @@ TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors
             );
         }
 
-        auto flatMemoryBuffer = this->readMemory(
+        const auto flatMemoryBuffer = this->readMemory(
             memoryType,
             startAddress,
             bufferSize,
