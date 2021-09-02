@@ -17,6 +17,7 @@ namespace Bloom::Widgets
         explicit ClickableWidget(QWidget* parent): QFrame(parent) {};
 
     signals:
+        void rightClicked();
         void clicked();
         void doubleClicked();
 
