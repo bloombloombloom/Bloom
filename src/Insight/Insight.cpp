@@ -3,7 +3,6 @@
 #include <typeindex>
 #include <QTimer>
 
-#include "InsightWorker.hpp"
 #include "src/Helpers/Paths.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
@@ -69,36 +68,31 @@ void Insight::startup() {
      * This allows us to use Qt's event loop whilst still being able to process our own events.
      */
     auto eventDispatchTimer = new QTimer(&(this->application));
-    connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
+    this->connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
     eventDispatchTimer->start(100);
+
+    this->connect(this->insightWorker, &InsightWorker::targetControllerSuspended, this->mainWindow, &InsightWindow::onTargetControllerSuspended);
+    this->connect(this->insightWorker, &InsightWorker::targetControllerResumed, this->mainWindow, &InsightWindow::onTargetControllerResumed);
+    this->connect(this->insightWorker, &InsightWorker::targetStateUpdated, this->mainWindow, &InsightWindow::onTargetStateUpdate);
+    this->connect(this->insightWorker, &InsightWorker::targetProgramCounterUpdated, this->mainWindow, &InsightWindow::onTargetProgramCounterUpdate);
+    this->connect(this->insightWorker, &InsightWorker::targetIoPortsUpdated, this->mainWindow, &InsightWindow::onTargetIoPortsUpdate);
+    this->connect(this->mainWindow, &InsightWindow::refreshTargetPinStates, this->insightWorker, &InsightWorker::requestPinStates);
+    this->connect(this->mainWindow, &InsightWindow::setTargetPinState, this->insightWorker, &InsightWorker::requestPinStateUpdate);
+
+    this->mainWindow->setInsightConfig(this->insightConfig);
+    this->mainWindow->setEnvironmentConfig(this->environmentConfig);
+
+    this->mainWindow->init(targetDescriptor);
 
     // Prepare worker thread
     this->workerThread = new QThread();
     this->workerThread->setObjectName("IW");
     this->insightWorker->moveToThread(this->workerThread);
-    connect(this->workerThread, &QThread::started, this->insightWorker, &InsightWorker::startup);
-    connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);
-    connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
+    this->connect(this->workerThread, &QThread::started, this->insightWorker, &InsightWorker::startup);
+    this->connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);
+    this->connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
 
-    connect(this->insightWorker, &InsightWorker::targetControllerSuspended, &(this->mainWindow), &InsightWindow::onTargetControllerSuspended);
-    connect(this->insightWorker, &InsightWorker::targetControllerResumed, &(this->mainWindow), &InsightWindow::onTargetControllerResumed);
-    connect(this->insightWorker, &InsightWorker::targetStateUpdated, &(this->mainWindow), &InsightWindow::onTargetStateUpdate);
-    connect(this->insightWorker, &InsightWorker::targetProgramCounterUpdated, &(this->mainWindow), &InsightWindow::onTargetProgramCounterUpdate);
-    connect(this->insightWorker, &InsightWorker::targetPinStatesUpdated, &(this->mainWindow), &InsightWindow::onTargetPinStatesUpdate);
-    connect(this->insightWorker, &InsightWorker::targetIoPortsUpdated, &(this->mainWindow), &InsightWindow::onTargetIoPortsUpdate);
-    connect(&(this->mainWindow), &InsightWindow::refreshTargetPinStates, this->insightWorker, &InsightWorker::requestPinStates);
-    connect(&(this->mainWindow), &InsightWindow::setTargetPinState, this->insightWorker, &InsightWorker::requestPinStateUpdate);
-
-    this->mainWindow.setInsightConfig(this->insightConfig);
-    this->mainWindow.setEnvironmentConfig(this->environmentConfig);
-
-    this->mainWindow.init(
-        this->application,
-        *(this->insightWorker),
-        targetDescriptor
-    );
-
-    this->mainWindow.show();
+    this->mainWindow->show();
 }
 
 void Insight::shutdown() {
@@ -107,7 +101,7 @@ void Insight::shutdown() {
     }
 
     Logger::info("Shutting down Insight");
-    this->mainWindow.close();
+    this->mainWindow->close();
 
     if (this->workerThread != nullptr && this->workerThread->isRunning()) {
         this->workerThread->quit();

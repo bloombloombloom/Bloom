@@ -24,8 +24,7 @@ namespace Bloom
     public:
         InsightWorkerTaskState state;
 
-        InsightWorkerTask() = default;
-        InsightWorkerTask(QObject* parent): QObject(parent) {};
+        InsightWorkerTask(): QObject(nullptr) {};
 
         void execute(TargetControllerConsole& targetControllerConsole);
 

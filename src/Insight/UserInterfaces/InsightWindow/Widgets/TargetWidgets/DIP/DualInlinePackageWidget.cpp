@@ -1,3 +1,5 @@
+#include "DualInlinePackageWidget.hpp"
+
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -6,7 +8,6 @@
 #include <QFile>
 
 #include "../../../InsightWindow.hpp"
-#include "DualInlinePackageWidget.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Helpers/Paths.hpp"
@@ -21,8 +22,9 @@ using Bloom::Targets::TargetVariant;
 DualInlinePackageWidget::DualInlinePackageWidget(
     const TargetVariant& targetVariant,
     QObject* insightWindowObj,
+    InsightWorker& insightWorker,
     QWidget* parent
-): TargetPackageWidget(targetVariant, insightWindowObj, parent) {
+): TargetPackageWidget(targetVariant, insightWorker, parent) {
     auto stylesheetFile = QFile(QString::fromStdString(
             Paths::compiledResourcesPath()
             + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss"

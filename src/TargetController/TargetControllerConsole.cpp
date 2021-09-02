@@ -116,6 +116,13 @@ void TargetControllerConsole::requestPinStates(int variantId) {
     this->eventManager.triggerEvent(requestEvent);
 }
 
+Targets::TargetPinStateMappingType TargetControllerConsole::getPinStates(int variantId) {
+    auto requestEvent = std::make_shared<RetrieveTargetPinStates>();
+    requestEvent->variantId = variantId;
+
+    return this->triggerTargetControllerEventAndWaitForResponse(requestEvent)->pinSatesByNumber;
+}
+
 void TargetControllerConsole::setPinState(int variantId, TargetPinDescriptor pinDescriptor, TargetPinState pinState) {
     auto updateEvent = std::make_shared<SetTargetPinState>();
     updateEvent->variantId = variantId;

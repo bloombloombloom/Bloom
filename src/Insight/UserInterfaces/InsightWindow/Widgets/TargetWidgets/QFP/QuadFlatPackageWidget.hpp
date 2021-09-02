@@ -32,6 +32,11 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         void drawWidget(QPainter& painter);
 
     public:
-        QuadFlatPackageWidget(const Targets::TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent);
+        QuadFlatPackageWidget(
+            const Targets::TargetVariant& targetVariant,
+            QObject* insightWindowObj,
+            InsightWorker& insightWorker,
+            QWidget* parent
+        );
     };
 }

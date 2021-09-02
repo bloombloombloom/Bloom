@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
+
 #include "TargetPinWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
@@ -19,19 +21,17 @@ namespace Bloom::Widgets::InsightTargetWidgets
     Q_OBJECT
     protected:
         Targets::TargetVariant targetVariant;
+        InsightWorker& insightWorker;
         std::vector<TargetPinWidget*> pinWidgets;
 
-    public:
-        TargetPackageWidget(Targets::TargetVariant targetVariant, QObject* insightWindowObj, QWidget* parent):
-        QWidget(parent), targetVariant(std::move(targetVariant)) {};
+        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
-        virtual void updatePinStates(std::map<int, Targets::TargetPinState> pinStatesByNumber) {
-            for (auto& pinWidget : this->pinWidgets) {
-                auto pinNumber = pinWidget->getPinNumber();
-                if (pinStatesByNumber.contains(pinNumber)) {
-                    pinWidget->updatePinState(pinStatesByNumber.at(pinNumber));
-                }
-            }
-        }
+    protected slots:
+        virtual void updatePinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber);
+        void onTargetStateChanged(Targets::TargetState newState);
+
+    public:
+        TargetPackageWidget(Targets::TargetVariant targetVariant, InsightWorker& insightWorker, QWidget* parent);
+        virtual void refreshPinStates(std::optional<std::function<void(void)>> callback = std::nullopt);
     };
 }

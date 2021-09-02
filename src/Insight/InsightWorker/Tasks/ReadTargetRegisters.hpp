@@ -18,8 +18,8 @@ namespace Bloom
         void run(TargetControllerConsole& targetControllerConsole) override;
 
     public:
-        ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors, QObject* parent):
-        InsightWorkerTask(nullptr), descriptors(descriptors) {}
+        ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors):
+        InsightWorkerTask(), descriptors(descriptors) {}
 
     signals:
         void targetRegistersRead(Targets::TargetRegisters registers);

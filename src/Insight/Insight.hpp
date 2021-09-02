@@ -4,6 +4,7 @@
 #include <QApplication>
 
 #include "src/Helpers/Thread.hpp"
+#include "InsightWorker/InsightWorker.hpp"
 #include "src/ApplicationConfig.hpp"
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
@@ -37,7 +38,7 @@ namespace Bloom
 
         QApplication application;
         InsightWorker* insightWorker = new InsightWorker(this->eventManager);
-        InsightWindow mainWindow;
+        InsightWindow* mainWindow = new InsightWindow(this->application, *(this->insightWorker));
 
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(
             this->eventManager,

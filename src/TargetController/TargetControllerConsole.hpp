@@ -183,6 +183,20 @@ namespace Bloom
         void removeBreakpoint(Targets::TargetBreakpoint breakpoint);
 
         /**
+         * Requests a pin state refresh from the TargetController, for a specific target variant.
+         *
+         * @param variantId
+         */
+        void requestPinStates(int variantId);
+
+        /**
+         * Retrieves the pin states for a particular target variant.
+         *
+         * @param variantId
+         */
+        Targets::TargetPinStateMappingType getPinStates(int variantId);
+
+        /**
          * Requests a pin state update on the target, for a specific pin.
          *
          * @param variantId
@@ -190,12 +204,5 @@ namespace Bloom
          * @param pinState
          */
         void setPinState(int variantId, Targets::TargetPinDescriptor pinDescriptor, Targets::TargetPinState pinState);
-
-        /**
-         * Requests a pin state refresh from the TargetController, for a specific target variant.
-         *
-         * @param variantId
-         */
-        void requestPinStates(int variantId);
     };
 }

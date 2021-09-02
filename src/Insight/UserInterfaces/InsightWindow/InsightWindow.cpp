@@ -6,10 +6,13 @@
 #include "AboutWindow.hpp"
 #include "Widgets/TargetWidgets/DIP/DualInlinePackageWidget.hpp"
 #include "Widgets/TargetWidgets/QFP/QuadFlatPackageWidget.hpp"
+
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
-#include "src/Targets/TargetDescriptor.hpp"
 #include "src/Helpers/Paths.hpp"
+#include "src/Targets/TargetDescriptor.hpp"
+
+#include "AboutWindow.hpp"
 
 using namespace Bloom;
 using namespace Bloom::Exceptions;
@@ -22,12 +25,10 @@ using Bloom::Targets::TargetVariant;
 using Bloom::Targets::TargetPackage;
 using Bloom::Targets::TargetPinDescriptor;
 
-void InsightWindow::init(
+InsightWindow::InsightWindow(
     QApplication& application,
-    TargetDescriptor targetDescriptor
-) {
-    this->targetDescriptor = std::move(targetDescriptor);
-
+    InsightWorker& insightWorker
+): QObject(&application), insightWorker(insightWorker) {
     auto mainWindowUiFile = QFile(
         QString::fromStdString(Paths::compiledResourcesPath()
             + "/src/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui"
@@ -85,9 +86,11 @@ void InsightWindow::init(
     this->footer = this->mainWindowWidget->findChild<QWidget*>("footer");
     this->targetStatusLabel = this->footer->findChild<QLabel*>("target-state");
     this->programCounterValueLabel = this->footer->findChild<QLabel*>("target-program-counter-value");
+}
 
+void InsightWindow::init(TargetDescriptor targetDescriptor) {
+    this->targetDescriptor = std::move(targetDescriptor);
     this->activate();
-
     /*
      * Do not delete svgWidget. It seems like it's absolutely pointless, but it's really not. I know this is gross but
      * I don't seem to have any other option.
@@ -316,6 +319,7 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
         this->targetPackageWidget = new InsightTargetWidgets::Dip::DualInlinePackageWidget(
             *variant,
             this,
+            this->insightWorker,
             this->ioContainerWidget
         );
 
@@ -323,6 +327,7 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
         this->targetPackageWidget = new InsightTargetWidgets::Qfp::QuadFlatPackageWidget(
             *variant,
             this,
+            this->insightWorker,
             this->ioContainerWidget
         );
     }
@@ -356,10 +361,6 @@ void InsightWindow::toggleUi(bool disable) {
         this->refreshIoInspectionButton->repaint();
     }
 
-    if (this->ioContainerWidget != nullptr) {
-        this->ioContainerWidget->setDisabled(disable);
-        this->ioContainerWidget->repaint();
-    }
 }
 
 void InsightWindow::onTargetControllerSuspended() {
@@ -418,14 +419,10 @@ void InsightWindow::onTargetStateUpdate(TargetState newState) {
     if (newState == TargetState::RUNNING) {
         this->targetStatusLabel->setText("Running");
         this->programCounterValueLabel->setText("-");
-        this->toggleUi(true);
 
     } else if (newState == TargetState::STOPPED) {
         this->targetStatusLabel->setText("Stopped");
-
-        if (this->selectedVariant != nullptr) {
-            emit this->refreshTargetPinStates(this->selectedVariant->id);
-        }
+        this->toggleUi(false);
 
     } else {
         this->targetStatusLabel->setText("Unknown");
@@ -441,21 +438,6 @@ void InsightWindow::onTargetProgramCounterUpdate(quint32 programCounter) {
 void InsightWindow::onTargetIoPortsUpdate() {
     if (this->targetState == TargetState::STOPPED && this->selectedVariant != nullptr) {
         emit this->refreshTargetPinStates(this->selectedVariant->id);
-    }
-}
-
-void InsightWindow::onTargetPinStatesUpdate(int variantId, Bloom::Targets::TargetPinStateMappingType pinStatesByNumber) {
-    if (this->targetPackageWidget != nullptr
-        && this->selectedVariant != nullptr
-        && this->selectedVariant->id == variantId
-    ) {
-        this->targetPackageWidget->updatePinStates(pinStatesByNumber);
-        if (this->targetState == TargetState::STOPPED && this->uiDisabled) {
-            this->toggleUi(false);
-
-        } else {
-            this->targetPackageWidget->repaint();
-        }
     }
 }
 

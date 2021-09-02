@@ -30,6 +30,11 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         void drawWidget(QPainter& painter);
 
     public:
-        DualInlinePackageWidget(const Targets::TargetVariant& targetVariant, QObject* insightWindowObj, QWidget* parent);
+        DualInlinePackageWidget(
+            const Targets::TargetVariant& targetVariant,
+            QObject* insightWindowObj,
+            InsightWorker& insightWorker,
+            QWidget* parent
+        );
     };
 }

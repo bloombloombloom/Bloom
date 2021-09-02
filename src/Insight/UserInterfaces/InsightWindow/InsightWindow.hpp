@@ -6,12 +6,15 @@
 #include <memory>
 #include <optional>
 
-#include "AboutWindow.hpp"
 #include "src/ApplicationConfig.hpp"
-#include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetState.hpp"
+
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetVariant.hpp"
+
+#include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
+#include "AboutWindow.hpp"
 
 namespace Bloom
 {
@@ -22,6 +25,8 @@ namespace Bloom
         InsightConfig insightConfig;
         EnvironmentConfig environmentConfig;
         TargetConfig targetConfig;
+
+        InsightWorker& insightWorker;
 
         bool activated = false;
 
@@ -57,7 +62,7 @@ namespace Bloom
         void deactivate();
 
     public:
-        InsightWindow() = default;
+        InsightWindow(QApplication& application, InsightWorker& insightWorker);
 
         void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
             this->environmentConfig = environmentConfig;
@@ -68,17 +73,13 @@ namespace Bloom
             this->insightConfig = insightConfig;
         }
 
-        void init(
-            QApplication& application,
-            Targets::TargetDescriptor targetDescriptor
-        );
+        void init(Targets::TargetDescriptor targetDescriptor);
 
         void show();
 
     public slots:
         void onTargetControllerSuspended();
         void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
-        void onTargetPinStatesUpdate(int variantId, Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);
         void onTargetStateUpdate(Targets::TargetState newState);
         void onTargetProgramCounterUpdate(quint32 programCounter);
         void onTargetIoPortsUpdate();

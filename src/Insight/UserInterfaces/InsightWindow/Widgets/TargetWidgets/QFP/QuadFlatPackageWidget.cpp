@@ -1,3 +1,5 @@
+#include "QuadFlatPackageWidget.hpp"
+
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -6,7 +8,6 @@
 #include <QFile>
 
 #include "../../../InsightWindow.hpp"
-#include "QuadFlatPackageWidget.hpp"
 #include "src/Helpers/Paths.hpp"
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
@@ -17,8 +18,9 @@ using namespace Bloom::Targets;
 QuadFlatPackageWidget::QuadFlatPackageWidget(
     const TargetVariant& targetVariant,
     QObject* insightWindowObj,
+    InsightWorker& insightWorker,
     QWidget* parent
-): TargetPackageWidget(targetVariant, insightWindowObj, parent) {
+): TargetPackageWidget(targetVariant, insightWorker, parent) {
     assert((targetVariant.pinDescriptorsByNumber.size() % 4) == 0);
 
     auto stylesheetFile = QFile(QString::fromStdString(
