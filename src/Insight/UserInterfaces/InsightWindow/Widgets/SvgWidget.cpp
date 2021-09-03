@@ -27,7 +27,7 @@ void SvgWidget::paintEvent(QPaintEvent* paintEvent) {
             std::ceil(static_cast<float>(this->containerWidth / 2)),
             std::ceil(static_cast<float>(this->containerHeight / 2))
         );
-        painter.rotate(90);
+        painter.rotate(this->angle);
         painter.translate(
             -std::ceil(static_cast<float>(this->containerWidth / 2)),
             -std::ceil(static_cast<float>(this->containerHeight / 2))
