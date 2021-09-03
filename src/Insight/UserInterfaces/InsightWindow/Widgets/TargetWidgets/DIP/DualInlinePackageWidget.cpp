@@ -69,8 +69,8 @@ DualInlinePackageWidget::DualInlinePackageWidget(
     auto insightWindowWidget = this->window();
     assert(insightWindowWidget != nullptr);
 
-    insightWindowWidget->setMinimumHeight(500);
-    insightWindowWidget->setMinimumWidth(1000);
+    insightWindowWidget->setMinimumHeight(540);
+    insightWindowWidget->setMinimumWidth(1100);
 }
 
 void DualInlinePackageWidget::paintEvent(QPaintEvent* event) {

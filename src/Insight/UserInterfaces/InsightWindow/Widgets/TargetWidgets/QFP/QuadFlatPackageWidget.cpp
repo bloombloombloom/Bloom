@@ -104,7 +104,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
         std::max(
             1000,
             static_cast<int>(((PinWidget::MAXIMUM_VERTICAL_WIDTH + PinWidget::PIN_WIDGET_SPACING)  * pinCountPerLayout)
-                + (PinWidget::MAXIMUM_VERTICAL_WIDTH * 2)) + 600
+                + (PinWidget::MAXIMUM_VERTICAL_WIDTH * 2)) + 760
         )
     );
 }
