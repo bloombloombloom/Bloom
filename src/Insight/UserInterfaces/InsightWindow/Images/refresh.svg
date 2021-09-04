@@ -7,9 +7,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="30"
-   height="30"
-   viewBox="0 0 30 30"
+   width="20"
+   height="20"
+   viewBox="0 0 20 20"
    version="1.1"
    id="svg2664"
    sodipodi:docname="refresh.svg"
@@ -22,7 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -37,20 +37,25 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="2560"
+     inkscape:window-width="3440"
      inkscape:window-height="1353"
      id="namedview2666"
      showgrid="false"
      inkscape:zoom="29.698485"
-     inkscape:cx="21.843683"
-     inkscape:cy="16.338347"
-     inkscape:window-x="6000"
-     inkscape:window-y="24"
+     inkscape:cx="20.067735"
+     inkscape:cy="11.072076"
+     inkscape:window-x="2560"
+     inkscape:window-y="34"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2664"
-     inkscape:document-rotation="0" />
+     inkscape:document-rotation="0"
+     lock-margins="false"
+     fit-margin-top="3.625"
+     fit-margin-left="1.5"
+     fit-margin-right="1.5"
+     fit-margin-bottom="3.625" />
   <path
-     d="M 12,15 7.537,19.969 3,15 h 3 c 0,-4.97 4.03,-9 9,-9 2.395,0 4.565,0.942 6.179,2.468 l -2.004,2.231 C 18.094,9.649 16.622,9 15,9 11.691,9 9,11.691 9,15 Z M 22.463,10.031 18,15 h 3 c 0,3.309 -2.691,6 -6,6 -1.623,0 -3.094,-0.65 -4.175,-1.699 L 8.821,21.532 C 10.434,23.058 12.605,24 15,24 c 4.97,0 9,-4.03 9,-9 h 3 z"
+     d="M 7.875,10 4.7137084,13.519709 1.5,10 h 2.125 c 0,-3.5204166 2.8545834,-6.375 6.375,-6.375 1.696459,0 3.233541,0.66725 4.376791,1.7481666 l -1.4195,1.5802918 C 12.191584,6.2097084 11.148916,5.75 10,5.75 7.656125,5.75 5.75,7.656125 5.75,10 Z M 15.286291,6.4802916 12.125,10 h 2.125 c 0,2.343875 -1.906125,4.25 -4.25,4.25 -1.149625,0 -2.1915834,-0.460416 -2.9572916,-1.203459 l -1.4195,1.580293 C 6.76575,15.70775 8.3035416,16.375 10,16.375 c 3.520416,0 6.375,-2.854584 6.375,-6.375 H 18.5 Z"
      id="path2662"
-     style="fill:#a6a8ab;fill-opacity:1" />
+     style="fill:#a6a8ab;fill-opacity:1;stroke-width:0.708334" />
 </svg>

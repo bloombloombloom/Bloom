@@ -58,18 +58,47 @@
                 </property>
                 <item>
                     <widget class="QWidget" name="header">
-                        <widget class="QToolBar" name="header-tool-bar">
-                            <widget class="QToolButton" name="refresh-io-inspection-btn">
-                                <property name="icon">
-                                    <iconset>
-                                        <disabledoff>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</disabledoff>
-                                        <normalon>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh.svg</normalon>
-                                    </iconset>
+                        <widget class="QWidget" name="header-tool-bar">
+                            <layout class="QHBoxLayout">
+                                <property name="spacing">
+                                    <number>1</number>
                                 </property>
-                                <property name="toolTip">
-                                    <string>Refresh GPIO Pin States</string>
+                                <property name="margin">
+                                    <number>0</number>
                                 </property>
-                            </widget>
+                                <item>
+                                    <spacer name="header-tool-bar-padding-spacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Horizontal</enum>
+                                        </property>
+                                        <property name="sizeHint" >
+                                            <size>
+                                                <width>3</width>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item>
+                                    <widget class="SvgToolButton" name="refresh-io-inspection-btn">
+                                        <property name="svgFilePath">
+                                            <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh.svg</string>
+                                        </property>
+                                        <property name="disabledSvgFilePath">
+                                            <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</string>
+                                        </property>
+                                        <property name="toolTip">
+                                            <string>Refresh GPIO Pin States</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="header-tool-bar-tailing-spacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Horizontal</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
                         </widget>
                     </widget>
                 </item>
