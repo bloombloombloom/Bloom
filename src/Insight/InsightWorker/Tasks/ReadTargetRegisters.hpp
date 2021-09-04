@@ -1,8 +1,5 @@
 #pragma once
 
-#include <QObject>
-#include <QString>
-
 #include "InsightWorkerTask.hpp"
 #include "src/Targets/TargetRegister.hpp"
 

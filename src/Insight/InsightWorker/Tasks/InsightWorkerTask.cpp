@@ -12,6 +12,7 @@ void InsightWorkerTask::execute(TargetControllerConsole& targetControllerConsole
 
     } catch (std::exception& exception) {
         this->state = InsightWorkerTaskState::FAILED;
+        Logger::error("InsightWorker task failed - " + std::string(exception.what()));
         emit this->failed(QString::fromStdString(exception.what()));
     }
 }

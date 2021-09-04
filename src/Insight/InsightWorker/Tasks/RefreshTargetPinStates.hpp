@@ -1,8 +1,5 @@
 #pragma once
 
-#include <QObject>
-#include <QString>
-
 #include "InsightWorkerTask.hpp"
 #include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"
