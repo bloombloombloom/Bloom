@@ -3,6 +3,7 @@
 #include <QFrame>
 #include <QSvgRenderer>
 #include <QString>
+#include <QEvent>
 #include <QSize>
 
 namespace Bloom::Widgets
@@ -11,6 +12,7 @@ namespace Bloom::Widgets
     {
     Q_OBJECT
         Q_PROPERTY(QString svgFilePath READ getSvgFilePath WRITE setSvgFilePath DESIGNABLE true)
+        Q_PROPERTY(QString disabledSvgFilePath READ getDisabledSvgFilePath WRITE setDisabledSvgFilePath DESIGNABLE true)
         Q_PROPERTY(int containerWidth READ getContainerWidth WRITE setContainerWidth DESIGNABLE true)
         Q_PROPERTY(int containerHeight READ getContainerHeight WRITE setContainerHeight DESIGNABLE true)
         Q_PROPERTY(int angle READ getAngle WRITE setAngle DESIGNABLE true)
@@ -18,12 +20,14 @@ namespace Bloom::Widgets
     private:
         QSvgRenderer renderer = new QSvgRenderer(this);
         QString svgFilePath;
+        QString disabledSvgFilePath;
         int containerWidth = 0;
         int containerHeight = 0;
         int angle = 0;
 
     protected:
         void paintEvent(QPaintEvent* paintEvent) override;
+        void changeEvent(QEvent* event) override;
 
     public:
         explicit SvgWidget(QWidget* parent);
@@ -35,6 +39,14 @@ namespace Bloom::Widgets
 
         QString getSvgFilePath() {
             return this->svgFilePath;
+        }
+
+        void setDisabledSvgFilePath(const QString& disabledSvgFilePath) {
+            this->disabledSvgFilePath = disabledSvgFilePath;
+        }
+
+        [[nodiscard]] QString getDisabledSvgFilePath() const {
+            return this->disabledSvgFilePath;
         }
 
         void setContainerWidth(int containerWidth) {

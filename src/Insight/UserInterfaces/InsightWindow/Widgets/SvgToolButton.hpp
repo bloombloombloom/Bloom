@@ -22,15 +22,6 @@ namespace Bloom::Widgets
         int buttonWidth = 0;
         int buttonHeight = 0;
 
-    protected:
-        void changeEvent(QEvent* event) override {
-            if (event->type() == QEvent::EnabledChange && this->disabledSvgWidget != nullptr) {
-                auto enabled = this->isEnabled();
-                this->svgWidget->setVisible(enabled);
-                this->disabledSvgWidget->setVisible(!enabled);
-            }
-        };
-
     public:
         explicit SvgToolButton(QWidget* parent): QToolButton(parent) {
             this->setButtonWidth(10);
@@ -46,31 +37,17 @@ namespace Bloom::Widgets
         }
 
         void setDisabledSvgFilePath(const QString& disabledSvgFilePath) {
-            if (this->disabledSvgWidget == nullptr) {
-                this->disabledSvgWidget = new SvgWidget(this);
-                this->disabledSvgWidget->setContainerWidth(this->buttonWidth);
-                this->disabledSvgWidget->setContainerHeight(this->buttonHeight);
-            }
-
-            this->disabledSvgWidget->setSvgFilePath(disabledSvgFilePath);
+            this->svgWidget->setDisabledSvgFilePath(disabledSvgFilePath);
         }
 
         [[nodiscard]] QString getDisabledSvgFilePath() const {
-            if (this->disabledSvgWidget != nullptr) {
-                return this->disabledSvgWidget->getSvgFilePath();
-            }
-
-            return QString();
+            return this->svgWidget->getDisabledSvgFilePath();
         }
 
         void setButtonWidth(int buttonWidth) {
             this->buttonWidth = buttonWidth;
             this->setFixedWidth(buttonWidth);
             this->svgWidget->setContainerWidth(buttonWidth);
-
-            if (this->disabledSvgWidget != nullptr) {
-                this->disabledSvgWidget->setContainerWidth(buttonWidth);
-            }
         }
 
         [[nodiscard]] int getButtonWidth() const {
@@ -81,10 +58,6 @@ namespace Bloom::Widgets
             this->buttonHeight = buttonHeight;
             this->setFixedHeight(buttonHeight);
             this->svgWidget->setContainerHeight(buttonHeight);
-
-            if (this->disabledSvgWidget != nullptr) {
-                this->disabledSvgWidget->setContainerHeight(buttonHeight);
-            }
         }
 
         [[nodiscard]] int getButtonHeight() const {

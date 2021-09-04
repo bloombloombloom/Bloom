@@ -41,3 +41,16 @@ void SvgWidget::paintEvent(QPaintEvent* paintEvent) {
         svgSize.height()
     ));
 }
+
+void SvgWidget::changeEvent(QEvent* event) {
+    if (event->type() == QEvent::EnabledChange && !this->disabledSvgFilePath.isEmpty()) {
+        if (!this->isEnabled()) {
+            this->renderer.load(this->disabledSvgFilePath);
+
+        } else {
+            this->renderer.load(this->svgFilePath);
+        }
+
+        this->repaint();
+    }
+}
