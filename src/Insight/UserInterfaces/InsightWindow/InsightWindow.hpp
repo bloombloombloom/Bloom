@@ -93,7 +93,7 @@ namespace Bloom
         void onTargetIoPortsUpdate();
         void close();
         void openReportIssuesUrl();
-        static void openGettingStartedUrl();
+        void openGettingStartedUrl();
         void openAboutWindow();
         void toggleTargetRegistersPane();
 

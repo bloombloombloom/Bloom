@@ -130,27 +130,6 @@ InsightWindow::InsightWindow(
 void InsightWindow::init(TargetDescriptor targetDescriptor) {
     this->targetDescriptor = std::move(targetDescriptor);
     this->activate();
-    /*
-     * Do not delete svgWidget. It seems like it's absolutely pointless, but it's really not. I know this is gross but
-     * I don't seem to have any other option.
-     *
-     * You see, we use Qt's SVG libraries for some icons and other graphics in the Insight window, but because these are
-     * all loaded via the .ui and .qss file (at runtime, by Qt), and the fact that we don't use QSvgWidget anywhere in
-     * our C++ code, the linker doesn't link the SVG library to the Bloom binary! This then leads to the failure of
-     * rendering SVG images at runtime.
-     *
-     * I've scowered the internet looking for a solution to this, but I've found nothing! There was one post on the
-     * Qt forum, where someone had the very same issue: https://forum.qt.io/topic/61875/cmake-is-not-linking but no
-     * helpful responses.
-     *
-     * The easy solution is finding an excuse to use the QSvgWidget class in our code, but we have no real requirement
-     * of that.
-     *
-     * So for now, I'm just going to create an instance to QSvgWidget() here. Doing so will force the linker to link
-     * the libQt5Svg library. This will need to remain here until I find a better solution, or an actual need for the
-     * QSVGWidget class in our code.
-     */
-    auto svgWidget = QSvgWidget();
 }
 
 void InsightWindow::activate() {
@@ -173,8 +152,8 @@ void InsightWindow::activate() {
     /*
      * We don't want to present the user with duplicate target variants.
      *
-     * In the context of the Insight window, a variant that doesn't differ in package type or pinout
-     * configuration is considered a duplicate.
+     * In the context of Insight, a variant that doesn't differ in package type or pinout configuration is
+     * considered a duplicate.
      */
     auto processedVariants = std::vector<TargetVariant>();
     auto isDuplicateVariant = [&processedVariants] (const TargetVariant& variantA) {

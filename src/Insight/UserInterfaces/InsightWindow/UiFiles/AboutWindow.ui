@@ -22,7 +22,7 @@
                     <widget class="QLabel" name="link-label">
                         <property name="text">
                             <string><![CDATA[
-                            <a style="color: #3F86A0;" href="https://bloom.oscillate.io/">https://bloom.oscillate.io/</a>
+                            <a style="color: #3F86A0;" href="https://bloom.oscillate.io/">https://bloom.oscillate.io</a>
                             ]]></string>
                         </property>
                         <property name="openExternalLinks">
