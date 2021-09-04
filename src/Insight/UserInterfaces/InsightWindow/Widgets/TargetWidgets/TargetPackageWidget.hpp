@@ -33,5 +33,9 @@ namespace Bloom::Widgets::InsightTargetWidgets
     public:
         TargetPackageWidget(Targets::TargetVariant targetVariant, InsightWorker& insightWorker, QWidget* parent);
         virtual void refreshPinStates(std::optional<std::function<void(void)>> callback = std::nullopt);
+
+        virtual void setTargetState(Targets::TargetState targetState) {
+            this->targetState = targetState;
+        }
     };
 }

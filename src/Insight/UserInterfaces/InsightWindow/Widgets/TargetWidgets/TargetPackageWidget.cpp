@@ -23,15 +23,11 @@ TargetPackageWidget::TargetPackageWidget(
 
     this->connect(
         &(this->insightWorker),
-        &InsightWorker::targetPinStatesUpdated,
+        &InsightWorker::targetIoPortsUpdated,
         this,
-        [this] (int variantId, const Targets::TargetPinStateMappingType& pinStatesByNumber) {
-            if (variantId == this->targetVariant.id) {
-                this->updatePinStates(pinStatesByNumber);
-
-                if (this->targetState == TargetState::STOPPED && !this->isEnabled()) {
-                    this->setDisabled(false);
-                }
+        [this] {
+            if (this->targetState == TargetState::STOPPED) {
+                this->refreshPinStates();
             }
         }
     );
