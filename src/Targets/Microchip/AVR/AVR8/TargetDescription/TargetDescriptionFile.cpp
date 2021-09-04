@@ -435,6 +435,7 @@ void TargetDescriptionFile::loadTargetVariants() {
             targetPin.name = tdPin.pad;
             targetPin.padName = tdPin.pad;
             targetPin.number = tdPin.position;
+            targetPin.variantId = targetVariant.id;
 
             // TODO: REMOVE THIS:
             if (tdPin.pad.find("vcc") == 0

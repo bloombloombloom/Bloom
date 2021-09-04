@@ -197,12 +197,11 @@ namespace Bloom
         Targets::TargetPinStateMappingType getPinStates(int variantId);
 
         /**
-         * Requests a pin state update on the target, for a specific pin.
+         * Updates the pin state on the target, for a specific pin.
          *
-         * @param variantId
          * @param pinDescriptor
          * @param pinState
          */
-        void setPinState(int variantId, Targets::TargetPinDescriptor pinDescriptor, Targets::TargetPinState pinState);
+        void setPinState(Targets::TargetPinDescriptor pinDescriptor, Targets::TargetPinState pinState);
     };
 }

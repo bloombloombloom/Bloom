@@ -292,12 +292,10 @@ namespace Bloom::Targets
         /**
          * Should update the pin state for the given pin, with the given state.
          *
-         * @param variantId
          * @param pinDescriptor
          * @param state
          */
         virtual void setPinState(
-            int variantId,
             const TargetPinDescriptor& pinDescriptor,
             const TargetPinState& state
         ) = 0;

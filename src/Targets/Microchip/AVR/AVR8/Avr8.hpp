@@ -146,7 +146,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         std::map<int, TargetPinState> getPinStates(int variantId) override;
         void setPinState(
-            int variantId,
             const TargetPinDescriptor& pinDescriptor,
             const TargetPinState& state
         ) override;

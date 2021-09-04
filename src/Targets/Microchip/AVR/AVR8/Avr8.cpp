@@ -428,7 +428,8 @@ std::map<int, TargetPinState> Avr8::getPinStates(int variantId) {
     return output;
 }
 
-void Avr8::setPinState(int variantId, const TargetPinDescriptor& pinDescriptor, const TargetPinState& state) {
+void Avr8::setPinState(const TargetPinDescriptor& pinDescriptor, const TargetPinState& state) {
+    auto variantId = pinDescriptor.variantId;
     if (!this->targetVariantsById.contains(variantId)) {
         throw Exception("Invalid target variant ID");
     }

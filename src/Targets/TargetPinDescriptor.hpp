@@ -8,7 +8,7 @@
 
 namespace Bloom::Targets
 {
-    enum class TargetPinType: int
+    enum class TargetPinType: std::uint8_t
     {
         UNKNOWN,
         GPIO,
@@ -19,6 +19,7 @@ namespace Bloom::Targets
     struct TargetPinDescriptor
     {
         int number;
+        int variantId;
         bool supportsGpio = false;
         std::string name;
         std::string padName;
@@ -39,13 +40,13 @@ namespace Bloom::Targets
 
     struct TargetPinState
     {
-        enum class IoState: int
+        enum class IoState: std::uint8_t
         {
             HIGH,
             LOW,
         };
 
-        enum class IoDirection: int
+        enum class IoDirection: std::uint8_t
         {
             INPUT,
             OUTPUT,

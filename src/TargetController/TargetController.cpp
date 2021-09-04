@@ -630,11 +630,11 @@ void TargetController::onSetPinStateEvent(const Events::SetTargetPinState& event
             );
         }
 
-        this->target->setPinState(event.variantId, event.pinDescriptor, event.pinState);
+        this->target->setPinState(event.pinDescriptor, event.pinState);
 
         auto pinStatesUpdateEvent = std::make_shared<Events::TargetPinStatesRetrieved>();
         pinStatesUpdateEvent->correlationId = event.id;
-        pinStatesUpdateEvent->variantId = event.variantId;
+        pinStatesUpdateEvent->variantId = event.pinDescriptor.variantId;
         pinStatesUpdateEvent->pinSatesByNumber = {
             {event.pinDescriptor.number, event.pinState}
         };

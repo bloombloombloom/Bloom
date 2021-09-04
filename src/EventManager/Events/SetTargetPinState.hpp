@@ -15,7 +15,6 @@ namespace Bloom::Events
 
         static inline EventType type = EventType::SET_TARGET_PIN_STATE;
         static inline const std::string name = "SetTargetPinState";
-        int variantId = 0;
         Targets::TargetPinDescriptor pinDescriptor;
         Targets::TargetPinState pinState;
 
