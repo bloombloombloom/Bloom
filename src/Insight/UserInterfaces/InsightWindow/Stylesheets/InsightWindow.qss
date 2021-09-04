@@ -1,6 +1,7 @@
 * {
     color: #afb1b3;
     font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
 }
 
 QMainWindow {
@@ -11,10 +12,10 @@ QMainWindow {
     position: relative;
     background-color: transparent;
     max-height: 25px;
+    min-height: 25px;
     width: auto;
     border-top: 1px solid #41423f;
-    border-top: 1px solid #41423f;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid #2b2b2b;
 }
 
 QMenuBar::item {
@@ -62,7 +63,6 @@ QMenu::item {
 }
 
 QMenu::item:selected {
-    background-color: #4d7bba;
     background-color: #335883;
 }
 
@@ -70,50 +70,32 @@ QMenu::item:disabled {
     color: #808484;
 }
 
-QMenu#help-menu::separator {
+QMenu::separator {
     border-top: 1px solid #41423f;
     height: 1px;
+}
+
+QMenu#help-menu::separator {
     margin: 1px 0;
 }
 
-#rhSideBar {
-    max-width: 25px;
-    background-color: transparent;
-    height: auto;
-    border-left: 1px solid #515151;
-    text-align: right;
-}
-
-#rhSideBar #inspectRamBtn {
-    position: relative;
-    max-width: 25px;
-    height: 25px;
-    color: #000;
-    border: none;
-    qproperty-icon: url(":/compiled/src/Insight/UserInterfaces/InsightWindow/Images/RAM.svg");
-    icon-size: 25px;
-}
-
-#rhSideBar #inspectRamBtn:hover {
-    background-color: #343536;
-    border: none;
-
-}
-
 #header-tool-bar {
-    min-height: 25px;
-    min-width: 100%;
+    min-height: 27px;
+    margin-left: 10px;
+}
+
+#header-tool-bar QHBoxLayout {
+    margin-left: 10px;
 }
 
 #header-tool-bar QToolButton {
     background-color: transparent;
-    max-width: 25px;
-    max-height: 21px;
+    /*max-width: 26px;*/
+    /*max-height: 22px;*/
     border: none;
     padding: 0;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    margin-left: 2px;
+    qproperty-buttonWidth: 24;
+    qproperty-buttonHeight: 20;
 }
 
 #header-tool-bar QToolButton:hover {
@@ -194,4 +176,127 @@ QToolTip {
 #io-inspection-unavailable {
     color: #838386;
     font-size: 14px;
+}
+
+QScrollBar:vertical {
+    background-color: transparent;
+    width: 15px;
+    margin: 1px 1px 1px 5px;
+}
+
+QScrollBar:handle:vertical {
+    border: none;
+    background-color: rgba(69, 69, 66, 0.6);
+}
+
+QScrollBar:handle:vertical:hover {
+    background-color: rgba(69, 69, 66, 0.91);
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+}
+
+/* Left-side panel */
+#left-side-menu-bar {
+    max-width: 22px;
+    background-color: transparent;
+    height: auto;
+    border-right: 1px solid #313131;
+    border-right: 1px solid #2b2b2b;
+    text-align: right;
+}
+
+#left-side-menu-bar #target-registers-btn {
+    position: relative;
+    max-width: 22px;
+    min-height: 95px;
+    border: none;
+}
+
+#left-side-menu-bar QToolButton:hover,
+#left-side-menu-bar QToolButton:checked {
+    background-color: #2B2B29;
+    border: none;
+}
+
+#left-panel-layout-container {
+    border-right: 1px solid #2b2b2b;
+}
+
+/* Target Registers Pane */
+#target-registers-side-pane {
+    /*min-width: 250px;*/
+    /*min-height: 200px;*/
+    /*height: 200px;*/
+
+}
+
+#target-registers-side-pane #tool-bar {
+    background-color: #353C41;
+    border-bottom: 1px solid #2b2b2b;
+}
+
+#target-registers-side-pane #title {
+    color: #afb1b3;
+}
+
+#target-registers-side-pane #tool-bar QToolButton {
+    background-color: transparent;
+    /*max-width: 26px;*/
+    /*max-height: 22px;*/
+    border: none;
+    padding: 0;
+    qproperty-buttonWidth: 23;
+    qproperty-buttonHeight: 21;
+}
+
+#target-registers-side-pane #tool-bar QToolButton:hover {
+    background-color: #40464e;
+    border: none;
+    padding: 0;
+}
+
+#target-registers-side-pane #search-bar {
+    background-color: #343532;
+    border-bottom: 1px solid #2b2b2b;
+}
+
+#target-registers-side-pane #search-input {
+    background-color: transparent;
+    /*font-size: 13px;*/
+    color: #9b9b9e;
+}
+
+#target-registers-side-pane QScrollArea {
+    background-color: transparent;
+}
+
+#target-registers-side-pane #item-container {
+    background-color: transparent;
+}
+
+#target-registers-side-pane #header {
+    border: none;
+}
+
+#target-registers-side-pane #register-group-header[selected=true],
+#target-registers-side-pane #register-item[selected=true] {
+    background-color: #335883;
+}
+
+#target-registers-side-pane #register-item #value {
+    font-size: 13px;
+    color: #8a8a8d;
+    font-style: italic;
+}
+
+#target-registers-side-pane #register-item[selected=false] #value[changed=true] {
+    color: #547fba;
+}
+
+#target-registers-side-pane #register-item[selected=true] #value[changed=true] {
+    color: #8a8a8d;
 }

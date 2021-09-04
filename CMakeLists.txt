@@ -141,10 +141,11 @@ add_executable(Bloom
     src/Insight/InsightWorker/Tasks/InsightWorkerTask.cpp
     src/Insight/InsightWorker/Tasks/ReadTargetRegisters.cpp
     src/Insight/InsightWorker/Tasks/RefreshTargetPinStates.cpp
+    src/Insight/InsightWorker/Tasks/SetTargetPinState.cpp
 
     # Target package widgets
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidget.cpp
-    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinWidget.hpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinBodyWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/DualInlinePackageWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/PinWidget.cpp
@@ -154,6 +155,12 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/PinWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/PinBodyWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/BodyWidget.cpp
+
+    # Target register side pane
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/TargetRegistersPaneWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/ItemWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/RegisterGroupWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/RegisterWidget.cpp
 )
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)

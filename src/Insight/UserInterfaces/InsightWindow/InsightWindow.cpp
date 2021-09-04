@@ -1,9 +1,12 @@
-#include <QtUiTools>
+#include "InsightWindow.hpp"
+
 #include <QtSvg/QtSvg>
 #include <utility>
 
-#include "InsightWindow.hpp"
-#include "AboutWindow.hpp"
+#include "UiLoader.hpp"
+#include "Widgets/SlidingHandleWidget.hpp"
+#include "Widgets/RotatableLabel.hpp"
+
 #include "Widgets/TargetWidgets/DIP/DualInlinePackageWidget.hpp"
 #include "Widgets/TargetWidgets/QFP/QuadFlatPackageWidget.hpp"
 
@@ -48,9 +51,12 @@ InsightWindow::InsightWindow(
         throw Exception("Failed to open InsightWindow stylesheet file");
     }
 
-    auto uiLoader = QUiLoader(this);
+    auto uiLoader = UiLoader(this);
     this->mainWindowWidget = uiLoader.load(&mainWindowUiFile);
     this->mainWindowWidget->setStyleSheet(mainWindowStylesheet.readAll());
+
+    mainWindowUiFile.close();
+    mainWindowStylesheet.close();
 
     QApplication::setWindowIcon(QIcon(
         QString::fromStdString(Paths::compiledResourcesPath()
@@ -77,11 +83,44 @@ InsightWindow::InsightWindow(
     this->refreshIoInspectionButton = this->header->findChild<QToolButton*>("refresh-io-inspection-btn");
 
     connect(this->refreshIoInspectionButton, &QToolButton::clicked, this, [this] {
+        // TODO: Move this into a member function - getting too big for a lambda
         if (this->targetState == TargetState::STOPPED && this->selectedVariant != nullptr) {
             this->toggleUi(true);
-            emit this->refreshTargetPinStates(this->selectedVariant->id);
+            if (this->targetPackageWidget != nullptr) {
+                this->targetPackageWidget->setDisabled(true);
+                this->targetPackageWidget->refreshPinStates([this] {
+                    if (this->targetState == TargetState::STOPPED) {
+                        this->targetPackageWidget->setDisabled(false);
+
+                        if (this->targetRegistersSidePane == nullptr || !this->targetRegistersSidePane->activated) {
+                            this->toggleUi(false);
+                        }
+                    }
+                });
+            }
+
+            if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->activated) {
+                this->targetRegistersSidePane->refreshRegisterValues([this] {
+                    this->toggleUi(false);
+                });
+            }
         }
     });
+
+    this->leftPanel = this->mainWindowWidget->findChild<QWidget*>("left-panel");
+    this->leftPanelLayoutContainer = this->leftPanel->findChild<QWidget*>("left-panel-layout-container");
+
+    auto leftPanelSlider = this->mainWindowWidget->findChild<SlidingHandleWidget*>("left-panel-slider");
+    connect(leftPanelSlider, &SlidingHandleWidget::horizontalSlide, this, &InsightWindow::onLeftPanelHandleSlide);
+
+    this->targetRegistersButton = this->mainWindowWidget->findChild<QToolButton*>("target-registers-btn");
+    auto targetRegisterButtonLayout = this->targetRegistersButton->findChild<QVBoxLayout*>();
+    auto registersBtnLabel = new RotatableLabel(270, "Registers", this->targetRegistersButton);
+    registersBtnLabel->setObjectName("target-registers-btn-label");
+    registersBtnLabel->setContentsMargins(5,0,9,0);
+    targetRegisterButtonLayout->insertWidget(0, registersBtnLabel, 0, Qt::AlignTop);
+
+    connect(this->targetRegistersButton, &QToolButton::clicked, this, &InsightWindow::toggleTargetRegistersPane);
 
     this->footer = this->mainWindowWidget->findChild<QWidget*>("footer");
     this->targetStatusLabel = this->footer->findChild<QLabel*>("target-state");
@@ -235,6 +274,17 @@ void InsightWindow::activate() {
         this->ioUnavailableWidget->show();
     }
 
+    auto leftPanelLayout = this->leftPanelLayoutContainer->findChild<QVBoxLayout*>("left-panel-layout");
+    this->targetRegistersSidePane = new TargetRegistersPaneWidget(
+        this->targetDescriptor,
+        insightWorker,
+        this->leftPanelLayoutContainer
+    );
+    leftPanelLayout->addWidget(this->targetRegistersSidePane);
+    this->targetRegistersButton->setChecked(false);
+    this->targetRegistersButton->setDisabled(false);
+
+
     this->toggleUi(this->targetState != TargetState::STOPPED);
     this->activated = true;
 }
@@ -244,6 +294,14 @@ void InsightWindow::deactivate() {
         this->targetPackageWidget->hide();
         this->targetPackageWidget->deleteLater();
         this->targetPackageWidget = nullptr;
+    }
+
+    if (this->targetRegistersSidePane != nullptr) {
+        this->targetRegistersSidePane->deactivate();
+        this->targetRegistersSidePane->deleteLater();
+        this->leftPanel->setVisible(false);
+        this->targetRegistersButton->setChecked(false);
+        this->targetRegistersButton->setDisabled(true);
     }
 
     this->ioUnavailableWidget->setText(
@@ -365,7 +423,12 @@ void InsightWindow::toggleUi(bool disable) {
         this->refreshIoInspectionButton->setDisabled(disable);
         this->refreshIoInspectionButton->repaint();
     }
+}
 
+void InsightWindow::onLeftPanelHandleSlide(int horizontalPosition) {
+    auto width = std::max(this->leftPanelMinWidth, this->leftPanel->width() + horizontalPosition);
+    this->leftPanel->setMaximumWidth(width);
+    this->leftPanel->setFixedWidth(width);
 }
 
 void InsightWindow::onTargetControllerSuspended() {
@@ -446,6 +509,20 @@ void InsightWindow::onTargetIoPortsUpdate() {
     }
 }
 
+void InsightWindow::toggleTargetRegistersPane() {
+    if (this->targetRegistersSidePane->activated) {
+        this->targetRegistersSidePane->deactivate();
+        this->targetRegistersButton->setChecked(false);
 
+        /*
+         * Given that the target registers side pane is currently the only pane in the left panel, the panel will be
+         * empty so no need to leave it visible.
+         */
+        this->leftPanel->setVisible(false);
+
+    } else {
+        this->targetRegistersSidePane->activate();
+        this->targetRegistersButton->setChecked(true);
+        this->leftPanel->setVisible(true);
     }
 }

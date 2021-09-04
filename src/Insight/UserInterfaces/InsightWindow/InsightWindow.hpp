@@ -14,6 +14,7 @@
 #include "src/Targets/TargetVariant.hpp"
 
 #include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
+#include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
 #include "AboutWindow.hpp"
 
 namespace Bloom
@@ -40,6 +41,12 @@ namespace Bloom
 
         QWidget* header = nullptr;
         QToolButton* refreshIoInspectionButton = nullptr;
+
+        QWidget* leftPanel = nullptr;
+        int leftPanelMinWidth = 300;
+        QWidget* leftPanelLayoutContainer = nullptr;
+        Widgets::TargetRegistersPaneWidget* targetRegistersSidePane = nullptr;
+        QToolButton* targetRegistersButton = nullptr;
 
         QWidget* ioContainerWidget = nullptr;
         QLabel* ioUnavailableWidget = nullptr;
@@ -78,6 +85,7 @@ namespace Bloom
         void show();
 
     public slots:
+        void onLeftPanelHandleSlide(int horizontalPosition);
         void onTargetControllerSuspended();
         void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void onTargetStateUpdate(Targets::TargetState newState);
@@ -87,6 +95,7 @@ namespace Bloom
         void openReportIssuesUrl();
         static void openGettingStartedUrl();
         void openAboutWindow();
+        void toggleTargetRegistersPane();
 
     signals:
         void refreshTargetPinStates(int variantId);
