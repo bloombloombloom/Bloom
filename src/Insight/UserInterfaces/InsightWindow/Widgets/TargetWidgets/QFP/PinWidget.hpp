@@ -42,9 +42,10 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         static const int MAXIMUM_VERTICAL_WIDTH = PinBodyWidget::WIDTH;
 
         PinWidget(
-            QWidget* parent,
             const Targets::TargetPinDescriptor& pinDescriptor,
-            const Targets::TargetVariant& targetVariant
+            const Targets::TargetVariant& targetVariant,
+            InsightWorker& insightWorker,
+            QWidget* parent
         );
 
         void updatePinState(const Targets::TargetPinState& pinState) override;

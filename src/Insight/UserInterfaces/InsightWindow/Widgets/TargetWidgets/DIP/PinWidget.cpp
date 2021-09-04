@@ -11,8 +11,12 @@
 using namespace Bloom::Widgets::InsightTargetWidgets::Dip;
 using namespace Bloom::Targets;
 
-PinWidget::PinWidget(QWidget* parent, const TargetPinDescriptor& pinDescriptor, const TargetVariant& targetVariant):
-    TargetPinWidget(parent, pinDescriptor, targetVariant) {
+PinWidget::PinWidget(
+    const TargetPinDescriptor& pinDescriptor,
+    const TargetVariant& targetVariant,
+    InsightWorker& insightWorker,
+    QWidget* parent
+): TargetPinWidget(pinDescriptor, targetVariant, insightWorker, parent) {
     this->layout = new QVBoxLayout();
     this->layout->setContentsMargins(0, 0, 0, 0);
     this->layout->setSpacing(0);

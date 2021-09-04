@@ -39,7 +39,6 @@ namespace Bloom
 
         void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
-        void onTargetPinStatesRetrievedEvent(const Events::TargetPinStatesRetrieved& event);
         void onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event);
         void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
 
@@ -58,17 +57,11 @@ namespace Bloom
     public slots:
         void startup();
         void requestPinStates(int variantId);
-        void requestPinStateUpdate(
-            int variantId,
-            Bloom::Targets::TargetPinDescriptor pinDescriptor,
-            Bloom::Targets::TargetPinState pinState
-        );
 
     signals:
         void taskQueued();
         void targetStateUpdated(Bloom::Targets::TargetState newState);
         void targetProgramCounterUpdated(quint32 programCounter);
-        void targetPinStatesUpdated(int variantId, Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);
         void targetIoPortsUpdated();
         void targetControllerSuspended();
         void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);

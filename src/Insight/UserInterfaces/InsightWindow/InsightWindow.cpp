@@ -333,9 +333,14 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
     }
 
     if (this->targetPackageWidget != nullptr) {
+        this->targetPackageWidget->setTargetState(this->targetState);
+
         if (this->targetState == TargetState::STOPPED) {
-            this->toggleUi(true);
-            emit this->refreshTargetPinStates(variant->id);
+            this->targetPackageWidget->refreshPinStates([this] {
+                if (this->targetState == TargetState::STOPPED) {
+                    this->targetPackageWidget->setDisabled(false);
+                }
+            });
         }
 
         this->targetPackageWidget->show();
@@ -441,17 +446,6 @@ void InsightWindow::onTargetIoPortsUpdate() {
     }
 }
 
-void InsightWindow::togglePinIoState(InsightTargetWidgets::TargetPinWidget* pinWidget) {
-    auto pinState = pinWidget->getPinState();
 
-    // Currently, we only allow users to toggle the IO state of output pins
-    if (pinState.has_value()
-        && pinState.value().ioDirection == TargetPinState::IoDirection::OUTPUT
-        && this->selectedVariant != nullptr
-    ) {
-        auto& pinDescriptor = pinWidget->getPinDescriptor();
-        pinState.value().ioState = (pinState.value().ioState == TargetPinState::IoState::HIGH) ?
-            TargetPinState::IoState::LOW : TargetPinState::IoState::HIGH;
-        emit this->setTargetPinState(this->selectedVariant->id, pinDescriptor, pinState.value());
     }
 }

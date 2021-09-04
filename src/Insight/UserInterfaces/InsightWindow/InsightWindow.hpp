@@ -87,14 +87,8 @@ namespace Bloom
         void openReportIssuesUrl();
         static void openGettingStartedUrl();
         void openAboutWindow();
-        void togglePinIoState(Widgets::InsightTargetWidgets::TargetPinWidget* pinWidget);
 
     signals:
         void refreshTargetPinStates(int variantId);
-        void setTargetPinState(
-            int variantId,
-            Bloom::Targets::TargetPinDescriptor pinDescriptor,
-            Bloom::Targets::TargetPinState pinState
-        );
     };
 }

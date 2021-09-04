@@ -28,10 +28,6 @@ void InsightWorker::startup() {
         std::bind(&InsightWorker::onTargetResumedEvent, this, std::placeholders::_1)
     );
 
-    this->eventListener->registerCallbackForEventType<Events::TargetPinStatesRetrieved>(
-        std::bind(&InsightWorker::onTargetPinStatesRetrievedEvent, this, std::placeholders::_1)
-    );
-
     this->eventListener->registerCallbackForEventType<Events::TargetIoPortsUpdated>(
         std::bind(&InsightWorker::onTargetIoPortsUpdatedEvent, this, std::placeholders::_1)
     );
@@ -81,14 +77,6 @@ void InsightWorker::requestPinStates(int variantId) {
     this->targetControllerConsole.requestPinStates(variantId);
 }
 
-void InsightWorker::requestPinStateUpdate(
-    int variantId,
-    Bloom::Targets::TargetPinDescriptor pinDescriptor,
-    Bloom::Targets::TargetPinState pinState
-) {
-    this->targetControllerConsole.setPinState(variantId, pinDescriptor, pinState);
-}
-
 void InsightWorker::onTargetStoppedEvent(const Events::TargetExecutionStopped& event) {
     /*
      * When we report a target halt to Insight, Insight will immediately seek more data from the target (such as GPIO
@@ -123,10 +111,6 @@ void InsightWorker::onTargetStoppedEvent(const Events::TargetExecutionStopped& e
 
 void InsightWorker::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
     emit this->targetStateUpdated(TargetState::RUNNING);
-}
-
-void InsightWorker::onTargetPinStatesRetrievedEvent(const Events::TargetPinStatesRetrieved& event) {
-    emit this->targetPinStatesUpdated(event.variantId, event.pinSatesByNumber);
 }
 
 void InsightWorker::onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event) {

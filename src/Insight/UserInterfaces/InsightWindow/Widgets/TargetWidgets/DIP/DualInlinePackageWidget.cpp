@@ -48,7 +48,7 @@ DualInlinePackageWidget::DualInlinePackageWidget(
     assert(insightWindow != nullptr);
 
     for (const auto& [targetPinNumber, targetPinDescriptor]: targetVariant.pinDescriptorsByNumber) {
-        auto pinWidget = new PinWidget(this, targetPinDescriptor, targetVariant);
+        auto pinWidget = new PinWidget(targetPinDescriptor, targetVariant, insightWorker, this);
         this->pinWidgets.push_back(pinWidget);
 
         if (targetPinNumber <= (targetVariant.pinDescriptorsByNumber.size() / 2)) {
@@ -56,8 +56,6 @@ DualInlinePackageWidget::DualInlinePackageWidget(
         } else {
             this->topPinLayout->addWidget(pinWidget, 0, Qt::AlignmentFlag::AlignRight);
         }
-
-        connect(pinWidget, &TargetPinWidget::toggleIoState, insightWindow, &InsightWindow::togglePinIoState);
     }
 
     this->layout->addLayout(this->topPinLayout);

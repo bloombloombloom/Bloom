@@ -34,9 +34,10 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
             + (PinWidget::LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT);
 
         PinWidget(
-            QWidget* parent,
             const Targets::TargetPinDescriptor& pinDescriptor,
-            const Targets::TargetVariant& targetVariant
+            const Targets::TargetVariant& targetVariant,
+            InsightWorker& insightWorker,
+            QWidget* parent
         );
 
         void updatePinState(const Targets::TargetPinState& pinState) override {

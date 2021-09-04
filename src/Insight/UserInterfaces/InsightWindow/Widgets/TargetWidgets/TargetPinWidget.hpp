@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <utility>
 
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"
 
@@ -12,6 +13,8 @@ namespace Bloom::Widgets::InsightTargetWidgets
     {
     Q_OBJECT
     protected:
+        InsightWorker& insightWorker;
+
         Targets::TargetVariant targetVariant;
         Targets::TargetPinDescriptor pinDescriptor;
         std::optional<Targets::TargetPinState> pinState;
@@ -19,23 +22,14 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
     public:
         TargetPinWidget(
-            QWidget* parent,
             Targets::TargetPinDescriptor pinDescriptor,
-            Targets::TargetVariant targetVariant
-        ): QWidget(parent), targetVariant(std::move(targetVariant)), pinDescriptor(std::move(pinDescriptor)) {
-            this->setDisabled(false);
-        };
+            Targets::TargetVariant targetVariant,
+            InsightWorker& insightWorker,
+            QWidget* parent
+        );
 
         int getPinNumber() const {
             return this->pinDescriptor.number;
-        }
-
-        const Targets::TargetPinDescriptor& getPinDescriptor() const {
-            return this->pinDescriptor;
-        }
-
-        std::optional<Targets::TargetPinState> getPinState() const {
-            return this->pinState;
         }
 
         virtual void updatePinState(const Targets::TargetPinState& pinState) {
@@ -46,21 +40,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
             this->pinState = pinState;
         }
 
-        void setDisabled(bool disabled) {
-            if (pinDescriptor.type != Targets::TargetPinType::UNKNOWN) {
-                QWidget::setDisabled(disabled);
-
-            } else {
-                QWidget::setDisabled(true);
-            }
-        }
-
     public slots:
-        void onWidgetBodyClicked() {
-            emit this->toggleIoState(this);
-        }
-
-    signals:
-        void toggleIoState(TargetPinWidget* pinWidget);
+        virtual void onWidgetBodyClicked();
     };
 }
