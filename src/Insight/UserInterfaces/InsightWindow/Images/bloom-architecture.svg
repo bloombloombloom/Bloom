@@ -39,11 +39,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.9899495"
-     inkscape:cx="548.63418"
-     inkscape:cy="133.11151"
+     inkscape:zoom="1.979899"
+     inkscape:cx="510.14484"
+     inkscape:cy="-17.592111"
      inkscape:document-units="px"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="layer9"
      inkscape:document-rotation="0"
      showgrid="false"
      units="px"
@@ -77,7 +77,8 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="BG"
-     style="display:inline" />
+     style="display:inline"
+     sodipodi:insensitive="true" />
   <g
      inkscape:label="DebugTool"
      inkscape:groupmode="layer"
@@ -1075,8 +1076,7 @@
   <g
      inkscape:groupmode="layer"
      id="layer9"
-     inkscape:label="Bloom"
-     sodipodi:insensitive="true">
+     inkscape:label="Bloom">
     <path
        style="display:inline;opacity:1;fill:#a8a9a9;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 171.85601,38.999201 h -1.87093 v 1.870924 h 1.87093 z"
@@ -1101,7 +1101,7 @@
        d="m 171.85601,25.487376 h -1.87093 v 1.870925 h 1.87093 z"
        id="path3014" />
     <path
-       style="display:inline;opacity:1;fill:#98763f;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;opacity:1;fill:#7c5e35;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 175.03145,25.487376 h -1.87092 v 1.870925 h 1.87092 z"
        id="path3012" />
     <path
@@ -1129,7 +1129,7 @@
        d="m 177.27115,25.487376 v -3.181359 l 2.65747,-2.471742"
        id="path2868-4-96-2" />
     <path
-       style="display:inline;fill:none;stroke:#98763f;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:none;stroke:#7c5e35;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 174.09576,25.487376 V 18.537071"
        id="path2885-2-0" />
     <path
@@ -1137,19 +1137,19 @@
        d="m 181.78734,30.003301 h 3.18134 l 2.47175,-2.657474"
        id="path2868" />
     <path
-       style="display:inline;fill:none;stroke:#3d778c;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:none;stroke:#395e62;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 181.78734,36.353944 h 3.18134 l 2.47175,2.657473"
        id="path2868-4" />
     <path
-       style="display:inline;fill:none;stroke:#3d778c;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:none;stroke:#395e62;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 181.78734,33.178558 h 6.9503"
        id="path2885" />
     <path
-       style="display:inline;fill:none;stroke:#98763f;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:none;stroke:#7c5e35;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 166.40459,30.003301 h -3.18136 l -2.47173,-2.657474"
        id="path2868-9" />
     <path
-       style="display:inline;fill:none;stroke:#98763f;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:none;stroke:#7c5e35;stroke-width:0.769139;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 166.40459,36.353944 h -3.18136 l -2.47173,2.657473"
        id="path2868-4-9" />
     <path
@@ -1157,7 +1157,7 @@
        d="m 166.40459,33.178558 h -6.9503"
        id="path2885-4" />
     <rect
-       style="display:inline;opacity:1;fill:#98763f;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;opacity:1;fill:#7c5e35;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect3462-2-5"
        width="1.8709255"
        height="1.8709253"
@@ -1173,7 +1173,7 @@
        y="32.24324"
        transform="scale(-1,1)" />
     <rect
-       style="display:inline;opacity:1;fill:#98763f;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;opacity:1;fill:#7c5e35;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect3462-6-0-3"
        width="1.8709255"
        height="1.8709253"
@@ -1188,14 +1188,14 @@
        x="179.91611"
        y="29.067802" />
     <rect
-       style="display:inline;opacity:1;fill:#3d778c;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;opacity:1;fill:#395e62;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect3462-3-7"
        width="1.8709255"
        height="1.8709253"
        x="179.91611"
        y="32.24324" />
     <rect
-       style="display:inline;opacity:1;fill:#3d778c;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;opacity:1;fill:#395e62;fill-opacity:1;stroke:none;stroke-width:0.311819;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect3462-6-0"
        width="1.8709255"
        height="1.8709253"
