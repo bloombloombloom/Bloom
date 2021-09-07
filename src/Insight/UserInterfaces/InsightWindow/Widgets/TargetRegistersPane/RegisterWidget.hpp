@@ -9,9 +9,9 @@
 #include <QEvent>
 
 #include "ItemWidget.hpp"
-#include "../SvgWidget.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgWidget.hpp"
 namespace Bloom::Widgets
 {
     class RegisterWidget: public ItemWidget

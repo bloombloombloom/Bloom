@@ -227,13 +227,6 @@ QScrollBar::sub-line:vertical {
 }
 
 /* Target Registers Pane */
-#target-registers-side-pane {
-    /*min-width: 250px;*/
-    /*min-height: 200px;*/
-    /*height: 200px;*/
-
-}
-
 #target-registers-side-pane #tool-bar {
     background-color: #353C41;
     border-bottom: 1px solid #2b2b2b;

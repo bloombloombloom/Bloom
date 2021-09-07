@@ -71,7 +71,7 @@
                                         <property name="orientation">
                                             <enum>Qt::Horizontal</enum>
                                         </property>
-                                        <property name="sizeHint" >
+                                        <property name="sizeHint">
                                             <size>
                                                 <width>3</width>
                                             </size>
