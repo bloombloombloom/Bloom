@@ -6,10 +6,7 @@ using namespace Bloom::Widgets::InsightTargetWidgets;
 using namespace Bloom::Targets;
 
 bool TargetPinBodyWidget::event(QEvent* event) {
-    if (this->isEnabled()
-        && this->pinState.has_value()
-        && this->pinState->ioDirection == TargetPinState::IoDirection::OUTPUT
-    ) {
+    if (this->pinState.has_value() && this->pinState->ioDirection == TargetPinState::IoDirection::OUTPUT) {
         switch (event->type()) {
             case QEvent::Enter: {
                 this->hoverActive = true;
