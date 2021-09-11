@@ -140,6 +140,7 @@ add_executable(Bloom
     # Insight worker tasks
     src/Insight/InsightWorker/Tasks/InsightWorkerTask.cpp
     src/Insight/InsightWorker/Tasks/ReadTargetRegisters.cpp
+    src/Insight/InsightWorker/Tasks/WriteTargetRegister.cpp
     src/Insight/InsightWorker/Tasks/RefreshTargetPinStates.cpp
     src/Insight/InsightWorker/Tasks/SetTargetPinState.cpp
 
