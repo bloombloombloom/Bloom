@@ -3,6 +3,7 @@
 #include <thread>
 #include <filesystem>
 #include <typeindex>
+#include <algorithm>
 
 #include "src/Application.hpp"
 #include "src/Helpers/Paths.hpp"
@@ -16,6 +17,9 @@ using namespace Bloom;
 using namespace Bloom::Targets;
 using namespace Bloom::Events;
 using namespace Bloom::Exceptions;
+
+using Bloom::Targets::TargetRegisterDescriptor;
+using Bloom::Targets::TargetRegisterDescriptors;
 
 void TargetController::run() {
     try {
@@ -170,6 +174,8 @@ void TargetController::suspend() {
 
     this->lastTargetState = TargetState::UNKNOWN;
     this->cachedTargetDescriptor = std::nullopt;
+    this->registerDescriptorsByMemoryType.clear();
+    this->registerAddressRangeByMemoryType.clear();
 
     this->state = TargetControllerState::SUSPENDED;
     this->eventManager.triggerEvent(
@@ -181,6 +187,7 @@ void TargetController::suspend() {
 
 void TargetController::resume() {
     this->acquireHardware();
+    this->loadRegisterDescriptors();
 
     this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
         std::bind(&TargetController::onDebugSessionFinishedEvent, this, std::placeholders::_1)
@@ -250,6 +257,78 @@ void TargetController::resume() {
     if (this->target->getState() != TargetState::RUNNING) {
         this->target->run();
     }
+}
+
+void TargetController::loadRegisterDescriptors() {
+    auto& targetDescriptor = this->getTargetDescriptor();
+
+    for (const auto& [registerType, registerDescriptors] : targetDescriptor.registerDescriptorsByType) {
+        for (const auto& registerDescriptor : registerDescriptors) {
+            auto startAddress = registerDescriptor.startAddress.value_or(0);
+            auto endAddress = startAddress + (registerDescriptor.size - 1);
+
+            if (!this->registerAddressRangeByMemoryType.contains(registerDescriptor.memoryType)) {
+                auto addressRange = TargetMemoryAddressRange();
+                addressRange.startAddress = startAddress;
+                addressRange.endAddress = endAddress;
+                this->registerAddressRangeByMemoryType.insert(
+                    std::pair(registerDescriptor.memoryType, addressRange)
+                );
+
+            } else {
+                auto& addressRange = this->registerAddressRangeByMemoryType.at(registerDescriptor.memoryType);
+
+                if (startAddress < addressRange.startAddress) {
+                    addressRange.startAddress = startAddress;
+                }
+
+                if (endAddress > addressRange.endAddress) {
+                    addressRange.endAddress = endAddress;
+                }
+            }
+
+            this->registerDescriptorsByMemoryType[registerDescriptor.memoryType].insert(registerDescriptor);
+        }
+    }
+}
+
+TargetRegisterDescriptors TargetController::getRegisterDescriptorsWithinAddressRange(
+    std::uint32_t startAddress,
+    std::uint32_t endAddress,
+    Targets::TargetMemoryType memoryType
+) {
+    auto output = TargetRegisterDescriptors();
+
+    if (this->registerAddressRangeByMemoryType.contains(memoryType)
+        && this->registerDescriptorsByMemoryType.contains(memoryType)
+    ) {
+        auto& registersAddressRange = this->registerAddressRangeByMemoryType.at(memoryType);
+
+        if (
+            (startAddress <= registersAddressRange.startAddress && endAddress >= registersAddressRange.startAddress)
+            || (startAddress <= registersAddressRange.endAddress && endAddress >= registersAddressRange.startAddress)
+        ) {
+            auto& registerDescriptors = this->registerDescriptorsByMemoryType.at(memoryType);
+
+            for (const auto& registerDescriptor : registerDescriptors) {
+                if (!registerDescriptor.startAddress.has_value() || registerDescriptor.size < 1) {
+                    continue;
+                }
+
+                auto registerStartAddress = registerDescriptor.startAddress.value();
+                auto registerEndAddress = registerStartAddress + registerDescriptor.size;
+
+                if (
+                    (startAddress <= registerStartAddress && endAddress >= registerStartAddress)
+                    || (startAddress <= registerEndAddress && endAddress >= registerStartAddress)
+                ) {
+                    output.insert(registerDescriptor);
+                }
+            }
+        }
+    }
+
+    return output;
 }
 
 void TargetController::acquireHardware() {
@@ -364,6 +443,14 @@ void TargetController::emitErrorEvent(int correlationId) {
     this->eventManager.triggerEvent(errorEvent);
 }
 
+Targets::TargetDescriptor& TargetController::getTargetDescriptor() {
+    if (!this->cachedTargetDescriptor.has_value()) {
+        this->cachedTargetDescriptor = this->target->getDescriptor();
+    }
+
+    return this->cachedTargetDescriptor.value();
+}
+
 void TargetController::onShutdownTargetControllerEvent(const Events::ShutdownTargetController&) {
     this->shutdown();
 }
@@ -401,12 +488,8 @@ void TargetController::onDebugSessionFinishedEvent(const DebugSessionFinished&) 
 }
 
 void TargetController::onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event) {
-    if (!this->cachedTargetDescriptor.has_value()) {
-        this->cachedTargetDescriptor = this->target->getDescriptor();
-    }
-
     auto targetDescriptorExtracted = std::make_shared<TargetDescriptorExtracted>();
-    targetDescriptorExtracted->targetDescriptor = this->cachedTargetDescriptor.value();
+    targetDescriptorExtracted->targetDescriptor = this->getTargetDescriptor();
 
     targetDescriptorExtracted->correlationId = event.id;
     this->eventManager.triggerEvent(targetDescriptorExtracted);
@@ -495,6 +578,16 @@ void TargetController::onWriteRegistersEvent(const Events::WriteRegistersToTarge
 
         auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
         registersWrittenEvent->correlationId = event.id;
+
+        std::transform(
+            event.registers.begin(),
+            event.registers.end(),
+            std::inserter(registersWrittenEvent->descriptors, registersWrittenEvent->descriptors.begin()),
+            [] (const TargetRegister& targetRegister) {
+                return targetRegister.descriptor;
+            }
+        );
+
         this->eventManager.triggerEvent(registersWrittenEvent);
 
     } catch (const TargetOperationFailure& exception) {
@@ -525,6 +618,27 @@ void TargetController::onWriteMemoryEvent(const Events::WriteMemoryToTarget& eve
         memoryWrittenEvent->correlationId = event.id;
         this->eventManager.triggerEvent(memoryWrittenEvent);
 
+        if (this->registerDescriptorsByMemoryType.contains(event.memoryType)) {
+            /*
+             * The memory type we just wrote to contains some number of registers - if we've written to any address
+             * that is known to store the value of a register, trigger a RegistersWrittenToTarget event
+             */
+            auto registerDescriptors = this->getRegisterDescriptorsWithinAddressRange(
+                event.startAddress,
+                static_cast<std::uint32_t>(event.startAddress + (event.buffer.size() - 1)),
+                event.memoryType
+            );
+
+            if (!registerDescriptors.empty()) {
+                auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
+                registersWrittenEvent->correlationId = event.id;
+                registersWrittenEvent->descriptors = registerDescriptors;
+
+                this->eventManager.triggerEvent(registersWrittenEvent);
+            }
+        }
+
+        // TODO: REMOVE THIS
         if (this->target->memoryAddressRangeClashesWithIoPortRegisters(
             event.memoryType,
             event.startAddress,

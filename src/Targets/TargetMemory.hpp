@@ -13,5 +13,11 @@ namespace Bloom::Targets
         OTHER,
     };
 
+    struct TargetMemoryAddressRange
+    {
+        std::uint32_t startAddress = 0;
+        std::uint32_t endAddress = 0;
+    };
+
     using TargetMemoryBuffer = std::vector<unsigned char>;
 }

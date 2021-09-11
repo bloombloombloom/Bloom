@@ -13,6 +13,8 @@
 #include "src/DebugToolDrivers/DebugTools.hpp"
 #include "src/Targets/Target.hpp"
 #include "src/Targets/Targets.hpp"
+#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
@@ -64,6 +66,16 @@ namespace Bloom
          * Obtaining a TargetDescriptor for the connected target can be quite expensive. We cache it here.
          */
         std::optional<Targets::TargetDescriptor> cachedTargetDescriptor;
+
+        /**
+         * Target register descriptors mapped by the memory type on which the register is stored.
+         */
+        std::map<Targets::TargetMemoryType, Targets::TargetRegisterDescriptors> registerDescriptorsByMemoryType;
+
+        /**
+         * Memory address ranges for target registers, mapped by the register memory type.
+         */
+        std::map<Targets::TargetMemoryType, Targets::TargetMemoryAddressRange> registerAddressRangeByMemoryType;
 
         /**
          * Constructs a mapping of supported debug tool names to lambdas. The lambdas should *only* instantiate
@@ -211,6 +223,25 @@ namespace Bloom
         void resume();
 
         /**
+         * Extracts address ranges and groups target register descriptors.
+         */
+        void loadRegisterDescriptors();
+
+        /**
+         * Resolves the descriptors of all target registers found within the given address range and memory type.
+         *
+         * @param startAddress
+         * @param endAddress
+         * @param memoryType
+         * @return
+         */
+        Targets::TargetRegisterDescriptors getRegisterDescriptorsWithinAddressRange(
+            std::uint32_t startAddress,
+            std::uint32_t endAddress,
+            Targets::TargetMemoryType memoryType
+        );
+
+        /**
          * Should fire any events queued on the target.
          */
         void fireTargetEvents();
@@ -222,6 +253,8 @@ namespace Bloom
          * @param correlationId
          */
         void emitErrorEvent(int correlationId);
+
+        Targets::TargetDescriptor& getTargetDescriptor();
 
     public:
         explicit TargetController(EventManager& eventManager): eventManager(eventManager) {};

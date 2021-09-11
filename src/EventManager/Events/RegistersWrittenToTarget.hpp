@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Event.hpp"
+#include "src/Targets/TargetRegister.hpp"
 
 namespace Bloom::Events
 {
@@ -11,6 +12,8 @@ namespace Bloom::Events
     public:
         static inline EventType type = EventType::REGISTERS_WRITTEN_TO_TARGET;
         static inline const std::string name = "RegistersWrittenToTarget";
+
+        Targets::TargetRegisterDescriptors descriptors;
 
         [[nodiscard]] EventType getType() const override {
             return RegistersWrittenToTarget::type;
