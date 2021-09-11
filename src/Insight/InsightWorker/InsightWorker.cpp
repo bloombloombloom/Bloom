@@ -17,7 +17,7 @@ void InsightWorker::startup() {
     this->eventManager.registerListener(this->eventListener);
 
     this->eventListener->registerCallbackForEventType<Events::TargetControllerStateReported>(
-        std::bind(&InsightWorker::onTargetControllerStateReported, this, std::placeholders::_1)
+        std::bind(&InsightWorker::onTargetControllerStateReportedEvent, this, std::placeholders::_1)
     );
 
     this->eventListener->registerCallbackForEventType<Events::TargetExecutionStopped>(
@@ -125,7 +125,7 @@ void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWritten
     emit this->targetRegistersWritten(event.descriptors);
 }
 
-void InsightWorker::onTargetControllerStateReported(const Events::TargetControllerStateReported& event) {
+void InsightWorker::onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event) {
     if (this->lastTargetControllerState == TargetControllerState::ACTIVE
         && event.state == TargetControllerState::SUSPENDED
     ) {

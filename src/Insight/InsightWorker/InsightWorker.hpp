@@ -40,8 +40,8 @@ namespace Bloom
         void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
         void onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event);
-        void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
         void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
+        void onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event);
 
     private slots:
         void executeTasks();

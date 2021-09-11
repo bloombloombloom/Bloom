@@ -44,6 +44,7 @@ namespace Bloom::Widgets
 
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);
+        void onRegistersRead(const Targets::TargetRegisters& registers);
         void onRegistersWritten(const Bloom::Targets::TargetRegisterDescriptors& descriptors);
 
     protected:
@@ -81,6 +82,5 @@ namespace Bloom::Widgets
 
     public slots:
         void onItemSelectionChange(ItemWidget* newlySelectedWidget);
-        void onRegistersRead(const Targets::TargetRegisters& registers);
     };
 }

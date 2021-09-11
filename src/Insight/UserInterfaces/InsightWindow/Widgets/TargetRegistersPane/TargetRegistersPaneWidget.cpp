@@ -149,6 +149,18 @@ void TargetRegistersPaneWidget::onTargetStateChanged(Targets::TargetState newSta
     }
 }
 
+void TargetRegistersPaneWidget::onRegistersRead(const Targets::TargetRegisters& registers) {
+    for (const auto& targetRegister : registers) {
+        auto& descriptor = targetRegister.descriptor;
+
+        for (const auto& registerGroupWidget : this->registerGroupWidgets) {
+            if (registerGroupWidget->registerWidgetsMappedByDescriptor.contains(descriptor)) {
+                registerGroupWidget->registerWidgetsMappedByDescriptor.at(descriptor)->setRegisterValue(targetRegister);
+                break;
+            }
+        }
+    }
+}
 
 void TargetRegistersPaneWidget::onRegistersWritten(const Bloom::Targets::TargetRegisterDescriptors& descriptors) {
     if (this->targetState != Targets::TargetState::STOPPED) {
@@ -263,18 +275,5 @@ void TargetRegistersPaneWidget::onItemSelectionChange(ItemWidget* newlySelectedW
         }
 
         this->selectedItemWidget = newlySelectedWidget;
-    }
-}
-
-void TargetRegistersPaneWidget::onRegistersRead(const Targets::TargetRegisters& registers) {
-    for (const auto& targetRegister : registers) {
-        auto& descriptor = targetRegister.descriptor;
-
-        for (const auto& registerGroupWidget : this->registerGroupWidgets) {
-            if (registerGroupWidget->registerWidgetsMappedByDescriptor.contains(descriptor)) {
-                registerGroupWidget->registerWidgetsMappedByDescriptor.at(descriptor)->setRegisterValue(targetRegister);
-                break;
-            }
-        }
     }
 }
