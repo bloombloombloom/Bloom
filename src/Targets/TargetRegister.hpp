@@ -34,6 +34,7 @@ namespace Bloom::Targets
         std::optional<std::uint32_t> startAddress;
         std::uint32_t size = 0;
         TargetRegisterType type = TargetRegisterType::OTHER;
+        TargetMemoryType memoryType = TargetMemoryType::OTHER;
 
         std::optional<std::string> name = "";
         std::optional<std::string> groupName;

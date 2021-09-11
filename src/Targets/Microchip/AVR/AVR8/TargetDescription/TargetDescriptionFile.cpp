@@ -486,6 +486,7 @@ void TargetDescriptionFile::loadTargetRegisterDescriptors() {
 
                         auto registerDescriptor = TargetRegisterDescriptor();
                         registerDescriptor.type = TargetRegisterType::OTHER;
+                        registerDescriptor.memoryType = TargetMemoryType::RAM;
                         registerDescriptor.name = moduleRegisterName;
                         registerDescriptor.groupName = peripheralRegisterGroup.name;
                         registerDescriptor.size = moduleRegister.size;
