@@ -41,6 +41,7 @@ namespace Bloom
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
         void onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event);
         void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
+        void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
 
     private slots:
         void executeTasks();
@@ -65,5 +66,6 @@ namespace Bloom
         void targetIoPortsUpdated();
         void targetControllerSuspended();
         void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
+        void targetRegistersWritten(const Bloom::Targets::TargetRegisterDescriptors& descriptors);
     };
 }

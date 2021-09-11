@@ -112,6 +112,13 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
         this,
         &TargetRegistersPaneWidget::onTargetStateChanged
     );
+
+    this->connect(
+        &insightWorker,
+        &InsightWorker::targetRegistersWritten,
+        this,
+        &TargetRegistersPaneWidget::onRegistersWritten
+    );
 }
 
 void TargetRegistersPaneWidget::resizeEvent(QResizeEvent* event) {
@@ -138,6 +145,31 @@ void TargetRegistersPaneWidget::onTargetStateChanged(Targets::TargetState newSta
     this->targetState = newState;
 
     if (newState == TargetState::STOPPED && this->activated) {
+        this->refreshRegisterValues();
+    }
+}
+
+
+void TargetRegistersPaneWidget::onRegistersWritten(const Bloom::Targets::TargetRegisterDescriptors& descriptors) {
+    if (this->targetState != Targets::TargetState::STOPPED) {
+        return;
+    }
+
+    /*
+     * Don't bother refreshing individual registers if it will involve more than two refresh calls - In this case, it
+     * will be faster to just refresh all of them at once.
+     */
+    if (descriptors.size() <= 2) {
+        for (const auto& descriptor : descriptors) {
+            for (const auto& registerGroupWidget : this->registerGroupWidgets) {
+                if (registerGroupWidget->registerWidgetsMappedByDescriptor.contains(descriptor)) {
+                    registerGroupWidget->registerWidgetsMappedByDescriptor.at(descriptor)->refreshValue();
+                    break;
+                }
+            }
+        }
+
+    } else {
         this->refreshRegisterValues();
     }
 }

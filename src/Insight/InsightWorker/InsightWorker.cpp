@@ -32,6 +32,10 @@ void InsightWorker::startup() {
         std::bind(&InsightWorker::onTargetIoPortsUpdatedEvent, this, std::placeholders::_1)
     );
 
+    this->eventListener->registerCallbackForEventType<Events::RegistersWrittenToTarget>(
+        std::bind(&InsightWorker::onTargetRegistersWrittenEvent, this, std::placeholders::_1)
+    );
+
     this->eventDispatchTimer = new QTimer(this);
     this->connect(this->eventDispatchTimer, &QTimer::timeout, this, &InsightWorker::dispatchEvents);
     this->eventDispatchTimer->start(5);
@@ -115,6 +119,10 @@ void InsightWorker::onTargetResumedEvent(const Events::TargetExecutionResumed& e
 
 void InsightWorker::onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event) {
     emit this->targetIoPortsUpdated();
+}
+
+void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {
+    emit this->targetRegistersWritten(event.descriptors);
 }
 
 void InsightWorker::onTargetControllerStateReported(const Events::TargetControllerStateReported& event) {
