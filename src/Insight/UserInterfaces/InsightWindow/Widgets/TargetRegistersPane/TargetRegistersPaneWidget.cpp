@@ -117,7 +117,7 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
         &insightWorker,
         &InsightWorker::targetRegistersWritten,
         this,
-        &TargetRegistersPaneWidget::onRegistersWritten
+        &TargetRegistersPaneWidget::onRegistersRead
     );
 }
 
@@ -159,30 +159,6 @@ void TargetRegistersPaneWidget::onRegistersRead(const Targets::TargetRegisters& 
                 break;
             }
         }
-    }
-}
-
-void TargetRegistersPaneWidget::onRegistersWritten(const Bloom::Targets::TargetRegisterDescriptors& descriptors) {
-    if (this->targetState != Targets::TargetState::STOPPED) {
-        return;
-    }
-
-    /*
-     * Don't bother refreshing individual registers if it will involve more than two refresh calls - In this case, it
-     * will be faster to just refresh all of them at once.
-     */
-    if (descriptors.size() <= 2) {
-        for (const auto& descriptor : descriptors) {
-            for (const auto& registerGroupWidget : this->registerGroupWidgets) {
-                if (registerGroupWidget->registerWidgetsMappedByDescriptor.contains(descriptor)) {
-                    registerGroupWidget->registerWidgetsMappedByDescriptor.at(descriptor)->refreshValue();
-                    break;
-                }
-            }
-        }
-
-    } else {
-        this->refreshRegisterValues();
     }
 }
 

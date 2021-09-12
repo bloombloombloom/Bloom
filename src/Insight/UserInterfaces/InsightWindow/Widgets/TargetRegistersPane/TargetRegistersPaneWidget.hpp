@@ -45,7 +45,6 @@ namespace Bloom::Widgets
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);
         void onRegistersRead(const Targets::TargetRegisters& registers);
-        void onRegistersWritten(const Bloom::Targets::TargetRegisterDescriptors& descriptors);
 
     protected:
         void resizeEvent(QResizeEvent* event) override;

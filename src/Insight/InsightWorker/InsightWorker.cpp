@@ -122,7 +122,7 @@ void InsightWorker::onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdat
 }
 
 void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {
-    emit this->targetRegistersWritten(event.descriptors);
+    emit this->targetRegistersWritten(event.registers);
 }
 
 void InsightWorker::onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event) {

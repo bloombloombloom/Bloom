@@ -578,15 +578,7 @@ void TargetController::onWriteRegistersEvent(const Events::WriteRegistersToTarge
 
         auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
         registersWrittenEvent->correlationId = event.id;
-
-        std::transform(
-            event.registers.begin(),
-            event.registers.end(),
-            std::inserter(registersWrittenEvent->descriptors, registersWrittenEvent->descriptors.begin()),
-            [] (const TargetRegister& targetRegister) {
-                return targetRegister.descriptor;
-            }
-        );
+        registersWrittenEvent->registers = event.registers;
 
         this->eventManager.triggerEvent(registersWrittenEvent);
 
@@ -612,27 +604,49 @@ void TargetController::onReadMemoryEvent(const Events::RetrieveMemoryFromTarget&
 
 void TargetController::onWriteMemoryEvent(const Events::WriteMemoryToTarget& event) {
     try {
+        const auto& buffer = event.buffer;
+        const auto bufferSize = event.buffer.size();
+        const auto bufferStartAddress = event.startAddress;
+
         this->target->writeMemory(event.memoryType, event.startAddress, event.buffer);
 
         auto memoryWrittenEvent = std::make_shared<Events::MemoryWrittenToTarget>();
         memoryWrittenEvent->correlationId = event.id;
         this->eventManager.triggerEvent(memoryWrittenEvent);
 
-        if (this->registerDescriptorsByMemoryType.contains(event.memoryType)) {
+        if (this->eventManager.isEventTypeListenedFor(Events::RegistersWrittenToTarget::type)
+            && this->registerDescriptorsByMemoryType.contains(event.memoryType)
+        ) {
             /*
              * The memory type we just wrote to contains some number of registers - if we've written to any address
              * that is known to store the value of a register, trigger a RegistersWrittenToTarget event
              */
+            const auto bufferEndAddress = static_cast<std::uint32_t>(bufferStartAddress + (bufferSize - 1));
             auto registerDescriptors = this->getRegisterDescriptorsWithinAddressRange(
-                event.startAddress,
-                static_cast<std::uint32_t>(event.startAddress + (event.buffer.size() - 1)),
+                bufferStartAddress,
+                bufferEndAddress,
                 event.memoryType
             );
 
             if (!registerDescriptors.empty()) {
                 auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
                 registersWrittenEvent->correlationId = event.id;
-                registersWrittenEvent->descriptors = registerDescriptors;
+
+                for (const auto& registerDescriptor : registerDescriptors) {
+                    const auto registerSize = registerDescriptor.size;
+                    const auto registerStartAddress = registerDescriptor.startAddress.value();
+                    const auto registerEndAddress = registerStartAddress + (registerSize - 1);
+
+                    if (registerStartAddress < bufferStartAddress || registerEndAddress > bufferEndAddress) {
+                        continue;
+                    }
+
+                    const auto bufferBeginIt = buffer.begin() + (registerStartAddress - bufferStartAddress);
+                    registersWrittenEvent->registers.emplace_back(TargetRegister(
+                        registerDescriptor,
+                        TargetMemoryBuffer(bufferBeginIt, bufferBeginIt + registerSize)
+                    ));
+                }
 
                 this->eventManager.triggerEvent(registersWrittenEvent);
             }

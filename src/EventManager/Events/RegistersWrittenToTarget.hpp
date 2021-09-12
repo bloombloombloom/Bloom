@@ -13,7 +13,7 @@ namespace Bloom::Events
         static inline EventType type = EventType::REGISTERS_WRITTEN_TO_TARGET;
         static inline const std::string name = "RegistersWrittenToTarget";
 
-        Targets::TargetRegisterDescriptors descriptors;
+        Targets::TargetRegisters registers;
 
         [[nodiscard]] EventType getType() const override {
             return RegistersWrittenToTarget::type;

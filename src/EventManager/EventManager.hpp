@@ -54,5 +54,13 @@ namespace Bloom
          * @param event
          */
         void triggerEvent(const Events::SharedGenericEventPointer& event);
+
+        /**
+         * Checks if any registered listener is listening for a particular event type.
+         *
+         * @param eventType
+         * @return
+         */
+        bool isEventTypeListenedFor(Events::EventType eventType);
     };
 }

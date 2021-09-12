@@ -66,6 +66,6 @@ namespace Bloom
         void targetIoPortsUpdated();
         void targetControllerSuspended();
         void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
-        void targetRegistersWritten(const Bloom::Targets::TargetRegisterDescriptors& descriptors);
+        void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters);
     };
 }
