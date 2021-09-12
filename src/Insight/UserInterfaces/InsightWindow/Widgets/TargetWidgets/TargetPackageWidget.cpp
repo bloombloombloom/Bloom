@@ -23,13 +23,9 @@ TargetPackageWidget::TargetPackageWidget(
 
     this->connect(
         &(this->insightWorker),
-        &InsightWorker::targetIoPortsUpdated,
+        &InsightWorker::targetRegistersWritten,
         this,
-        [this] {
-            if (this->targetState == TargetState::STOPPED) {
-                this->refreshPinStates();
-            }
-        }
+        &TargetPackageWidget::onRegistersWritten
     );
 
     this->setDisabled(true);
@@ -79,5 +75,19 @@ void TargetPackageWidget::onTargetStateChanged(TargetState newState) {
                 this->setDisabled(false);
             }
         });
+    }
+}
+
+void TargetPackageWidget::onRegistersWritten(Targets::TargetRegisters targetRegisters) {
+    if (this->targetState != TargetState::STOPPED) {
+        return;
+    }
+
+    // If a PORT register was just updated, refresh pin states.
+    for (const auto& targetRegister : targetRegisters) {
+        if (targetRegister.descriptor.type == Targets::TargetRegisterType::PORT_REGISTER) {
+            this->refreshPinStates();
+            return;
+        }
     }
 }

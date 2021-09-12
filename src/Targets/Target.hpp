@@ -300,23 +300,6 @@ namespace Bloom::Targets
             const TargetPinState& state
         ) = 0;
 
-        /**
-         * Should determine whether writing to a certain memory type and address range will affect the target's pin
-         * states. This is used by Insight to kick off a pin state update if some other component may have updated the
-         * pin states via a memory write to IO port register addresses.
-         *
-         * @param memoryType
-         * @param startAddress
-         * @param endAddress
-         *
-         * @return
-         */
-        virtual bool memoryAddressRangeClashesWithIoPortRegisters(
-            TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t endAddress
-        ) = 0;
-
         virtual ~Target() = default;
     };
 }

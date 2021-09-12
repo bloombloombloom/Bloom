@@ -90,7 +90,6 @@ namespace Bloom
         void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void onTargetStateUpdate(Targets::TargetState newState);
         void onTargetProgramCounterUpdate(quint32 programCounter);
-        void onTargetIoPortsUpdate();
         void close();
         void openReportIssuesUrl();
         void openGettingStartedUrl();

@@ -149,11 +149,5 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             const TargetPinDescriptor& pinDescriptor,
             const TargetPinState& state
         ) override;
-
-        bool memoryAddressRangeClashesWithIoPortRegisters(
-            TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t endAddress
-        ) override;
     };
 }

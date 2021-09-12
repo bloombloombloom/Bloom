@@ -652,16 +652,6 @@ void TargetController::onWriteMemoryEvent(const Events::WriteMemoryToTarget& eve
             }
         }
 
-        // TODO: REMOVE THIS
-        if (this->target->memoryAddressRangeClashesWithIoPortRegisters(
-            event.memoryType,
-            event.startAddress,
-            static_cast<std::uint32_t>(event.startAddress + (event.buffer.size() - 1))
-        )) {
-            // This memory write has affected the target's IO port values
-            this->eventManager.triggerEvent(std::make_shared<Events::TargetIoPortsUpdated>());
-        }
-
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to write memory to target - " + exception.getMessage());
         this->emitErrorEvent(event.id);

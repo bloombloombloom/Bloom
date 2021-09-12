@@ -51,7 +51,6 @@ namespace Bloom::Events
         RETRIEVE_TARGET_PIN_STATES,
         TARGET_PIN_STATES_RETRIEVED,
         SET_TARGET_PIN_STATE,
-        TARGET_IO_PORTS_UPDATED,
     };
 
     class Event

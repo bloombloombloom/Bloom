@@ -28,10 +28,6 @@ void InsightWorker::startup() {
         std::bind(&InsightWorker::onTargetResumedEvent, this, std::placeholders::_1)
     );
 
-    this->eventListener->registerCallbackForEventType<Events::TargetIoPortsUpdated>(
-        std::bind(&InsightWorker::onTargetIoPortsUpdatedEvent, this, std::placeholders::_1)
-    );
-
     this->eventListener->registerCallbackForEventType<Events::RegistersWrittenToTarget>(
         std::bind(&InsightWorker::onTargetRegistersWrittenEvent, this, std::placeholders::_1)
     );
@@ -115,10 +111,6 @@ void InsightWorker::onTargetStoppedEvent(const Events::TargetExecutionStopped& e
 
 void InsightWorker::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
     emit this->targetStateUpdated(TargetState::RUNNING);
-}
-
-void InsightWorker::onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event) {
-    emit this->targetIoPortsUpdated();
 }
 
 void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {

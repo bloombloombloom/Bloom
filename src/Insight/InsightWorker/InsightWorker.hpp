@@ -39,7 +39,6 @@ namespace Bloom
 
         void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
-        void onTargetIoPortsUpdatedEvent(const Events::TargetIoPortsUpdated& event);
         void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
         void onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event);
 
@@ -63,7 +62,6 @@ namespace Bloom
         void taskQueued();
         void targetStateUpdated(Bloom::Targets::TargetState newState);
         void targetProgramCounterUpdated(quint32 programCounter);
-        void targetIoPortsUpdated();
         void targetControllerSuspended();
         void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters);

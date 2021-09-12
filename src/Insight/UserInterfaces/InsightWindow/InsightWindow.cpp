@@ -482,12 +482,6 @@ void InsightWindow::onTargetProgramCounterUpdate(quint32 programCounter) {
     );
 }
 
-void InsightWindow::onTargetIoPortsUpdate() {
-    if (this->targetState == TargetState::STOPPED && this->selectedVariant != nullptr) {
-        emit this->refreshTargetPinStates(this->selectedVariant->id);
-    }
-}
-
 void InsightWindow::toggleTargetRegistersPane() {
     if (this->targetRegistersSidePane->activated) {
         this->targetRegistersSidePane->deactivate();

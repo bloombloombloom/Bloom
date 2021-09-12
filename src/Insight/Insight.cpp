@@ -75,7 +75,6 @@ void Insight::startup() {
     this->connect(this->insightWorker, &InsightWorker::targetControllerResumed, this->mainWindow, &InsightWindow::onTargetControllerResumed);
     this->connect(this->insightWorker, &InsightWorker::targetStateUpdated, this->mainWindow, &InsightWindow::onTargetStateUpdate);
     this->connect(this->insightWorker, &InsightWorker::targetProgramCounterUpdated, this->mainWindow, &InsightWindow::onTargetProgramCounterUpdate);
-    this->connect(this->insightWorker, &InsightWorker::targetIoPortsUpdated, this->mainWindow, &InsightWindow::onTargetIoPortsUpdate);
     this->connect(this->mainWindow, &InsightWindow::refreshTargetPinStates, this->insightWorker, &InsightWorker::requestPinStates);
 
     this->mainWindow->setInsightConfig(this->insightConfig);

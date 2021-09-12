@@ -29,6 +29,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
     protected slots:
         virtual void updatePinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber);
         void onTargetStateChanged(Targets::TargetState newState);
+        void onRegistersWritten(Targets::TargetRegisters targetRegisters);
 
     public:
         TargetPackageWidget(Targets::TargetVariant targetVariant, InsightWorker& insightWorker, QWidget* parent);

@@ -559,22 +559,3 @@ void Avr8::setPinState(const TargetPinDescriptor& pinDescriptor, const TargetPin
         }
     }
 }
-
-bool Avr8::memoryAddressRangeClashesWithIoPortRegisters(
-    TargetMemoryType memoryType,
-    std::uint32_t startAddress,
-    std::uint32_t endAddress
-) {
-    auto& targetParameters = this->targetParameters.value();
-    if (targetParameters.mappedIoSegmentStartAddress.has_value() && targetParameters.mappedIoSegmentSize.has_value()) {
-        auto mappedIoSegmentStart = targetParameters.mappedIoSegmentStartAddress.value();
-        auto mappedIoSegmentEnd = mappedIoSegmentStart + targetParameters.mappedIoSegmentSize.value();
-
-        return (startAddress >= mappedIoSegmentStart && startAddress <= mappedIoSegmentEnd)
-            || (endAddress >= mappedIoSegmentStart && endAddress <= mappedIoSegmentEnd)
-            || (startAddress <= mappedIoSegmentStart && endAddress >= mappedIoSegmentStart)
-        ;
-    }
-
-    return false;
-}

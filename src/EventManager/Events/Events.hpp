@@ -39,7 +39,6 @@
 #include "RetrieveTargetPinStates.hpp"
 #include "TargetPinStatesRetrieved.hpp"
 #include "SetTargetPinState.hpp"
-#include "TargetIoPortsUpdated.hpp"
 
 namespace Bloom::Events
 {
