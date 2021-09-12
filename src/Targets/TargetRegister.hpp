@@ -18,6 +18,7 @@ namespace Bloom::Targets
         PROGRAM_COUNTER,
         STACK_POINTER,
         STATUS_REGISTER,
+        PORT_REGISTER,
         OTHER,
     };
 

@@ -87,8 +87,10 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
     auto registerDescriptorsByGroupName = std::map<std::string, std::set<TargetRegisterDescriptor>>();
     for (const auto& registerDescriptor : registerDescriptors.at(TargetRegisterType::OTHER)) {
         registerDescriptorsByGroupName[registerDescriptor.groupName.value_or("other")].insert(registerDescriptor);
-        auto groupName = registerDescriptor.groupName.value_or("other");
+    }
 
+    for (const auto& registerDescriptor : registerDescriptors.at(TargetRegisterType::PORT_REGISTER)) {
+        registerDescriptorsByGroupName[registerDescriptor.groupName.value_or("other")].insert(registerDescriptor);
     }
 
     for (const auto& [groupName, registerDescriptors] : registerDescriptorsByGroupName) {
