@@ -41,9 +41,9 @@ void BodyWidget::drawWidget(QPainter& painter) {
 
     painter.setBrush(backgroundColor);
     painter.drawEllipse(QRectF(
-        targetBodyPoint.x() + 10,
-        targetBodyPoint.y() + 10,
-        15,
-        15
+        targetBodyPoint.x() + 13,
+        targetBodyPoint.y() + 13,
+        20,
+        20
     ));
 }
