@@ -685,7 +685,7 @@
                     <bitfield caption="" mask="0x08" name="WGM02"/>
                     <bitfield caption="Clock Select" mask="0x07" name="CS0" values="CLK_SEL_3BIT_EXT"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x44" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x44" size="1">
                     <bitfield caption="Compare Output Mode, Phase Correct PWM Mode" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Output Mode, Fast PWm" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode" mask="0x03" name="WGM0"/>

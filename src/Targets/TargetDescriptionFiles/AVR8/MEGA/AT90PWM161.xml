@@ -655,9 +655,9 @@
                     <bitfield caption="ADC Auto Trigger Enable" mask="0x20" name="ADATE"/>
                     <bitfield caption="ADC Interrupt Flag" mask="0x10" name="ADIF"/>
                     <bitfield caption="ADC Interrupt Enable" mask="0x08" name="ADIE"/>
-                    <bitfield caption="ADC  Prescaler Select Bits" mask="0x07" name="ADPS"/>
+                    <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x4C" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x4C" size="2" mask="0xFFFF"/>
                 <register caption="ADC Control and Status Register B" name="ADCSRB" offset="0x27" size="1">
                     <bitfield caption="ADC High Speed Mode" mask="0x80" name="ADHSM"/>
                     <bitfield caption="ADC Noise Canceller Disable" mask="0x40" name="ADNCDIS"/>
@@ -718,28 +718,28 @@
                 <register caption="Analog Comparator3 Control Register" name="AC3CON" offset="0x7F" size="1">
                     <bitfield caption="Analog Comparator3 Enable Bit" mask="0x80" name="AC3EN"/>
                     <bitfield caption="Analog Comparator 3 Interrupt Enable Bit" mask="0x40" name="AC3IE"/>
-                    <bitfield caption="Analog Comparator 3  Interrupt Select Bit" mask="0x30" name="AC3IS"/>
+                    <bitfield caption="Analog Comparator 3 Interrupt Select Bit" mask="0x30" name="AC3IS"/>
                     <bitfield caption="Analog Comparator 3 Alternate Output Enable" mask="0x08" name="AC3OEA"/>
                     <bitfield caption="Analog Comparator 3 Multiplexer Register" mask="0x07" name="AC3M"/>
                 </register>
                 <register caption="Analog Comparator 1 Control Register" name="AC1CON" offset="0x7D" size="1">
                     <bitfield caption="Analog Comparator 1 Enable Bit" mask="0x80" name="AC1EN"/>
                     <bitfield caption="Analog Comparator 1 Interrupt Enable Bit" mask="0x40" name="AC1IE"/>
-                    <bitfield caption="Analog Comparator 1  Interrupt Select Bit" mask="0x30" name="AC1IS"
+                    <bitfield caption="Analog Comparator 1 Interrupt Select Bit" mask="0x30" name="AC1IS"
                               values="ANALOG_COMP_INTERRUPT"/>
                     <bitfield caption="Analog Comparator 1 Multiplexer Register" mask="0x07" name="AC1M"/>
                 </register>
                 <register caption="Analog Comparator 2 Control Register" name="AC2CON" offset="0x7E" size="1">
                     <bitfield caption="Analog Comparator 2 Enable Bit" mask="0x80" name="AC2EN"/>
                     <bitfield caption="Analog Comparator 2 Interrupt Enable Bit" mask="0x40" name="AC2IE"/>
-                    <bitfield caption="Analog Comparator 2  Interrupt Select Bit" mask="0x30" name="AC2IS"
+                    <bitfield caption="Analog Comparator 2 Interrupt Select Bit" mask="0x30" name="AC2IS"
                               values="ANALOG_COMP_INTERRUPT"/>
                     <bitfield caption="Analog Comparator 2 Multiplexer Register" mask="0x07" name="AC2M"/>
                 </register>
                 <register caption="Analog Comparator Status Register" name="ACSR" offset="0x20" size="1" ocd-rw="R">
                     <bitfield caption="Analog Comparator 3 Interrupt Flag Bit" mask="0x80" name="AC3IF"/>
                     <bitfield caption="Analog Comparator 2 Interrupt Flag Bit" mask="0x40" name="AC2IF"/>
-                    <bitfield caption="Analog Comparator 1  Interrupt Flag Bit" mask="0x20" name="AC1IF"/>
+                    <bitfield caption="Analog Comparator 1 Interrupt Flag Bit" mask="0x20" name="AC1IF"/>
                     <bitfield caption="Analog Comparator 3 Output Bit" mask="0x08" name="AC3O"/>
                     <bitfield caption="Analog Comparator 2 Output Bit" mask="0x04" name="AC2O"/>
                     <bitfield caption="Analog Comparator 1 Output Bit" mask="0x02" name="AC1O"/>
@@ -879,7 +879,7 @@
         </module>
         <module caption="EEPROM" name="EEPROM">
             <register-group caption="EEPROM" name="EEPROM">
-                <register caption="EEPROM Read/Write Access  Bytes" name="EEAR" offset="0x3E" size="2" mask="0x01FF"/>
+                <register caption="EEPROM Read/Write Access Bytes" name="EEAR" offset="0x3E" size="2" mask="0x01FF"/>
                 <register caption="EEPROM Data Register" name="EEDR" offset="0x3D" size="1" mask="0xFF"/>
                 <register caption="EEPROM Control Register" name="EECR" offset="0x3C" size="1">
                     <bitfield caption="None Volatile Busy Memory Busy" mask="0x80" name="NVMBSY"/>
@@ -1053,8 +1053,8 @@
                     <bitfield caption="Prescaler source of Timer/Counter 1" mask="0x07" name="CS1"
                               values="CLK_SEL_3BIT_EXT"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x5A" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x8C" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x5A" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x8C" size="2"
                           mask="0xFFFF"/>
             </register-group>
             <value-group caption="" name="CLK_SEL_3BIT_EXT">

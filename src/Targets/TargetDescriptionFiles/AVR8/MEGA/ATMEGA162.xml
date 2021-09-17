@@ -599,12 +599,12 @@
                     <bitfield caption="Pulse Width Modulator Select Bits" mask="0x18" name="WGM1" lsb="2"/>
                     <bitfield caption="Clock Select1 bits" mask="0x07" name="CS1" values="CLK_SEL_3BIT_EXT"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register A  Bytes" name="OCR1A" offset="0x4A" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register A Bytes" name="OCR1A" offset="0x4A" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register B  Bytes" name="OCR1B" offset="0x48" size="2"
+                <register caption="Timer/Counter1 Output Compare Register B Bytes" name="OCR1B" offset="0x48" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x44" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x44" size="2"
                           mask="0xFFFF"/>
             </register-group>
             <register-group caption="Timer/Counter, 16-bit" name="TC3">
@@ -636,12 +636,12 @@
                     <bitfield caption="Pulse Width Modulator Select Bits" mask="0x18" name="WGM3" lsb="2"/>
                     <bitfield caption="Clock Select3 bits" mask="0x07" name="CS3" values="CLK_SEL_3BIT_SWAPPED"/>
                 </register>
-                <register caption="Timer/Counter3  Bytes" name="TCNT3" offset="0x88" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter3 Output Compare Register A  Bytes" name="OCR3A" offset="0x86" size="2"
+                <register caption="Timer/Counter3 Bytes" name="TCNT3" offset="0x88" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter3 Output Compare Register A Bytes" name="OCR3A" offset="0x86" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counte3 Output Compare Register B  Bytes" name="OCR3B" offset="0x84" size="2"
+                <register caption="Timer/Counte3 Output Compare Register B Bytes" name="OCR3B" offset="0x84" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter3 Input Capture Register  Bytes" name="ICR3" offset="0x80" size="2"
+                <register caption="Timer/Counter3 Input Capture Register Bytes" name="ICR3" offset="0x80" size="2"
                           mask="0xFFFF"/>
             </register-group>
             <value-group caption="" name="CLK_SEL_3BIT_EXT">

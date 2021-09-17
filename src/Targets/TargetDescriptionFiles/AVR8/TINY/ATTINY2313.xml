@@ -499,7 +499,7 @@
                           mask="0xFF"/>
                 <register caption="Timer/Counter0 Output Compare Register" name="OCR0A" offset="0x56" size="1"
                           mask="0xFF"/>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x50" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x50" size="1">
                     <bitfield caption="Compare Match Output A Mode" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Match Output B Mode" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode" mask="0x03" name="WGM0"/>
@@ -554,12 +554,12 @@
                     <bitfield caption="Force Output Compare for Channel A" mask="0x80" name="FOC1A"/>
                     <bitfield caption="Force Output Compare for Channel B" mask="0x40" name="FOC1B"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register  Bytes" name="OCR1A" offset="0x4A" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1A" offset="0x4A" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register  Bytes" name="OCR1B" offset="0x48" size="2"
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1B" offset="0x48" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x44" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x44" size="2"
                           mask="0xFFFF"/>
             </register-group>
             <value-group caption="" name="CLK_SEL_3BIT_EXT">

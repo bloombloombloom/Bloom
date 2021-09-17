@@ -784,7 +784,7 @@
                     <bitfield caption="Character Size" mask="0x06" name="UCSZ1"/>
                     <bitfield caption="Clock Polarity" mask="0x01" name="UCPOL1"/>
                 </register>
-                <register caption="USART Baud Rate Register  Bytes" name="UBRR1" offset="0xCC" size="2" mask="0x0FFF"/>
+                <register caption="USART Baud Rate Register Bytes" name="UBRR1" offset="0xCC" size="2" mask="0x0FFF"/>
             </register-group>
             <value-group caption="" name="COMM_UPM_PARITY_MODE">
                 <value caption="Disabled" name="VAL_0x00" value="0x00"/>
@@ -837,7 +837,7 @@
                     <bitfield caption="" mask="0x08" name="WGM02"/>
                     <bitfield caption="Clock Select" mask="0x07" name="CS0" values="CLK_SEL_3BIT_EXT"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x44" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x44" size="1">
                     <bitfield caption="Compare Output Mode, Phase Correct PWM Mode" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Output Mode, Fast PWm" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode" mask="0x03" name="WGM0"/>
@@ -1027,15 +1027,15 @@
                     <bitfield caption="Analog Channel and Gain Selection Bits" mask="0x1F" name="MUX"
                               values="ADC_MUX_DIFF"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF"/>
                 <register caption="The ADC Control and Status register A" name="ADCSRA" offset="0x7A" size="1"
                           ocd-rw="R">
                     <bitfield caption="ADC Enable" mask="0x80" name="ADEN"/>
                     <bitfield caption="ADC Start Conversion" mask="0x40" name="ADSC"/>
-                    <bitfield caption="ADC  Auto Trigger Enable" mask="0x20" name="ADATE"/>
+                    <bitfield caption="ADC Auto Trigger Enable" mask="0x20" name="ADATE"/>
                     <bitfield caption="ADC Interrupt Flag" mask="0x10" name="ADIF"/>
                     <bitfield caption="ADC Interrupt Enable" mask="0x08" name="ADIE"/>
-                    <bitfield caption="ADC  Prescaler Select Bits" mask="0x07" name="ADPS"
+                    <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
                 <register caption="The ADC Control and Status register B" name="ADCSRB" offset="0x7B" size="1">
@@ -1171,12 +1171,12 @@
                     <bitfield caption="Force Output Compare for Channel A" mask="0x80" name="FOC1A"/>
                     <bitfield caption="Force Output Compare for Channel B" mask="0x40" name="FOC1B"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register A  Bytes" name="OCR1A" offset="0x88" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register A Bytes" name="OCR1A" offset="0x88" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register B  Bytes" name="OCR1B" offset="0x8A" size="2"
+                <register caption="Timer/Counter1 Output Compare Register B Bytes" name="OCR1B" offset="0x8A" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x86" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x86" size="2"
                           mask="0xFFFF"/>
             </register-group>
             <value-group caption="" name="CLK_SEL_3BIT_EXT">

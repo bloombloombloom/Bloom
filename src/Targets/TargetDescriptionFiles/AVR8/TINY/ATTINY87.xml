@@ -587,7 +587,7 @@
                     <bitfield caption="Enable External Clock Input" mask="0x40" name="EXCLK"/>
                     <bitfield caption="Asynchronous Timer/Counter0" mask="0x20" name="AS0"/>
                     <bitfield caption="Timer/Counter0 Update Busy" mask="0x10" name="TCN0UB"/>
-                    <bitfield caption="Output Compare Register 0A  Update Busy" mask="0x08" name="OCR0AUB"/>
+                    <bitfield caption="Output Compare Register 0A Update Busy" mask="0x08" name="OCR0AUB"/>
                     <bitfield caption="Timer/Counter0 Control Register A Update Busy" mask="0x02" name="TCR0AUB"/>
                     <bitfield caption="Timer/Counter0 Control Register B Update Busy" mask="0x01" name="TCR0BUB"/>
                 </register>
@@ -659,12 +659,12 @@
                     <bitfield caption="Timer/Counter1 Output Compare U-pin Enable for Channel A" mask="0x01"
                               name="OC1AU"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register A  Bytes" name="OCR1A" offset="0x88" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register A Bytes" name="OCR1A" offset="0x88" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register B  Bytes" name="OCR1B" offset="0x8A" size="2"
+                <register caption="Timer/Counter1 Output Compare Register B Bytes" name="OCR1B" offset="0x8A" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x86" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x86" size="2"
                           mask="0xFFFF"/>
             </register-group>
             <value-group caption="" name="CLK_SEL_3BIT_EXT">
@@ -704,7 +704,7 @@
         </module>
         <module caption="EEPROM" name="EEPROM">
             <register-group caption="EEPROM" name="EEPROM">
-                <register caption="EEPROM Address Register  Bytes" name="EEAR" offset="0x41" size="2" mask="0x01FF"/>
+                <register caption="EEPROM Address Register Bytes" name="EEAR" offset="0x41" size="2" mask="0x01FF"/>
                 <register caption="EEPROM Data Register" name="EEDR" offset="0x40" size="1" mask="0xFF"/>
                 <register caption="EEPROM Control Register" name="EECR" offset="0x3F" size="1">
                     <bitfield caption="EEPROM Programming Mode Bits" mask="0x30" name="EEPM" values="EEP_MODE"/>
@@ -756,15 +756,15 @@
                     <bitfield caption="Left Adjust Result" mask="0x20" name="ADLAR"/>
                     <bitfield caption="Analog Channel and Gain Selection Bits" mask="0x1F" name="MUX"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF"/>
                 <register caption="The ADC Control and Status register A" name="ADCSRA" offset="0x7A" size="1"
                           ocd-rw="R">
                     <bitfield caption="ADC Enable" mask="0x80" name="ADEN"/>
                     <bitfield caption="ADC Start Conversion" mask="0x40" name="ADSC"/>
-                    <bitfield caption="ADC  Auto Trigger Enable" mask="0x20" name="ADATE"/>
+                    <bitfield caption="ADC Auto Trigger Enable" mask="0x20" name="ADATE"/>
                     <bitfield caption="ADC Interrupt Flag" mask="0x10" name="ADIF"/>
                     <bitfield caption="ADC Interrupt Enable" mask="0x08" name="ADIE"/>
-                    <bitfield caption="ADC  Prescaler Select Bits" mask="0x07" name="ADPS"
+                    <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
                 <register caption="The ADC Control and Status register B (Shared with ANALOG_COMPARATOR IO_MODULE)"
@@ -876,7 +876,7 @@
                     <bitfield caption="External Interrupt Flags" mask="0x03" name="INTF"/>
                 </register>
                 <register caption="Pin Change Interrupt Control Register" name="PCICR" offset="0x68" size="1">
-                    <bitfield caption="Pin Change Interrupt Enable  on any PCINT14..8 pin" mask="0x03" name="PCIE"/>
+                    <bitfield caption="Pin Change Interrupt Enable on any PCINT14..8 pin" mask="0x03" name="PCIE"/>
                 </register>
                 <register caption="Pin Change Interrupt Flag Register" name="PCIFR" offset="0x3B" size="1" ocd-rw="R">
                     <bitfield caption="Pin Change Interrupt Flags" mask="0x03" name="PCIF"/>
@@ -928,7 +928,7 @@
                     <bitfield caption="Power Reduction USI" mask="0x02" name="PRUSI"/>
                     <bitfield caption="Power Reduction ADC" mask="0x01" name="PRADC"/>
                 </register>
-                <register caption="Stack Pointer  Bytes" name="SP" offset="0x5D" size="2" mask="0x07FF"/>
+                <register caption="Stack Pointer Bytes" name="SP" offset="0x5D" size="2" mask="0x07FF"/>
                 <register caption="MCU Control Register" name="MCUCR" offset="0x55" size="1">
                     <bitfield caption="BOD Sleep" mask="0x40" name="BODS"/>
                     <bitfield caption="BOD Sleep Enable" mask="0x20" name="BODSE"/>

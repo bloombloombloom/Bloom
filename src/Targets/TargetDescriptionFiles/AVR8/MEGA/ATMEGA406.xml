@@ -324,7 +324,7 @@
                 <register caption="The VADC multiplexer Selection Register" name="VADMUX" offset="0x7C" size="1">
                     <bitfield caption="Analog Channel and Gain Selection Bits" mask="0x0F" name="VADMUX"/>
                 </register>
-                <register caption="VADC Data Register  Bytes" name="VADC" offset="0x78" size="2" mask="0x0FFF"/>
+                <register caption="VADC Data Register Bytes" name="VADC" offset="0x78" size="2" mask="0x0FFF"/>
                 <register caption="The VADC Control and Status register" name="VADCSR" offset="0x7A" size="1"
                           ocd-rw="R">
                     <bitfield caption="VADC Enable" mask="0x08" name="VADEN"/>
@@ -374,7 +374,7 @@
                     <bitfield caption="Clear Timer/Counter on Compare Match" mask="0x08" name="CTC1"/>
                     <bitfield caption="Clock Select1 bits" mask="0x07" name="CS1" values="CLK_SEL_3BIT"/>
                 </register>
-                <register caption="Timer Counter 1  Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
+                <register caption="Timer Counter 1 Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
                 <register caption="Output Compare Register 1A Low byte" name="OCR1AL" offset="0x88" size="1"
                           mask="0xFF"/>
                 <register caption="Output Compare Register 1A High byte" name="OCR1AH" offset="0x89" size="1"
@@ -843,7 +843,7 @@
         </module>
         <module caption="EEPROM" name="EEPROM">
             <register-group caption="EEPROM" name="EEPROM">
-                <register caption="EEPROM Address Register  Bytes" name="EEAR" offset="0x41" size="2" mask="0x01FF"/>
+                <register caption="EEPROM Address Register Bytes" name="EEAR" offset="0x41" size="2" mask="0x01FF"/>
                 <register caption="EEPROM Data Register" name="EEDR" offset="0x40" size="1" mask="0xFF"/>
                 <register caption="EEPROM Control Register" name="EECR" offset="0x3F" size="1">
                     <bitfield caption="EEPROM Programming Mode Bits" mask="0x30" name="EEPM" values="EEP_MODE"/>

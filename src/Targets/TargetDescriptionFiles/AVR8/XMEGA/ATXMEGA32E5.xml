@@ -2325,7 +2325,7 @@
         </module>
         <module name="TC" id="I3007" version="XMEGAE" caption="16-bit Timer/Counter With PWM">
             <register-group caption="16-bit Timer/Counter 4" name="TC4" size="64">
-                <register caption="Control  Register A" name="CTRLA" offset="0x00" size="1">
+                <register caption="Control Register A" name="CTRLA" offset="0x00" size="1">
                     <bitfield caption="Synchronization Enabled" mask="0x40" name="SYNCHEN"/>
                     <bitfield caption="Start on Next Event" mask="0x20" name="EVSTART"/>
                     <bitfield caption="Stop on Next Update" mask="0x10" name="UPSTOP"/>
@@ -2476,7 +2476,7 @@
                 <register caption="Compare Or Capture D Buffer" name="CCDBUF" offset="0x3E" size="2"/>
             </register-group>
             <register-group caption="16-bit Timer/Counter 5" name="TC5" size="64">
-                <register caption="Control  Register A" name="CTRLA" offset="0x00" size="1">
+                <register caption="Control Register A" name="CTRLA" offset="0x00" size="1">
                     <bitfield caption="Synchronization Enabled" mask="0x40" name="SYNCHEN"/>
                     <bitfield caption="Start on Next Event" mask="0x20" name="EVSTART"/>
                     <bitfield caption="Stop on Next Update" mask="0x10" name="UPSTOP"/>

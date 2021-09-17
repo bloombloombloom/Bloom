@@ -522,7 +522,7 @@
                     <bitfield caption="Timer/Counter0 Output Compare Flag A" mask="0x02" name="OCF0A"/>
                     <bitfield caption="Timer/Counter0 Overflow Flag" mask="0x01" name="TOV0"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x50" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x50" size="1">
                     <bitfield caption="Compare Match Output A Mode bits" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Match Output B Mode bits" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode bits" mask="0x03" name="WGM0"/>
@@ -739,10 +739,10 @@
                     <bitfield caption="ADC Auto Trigger Enable" mask="0x20" name="ADATE"/>
                     <bitfield caption="ADC Interrupt Flag" mask="0x10" name="ADIF"/>
                     <bitfield caption="ADC Interrupt Enable" mask="0x08" name="ADIE"/>
-                    <bitfield caption="ADC  Prescaler Select Bits" mask="0x07" name="ADPS"
+                    <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x24" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x24" size="2" mask="0xFFFF"/>
                 <register caption="ADC Control and Status Register B" name="ADCSRB" offset="0x23" size="1">
                     <bitfield caption="Boost Regulator Status Bit" mask="0x80" name="BVRON"/>
                     <bitfield caption="Analog Comparator Multiplexer Enable" mask="0x40" name="ACME"/>

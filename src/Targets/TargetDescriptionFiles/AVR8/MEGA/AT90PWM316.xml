@@ -667,13 +667,13 @@
                 <register caption="Analog Comparator 0 Control Register" name="AC0CON" offset="0xAD" size="1">
                     <bitfield caption="Analog Comparator 0 Enable Bit" mask="0x80" name="AC0EN"/>
                     <bitfield caption="Analog Comparator 0 Interrupt Enable Bit" mask="0x40" name="AC0IE"/>
-                    <bitfield caption="Analog Comparator 0  Interrupt Select Bit" mask="0x30" name="AC0IS"/>
+                    <bitfield caption="Analog Comparator 0 Interrupt Select Bit" mask="0x30" name="AC0IS"/>
                     <bitfield caption="Analog Comparator 0 Multiplexer Register" mask="0x07" name="AC0M"/>
                 </register>
                 <register caption="Analog Comparator 1 Control Register" name="AC1CON" offset="0xAE" size="1">
                     <bitfield caption="Analog Comparator 1 Enable Bit" mask="0x80" name="AC1EN"/>
                     <bitfield caption="Analog Comparator 1 Interrupt Enable Bit" mask="0x40" name="AC1IE"/>
-                    <bitfield caption="Analog Comparator 1  Interrupt Select Bit" mask="0x30" name="AC1IS"
+                    <bitfield caption="Analog Comparator 1 Interrupt Select Bit" mask="0x30" name="AC1IS"
                               values="ANALOG_COMP_INTERRUPT"/>
                     <bitfield caption="Analog Comparator 1 Interrupt Capture Enable Bit" mask="0x08" name="AC1ICE"/>
                     <bitfield caption="Analog Comparator 1 Multiplexer Register" mask="0x07" name="AC1M"/>
@@ -681,14 +681,14 @@
                 <register caption="Analog Comparator 2 Control Register" name="AC2CON" offset="0xAF" size="1">
                     <bitfield caption="Analog Comparator 2 Enable Bit" mask="0x80" name="AC2EN"/>
                     <bitfield caption="Analog Comparator 2 Interrupt Enable Bit" mask="0x40" name="AC2IE"/>
-                    <bitfield caption="Analog Comparator 2  Interrupt Select Bit" mask="0x30" name="AC2IS"
+                    <bitfield caption="Analog Comparator 2 Interrupt Select Bit" mask="0x30" name="AC2IS"
                               values="ANALOG_COMP_INTERRUPT"/>
                     <bitfield caption="Analog Comparator 2 Multiplexer Register" mask="0x07" name="AC2M"/>
                 </register>
                 <register caption="Analog Comparator Status Register" name="ACSR" offset="0x50" size="1" ocd-rw="R">
                     <bitfield caption="Analog Comparator Clock Divider" mask="0x80" name="ACCKDIV"/>
                     <bitfield caption="Analog Comparator 2 Interrupt Flag Bit" mask="0x40" name="AC2IF"/>
-                    <bitfield caption="Analog Comparator 1  Interrupt Flag Bit" mask="0x20" name="AC1IF"/>
+                    <bitfield caption="Analog Comparator 1 Interrupt Flag Bit" mask="0x20" name="AC1IF"/>
                     <bitfield caption="Analog Comparator 0 Interrupt Flag Bit" mask="0x10" name="AC0IF"/>
                     <bitfield caption="Analog Comparator 2 Output Bit" mask="0x04" name="AC2O"/>
                     <bitfield caption="Analog Comparator 1 Output Bit" mask="0x02" name="AC1O"/>
@@ -839,7 +839,7 @@
                     <bitfield caption="Timer/Counter0 Output Compare Flag 0A" mask="0x02" name="OCF0A"/>
                     <bitfield caption="Timer/Counter0 Overflow Flag" mask="0x01" name="TOV0"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x44" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x44" size="1">
                     <bitfield caption="Compare Output Mode, Phase Correct PWM Mode" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Output Mode, Fast PWm" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode" mask="0x03" name="WGM0"/>
@@ -920,7 +920,7 @@
                           mask="0xFFFF">
                     <bitfield caption="Timer/Counter1 Output Compare B Register" mask="0xFFFF" name="OCR1B"/>
                 </register>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x86" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x86" size="2"
                           mask="0xFFFF"/>
                 <register caption="General Timer/Counter Control Register" name="GTCCR" offset="0x43" size="1">
                     <bitfield caption="Timer/Counter Synchronization Mode" mask="0x80" name="TSM"/>
@@ -951,9 +951,9 @@
                     <bitfield caption="ADC Auto Trigger Enable" mask="0x20" name="ADATE"/>
                     <bitfield caption="ADC Interrupt Flag" mask="0x10" name="ADIF"/>
                     <bitfield caption="ADC Interrupt Enable" mask="0x08" name="ADIE"/>
-                    <bitfield caption="ADC  Prescaler Select Bits" mask="0x07" name="ADPS"/>
+                    <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF"/>
                 <register caption="ADC Control and Status Register B" name="ADCSRB" offset="0x7B" size="1" mask="0x8F">
                     <bitfield caption="ADC High Speed Mode" mask="0x80" name="ADHSM"/>
                     <bitfield caption="ADC Auto Trigger Source Selection 3" mask="0x08" name="ADTS3"/>

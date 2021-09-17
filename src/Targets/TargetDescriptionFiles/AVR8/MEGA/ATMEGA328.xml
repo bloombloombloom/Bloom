@@ -855,10 +855,10 @@
                           ocd-rw="R">
                     <bitfield caption="ADC Enable" mask="0x80" name="ADEN"/>
                     <bitfield caption="ADC Start Conversion" mask="0x40" name="ADSC"/>
-                    <bitfield caption="ADC  Auto Trigger Enable" mask="0x20" name="ADATE"/>
+                    <bitfield caption="ADC Auto Trigger Enable" mask="0x20" name="ADATE"/>
                     <bitfield caption="ADC Interrupt Flag" mask="0x10" name="ADIF"/>
                     <bitfield caption="ADC Interrupt Enable" mask="0x08" name="ADIE"/>
-                    <bitfield caption="ADC  Prescaler Select Bits" mask="0x07" name="ADPS"
+                    <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
                 <register caption="The ADC Control and Status register B" name="ADCSRB" offset="0x7B" size="1">
@@ -976,7 +976,7 @@
                     <bitfield caption="" mask="0x08" name="WGM02"/>
                     <bitfield caption="Clock Select" mask="0x07" name="CS0" values="CLK_SEL_3BIT_EXT"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x44" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x44" size="1">
                     <bitfield caption="Compare Output Mode, Phase Correct PWM Mode" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Output Mode, Fast PWm" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode" mask="0x03" name="WGM0"/>

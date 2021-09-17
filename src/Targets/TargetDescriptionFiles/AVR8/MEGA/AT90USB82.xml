@@ -619,7 +619,7 @@
                     <bitfield caption="" mask="0x08" name="WGM02"/>
                     <bitfield caption="Clock Select" mask="0x07" name="CS0" values="CLK_SEL_3BIT_EXT"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x44" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x44" size="1">
                     <bitfield caption="Compare Output Mode, Phase Correct PWM Mode" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Output Mode, Fast PWm" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode" mask="0x03" name="WGM0"/>
@@ -673,14 +673,14 @@
                     <bitfield caption="Force Output Compare 1B" mask="0x40" name="FOC1B"/>
                     <bitfield caption="Force Output Compare 1C" mask="0x20" name="FOC1C"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register A  Bytes" name="OCR1A" offset="0x88" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register A Bytes" name="OCR1A" offset="0x88" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register B  Bytes" name="OCR1B" offset="0x8A" size="2"
+                <register caption="Timer/Counter1 Output Compare Register B Bytes" name="OCR1B" offset="0x8A" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register C  Bytes" name="OCR1C" offset="0x8C" size="2"
+                <register caption="Timer/Counter1 Output Compare Register C Bytes" name="OCR1C" offset="0x8C" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x86" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x86" size="2"
                           mask="0xFFFF"/>
                 <register caption="Timer/Counter1 Interrupt Mask Register" name="TIMSK1" offset="0x6F" size="1">
                     <bitfield caption="Timer/Counter1 Input Capture Interrupt Enable" mask="0x20" name="ICIE1"/>
@@ -995,7 +995,7 @@
                     <bitfield caption="CTS Enable" mask="0x02" name="CTSEN"/>
                     <bitfield caption="RTS Enable" mask="0x01" name="RTSEN"/>
                 </register>
-                <register caption="USART Baud Rate Register  Bytes" name="UBRR1" offset="0xCC" size="2" mask="0x0FFF"/>
+                <register caption="USART Baud Rate Register Bytes" name="UBRR1" offset="0xCC" size="2" mask="0x0FFF"/>
             </register-group>
         </module>
         <module caption="Watchdog Timer" name="WDT">

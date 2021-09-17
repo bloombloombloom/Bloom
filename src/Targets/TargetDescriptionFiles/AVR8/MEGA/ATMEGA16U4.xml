@@ -780,7 +780,7 @@
                     <bitfield caption="CTS Enable" mask="0x02" name="CTSEN"/>
                     <bitfield caption="RTS Enable" mask="0x01" name="RTSEN"/>
                 </register>
-                <register caption="USART Baud Rate Register  Bytes" name="UBRR1" offset="0xCC" size="2" mask="0x0FFF"/>
+                <register caption="USART Baud Rate Register Bytes" name="UBRR1" offset="0xCC" size="2" mask="0x0FFF"/>
             </register-group>
             <value-group caption="" name="COMM_USART_MODE_2BIT">
                 <value caption="Asynchronous USART" name="VAL_0x00" value="0x00"/>
@@ -853,7 +853,7 @@
                     <bitfield caption="" mask="0x08" name="WGM02"/>
                     <bitfield caption="Clock Select" mask="0x07" name="CS0" values="CLK_SEL_3BIT_EXT"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x44" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x44" size="1">
                     <bitfield caption="Compare Output Mode, Phase Correct PWM Mode" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Output Mode, Fast PWm" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode" mask="0x03" name="WGM0"/>
@@ -992,7 +992,7 @@
                 <register caption="Timer/Counter3 Bytes" name="TCNT3" offset="0x94" size="2" mask="0xFFFF">
                     <bitfield caption="Timer/Counter3 bits" mask="0xFFFF" name="TCNT3"/>
                 </register>
-                <register caption="Timer/Counter3 Output Compare Register A  Bytes" name="OCR3A" offset="0x98" size="2"
+                <register caption="Timer/Counter3 Output Compare Register A Bytes" name="OCR3A" offset="0x98" size="2"
                           mask="0xFFFF">
                     <bitfield caption="Timer/Counter3 Output Compare A bits" mask="0xFFFF" name="OCR3A"/>
                 </register>
@@ -1004,7 +1004,7 @@
                           mask="0xFFFF">
                     <bitfield caption="Timer/Counter3 Output Compare C bits" mask="0xFFFF" name="OCR3C"/>
                 </register>
-                <register caption="Timer/Counter3 Input Capture Register  Bytes" name="ICR3" offset="0x96" size="2"
+                <register caption="Timer/Counter3 Input Capture Register Bytes" name="ICR3" offset="0x96" size="2"
                           mask="0xFFFF">
                     <bitfield caption="Timer/Counter3 Input Capture bits" mask="0xFFFF" name="ICR3"/>
                 </register>
@@ -1197,10 +1197,10 @@
                     <bitfield caption="ADC Auto Trigger Enable" mask="0x20" name="ADATE"/>
                     <bitfield caption="ADC Interrupt Flag" mask="0x10" name="ADIF"/>
                     <bitfield caption="ADC Interrupt Enable" mask="0x08" name="ADIE"/>
-                    <bitfield caption="ADC  Prescaler Select Bits" mask="0x07" name="ADPS"
+                    <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF">
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF">
                     <bitfield caption="ADC Data Bits" mask="0x03FF" name="ADC"/>
                 </register>
                 <register caption="ADC Control and Status Register B" name="ADCSRB" offset="0x7B" size="1">

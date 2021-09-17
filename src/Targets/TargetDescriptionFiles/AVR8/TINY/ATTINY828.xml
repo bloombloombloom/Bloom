@@ -618,7 +618,7 @@
                     <bitfield caption="" mask="0x08" name="WGM02"/>
                     <bitfield caption="Clock Select" mask="0x07" name="CS0" values="CLK_SEL_3BIT_EXT"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x44" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x44" size="1">
                     <bitfield caption="Compare Output Mode, Phase Correct PWM Mode" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Output Mode, Fast PWm" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode" mask="0x03" name="WGM0"/>
@@ -685,12 +685,12 @@
                     <bitfield caption="" mask="0x80" name="FOC1A"/>
                     <bitfield caption="" mask="0x40" name="FOC1B"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register  Bytes" name="OCR1A" offset="0x88" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1A" offset="0x88" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register  Bytes" name="OCR1B" offset="0x8A" size="2"
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1B" offset="0x8A" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x86" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x86" size="2"
                           mask="0xFFFF"/>
                 <register caption="General Timer/Counter Control Register" name="GTCCR" offset="0x43" size="1">
                     <bitfield caption="Timer/Counter Synchronization Mode" mask="0x80" name="TSM"/>
@@ -753,7 +753,7 @@
                     <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x78" size="2" mask="0xFFFF"/>
                 <register caption="ADC Control and Status Register B" name="ADCSRB" offset="0x7B" size="1">
                     <bitfield caption="" mask="0x08" name="ADLAR"/>
                     <bitfield caption="ADC Auto Trigger Sources" mask="0x07" name="ADTS"
@@ -997,7 +997,7 @@
                     <bitfield caption="USART RX Start Flag" mask="0x40" name="RXS"/>
                     <bitfield caption="USART RX Start Frame Detection Enable" mask="0x20" name="SFDE"/>
                 </register>
-                <register caption="USART Baud Rate Register  Bytes" name="UBRR" offset="0xC4" size="2" mask="0x0FFF"/>
+                <register caption="USART Baud Rate Register Bytes" name="UBRR" offset="0xC4" size="2" mask="0x0FFF"/>
             </register-group>
             <value-group caption="" name="COMM_USART_MODE">
                 <value caption="Asynchronous Operation" name="VAL_0x00" value="0x00"/>

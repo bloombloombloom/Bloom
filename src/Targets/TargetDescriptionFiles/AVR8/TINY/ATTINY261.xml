@@ -575,7 +575,7 @@
                     <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x24" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x24" size="2" mask="0xFFFF"/>
                 <register caption="ADC Control and Status Register B" name="ADCSRB" offset="0x23" size="1">
                     <bitfield caption="Bipolar Input Mode" mask="0x80" name="BIN"/>
                     <bitfield caption="Gain Select" mask="0x40" name="GSEL"/>
@@ -678,7 +678,7 @@
         </module>
         <module caption="EEPROM" name="EEPROM">
             <register-group caption="EEPROM" name="EEPROM">
-                <register caption="EEPROM Address Register  Bytes" name="EEAR" offset="0x3E" size="2" mask="0x01FF"/>
+                <register caption="EEPROM Address Register Bytes" name="EEAR" offset="0x3E" size="2" mask="0x01FF"/>
                 <register caption="EEPROM Data Register" name="EEDR" offset="0x3D" size="1" mask="0xFF"/>
                 <register caption="EEPROM Control Register" name="EECR" offset="0x3C" size="1">
                     <bitfield caption="EEPROM Programming Mode Bits" mask="0x30" name="EEPM" values="EEP_MODE"/>
@@ -735,7 +735,7 @@
                     <bitfield caption="Timer/Counter0 Overflow Flag" mask="0x02" name="TOV0"/>
                     <bitfield caption="Timer/Counter0 Input Capture Flag" mask="0x01" name="ICF0"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x35" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x35" size="1">
                     <bitfield caption="Timer/Counter 0 Width" mask="0x80" name="TCW0"/>
                     <bitfield caption="Input Capture Mode Enable" mask="0x40" name="ICEN0"/>
                     <bitfield caption="Input Capture Noice Canceler" mask="0x20" name="ICNC0"/>

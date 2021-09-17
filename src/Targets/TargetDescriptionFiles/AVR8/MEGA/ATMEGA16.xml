@@ -704,12 +704,12 @@
                     <bitfield caption="Prescaler source of Timer/Counter 1" mask="0x07" name="CS1"
                               values="CLK_SEL_3BIT_EXT"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register  Bytes" name="OCR1A" offset="0x4A" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1A" offset="0x4A" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register  Bytes" name="OCR1B" offset="0x48" size="2"
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1B" offset="0x48" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x46" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x46" size="2"
                           mask="0xFFFF"/>
             </register-group>
             <value-group caption="" name="CLK_SEL_3BIT_EXT">
@@ -755,7 +755,7 @@
         </module>
         <module caption="EEPROM" name="EEPROM">
             <register-group caption="EEPROM" name="EEPROM">
-                <register caption="EEPROM Address Register  Bytes" name="EEAR" offset="0x3E" size="2" mask="0x01FF"/>
+                <register caption="EEPROM Address Register Bytes" name="EEAR" offset="0x3E" size="2" mask="0x01FF"/>
                 <register caption="EEPROM Data Register" name="EEDR" offset="0x3D" size="1" mask="0xFF"/>
                 <register caption="EEPROM Control Register" name="EECR" offset="0x3C" size="1">
                     <bitfield caption="EEPROM Ready Interrupt Enable" mask="0x08" name="EERIE"/>
@@ -1021,7 +1021,7 @@
                     <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x24" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x24" size="2" mask="0xFFFF"/>
                 <register caption="Special Function IO Register" name="SFIOR" offset="0x50" size="1">
                     <bitfield caption="ADC Auto Trigger Sources" mask="0xE0" name="ADTS"/>
                 </register>

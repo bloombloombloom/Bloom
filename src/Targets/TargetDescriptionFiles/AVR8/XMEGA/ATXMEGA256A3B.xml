@@ -2247,7 +2247,7 @@
                 <register caption="Compare Or Capture D Buffer" name="CCDBUF" offset="0x3E" size="2"/>
             </register-group>
             <register-group caption="16-bit Timer/Counter 1" name="TC1" size="60">
-                <register caption="Control  Register A" name="CTRLA" offset="0x00" size="1">
+                <register caption="Control Register A" name="CTRLA" offset="0x00" size="1">
                     <bitfield caption="Clock Selection" mask="0x0F" name="CLKSEL" values="TC_CLKSEL"/>
                 </register>
                 <register caption="Control Register B" name="CTRLB" offset="0x01" size="1">

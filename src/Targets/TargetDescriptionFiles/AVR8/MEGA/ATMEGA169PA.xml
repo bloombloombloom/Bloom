@@ -741,7 +741,7 @@
                     <bitfield caption="Force Output Compare 1A" mask="0x80" name="FOC1A"/>
                     <bitfield caption="Force Output Compare 1B" mask="0x40" name="FOC1B"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF">
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF">
                     <bitfield caption="Timer/Counter1 bits" mask="0xFFFF" name="TCNT1"/>
                 </register>
                 <register caption="Timer/Counter1 Output Compare Register A Bytes" name="OCR1A" offset="0x88" size="2"

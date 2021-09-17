@@ -746,15 +746,15 @@
                     <bitfield caption="Left Adjust Result" mask="0x20" name="ADLAR"/>
                     <bitfield caption="Analog Channel and Gain Selection Bits" mask="0x1F" name="MUX"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x24" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x24" size="2" mask="0xFFFF"/>
                 <register caption="The ADC Control and Status register A" name="ADCSRA" offset="0x26" size="1"
                           ocd-rw="R">
                     <bitfield caption="ADC Enable" mask="0x80" name="ADEN"/>
                     <bitfield caption="ADC Start Conversion" mask="0x40" name="ADSC"/>
-                    <bitfield caption="ADC  Auto Trigger Enable" mask="0x20" name="ADATE"/>
+                    <bitfield caption="ADC Auto Trigger Enable" mask="0x20" name="ADATE"/>
                     <bitfield caption="ADC Interrupt Flag" mask="0x10" name="ADIF"/>
                     <bitfield caption="ADC Interrupt Enable" mask="0x08" name="ADIE"/>
-                    <bitfield caption="ADC  Prescaler Select Bits" mask="0x07" name="ADPS"
+                    <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
                 <register caption="The ADC Control and Status register B" name="ADCSRB" offset="0x8E" size="1">
@@ -1085,7 +1085,7 @@
         </module>
         <module caption="EEPROM" name="EEPROM">
             <register-group caption="EEPROM" name="EEPROM">
-                <register caption="EEPROM Read/Write Access  Bytes" name="EEAR" offset="0x3E" size="2" mask="0x07FF"/>
+                <register caption="EEPROM Read/Write Access Bytes" name="EEAR" offset="0x3E" size="2" mask="0x07FF"/>
                 <register caption="EEPROM Data Register" name="EEDR" offset="0x3D" size="1" mask="0xFF"/>
                 <register caption="EEPROM Control Register" name="EECR" offset="0x3C" size="1">
                     <bitfield caption="EEPROM Ready Interrupt Enable" mask="0x08" name="EERIE"/>
@@ -1225,14 +1225,14 @@
                     <bitfield caption="Force Output Compare for channel B" mask="0x40" name="FOC1B"/>
                     <bitfield caption="Force Output Compare for channel C" mask="0x20" name="FOC1C"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register  Bytes" name="OCR1A" offset="0x4A" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1A" offset="0x4A" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register  Bytes" name="OCR1B" offset="0x48" size="2"
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1B" offset="0x48" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register  Bytes" name="OCR1C" offset="0x78" size="2"
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1C" offset="0x78" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x46" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x46" size="2"
                           mask="0xFFFF"/>
             </register-group>
             <register-group caption="Timer/Counter, 16-bit" name="TC3">
@@ -1275,14 +1275,14 @@
                     <bitfield caption="Force Output Compare for channel B" mask="0x40" name="FOC3B"/>
                     <bitfield caption="Force Output Compare for channel C" mask="0x20" name="FOC3C"/>
                 </register>
-                <register caption="Timer/Counter3  Bytes" name="TCNT3" offset="0x88" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter3 Output Compare Register A  Bytes" name="OCR3A" offset="0x86" size="2"
+                <register caption="Timer/Counter3 Bytes" name="TCNT3" offset="0x88" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter3 Output Compare Register A Bytes" name="OCR3A" offset="0x86" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter3 Output Compare Register B  Bytes" name="OCR3B" offset="0x84" size="2"
+                <register caption="Timer/Counter3 Output Compare Register B Bytes" name="OCR3B" offset="0x84" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter3 Output compare Register C  Bytes" name="OCR3C" offset="0x82" size="2"
+                <register caption="Timer/Counter3 Output compare Register C Bytes" name="OCR3C" offset="0x82" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter3 Input Capture Register  Bytes" name="ICR3" offset="0x80" size="2"
+                <register caption="Timer/Counter3 Input Capture Register Bytes" name="ICR3" offset="0x80" size="2"
                           mask="0xFFFF"/>
             </register-group>
             <value-group caption="" name="CLK_SEL_3BIT_EXT">

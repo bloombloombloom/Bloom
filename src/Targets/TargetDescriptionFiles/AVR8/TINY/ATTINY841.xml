@@ -731,7 +731,7 @@
                     <bitfield caption="ADC Prescaler Select Bits" mask="0x07" name="ADPS"
                               values="ANALOG_ADC_PRESCALER"/>
                 </register>
-                <register caption="ADC Data Register  Bytes" name="ADC" offset="0x26" size="2" mask="0xFFFF"/>
+                <register caption="ADC Data Register Bytes" name="ADC" offset="0x26" size="2" mask="0xFFFF"/>
                 <register caption="ADC Control and Status Register B" name="ADCSRB" offset="0x24" size="1">
                     <bitfield caption="" mask="0x08" name="ADLAR"/>
                     <bitfield caption="ADC Auto Trigger Sources" mask="0x07" name="ADTS"
@@ -826,7 +826,7 @@
         </module>
         <module caption="EEPROM" name="EEPROM">
             <register-group caption="EEPROM" name="EEPROM">
-                <register caption="EEPROM Address Register  Bytes" name="EEAR" offset="0x3E" size="2" mask="0x01FF"/>
+                <register caption="EEPROM Address Register Bytes" name="EEAR" offset="0x3E" size="2" mask="0x01FF"/>
                 <register caption="EEPROM Data Register" name="EEDR" offset="0x3D" size="1" mask="0xFF"/>
                 <register caption="EEPROM Control Register" name="EECR" offset="0x3C" size="1">
                     <bitfield caption="EEPROM Programming Mode Bits" mask="0x30" name="EEPM" values="EEP_MODE"/>
@@ -874,12 +874,12 @@
                     <bitfield caption="Force Output Compare for Channel A" mask="0x80" name="FOC1A"/>
                     <bitfield caption="Force Output Compare for Channel B" mask="0x40" name="FOC1B"/>
                 </register>
-                <register caption="Timer/Counter1  Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register A  Bytes" name="OCR1A" offset="0x4A" size="2"
+                <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x4C" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register A Bytes" name="OCR1A" offset="0x4A" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register B  Bytes" name="OCR1B" offset="0x48" size="2"
+                <register caption="Timer/Counter1 Output Compare Register B Bytes" name="OCR1B" offset="0x48" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register  Bytes" name="ICR1" offset="0x44" size="2"
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x44" size="2"
                           mask="0xFFFF"/>
                 <register caption="General Timer/Counter Control Register" name="GTCCR" offset="0x43" size="1">
                     <bitfield caption="Timer/Counter Synchronization Mode" mask="0x80" name="TSM"/>
@@ -917,12 +917,12 @@
                     <bitfield caption="Force Output Compare for Channel A" mask="0x80" name="FOC2A"/>
                     <bitfield caption="Force Output Compare for Channel B" mask="0x40" name="FOC2B"/>
                 </register>
-                <register caption="Timer/Counter2  Bytes" name="TCNT2" offset="0xC6" size="2" mask="0xFFFF"/>
-                <register caption="Timer/Counter2 Output Compare Register A  Bytes" name="OCR2A" offset="0xC4" size="2"
+                <register caption="Timer/Counter2 Bytes" name="TCNT2" offset="0xC6" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter2 Output Compare Register A Bytes" name="OCR2A" offset="0xC4" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter2 Output Compare Register B  Bytes" name="OCR2B" offset="0xC2" size="2"
+                <register caption="Timer/Counter2 Output Compare Register B Bytes" name="OCR2B" offset="0xC2" size="2"
                           mask="0xFFFF"/>
-                <register caption="Timer/Counter2 Input Capture Register  Bytes" name="ICR2" offset="0xC0" size="2"
+                <register caption="Timer/Counter2 Input Capture Register Bytes" name="ICR2" offset="0xC0" size="2"
                           mask="0xFFFF"/>
                 <register caption="General Timer/Counter Control Register" name="GTCCR" offset="0x43" size="1">
                     <bitfield caption="Timer/Counter Synchronization Mode" mask="0x80" name="TSM"/>
@@ -955,7 +955,7 @@
                     <bitfield caption="Timer/Counter0 Output Compare Flag A" mask="0x02" name="OCF0A"/>
                     <bitfield caption="Timer/Counter0 Overflow Flag" mask="0x01" name="TOV0"/>
                 </register>
-                <register caption="Timer/Counter  Control Register A" name="TCCR0A" offset="0x50" size="1">
+                <register caption="Timer/Counter Control Register A" name="TCCR0A" offset="0x50" size="1">
                     <bitfield caption="Compare Match Output A Mode bits" mask="0xC0" name="COM0A"/>
                     <bitfield caption="Compare Match Output B Mode bits" mask="0x30" name="COM0B"/>
                     <bitfield caption="Waveform Generation Mode bits" mask="0x03" name="WGM0"/>
