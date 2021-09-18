@@ -3,11 +3,9 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QMenu>
-#include <utility>
 #include <QStyle>
 
 #include "src/Helpers/Paths.hpp"
-#include "src/Exceptions/Exception.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/ReadTargetRegisters.hpp"
 
@@ -45,6 +43,8 @@ RegisterWidget::RegisterWidget(
     this->layout->addWidget(this->valueLabel);
     this->layout->addStretch(1);
 
+    this->connect(this, &ClickableWidget::doubleClicked, this, &RegisterWidget::openInspectionWindow);
+    this->connect(this->openInspectionWindowAction, &QAction::triggered, this, &RegisterWidget::openInspectionWindow);
     this->connect(this->refreshValueAction, &QAction::triggered, this, &RegisterWidget::refreshValue);
     this->connect(this->copyValueNameAction, &QAction::triggered, this, &RegisterWidget::copyName);
     this->connect(this->copyValueHexAction, &QAction::triggered, this, &RegisterWidget::copyValueHex);
@@ -86,6 +86,23 @@ void RegisterWidget::setRegisterValue(const Targets::TargetRegister& targetRegis
 
 void RegisterWidget::clearInlineValue() {
     this->valueLabel->clear();
+}
+
+void RegisterWidget::openInspectionWindow() {
+    if (!TargetRegisterInspectorWindow::registerSupported(this->descriptor)) {
+        return;
+    }
+
+    if (this->inspectWindow == nullptr) {
+        this->inspectWindow = new TargetRegisterInspectorWindow(
+            this->descriptor,
+            this->insightWorker,
+            this->currentRegister.has_value() ? std::optional(this->currentRegister->value) : std::nullopt
+        );
+
+    } else {
+        this->inspectWindow->show();
+    }
 }
 
 void RegisterWidget::refreshValue() {
@@ -155,6 +172,7 @@ void RegisterWidget::contextMenuEvent(QContextMenuEvent* event) {
     this->setSelected(true);
 
     auto menu = new QMenu(this);
+    menu->addAction(this->openInspectionWindowAction);
     menu->addAction(this->refreshValueAction);
     menu->addSeparator();
 
@@ -166,6 +184,8 @@ void RegisterWidget::contextMenuEvent(QContextMenuEvent* event) {
     copyMenu->addAction(this->copyValueBinaryAction);
 
     menu->addMenu(copyMenu);
+
+    this->openInspectionWindowAction->setEnabled(TargetRegisterInspectorWindow::registerSupported(this->descriptor));
 
     const auto targetStopped = this->targetState == Targets::TargetState::STOPPED;
     const auto targetStoppedAndValuePresent = targetStopped && this->currentRegister.has_value();

@@ -162,6 +162,17 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/ItemWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/RegisterGroupWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/RegisterWidget.cpp
+
+    # Target register inspector window
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/TargetRegisterInspectorWindow.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/RegisterHistoryWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/Item.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/CurrentItem.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/RegisterHistoryItem.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitsetWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitBodyWidget.cpp
+
 )
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)

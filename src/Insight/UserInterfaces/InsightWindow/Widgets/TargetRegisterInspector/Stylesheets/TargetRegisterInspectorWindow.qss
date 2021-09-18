@@ -1,0 +1,138 @@
+* {
+    color: #afb1b3;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+}
+
+#target-register-inspector-window {
+    background-color: #343532;
+}
+
+#register-name {
+    font-size: 15px;
+}
+
+#register-value-container,
+#register-details-container {
+    border: 1px solid #2b2b2b;
+}
+
+#register-value-text-input-container {
+    border-top: 1px solid #41423f;
+}
+
+QLineEdit {
+    background-color: #2B2B29;
+    border: 1px solid #41423f;
+    padding: 3px;
+}
+
+QLineEdit:disabled {
+    font-style: italic;
+    color: #7d7d7d;
+}
+
+QPushButton {
+    background-color: #373937;
+    border: 1px solid #41423f;
+    padding: 3px 25px;
+}
+
+#apply-btn {
+    background-color: #353C41;
+    border: 1px solid #3e474c;
+}
+
+QPushButton:disabled {
+    background-color: #303230;
+    color: #8d8d90;
+}
+
+#register-bit-number-label {
+    font-size: 12px;
+    color: #a6a7aa;
+}
+
+#register-bit-label {
+    font-size: 11px;
+    color: #8a8a8d;
+}
+
+/* BitsetWidget */
+#bitset-widget {
+    font-size: 12px;
+}
+
+/* RegisterHistoryWidget */
+#target-register-history-widget #container {
+    border: 1px solid #2b2b2b;
+}
+
+#target-register-history-widget #title-bar {
+    background-color: #353C41;
+    border-bottom: 1px solid #2b2b2b;
+}
+
+#target-register-history-widget #title {
+    color: #afb1b3;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 5px;
+}
+
+#target-register-history-widget QScrollArea,
+#target-register-history-widget #item-container {
+    background-color: transparent;
+    border: none;
+}
+
+#target-register-history-widget #current-item[selected=true],
+#target-register-history-widget #register-history-item[selected=true] {
+    background-color: #335883;
+}
+
+#target-register-history-widget #separator-widget {
+    border-top: 1px solid #2e2e2e;
+    border-bottom: 1px solid #2e2e2e;
+}
+
+#target-register-history-widget #register-history-item {
+    border-bottom: 1px solid #2e2e2e;
+    background-color: transparent;
+}
+
+#target-register-history-widget #register-history-item #date-label {
+    font-size: 14px
+}
+
+#target-register-history-widget #register-history-item #value-label {
+    font-size: 13px;
+    font-style: italic;
+    color: #8a8a8d;
+}
+
+#target-register-history-widget #separator-label {
+    /*font-style: italic;*/
+    color: #8a8a8d;
+}
+
+QScrollBar:vertical {
+    background-color: transparent;
+    width: 15px;
+    margin: 1px 1px 1px 5px;
+}
+
+QScrollBar:handle:vertical {
+    border: none;
+    background-color: rgba(69, 69, 66, 0.6);
+}
+
+QScrollBar:handle:vertical:hover {
+    background-color: rgba(69, 69, 66, 0.91);
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+}

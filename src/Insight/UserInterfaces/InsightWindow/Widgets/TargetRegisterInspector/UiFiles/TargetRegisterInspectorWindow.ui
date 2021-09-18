@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <widget class="QWidget" name="container">
+        <layout class="QVBoxLayout">
+            <item alignment="Qt::AlignHCenter">
+                <widget class="SvgWidget" name="icon">
+                    <property name="svgFilePath">
+                        <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg</string>
+                    </property>
+                    <property name="containerHeight">
+                        <number>46</number>
+                    </property>
+                    <property name="containerWidth">
+                        <number>57</number>
+                    </property>
+                </widget>
+            </item>
+            <item alignment="Qt::AlignHCenter">
+                <widget class="QLabel" name="register-name"/>
+            </item>
+            <item alignment="Qt::AlignHCenter">
+                <widget class="QLabel" name="register-description">
+                    <property name="visible">
+                        <bool>false</bool>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+            <item alignment="Qt::AlignLeft">
+                <layout class="QHBoxLayout" name="content-layout">
+                    <property name="spacing">
+                        <number>20</number>
+                    </property>
+
+                    <item alignment="Qt::AlignLeft">
+                        <widget class="QWidget" name="content-container">
+                            <layout class="QVBoxLayout" name="content-layout">
+                                <property name="spacing">
+                                    <number>20</number>
+                                </property>
+
+                                <item alignment="Qt::AlignTop">
+                                    <widget class="QWidget" name="register-details-container">
+                                        <layout class="QVBoxLayout">
+                                            <property name="spacing">
+                                                <number>10</number>
+                                            </property>
+
+                                            <item alignment="Qt::AlignLeft">
+                                                <layout class="QHBoxLayout" name="register-details-row">
+                                                    <property name="spacing">
+                                                        <number>20</number>
+                                                    </property>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="QLabel" name="register-details-name-label">
+                                                            <property name="text">
+                                                                <string>Name:</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="QLineEdit" name="register-details-name-input">
+                                                            <property name="enabled">
+                                                                <bool>false</bool>
+                                                            </property>
+                                                            <property name="minimumWidth">
+                                                                <number>350</number>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                </layout>
+                                            </item>
+                                            <item alignment="Qt::AlignLeft">
+                                                <layout class="QHBoxLayout" name="register-details-row">
+                                                    <property name="spacing">
+                                                        <number>20</number>
+                                                    </property>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="QLabel" name="register-details-size-label">
+                                                            <property name="text">
+                                                                <string>Size (bytes):</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="QLineEdit" name="register-details-size-input">
+                                                            <property name="enabled">
+                                                                <bool>false</bool>
+                                                            </property>
+                                                            <property name="minimumWidth">
+                                                                <number>350</number>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                </layout>
+                                            </item>
+                                            <item alignment="Qt::AlignLeft">
+                                                <layout class="QHBoxLayout" name="register-details-row">
+                                                    <property name="spacing">
+                                                        <number>20</number>
+                                                    </property>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="QLabel" name="register-details-start-address-label">
+                                                            <property name="text">
+                                                                <string>Start Address:</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="QLineEdit" name="register-details-start-address-input">
+                                                            <property name="enabled">
+                                                                <bool>false</bool>
+                                                            </property>
+                                                            <property name="minimumWidth">
+                                                                <number>350</number>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                </layout>
+                                            </item>
+                                        </layout>
+                                    </widget>
+                                </item>
+
+                                <item alignment="Qt::AlignTop">
+                                    <widget class="QWidget" name="register-value-container">
+                                        <layout class="QVBoxLayout">
+                                            <property name="spacing">
+                                                <number>20</number>
+                                            </property>
+
+                                            <item alignment="Qt::AlignLeft">
+                                                <widget class="QLineEdit" name="register-value-text-input"/>
+                                            </item>
+                                            <item alignment="Qt::AlignLeft">
+                                                <widget class="QWidget" name="register-value-bitset-widget-container">
+                                                    <property name="minimumHeight">
+                                                        <number>60</number>
+                                                    </property>
+                                                    <layout class="QVBoxLayout" name="register-value-bitset-widget-layout">
+                                                        <property name="spacing">
+                                                            <number>15</number>
+                                                        </property>
+                                                    </layout>
+                                                </widget>
+                                            </item>
+                                            <item alignment="Qt::AlignLeft">
+                                                <layout class="QHBoxLayout">
+                                                    <property name="spacing">
+                                                        <number>15</number>
+                                                    </property>
+                                                    <item alignment="Qt::AlignCenter">
+                                                        <widget class="QPushButton" name="refresh-value-btn">
+                                                            <property name="text">
+                                                                <string>Refresh Value</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item alignment="Qt::AlignCenter">
+                                                        <spacer name="horizontal-spacer">
+                                                            <property name="orientation">
+                                                                <enum>Qt::Horizontal</enum>
+                                                            </property>
+                                                        </spacer>
+                                                    </item>
+                                                    <item alignment="Qt::AlignCenter">
+                                                        <widget class="QPushButton" name="apply-btn">
+                                                            <property name="text">
+                                                                <string>Apply</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                </layout>
+                                            </item>
+                                        </layout>
+                                    </widget>
+                                </item>
+                                <item alignment="Qt::AlignHCenter">
+                                    <spacer name="vertical-spacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+            <item alignment="Qt::AlignHCenter">
+                <spacer name="vertical-spacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QHBoxLayout">
+                    <property name="spacing">
+                        <number>15</number>
+                    </property>
+                    <item alignment="Qt::AlignLeft">
+                        <spacer name="horizontal-spacer">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignRight">
+                        <widget class="QPushButton" name="close-btn">
+                            <property name="text">
+                                <string>Close</string>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+        </layout>
+    </widget>
+</ui>
