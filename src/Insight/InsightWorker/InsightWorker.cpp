@@ -114,7 +114,7 @@ void InsightWorker::onTargetResumedEvent(const Events::TargetExecutionResumed& e
 }
 
 void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {
-    emit this->targetRegistersWritten(event.registers);
+    emit this->targetRegistersWritten(event.registers, event.createdTimestamp);
 }
 
 void InsightWorker::onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event) {

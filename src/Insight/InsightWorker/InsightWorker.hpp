@@ -64,6 +64,6 @@ namespace Bloom
         void targetProgramCounterUpdated(quint32 programCounter);
         void targetControllerSuspended();
         void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
-        void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters);
+        void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
     };
 }
