@@ -66,7 +66,7 @@ namespace Bloom
         eventManager(eventManager),
         application(
             (
-                QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true),
+                QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, false),
                 QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
             )
         ) {};
