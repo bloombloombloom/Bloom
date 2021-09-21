@@ -21,10 +21,12 @@ using namespace Bloom::Exceptions;
 using Bloom::Targets::TargetRegisterDescriptor;
 using Bloom::Targets::TargetRegisterDescriptors;
 using Bloom::Targets::TargetRegisterType;
+using Bloom::Targets::TargetState;
 
 TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
     const Targets::TargetRegisterDescriptor& registerDescriptor,
     InsightWorker& insightWorker,
+    TargetState currentTargetState,
     std::optional<Targets::TargetMemoryBuffer> registerValue
 ):
 registerDescriptor(registerDescriptor),
@@ -192,6 +194,7 @@ registerValue(registerValue.value_or(Targets::TargetMemoryBuffer(registerDescrip
     );
 
     this->updateRegisterValueInputField();
+    this->onTargetStateChanged(currentTargetState);
     this->show();
 }
 
@@ -232,8 +235,20 @@ void TargetRegisterInspectorWindow::onValueTextInputChanged(QString text) {
     }
 }
 
-void TargetRegisterInspectorWindow::onTargetStateChanged(Targets::TargetState newState) {
-    using Targets::TargetState;
+void TargetRegisterInspectorWindow::onTargetStateChanged(TargetState newState) {
+    if (newState != TargetState::STOPPED) {
+        this->registerValueTextInput->setDisabled(true);
+        this->registerValueBitsetWidgetContainer->setDisabled(true);
+        this->applyButton->setDisabled(true);
+        this->refreshValueButton->setDisabled(true);
+
+    } else if (this->targetState != TargetState::STOPPED && this->registerValueContainer->isEnabled()) {
+        this->registerValueTextInput->setDisabled(false);
+        this->registerValueBitsetWidgetContainer->setDisabled(false);
+        this->applyButton->setDisabled(false);
+        this->refreshValueButton->setDisabled(false);
+    }
+
     this->targetState = newState;
 }
 
@@ -301,16 +316,12 @@ void TargetRegisterInspectorWindow::refreshRegisterValue() {
 }
 
 void TargetRegisterInspectorWindow::applyChanges() {
-    this->applyButton->setDisabled(true);
-    this->registerValueBitsetWidgetContainer->setDisabled(true);
+    this->registerValueContainer->setDisabled(true);
     const auto targetRegister = Targets::TargetRegister(this->registerDescriptor, this->registerValue);
-    auto writeRegisterTask = new WriteTargetRegister(
-        targetRegister
-    );
+    auto writeRegisterTask = new WriteTargetRegister(targetRegister);
 
     this->connect(writeRegisterTask, &InsightWorkerTask::completed, this, [this, targetRegister] {
-        this->registerValueBitsetWidgetContainer->setDisabled(false);
-        this->applyButton->setDisabled(false);
+        this->registerValueContainer->setDisabled(false);
         emit this->insightWorker.targetRegistersWritten(
             {targetRegister},
             DateTime::currentDateTime()
@@ -321,8 +332,7 @@ void TargetRegisterInspectorWindow::applyChanges() {
 
     this->connect(writeRegisterTask, &InsightWorkerTask::failed, this, [this] {
         // TODO: Let the user know the write failed.
-        this->registerValueBitsetWidgetContainer->setDisabled(false);
-        this->applyButton->setDisabled(false);
+        this->registerValueContainer->setDisabled(false);
     });
 
     this->insightWorker.queueTask(writeRegisterTask);

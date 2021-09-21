@@ -101,6 +101,7 @@ void RegisterWidget::openInspectionWindow() {
         this->inspectWindow = new TargetRegisterInspectorWindow(
             this->descriptor,
             this->insightWorker,
+            this->targetState,
             this->currentRegister.has_value() ? std::optional(this->currentRegister->value) : std::nullopt
         );
 

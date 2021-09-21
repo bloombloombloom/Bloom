@@ -60,6 +60,7 @@ namespace Bloom::Widgets
         TargetRegisterInspectorWindow(
             const Targets::TargetRegisterDescriptor& registerDescriptor,
             InsightWorker& insightWorker,
+            Targets::TargetState currentTargetState,
             std::optional<Targets::TargetMemoryBuffer> registerValue = std::nullopt
         );
 
