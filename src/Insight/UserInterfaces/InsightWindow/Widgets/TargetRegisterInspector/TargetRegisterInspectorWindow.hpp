@@ -40,9 +40,10 @@ namespace Bloom::Widgets
         QWidget* registerValueBitsetWidgetContainer = nullptr;
         std::vector<BitsetWidget*> bitsetWidgets;
 
-        QPushButton* closeButton = nullptr;
         QPushButton* refreshValueButton = nullptr;
         QPushButton* applyButton = nullptr;
+        QPushButton* helpButton = nullptr;
+        QPushButton* closeButton = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
@@ -55,6 +56,7 @@ namespace Bloom::Widgets
         void updateValue();
         void refreshRegisterValue();
         void applyChanges();
+        void openHelpPage();
 
     public:
         TargetRegisterInspectorWindow(

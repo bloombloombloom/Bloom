@@ -207,6 +207,13 @@
                     <property name="spacing">
                         <number>15</number>
                     </property>
+                    <item alignment="Qt::AlignRight">
+                        <widget class="QPushButton" name="help-btn">
+                            <property name="text">
+                                <string>Help</string>
+                            </property>
+                        </widget>
+                    </item>
                     <item alignment="Qt::AlignLeft">
                         <spacer name="horizontal-spacer">
                             <property name="orientation">

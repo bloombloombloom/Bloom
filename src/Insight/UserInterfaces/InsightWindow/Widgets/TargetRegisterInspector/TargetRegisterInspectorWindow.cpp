@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include <QScrollBar>
 #include <set>
+#include <QDesktopServices>
 
 #include "../../UiLoader.hpp"
 
@@ -78,9 +79,10 @@ registerValue(registerValue.value_or(Targets::TargetMemoryBuffer(registerDescrip
     this->registerValueContainer = this->container->findChild<QWidget*>("register-value-container");
     this->registerValueTextInput = this->container->findChild<QLineEdit*>("register-value-text-input");
     this->registerValueBitsetWidgetContainer = this->container->findChild<QWidget*>("register-value-bitset-widget-container");
-    this->closeButton = this->container->findChild<QPushButton*>("close-btn");
     this->refreshValueButton = this->container->findChild<QPushButton*>("refresh-value-btn");
     this->applyButton = this->container->findChild<QPushButton*>("apply-btn");
+    this->helpButton = this->container->findChild<QPushButton*>("help-btn");
+    this->closeButton = this->container->findChild<QPushButton*>("close-btn");
 
     this->registerNameLabel->setText(registerName);
 
@@ -163,6 +165,7 @@ registerValue(registerValue.value_or(Targets::TargetMemoryBuffer(registerDescrip
 
     this->registerHistoryWidget->setFixedHeight(this->contentContainer->sizeHint().height());
 
+    this->connect(this->helpButton, &QPushButton::clicked, this, &TargetRegisterInspectorWindow::openHelpPage);
     this->connect(this->closeButton, &QPushButton::clicked, this, &QWidget::close);
     this->connect(
         this->refreshValueButton,
@@ -307,7 +310,7 @@ void TargetRegisterInspectorWindow::refreshRegisterValue() {
         readTargetRegisterTask,
         &InsightWorkerTask::failed,
         this,
-        [this] () {
+        [this] {
             this->registerValueContainer->setDisabled(false);
         }
     );
@@ -336,4 +339,9 @@ void TargetRegisterInspectorWindow::applyChanges() {
     });
 
     this->insightWorker.queueTask(writeRegisterTask);
+}
+
+void TargetRegisterInspectorWindow::openHelpPage() {
+//    QDesktopServices::openUrl(QUrl("https://bloom.oscillate.io/docs/register-inspection"));
+    QDesktopServices::openUrl(QUrl("http://bloom.local/docs/register-inspection"));
 }
