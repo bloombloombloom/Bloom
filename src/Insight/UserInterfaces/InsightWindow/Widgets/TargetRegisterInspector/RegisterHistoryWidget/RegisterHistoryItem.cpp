@@ -1,7 +1,7 @@
 #include "RegisterHistoryItem.hpp"
 
 #include <QStyle>
-#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QByteArray>
 
 using namespace Bloom::Widgets;
@@ -24,15 +24,20 @@ RegisterHistoryItem::RegisterHistoryItem(
     ).toHex()).toUpper());
     this->valueLabel->setObjectName("value-label");
 
-    auto labelLayout = new QVBoxLayout();
-    labelLayout->setSpacing(5);
-    labelLayout->setContentsMargins(0, 0, 0, 0);
-    labelLayout->addWidget(this->dateLabel, 0, Qt::AlignmentFlag::AlignTop);
-    labelLayout->addWidget(this->valueLabel, 0, Qt::AlignmentFlag::AlignTop);
-    labelLayout->addStretch(1);
+    this->descriptionLayout->setText("Register Written");
+    this->descriptionLayout->setObjectName("description-label");
 
-    this->layout->setSpacing(1);
-    this->layout->addLayout(labelLayout);
+    auto subLabelLayout = new QHBoxLayout();
+    subLabelLayout->setSpacing(0);
+    subLabelLayout->setContentsMargins(0, 0, 0, 0);
+    subLabelLayout->addWidget(this->valueLabel, 0, Qt::AlignmentFlag::AlignLeft);
+    subLabelLayout->addStretch(1);
+    subLabelLayout->addWidget(this->descriptionLayout, 0, Qt::AlignmentFlag::AlignRight);
+
+    this->layout->setSpacing(5);
+    this->layout->addWidget(this->dateLabel, 0, Qt::AlignmentFlag::AlignTop);
+    this->layout->addLayout(subLabelLayout);
+    this->layout->addStretch(1);
 
     auto onClick = [this] {
         this->setSelected(true);

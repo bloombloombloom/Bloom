@@ -111,6 +111,11 @@ QPushButton:disabled {
     color: #8a8a8d;
 }
 
+#target-register-history-widget #register-history-item #description-label {
+    font-size: 13px;
+    color: #8a8a8d;
+}
+
 #target-register-history-widget #separator-label {
     /*font-style: italic;*/
     color: #8a8a8d;
