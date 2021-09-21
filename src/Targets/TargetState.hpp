@@ -4,7 +4,7 @@
 
 namespace Bloom::Targets
 {
-    enum class TargetState: int
+    enum class TargetState: std::uint8_t
     {
         UNKNOWN,
         STOPPED,
