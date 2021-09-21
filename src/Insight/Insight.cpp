@@ -54,6 +54,7 @@ void Insight::startup() {
 #ifndef BLOOM_DEBUG_BUILD
     QCoreApplication::addLibraryPath(QString::fromStdString(Paths::applicationDirPath() + "/plugins"));
 #endif
+
     this->application.setQuitOnLastWindowClosed(true);
     qRegisterMetaType<Bloom::Targets::TargetDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinDescriptor>();

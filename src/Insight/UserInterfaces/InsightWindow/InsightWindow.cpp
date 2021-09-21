@@ -1,6 +1,7 @@
 #include "InsightWindow.hpp"
 
 #include <QtSvg/QtSvg>
+#include <QDesktopServices>
 #include <utility>
 
 #include "UiLoader.hpp"

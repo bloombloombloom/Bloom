@@ -508,7 +508,7 @@ void Avr8::setPinState(const TargetPinDescriptor& pinDescriptor, const TargetPin
         ) {
             if (padDescriptor.gpioPortClearAddress != portSetAddress) {
                 /*
-                 * We don't need to read the register if the SET and CLEAR operations are performed via different
+                 * We don't need to read the SET register if the SET and CLEAR operations are performed via different
                  * registers.
                  *
                  * Instead, we can just set the appropriate bit against the SET register.

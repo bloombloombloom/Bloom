@@ -174,7 +174,7 @@
                                                     <item alignment="Qt::AlignCenter">
                                                         <widget class="QPushButton" name="apply-btn">
                                                             <property name="text">
-                                                                <string>Apply</string>
+                                                                <string>Write Value</string>
                                                             </property>
                                                         </widget>
                                                     </item>

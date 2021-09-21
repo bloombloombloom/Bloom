@@ -172,7 +172,6 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitsetWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitBodyWidget.cpp
-
 )
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)

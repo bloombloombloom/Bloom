@@ -569,7 +569,7 @@ void TargetController::onReadRegistersEvent(const Events::RetrieveRegistersFromT
         }
 
     } catch (const TargetOperationFailure& exception) {
-        Logger::error("Failed to read general registers from target - " + exception.getMessage());
+        Logger::error("Failed to read registers from target - " + exception.getMessage());
         this->emitErrorEvent(event.id);
     }
 }
