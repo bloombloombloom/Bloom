@@ -135,6 +135,8 @@ void TargetController::shutdown() {
         this->releaseHardware();
 
     } catch (const std::exception& exception) {
+        this->target.reset();
+        this->debugTool.reset();
         Logger::error("Failed to properly shutdown TargetController. Error: " + std::string(exception.what()));
     }
 
