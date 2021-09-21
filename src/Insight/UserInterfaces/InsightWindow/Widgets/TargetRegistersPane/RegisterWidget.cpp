@@ -82,6 +82,10 @@ void RegisterWidget::setRegisterValue(const Targets::TargetRegister& targetRegis
     this->valueLabel->style()->polish(this->valueLabel);
 
     this->valueLabel->setText(registerValue);
+
+    if (this->inspectWindow != nullptr) {
+        this->inspectWindow->setValue(targetRegister.value);
+    }
 }
 
 void RegisterWidget::clearInlineValue() {
@@ -101,6 +105,10 @@ void RegisterWidget::openInspectionWindow() {
         );
 
     } else {
+        if (this->currentRegister.has_value()) {
+            this->inspectWindow->setValue(this->currentRegister->value);
+        }
+
         this->inspectWindow->show();
     }
 }

@@ -64,5 +64,7 @@ namespace Bloom::Widgets
         );
 
         static bool registerSupported(const Targets::TargetRegisterDescriptor& descriptor);
+
+        void setValue(const Targets::TargetMemoryBuffer& registerValue);
     };
 }

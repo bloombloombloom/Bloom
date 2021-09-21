@@ -199,6 +199,12 @@ bool TargetRegisterInspectorWindow::registerSupported(const Targets::TargetRegis
     return (descriptor.size > 0 && descriptor.size <= 8);
 }
 
+void TargetRegisterInspectorWindow::setValue(const Targets::TargetMemoryBuffer& registerValue) {
+    this->registerValue = registerValue;
+    this->registerHistoryWidget->updateCurrentItemValue(this->registerValue);
+    this->registerHistoryWidget->selectCurrentItem();
+}
+
 void TargetRegisterInspectorWindow::onValueTextInputChanged(QString text) {
     if (text.isEmpty()) {
         text = "0";
@@ -276,9 +282,7 @@ void TargetRegisterInspectorWindow::refreshRegisterValue() {
 
             for (const auto& targetRegister : targetRegisters) {
                 if (targetRegister.descriptor == this->registerDescriptor) {
-                    this->registerValue = targetRegister.value;
-                    this->registerHistoryWidget->updateCurrentItemValue(this->registerValue);
-                    this->registerHistoryWidget->selectCurrentItem();
+                    this->setValue(targetRegister.value);
                 }
             }
         }
