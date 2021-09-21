@@ -4,7 +4,7 @@
 }
 
 QMainWindow {
-    background-color: #343532;
+    background-color: #373835;
 }
 
 

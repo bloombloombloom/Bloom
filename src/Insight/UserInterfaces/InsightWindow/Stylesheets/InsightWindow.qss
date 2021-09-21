@@ -5,7 +5,7 @@
 }
 
 QMainWindow {
-    background-color: #343532;
+    background-color: #373835;
 }
 
 #header {
@@ -15,7 +15,7 @@ QMainWindow {
     min-height: 25px;
     width: auto;
     border-top: 1px solid #41423f;
-    border-bottom: 1px solid #2b2b2b;
+    border-bottom: 1px solid #2F2F2D;
 }
 
 QMenuBar::item {
@@ -33,7 +33,7 @@ QMenuBar::item {
 }
 
 QMenuBar::item:pressed {
-    background-color: #335883;
+    background-color: #355A80;
 }
 
 QMenuBar {
@@ -50,7 +50,7 @@ QMenuBar {
 QMenu {
     margin: 0;
     padding: 0;
-    background-color: #343532;
+    background-color: #373835;
     color: #afb1b3;
     border: 1px solid #41423f;
     min-width: 200px;
@@ -63,7 +63,7 @@ QMenu::item {
 }
 
 QMenu::item:selected {
-    background-color: #335883;
+    background-color: #355A80;
 }
 
 QMenu::item:disabled {
@@ -204,8 +204,7 @@ QScrollBar::sub-line:vertical {
     max-width: 22px;
     background-color: transparent;
     height: auto;
-    border-right: 1px solid #313131;
-    border-right: 1px solid #2b2b2b;
+    border-right: 1px solid #2F2F2D;
     text-align: right;
 }
 
@@ -218,18 +217,18 @@ QScrollBar::sub-line:vertical {
 
 #left-side-menu-bar QToolButton:hover,
 #left-side-menu-bar QToolButton:checked {
-    background-color: #2B2B29;
+    background-color: #2F2F2D;
     border: none;
 }
 
 #left-panel-layout-container {
-    border-right: 1px solid #2b2b2b;
+    border-right: 1px solid #2F2F2D;
 }
 
 /* Target Registers Pane */
 #target-registers-side-pane #tool-bar {
-    background-color: #353C41;
-    border-bottom: 1px solid #2b2b2b;
+    background-color: #383F43;
+    border-bottom: 1px solid #2F2F2D;
 }
 
 #target-registers-side-pane #title {
@@ -253,8 +252,8 @@ QScrollBar::sub-line:vertical {
 }
 
 #target-registers-side-pane #search-bar {
-    background-color: #343532;
-    border-bottom: 1px solid #2b2b2b;
+    background-color: #373835;
+    border-bottom: 1px solid #2F2F2D;
 }
 
 #target-registers-side-pane #search-input {
@@ -277,7 +276,7 @@ QScrollBar::sub-line:vertical {
 
 #target-registers-side-pane #register-group-header[selected=true],
 #target-registers-side-pane #register-item[selected=true] {
-    background-color: #335883;
+    background-color: #355A80;
 }
 
 #target-registers-side-pane #register-item #value {

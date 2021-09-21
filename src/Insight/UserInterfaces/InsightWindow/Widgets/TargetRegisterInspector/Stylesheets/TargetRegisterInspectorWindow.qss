@@ -5,7 +5,7 @@
 }
 
 #target-register-inspector-window {
-    background-color: #343532;
+    background-color: #373835;
 }
 
 #register-name {
@@ -14,7 +14,7 @@
 
 #register-value-container,
 #register-details-container {
-    border: 1px solid #2b2b2b;
+    border: 1px solid #2F2F2D;
 }
 
 #register-value-text-input-container {
@@ -22,7 +22,7 @@
 }
 
 QLineEdit {
-    background-color: #2B2B29;
+    background-color: #2F2F2D;
     border: 1px solid #41423f;
     padding: 3px;
 }
@@ -65,12 +65,12 @@ QPushButton:disabled {
 
 /* RegisterHistoryWidget */
 #target-register-history-widget #container {
-    border: 1px solid #2b2b2b;
+    border: 1px solid #2F2F2D;
 }
 
 #target-register-history-widget #title-bar {
-    background-color: #353C41;
-    border-bottom: 1px solid #2b2b2b;
+    background-color: #383F43;
+    border-bottom: 1px solid #2F2F2D;
 }
 
 #target-register-history-widget #title {
@@ -88,7 +88,7 @@ QPushButton:disabled {
 
 #target-register-history-widget #current-item[selected=true],
 #target-register-history-widget #register-history-item[selected=true] {
-    background-color: #335883;
+    background-color: #355A80;
 }
 
 #target-register-history-widget #separator-widget {

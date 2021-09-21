@@ -29,11 +29,11 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
         bool hoverActive = false;
 
-        QColor defaultBodyColor = QColor("#918E86");
-        QColor vccBodyColor = QColor("#703736");
-        QColor gndBodyColor = QColor("#46484A");
-        QColor outputHighBodyColor = QColor("#3B6469");
-        QColor inputHighBodyColor = QColor("#7B5F31");
+        QColor defaultBodyColor = QColor("#83817B");
+        QColor vccBodyColor = QColor("#70383A");
+        QColor gndBodyColor = QColor("#484A4B");
+        QColor outputHighBodyColor = QColor("#3C5E62");
+        QColor inputHighBodyColor = QColor("#7B5E38");
 
         int disableAlphaLevel = 100;
 

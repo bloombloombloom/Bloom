@@ -12,7 +12,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 
     private:
         // These properties can be modified via Qt style sheets (see Stylesheets/QuadFlatPackage.qss)
-        QColor bodyColor = QColor("#918E86");
+        QColor bodyColor = QColor("#908D85");
         int disableAlphaLevel = 100;
 
     protected:
