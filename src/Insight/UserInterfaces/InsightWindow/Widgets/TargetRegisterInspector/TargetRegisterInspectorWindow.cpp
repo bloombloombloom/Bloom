@@ -47,8 +47,8 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
         )
     );
 
-    auto windowStylesheet = QFile(QString::fromStdString(
-        Paths::compiledResourcesPath()
+    auto windowStylesheet = QFile(
+        QString::fromStdString(Paths::compiledResourcesPath()
             + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss"
         )
     );
@@ -63,8 +63,11 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
 
     auto windowSize = QSize(
         840,
-        static_cast<int>(440 + ((BitsetWidget::HEIGHT + 20)
-            * std::ceil(static_cast<float>(this->registerValue.size()) / 2)))
+        static_cast<int>(
+            440
+            + ((BitsetWidget::HEIGHT + 20) * std::ceil(static_cast<float>(this->registerValue.size()) / 2))
+            + (!this->registerDescriptor.writable ? 50 : 0)
+        )
     );
     auto containerMargins = QMargins(15, 30, 15, 10);
 
@@ -122,6 +125,13 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
     );
 
     this->registerValueTextInput->setFixedWidth(BitsetWidget::WIDTH * 2);
+    if (!this->registerDescriptor.writable) {
+        this->registerValueTextInput->setDisabled(true);
+        this->applyButton->setVisible(false);
+
+        auto readOnlyIndicatorLabel = this->registerValueContainer->findChild<QLabel*>("read-only-indicator-label");
+        readOnlyIndicatorLabel->show();
+    }
 
     auto registerBitsetWidgetLayout = this->registerValueBitsetWidgetContainer->findChild<QVBoxLayout*>(
         "register-value-bitset-widget-layout"
@@ -250,10 +260,13 @@ void TargetRegisterInspectorWindow::onTargetStateChanged(TargetState newState) {
         this->refreshValueButton->setDisabled(true);
 
     } else if (this->targetState != TargetState::STOPPED && this->registerValueContainer->isEnabled()) {
-        this->registerValueTextInput->setDisabled(false);
         this->registerValueBitsetWidgetContainer->setDisabled(false);
-        this->applyButton->setDisabled(false);
         this->refreshValueButton->setDisabled(false);
+
+        if (this->registerDescriptor.writable) {
+            this->registerValueTextInput->setDisabled(false);
+            this->applyButton->setDisabled(false);
+        }
     }
 
     this->targetState = newState;

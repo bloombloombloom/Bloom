@@ -136,7 +136,23 @@
                                             <property name="spacing">
                                                 <number>20</number>
                                             </property>
-
+                                            <item alignment="Qt::AlignLeft">
+                                                <widget class="QLabel" name="read-only-indicator-label">
+                                                    <property name="visible">
+                                                        <bool>false</bool>
+                                                    </property>
+                                                    <property name="wordWrap">
+                                                        <bool>false</bool>
+                                                    </property>
+                                                    <property name="alignment">
+                                                        <enum>Qt::AlignLeft</enum>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>This register is configured as read-only - it cannot be manipulated via
+Insight.</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
                                             <item alignment="Qt::AlignLeft">
                                                 <widget class="QLineEdit" name="register-value-text-input"/>
                                             </item>
