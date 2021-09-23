@@ -57,7 +57,7 @@ void BitBodyWidget::paintEvent(QPaintEvent* event) {
 void BitBodyWidget::drawWidget(QPainter& painter) {
     painter.setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
 
-    auto bodyColor = QColor(this->bit == true ? "#7B5E38" : "#83817B");
+    auto bodyColor = QColor(this->bit == true ? "#7B5E38" : "#908D85");
 
     if (!this->isEnabled()) {
         bodyColor.setAlpha(100);

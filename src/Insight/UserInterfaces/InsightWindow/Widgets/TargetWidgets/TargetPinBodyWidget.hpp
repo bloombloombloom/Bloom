@@ -29,7 +29,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
         bool hoverActive = false;
 
-        QColor defaultBodyColor = QColor("#83817B");
+        QColor defaultBodyColor = QColor("#908D85");
         QColor vccBodyColor = QColor("#70383A");
         QColor gndBodyColor = QColor("#484A4B");
         QColor outputHighBodyColor = QColor("#3C5E62");
