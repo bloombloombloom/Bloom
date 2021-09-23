@@ -28,11 +28,15 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
     const Targets::TargetRegisterDescriptor& registerDescriptor,
     InsightWorker& insightWorker,
     TargetState currentTargetState,
-    std::optional<Targets::TargetMemoryBuffer> registerValue
+    std::optional<Targets::TargetMemoryBuffer> registerValue,
+    QWidget* parent
 ):
-registerDescriptor(registerDescriptor),
-insightWorker(insightWorker),
-registerValue(registerValue.value_or(Targets::TargetMemoryBuffer(registerDescriptor.size, 0))) {
+    QWidget(parent),
+    registerDescriptor(registerDescriptor),
+    insightWorker(insightWorker),
+    registerValue(registerValue.value_or(Targets::TargetMemoryBuffer(registerDescriptor.size, 0)))
+{
+    this->setWindowFlag(Qt::Window);
     auto registerName = QString::fromStdString(this->registerDescriptor.name.value()).toUpper();
     this->setObjectName("target-register-inspector-window");
     this->setWindowTitle("Inspect Register");
