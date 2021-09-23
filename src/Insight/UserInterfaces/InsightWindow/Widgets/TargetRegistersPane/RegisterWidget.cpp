@@ -110,7 +110,12 @@ void RegisterWidget::openInspectionWindow() {
             this->inspectWindow->setValue(this->currentRegister->value);
         }
 
-        this->inspectWindow->show();
+        if (!this->inspectWindow->isVisible()) {
+            this->inspectWindow->show();
+
+        } else {
+            this->inspectWindow->activateWindow();
+        }
     }
 }
 
