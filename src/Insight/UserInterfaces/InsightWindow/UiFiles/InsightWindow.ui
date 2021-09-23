@@ -3,7 +3,7 @@
     <widget class="QMainWindow" name="main-window">
         <property name="minimumHeight"><number>500</number></property>
         <property name="minimumWidth"><number>1000</number></property>
-        <property name="windowTitle"><string>Bloom</string></property>
+        <property name="windowTitle"><string>Bloom Insight</string></property>
         <property name="maximized"><bool>false</bool></property>
 
         <widget class="QMenuBar" name="menu-bar">
