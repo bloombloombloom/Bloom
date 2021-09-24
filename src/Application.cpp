@@ -49,8 +49,18 @@ int Application::run(const std::vector<std::string>& arguments) {
             this->insight->setApplicationConfig(this->applicationConfig);
             this->insight->setEnvironmentConfig(this->environmentConfig);
             this->insight->setInsightConfig(this->insightConfig);
-            this->insight->run();
-            Logger::debug("Insight closed");
+
+            /*
+             * Before letting Insight occupy the main thread, process any pending events that accumulated
+             * during startup.
+             */
+            this->applicationEventListener->dispatchCurrentEvents();
+
+            if (Thread::getThreadState() == ThreadState::READY) {
+                this->insight->run();
+                Logger::debug("Insight closed");
+            }
+
             this->shutdown();
             return EXIT_SUCCESS;
         }
