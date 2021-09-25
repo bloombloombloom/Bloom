@@ -1,51 +1,51 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-<qresource>
-    <!--
-    CAUTION: For aliases, please be sure to use the path of the file, relative to the Bloom project dir, but prefixed
-    with "/compiled/". See below for examples.
+    <qresource>
+        <!--
+        CAUTION: For aliases, please be sure to use the path of the file, relative to the Bloom project dir, but prefixed
+        with "/compiled/". See below for examples.
 
-    This is required because Bloom does not use compiled resources for debug builds. Instead, it will use the files
-    located in the Bloom project directory. See comment for BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE macro
-    in CMakeLists.txt for more.
-    -->
+        This is required because Bloom does not use compiled resources for debug builds. Instead, it will use the files
+        located in the Bloom project directory. See comment for BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE macro
+        in CMakeLists.txt for more.
+        -->
 
-    <!-- The contents of help.txt is presented to the user in response to the invocation of the help command -->
-    <file alias="/compiled/resources/help.txt">../resources/help.txt</file>
+        <!-- The contents of help.txt is presented to the user in response to the invocation of the help command -->
+        <file alias="/compiled/resources/help.txt">../resources/help.txt</file>
 
-    <!-- The bloom.template.json is a template configuration file that is used to initiate a new project, via the init command -->
-    <file alias="/compiled/resources/bloom.template.json">../resources/bloom.template.json</file>
+        <!-- The bloom.template.json is a template configuration file that is used to initiate a new project, via the init command -->
+        <file alias="/compiled/resources/bloom.template.json">../resources/bloom.template.json</file>
 
-    <!-- QT UI templates for Insight -->
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/TargetRegisterInspectorWindow.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/TargetRegisterInspectorWindow.ui</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui</file>
+        <!-- QT UI templates for Insight -->
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/TargetRegisterInspectorWindow.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/TargetRegisterInspectorWindow.ui</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui</file>
 
-    <!-- QT UI stylesheets for Insight -->
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss</file>
+        <!-- QT UI stylesheets for Insight -->
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss</file>
 
-    <!-- Icons for Insight -->
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg">./Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/RAM.svg">./Insight/UserInterfaces/InsightWindow/Images/RAM.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/collapse-all.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/collapse-all.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/expand-all.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/expand-all.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/arrow.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/arrow.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register-group.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register-group.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/search-registers.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/search-registers.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg</file>
-    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg</file>
-</qresource>
+        <!-- Icons for Insight -->
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg">./Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/RAM.svg">./Insight/UserInterfaces/InsightWindow/Images/RAM.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg">./Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/collapse-all.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/collapse-all.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/expand-all.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/expand-all.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/arrow.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/arrow.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register-group.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register-group.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/search-registers.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/search-registers.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg</file>
+    </qresource>
 </RCC>
