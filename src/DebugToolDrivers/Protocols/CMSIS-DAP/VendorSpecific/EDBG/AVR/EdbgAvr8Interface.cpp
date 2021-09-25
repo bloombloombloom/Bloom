@@ -660,7 +660,7 @@ void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
             return this->activatePhysical(true);
 
         } else {
-            throw Avr8CommandFailure("Activate physical interface command failed", response);
+            throw Avr8CommandFailure("AVR8 Activate physical interface command failed", response);
         }
     }
 
@@ -672,7 +672,7 @@ void EdbgAvr8Interface::deactivatePhysical() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("deactivate physical interface on AVR8 target command failed", response);
+        throw Avr8CommandFailure("AVR8 Deactivate physical interface command failed", response);
     }
 
     this->physicalInterfaceActivated = false;
@@ -693,7 +693,7 @@ void EdbgAvr8Interface::attach() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Attach AVR8 target command failed", response);
+        throw Avr8CommandFailure("AVR8 Attach command failed", response);
     }
 
     this->targetAttached = true;
@@ -712,7 +712,7 @@ void EdbgAvr8Interface::detach() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Detach AVR8 target command failed", response);
+        throw Avr8CommandFailure("AVR8 Detach command failed", response);
     }
 
     this->targetAttached = false;
@@ -760,7 +760,7 @@ void EdbgAvr8Interface::reset() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Reset AVR8 target command failed", response);
+        throw Avr8CommandFailure("AVR8 Reset target command failed", response);
     }
 }
 
@@ -769,7 +769,7 @@ void EdbgAvr8Interface::stop() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Stop AVR8 target command failed", response);
+        throw Avr8CommandFailure("AVR8 Stop target command failed", response);
     }
 
     if (this->getTargetState() == TargetState::RUNNING) {
@@ -782,7 +782,7 @@ void EdbgAvr8Interface::step() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Step AVR8 target command failed", response);
+        throw Avr8CommandFailure("AVR8 Step target command failed", response);
     }
 
     this->targetState = TargetState::RUNNING;
@@ -803,7 +803,7 @@ void EdbgAvr8Interface::disableDebugWire() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Disable debugWire AVR8 target command failed", response);
+        throw Avr8CommandFailure("AVR8 Disable debugWire command failed", response);
     }
 }
 
@@ -813,7 +813,7 @@ void EdbgAvr8Interface::run() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Run AVR8 command failed", response);
+        throw Avr8CommandFailure("AVR8 Run command failed", response);
     }
 
     this->targetState = TargetState::RUNNING;
@@ -826,7 +826,7 @@ void EdbgAvr8Interface::runTo(std::uint32_t address) {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Run-to AVR8 command failed", response);
+        throw Avr8CommandFailure("AVR8 Run-to command failed", response);
     }
 
     this->targetState = TargetState::RUNNING;
@@ -840,7 +840,7 @@ std::uint32_t EdbgAvr8Interface::getProgramCounter() {
     auto commandFrame = CommandFrames::Avr8Generic::GetProgramCounter();
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Get AVR8 program counter command failed", response);
+        throw Avr8CommandFailure("AVR8 Get program counter command failed", response);
     }
 
     return response.extractProgramCounter();
@@ -858,7 +858,7 @@ void EdbgAvr8Interface::setProgramCounter(std::uint32_t programCounter) {
     auto commandFrame = CommandFrames::Avr8Generic::SetProgramCounter(programCounter / 2);
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Set program counter command failed", response);
+        throw Avr8CommandFailure("AVR8 Set program counter command failed", response);
     }
 }
 
@@ -892,7 +892,7 @@ TargetSignature EdbgAvr8Interface::getDeviceId() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Get device ID command failed", response);
+        throw Avr8CommandFailure("AVR8 Get device ID command failed", response);
     }
 
     return response.extractSignature(this->physicalInterface);
@@ -903,7 +903,7 @@ void EdbgAvr8Interface::setBreakpoint(std::uint32_t address) {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Set software breakpoint command failed", response);
+        throw Avr8CommandFailure("AVR8 Set software breakpoint command failed", response);
     }
 }
 
@@ -912,7 +912,7 @@ void EdbgAvr8Interface::clearBreakpoint(std::uint32_t address) {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Clear AVR8 software breakpoint command failed", response);
+        throw Avr8CommandFailure("AVR8 Clear software breakpoint command failed", response);
     }
 }
 
@@ -921,7 +921,7 @@ void EdbgAvr8Interface::clearAllBreakpoints() {
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Clear all AVR8 software breakpoints command failed", response);
+        throw Avr8CommandFailure("AVR8 Clear all software breakpoints command failed", response);
     }
 }
 
@@ -1109,7 +1109,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Read memory AVR8 from target command failed", response);
+        throw Avr8CommandFailure("AVR8 Read memory command failed", response);
     }
 
     return response.getMemoryBuffer();
@@ -1128,7 +1128,7 @@ void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, 
 
     auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("Write memory AVR8 from target command failed", response);
+        throw Avr8CommandFailure("AVR8 Write memory command failed", response);
     }
 }
 

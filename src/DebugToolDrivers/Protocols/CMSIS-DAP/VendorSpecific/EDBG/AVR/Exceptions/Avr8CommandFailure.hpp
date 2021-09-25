@@ -55,7 +55,7 @@ namespace Bloom::Exceptions
             {0x81, "Not enough available resources"},
             {0x90, "Feature not available"},
             {0x91, "Command has not been implemented"},
-            {0xFF, "Unknown error"},
+            {0xFF, "Unknown error reported by EDBG device"},
         });
 
     public:
