@@ -8,7 +8,7 @@
 
       "target": {
         "name": "avr8",
-        "physicalInterface": "debugWire"
+        "physicalInterface": "debug-wire"
       },
 
       "debugServer": {

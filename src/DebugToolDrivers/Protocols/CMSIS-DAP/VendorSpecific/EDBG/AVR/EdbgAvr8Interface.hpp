@@ -126,6 +126,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
             return std::map<std::string, PhysicalInterface>({
                 {"debugwire", PhysicalInterface::DEBUG_WIRE},
+                {"debug-wire", PhysicalInterface::DEBUG_WIRE},
                 {"pdi", PhysicalInterface::PDI},
                 {"jtag", PhysicalInterface::JTAG},
                 {"updi", PhysicalInterface::UPDI},
