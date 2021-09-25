@@ -40,11 +40,10 @@ Bloom and thus the connected target. The DebugServer runs on a dedicated thread.
 See source code in src/DebugServer/ for more.
 
 ##### Insight
-Insight is a graphical user interface that provides insight of the target's GPIO pin states. It also enables GPIO
-pin manipulation. Insight occupies Bloom's main thread and employs a single worker thread for background tasks. 
-Unlike other components within Bloom, Insight relies heavily on the Qt framework for its GUI capabilities and 
-other useful utilities.
-See source code in src/Insight/ for more.
+Insight is a graphical user interface that provides insight into the connected target. It presents the target's GPIO 
+pin states & registers, along with the ability to manipulate them. Insight occupies Bloom's main thread and employs a 
+single worker thread for background tasks. Unlike other components within Bloom, Insight relies heavily on the Qt 
+framework for its GUI capabilities and other useful utilities. See source code in src/Insight/ for more.
 
 ##### SignalHandler
 The SignalHandler is responsible for handling any UNIX signals issued to Bloom. It runs on a dedicated thread. All
