@@ -7,7 +7,8 @@
 #include <set>
 #include <QDesktopServices>
 
-#include "../../UiLoader.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Helpers/DateTime.hpp"
@@ -17,8 +18,8 @@
 #include "src/Insight/InsightWorker/Tasks/WriteTargetRegister.hpp"
 
 using namespace Bloom::Widgets;
-using namespace Bloom::Exceptions;
 
+using Bloom::Exceptions::Exception;
 using Bloom::Targets::TargetRegisterDescriptor;
 using Bloom::Targets::TargetRegisterDescriptors;
 using Bloom::Targets::TargetRegisterType;
@@ -350,9 +351,16 @@ void TargetRegisterInspectorWindow::applyChanges() {
         this->registerHistoryWidget->selectCurrentItem();
     });
 
-    this->connect(writeRegisterTask, &InsightWorkerTask::failed, this, [this] {
-        // TODO: Let the user know the write failed.
+    this->connect(writeRegisterTask, &InsightWorkerTask::failed, this, [this] (QString errorMessage) {
         this->registerValueContainer->setDisabled(false);
+        auto errorDialogue = new ErrorDialogue(
+            "Error",
+            "Failed to update " + QString::fromStdString(
+                this->registerDescriptor.name.value_or("")
+            ).toUpper() + " register value - " + errorMessage,
+            this
+        );
+        errorDialogue->show();
     });
 
     this->insightWorker.queueTask(writeRegisterTask);

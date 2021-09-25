@@ -22,6 +22,7 @@
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui</file>
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/TargetRegisterInspectorWindow.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/TargetRegisterInspectorWindow.ui</file>
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui</file>
 
     <!-- QT UI stylesheets for Insight -->
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss</file>
@@ -29,6 +30,7 @@
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss</file>
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss</file>
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss</file>
 
     <!-- Icons for Insight -->
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg">./Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg</file>
@@ -44,5 +46,6 @@
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg</file>
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/search-registers.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/search-registers.svg</file>
     <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg</file>
+    <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg</file>
 </qresource>
 </RCC>

@@ -1,0 +1,15 @@
+* {
+    color: #afb1b3;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+}
+
+#error-dialogue {
+    background-color: #373835;
+}
+
+QPushButton {
+    background-color: #373937;
+    border: 1px solid #484A49;
+    padding: 3px 25px;
+}
