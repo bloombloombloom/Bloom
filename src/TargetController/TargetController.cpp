@@ -439,9 +439,10 @@ void TargetController::fireTargetEvents() {
     }
 }
 
-void TargetController::emitErrorEvent(int correlationId) {
+void TargetController::emitErrorEvent(int correlationId, const std::string& errorMessage) {
     auto errorEvent = std::make_shared<Events::TargetControllerErrorOccurred>();
     errorEvent->correlationId = correlationId;
+    errorEvent->errorMessage = errorMessage;
     this->eventManager.triggerEvent(errorEvent);
 }
 
@@ -532,7 +533,7 @@ void TargetController::onStepTargetExecutionEvent(const Events::StepTargetExecut
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to step execution on target - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -553,7 +554,7 @@ void TargetController::onResumeTargetExecutionEvent(const Events::ResumeTargetEx
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to resume execution on target - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -570,7 +571,7 @@ void TargetController::onReadRegistersEvent(const Events::RetrieveRegistersFromT
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to read registers from target - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -586,7 +587,7 @@ void TargetController::onWriteRegistersEvent(const Events::WriteRegistersToTarge
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to write registers to target - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -600,7 +601,7 @@ void TargetController::onReadMemoryEvent(const Events::RetrieveMemoryFromTarget&
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to read memory from target - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -656,7 +657,7 @@ void TargetController::onWriteMemoryEvent(const Events::WriteMemoryToTarget& eve
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to write memory to target - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -670,7 +671,7 @@ void TargetController::onSetBreakpointEvent(const Events::SetBreakpointOnTarget&
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to set breakpoint on target - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -684,7 +685,7 @@ void TargetController::onRemoveBreakpointEvent(const Events::RemoveBreakpointOnT
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to remove breakpoint on target - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -704,7 +705,7 @@ void TargetController::onSetProgramCounterEvent(const Events::SetProgramCounterO
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to set program counter on target - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -738,7 +739,7 @@ void TargetController::onRetrieveTargetPinStatesEvent(const Events::RetrieveTarg
 
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to retrieve target pin states - " + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }
 
@@ -764,6 +765,6 @@ void TargetController::onSetPinStateEvent(const Events::SetTargetPinState& event
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to set target pin state for pin " + event.pinDescriptor.name + " - "
             + exception.getMessage());
-        this->emitErrorEvent(event.id);
+        this->emitErrorEvent(event.id, exception.getMessage());
     }
 }

@@ -55,6 +55,9 @@ namespace Bloom
             const Events::SharedEventPointerNonConst<TriggerEventType> event,
             std::optional<std::chrono::milliseconds> timeout = {}
         ) {
+            using Bloom::Events::SharedEventPointer;
+            using Bloom::Events::TargetControllerErrorOccurred;
+
             using ResponseEventType = typename TriggerEventType::TargetControllerResponseType;
 
             bool deRegisterEventType = false;
@@ -68,7 +71,7 @@ namespace Bloom
 
             auto responseEvent = this->eventListener.waitForEvent<
                 ResponseEventType,
-                Events::TargetControllerErrorOccurred
+                TargetControllerErrorOccurred
             >(timeout.value_or(this->defaultTimeout), event->id);
 
             if (deRegisterEventType) {
@@ -79,11 +82,17 @@ namespace Bloom
                 throw Bloom::Exceptions::Exception("Timed out waiting for response from TargetController.");
             }
 
-            if (!std::holds_alternative<Events::SharedEventPointer<ResponseEventType>>(responseEvent.value())) {
-                throw Bloom::Exceptions::Exception("Unexpected response from TargetController");
+            if (!std::holds_alternative<SharedEventPointer<ResponseEventType>>(responseEvent.value())) {
+                if (std::holds_alternative<SharedEventPointer<TargetControllerErrorOccurred>>(responseEvent.value())) {
+                    auto& tcErrorEvent = std::get<SharedEventPointer<TargetControllerErrorOccurred>>(responseEvent.value());
+                    throw Bloom::Exceptions::Exception(tcErrorEvent->errorMessage);
+
+                } else {
+                    throw Bloom::Exceptions::Exception("Unexpected response from TargetController");
+                }
             }
 
-            return std::get<Events::SharedEventPointer<ResponseEventType>>(responseEvent.value());
+            return std::get<SharedEventPointer<ResponseEventType>>(responseEvent.value());
         }
 
     public:

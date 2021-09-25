@@ -251,8 +251,9 @@ namespace Bloom
          * a correlation ID matching the ID of the event that triggered the handler.
          *
          * @param correlationId
+         * @param errorMessage
          */
-        void emitErrorEvent(int correlationId);
+        void emitErrorEvent(int correlationId, const std::string& errorMessage);
 
         Targets::TargetDescriptor& getTargetDescriptor();
 
