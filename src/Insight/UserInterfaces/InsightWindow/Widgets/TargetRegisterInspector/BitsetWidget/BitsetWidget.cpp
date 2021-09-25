@@ -55,10 +55,10 @@ void BitsetWidget::drawWidget(QPainter& painter) {
     auto byteHex = "0x" + QString::number(this->byte, 16).toUpper();
 
     painter.setPen(QColor("#474747"));
-    constexpr int labelHeight = 10;
+    constexpr int labelHeight = 11;
     int containerWidth = this->width();
     constexpr int charWidth = 6;
-    auto labelWidth = (charWidth * byteHex.size()) + 13;
+    auto labelWidth = static_cast<int>(charWidth * byteHex.size()) + 13;
     auto width = (containerWidth - (BitWidget::WIDTH) - labelWidth) / 2;
 
     painter.drawLine(QLine(
@@ -91,10 +91,13 @@ void BitsetWidget::drawWidget(QPainter& painter) {
 
     painter.setPen(QColor("#8a8a8d"));
     painter.drawText(
-        static_cast<int>(
-            std::floor((BitWidget::WIDTH / 2) + width + ((labelWidth - (byteHex.size() * charWidth)) / 2))
+        QRect(
+            static_cast<int>((BitWidget::WIDTH / 2) + width),
+            BitWidget::HEIGHT + BitsetWidget::VALUE_GRAPHIC_HEIGHT - (labelHeight / 2),
+            labelWidth,
+            labelHeight
         ),
-        BitWidget::HEIGHT + BitsetWidget::VALUE_GRAPHIC_HEIGHT + (labelHeight / 2),
+        Qt::AlignCenter,
         byteHex
     );
 }
