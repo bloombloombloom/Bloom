@@ -195,6 +195,15 @@ add_custom_command(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.qrc
 )
 
+# Copy resources/fonts into build/resources/Fonts
+add_custom_command(
+    TARGET Bloom
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts
+    ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/Fonts
+)
+
 # Copy resources/udevrules/99-bloom.rules to build/resources/UDevRules/99-bloom.rules
 add_custom_command(
     TARGET Bloom

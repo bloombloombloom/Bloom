@@ -2,6 +2,7 @@
 
 #include <typeindex>
 #include <QTimer>
+#include <QFontDatabase>
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Logger/Logger.hpp"
@@ -61,6 +62,50 @@ void Insight::startup() {
     qRegisterMetaType<Bloom::Targets::TargetPinState>();
     qRegisterMetaType<Bloom::Targets::TargetState>();
     qRegisterMetaType<std::map<int, Bloom::Targets::TargetPinState>>();
+
+    // Load Ubuntu fonts
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-B.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-BI.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-C.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-L.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-LI.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-M.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-MI.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/UbuntuMono-B.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/UbuntuMono-BI.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/UbuntuMono-R.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/UbuntuMono-RI.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-R.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-RI.ttf")
+    );
+    QFontDatabase::addApplicationFont(
+        QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-Th.ttf")
+    );
 
     /*
      * We can't run our own event loop here - we have to use Qt's event loop. But we still need to be able to
