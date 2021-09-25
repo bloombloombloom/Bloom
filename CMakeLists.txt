@@ -6,12 +6,6 @@ set(CMAKE_VERBOSE_MAKEFILE off)
 # Create directory for generated sources
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/Generated)
 
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources/udevrules/99-bloom.rules
-    ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/UDevRules/99-bloom.rules
-    COPYONLY
-)
-
 set(CMAKE_CXX_STANDARD 20)
 set(ENABLE_SANITIZERS off)
 
@@ -199,6 +193,15 @@ add_custom_command(
     COMMAND
     rcc -o ${CMAKE_CURRENT_SOURCE_DIR}/src/Generated/resources.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.qrc
+)
+
+# Copy resources/udevrules/99-bloom.rules to build/resources/UDevRules/99-bloom.rules
+add_custom_command(
+    TARGET Bloom
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/udevrules/99-bloom.rules
+    ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/UDevRules/99-bloom.rules
 )
 
 target_link_libraries(Bloom -static-libgcc -static-libstdc++)
