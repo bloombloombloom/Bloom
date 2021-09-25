@@ -34,13 +34,13 @@ QLineEdit:disabled {
 
 QPushButton {
     background-color: #373937;
-    border: 1px solid #41423f;
+    border: 1px solid #484A49;
     padding: 3px 25px;
 }
 
 #apply-btn {
     background-color: #353C41;
-    border: 1px solid #3e474c;
+    border: 1px solid #454C52;
 }
 
 QPushButton:disabled {
