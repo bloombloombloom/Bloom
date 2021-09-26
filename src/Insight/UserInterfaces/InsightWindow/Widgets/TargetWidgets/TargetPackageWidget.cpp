@@ -60,7 +60,7 @@ void TargetPackageWidget::updatePinStates(const Targets::TargetPinStateMappingTy
         }
     }
 
-    this->repaint();
+    this->update();
 }
 
 void TargetPackageWidget::onTargetStateChanged(TargetState newState) {
