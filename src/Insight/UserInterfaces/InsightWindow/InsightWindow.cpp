@@ -363,7 +363,6 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
     } else if (variant->package == TargetPackage::QFP || variant->package == TargetPackage::QFN) {
         this->targetPackageWidget = new InsightTargetWidgets::Qfp::QuadFlatPackageWidget(
             *variant,
-            this,
             this->insightWorker,
             this->ioContainerWidget
         );

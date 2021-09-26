@@ -29,7 +29,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 
     public:
         static const int PIN_WIDGET_LAYOUT_PADDING = 46;
-        static const int PIN_WIDGET_SPACING = 8;
+        static const int WIDTH_SPACING = 8;
         static const int MAXIMUM_LABEL_COUNT = 3;
         static const int LABEL_HEIGHT = 20;
         static const int MAXIMUM_LABEL_WIDTH = PinBodyWidget::WIDTH;

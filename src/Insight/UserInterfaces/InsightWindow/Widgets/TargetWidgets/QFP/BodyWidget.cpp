@@ -23,13 +23,13 @@ void BodyWidget::drawWidget(QPainter& painter) {
     painter.setPen(Qt::PenStyle::NoPen);
     painter.setBrush(targetBodyColor);
 
-    auto containerGeometry = this->geometry();
-    auto targetBodyWidth = containerGeometry.width() - 16;
-    auto targetBodyHeight = containerGeometry.height() - 16;
+    const auto containerSize = this->size();
+    auto targetBodyWidth = containerSize.width() - 16;
+    auto targetBodyHeight = containerSize.height() - 16;
 
     auto targetBodyPoint = QPoint(
-        (containerGeometry.width() / 2) - (targetBodyWidth / 2),
-        (containerGeometry.height() / 2) - (targetBodyHeight / 2)
+        (containerSize.width() / 2) - (targetBodyWidth / 2),
+        (containerSize.height() / 2) - (targetBodyHeight / 2)
     );
 
     painter.drawRect(

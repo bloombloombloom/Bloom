@@ -27,14 +27,9 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         QVBoxLayout* leftPinLayout = nullptr;
         BodyWidget* bodyWidget = nullptr;
 
-    protected:
-        void paintEvent(QPaintEvent* event) override;
-        void drawWidget(QPainter& painter);
-
     public:
         QuadFlatPackageWidget(
             const Targets::TargetVariant& targetVariant,
-            QObject* insightWindowObj,
             InsightWorker& insightWorker,
             QWidget* parent
         );
