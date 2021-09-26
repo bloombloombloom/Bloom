@@ -1,6 +1,5 @@
 #include "DualInlinePackageWidget.hpp"
 
-#include <QPainter>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <vector>
@@ -8,8 +7,6 @@
 #include <QFile>
 
 #include "../../../InsightWindow.hpp"
-#include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
 #include "src/Helpers/Paths.hpp"
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
@@ -21,7 +18,6 @@ using Bloom::Targets::TargetVariant;
 
 DualInlinePackageWidget::DualInlinePackageWidget(
     const TargetVariant& targetVariant,
-    QObject* insightWindowObj,
     InsightWorker& insightWorker,
     QWidget* parent
 ): TargetPackageWidget(targetVariant, insightWorker, parent) {
@@ -39,13 +35,10 @@ DualInlinePackageWidget::DualInlinePackageWidget(
     this->layout->setContentsMargins(0, 0, 0, 0);
 
     this->topPinLayout = new QHBoxLayout();
-    this->topPinLayout->setSpacing(8);
+    this->topPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
     this->topPinLayout->setDirection(QBoxLayout::Direction::RightToLeft);
     this->bottomPinLayout = new QHBoxLayout();
-    this->bottomPinLayout->setSpacing(8);
-
-    auto insightWindow = qobject_cast<InsightWindow*>(insightWindowObj);
-    assert(insightWindow != nullptr);
+    this->bottomPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
 
     for (const auto& [targetPinNumber, targetPinDescriptor]: targetVariant.pinDescriptorsByNumber) {
         auto pinWidget = new PinWidget(targetPinDescriptor, targetVariant, insightWorker, this);
@@ -64,64 +57,29 @@ DualInlinePackageWidget::DualInlinePackageWidget(
     this->layout->addLayout(this->bottomPinLayout);
     this->setLayout(this->layout);
 
-    auto insightWindowWidget = this->window();
-    assert(insightWindowWidget != nullptr);
+    const auto bodyWidgetWidth = ((PinWidget::MINIMUM_WIDTH + PinWidget::WIDTH_SPACING)
+        * static_cast<int>(this->pinWidgets.size() / 2)) - PinWidget::WIDTH_SPACING + 46;
+    const auto bodyWidgetHeight = 150;
 
-    insightWindowWidget->setMinimumHeight(540);
-    insightWindowWidget->setMinimumWidth(1100);
-}
+    const auto width = bodyWidgetWidth;
+    const auto height = (PinWidget::MAXIMUM_HEIGHT * 2) + bodyWidgetHeight + (8 * 3);
 
-void DualInlinePackageWidget::paintEvent(QPaintEvent* event) {
-//    Logger::debug("Drawing main package widget");
-
-    auto painter = QPainter(this);
-    this->drawWidget(painter);
-}
-
-void DualInlinePackageWidget::resizeEvent(QResizeEvent* event) {
-//    Logger::debug("RESIZE EVENT");
-}
-
-void DualInlinePackageWidget::drawWidget(QPainter& painter) {
-    auto parentWidget = this->parentWidget();
-
-    if (parentWidget == nullptr) {
-        throw Exception("DualInlinePackageWidget requires a parent widget");
-    }
-
-    auto parentContainerHeight = parentWidget->height();
-    auto parentContainerWidth = parentWidget->width();
-
-    auto width = ((PinWidget::MINIMUM_WIDTH + 8) * static_cast<int>(this->pinWidgets.size() / 2)) + 46;
-
+    this->bodyWidget->setGeometry(0, PinWidget::MAXIMUM_HEIGHT + 8, width, bodyWidgetHeight);
     this->topPinLayout->setGeometry(QRect(0, 0, width, PinWidget::MAXIMUM_HEIGHT));
-    auto bodyGeometry = QRect(0, this->topPinLayout->geometry().height() + 8, width, this->bodyWidget->height());
-    this->bodyWidget->setGeometry(bodyGeometry);
     this->bottomPinLayout->setGeometry(
         QRect(
             0,
-            bodyGeometry.top() + bodyGeometry.height() + 8,
+            (PinWidget::MAXIMUM_HEIGHT + bodyWidgetHeight + (8 * 2)),
             width,
             PinWidget::MAXIMUM_HEIGHT
         )
     );
-    this->topPinLayout->setContentsMargins(
-        static_cast<int>(width * 0.04),
-        0,
-        static_cast<int>(width * 0.04),
-        0
-    );
-    this->bottomPinLayout->setContentsMargins(
-        static_cast<int>(width * 0.04),
-        0,
-        static_cast<int>(width * 0.04),
-        0
-    );
+    this->topPinLayout->setContentsMargins(23, 0, 23, 0);
+    this->bottomPinLayout->setContentsMargins( 23, 0, 23, 0);
 
-    auto height = (PinWidget::MAXIMUM_HEIGHT * 2) + bodyGeometry.height() + (8 * 3);
     this->setGeometry(
-        (parentContainerWidth / 2) - (width / 2),
-        (parentContainerHeight / 2) - (height / 2),
+        (parent->width() / 2) - (width / 2),
+        (parent->height() / 2) - (height / 2),
         width,
         height
     );

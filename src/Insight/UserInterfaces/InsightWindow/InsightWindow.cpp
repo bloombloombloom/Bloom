@@ -356,7 +356,6 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
     ) {
         this->targetPackageWidget = new InsightTargetWidgets::Dip::DualInlinePackageWidget(
             *variant,
-            this,
             this->insightWorker,
             this->ioContainerWidget
         );

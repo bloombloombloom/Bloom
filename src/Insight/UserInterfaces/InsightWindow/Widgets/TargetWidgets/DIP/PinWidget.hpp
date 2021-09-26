@@ -28,6 +28,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
 
     public:
         static const int MINIMUM_WIDTH = 30;
+        static const int WIDTH_SPACING = 8;
         static const int MAXIMUM_LABEL_COUNT = 3;
         static const int LABEL_HEIGHT = 20;
         static const int MAXIMUM_HEIGHT = PinBodyWidget::HEIGHT

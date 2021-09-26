@@ -24,15 +24,9 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         QHBoxLayout* bottomPinLayout = nullptr;
         BodyWidget* bodyWidget = nullptr;
 
-    protected:
-        void paintEvent(QPaintEvent* event) override;
-        void resizeEvent(QResizeEvent* event) override;
-        void drawWidget(QPainter& painter);
-
     public:
         DualInlinePackageWidget(
             const Targets::TargetVariant& targetVariant,
-            QObject* insightWindowObj,
             InsightWorker& insightWorker,
             QWidget* parent
         );
