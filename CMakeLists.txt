@@ -139,6 +139,7 @@ add_executable(Bloom
     src/Insight/InsightWorker/Tasks/SetTargetPinState.cpp
 
     # Target package widgets
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidgetContainer.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinBodyWidget.cpp

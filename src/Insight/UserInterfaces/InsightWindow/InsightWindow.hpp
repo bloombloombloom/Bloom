@@ -13,6 +13,7 @@
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
+#include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
 #include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
 #include "AboutWindow.hpp"
@@ -48,7 +49,7 @@ namespace Bloom
         Widgets::TargetRegistersPaneWidget* targetRegistersSidePane = nullptr;
         QToolButton* targetRegistersButton = nullptr;
 
-        QWidget* ioContainerWidget = nullptr;
+        Widgets::InsightTargetWidgets::TargetPackageWidgetContainer* ioContainerWidget = nullptr;
         QLabel* ioUnavailableWidget = nullptr;
         Widgets::InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
 

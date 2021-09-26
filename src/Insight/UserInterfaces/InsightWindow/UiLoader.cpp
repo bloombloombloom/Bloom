@@ -8,7 +8,7 @@
 #include "Widgets/SvgToolButton.hpp"
 #include "Widgets/ExpandingWidget.hpp"
 #include "Widgets/ExpandingHeightScrollAreaWidget.hpp"
-#include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
+#include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -66,6 +66,15 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
             "SvgToolButton",
             [this](QWidget* parent, const QString& name) {
                 auto widget = new SvgToolButton(parent);
+                widget->setObjectName(name);
+                widget->setStyleSheet(parent->styleSheet());
+                return widget;
+            }
+        },
+        {
+            "TargetPackageWidgetContainer",
+            [this](QWidget* parent, const QString& name) {
+                auto widget = new InsightTargetWidgets::TargetPackageWidgetContainer(parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;

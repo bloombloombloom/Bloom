@@ -64,7 +64,9 @@ InsightWindow::InsightWindow(
             + "/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg"
         )
     ));
-    this->ioContainerWidget = this->mainWindowWidget->findChild<QWidget*>("io-container");
+    this->ioContainerWidget = this->mainWindowWidget->findChild<InsightTargetWidgets::TargetPackageWidgetContainer*>(
+        "io-container"
+    );
     this->ioUnavailableWidget = this->mainWindowWidget->findChild<QLabel*>("io-inspection-unavailable");
     this->mainMenuBar = this->mainWindowWidget->findChild<QMenuBar*>("menu-bar");
 
@@ -345,6 +347,7 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
         this->targetPackageWidget->hide();
         this->targetPackageWidget->deleteLater();
         this->targetPackageWidget = nullptr;
+        this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
     }
 
     this->selectedVariant = variant;
@@ -369,6 +372,7 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
     }
 
     if (this->targetPackageWidget != nullptr) {
+        this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
         this->targetPackageWidget->setTargetState(this->targetState);
 
         if (this->targetState == TargetState::STOPPED) {
@@ -378,6 +382,13 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
                 }
             });
         }
+
+        this->mainWindowWidget->setMinimumSize(
+            this->targetPackageWidget->width() + 500,
+            this->targetPackageWidget->height() + 150
+        );
+
+        this->ioContainerWidget->resize(this->ioContainerWidget->size());
 
         this->targetPackageWidget->show();
     }

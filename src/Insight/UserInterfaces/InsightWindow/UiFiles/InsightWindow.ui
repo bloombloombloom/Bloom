@@ -209,7 +209,7 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QWidget" name="io-container">
+                                <widget class="TargetPackageWidgetContainer" name="io-container">
                                     <layout class="QHBoxLayout">
                                         <item alignment="Qt::AlignHCenter">
                                             <widget class="QLabel" name="io-inspection-unavailable">
