@@ -4,12 +4,15 @@
 #include <QApplication>
 
 #include "src/Helpers/Thread.hpp"
-#include "InsightWorker/InsightWorker.hpp"
+#include "src/TargetController/TargetControllerConsole.hpp"
+#include "src/Helpers/Paths.hpp"
 #include "src/ApplicationConfig.hpp"
+
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
+
+#include "InsightWorker/InsightWorker.hpp"
 #include "UserInterfaces/InsightWindow/InsightWindow.hpp"
-#include "src/TargetController/TargetControllerConsole.hpp"
 
 namespace Bloom
 {
@@ -67,6 +70,9 @@ namespace Bloom
         application(
             (
                 QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, false),
+#ifndef BLOOM_DEBUG_BUILD
+                QCoreApplication::addLibraryPath(QString::fromStdString(Paths::applicationDirPath() + "/plugins")),
+#endif
                 QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
             )
         ) {};
