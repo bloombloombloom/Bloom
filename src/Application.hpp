@@ -29,7 +29,7 @@ namespace Bloom
     class Application: public Thread
     {
     public:
-        static const inline std::string VERSION_STR = "0.3.0";
+        static const inline std::string VERSION_STR = "0.4.0";
 
     private:
         /**

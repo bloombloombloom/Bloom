@@ -367,6 +367,5 @@ void TargetRegisterInspectorWindow::applyChanges() {
 }
 
 void TargetRegisterInspectorWindow::openHelpPage() {
-//    QDesktopServices::openUrl(QUrl("https://bloom.oscillate.io/docs/register-inspection"));
-    QDesktopServices::openUrl(QUrl("http://bloom.local/docs/register-inspection"));
+    QDesktopServices::openUrl(QUrl("https://bloom.oscillate.io/docs/register-inspection"));
 }
