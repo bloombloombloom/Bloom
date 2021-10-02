@@ -1,6 +1,7 @@
+#include "RemoveBreakpoint.hpp"
+
 #include <QtCore/QString>
 
-#include "RemoveBreakpoint.hpp"
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
 
 using namespace Bloom::DebugServers::Gdb::CommandPackets;

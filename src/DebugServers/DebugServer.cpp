@@ -1,6 +1,7 @@
+#include "DebugServer.hpp"
+
 #include <variant>
 
-#include "DebugServer.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Logger/Logger.hpp"
 

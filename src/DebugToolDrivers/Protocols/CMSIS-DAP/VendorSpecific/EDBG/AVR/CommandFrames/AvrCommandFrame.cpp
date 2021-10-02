@@ -1,6 +1,6 @@
-#include <math.h>
-
 #include "AvrCommandFrame.hpp"
+
+#include <math.h>
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
 

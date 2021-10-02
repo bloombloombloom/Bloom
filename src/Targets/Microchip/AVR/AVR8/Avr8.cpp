@@ -1,3 +1,5 @@
+#include "Avr8.hpp"
+
 #include <cstdint>
 #include <QtCore>
 #include <QJsonDocument>
@@ -5,7 +7,6 @@
 #include <bitset>
 #include <limits>
 
-#include "Avr8.hpp"
 #include "PadDescriptor.hpp"
 #include "PhysicalInterface.hpp"
 #include "src/Logger/Logger.hpp"

@@ -1,6 +1,7 @@
+#include "Logger.hpp"
+
 #include <iostream>
 #include <thread>
-#include "Logger.hpp"
 
 using namespace Bloom;
 

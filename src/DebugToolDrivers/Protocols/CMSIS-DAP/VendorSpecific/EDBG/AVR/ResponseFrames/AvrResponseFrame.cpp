@@ -1,6 +1,7 @@
+#include "AvrResponseFrame.hpp"
+
 #include <cstdint>
 
-#include "AvrResponseFrame.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;

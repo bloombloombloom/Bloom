@@ -1,6 +1,7 @@
+#include "AvrResponse.hpp"
+
 #include <cstdint>
 
-#include "AvrResponse.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
@@ -40,4 +41,3 @@ void AvrResponse::init(const std::vector<unsigned char>& rawResponse) {
 
     this->setResponsePacket(responsePacket);
 }
-

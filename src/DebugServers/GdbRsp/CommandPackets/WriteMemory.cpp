@@ -1,4 +1,5 @@
 #include "WriteMemory.hpp"
+
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
 
 using namespace Bloom::DebugServers::Gdb::CommandPackets;

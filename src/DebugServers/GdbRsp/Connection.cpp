@@ -1,15 +1,16 @@
+#include "Connection.hpp"
+
 #include <sys/socket.h>
 #include <sys/epoll.h>
 #include <cerrno>
 #include <fcntl.h>
 
-#include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
-#include "src/Exceptions/DebugServerInterrupted.hpp"
-#include "Connection.hpp"
+#include "CommandPackets/CommandPacketFactory.hpp"
 #include "Exceptions/ClientDisconnected.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"
-#include "CommandPackets/CommandPacketFactory.hpp"
+#include "src/Exceptions/Exception.hpp"
+#include "src/Exceptions/DebugServerInterrupted.hpp"
+#include "src/Logger/Logger.hpp"
 
 using namespace Bloom::DebugServers::Gdb;
 using namespace Bloom::DebugServers::Gdb::CommandPackets;

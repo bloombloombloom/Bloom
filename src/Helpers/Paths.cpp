@@ -1,10 +1,11 @@
+#include "Paths.hpp"
+
 #include <unistd.h>
 #include <array>
 #include <filesystem>
 #include <climits>
-#include <src/Exceptions/Exception.hpp>
 
-#include "Paths.hpp"
+#include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom;
 

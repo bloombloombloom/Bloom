@@ -1,4 +1,5 @@
 #include "WriteRegister.hpp"
+
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
 #include "src/Exceptions/Exception.hpp"
 

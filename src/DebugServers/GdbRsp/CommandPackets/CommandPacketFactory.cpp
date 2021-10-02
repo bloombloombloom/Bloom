@@ -1,8 +1,8 @@
+#include "CommandPacketFactory.hpp"
+
 #include <vector>
 #include <memory>
 #include <map>
-
-#include "CommandPacketFactory.hpp"
 
 using namespace Bloom::DebugServers::Gdb;
 using namespace Bloom::DebugServers::Gdb::CommandPackets;

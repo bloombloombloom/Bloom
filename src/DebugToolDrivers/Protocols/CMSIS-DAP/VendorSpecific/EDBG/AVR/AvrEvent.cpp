@@ -1,4 +1,5 @@
 #include "AvrEvent.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;

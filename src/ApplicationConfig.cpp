@@ -1,4 +1,5 @@
 #include "ApplicationConfig.hpp"
+
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 

@@ -1,5 +1,6 @@
-#include "src/Exceptions/Exception.hpp"
 #include "Response.hpp"
+
+#include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap;
 

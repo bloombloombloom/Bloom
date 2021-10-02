@@ -1,7 +1,8 @@
+#include "ContinueExecution.hpp"
+
 #include <cstdint>
 
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
-#include "ContinueExecution.hpp"
 
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 

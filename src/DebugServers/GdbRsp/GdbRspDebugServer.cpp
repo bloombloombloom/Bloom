@@ -1,8 +1,9 @@
+#include "GdbRspDebugServer.hpp"
+
 #include <sys/socket.h>
 #include <sys/epoll.h>
 #include <cstdint>
 
-#include "GdbRspDebugServer.hpp"
 #include "Exceptions/ClientDisconnected.hpp"
 #include "Exceptions/ClientNotSupported.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"

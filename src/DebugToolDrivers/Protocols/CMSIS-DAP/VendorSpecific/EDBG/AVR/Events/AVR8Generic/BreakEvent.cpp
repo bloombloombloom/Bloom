@@ -1,6 +1,7 @@
+#include "BreakEvent.hpp"
+
 #include <cstdint>
 
-#include "BreakEvent.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;

@@ -1,7 +1,8 @@
+#include "TargetDescriptionFile.hpp"
+
 #include <QJsonDocument>
 #include <QJsonArray>
 
-#include "TargetDescriptionFile.hpp"
 #include "Exceptions/TargetDescriptionParsingFailureException.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -461,7 +462,6 @@ void TargetDescriptionFile::loadPinouts() {
         }
     }
 }
-
 
 void TargetDescriptionFile::loadInterfaces() {
     auto interfaceNodes = this->deviceElement.elementsByTagName("interfaces").item(0).toElement()

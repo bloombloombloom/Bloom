@@ -1,7 +1,8 @@
+#include "SignalHandler.hpp"
+
 #include <csignal>
 #include <thread>
 
-#include "SignalHandler.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
