@@ -143,7 +143,7 @@ namespace Bloom
         void registerCallbackForEventType(std::function<void(const EventType&)> callback) {
             // We encapsulate the callback in a lambda to handle the downcasting.
             std::function<void(const Events::Event&)> parentCallback =
-                [callback] (const Events::Event& event) {
+                [callback](const Events::Event& event) {
                     // Downcast the event to the expected type
                     callback(dynamic_cast<const EventType&>(event));
                 }

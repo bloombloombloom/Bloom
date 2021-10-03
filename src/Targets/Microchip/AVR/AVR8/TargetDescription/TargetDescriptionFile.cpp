@@ -36,7 +36,7 @@ TargetDescriptionFile::TargetDescriptionFile(
             descriptionFilesJsonArray.begin(),
             descriptionFilesJsonArray.end(),
             std::back_inserter(matchingDescriptionFiles),
-            [&targetName] (const QJsonValue& value) {
+            [&targetName](const QJsonValue& value) {
                 auto pdTargetName = value.toObject().find("targetName")->toString().toLower().toStdString();
                 return !targetName.has_value() || (targetName.has_value() && targetName.value() == pdTargetName);
             }
@@ -66,7 +66,7 @@ TargetDescriptionFile::TargetDescriptionFile(
                 matchingDescriptionFiles.begin(),
                 matchingDescriptionFiles.end(),
                 std::back_inserter(targetNames),
-                [] (const QJsonValue& descriptionFile) {
+                [](const QJsonValue& descriptionFile) {
                     return QString("\"" + descriptionFile.toObject().find("targetName")->toString().toLower() + "\"");
                 }
             );
