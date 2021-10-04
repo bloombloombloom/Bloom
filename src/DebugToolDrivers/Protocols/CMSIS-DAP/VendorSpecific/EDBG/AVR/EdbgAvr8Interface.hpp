@@ -73,6 +73,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         Targets::Microchip::Avr::Avr8Bit::TargetParameters targetParameters;
 
         /**
+         * Some EDBG devices don't seem to operate correctly when actioning the masked memory read command. The data
+         * returned in response to the command appears to be completely incorrect. This appears to only occur with
+         * the MPLAB Snap device.
+         *
+         * Setting this flag to true will mean we implement our own masked memory read, in this driver, as opposed to
+         * employing the masked memory read command.
+         */
+        bool avoidMaskedMemoryRead = false;
+
+        /**
          * We keep record of the current target state for caching purposes. We'll only refresh the target state if the
          * target is running. If it has already stopped, then we assume it cannot transition to a running state without
          * an instruction from us.
@@ -450,6 +460,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     public:
         explicit EdbgAvr8Interface(EdbgInterface& edbgInterface)
         : edbgInterface(edbgInterface) {};
+
+        void setAvoidMaskedMemoryRead(bool avoidMaskedMemoryRead) {
+            this->avoidMaskedMemoryRead = avoidMaskedMemoryRead;
+        }
 
         /*
          * The public methods below implement the interface defined by the Avr8Interface class.

@@ -963,6 +963,48 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
     std::uint32_t bytes,
     std::set<std::uint32_t> excludedAddresses
 ) {
+    if (!excludedAddresses.empty() && this->avoidMaskedMemoryRead) {
+        /*
+         * Driver-side masked memory read.
+         *
+         * Split the read into numerous reads, whenever we encounter an excluded address.
+         *
+         * All values for bytes located at excluded addresses will be returned as 0x00 - this mirrors the behaviour
+         * of the masked read memory command.
+         */
+        auto output = TargetMemoryBuffer();
+        auto segmentStartAddress = address;
+
+        for (std::uint32_t i = 0; i < bytes; i++) {
+            const auto byteAddress = address + i;
+
+            if (excludedAddresses.contains(byteAddress)) {
+                auto segmentBuffer = this->readMemory(
+                    type,
+                    segmentStartAddress,
+                    (byteAddress - segmentStartAddress)
+                );
+
+                output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
+                output.emplace_back(0x00);
+
+                segmentStartAddress = byteAddress + 1;
+
+            } else if (i == (bytes - 1)) {
+                // Read final segment
+                auto segmentBuffer = this->readMemory(
+                    type,
+                    segmentStartAddress,
+                    (byteAddress - segmentStartAddress + 1)
+                );
+
+                output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
+            }
+        }
+
+        return output;
+    }
+
     if (type == Avr8MemoryType::FLASH_PAGE) {
         if (this->targetParameters.flashPageSize.value_or(0) < 1) {
             throw Exception("Missing/invalid flash page size parameter");
