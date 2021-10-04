@@ -1,7 +1,7 @@
-#include "Application.hpp"
-
 #include <string>
 #include <vector>
+
+#include "Application.hpp"
 
 using namespace Bloom;
 

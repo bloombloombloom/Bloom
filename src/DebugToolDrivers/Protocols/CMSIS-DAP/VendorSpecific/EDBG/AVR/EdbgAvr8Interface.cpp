@@ -970,7 +970,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
          * Split the read into numerous reads, whenever we encounter an excluded address.
          *
          * All values for bytes located at excluded addresses will be returned as 0x00 - this mirrors the behaviour
-         * of the masked read memory command.
+         * of the masked read memory EDBG command.
          */
         auto output = TargetMemoryBuffer();
         auto segmentStartAddress = address;
