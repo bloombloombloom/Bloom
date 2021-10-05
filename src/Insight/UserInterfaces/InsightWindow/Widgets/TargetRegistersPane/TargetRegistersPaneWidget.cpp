@@ -232,14 +232,6 @@ void TargetRegistersPaneWidget::refreshRegisterValues(std::optional<std::functio
     this->insightWorker.queueTask(readRegisterTask);
 }
 
-void TargetRegistersPaneWidget::clearInlineValues() {
-    for (const auto& registerGroupWidget : this->registerGroupWidgets) {
-        for (auto& [registerDescriptor, registerWidget] : registerGroupWidget->registerWidgetsMappedByDescriptor) {
-            registerWidget->clearInlineValue();
-        }
-    }
-}
-
 void TargetRegistersPaneWidget::activate() {
     this->show();
     this->activated = true;

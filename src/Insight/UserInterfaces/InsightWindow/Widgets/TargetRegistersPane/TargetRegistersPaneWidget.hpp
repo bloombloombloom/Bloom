@@ -64,20 +64,11 @@ namespace Bloom::Widgets
             PanelWidget *parent
         );
 
-        [[nodiscard]] QSize minimumSizeHint() const override {
-            return this->parent->size();
-        }
-
-        [[nodiscard]] QSize sizeHint() const override {
-            return this->minimumSizeHint();
-        }
-
         void filterRegisters(const QString& keyword);
         void collapseAllRegisterGroups();
         void expandAllRegisterGroups();
 
         void refreshRegisterValues(std::optional<std::function<void(void)>> callback = std::nullopt);
-        void clearInlineValues();
 
         void activate();
         void deactivate();

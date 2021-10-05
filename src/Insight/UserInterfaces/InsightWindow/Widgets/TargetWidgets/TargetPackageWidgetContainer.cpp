@@ -5,9 +5,7 @@
 using namespace Bloom;
 using namespace Bloom::Widgets::InsightTargetWidgets;
 
-TargetPackageWidgetContainer::TargetPackageWidgetContainer(QWidget* parent): QWidget(parent) {
-    this->packageWidget = this->findChild<TargetPackageWidget*>();
-}
+TargetPackageWidgetContainer::TargetPackageWidgetContainer(QWidget* parent): QWidget(parent) {}
 
 void TargetPackageWidgetContainer::resizeEvent(QResizeEvent* event) {
     if (this->packageWidget == nullptr) {

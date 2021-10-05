@@ -22,6 +22,9 @@
                             <height>20</height>
                         </size>
                     </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
                 </spacer>
             </item>
             <item alignment="Qt::AlignHCenter">

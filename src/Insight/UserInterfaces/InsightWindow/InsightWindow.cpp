@@ -238,10 +238,8 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
             this->targetPackageWidget->height() + 450
         );
 
-        Logger::error("ressss");
         this->adjustSize();
         this->targetPackageWidget->show();
-
     }
 }
 
