@@ -13,6 +13,12 @@
                     <property name="minimumHeight">
                         <number>28</number>
                     </property>
+                    <property name="maximumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+                    </property>
                     <layout class="QHBoxLayout">
                         <property name="spacing">
                             <number>3</number>
@@ -61,6 +67,12 @@
                     <property name="minimumHeight">
                         <number>27</number>
                     </property>
+                    <property name="maximumHeight">
+                        <number>27</number>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+                    </property>
                     <layout class="QHBoxLayout">
                         <property name="spacing">
                             <number>0</number>
@@ -105,15 +117,13 @@
                 </widget>
             </item>
             <item alignment="Qt::AlignTop">
-                <widget class="ExpandingHeightScrollAreaWidget" name="item-scroll-area">
+                <widget class="QScrollArea" name="item-scroll-area">
                     <property name="widgetResizable"><bool>true</bool></property>
                     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAsNeeded</enum></property>
                     <property name="sizeAdjustPolicy"><enum>QAbstractScrollArea::AdjustToContents</enum></property>
                     <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
-                    <property name="sizePolicy"><enum>QSizePolicy::SetMinAndMaxSize</enum></property>
 
                     <widget class="QWidget" name="item-container">
-
                         <layout class="QVBoxLayout">
                             <property name="spacing">
                                 <number>0</number>
@@ -128,6 +138,13 @@
                         </layout>
                     </widget>
                 </widget>
+            </item>
+            <item alignment="Qt::AlignTop">
+                <spacer name="vertical-spacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                </spacer>
             </item>
         </layout>
     </widget>

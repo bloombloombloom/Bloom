@@ -41,7 +41,7 @@ namespace Bloom
 
         QApplication application;
         InsightWorker* insightWorker = new InsightWorker(this->eventManager);
-        InsightWindow* mainWindow = new InsightWindow(this->application, *(this->insightWorker));
+        InsightWindow* mainWindow = new InsightWindow(*(this->insightWorker));
 
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(
             this->eventManager,

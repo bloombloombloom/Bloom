@@ -1,5 +1,7 @@
 #include "TargetPackageWidgetContainer.hpp"
 
+#include <QLayout>
+
 using namespace Bloom;
 using namespace Bloom::Widgets::InsightTargetWidgets;
 
@@ -23,4 +25,8 @@ void TargetPackageWidgetContainer::resizeEvent(QResizeEvent* event) {
 
 void TargetPackageWidgetContainer::setPackageWidget(TargetPackageWidget* packageWidget) {
     this->packageWidget = packageWidget;
+
+    if (packageWidget != nullptr) {
+        this->layout()->addWidget(packageWidget);
+    }
 }

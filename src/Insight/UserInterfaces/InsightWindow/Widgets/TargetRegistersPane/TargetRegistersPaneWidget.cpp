@@ -1,11 +1,9 @@
 #include "TargetRegistersPaneWidget.hpp"
 
 #include <QVBoxLayout>
-#include <QScrollArea>
 #include <set>
 
 #include "../../UiLoader.hpp"
-#include "../ExpandingWidget.hpp"
 #include "RegisterGroupWidget.hpp"
 #include "RegisterWidget.hpp"
 
@@ -25,7 +23,7 @@ using Bloom::Targets::TargetRegisterType;
 TargetRegistersPaneWidget::TargetRegistersPaneWidget(
     const TargetDescriptor& targetDescriptor,
     InsightWorker& insightWorker,
-    QWidget* parent
+    PanelWidget* parent
 ): QWidget(parent), parent(parent), targetDescriptor(targetDescriptor), insightWorker(insightWorker) {
     this->setObjectName("target-registers-side-pane");
 
@@ -64,6 +62,8 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
     this->connect(this->searchInput, &QLineEdit::textChanged, [this] {
         this->filterRegisters(this->searchInput->text());
     });
+
+    this->itemScrollArea = this->container->findChild<QScrollArea*>("item-scroll-area");
 
     this->itemContainer = this->container->findChild<QWidget*>("item-container");
     auto itemLayout = this->itemContainer->findChild<QVBoxLayout*>();
@@ -124,12 +124,19 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
 }
 
 void TargetRegistersPaneWidget::resizeEvent(QResizeEvent* event) {
-    auto parentSize = this->parent->size();
-    this->container->setFixedSize(
-        parentSize.width() - 1,
-        parentSize.height()
+    const auto parentSize = this->parent->size();
+    const auto width = parentSize.width() - 1;
+    this->container->setFixedSize(width, parentSize.height());
+    this->searchInput->setFixedWidth(width - 20);
+
+    /*
+     * In order to avoid the panel resize handle overlapping the scroll bar handle, we reduce the size of
+     * the scroll area.
+     */
+    this->itemScrollArea->setFixedSize(
+        width - this->parent->getHandleSize(),
+        parentSize.height() - this->toolBar->height() - this->searchInput->height() - 5
     );
-    this->searchInput->setFixedWidth(parentSize.width() - 20);
 }
 
 void TargetRegistersPaneWidget::postActivate() {

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <widget class="QMainWindow" name="main-window">
-        <property name="minimumHeight"><number>500</number></property>
-        <property name="minimumWidth"><number>1000</number></property>
-        <property name="windowTitle"><string>Bloom Insight</string></property>
-        <property name="maximized"><bool>false</bool></property>
-
+    <widget class="QWidget" name="window-container">
         <widget class="QMenuBar" name="menu-bar">
             <property name="nativeMenuBar">
                 <bool>false</bool>
+            </property>
+            <property name="minimumHeight"><number>25</number></property>
+            <property name="maximumHeight"><number>25</number></property>
+            <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
             </property>
 
             <widget class="QMenu" name="file-menu">
@@ -48,7 +48,7 @@
             <addaction name="help-menu"/>
         </widget>
 
-        <widget class="QWidget">
+        <widget class="QWidget" name="layout-container">
             <layout class="QVBoxLayout">
                 <property name="spacing">
                     <number>0</number>
@@ -67,14 +67,14 @@
                                     <number>0</number>
                                 </property>
                                 <item>
-                                    <spacer name="header-tool-bar-padding-spacer">
-                                        <property name="orientation">
-                                            <enum>Qt::Horizontal</enum>
-                                        </property>
+                                    <spacer name="horizontal-spacer">
                                         <property name="sizeHint">
                                             <size>
                                                 <width>3</width>
                                             </size>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>QSizePolicy::Fixed</enum>
                                         </property>
                                     </spacer>
                                 </item>
@@ -104,7 +104,7 @@
                 </item>
                 <item>
                     <widget class="QWidget" name="container">
-                        <layout class="QHBoxLayout">
+                        <layout class="QVBoxLayout">
                             <property name="spacing">
                                 <number>0</number>
                             </property>
@@ -112,43 +112,192 @@
                                 <number>0</number>
                             </property>
                             <item>
-                                <widget class="QWidget" name="left-side-menu-bar">
-                                    <property name="layoutDirection">
-                                        <enum>Qt::LeftToRight</enum>
+                                <layout class="QHBoxLayout">
+                                    <property name="spacing">
+                                        <number>0</number>
                                     </property>
-                                    <layout class="QVBoxLayout">
+                                    <property name="margin">
+                                        <number>0</number>
+                                    </property>
+                                    <item>
+                                        <widget class="QWidget" name="left-side-menu-bar">
+                                            <property name="layoutDirection">
+                                                <enum>Qt::LeftToRight</enum>
+                                            </property>
+                                            <layout class="QVBoxLayout">
+                                                <property name="spacing">
+                                                    <number>0</number>
+                                                </property>
+                                                <property name="margin">
+                                                    <number>0</number>
+                                                </property>
+
+                                                <item alignment="Qt::AlignTop">
+                                                    <widget class="QToolButton" name="target-registers-btn">
+                                                        <property name="toolTip">
+                                                            <string>Target Registers</string>
+                                                        </property>
+                                                        <property name="checkable">
+                                                            <bool>true</bool>
+                                                        </property>
+                                                        <property name="disabled">
+                                                            <bool>true</bool>
+                                                        </property>
+                                                        <layout class="QVBoxLayout">
+                                                            <property name="spacing">
+                                                                <number>0</number>
+                                                            </property>
+                                                            <property name="margin">
+                                                                <number>0</number>
+                                                            </property>
+                                                            <item alignment="Qt::AlignTop">
+                                                                <widget class="SvgWidget" name="target-registers-icon">
+                                                                    <property name="containerHeight">
+                                                                        <number>15</number>
+                                                                    </property>
+                                                                    <property name="containerWidth">
+                                                                        <number>22</number>
+                                                                    </property>
+                                                                    <property name="svgFilePath">
+                                                                        <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers.svg</string>
+                                                                    </property>
+                                                                    <property name="disabledSvgFilePath">
+                                                                        <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg</string>
+                                                                    </property>
+                                                                </widget>
+                                                            </item>
+                                                            <item alignment="Qt::AlignTop">
+                                                                <spacer name="vSpacer">
+                                                                    <property name="orientation">
+                                                                        <enum>Qt::Vertical</enum>
+                                                                    </property>
+                                                                </spacer>
+                                                            </item>
+                                                        </layout>
+                                                    </widget>
+                                                </item>
+                                            </layout>
+                                        </widget>
+                                    </item>
+                                    <item>
+                                        <widget class="PanelWidget" name="left-panel">
+                                            <property name="visible">
+                                                <bool>false</bool>
+                                            </property>
+                                            <property name="maximumWidth">
+                                                <number>300</number>
+                                            </property>
+                                            <property name="minimumResize">
+                                                <number>300</number>
+                                            </property>
+                                            <property name="handleSize">
+                                                <number>6</number>
+                                            </property>
+                                            <layout class="QVBoxLayout" name="left-panel-layout">
+                                                <property name="spacing">
+                                                    <number>0</number>
+                                                </property>
+                                                <property name="margin">
+                                                    <number>0</number>
+                                                </property>
+                                            </layout>
+                                        </widget>
+                                    </item>
+                                    <item>
+                                        <widget class="TargetPackageWidgetContainer" name="io-container">
+                                            <property name="sizePolicy">
+                                                <sizepolicy hsizetype="Ignored" vsizetype="Ignored"/>
+                                            </property>
+                                            <layout class="QHBoxLayout">
+                                                <item alignment="Qt::AlignHCenter">
+                                                    <widget class="QLabel" name="io-inspection-unavailable">
+                                                        <property name="visible"><bool>false</bool></property>
+                                                        <property name="alignment">
+                                                            <enum>Qt::AlignCenter</enum>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string>-</string>
+                                                        </property>
+                                                    </widget>
+                                                </item>
+                                            </layout>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </item>
+                            <item>
+                                <widget class="PanelWidget" name="bottom-panel">
+                                    <property name="visible">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="panelType">
+                                        <enum>PanelWidgetType::BOTTOM</enum>
+                                    </property>
+                                    <property name="maximumHeight">
+                                        <number>200</number>
+                                    </property>
+                                    <property name="minimumResize">
+                                        <number>200</number>
+                                    </property>
+                                    <property name="handleSize">
+                                        <number>6</number>
+                                    </property>
+                                    <layout class="QHBoxLayout" name="bottom-panel-layout">
                                         <property name="spacing">
                                             <number>0</number>
                                         </property>
                                         <property name="margin">
                                             <number>0</number>
                                         </property>
-
-                                        <item alignment="Qt::AlignTop">
-                                            <widget class="QToolButton" name="target-registers-btn">
+                                    </layout>
+                                </widget>
+                            </item>
+                            <item>
+                                <widget class="QWidget" name="bottom-menu-bar">
+                                    <layout class="QHBoxLayout">
+                                        <property name="spacing">
+                                            <number>1</number>
+                                        </property>
+                                        <property name="margin">
+                                            <number>0</number>
+                                        </property>
+                                        <item>
+                                            <spacer name="horizontal-spacer">
+                                                <property name="sizeHint">
+                                                    <size>
+                                                        <width>22</width>
+                                                    </size>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>QSizePolicy::Fixed</enum>
+                                                </property>
+                                            </spacer>
+                                        </item>
+                                        <item>
+                                            <widget class="QToolButton" name="ram-inspection-btn">
                                                 <property name="toolTip">
-                                                    <string>Target Registers</string>
+                                                    <string>Inspect RAM</string>
                                                 </property>
                                                 <property name="checkable">
                                                     <bool>true</bool>
                                                 </property>
                                                 <property name="disabled">
-                                                    <bool>true</bool>
+                                                    <bool>false</bool>
                                                 </property>
-                                                <layout class="QVBoxLayout">
+                                                <layout class="QHBoxLayout">
                                                     <property name="spacing">
                                                         <number>0</number>
                                                     </property>
                                                     <property name="margin">
                                                         <number>0</number>
                                                     </property>
-                                                    <item alignment="Qt::AlignTop">
-                                                        <widget class="SvgWidget" name="target-registers-icon">
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="SvgWidget" name="ram-inspection-btn-icon">
                                                             <property name="containerHeight">
-                                                                <number>15</number>
+                                                                <number>22</number>
                                                             </property>
                                                             <property name="containerWidth">
-                                                                <number>22</number>
+                                                                <number>15</number>
                                                             </property>
                                                             <property name="svgFilePath">
                                                                 <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers.svg</string>
@@ -158,69 +307,29 @@
                                                             </property>
                                                         </widget>
                                                     </item>
-                                                    <item alignment="Qt::AlignTop">
-                                                        <spacer name="vSpacer">
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="QLabel" name="ram-inspection-btn-label">
+                                                            <property name="text">
+                                                                <string>Memory</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <spacer name="horizontal-spacer">
                                                             <property name="orientation">
-                                                                <enum>Qt::Vertical</enum>
+                                                                <enum>Qt::Horizontal</enum>
                                                             </property>
                                                         </spacer>
                                                     </item>
                                                 </layout>
                                             </widget>
                                         </item>
-                                    </layout>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QWidget" name="left-panel">
-                                    <property name="visible">
-                                        <bool>false</bool>
-                                    </property>
-                                    <property name="maximumWidth">
-                                        <number>300</number>
-                                    </property>
-                                    <layout class="QHBoxLayout">
-                                        <property name="spacing">
-                                            <number>0</number>
-                                        </property>
-                                        <property name="margin">
-                                            <number>0</number>
-                                        </property>
                                         <item>
-                                            <widget class="QWidget" name="left-panel-layout-container">
-                                                <layout class="QVBoxLayout" name="left-panel-layout">
-                                                    <property name="spacing">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="margin">
-                                                        <number>0</number>
-                                                    </property>
-                                                </layout>
-                                            </widget>
-                                        </item>
-                                        <item>
-                                            <widget class="SlidingHandleWidget" name="left-panel-slider">
-                                                <property name="handleWidth">
-                                                    <number>6</number>
+                                            <spacer name="horizontal-spacer">
+                                                <property name="orientation">
+                                                    <enum>Qt::Horizontal</enum>
                                                 </property>
-                                            </widget>
-                                        </item>
-                                    </layout>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="TargetPackageWidgetContainer" name="io-container">
-                                    <layout class="QHBoxLayout">
-                                        <item alignment="Qt::AlignHCenter">
-                                            <widget class="QLabel" name="io-inspection-unavailable">
-                                                <property name="visible"><bool>false</bool></property>
-                                                <property name="alignment">
-                                                    <enum>Qt::AlignCenter</enum>
-                                                </property>
-                                                <property name="text">
-                                                    <string>-</string>
-                                                </property>
-                                            </widget>
+                                            </spacer>
                                         </item>
                                     </layout>
                                 </widget>
@@ -230,18 +339,25 @@
                 </item>
                 <item>
                     <widget class="QWidget" name="footer">
-                        <layout class="QHBoxLayout" stretch="100,0,0">
+                        <layout class="QHBoxLayout">
                             <property name="spacing"><number>0</number></property>
                             <property name="margin"><number>0</number></property>
-                            <item alignment="Qt::AlignLeft">
+
+                            <item>
                                 <widget class="QLabel" name="target-state">
                                     <property name="toolTip">
                                         <string>Target State</string>
                                     </property>
                                 </widget>
                             </item>
-
-                            <item alignment="Qt::AlignRight">
+                            <item>
+                                <spacer name="horizontal-spacer">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item>
                                 <widget class="QLabel" name="target-program-counter-value">
                                     <property name="text">
                                         <string>-</string>
@@ -251,30 +367,30 @@
                                     </property>
                                 </widget>
                             </item>
-
-                            <item alignment="Qt::AlignRight">
+                            <item>
                                 <widget class="QLabel" name="target-name">
                                     <property name="toolTip">
                                         <string>Target Name</string>
                                     </property>
                                 </widget>
                             </item>
-
-                            <item alignment="Qt::AlignRight">
+                            <item>
                                 <widget class="QLabel" name="target-id">
                                     <property name="toolTip">
                                         <string>Target ID</string>
                                     </property>
                                 </widget>
                             </item>
-
-                            <item alignment="Qt::AlignRight">
+                            <item>
                                 <widget class="QMenuBar" name="target-variant-menu-bar">
                                     <property name="nativeMenuBar">
                                         <bool>false</bool>
                                     </property>
                                     <property name="defaultUp">
                                         <bool>true</bool>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                                     </property>
 
                                     <widget class="QMenu" name="target-variant-menu">

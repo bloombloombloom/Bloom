@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QLineEdit>
+#include <QScrollArea>
 #include <set>
 #include <QSize>
 #include <QString>
@@ -9,7 +10,8 @@
 #include <optional>
 
 #include "ItemWidget.hpp"
-#include "../SvgToolButton.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
@@ -25,7 +27,7 @@ namespace Bloom::Widgets
         const Targets::TargetDescriptor& targetDescriptor;
         InsightWorker& insightWorker;
 
-        QWidget* parent = nullptr;
+        PanelWidget* parent = nullptr;
         QWidget* container = nullptr;
 
         QWidget* toolBar = nullptr;
@@ -33,6 +35,7 @@ namespace Bloom::Widgets
         SvgToolButton* expandAllButton = nullptr;
 
         QLineEdit* searchInput = nullptr;
+        QScrollArea* itemScrollArea = nullptr;
         QWidget* itemContainer = nullptr;
 
         ItemWidget* selectedItemWidget = nullptr;
@@ -58,7 +61,7 @@ namespace Bloom::Widgets
         TargetRegistersPaneWidget(
             const Targets::TargetDescriptor& targetDescriptor,
             InsightWorker& insightWorker,
-            QWidget *parent
+            PanelWidget *parent
         );
 
         [[nodiscard]] QSize minimumSizeHint() const override {

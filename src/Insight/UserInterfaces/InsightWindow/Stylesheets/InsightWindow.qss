@@ -4,7 +4,7 @@
     font-size: 14px;
 }
 
-QMainWindow {
+#main-window #window-container {
     background-color: #373835;
 }
 
@@ -112,15 +112,11 @@ QToolTip {
     font-size: 13px;
 }
 
-
 #footer {
-    position: relative;
     background-color: transparent;
     padding: 0 3px 0 30px;
     max-height: 25px;
-    width: auto;
     border-top: 1px solid #41423f;
-
 }
 
 #footer QLabel,
@@ -165,10 +161,6 @@ QToolTip {
     min-height: 25px;
 }
 
-#footer QLayoutItem {
-    max-width: 100px;
-}
-
 #target-variant-menu::item {
     padding: 4px 10px 4px 10px;
 }
@@ -180,8 +172,8 @@ QToolTip {
 
 QScrollBar:vertical {
     background-color: transparent;
-    width: 15px;
-    margin: 1px 1px 1px 5px;
+    width: 12px;
+    margin: 1px;
 }
 
 QScrollBar:handle:vertical {
@@ -221,8 +213,13 @@ QScrollBar::sub-line:vertical {
     border: none;
 }
 
-#left-panel-layout-container {
+#left-panel {
     border-right: 1px solid #2F2F2D;
+    background-color: transparent;
+}
+
+#left-panel-slider {
+    background-color: transparent;
 }
 
 /* Target Registers Pane */
@@ -291,4 +288,37 @@ QScrollBar::sub-line:vertical {
 
 #target-registers-side-pane #register-item[selected=true] #value[changed=true] {
     color: #8a8a8d;
+}
+
+/* Bottom menu bar & panels */
+#bottom-menu-bar {
+    background-color: transparent;
+    max-height: 22px;
+    border-top: 1px solid #2F2F2D;
+}
+
+#bottom-menu-bar #ram-inspection-btn {
+    position: relative;
+    border: none;
+    min-width: 90px;
+    min-height: 22px;
+}
+
+#bottom-menu-bar #ram-inspection-btn #ram-inspection-btn-icon {
+    margin-left: 9px;
+}
+
+#bottom-menu-bar #ram-inspection-btn #ram-inspection-btn-label {
+    margin-left: 2px;
+}
+
+#bottom-menu-bar QToolButton:hover,
+#bottom-menu-bar QToolButton:checked {
+    background-color: #2F2F2D;
+    border: none;
+}
+
+#bottom-panel {
+    border-top: 1px solid #2F2F2D;
+    background-color: transparent;
 }

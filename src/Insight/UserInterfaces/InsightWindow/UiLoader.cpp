@@ -2,11 +2,10 @@
 
 #include <QtUiTools>
 
+#include "Widgets/PanelWidget.hpp"
 #include "Widgets/RotatableLabel.hpp"
-#include "Widgets/SlidingHandleWidget.hpp"
 #include "Widgets/SvgWidget.hpp"
 #include "Widgets/SvgToolButton.hpp"
-#include "Widgets/ExpandingWidget.hpp"
 #include "Widgets/ExpandingHeightScrollAreaWidget.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
 
@@ -18,27 +17,18 @@ using namespace Bloom::Widgets;
 UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
     this->customWidgetConstructorsByWidgetName = decltype(this->customWidgetConstructorsByWidgetName) {
         {
+            "PanelWidget",
+            [this](QWidget* parent, const QString& name) {
+                auto widget = new PanelWidget(parent);
+                widget->setObjectName(name);
+                widget->setStyleSheet(parent->styleSheet());
+                return widget;
+            }
+        },
+        {
             "RotatableLabel",
             [this](QWidget* parent, const QString& name) {
                 auto widget = new RotatableLabel("", parent);
-                widget->setObjectName(name);
-                widget->setStyleSheet(parent->styleSheet());
-                return widget;
-            }
-        },
-        {
-            "SlidingHandleWidget",
-            [this](QWidget* parent, const QString& name) {
-                auto widget = new SlidingHandleWidget(parent);
-                widget->setObjectName(name);
-                widget->setStyleSheet(parent->styleSheet());
-                return widget;
-            }
-        },
-        {
-            "ExpandingWidget",
-            [this](QWidget* parent, const QString& name) {
-                auto widget = new ExpandingWidget(parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;

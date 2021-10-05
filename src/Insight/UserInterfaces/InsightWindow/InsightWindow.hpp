@@ -13,6 +13,8 @@
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
+#include "Widgets/PanelWidget.hpp"
+
 #include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
 #include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
@@ -20,7 +22,7 @@
 
 namespace Bloom
 {
-    class InsightWindow: public QObject
+    class InsightWindow: public QMainWindow
     {
     Q_OBJECT
     private:
@@ -35,23 +37,27 @@ namespace Bloom
         Targets::TargetDescriptor targetDescriptor;
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
-        QWidget* mainWindowWidget = nullptr;
-        AboutWindow* aboutWindowWidget = nullptr;
+        QWidget* windowContainer = nullptr;
         QMenuBar* mainMenuBar = nullptr;
+        QWidget* layoutContainer = nullptr;
+        QWidget* container = nullptr;
         QMenu* variantMenu = nullptr;
+        AboutWindow* aboutWindowWidget = nullptr;
 
         QWidget* header = nullptr;
         QToolButton* refreshIoInspectionButton = nullptr;
 
-        QWidget* leftPanel = nullptr;
-        int leftPanelMinWidth = 300;
-        QWidget* leftPanelLayoutContainer = nullptr;
+        QWidget* leftMenuBar = nullptr;
+        Widgets::PanelWidget* leftPanel = nullptr;
         Widgets::TargetRegistersPaneWidget* targetRegistersSidePane = nullptr;
         QToolButton* targetRegistersButton = nullptr;
-
         Widgets::InsightTargetWidgets::TargetPackageWidgetContainer* ioContainerWidget = nullptr;
+
         QLabel* ioUnavailableWidget = nullptr;
         Widgets::InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
+
+        QWidget* bottomMenuBar = nullptr;
+        Widgets::PanelWidget* bottomPanel = nullptr;
 
         QWidget* footer = nullptr;
         QLabel* targetStatusLabel = nullptr;
@@ -69,8 +75,14 @@ namespace Bloom
         void activate();
         void deactivate();
 
+        void adjustPanels();
+
+    protected:
+        void resizeEvent(QResizeEvent* event) override;
+        void showEvent(QShowEvent* event) override;
+
     public:
-        InsightWindow(QApplication& application, InsightWorker& insightWorker);
+        InsightWindow(InsightWorker& insightWorker);
 
         void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
             this->environmentConfig = environmentConfig;
@@ -83,15 +95,11 @@ namespace Bloom
 
         void init(Targets::TargetDescriptor targetDescriptor);
 
-        void show();
-
     public slots:
-        void onLeftPanelHandleSlide(int horizontalPosition);
         void onTargetControllerSuspended();
         void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void onTargetStateUpdate(Targets::TargetState newState);
         void onTargetProgramCounterUpdate(quint32 programCounter);
-        void close();
         void openReportIssuesUrl();
         void openGettingStartedUrl();
         void openAboutWindow();
