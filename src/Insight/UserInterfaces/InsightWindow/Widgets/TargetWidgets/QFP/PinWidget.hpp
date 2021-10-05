@@ -35,10 +35,10 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         static const int MAXIMUM_LABEL_WIDTH = PinBodyWidget::WIDTH;
         static const int MAXIMUM_LABEL_HEIGHT = 20;
         static const int MAXIMUM_HORIZONTAL_WIDTH = PinBodyWidget::HEIGHT
-            + (PinWidget::MAXIMUM_LABEL_WIDTH * PinWidget::MAXIMUM_LABEL_COUNT);
+            + ((PinWidget::MAXIMUM_LABEL_WIDTH + 12) * (PinWidget::MAXIMUM_LABEL_COUNT - 1)) - 12;
         static const int MAXIMUM_HORIZONTAL_HEIGHT = PinBodyWidget::WIDTH;
         static const int MAXIMUM_VERTICAL_HEIGHT = PinBodyWidget::HEIGHT
-            + (PinWidget::MAXIMUM_LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT);
+            + ((PinWidget::MAXIMUM_LABEL_HEIGHT + 8) * PinWidget::MAXIMUM_LABEL_COUNT) - 8;
         static const int MAXIMUM_VERTICAL_WIDTH = PinBodyWidget::WIDTH;
 
         PinWidget(

@@ -77,6 +77,8 @@ DualInlinePackageWidget::DualInlinePackageWidget(
     this->topPinLayout->setContentsMargins(23, 0, 23, 0);
     this->bottomPinLayout->setContentsMargins( 23, 0, 23, 0);
 
+    this->setFixedSize(width, height);
+
     this->setGeometry(
         (parent->width() / 2) - (width / 2),
         (parent->height() / 2) - (height / 2),

@@ -99,8 +99,14 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     const auto verticalLayoutWidth = ((verticalPinWidgetWidth + PinWidget::WIDTH_SPACING) * pinCountPerLayout
         + PinWidget::PIN_WIDGET_LAYOUT_PADDING - PinWidget::WIDTH_SPACING);
 
-    const auto width = verticalLayoutWidth + (horizontalPinWidgetWidth * 2);
+    /*
+     * + 16 for the spacing between the package body and the pins (8 pixels on each side)
+     *
+     * Also, the width is a little smaller than the height because of the layout of the horizontal pin labels, but
+     * we just use the same value as the height here (to contain and center the widget), as it looks nicer.
+     */
     const auto height = horizontalLayoutHeight + (verticalPinWidgetHeight * 2);
+    const auto width = height;
 
     this->topPinLayout->insertSpacing(0, horizontalPinWidgetWidth);
     this->topPinLayout->addSpacing(horizontalPinWidgetWidth);
@@ -153,6 +159,8 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
         0,
         pinWidgetLayoutMargin
     );
+
+    this->setFixedSize(width, height);
 
     // Set the fixed size and center the widget
     this->setGeometry(

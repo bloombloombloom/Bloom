@@ -38,5 +38,13 @@ namespace Bloom::Widgets::InsightTargetWidgets
         virtual void setTargetState(Targets::TargetState targetState) {
             this->targetState = targetState;
         }
+
+        QSize sizeHint() const override {
+            return this->minimumSize();
+        }
+
+        QSize minimumSizeHint() const override {
+            return this->sizeHint();
+        }
     };
 }
