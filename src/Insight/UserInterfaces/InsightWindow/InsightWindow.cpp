@@ -209,7 +209,7 @@ void InsightWindow::openGettingStartedUrl() {
 
 void InsightWindow::openAboutWindow() {
     if (this->aboutWindowWidget == nullptr) {
-        this->aboutWindowWidget = new AboutWindow(this->windowContainer);
+        this->aboutWindowWidget = new AboutWindow(this);
     }
 
     this->aboutWindowWidget->show();
