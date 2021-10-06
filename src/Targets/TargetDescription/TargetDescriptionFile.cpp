@@ -9,6 +9,10 @@
 using namespace Bloom::Targets::TargetDescription;
 using namespace Bloom::Exceptions;
 
+std::string TargetDescriptionFile::getTargetName() const {
+    return this->deviceElement.attributes().namedItem("name").nodeValue().toStdString();
+}
+
 void TargetDescriptionFile::init(const QString& xmlFilePath) {
     auto file = QFile(xmlFilePath);
     if (!file.exists()) {
@@ -43,10 +47,6 @@ void TargetDescriptionFile::init(const QDomDocument& xml) {
     this->loadVariants();
     this->loadPinouts();
     this->loadInterfaces();
-}
-
-std::string TargetDescriptionFile::getTargetName() const {
-    return this->deviceElement.attributes().namedItem("name").nodeValue().toStdString();
 }
 
 AddressSpace TargetDescriptionFile::generateAddressSpaceFromXml(const QDomElement& xmlElement) {

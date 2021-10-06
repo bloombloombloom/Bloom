@@ -49,6 +49,577 @@ using Bloom::Targets::TargetRegisterDescriptors;
 using Bloom::Targets::TargetRegisterType;
 using Bloom::Targets::TargetRegisters;
 
+void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
+    auto physicalInterface = targetConfig.jsonObject.find("physicalInterface")->toString().toLower().toStdString();
+
+    auto availablePhysicalInterfaces = this->getPhysicalInterfacesByName();
+
+    if (physicalInterface.empty()
+        || availablePhysicalInterfaces.find(physicalInterface) == availablePhysicalInterfaces.end()
+    ) {
+        throw InvalidConfig("Invalid physical interface config parameter for AVR8 target.");
+    }
+
+    auto selectedPhysicalInterface = availablePhysicalInterfaces.find(physicalInterface)->second;
+
+    if (selectedPhysicalInterface == PhysicalInterface::DEBUG_WIRE) {
+        Logger::warning("AVR8 debugWire interface selected - the DWEN fuse will need to be enabled");
+    }
+
+    this->physicalInterface = selectedPhysicalInterface;
+
+    if (!this->family.has_value()) {
+        if (this->physicalInterface == PhysicalInterface::JTAG) {
+            throw InvalidConfig("The JTAG physical interface cannot be used with an ambiguous target name"
+                " - please specify the exact name of the target in your configuration file. "
+                "See https://bloom.oscillate.io/docs/supported-targets"
+            );
+
+        } else if (this->physicalInterface == PhysicalInterface::UPDI) {
+            throw InvalidConfig("The UPDI physical interface cannot be used with an ambiguous target name"
+                " - please specify the exact name of the target in your configuration file. "
+                "See https://bloom.oscillate.io/docs/supported-targets"
+            );
+        }
+    }
+
+    this->configVariant = this->resolveConfigVariant().value_or(Avr8ConfigVariant::NONE);
+}
+
+void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& config) {
+    this->targetParameters = config;
+
+    if (!config.stackPointerRegisterLowAddress.has_value()) {
+        throw DeviceInitializationFailure("Failed to find stack pointer register start address");
+    }
+
+    if (!config.stackPointerRegisterSize.has_value()) {
+        throw DeviceInitializationFailure("Failed to find stack pointer register size");
+    }
+
+    if (!config.statusRegisterStartAddress.has_value()) {
+        throw DeviceInitializationFailure("Failed to find status register start address");
+    }
+
+    if (!config.statusRegisterSize.has_value()) {
+        throw DeviceInitializationFailure("Failed to find status register size");
+    }
+
+    if (this->configVariant == Avr8ConfigVariant::NONE) {
+        auto configVariant = this->resolveConfigVariant();
+
+        if (!configVariant.has_value()) {
+            throw DeviceInitializationFailure("Failed to resolve config variant for the selected "
+                "physical interface and AVR8 family. The selected physical interface is not known to be supported "
+                "by the AVR8 family."
+            );
+        }
+
+        this->configVariant = configVariant.value();
+    }
+
+    switch (this->configVariant) {
+        case Avr8ConfigVariant::DEBUG_WIRE:
+        case Avr8ConfigVariant::MEGAJTAG: {
+            this->setDebugWireAndJtagParameters();
+            break;
+        }
+        case Avr8ConfigVariant::XMEGA: {
+            this->setPdiParameters();
+            break;
+        }
+        case Avr8ConfigVariant::UPDI: {
+            this->setUpdiParameters();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+}
+
+void EdbgAvr8Interface::init() {
+    if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+        // Default PDI clock to 4MHz
+        // TODO: Make this adjustable via a target config parameter
+        this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(0x0FA0));
+    }
+
+    if (this->configVariant == Avr8ConfigVariant::UPDI) {
+        // Default UPDI clock to 1.8MHz
+        this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(0x0708));
+        this->setParameter(Avr8EdbgParameters::ENABLE_HIGH_VOLTAGE_UPDI, static_cast<std::uint8_t>(0x00));
+    }
+
+    if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
+        // Default clock value for mega debugging is 2KHz
+        // TODO: Make this adjustable via a target config parameter
+        this->setParameter(Avr8EdbgParameters::MEGA_DEBUG_CLOCK, static_cast<std::uint16_t>(0x00C8));
+        this->setParameter(Avr8EdbgParameters::JTAG_DAISY_CHAIN_SETTINGS, static_cast<std::uint32_t>(0));
+    }
+
+    this->setParameter(
+        Avr8EdbgParameters::CONFIG_VARIANT,
+        static_cast<std::uint8_t>(this->configVariant)
+    );
+
+    this->setParameter(
+        Avr8EdbgParameters::CONFIG_FUNCTION,
+        static_cast<std::uint8_t>(this->configFunction)
+    );
+
+    this->setParameter(
+        Avr8EdbgParameters::PHYSICAL_INTERFACE,
+        getAvr8PhysicalInterfaceToIdMapping().at(this->physicalInterface)
+    );
+}
+
+void EdbgAvr8Interface::stop() {
+    auto commandFrame = CommandFrames::Avr8Generic::Stop();
+
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Stop target command failed", response);
+    }
+
+    if (this->getTargetState() == TargetState::RUNNING) {
+        this->waitForStoppedEvent();
+    }
+}
+
+void EdbgAvr8Interface::run() {
+    this->clearEvents();
+    auto commandFrame = CommandFrames::Avr8Generic::Run();
+
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Run command failed", response);
+    }
+
+    this->targetState = TargetState::RUNNING;
+}
+
+void EdbgAvr8Interface::runTo(std::uint32_t address) {
+    this->clearEvents();
+    Logger::debug("Running to address: " + std::to_string(address));
+    auto commandFrame = CommandFrames::Avr8Generic::RunTo(address);
+
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Run-to command failed", response);
+    }
+
+    this->targetState = TargetState::RUNNING;
+}
+
+void EdbgAvr8Interface::step() {
+    auto commandFrame = CommandFrames::Avr8Generic::Step();
+
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Step target command failed", response);
+    }
+
+    this->targetState = TargetState::RUNNING;
+}
+
+void EdbgAvr8Interface::reset() {
+    auto commandFrame = CommandFrames::Avr8Generic::Reset();
+
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Reset target command failed", response);
+    }
+}
+
+void EdbgAvr8Interface::activate() {
+    if (!this->physicalInterfaceActivated) {
+        this->activatePhysical();
+    }
+
+    if (!this->targetAttached) {
+        this->attach();
+    }
+}
+
+void EdbgAvr8Interface::deactivate() {
+    if (this->targetAttached) {
+        if (this->physicalInterface == PhysicalInterface::DEBUG_WIRE && this->disableDebugWireOnDeactivate) {
+            try {
+                this->disableDebugWire();
+                Logger::warning("Successfully disabled debugWire on the AVR8 target - this is only temporary - "
+                    "the debugWire module has lost control of the RESET pin. Bloom will no longer be able to interface "
+                    "with the target until the next power cycle.");
+
+            } catch (const Exception& exception) {
+                // Failing to disable debugWire should never prevent us from proceeding with target deactivation.
+                Logger::error(exception.getMessage());
+            }
+        }
+
+        this->stop();
+        this->clearAllBreakpoints();
+        this->run();
+
+        this->detach();
+    }
+
+    if (this->physicalInterfaceActivated) {
+        this->deactivatePhysical();
+    }
+}
+
+std::uint32_t EdbgAvr8Interface::getProgramCounter() {
+    if (this->targetState != TargetState::STOPPED) {
+        this->stop();
+    }
+
+    auto commandFrame = CommandFrames::Avr8Generic::GetProgramCounter();
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Get program counter command failed", response);
+    }
+
+    return response.extractProgramCounter();
+}
+
+void EdbgAvr8Interface::setProgramCounter(std::uint32_t programCounter) {
+    if (this->targetState != TargetState::STOPPED) {
+        this->stop();
+    }
+
+    /*
+     * The program counter will be given in byte address form, but the EDBG tool will be expecting it in word
+     * address (16-bit) form. This is why we divide it by 2.
+     */
+    auto commandFrame = CommandFrames::Avr8Generic::SetProgramCounter(programCounter / 2);
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Set program counter command failed", response);
+    }
+}
+
+TargetSignature EdbgAvr8Interface::getDeviceId() {
+    if (this->configVariant == Avr8ConfigVariant::UPDI) {
+        /*
+         * When using the UPDI physical interface, the 'Get device ID' command behaves in an odd manner, where it
+         * doesn't actually return the target signature, but instead a fixed four byte string reading:
+         * 'A', 'V', 'R' and ' ' (white space).
+         *
+         * So it appears we cannot use that command for UPDI sessions. As an alternative, we will just read the
+         * signature from memory using the signature base address.
+         *
+         * TODO: Currently, we're assuming the signature will always only ever be three bytes in size, but we may
+         *       want to consider pulling the size from the TDF.
+         */
+        auto signatureMemory = this->readMemory(
+            Avr8MemoryType::SRAM,
+            this->targetParameters.signatureSegmentStartAddress.value(),
+            3
+        );
+
+        if (signatureMemory.size() != 3) {
+            throw Exception("Failed to read AVR8 signature from target - unexpected response size");
+        }
+
+        return TargetSignature(signatureMemory[0], signatureMemory[1], signatureMemory[2]);
+    }
+
+    auto commandFrame = CommandFrames::Avr8Generic::GetDeviceId();
+
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Get device ID command failed", response);
+    }
+
+    return response.extractSignature(this->physicalInterface);
+}
+
+void EdbgAvr8Interface::setBreakpoint(std::uint32_t address) {
+    auto commandFrame = CommandFrames::Avr8Generic::SetSoftwareBreakpoints({address});
+
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Set software breakpoint command failed", response);
+    }
+}
+
+void EdbgAvr8Interface::clearBreakpoint(std::uint32_t address) {
+    auto commandFrame = CommandFrames::Avr8Generic::ClearSoftwareBreakpoints({address});
+
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Clear software breakpoint command failed", response);
+    }
+}
+
+void EdbgAvr8Interface::clearAllBreakpoints() {
+    auto commandFrame = CommandFrames::Avr8Generic::ClearAllSoftwareBreakpoints();
+
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Clear all software breakpoints command failed", response);
+    }
+}
+
+TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors& descriptors) {
+    /*
+     * This function needs to be fast. Insight eagerly requests the values of all known registers that it can present
+     * to the user. It does this on numerous occasions (target stopped, user clicked refresh, etc). This means we will
+     * be frequently loading over 100 register values in a single instance.
+     *
+     * For the above reason, we do not read each register value individually. That would take far too long if we have
+     * over 100 registers to read. Instead, we group the register descriptors into collections by register type, and
+     * resolve the address range for each collection. We then perform a single read operation for each collection
+     * and hold the memory buffer in a random access container (std::vector). Finally, we extract the data for
+     * each register descriptor, from the memory buffer, and construct the relevant TargetRegister object.
+     *
+     * TODO: We should be grouping the register descriptors by memory type, as opposed to register type. This
+     *       isn't much of a problem ATM, as currently, we only work with registers that are stored in the data
+     *       address space or the register file. This will need to be addressed before we can work with any other
+     *       registers stored elsewhere.
+     */
+    auto output = TargetRegisters();
+
+    // Group descriptors by type and resolve the address range for each type
+    auto descriptorsByType = std::map<TargetRegisterType, std::set<const TargetRegisterDescriptor*>>();
+
+    /*
+     * An address range is just an std::pair of integers - the first being the start address, the second being the
+     * end address.
+     */
+    using AddressRange = std::pair<std::uint32_t, std::uint32_t>;
+    auto addressRangeByType = std::map<TargetRegisterType, AddressRange>();
+
+    for (const auto& descriptor : descriptors) {
+        if (!descriptor.startAddress.has_value()) {
+            Logger::debug(
+                "Attempted to read register in the absence of a start address - register name: "
+                    + descriptor.name.value_or("unknown")
+            );
+            continue;
+        }
+
+        descriptorsByType[descriptor.type].insert(&descriptor);
+
+        const auto startAddress = descriptor.startAddress.value();
+        const auto endAddress = startAddress + (descriptor.size - 1);
+
+        if (!addressRangeByType.contains(descriptor.type)) {
+            auto addressRange = AddressRange();
+            addressRange.first = startAddress;
+            addressRange.second = endAddress;
+            addressRangeByType[descriptor.type] = addressRange;
+
+        } else {
+            auto& addressRange = addressRangeByType[descriptor.type];
+
+            if (startAddress < addressRange.first) {
+                addressRange.first = startAddress;
+            }
+
+            if (endAddress > addressRange.second) {
+                addressRange.second = endAddress;
+            }
+        }
+    }
+
+    /*
+     * Now that we have our address ranges and grouped descriptors, we can perform a single read call for each
+     * register type.
+     */
+    for (const auto& [registerType, descriptors] : descriptorsByType) {
+        const auto& addressRange = addressRangeByType[registerType];
+        const auto startAddress = addressRange.first;
+        const auto endAddress = addressRange.second;
+        const auto bufferSize = (endAddress - startAddress) + 1;
+
+        const auto memoryType = (registerType != TargetRegisterType::GENERAL_PURPOSE_REGISTER) ? Avr8MemoryType::SRAM : (
+            this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
+                ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM
+        );
+
+        /*
+         * When reading the entire range, we must avoid any attempts to access the OCD data register (OCDDR), as the
+         * debug tool will reject the command and respond with a 0x36 error code (invalid address error).
+         *
+         * For this reason, we specify the OCDDR address as an excluded address. This will mean
+         * the EdbgAvr8Interface::readMemory() function will employ the masked read memory command, as opposed to the
+         * general read memory command. The masked read memory command allows us to specify which addresses to
+         * read and which ones to ignore. For ignored addresses, the debug tool will just return a 0x00 byte.
+         * For more info, see section 7.1.22 titled 'Memory Read Masked', in the EDBG protocol document.
+         *
+         * Interestingly, the masked read memory command doesn't seem to require us to explicitly specify the OCDDR
+         * address as an excluded address. It seems to exclude the OCDDR automatically, even if we've not
+         * instructed it to do so. This is plausible, as we send the OCDDR address to the debug tool during target
+         * initialisation (see EdbgAvr8Interface::setDebugWireAndJtagParameters()). So this means we don't have to
+         * specify the OCDDR address as an excluded address, but the EdbgAvr8Interface::readMemory() function will
+         * only employ the masked read memory command when we supply at least one excluded address. For this reason,
+         * we still pass the OCDDR address to EdbgAvr8Interface::readMemory(), as an excluded address (provided we
+         * have it).
+         *
+         * See CommandFrames::Avr8Generic::ReadMemory(); and the Microchip EDBG documentation for more.
+         */
+        auto excludedAddresses = std::set<std::uint32_t>();
+        if (memoryType == Avr8MemoryType::SRAM && this->targetParameters.ocdDataRegister.has_value()) {
+            excludedAddresses.insert(
+                this->targetParameters.ocdDataRegister.value()
+                    + this->targetParameters.mappedIoSegmentStartAddress.value_or(0)
+            );
+        }
+
+        const auto flatMemoryBuffer = this->readMemory(
+            memoryType,
+            startAddress,
+            bufferSize,
+            excludedAddresses
+        );
+
+        if (flatMemoryBuffer.size() != bufferSize) {
+            throw Exception(
+                "Failed to read memory within register type address range (" + std::to_string(startAddress)
+                    + " - " + std::to_string(endAddress) +"). Expected " + std::to_string(bufferSize)
+                    + " bytes, got " + std::to_string(flatMemoryBuffer.size())
+            );
+        }
+
+        // Construct our TargetRegister objects directly from the flat memory buffer
+        for (const auto& descriptor : descriptors) {
+            /*
+             * Multi-byte AVR8 registers are stored in LSB form.
+             *
+             * This is why we use reverse iterators when extracting our data from flatMemoryBuffer. Doing so allows
+             * us to extract the data in MSB form (as is expected for all register values held in TargetRegister
+             * objects).
+             */
+            const auto bufferStartIt = flatMemoryBuffer.rend() - (descriptor->startAddress.value() - startAddress)
+                - descriptor->size;
+
+            output.emplace_back(
+                TargetRegister(
+                    *descriptor,
+                    TargetMemoryBuffer(bufferStartIt, bufferStartIt + descriptor->size)
+                )
+            );
+        }
+    }
+
+    return output;
+}
+
+void EdbgAvr8Interface::writeRegisters(const Targets::TargetRegisters& registers) {
+    for (const auto& reg : registers) {
+        const auto& registerDescriptor = reg.descriptor;
+        auto registerValue = reg.value;
+
+        if (registerValue.empty()) {
+            throw Exception("Cannot write empty register value");
+        }
+
+        if (registerValue.size() > registerDescriptor.size) {
+            throw Exception("Register value exceeds size specified by register descriptor.");
+
+        } else if (registerValue.size() < registerDescriptor.size) {
+            // Fill the missing most-significant bytes with 0x00
+            registerValue.insert(registerValue.begin(), registerDescriptor.size - registerValue.size(), 0x00);
+        }
+
+        if (registerValue.size() > 1) {
+            // AVR8 registers are stored in LSB
+            std::reverse(registerValue.begin(), registerValue.end());
+        }
+
+        auto memoryType = Avr8MemoryType::SRAM;
+        if (registerDescriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER
+            && (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI)
+        ) {
+            memoryType = Avr8MemoryType::REGISTER_FILE;
+        }
+
+        // TODO: This can be inefficient when updating many registers, maybe do something a little smarter here.
+        this->writeMemory(
+            memoryType,
+            registerDescriptor.startAddress.value(),
+            registerValue
+        );
+    }
+}
+
+TargetMemoryBuffer EdbgAvr8Interface::readMemory(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes) {
+    auto avr8MemoryType = Avr8MemoryType::SRAM;
+
+    switch (memoryType) {
+        case TargetMemoryType::RAM: {
+            avr8MemoryType = Avr8MemoryType::SRAM;
+            break;
+        }
+        case TargetMemoryType::FLASH: {
+            if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+                avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
+
+            } else if (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI) {
+                avr8MemoryType = Avr8MemoryType::APPL_FLASH;
+
+            } else {
+                avr8MemoryType = Avr8MemoryType::SPM;
+            }
+            break;
+        }
+        case TargetMemoryType::EEPROM: {
+            avr8MemoryType = Avr8MemoryType::EEPROM;
+        }
+    }
+
+    return this->readMemory(avr8MemoryType, startAddress, bytes);
+}
+
+void EdbgAvr8Interface::writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
+    auto avr8MemoryType = Avr8MemoryType::SRAM;
+
+    switch (memoryType) {
+        case TargetMemoryType::RAM: {
+            avr8MemoryType = Avr8MemoryType::SRAM;
+            break;
+        }
+        case TargetMemoryType::FLASH: {
+            if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+                avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
+
+            } else if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
+                avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
+                // TODO: Enable programming mode
+
+            } else if (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI) {
+                avr8MemoryType = Avr8MemoryType::APPL_FLASH;
+
+            } else {
+                avr8MemoryType = Avr8MemoryType::SPM;
+            }
+            break;
+        }
+        case TargetMemoryType::EEPROM: {
+            avr8MemoryType = Avr8MemoryType::EEPROM;
+        }
+    }
+
+    return this->writeMemory(avr8MemoryType, startAddress, buffer);
+}
+
+TargetState EdbgAvr8Interface::getTargetState() {
+    /*
+     * We are not informed when a target goes from a stopped state to a running state, so there is no need
+     * to query the tool when we already know the target has stopped.
+     *
+     * This means we have to rely on the assumption that the target cannot enter a running state without
+     * our instruction.
+     */
+    if (this->targetState != TargetState::STOPPED) {
+        this->refreshTargetState();
+    }
+
+    return this->targetState;
+}
+
 void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
     auto commandFrame = CommandFrames::Avr8Generic::SetParameter(parameter, value);
 
@@ -498,157 +1069,6 @@ void EdbgAvr8Interface::setUpdiParameters() {
     );
 }
 
-void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
-    auto physicalInterface = targetConfig.jsonObject.find("physicalInterface")->toString().toLower().toStdString();
-
-    auto availablePhysicalInterfaces = this->getPhysicalInterfacesByName();
-
-    if (physicalInterface.empty()
-        || availablePhysicalInterfaces.find(physicalInterface) == availablePhysicalInterfaces.end()
-    ) {
-        throw InvalidConfig("Invalid physical interface config parameter for AVR8 target.");
-    }
-
-    auto selectedPhysicalInterface = availablePhysicalInterfaces.find(physicalInterface)->second;
-
-    if (selectedPhysicalInterface == PhysicalInterface::DEBUG_WIRE) {
-        Logger::warning("AVR8 debugWire interface selected - the DWEN fuse will need to be enabled");
-    }
-
-    this->physicalInterface = selectedPhysicalInterface;
-
-    if (!this->family.has_value()) {
-        if (this->physicalInterface == PhysicalInterface::JTAG) {
-            throw InvalidConfig("The JTAG physical interface cannot be used with an ambiguous target name"
-                " - please specify the exact name of the target in your configuration file. "
-                "See https://bloom.oscillate.io/docs/supported-targets"
-            );
-
-        } else if (this->physicalInterface == PhysicalInterface::UPDI) {
-            throw InvalidConfig("The UPDI physical interface cannot be used with an ambiguous target name"
-                " - please specify the exact name of the target in your configuration file. "
-                "See https://bloom.oscillate.io/docs/supported-targets"
-            );
-        }
-    }
-
-    this->configVariant = this->resolveConfigVariant().value_or(Avr8ConfigVariant::NONE);
-}
-
-void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& config) {
-    this->targetParameters = config;
-
-    if (!config.stackPointerRegisterLowAddress.has_value()) {
-        throw DeviceInitializationFailure("Failed to find stack pointer register start address");
-    }
-
-    if (!config.stackPointerRegisterSize.has_value()) {
-        throw DeviceInitializationFailure("Failed to find stack pointer register size");
-    }
-
-    if (!config.statusRegisterStartAddress.has_value()) {
-        throw DeviceInitializationFailure("Failed to find status register start address");
-    }
-
-    if (!config.statusRegisterSize.has_value()) {
-        throw DeviceInitializationFailure("Failed to find status register size");
-    }
-
-    if (this->configVariant == Avr8ConfigVariant::NONE) {
-        auto configVariant = this->resolveConfigVariant();
-
-        if (!configVariant.has_value()) {
-            throw DeviceInitializationFailure("Failed to resolve config variant for the selected "
-                "physical interface and AVR8 family. The selected physical interface is not known to be supported "
-                "by the AVR8 family."
-            );
-        }
-
-        this->configVariant = configVariant.value();
-    }
-
-    switch (this->configVariant) {
-        case Avr8ConfigVariant::DEBUG_WIRE:
-        case Avr8ConfigVariant::MEGAJTAG: {
-            this->setDebugWireAndJtagParameters();
-            break;
-        }
-        case Avr8ConfigVariant::XMEGA: {
-            this->setPdiParameters();
-            break;
-        }
-        case Avr8ConfigVariant::UPDI: {
-            this->setUpdiParameters();
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-}
-
-void EdbgAvr8Interface::init() {
-    if (this->configVariant == Avr8ConfigVariant::XMEGA) {
-        // Default PDI clock to 4MHz
-        // TODO: Make this adjustable via a target config parameter
-        this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(0x0FA0));
-    }
-
-    if (this->configVariant == Avr8ConfigVariant::UPDI) {
-        // Default UPDI clock to 1.8MHz
-        this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(0x0708));
-        this->setParameter(Avr8EdbgParameters::ENABLE_HIGH_VOLTAGE_UPDI, static_cast<std::uint8_t>(0x00));
-    }
-
-    if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
-        // Default clock value for mega debugging is 2KHz
-        // TODO: Make this adjustable via a target config parameter
-        this->setParameter(Avr8EdbgParameters::MEGA_DEBUG_CLOCK, static_cast<std::uint16_t>(0x00C8));
-        this->setParameter(Avr8EdbgParameters::JTAG_DAISY_CHAIN_SETTINGS, static_cast<std::uint32_t>(0));
-    }
-
-    this->setParameter(
-        Avr8EdbgParameters::CONFIG_VARIANT,
-        static_cast<std::uint8_t>(this->configVariant)
-    );
-
-    this->setParameter(
-        Avr8EdbgParameters::CONFIG_FUNCTION,
-        static_cast<std::uint8_t>(this->configFunction)
-    );
-
-    this->setParameter(
-        Avr8EdbgParameters::PHYSICAL_INTERFACE,
-        getAvr8PhysicalInterfaceToIdMapping().at(this->physicalInterface)
-    );
-}
-
-std::unique_ptr<AvrEvent> EdbgAvr8Interface::getAvrEvent() {
-    auto event = this->edbgInterface.requestAvrEvent();
-
-    if (!event.has_value()) {
-        return nullptr;
-    }
-
-    switch (event->getEventId()) {
-        case AvrEventId::AVR8_BREAK_EVENT: {
-            // Break event
-            return std::make_unique<BreakEvent>(event.value());
-        }
-        default: {
-            /*
-             * TODO: This isn't very nice as we're performing an unnecessary copy. Maybe requestAvrEvents should
-             *       return a unique_ptr instead?
-             */
-            return std::make_unique<AvrEvent>(event.value());
-        }
-    }
-}
-
-void EdbgAvr8Interface::clearEvents() {
-    while (this->getAvrEvent() != nullptr) {}
-}
-
 void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
     auto commandFrame = CommandFrames::Avr8Generic::ActivatePhysical(applyExternalReset);
 
@@ -718,243 +1138,30 @@ void EdbgAvr8Interface::detach() {
     this->targetAttached = false;
 }
 
-void EdbgAvr8Interface::activate() {
-    if (!this->physicalInterfaceActivated) {
-        this->activatePhysical();
+std::unique_ptr<AvrEvent> EdbgAvr8Interface::getAvrEvent() {
+    auto event = this->edbgInterface.requestAvrEvent();
+
+    if (!event.has_value()) {
+        return nullptr;
     }
 
-    if (!this->targetAttached) {
-        this->attach();
-    }
-}
-
-void EdbgAvr8Interface::deactivate() {
-    if (this->targetAttached) {
-        if (this->physicalInterface == PhysicalInterface::DEBUG_WIRE && this->disableDebugWireOnDeactivate) {
-            try {
-                this->disableDebugWire();
-                Logger::warning("Successfully disabled debugWire on the AVR8 target - this is only temporary - "
-                    "the debugWire module has lost control of the RESET pin. Bloom will no longer be able to interface "
-                    "with the target until the next power cycle.");
-
-            } catch (const Exception& exception) {
-                // Failing to disable debugWire should never prevent us from proceeding with target deactivation.
-                Logger::error(exception.getMessage());
-            }
+    switch (event->getEventId()) {
+        case AvrEventId::AVR8_BREAK_EVENT: {
+            // Break event
+            return std::make_unique<BreakEvent>(event.value());
         }
-
-        this->stop();
-        this->clearAllBreakpoints();
-        this->run();
-
-        this->detach();
-    }
-
-    if (this->physicalInterfaceActivated) {
-        this->deactivatePhysical();
-    }
-}
-
-void EdbgAvr8Interface::reset() {
-    auto commandFrame = CommandFrames::Avr8Generic::Reset();
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Reset target command failed", response);
-    }
-}
-
-void EdbgAvr8Interface::stop() {
-    auto commandFrame = CommandFrames::Avr8Generic::Stop();
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Stop target command failed", response);
-    }
-
-    if (this->getTargetState() == TargetState::RUNNING) {
-        this->waitForStoppedEvent();
-    }
-}
-
-void EdbgAvr8Interface::step() {
-    auto commandFrame = CommandFrames::Avr8Generic::Step();
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Step target command failed", response);
-    }
-
-    this->targetState = TargetState::RUNNING;
-}
-
-void EdbgAvr8Interface::waitForStoppedEvent() {
-    auto breakEvent = this->waitForAvrEvent<BreakEvent>();
-
-    if (breakEvent == nullptr) {
-        throw Exception("Failed to receive break event for AVR8 target");
-    }
-
-    this->targetState = TargetState::STOPPED;
-}
-
-void EdbgAvr8Interface::disableDebugWire() {
-    auto commandFrame = CommandFrames::Avr8Generic::DisableDebugWire();
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Disable debugWire command failed", response);
-    }
-}
-
-void EdbgAvr8Interface::run() {
-    this->clearEvents();
-    auto commandFrame = CommandFrames::Avr8Generic::Run();
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Run command failed", response);
-    }
-
-    this->targetState = TargetState::RUNNING;
-}
-
-void EdbgAvr8Interface::runTo(std::uint32_t address) {
-    this->clearEvents();
-    Logger::debug("Running to address: " + std::to_string(address));
-    auto commandFrame = CommandFrames::Avr8Generic::RunTo(address);
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Run-to command failed", response);
-    }
-
-    this->targetState = TargetState::RUNNING;
-}
-
-std::uint32_t EdbgAvr8Interface::getProgramCounter() {
-    if (this->targetState != TargetState::STOPPED) {
-        this->stop();
-    }
-
-    auto commandFrame = CommandFrames::Avr8Generic::GetProgramCounter();
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Get program counter command failed", response);
-    }
-
-    return response.extractProgramCounter();
-}
-
-void EdbgAvr8Interface::setProgramCounter(std::uint32_t programCounter) {
-    if (this->targetState != TargetState::STOPPED) {
-        this->stop();
-    }
-
-    /*
-     * The program counter will be given in byte address form, but the EDBG tool will be expecting it in word
-     * address (16-bit) form. This is why we divide it by 2.
-     */
-    auto commandFrame = CommandFrames::Avr8Generic::SetProgramCounter(programCounter / 2);
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Set program counter command failed", response);
-    }
-}
-
-TargetSignature EdbgAvr8Interface::getDeviceId() {
-    if (this->configVariant == Avr8ConfigVariant::UPDI) {
-        /*
-         * When using the UPDI physical interface, the 'Get device ID' command behaves in an odd manner, where it
-         * doesn't actually return the target signature, but instead a fixed four byte string reading:
-         * 'A', 'V', 'R' and ' ' (white space).
-         *
-         * So it appears we cannot use that command for UPDI sessions. As an alternative, we will just read the
-         * signature from memory using the signature base address.
-         *
-         * TODO: Currently, we're assuming the signature will always only ever be three bytes in size, but we may
-         *       want to consider pulling the size from the TDF.
-         */
-        auto signatureMemory = this->readMemory(
-            Avr8MemoryType::SRAM,
-            this->targetParameters.signatureSegmentStartAddress.value(),
-            3
-        );
-
-        if (signatureMemory.size() != 3) {
-            throw Exception("Failed to read AVR8 signature from target - unexpected response size");
+        default: {
+            /*
+             * TODO: This isn't very nice as we're performing an unnecessary copy. Maybe requestAvrEvents should
+             *       return a unique_ptr instead?
+             */
+            return std::make_unique<AvrEvent>(event.value());
         }
-
-        return TargetSignature(signatureMemory[0], signatureMemory[1], signatureMemory[2]);
-    }
-
-    auto commandFrame = CommandFrames::Avr8Generic::GetDeviceId();
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Get device ID command failed", response);
-    }
-
-    return response.extractSignature(this->physicalInterface);
-}
-
-void EdbgAvr8Interface::setBreakpoint(std::uint32_t address) {
-    auto commandFrame = CommandFrames::Avr8Generic::SetSoftwareBreakpoints({address});
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Set software breakpoint command failed", response);
     }
 }
 
-void EdbgAvr8Interface::clearBreakpoint(std::uint32_t address) {
-    auto commandFrame = CommandFrames::Avr8Generic::ClearSoftwareBreakpoints({address});
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Clear software breakpoint command failed", response);
-    }
-}
-
-void EdbgAvr8Interface::clearAllBreakpoints() {
-    auto commandFrame = CommandFrames::Avr8Generic::ClearAllSoftwareBreakpoints();
-
-    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
-    if (response.getResponseId() == Avr8ResponseId::FAILED) {
-        throw Avr8CommandFailure("AVR8 Clear all software breakpoints command failed", response);
-    }
-}
-
-void EdbgAvr8Interface::refreshTargetState() {
-    auto avrEvent = this->getAvrEvent();
-
-    if (avrEvent != nullptr && avrEvent->getEventId() == AvrEventId::AVR8_BREAK_EVENT) {
-        auto breakEvent = dynamic_cast<BreakEvent*>(avrEvent.get());
-
-        if (breakEvent == nullptr) {
-            throw Exception("Failed to process AVR8 break event");
-        }
-
-        this->targetState = TargetState::STOPPED;
-        return;
-    }
-
-    this->targetState = TargetState::RUNNING;
-}
-
-TargetState EdbgAvr8Interface::getTargetState() {
-    /*
-     * We are not informed when a target goes from a stopped state to a running state, so there is no need
-     * to query the tool when we already know the target has stopped.
-     *
-     * This means we have to rely on the assumption that the target cannot enter a running state without
-     * our instruction.
-     */
-    if (this->targetState != TargetState::STOPPED) {
-        this->refreshTargetState();
-    }
-
-    return this->targetState;
+void EdbgAvr8Interface::clearEvents() {
+    while (this->getAvrEvent() != nullptr) {}
 }
 
 TargetMemoryBuffer EdbgAvr8Interface::readMemory(
@@ -1174,245 +1381,38 @@ void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, 
     }
 }
 
-TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors& descriptors) {
-    /*
-     * This function needs to be fast. Insight eagerly requests the values of all known registers that it can present
-     * to the user. It does this on numerous occasions (target stopped, user clicked refresh, etc). This means we will
-     * be frequently loading over 100 register values in a single instance.
-     *
-     * For the above reason, we do not read each register value individually. That would take far too long if we have
-     * over 100 registers to read. Instead, we group the register descriptors into collections by register type, and
-     * resolve the address range for each collection. We then perform a single read operation for each collection
-     * and hold the memory buffer in a random access container (std::vector). Finally, we extract the data for
-     * each register descriptor, from the memory buffer, and construct the relevant TargetRegister object.
-     *
-     * TODO: We should be grouping the register descriptors by memory type, as opposed to register type. This
-     *       isn't much of a problem ATM, as currently, we only work with registers that are stored in the data
-     *       address space or the register file. This will need to be addressed before we can work with any other
-     *       registers stored elsewhere.
-     */
-    auto output = TargetRegisters();
+void EdbgAvr8Interface::refreshTargetState() {
+    auto avrEvent = this->getAvrEvent();
 
-    // Group descriptors by type and resolve the address range for each type
-    auto descriptorsByType = std::map<TargetRegisterType, std::set<const TargetRegisterDescriptor*>>();
+    if (avrEvent != nullptr && avrEvent->getEventId() == AvrEventId::AVR8_BREAK_EVENT) {
+        auto breakEvent = dynamic_cast<BreakEvent*>(avrEvent.get());
 
-    /*
-     * An address range is just an std::pair of integers - the first being the start address, the second being the
-     * end address.
-     */
-    using AddressRange = std::pair<std::uint32_t, std::uint32_t>;
-    auto addressRangeByType = std::map<TargetRegisterType, AddressRange>();
-
-    for (const auto& descriptor : descriptors) {
-        if (!descriptor.startAddress.has_value()) {
-            Logger::debug(
-                "Attempted to read register in the absence of a start address - register name: "
-                    + descriptor.name.value_or("unknown")
-            );
-            continue;
+        if (breakEvent == nullptr) {
+            throw Exception("Failed to process AVR8 break event");
         }
 
-        descriptorsByType[descriptor.type].insert(&descriptor);
-
-        const auto startAddress = descriptor.startAddress.value();
-        const auto endAddress = startAddress + (descriptor.size - 1);
-
-        if (!addressRangeByType.contains(descriptor.type)) {
-            auto addressRange = AddressRange();
-            addressRange.first = startAddress;
-            addressRange.second = endAddress;
-            addressRangeByType[descriptor.type] = addressRange;
-
-        } else {
-            auto& addressRange = addressRangeByType[descriptor.type];
-
-            if (startAddress < addressRange.first) {
-                addressRange.first = startAddress;
-            }
-
-            if (endAddress > addressRange.second) {
-                addressRange.second = endAddress;
-            }
-        }
+        this->targetState = TargetState::STOPPED;
+        return;
     }
 
-    /*
-     * Now that we have our address ranges and grouped descriptors, we can perform a single read call for each
-     * register type.
-     */
-    for (const auto& [registerType, descriptors] : descriptorsByType) {
-        const auto& addressRange = addressRangeByType[registerType];
-        const auto startAddress = addressRange.first;
-        const auto endAddress = addressRange.second;
-        const auto bufferSize = (endAddress - startAddress) + 1;
-
-        const auto memoryType = (registerType != TargetRegisterType::GENERAL_PURPOSE_REGISTER) ? Avr8MemoryType::SRAM : (
-            this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
-                ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM
-        );
-
-        /*
-         * When reading the entire range, we must avoid any attempts to access the OCD data register (OCDDR), as the
-         * debug tool will reject the command and respond with a 0x36 error code (invalid address error).
-         *
-         * For this reason, we specify the OCDDR address as an excluded address. This will mean
-         * the EdbgAvr8Interface::readMemory() function will employ the masked read memory command, as opposed to the
-         * general read memory command. The masked read memory command allows us to specify which addresses to
-         * read and which ones to ignore. For ignored addresses, the debug tool will just return a 0x00 byte.
-         * For more info, see section 7.1.22 titled 'Memory Read Masked', in the EDBG protocol document.
-         *
-         * Interestingly, the masked read memory command doesn't seem to require us to explicitly specify the OCDDR
-         * address as an excluded address. It seems to exclude the OCDDR automatically, even if we've not
-         * instructed it to do so. This is plausible, as we send the OCDDR address to the debug tool during target
-         * initialisation (see EdbgAvr8Interface::setDebugWireAndJtagParameters()). So this means we don't have to
-         * specify the OCDDR address as an excluded address, but the EdbgAvr8Interface::readMemory() function will
-         * only employ the masked read memory command when we supply at least one excluded address. For this reason,
-         * we still pass the OCDDR address to EdbgAvr8Interface::readMemory(), as an excluded address (provided we
-         * have it).
-         *
-         * See CommandFrames::Avr8Generic::ReadMemory(); and the Microchip EDBG documentation for more.
-         */
-        auto excludedAddresses = std::set<std::uint32_t>();
-        if (memoryType == Avr8MemoryType::SRAM && this->targetParameters.ocdDataRegister.has_value()) {
-            excludedAddresses.insert(
-                this->targetParameters.ocdDataRegister.value()
-                    + this->targetParameters.mappedIoSegmentStartAddress.value_or(0)
-            );
-        }
-
-        const auto flatMemoryBuffer = this->readMemory(
-            memoryType,
-            startAddress,
-            bufferSize,
-            excludedAddresses
-        );
-
-        if (flatMemoryBuffer.size() != bufferSize) {
-            throw Exception(
-                "Failed to read memory within register type address range (" + std::to_string(startAddress)
-                    + " - " + std::to_string(endAddress) +"). Expected " + std::to_string(bufferSize)
-                    + " bytes, got " + std::to_string(flatMemoryBuffer.size())
-            );
-        }
-
-        // Construct our TargetRegister objects directly from the flat memory buffer
-        for (const auto& descriptor : descriptors) {
-            /*
-             * Multi-byte AVR8 registers are stored in LSB form.
-             *
-             * This is why we use reverse iterators when extracting our data from flatMemoryBuffer. Doing so allows
-             * us to extract the data in MSB form (as is expected for all register values held in TargetRegister
-             * objects).
-             */
-            const auto bufferStartIt = flatMemoryBuffer.rend() - (descriptor->startAddress.value() - startAddress)
-                - descriptor->size;
-
-            output.emplace_back(
-                TargetRegister(
-                    *descriptor,
-                    TargetMemoryBuffer(bufferStartIt, bufferStartIt + descriptor->size)
-                )
-            );
-        }
-    }
-
-    return output;
+    this->targetState = TargetState::RUNNING;
 }
 
-void EdbgAvr8Interface::writeRegisters(const Targets::TargetRegisters& registers) {
-    for (const auto& reg : registers) {
-        const auto& registerDescriptor = reg.descriptor;
-        auto registerValue = reg.value;
+void EdbgAvr8Interface::disableDebugWire() {
+    auto commandFrame = CommandFrames::Avr8Generic::DisableDebugWire();
 
-        if (registerValue.empty()) {
-            throw Exception("Cannot write empty register value");
-        }
-
-        if (registerValue.size() > registerDescriptor.size) {
-            throw Exception("Register value exceeds size specified by register descriptor.");
-
-        } else if (registerValue.size() < registerDescriptor.size) {
-            // Fill the missing most-significant bytes with 0x00
-            registerValue.insert(registerValue.begin(), registerDescriptor.size - registerValue.size(), 0x00);
-        }
-
-        if (registerValue.size() > 1) {
-            // AVR8 registers are stored in LSB
-            std::reverse(registerValue.begin(), registerValue.end());
-        }
-
-        auto memoryType = Avr8MemoryType::SRAM;
-        if (registerDescriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER
-            && (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI)
-        ) {
-            memoryType = Avr8MemoryType::REGISTER_FILE;
-        }
-
-        // TODO: This can be inefficient when updating many registers, maybe do something a little smarter here.
-        this->writeMemory(
-            memoryType,
-            registerDescriptor.startAddress.value(),
-            registerValue
-        );
+    auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+    if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        throw Avr8CommandFailure("AVR8 Disable debugWire command failed", response);
     }
 }
 
-TargetMemoryBuffer EdbgAvr8Interface::readMemory(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes) {
-    auto avr8MemoryType = Avr8MemoryType::SRAM;
+void EdbgAvr8Interface::waitForStoppedEvent() {
+    auto breakEvent = this->waitForAvrEvent<BreakEvent>();
 
-    switch (memoryType) {
-        case TargetMemoryType::RAM: {
-            avr8MemoryType = Avr8MemoryType::SRAM;
-            break;
-        }
-        case TargetMemoryType::FLASH: {
-            if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
-                avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
-
-            } else if (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI) {
-                avr8MemoryType = Avr8MemoryType::APPL_FLASH;
-
-            } else {
-                avr8MemoryType = Avr8MemoryType::SPM;
-            }
-            break;
-        }
-        case TargetMemoryType::EEPROM: {
-            avr8MemoryType = Avr8MemoryType::EEPROM;
-        }
+    if (breakEvent == nullptr) {
+        throw Exception("Failed to receive break event for AVR8 target");
     }
 
-    return this->readMemory(avr8MemoryType, startAddress, bytes);
-}
-
-void EdbgAvr8Interface::writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
-    auto avr8MemoryType = Avr8MemoryType::SRAM;
-
-    switch (memoryType) {
-        case TargetMemoryType::RAM: {
-            avr8MemoryType = Avr8MemoryType::SRAM;
-            break;
-        }
-        case TargetMemoryType::FLASH: {
-            if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
-                avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
-
-            } else if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
-                avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
-                // TODO: Enable programming mode
-
-            } else if (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI) {
-                avr8MemoryType = Avr8MemoryType::APPL_FLASH;
-
-            } else {
-                avr8MemoryType = Avr8MemoryType::SPM;
-            }
-            break;
-        }
-        case TargetMemoryType::EEPROM: {
-            avr8MemoryType = Avr8MemoryType::EEPROM;
-        }
-    }
-
-    return this->writeMemory(avr8MemoryType, startAddress, buffer);
+    this->targetState = TargetState::STOPPED;
 }

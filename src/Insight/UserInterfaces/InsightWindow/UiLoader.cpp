@@ -2,14 +2,13 @@
 
 #include <QtUiTools>
 
+// Custom widgets
 #include "Widgets/PanelWidget.hpp"
 #include "Widgets/RotatableLabel.hpp"
 #include "Widgets/SvgWidget.hpp"
 #include "Widgets/SvgToolButton.hpp"
 #include "Widgets/ExpandingHeightScrollAreaWidget.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
-
-#include "src/Logger/Logger.hpp"
 
 using namespace Bloom;
 using namespace Bloom::Widgets;

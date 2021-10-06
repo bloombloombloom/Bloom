@@ -5,6 +5,10 @@
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 using namespace Bloom::Exceptions;
 
+void WriteMemory::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
+    gdbRspDebugServer.handleGdbPacket(*this);
+}
+
 void WriteMemory::init() {
     if (this->data.size() < 4) {
         throw Exception("Invalid packet length");
@@ -46,8 +50,4 @@ void WriteMemory::init() {
     if (this->buffer.size() != bufferSize) {
         throw Exception("Buffer size does not match length value given in write memory packet");
     }
-}
-
-void WriteMemory::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
-    gdbRspDebugServer.handleGdbPacket(*this);
 }

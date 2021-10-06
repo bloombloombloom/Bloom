@@ -8,10 +8,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class GetParameter: public Avr8GenericCommandFrame
     {
-    private:
-        Avr8EdbgParameter parameter;
-        std::uint8_t size = 0;
-
     public:
         GetParameter() = default;
 
@@ -49,5 +45,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        Avr8EdbgParameter parameter;
+        std::uint8_t size = 0;
     };
 }

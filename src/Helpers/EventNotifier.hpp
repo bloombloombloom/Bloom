@@ -25,26 +25,6 @@ namespace Bloom
      */
     class EventNotifier
     {
-    private:
-        int fileDescriptor = -1;
-        std::atomic<bool> initialised = false;
-
-        void init() {
-            this->fileDescriptor = ::eventfd(0, EFD_NONBLOCK);
-
-            if (this->fileDescriptor < -1) {
-                throw Exceptions::Exception("Failed to create new eventfd object - error number: "
-                    + std::to_string(errno));
-            }
-
-            this->initialised = true;
-        }
-
-        void close() {
-            ::close(this->fileDescriptor);
-            this->initialised = false;
-        }
-
     public:
         EventNotifier() {
             this->init();
@@ -77,6 +57,26 @@ namespace Bloom
                 throw Exceptions::Exception("Failed to clear EventNotifier object - eventfd_read failed - "
                     "error number: " + std::to_string(errno));
             }
+        }
+
+    private:
+        int fileDescriptor = -1;
+        std::atomic<bool> initialised = false;
+
+        void init() {
+            this->fileDescriptor = ::eventfd(0, EFD_NONBLOCK);
+
+            if (this->fileDescriptor < -1) {
+                throw Exceptions::Exception("Failed to create new eventfd object - error number: "
+                    + std::to_string(errno));
+            }
+
+            this->initialised = true;
+        }
+
+        void close() {
+            ::close(this->fileDescriptor);
+            this->initialised = false;
         }
     };
 }

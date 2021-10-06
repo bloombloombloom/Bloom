@@ -6,10 +6,12 @@
 #include <fcntl.h>
 
 #include "CommandPackets/CommandPacketFactory.hpp"
+
 #include "Exceptions/ClientDisconnected.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/DebugServerInterrupted.hpp"
+
 #include "src/Logger/Logger.hpp"
 
 using namespace Bloom::DebugServers::Gdb;
@@ -51,32 +53,6 @@ void Connection::accept(int serverSocketFileDescriptor) {
     this->enableReadInterrupts();
 }
 
-void Connection::disableReadInterrupts() {
-    if (::epoll_ctl(
-        this->eventFileDescriptor,
-        EPOLL_CTL_DEL,
-        this->interruptEventNotifier->getFileDescriptor(),
-        NULL) != 0
-    ) {
-        throw Exception("Failed to disable GDB client connection read interrupts - epoll_ctl failed");
-    }
-
-    this->readInterruptEnabled = false;
-}
-
-void Connection::enableReadInterrupts() {
-    auto interruptFileDescriptor = this->interruptEventNotifier->getFileDescriptor();
-    struct epoll_event event = {};
-    event.events = EPOLLIN;
-    event.data.fd = interruptFileDescriptor;
-
-    if (::epoll_ctl(this->eventFileDescriptor, EPOLL_CTL_ADD, interruptFileDescriptor, &event) != 0) {
-        throw Exception("Failed to enable GDB client connection read interrupts - epoll_ctl failed");
-    }
-
-    this->readInterruptEnabled = true;
-}
-
 void Connection::close() noexcept {
     if (this->socketFileDescriptor > 0) {
         ::close(this->socketFileDescriptor);
@@ -84,18 +60,28 @@ void Connection::close() noexcept {
     }
 }
 
-void Connection::write(const std::vector<unsigned char>& buffer) {
-    Logger::debug("Writing packet: " + std::string(buffer.begin(), buffer.end()));
-    if (::write(this->socketFileDescriptor, buffer.data(), buffer.size()) == -1) {
-        if (errno == EPIPE || errno == ECONNRESET) {
-            // Connection was closed
-            throw ClientDisconnected();
+std::vector<std::unique_ptr<CommandPacket>> Connection::readPackets() {
+    auto buffer = this->read();
+    Logger::debug("GDB client data received (" + std::to_string(buffer.size()) + " bytes): " + std::string(buffer.begin(), buffer.end()));
 
-        } else {
-            throw ClientCommunicationError("Failed to write " + std::to_string(buffer.size())
-            + " bytes to GDP client socket - error no: " + std::to_string(errno));
+    auto rawPackets = CommandPacketFactory::extractRawPackets(buffer);
+    std::vector<std::unique_ptr<CommandPacket>> output;
+
+    for (const auto& rawPacket : rawPackets) {
+        try {
+            output.push_back(CommandPacketFactory::create(rawPacket));
+            this->write({'+'});
+
+        } catch (const ClientDisconnected& exception) {
+            throw exception;
+
+        } catch (const Exception& exception) {
+            Logger::error("Failed to parse GDB packet - " + exception.getMessage());
+            this->write({'-'});
         }
     }
+
+    return output;
 }
 
 void Connection::writePacket(const ResponsePacket& packet) {
@@ -185,26 +171,42 @@ std::optional<unsigned char> Connection::readSingleByte(bool interruptible) {
     return std::nullopt;
 }
 
-std::vector<std::unique_ptr<CommandPacket>> Connection::readPackets() {
-    auto buffer = this->read();
-    Logger::debug("GDB client data received (" + std::to_string(buffer.size()) + " bytes): " + std::string(buffer.begin(), buffer.end()));
+void Connection::write(const std::vector<unsigned char>& buffer) {
+    Logger::debug("Writing packet: " + std::string(buffer.begin(), buffer.end()));
+    if (::write(this->socketFileDescriptor, buffer.data(), buffer.size()) == -1) {
+        if (errno == EPIPE || errno == ECONNRESET) {
+            // Connection was closed
+            throw ClientDisconnected();
 
-    auto rawPackets = CommandPacketFactory::extractRawPackets(buffer);
-    std::vector<std::unique_ptr<CommandPacket>> output;
-
-    for (const auto& rawPacket : rawPackets) {
-        try {
-            output.push_back(CommandPacketFactory::create(rawPacket));
-            this->write({'+'});
-
-        } catch (const ClientDisconnected& exception) {
-            throw exception;
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to parse GDB packet - " + exception.getMessage());
-            this->write({'-'});
+        } else {
+            throw ClientCommunicationError("Failed to write " + std::to_string(buffer.size())
+            + " bytes to GDP client socket - error no: " + std::to_string(errno));
         }
     }
+}
 
-    return output;
+void Connection::disableReadInterrupts() {
+    if (::epoll_ctl(
+        this->eventFileDescriptor,
+        EPOLL_CTL_DEL,
+        this->interruptEventNotifier->getFileDescriptor(),
+        NULL) != 0
+    ) {
+        throw Exception("Failed to disable GDB client connection read interrupts - epoll_ctl failed");
+    }
+
+    this->readInterruptEnabled = false;
+}
+
+void Connection::enableReadInterrupts() {
+    auto interruptFileDescriptor = this->interruptEventNotifier->getFileDescriptor();
+    struct epoll_event event = {};
+    event.events = EPOLLIN;
+    event.data.fd = interruptFileDescriptor;
+
+    if (::epoll_ctl(this->eventFileDescriptor, EPOLL_CTL_ADD, interruptFileDescriptor, &event) != 0) {
+        throw Exception("Failed to enable GDB client connection read interrupts - epoll_ctl failed");
+    }
+
+    this->readInterruptEnabled = true;
 }

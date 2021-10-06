@@ -35,6 +35,80 @@ namespace Bloom::Targets::TargetDescription
      */
     class TargetDescriptionFile
     {
+    public:
+        TargetDescriptionFile() = default;
+
+        /**
+         * Will construct a TargetDescriptionFile instance from the XML of a target description file, the path to which
+         * is given via xmlFilePath.
+         *
+         * @param xmlFilePath
+         */
+        explicit TargetDescriptionFile(const QString& xmlFilePath) {
+            this->init(xmlFilePath);
+        }
+
+        /**
+         * Will construct a TargetDescriptionFile instance from pre-loaded XML.
+         *
+         * @param xml
+         */
+        explicit TargetDescriptionFile(const QDomDocument& xml) {
+            this->init(xml);
+        }
+
+        /**
+         * Extracts target name.
+         *
+         * @return
+         */
+        [[nodiscard]] std::string getTargetName() const;
+
+        /**
+         * Returns a mapping of all property groups, with the property group name being the key.
+         *
+         * @return
+         */
+        [[nodiscard]] const std::map<std::string, PropertyGroup>& getPropertyGroupsMappedByName() const {
+            return this->propertyGroupsMappedByName;
+        }
+
+        /**
+         * Returns a mapping of all modules, with the module name being the key.
+         *
+         * @return
+         */
+        [[nodiscard]] const std::map<std::string, Module>& getModulesMappedByName() const {
+            return this->modulesMappedByName;
+        }
+
+        /**
+         * Returns a mapping of all peripheral modules, with the peripheral module name being the key.
+         *
+         * @return
+         */
+        [[nodiscard]] const std::map<std::string, Module>& getPeripheralModulesMappedByName() const {
+            return this->peripheralModulesMappedByName;
+        }
+
+        /**
+         * Returns all variants found in the TDF.
+         *
+         * @return
+         */
+        [[nodiscard]] const std::vector<Variant>& getVariants() const {
+            return this->variants;
+        }
+
+        /**
+         * Returns a mapping of pinouts, with the pinout name being the key.
+         *
+         * @return
+         */
+        [[nodiscard]] const std::map<std::string, Pinout>& getPinoutsMappedByName() const {
+            return this->pinoutsMappedByName;
+        }
+
     protected:
         QDomDocument xml;
         QDomElement deviceElement;
@@ -119,79 +193,5 @@ namespace Bloom::Targets::TargetDescription
          * Extracts all interfaces and loads them into this->interfacesByName
          */
         void loadInterfaces();
-
-    public:
-        TargetDescriptionFile() = default;
-
-        /**
-         * Will construct a TargetDescriptionFile instance from the XML of a target description file, the path to which
-         * is given via xmlFilePath.
-         *
-         * @param xmlFilePath
-         */
-        explicit TargetDescriptionFile(const QString& xmlFilePath) {
-            this->init(xmlFilePath);
-        }
-
-        /**
-         * Will construct a TargetDescriptionFile instance from pre-loaded XML.
-         *
-         * @param xml
-         */
-        explicit TargetDescriptionFile(const QDomDocument& xml) {
-            this->init(xml);
-        }
-
-        /**
-         * Extracts target name.
-         *
-         * @return
-         */
-        [[nodiscard]] std::string getTargetName() const;
-
-        /**
-         * Returns a mapping of all property groups, with the property group name being the key.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::map<std::string, PropertyGroup>& getPropertyGroupsMappedByName() const {
-            return this->propertyGroupsMappedByName;
-        }
-
-        /**
-         * Returns a mapping of all modules, with the module name being the key.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::map<std::string, Module>& getModulesMappedByName() const {
-            return this->modulesMappedByName;
-        }
-
-        /**
-         * Returns a mapping of all peripheral modules, with the peripheral module name being the key.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::map<std::string, Module>& getPeripheralModulesMappedByName() const {
-            return this->peripheralModulesMappedByName;
-        }
-
-        /**
-         * Returns all variants found in the TDF.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::vector<Variant>& getVariants() const {
-            return this->variants;
-        }
-
-        /**
-         * Returns a mapping of pinouts, with the pinout name being the key.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::map<std::string, Pinout>& getPinoutsMappedByName() const {
-            return this->pinoutsMappedByName;
-        }
     };
 }

@@ -3,7 +3,7 @@
 #include <QVBoxLayout>
 #include <set>
 
-#include "../../UiLoader.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "RegisterGroupWidget.hpp"
 #include "RegisterWidget.hpp"
 
@@ -123,54 +123,6 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
     );
 }
 
-void TargetRegistersPaneWidget::resizeEvent(QResizeEvent* event) {
-    const auto parentSize = this->parent->size();
-    const auto width = parentSize.width() - 1;
-    this->container->setFixedSize(width, parentSize.height());
-    this->searchInput->setFixedWidth(width - 20);
-
-    /*
-     * In order to avoid the panel resize handle overlapping the scroll bar handle, we reduce the size of
-     * the scroll area.
-     */
-    this->itemScrollArea->setFixedSize(
-        width - this->parent->getHandleSize(),
-        parentSize.height() - this->toolBar->height() - this->searchInput->height() - 5
-    );
-}
-
-void TargetRegistersPaneWidget::postActivate() {
-    if (this->targetState == Targets::TargetState::STOPPED) {
-        this->refreshRegisterValues();
-    }
-}
-
-void TargetRegistersPaneWidget::postDeactivate() {
-
-}
-
-void TargetRegistersPaneWidget::onTargetStateChanged(Targets::TargetState newState) {
-    using Targets::TargetState;
-    this->targetState = newState;
-
-    if (newState == TargetState::STOPPED && this->activated) {
-        this->refreshRegisterValues();
-    }
-}
-
-void TargetRegistersPaneWidget::onRegistersRead(const Targets::TargetRegisters& registers) {
-    for (const auto& targetRegister : registers) {
-        auto& descriptor = targetRegister.descriptor;
-
-        for (const auto& registerGroupWidget : this->registerGroupWidgets) {
-            if (registerGroupWidget->registerWidgetsMappedByDescriptor.contains(descriptor)) {
-                registerGroupWidget->registerWidgetsMappedByDescriptor.at(descriptor)->setRegisterValue(targetRegister);
-                break;
-            }
-        }
-    }
-}
-
 void TargetRegistersPaneWidget::filterRegisters(const QString& keyword) {
     auto stdKeyword = keyword.toLower().toStdString();
 
@@ -252,5 +204,53 @@ void TargetRegistersPaneWidget::onItemSelectionChange(ItemWidget* newlySelectedW
         }
 
         this->selectedItemWidget = newlySelectedWidget;
+    }
+}
+
+void TargetRegistersPaneWidget::resizeEvent(QResizeEvent* event) {
+    const auto parentSize = this->parent->size();
+    const auto width = parentSize.width() - 1;
+    this->container->setFixedSize(width, parentSize.height());
+    this->searchInput->setFixedWidth(width - 20);
+
+    /*
+     * In order to avoid the panel resize handle overlapping the scroll bar handle, we reduce the size of
+     * the scroll area.
+     */
+    this->itemScrollArea->setFixedSize(
+        width - this->parent->getHandleSize(),
+        parentSize.height() - this->toolBar->height() - this->searchInput->height() - 5
+    );
+}
+
+void TargetRegistersPaneWidget::postActivate() {
+    if (this->targetState == Targets::TargetState::STOPPED) {
+        this->refreshRegisterValues();
+    }
+}
+
+void TargetRegistersPaneWidget::postDeactivate() {
+
+}
+
+void TargetRegistersPaneWidget::onTargetStateChanged(Targets::TargetState newState) {
+    using Targets::TargetState;
+    this->targetState = newState;
+
+    if (newState == TargetState::STOPPED && this->activated) {
+        this->refreshRegisterValues();
+    }
+}
+
+void TargetRegistersPaneWidget::onRegistersRead(const Targets::TargetRegisters& registers) {
+    for (const auto& targetRegister : registers) {
+        auto& descriptor = targetRegister.descriptor;
+
+        for (const auto& registerGroupWidget : this->registerGroupWidgets) {
+            if (registerGroupWidget->registerWidgetsMappedByDescriptor.contains(descriptor)) {
+                registerGroupWidget->registerWidgetsMappedByDescriptor.at(descriptor)->setRegisterValue(targetRegister);
+                break;
+            }
+        }
     }
 }

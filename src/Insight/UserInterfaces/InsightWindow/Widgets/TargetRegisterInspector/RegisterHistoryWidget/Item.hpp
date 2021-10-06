@@ -8,7 +8,7 @@ namespace Bloom::Widgets
 {
     class Item: public ClickableWidget
     {
-    Q_OBJECT
+        Q_OBJECT
     public:
         Targets::TargetMemoryBuffer registerValue;
         Item(const Targets::TargetMemoryBuffer& registerValue, QWidget *parent);

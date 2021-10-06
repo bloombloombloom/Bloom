@@ -20,7 +20,29 @@ namespace Bloom
      */
     class InsightWorker: public QObject
     {
-    Q_OBJECT
+        Q_OBJECT
+
+    public:
+        explicit InsightWorker(EventManager& eventManager);
+
+        void queueTask(InsightWorkerTask* task);
+
+        void dispatchEvents() {
+            this->eventListener->dispatchCurrentEvents();
+        }
+
+    public slots:
+        void startup();
+        void requestPinStates(int variantId);
+
+    signals:
+        void taskQueued();
+        void targetStateUpdated(Bloom::Targets::TargetState newState);
+        void targetProgramCounterUpdated(quint32 programCounter);
+        void targetControllerSuspended();
+        void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
+        void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
+
     private:
         EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightWorkerEventListener");
@@ -44,26 +66,5 @@ namespace Bloom
 
     private slots:
         void executeTasks();
-
-    public:
-        explicit InsightWorker(EventManager& eventManager): eventManager(eventManager) {};
-
-        void dispatchEvents() {
-            this->eventListener->dispatchCurrentEvents();
-        }
-
-        void queueTask(InsightWorkerTask* task);
-
-    public slots:
-        void startup();
-        void requestPinStates(int variantId);
-
-    signals:
-        void taskQueued();
-        void targetStateUpdated(Bloom::Targets::TargetState newState);
-        void targetProgramCounterUpdated(quint32 programCounter);
-        void targetControllerSuspended();
-        void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
-        void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
     };
 }

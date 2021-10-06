@@ -6,9 +6,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class Attach: public Avr8GenericCommandFrame
     {
-    private:
-        bool breakAfterAttach = false;
-
     public:
         Attach() = default;
         explicit Attach(bool breakAfterAttach): breakAfterAttach(breakAfterAttach) {};
@@ -31,6 +28,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        bool breakAfterAttach = false;
     };
 
 }

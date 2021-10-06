@@ -17,16 +17,16 @@ void AvrEvent::init(const std::vector<unsigned char>& rawResponse) {
     if (responseData.size() < 2) {
         // All AVR_EVT responses should consist of at least two bytes (excluding the AVR_EVT ID)
         throw Exception("Failed to construct AvrEvent object - AVR_EVT response "
-                        "returned no additional data.");
+            "returned no additional data.");
     }
 
     // Response size is two bytes, MSB
-    auto responsePacketSize = static_cast<size_t>((responseData[0] << 8) | responseData[1]);
+    auto responsePacketSize = static_cast<std::size_t>((responseData[0] << 8) | responseData[1]);
 
     if (responseData.size() < 2) {
         // All AVR_EVT responses should consist of at least two bytes (excluding the AVR_EVT ID)
         throw Exception("Failed to construct AvrEvent object - AVR_EVT response "
-                        "contained invalid event data size.");
+            "contained invalid event data size.");
     }
 
     auto eventData = std::vector<unsigned char>();

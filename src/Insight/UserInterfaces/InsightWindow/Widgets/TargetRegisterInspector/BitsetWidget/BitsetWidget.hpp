@@ -13,18 +13,7 @@ namespace Bloom::Widgets
 {
     class BitsetWidget: public QWidget
     {
-    Q_OBJECT
-    private:
-        int byteNumber = 0;
-        unsigned char& byte;
-        std::bitset<std::numeric_limits<unsigned char>::digits> bitset = {byte};
-        bool readOnly = true;
-
-        QWidget* container = nullptr;
-
-    protected:
-        void paintEvent(QPaintEvent* event) override;
-        void drawWidget(QPainter& painter);
+        Q_OBJECT
 
     public:
         constexpr static int VALUE_GRAPHIC_HEIGHT = 20;
@@ -37,5 +26,17 @@ namespace Bloom::Widgets
 
     signals:
         void byteChanged();
+
+    protected:
+        void paintEvent(QPaintEvent* event) override;
+        void drawWidget(QPainter& painter);
+
+    private:
+        int byteNumber = 0;
+        unsigned char& byte;
+        std::bitset<std::numeric_limits<unsigned char>::digits> bitset = {byte};
+        bool readOnly = true;
+
+        QWidget* container = nullptr;
     };
 }

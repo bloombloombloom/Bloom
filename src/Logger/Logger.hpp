@@ -52,23 +52,11 @@ namespace Bloom
      */
     class Logger
     {
-    private:
-        /**
-         * We keep a record of every log entry for future processing. Maybe dumping to a file or something
-         * of that nature when a fatal error occurs.
-         */
-        static inline std::vector<LogEntry> logEntries;
-
-        static inline bool errorPrintingEnabled = true;
-        static inline bool warningPrintingEnabled = true;
-        static inline bool infoPrintingEnabled = true;
-        static inline bool debugPrintingEnabled = false;
-
-        static inline std::mutex logMutex;
-
-        static void log(const std::string& message, LogLevel logLevel, bool print);
-
     public:
+        static void configure(ApplicationConfig& applicationConfig);
+
+        static void silence();
+
         static void setInfoPrinting(bool enabled) {
             Logger::infoPrintingEnabled = enabled;
         }
@@ -97,8 +85,20 @@ namespace Bloom
             Logger::log(message, LogLevel::DEBUG, Logger::debugPrintingEnabled);
         }
 
-        static void configure(ApplicationConfig& applicationConfig);
+    private:
+        /**
+         * We keep a record of every log entry for future processing. Maybe dumping to a file or something
+         * of that nature when a fatal error occurs.
+         */
+        static inline std::vector<LogEntry> logEntries;
 
-        static void silence();
+        static inline bool errorPrintingEnabled = true;
+        static inline bool warningPrintingEnabled = true;
+        static inline bool infoPrintingEnabled = true;
+        static inline bool debugPrintingEnabled = false;
+
+        static inline std::mutex logMutex;
+
+        static void log(const std::string& message, LogLevel logLevel, bool print);
     };
 }

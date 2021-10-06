@@ -14,7 +14,6 @@
 #include <set>
 
 #include "src/EventManager/Events/Events.hpp"
-#include "src/Logger/Logger.hpp"
 #include "src/Helpers/SyncSafe.hpp"
 #include "src/Helpers/EventNotifier.hpp"
 
@@ -42,41 +41,6 @@ namespace Bloom
      */
     class EventListener
     {
-    private:
-        /**
-         * Human readable name for event listeners.
-         *
-         * TODO: This was useful during development, but may no longer be needed.
-         */
-        std::string name;
-
-        static inline std::atomic<std::size_t> lastId = 0;
-        std::size_t id = ++(EventListener::lastId);
-
-        /**
-         * Holds all events registered to this listener.
-         *
-         * Events are grouped by event type, and removed from their queue just *before* the dispatching to
-         * registered handlers begins.
-         */
-        SyncSafe<std::map<Events::EventType, std::queue<Events::SharedGenericEventPointer>>> eventQueueByEventType;
-        std::condition_variable eventQueueByEventTypeCV;
-
-        /**
-         * A mapping of event types to a vector of callback functions. Events will be dispatched to these
-         * callback functions, during a call to EventListener::dispatchEvent().
-         *
-         * Each callback will be passed a reference to the event (we wrap all registered callbacks in a lambda, where
-         * we perform a downcast before invoking the callback. See EventListener::registerCallbackForEventType()
-         * for more)
-         */
-        SyncSafe<std::map<Events::EventType, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
-        SyncSafe<std::set<Events::EventType>> registeredEventTypes;
-
-        std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
-
-        std::vector<Events::SharedGenericEventPointer> getEvents();
-
     public:
         explicit EventListener(std::string name): name(std::move(name)) {};
 
@@ -370,6 +334,41 @@ namespace Bloom
          * Removes all callbacks registered for the event listener.
          */
         void clearAllCallbacks();
+
+    private:
+        /**
+         * Human readable name for event listeners.
+         *
+         * TODO: This was useful during development, but may no longer be needed.
+         */
+        std::string name;
+
+        static inline std::atomic<std::size_t> lastId = 0;
+        std::size_t id = ++(EventListener::lastId);
+
+        /**
+         * Holds all events registered to this listener.
+         *
+         * Events are grouped by event type, and removed from their queue just *before* the dispatching to
+         * registered handlers begins.
+         */
+        SyncSafe<std::map<Events::EventType, std::queue<Events::SharedGenericEventPointer>>> eventQueueByEventType;
+        std::condition_variable eventQueueByEventTypeCV;
+
+        /**
+         * A mapping of event types to a vector of callback functions. Events will be dispatched to these
+         * callback functions, during a call to EventListener::dispatchEvent().
+         *
+         * Each callback will be passed a reference to the event (we wrap all registered callbacks in a lambda, where
+         * we perform a downcast before invoking the callback. See EventListener::registerCallbackForEventType()
+         * for more)
+         */
+        SyncSafe<std::map<Events::EventType, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
+        SyncSafe<std::set<Events::EventType>> registeredEventTypes;
+
+        std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
+
+        std::vector<Events::SharedGenericEventPointer> getEvents();
     };
 
     /**

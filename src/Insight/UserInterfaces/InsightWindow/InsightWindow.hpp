@@ -24,7 +24,39 @@ namespace Bloom
 {
     class InsightWindow: public QMainWindow
     {
-    Q_OBJECT
+        Q_OBJECT
+
+    public:
+        InsightWindow(InsightWorker& insightWorker);
+
+        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
+            this->environmentConfig = environmentConfig;
+            this->targetConfig = environmentConfig.targetConfig;
+        }
+
+        void setInsightConfig(const InsightConfig& insightConfig) {
+            this->insightConfig = insightConfig;
+        }
+
+        void init(Targets::TargetDescriptor targetDescriptor);
+
+    public slots:
+        void onTargetControllerSuspended();
+        void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
+        void onTargetStateUpdate(Targets::TargetState newState);
+        void onTargetProgramCounterUpdate(quint32 programCounter);
+        void openReportIssuesUrl();
+        void openGettingStartedUrl();
+        void openAboutWindow();
+        void toggleTargetRegistersPane();
+
+    signals:
+        void refreshTargetPinStates(int variantId);
+
+    protected:
+        void resizeEvent(QResizeEvent* event) override;
+        void showEvent(QShowEvent* event) override;
+
     private:
         InsightConfig insightConfig;
         EnvironmentConfig environmentConfig;
@@ -76,36 +108,5 @@ namespace Bloom
         void deactivate();
 
         void adjustPanels();
-
-    protected:
-        void resizeEvent(QResizeEvent* event) override;
-        void showEvent(QShowEvent* event) override;
-
-    public:
-        InsightWindow(InsightWorker& insightWorker);
-
-        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
-            this->environmentConfig = environmentConfig;
-            this->targetConfig = environmentConfig.targetConfig;
-        }
-
-        void setInsightConfig(const InsightConfig& insightConfig) {
-            this->insightConfig = insightConfig;
-        }
-
-        void init(Targets::TargetDescriptor targetDescriptor);
-
-    public slots:
-        void onTargetControllerSuspended();
-        void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
-        void onTargetStateUpdate(Targets::TargetState newState);
-        void onTargetProgramCounterUpdate(quint32 programCounter);
-        void openReportIssuesUrl();
-        void openGettingStartedUrl();
-        void openAboutWindow();
-        void toggleTargetRegistersPane();
-
-    signals:
-        void refreshTargetPinStates(int variantId);
     };
 }

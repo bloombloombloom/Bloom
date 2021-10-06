@@ -5,18 +5,14 @@
 #include <utility>
 
 #include "../TargetPinBodyWidget.hpp"
+
 #include "src/Targets/TargetPinDescriptor.hpp"
 
 namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 {
     class PinBodyWidget: public TargetPinBodyWidget
     {
-    private:
-        bool isVertical = false;
-
-    protected:
-        void paintEvent(QPaintEvent* event) override;
-        void drawWidget(QPainter& painter);
+        Q_OBJECT
 
     public:
         static const int WIDTH = 30;
@@ -33,5 +29,12 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
                 this->setFixedSize(PinBodyWidget::HEIGHT, PinBodyWidget::WIDTH);
             }
         }
+
+    protected:
+        void paintEvent(QPaintEvent* event) override;
+        void drawWidget(QPainter& painter);
+
+    private:
+        bool isVertical = false;
     };
 }

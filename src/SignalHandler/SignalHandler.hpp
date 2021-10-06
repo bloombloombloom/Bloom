@@ -10,6 +10,21 @@ namespace Bloom
 {
     class SignalHandler: public Thread
     {
+    public:
+        explicit SignalHandler(EventManager& eventManager): eventManager(eventManager) {};
+
+        /**
+         * Entry point for SignalHandler thread.
+         */
+        void run();
+
+        /**
+         * Triggers the shutdown of the SignalHandler thread.
+         */
+        void triggerShutdown() {
+            this->setThreadState(ThreadState::SHUTDOWN_INITIATED);
+        };
+
     private:
         EventManager& eventManager;
 
@@ -45,20 +60,5 @@ namespace Bloom
          * program immediately if numerous SIGINT signals have been received.
          */
         void triggerApplicationShutdown();
-
-    public:
-        explicit SignalHandler(EventManager& eventManager): eventManager(eventManager) {};
-
-        /**
-         * Entry point for SignalHandler thread.
-         */
-        void run();
-
-        /**
-         * Triggers the shutdown of the SignalHandler thread.
-         */
-        void triggerShutdown() {
-            this->setThreadState(ThreadState::SHUTDOWN_INITIATED);
-        };
     };
 }

@@ -19,13 +19,6 @@ namespace Bloom
      */
     class EventManager
     {
-    private:
-        /**
-         * A mapping of listener IDs to registered listeners. Each registered listener is given an interger ID.
-         */
-        std::map<size_t, std::shared_ptr<EventListener>> registeredListeners;
-        std::mutex registerListenerMutex;
-
     public:
         /**
          * Registers an EventListener instance with this manager.
@@ -62,5 +55,12 @@ namespace Bloom
          * @return
          */
         bool isEventTypeListenedFor(Events::EventType eventType);
+
+    private:
+        /**
+         * A mapping of listener IDs to registered listeners. Each registered listener is given an interger ID.
+         */
+        std::map<size_t, std::shared_ptr<EventListener>> registeredListeners;
+        std::mutex registerListenerMutex;
     };
 }

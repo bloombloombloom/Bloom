@@ -7,13 +7,17 @@ namespace Bloom
 {
     class UiLoader: public QUiLoader
     {
-    Q_OBJECT
-    private:
-        std::map<QString, std::function<QWidget*(QWidget* parent, const QString& name)>> customWidgetConstructorsByWidgetName = {};
+        Q_OBJECT
 
     public:
         explicit UiLoader(QObject* parent);
 
         QWidget* createWidget(const QString& className, QWidget* parent, const QString& name) override;
+
+    private:
+        std::map<
+            QString,
+            std::function<QWidget*(QWidget* parent, const QString& name)>
+        > customWidgetConstructorsByWidgetName = {};
     };
 }

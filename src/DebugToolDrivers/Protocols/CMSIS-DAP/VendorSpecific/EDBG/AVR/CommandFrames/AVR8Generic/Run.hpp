@@ -6,6 +6,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class Run: public Avr8GenericCommandFrame
     {
+    public:
+        Run() {
+            init();
+        };
+
     private:
         void init() {
             /*
@@ -18,10 +23,5 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             payload[1] = 0x00;
             this->setPayload(payload);
         }
-
-    public:
-        Run() {
-            init();
-        };
     };
 }

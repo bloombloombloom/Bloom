@@ -1,7 +1,5 @@
 #include "CmsisDapInterface.hpp"
 
-#include <memory>
-#include <chrono>
 #include <thread>
 
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"

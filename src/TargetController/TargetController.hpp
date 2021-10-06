@@ -20,8 +20,6 @@
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
 
-#include "src/Logger/Logger.hpp"
-
 namespace Bloom
 {
     /**
@@ -35,6 +33,22 @@ namespace Bloom
      */
     class TargetController: public Thread
     {
+    public:
+        explicit TargetController(EventManager& eventManager): eventManager(eventManager) {};
+
+        void setApplicationConfig(const ApplicationConfig& applicationConfig) {
+            this->applicationConfig = applicationConfig;
+        }
+
+        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
+            this->environmentConfig = environmentConfig;
+        }
+
+        /**
+         * Entry point for the TargetController.
+         */
+        void run();
+
     private:
         /**
          * The TC starts off in a suspended state. TargetController::resume() is invoked from the startup routine.
@@ -181,6 +195,11 @@ namespace Bloom
         }
 
         /**
+         * Because the TargetController hogs the thread, this method must be called in a dedicated thread.
+         */
+        void startup();
+
+        /**
          * Installs Bloom's udev rules on user's machine. Rules are copied from build/Distribution/Resources/UdevRules
          * to /etc/udev/rules.d/. This method will report an error if Bloom isn't running as root (as root privileges
          * are required for writing to files in /etc/udev).
@@ -188,27 +207,11 @@ namespace Bloom
         static void checkUdevRules();
 
         /**
-         * Because the TargetController hogs the thread, this method must be called in a dedicated thread.
-         */
-        void startup();
-
-        /**
          * Exit point - must be called before the TargetController thread is terminated.
          *
          * Handles releasing the hardware among other clean-up related things.
          */
         void shutdown();
-
-        /**
-         * Establishes a connection with the debug tool and target. Prepares the hardware for a debug session.
-         */
-        void acquireHardware();
-
-        /**
-         * Attempts to gracefully disconnect from the debug tool and the target. All control of the debug tool and
-         * target will cease.
-         */
-        void releaseHardware();
 
         /**
          * Puts the TargetController into the suspended state.
@@ -221,6 +224,17 @@ namespace Bloom
          * Wakes the TargetController from the suspended state.
          */
         void resume();
+
+        /**
+         * Establishes a connection with the debug tool and target. Prepares the hardware for a debug session.
+         */
+        void acquireHardware();
+
+        /**
+         * Attempts to gracefully disconnect from the debug tool and the target. All control of the debug tool and
+         * target will cease.
+         */
+        void releaseHardware();
 
         /**
          * Extracts address ranges and groups target register descriptors.
@@ -257,21 +271,12 @@ namespace Bloom
 
         Targets::TargetDescriptor& getTargetDescriptor();
 
-    public:
-        explicit TargetController(EventManager& eventManager): eventManager(eventManager) {};
-
-        void setApplicationConfig(const ApplicationConfig& applicationConfig) {
-            this->applicationConfig = applicationConfig;
-        }
-
-        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
-            this->environmentConfig = environmentConfig;
-        }
-
         /**
-         * Entry point for the TargetController.
+         * Invokes a shutdown.
+         *
+         * @param event
          */
-        void run();
+        void onShutdownTargetControllerEvent(const Events::ShutdownTargetController& event);
 
         /**
          * Reports the current state of the TargetController.
@@ -286,6 +291,20 @@ namespace Bloom
          * @param event
          */
         void onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event);
+
+        /**
+         * Will hold the target stopped at it's current state.
+         *
+         * @param event
+         */
+        void onDebugSessionStartedEvent(const Events::DebugSessionStarted& event);
+
+        /**
+         * Will simply kick off execution on the target.
+         *
+         * @param event
+         */
+        void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
         /**
          * Will attempt to stop execution on the target and emit a TargetExecutionStopped event.
@@ -307,13 +326,6 @@ namespace Bloom
          * @param event
          */
         void onResumeTargetExecutionEvent(const Events::ResumeTargetExecution& event);
-
-        /**
-         * Invokes a shutdown.
-         *
-         * @param event
-         */
-        void onShutdownTargetControllerEvent(const Events::ShutdownTargetController& event);
 
         /**
          * Will attempt to read the requested registers and emit a RegistersRetrievedFromTarget event.
@@ -358,20 +370,6 @@ namespace Bloom
          * @param event
          */
         void onRemoveBreakpointEvent(const Events::RemoveBreakpointOnTarget& event);
-
-        /**
-         * Will hold the target stopped at it's current state.
-         *
-         * @param event
-         */
-        void onDebugSessionStartedEvent(const Events::DebugSessionStarted& event);
-
-        /**
-         * Will simply kick off execution on the target.
-         *
-         * @param event
-         */
-        void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
         /**
          * Will update the program counter value on the target. On success, a ProgramCounterSetOnTarget event is

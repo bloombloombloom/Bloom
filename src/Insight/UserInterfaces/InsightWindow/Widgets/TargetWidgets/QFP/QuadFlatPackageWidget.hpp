@@ -17,7 +17,15 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
      */
     class QuadFlatPackageWidget: public TargetPackageWidget
     {
-    Q_OBJECT
+        Q_OBJECT
+
+    public:
+        QuadFlatPackageWidget(
+            const Targets::TargetVariant& targetVariant,
+            InsightWorker& insightWorker,
+            QWidget* parent
+        );
+
     private:
         QVBoxLayout* layout = nullptr;
         QHBoxLayout* horizontalLayout = nullptr;
@@ -26,12 +34,5 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         QHBoxLayout* bottomPinLayout = nullptr;
         QVBoxLayout* leftPinLayout = nullptr;
         BodyWidget* bodyWidget = nullptr;
-
-    public:
-        QuadFlatPackageWidget(
-            const Targets::TargetVariant& targetVariant,
-            InsightWorker& insightWorker,
-            QWidget* parent
-        );
     };
 }

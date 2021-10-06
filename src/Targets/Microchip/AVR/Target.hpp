@@ -4,12 +4,20 @@
 #include <iomanip>
 
 #include "../../Target.hpp"
+
 #include "TargetSignature.hpp"
 
 namespace Bloom::Targets::Microchip::Avr
 {
     class Target: public ::Bloom::Targets::Target
     {
+    public:
+        explicit Target() = default;
+
+        std::string getHumanReadableId() override {
+            return this->getId().toHex();
+        }
+
     protected:
         std::optional<TargetSignature> id;
 
@@ -18,12 +26,5 @@ namespace Bloom::Targets::Microchip::Avr
         }
 
         virtual TargetSignature getId() = 0;
-
-    public:
-        explicit Target() = default;
-
-        std::string getHumanReadableId() override {
-            return this->getId().toHex();
-        }
     };
 }

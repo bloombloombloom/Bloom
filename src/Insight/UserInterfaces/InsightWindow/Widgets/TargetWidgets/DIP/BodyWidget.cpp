@@ -1,7 +1,7 @@
+#include "BodyWidget.hpp"
+
 #include <QPainter>
 
-#include "BodyWidget.hpp"
-#include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::Widgets::InsightTargetWidgets::Dip;

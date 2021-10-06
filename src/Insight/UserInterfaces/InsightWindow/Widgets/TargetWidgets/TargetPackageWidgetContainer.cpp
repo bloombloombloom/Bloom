@@ -7,6 +7,14 @@ using namespace Bloom::Widgets::InsightTargetWidgets;
 
 TargetPackageWidgetContainer::TargetPackageWidgetContainer(QWidget* parent): QWidget(parent) {}
 
+void TargetPackageWidgetContainer::setPackageWidget(TargetPackageWidget* packageWidget) {
+    this->packageWidget = packageWidget;
+
+    if (packageWidget != nullptr) {
+        this->layout()->addWidget(packageWidget);
+    }
+}
+
 void TargetPackageWidgetContainer::resizeEvent(QResizeEvent* event) {
     if (this->packageWidget == nullptr) {
         return;
@@ -19,12 +27,4 @@ void TargetPackageWidgetContainer::resizeEvent(QResizeEvent* event) {
         packageSize.width(),
         packageSize.height()
     );
-}
-
-void TargetPackageWidgetContainer::setPackageWidget(TargetPackageWidget* packageWidget) {
-    this->packageWidget = packageWidget;
-
-    if (packageWidget != nullptr) {
-        this->layout()->addWidget(packageWidget);
-    }
 }

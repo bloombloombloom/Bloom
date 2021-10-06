@@ -11,14 +11,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
 {
     class TargetPinWidget: public QWidget
     {
-    Q_OBJECT
-    protected:
-        InsightWorker& insightWorker;
-
-        Targets::TargetVariant targetVariant;
-        Targets::TargetPinDescriptor pinDescriptor;
-        std::optional<Targets::TargetPinState> pinState;
-        bool pinStateChanged = false;
+        Q_OBJECT
 
     public:
         TargetPinWidget(
@@ -42,5 +35,13 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
     public slots:
         virtual void onWidgetBodyClicked();
+
+    protected:
+        InsightWorker& insightWorker;
+
+        Targets::TargetVariant targetVariant;
+        Targets::TargetPinDescriptor pinDescriptor;
+        std::optional<Targets::TargetPinState> pinState;
+        bool pinStateChanged = false;
     };
 }

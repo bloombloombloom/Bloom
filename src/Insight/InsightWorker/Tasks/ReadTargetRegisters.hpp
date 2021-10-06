@@ -7,12 +7,7 @@ namespace Bloom
 {
     class ReadTargetRegisters: public InsightWorkerTask
     {
-    Q_OBJECT
-    private:
-        Targets::TargetRegisterDescriptors descriptors;
-
-    protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        Q_OBJECT
 
     public:
         ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors):
@@ -20,5 +15,11 @@ namespace Bloom
 
     signals:
         void targetRegistersRead(Targets::TargetRegisters registers);
+
+    protected:
+        void run(TargetControllerConsole& targetControllerConsole) override;
+
+    private:
+        Targets::TargetRegisterDescriptors descriptors;
     };
 }

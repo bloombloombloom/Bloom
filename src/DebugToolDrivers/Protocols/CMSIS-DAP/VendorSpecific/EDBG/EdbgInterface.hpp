@@ -39,11 +39,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 
         Protocols::CmsisDap::Edbg::Avr::AvrResponse getAvrResponse();
 
-        virtual std::vector<Protocols::CmsisDap::Edbg::Avr::AvrResponse> requestAvrResponses();
-
-        virtual std::optional<Protocols::CmsisDap::Edbg::Avr::AvrEvent> requestAvrEvent();
-
-
         template<class CommandFrameType>
         typename CommandFrameType::ResponseFrameType sendAvrCommandFrameAndWaitForResponseFrame(
             const CommandFrameType& avrCommandFrame
@@ -72,5 +67,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
             responseFrame.initFromAvrResponses(responses);
             return responseFrame;
         }
+
+        virtual std::optional<Protocols::CmsisDap::Edbg::Avr::AvrEvent> requestAvrEvent();
+
+    private:
+        virtual std::vector<Protocols::CmsisDap::Edbg::Avr::AvrResponse> requestAvrResponses();
     };
 }

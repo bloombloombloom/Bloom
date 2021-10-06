@@ -8,10 +8,7 @@ namespace Bloom::Widgets
 {
     class Q_WIDGETS_EXPORT ClickableWidget: public QFrame
     {
-    Q_OBJECT
-    protected:
-        void mouseReleaseEvent(QMouseEvent* event) override;
-        void mouseDoubleClickEvent(QMouseEvent* event) override;
+        Q_OBJECT
 
     public:
         explicit ClickableWidget(QWidget* parent): QFrame(parent) {};
@@ -21,5 +18,8 @@ namespace Bloom::Widgets
         void clicked();
         void doubleClicked();
 
+    protected:
+        void mouseReleaseEvent(QMouseEvent* event) override;
+        void mouseDoubleClickEvent(QMouseEvent* event) override;
     };
 }

@@ -24,13 +24,6 @@ namespace Bloom::Targets
 
     struct TargetRegisterDescriptor
     {
-        friend std::hash<Bloom::Targets::TargetRegisterDescriptor>;
-
-    private:
-        mutable std::optional<std::size_t> cachedHash;
-
-        std::size_t getHash() const;
-
     public:
         std::optional<std::uint32_t> startAddress;
         std::uint32_t size = 0;
@@ -63,6 +56,12 @@ namespace Bloom::Targets
                 return this->getHash() < other.getHash();
             }
         }
+
+    private:
+        mutable std::optional<std::size_t> cachedHash;
+        std::size_t getHash() const;
+
+        friend std::hash<Bloom::Targets::TargetRegisterDescriptor>;
     };
 
     struct TargetRegister

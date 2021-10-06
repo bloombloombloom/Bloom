@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 
 #include "../TargetPackageWidget.hpp"
+
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
@@ -17,12 +18,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
      */
     class DualInlinePackageWidget: public TargetPackageWidget
     {
-    Q_OBJECT
-    private:
-        QVBoxLayout* layout = nullptr;
-        QHBoxLayout* topPinLayout = nullptr;
-        QHBoxLayout* bottomPinLayout = nullptr;
-        BodyWidget* bodyWidget = nullptr;
+        Q_OBJECT
 
     public:
         DualInlinePackageWidget(
@@ -30,5 +26,11 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
             InsightWorker& insightWorker,
             QWidget* parent
         );
+
+    private:
+        QVBoxLayout* layout = nullptr;
+        QHBoxLayout* topPinLayout = nullptr;
+        QHBoxLayout* bottomPinLayout = nullptr;
+        BodyWidget* bodyWidget = nullptr;
     };
 }

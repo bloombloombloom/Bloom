@@ -14,18 +14,8 @@ namespace Bloom
      */
     class DebugTool
     {
-    private:
-        bool initialised = false;
-
-    protected:
-        void setInitialised(bool initialised) {
-            this->initialised = initialised;
-        }
-
     public:
-        [[nodiscard]] bool isInitialised() const {
-            return this->initialised;
-        }
+        virtual ~DebugTool() = default;
 
         /**
          * Should establish a connection to the device and prepare it for a debug session.
@@ -55,6 +45,16 @@ namespace Bloom
             return nullptr;
         };
 
-        virtual ~DebugTool() = default;
+        [[nodiscard]] bool isInitialised() const {
+            return this->initialised;
+        }
+
+    protected:
+        void setInitialised(bool initialised) {
+            this->initialised = initialised;
+        }
+
+    private:
+        bool initialised = false;
     };
 }

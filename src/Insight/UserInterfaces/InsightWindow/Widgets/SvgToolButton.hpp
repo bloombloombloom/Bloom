@@ -9,18 +9,12 @@ namespace Bloom::Widgets
 {
     class SvgToolButton: public QToolButton
     {
-    Q_OBJECT
+        Q_OBJECT
         Q_PROPERTY(QString svgFilePath READ getSvgFilePath WRITE setSvgFilePath DESIGNABLE true)
         Q_PROPERTY(QString disabledSvgFilePath READ getDisabledSvgFilePath WRITE setDisabledSvgFilePath DESIGNABLE true)
 
         Q_PROPERTY(int buttonWidth READ getButtonWidth WRITE setButtonWidth DESIGNABLE true)
         Q_PROPERTY(int buttonHeight READ getButtonHeight WRITE setButtonHeight DESIGNABLE true)
-
-    private:
-        SvgWidget* svgWidget = new SvgWidget(this);
-        SvgWidget* disabledSvgWidget = nullptr;
-        int buttonWidth = 0;
-        int buttonHeight = 0;
 
     public:
         explicit SvgToolButton(QWidget* parent): QToolButton(parent) {
@@ -63,5 +57,10 @@ namespace Bloom::Widgets
         [[nodiscard]] int getButtonHeight() const {
             return this->buttonHeight;
         }
+
+    private:
+        SvgWidget* svgWidget = new SvgWidget(this);
+        int buttonWidth = 0;
+        int buttonHeight = 0;
     };
 }

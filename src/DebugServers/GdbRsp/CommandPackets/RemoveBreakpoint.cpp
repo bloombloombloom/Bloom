@@ -7,6 +7,10 @@
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 using namespace Bloom::Exceptions;
 
+void RemoveBreakpoint::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
+    gdbRspDebugServer.handleGdbPacket(*this);
+}
+
 void RemoveBreakpoint::init() {
     if (data.size() < 6) {
         throw Exception("Unexpected RemoveBreakpoint packet size");
@@ -32,8 +36,4 @@ void RemoveBreakpoint::init() {
     if (!conversionStatus) {
         throw Exception("Failed to convert address hex value from RemoveBreakpoint packet.");
     }
-}
-
-void RemoveBreakpoint::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
-    gdbRspDebugServer.handleGdbPacket(*this);
 }

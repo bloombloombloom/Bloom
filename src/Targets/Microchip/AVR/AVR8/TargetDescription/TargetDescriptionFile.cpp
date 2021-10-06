@@ -4,9 +4,10 @@
 #include <QJsonArray>
 
 #include "src/Helpers/Paths.hpp"
+#include "src/Logger/Logger.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 #include "src/Targets/TargetDescription/Exceptions/TargetDescriptionParsingFailureException.hpp"
-#include "src/Logger/Logger.hpp"
 
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription;
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
@@ -1126,37 +1127,4 @@ void TargetDescriptionFile::loadUpdiTargetParameters(TargetParameters& targetPar
     if (lockbitsMemorySegment.has_value()) {
         targetParameters.lockbitsSegmentStartAddress = lockbitsMemorySegment->startAddress;
     }
-}
-
-std::uint32_t TargetDescriptionFile::getRegisterAddressOffsetByModuleName(const std::string& moduleName) const {
-    if (this->peripheralModulesMappedByName.contains(moduleName)) {
-        auto& peripheralModule = this->peripheralModulesMappedByName.at(moduleName);
-
-        if (peripheralModule.instancesMappedByName.contains(moduleName)) {
-            auto& moduleInstance = peripheralModule.instancesMappedByName.at(moduleName);
-
-            if (moduleInstance.registerGroupsMappedByName.contains(moduleName)) {
-                auto& registerGroup = moduleInstance.registerGroupsMappedByName.at(moduleName);
-
-                if (!registerGroup.moduleName.has_value() || registerGroup.moduleName.value() == moduleName) {
-                    return registerGroup.offset.value_or(0);
-                }
-            }
-
-            /*
-             * If we get here, that means we couldn't find the right register group by module name. This will happen
-             * if the register group name doesn't match the module name attribute ("name-in-module") against the
-             * register group node, in the TDF.
-             *
-             * As a final attempt, we'll brute force search all register groups in the module instance.
-             */
-            for (const auto& [registerGroupName, registerGroup] : moduleInstance.registerGroupsMappedByName) {
-                if (registerGroup.moduleName.has_value() && registerGroup.moduleName.value() == moduleName) {
-                    return registerGroup.offset.value_or(0);
-                }
-            }
-        }
-    }
-
-    return 0;
 }

@@ -6,7 +6,7 @@
 #include <QScrollBar>
 #include <set>
 
-#include "../../../UiLoader.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Helpers/DateTime.hpp"

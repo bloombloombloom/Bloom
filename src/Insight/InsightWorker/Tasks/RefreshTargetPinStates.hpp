@@ -8,17 +8,18 @@ namespace Bloom
 {
     class RefreshTargetPinStates: public InsightWorkerTask
     {
-    Q_OBJECT
-    private:
-        int variantId;
-
-    protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        Q_OBJECT
 
     public:
         RefreshTargetPinStates(int variantId): InsightWorkerTask(), variantId(variantId) {}
 
     signals:
         void targetPinStatesRetrieved(Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);
+
+    protected:
+        void run(TargetControllerConsole& targetControllerConsole) override;
+
+    private:
+        int variantId;
     };
 }

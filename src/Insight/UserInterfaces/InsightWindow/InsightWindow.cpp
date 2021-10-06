@@ -143,13 +143,107 @@ void InsightWindow::init(TargetDescriptor targetDescriptor) {
     this->activate();
 }
 
-void InsightWindow::toggleUi(bool disable) {
-    this->uiDisabled = disable;
-
-    if (this->refreshIoInspectionButton != nullptr) {
-        this->refreshIoInspectionButton->setDisabled(disable);
-        this->refreshIoInspectionButton->repaint();
+void InsightWindow::onTargetControllerSuspended() {
+    if (this->activated) {
+        this->deactivate();
     }
+}
+
+void InsightWindow::onTargetControllerResumed(const TargetDescriptor& targetDescriptor) {
+    if (!this->activated) {
+        this->targetDescriptor = targetDescriptor;
+        this->activate();
+    }
+}
+
+void InsightWindow::onTargetStateUpdate(TargetState newState) {
+    this->targetState = newState;
+
+    if (newState == TargetState::RUNNING) {
+        this->targetStatusLabel->setText("Running");
+        this->programCounterValueLabel->setText("-");
+
+    } else if (newState == TargetState::STOPPED) {
+        this->targetStatusLabel->setText("Stopped");
+        this->toggleUi(false);
+
+    } else {
+        this->targetStatusLabel->setText("Unknown");
+    }
+}
+
+void InsightWindow::onTargetProgramCounterUpdate(quint32 programCounter) {
+    this->programCounterValueLabel->setText(
+        "0x" + QString::number(programCounter, 16).toUpper() + " (" + QString::number(programCounter) + ")"
+    );
+}
+
+void InsightWindow::openReportIssuesUrl() {
+    auto url = QUrl("https://bloom.oscillate.io/report-issue");
+    /*
+     * The https://bloom.oscillate.io/report-issue URL just redirects to the Bloom GitHub issue page.
+     *
+     * We can use query parameters in the URL to pre-fill the body of the issue. We use this to include some
+     * target information.
+     */
+    auto urlQuery = QUrlQuery();
+    auto issueBody = QString("Issue reported via Bloom Insight.\nTarget name: "
+        + QString::fromStdString(this->targetDescriptor.name) + "\n"
+        + "Target ID: " + QString::fromStdString(this->targetDescriptor.id) + "\n"
+    );
+
+    if (this->selectedVariant != nullptr) {
+        issueBody += "Target variant: " + QString::fromStdString(this->selectedVariant->name) + "\n";
+    }
+
+    issueBody += "\nPlease describe your issue below. Include as much detail as possible.";
+    urlQuery.addQueryItem("body", issueBody);
+    url.setQuery(urlQuery);
+
+    QDesktopServices::openUrl(url);
+}
+
+void InsightWindow::openGettingStartedUrl() {
+    QDesktopServices::openUrl(QUrl("https://bloom.oscillate.io/docs/getting-started"));
+}
+
+void InsightWindow::openAboutWindow() {
+    if (this->aboutWindowWidget == nullptr) {
+        this->aboutWindowWidget = new AboutWindow(this->windowContainer);
+    }
+
+    this->aboutWindowWidget->show();
+}
+
+void InsightWindow::toggleTargetRegistersPane() {
+    if (this->targetRegistersSidePane->activated) {
+        this->targetRegistersSidePane->deactivate();
+        this->targetRegistersButton->setChecked(false);
+
+        /*
+         * Given that the target registers side pane is currently the only pane in the left panel, the panel will be
+         * empty so no need to leave it visible.
+         */
+        this->leftPanel->setVisible(false);
+
+    } else {
+        this->targetRegistersSidePane->activate();
+        this->targetRegistersButton->setChecked(true);
+        this->leftPanel->setVisible(true);
+    }
+}
+
+void InsightWindow::resizeEvent(QResizeEvent* event) {
+    const auto windowSize = this->size();
+
+    this->windowContainer->setFixedSize(windowSize);
+    this->layoutContainer->setFixedSize(windowSize);
+
+    this->adjustPanels();
+}
+
+void InsightWindow::showEvent(QShowEvent* event) {
+    this->adjustPanels();
 }
 
 bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
@@ -240,6 +334,15 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
 
         this->adjustSize();
         this->targetPackageWidget->show();
+    }
+}
+
+void InsightWindow::toggleUi(bool disable) {
+    this->uiDisabled = disable;
+
+    if (this->refreshIoInspectionButton != nullptr) {
+        this->refreshIoInspectionButton->setDisabled(disable);
+        this->refreshIoInspectionButton->repaint();
     }
 }
 
@@ -431,107 +534,4 @@ void InsightWindow::adjustPanels() {
             containerSize.height() - targetPackageWidgetSize.height() - this->bottomMenuBar->height() - 20
         )
     );
-}
-
-void InsightWindow::resizeEvent(QResizeEvent* event) {
-    const auto windowSize = this->size();
-
-    this->windowContainer->setFixedSize(windowSize);
-    this->layoutContainer->setFixedSize(windowSize);
-
-    this->adjustPanels();
-}
-
-void InsightWindow::showEvent(QShowEvent* event) {
-    this->adjustPanels();
-}
-
-void InsightWindow::onTargetControllerSuspended() {
-    if (this->activated) {
-        this->deactivate();
-    }
-}
-
-void InsightWindow::onTargetControllerResumed(const TargetDescriptor& targetDescriptor) {
-    if (!this->activated) {
-        this->targetDescriptor = targetDescriptor;
-        this->activate();
-    }
-}
-
-void InsightWindow::openReportIssuesUrl() {
-    auto url = QUrl("https://bloom.oscillate.io/report-issue");
-    /*
-     * The https://bloom.oscillate.io/report-issue URL just redirects to the Bloom GitHub issue page.
-     *
-     * We can use query parameters in the URL to pre-fill the body of the issue. We use this to include some
-     * target information.
-     */
-    auto urlQuery = QUrlQuery();
-    auto issueBody = QString("Issue reported via Bloom Insight.\nTarget name: "
-        + QString::fromStdString(this->targetDescriptor.name) + "\n"
-        + "Target ID: " + QString::fromStdString(this->targetDescriptor.id) + "\n"
-    );
-
-    if (this->selectedVariant != nullptr) {
-        issueBody += "Target variant: " + QString::fromStdString(this->selectedVariant->name) + "\n";
-    }
-
-    issueBody += "\nPlease describe your issue below. Include as much detail as possible.";
-    urlQuery.addQueryItem("body", issueBody);
-    url.setQuery(urlQuery);
-
-    QDesktopServices::openUrl(url);
-}
-
-void InsightWindow::openGettingStartedUrl() {
-    QDesktopServices::openUrl(QUrl("https://bloom.oscillate.io/docs/getting-started"));
-}
-
-void InsightWindow::openAboutWindow() {
-    if (this->aboutWindowWidget == nullptr) {
-        this->aboutWindowWidget = new AboutWindow(this->windowContainer);
-    }
-
-    this->aboutWindowWidget->show();
-}
-
-void InsightWindow::onTargetStateUpdate(TargetState newState) {
-    this->targetState = newState;
-
-    if (newState == TargetState::RUNNING) {
-        this->targetStatusLabel->setText("Running");
-        this->programCounterValueLabel->setText("-");
-
-    } else if (newState == TargetState::STOPPED) {
-        this->targetStatusLabel->setText("Stopped");
-        this->toggleUi(false);
-
-    } else {
-        this->targetStatusLabel->setText("Unknown");
-    }
-}
-
-void InsightWindow::onTargetProgramCounterUpdate(quint32 programCounter) {
-    this->programCounterValueLabel->setText(
-        "0x" + QString::number(programCounter, 16).toUpper() + " (" + QString::number(programCounter) + ")"
-    );
-}
-
-void InsightWindow::toggleTargetRegistersPane() {
-    if (this->targetRegistersSidePane->activated) {
-        this->targetRegistersSidePane->deactivate();
-        this->targetRegistersButton->setChecked(false);
-
-        /*
-         * Given that the target registers side pane is currently the only pane in the left panel, the panel will be
-         * empty so no need to leave it visible.
-         */
-        this->leftPanel->setVisible(false);
-
-    } else {
-        this->targetRegistersSidePane->activate();
-        this->targetRegistersButton->setChecked(true);
-        this->leftPanel->setVisible(true);
-    }
 }

@@ -12,25 +12,8 @@ namespace Bloom::Usb
 {
     class UsbDevice
     {
-    protected:
-        libusb_context* libUsbContext = nullptr;
-        libusb_device* libUsbDevice = nullptr;
-        libusb_device_handle* libUsbDeviceHandle = nullptr;
-        std::uint16_t vendorId;
-        std::uint16_t productId;
-
-        std::vector<libusb_device*> findMatchingDevices(
-            std::optional<std::uint16_t> vendorId = std::nullopt, std::optional<std::uint16_t> productId = std::nullopt
-        );
-
-        void close();
-
     public:
-        UsbDevice(std::uint16_t vendorId, std::uint16_t productId) {
-            this->vendorId = vendorId;
-            this->productId = productId;
-        };
-
+        UsbDevice(std::uint16_t vendorId, std::uint16_t productId): vendorId(vendorId), productId(productId) {};
         ~UsbDevice() = default;
 
         void init();
@@ -57,5 +40,18 @@ namespace Bloom::Usb
          * @param configIndex
          */
         virtual void setConfiguration(int configIndex);
+
+    protected:
+        libusb_context* libUsbContext = nullptr;
+        libusb_device* libUsbDevice = nullptr;
+        libusb_device_handle* libUsbDeviceHandle = nullptr;
+        std::uint16_t vendorId;
+        std::uint16_t productId;
+
+        std::vector<libusb_device*> findMatchingDevices(
+            std::optional<std::uint16_t> vendorId = std::nullopt, std::optional<std::uint16_t> productId = std::nullopt
+        );
+
+        void close();
     };
 }

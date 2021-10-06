@@ -10,19 +10,6 @@ namespace Bloom::Usb
 {
     class Interface
     {
-    protected:
-        libusb_device* libUsbDevice = nullptr;
-        libusb_device_handle* libUsbDeviceHandle = nullptr;
-
-        std::uint16_t vendorId = 0;
-        std::uint16_t productId = 0;
-
-        std::uint8_t number = 0;
-        std::string name;
-
-        bool initialised = false;
-        bool claimed = false;
-
     public:
         explicit Interface(const std::uint8_t& interfaceNumber = 0) {
             this->setNumber(interfaceNumber);
@@ -112,5 +99,18 @@ namespace Bloom::Usb
          */
         virtual int read(unsigned char* buffer, unsigned char endPoint, std::size_t length, std::size_t timeout);
         virtual void write(unsigned char* buffer, unsigned char endPoint, int length);
+
+    protected:
+        libusb_device* libUsbDevice = nullptr;
+        libusb_device_handle* libUsbDeviceHandle = nullptr;
+
+        std::uint16_t vendorId = 0;
+        std::uint16_t productId = 0;
+
+        std::uint8_t number = 0;
+        std::string name;
+
+        bool initialised = false;
+        bool claimed = false;
     };
 }

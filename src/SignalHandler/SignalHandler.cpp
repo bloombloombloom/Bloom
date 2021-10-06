@@ -8,31 +8,6 @@
 
 using namespace Bloom;
 
-void SignalHandler::startup() {
-    this->setName("SH");
-    Thread::setThreadState(ThreadState::STARTING);
-    Logger::debug("Starting SignalHandler");
-    // Block all signal interrupts
-    auto signalSet = this->getRegisteredSignalSet();
-    sigprocmask(SIG_SETMASK, &signalSet, NULL);
-
-    // Register handlers here
-    this->handlersMappedBySignalNum.insert(std::pair(
-        SIGINT,
-        std::bind(&SignalHandler::triggerApplicationShutdown, this)
-    ));
-
-    this->handlersMappedBySignalNum.insert(std::pair(
-        SIGTERM,
-        std::bind(&SignalHandler::triggerApplicationShutdown, this)
-    ));
-
-    // It's possible that the SignalHandler has been instructed to shutdown, before it could finish starting up.
-    if (this->getThreadState() != ThreadState::SHUTDOWN_INITIATED) {
-        Thread::setThreadState(ThreadState::READY);
-    }
-}
-
 void SignalHandler::run() {
     try {
         this->startup();
@@ -56,6 +31,31 @@ void SignalHandler::run() {
 
     Logger::info("Shutting down SignalHandler");
     Thread::setThreadState(ThreadState::STOPPED);
+}
+
+void SignalHandler::startup() {
+    this->setName("SH");
+    Thread::setThreadState(ThreadState::STARTING);
+    Logger::debug("Starting SignalHandler");
+    // Block all signal interrupts
+    auto signalSet = this->getRegisteredSignalSet();
+    sigprocmask(SIG_SETMASK, &signalSet, NULL);
+
+    // Register handlers here
+    this->handlersMappedBySignalNum.insert(std::pair(
+        SIGINT,
+        std::bind(&SignalHandler::triggerApplicationShutdown, this)
+    ));
+
+    this->handlersMappedBySignalNum.insert(std::pair(
+        SIGTERM,
+        std::bind(&SignalHandler::triggerApplicationShutdown, this)
+    ));
+
+    // It's possible that the SignalHandler has been instructed to shutdown, before it could finish starting up.
+    if (this->getThreadState() != ThreadState::SHUTDOWN_INITIATED) {
+        Thread::setThreadState(ThreadState::READY);
+    }
 }
 
 sigset_t SignalHandler::getRegisteredSignalSet() const {

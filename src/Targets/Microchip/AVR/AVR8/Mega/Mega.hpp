@@ -6,8 +6,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
     class Mega: public Avr8
     {
-    protected:
-
     public:
         explicit Mega(const Avr8& avr8): Avr8(avr8) {};
 

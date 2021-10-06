@@ -1,9 +1,22 @@
 #include "Logger.hpp"
 
 #include <iostream>
-#include <thread>
 
 using namespace Bloom;
+
+void Logger::configure(ApplicationConfig& applicationConfig) {
+    if (applicationConfig.debugLoggingEnabled) {
+        Logger::debugPrintingEnabled = true;
+        Logger::debug("Debug log printing has been enabled.");
+    }
+}
+
+void Logger::silence() {
+    Logger::debugPrintingEnabled = false;
+    Logger::infoPrintingEnabled = false;
+    Logger::errorPrintingEnabled = false;
+    Logger::warningPrintingEnabled = false;
+}
 
 void Logger::log(const std::string& message, LogLevel logLevel, bool print) {
     auto lock = std::unique_lock(Logger::logMutex);
@@ -50,18 +63,4 @@ void Logger::log(const std::string& message, LogLevel logLevel, bool print) {
 
         std::cout << logEntry.message << "\033[0m" << std::endl;
     }
-}
-
-void Logger::configure(ApplicationConfig& applicationConfig) {
-    if (applicationConfig.debugLoggingEnabled) {
-        Logger::debugPrintingEnabled = true;
-        Logger::debug("Debug log printing has been enabled.");
-    }
-}
-
-void Logger::silence() {
-    Logger::debugPrintingEnabled = false;
-    Logger::infoPrintingEnabled = false;
-    Logger::errorPrintingEnabled = false;
-    Logger::warningPrintingEnabled = false;
 }

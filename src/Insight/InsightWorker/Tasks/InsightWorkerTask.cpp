@@ -1,5 +1,7 @@
 #include "InsightWorkerTask.hpp"
 
+#include "src/Logger/Logger.hpp"
+
 using namespace Bloom;
 
 void InsightWorkerTask::execute(TargetControllerConsole& targetControllerConsole) {

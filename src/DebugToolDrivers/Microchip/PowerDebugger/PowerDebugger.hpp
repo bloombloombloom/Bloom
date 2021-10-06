@@ -27,24 +27,6 @@ namespace Bloom::DebugToolDrivers
      */
     class PowerDebugger: public DebugTool, public Usb::UsbDevice
     {
-    private:
-        /**
-         * The EDBG interface implements additional functionality via vendor specific CMSIS-DAP commands.
-         * In other words, all EDBG commands are just CMSIS-DAP vendor commands that allow the debug tool
-         * to support additional functionality, like AVR programming and debugging.
-         *
-         * Any non-EDBG CMSIS-DAP commands for the Power Debugger can be sent through the EDBGInterface (as the
-         * EdbgInterface extends the CmsisDapInterface).
-         */
-        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
-
-        /**
-         * The Power Debugger employs the EDBG AVR8Generic protocol for interfacing with AVR8 targets.
-         */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface;
-
-        bool sessionStarted = false;
-
     public:
         static const std::uint16_t USB_VENDOR_ID = 1003;
         static const std::uint16_t USB_PRODUCT_ID = 8516;
@@ -83,5 +65,23 @@ namespace Bloom::DebugToolDrivers
          * Ends the active session with the debug tool.
          */
         void endSession();
+
+    private:
+        /**
+         * The EDBG interface implements additional functionality via vendor specific CMSIS-DAP commands.
+         * In other words, all EDBG commands are just CMSIS-DAP vendor commands that allow the debug tool
+         * to support additional functionality, like AVR programming and debugging.
+         *
+         * Any non-EDBG CMSIS-DAP commands for the Power Debugger can be sent through the EDBGInterface (as the
+         * EdbgInterface extends the CmsisDapInterface).
+         */
+        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
+
+        /**
+         * The Power Debugger employs the EDBG AVR8Generic protocol for interfacing with AVR8 targets.
+         */
+        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface;
+
+        bool sessionStarted = false;
     };
 }

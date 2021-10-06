@@ -8,7 +8,11 @@ namespace Bloom::Widgets
 {
     class Q_WIDGETS_EXPORT ExpandingHeightScrollAreaWidget: public QScrollArea
     {
-    Q_OBJECT
+        Q_OBJECT
+
+    public:
+        explicit ExpandingHeightScrollAreaWidget(QWidget* parent): QScrollArea(parent) {};
+
     protected:
         [[nodiscard]] QSize scrollAreaSize() const {
             auto parentWidget = this->parentWidget();
@@ -34,9 +38,5 @@ namespace Bloom::Widgets
         [[nodiscard]] QSize minimumSizeHint() const override {
             return this->scrollAreaSize();
         };
-
-    public:
-        explicit ExpandingHeightScrollAreaWidget(QWidget* parent): QScrollArea(parent) {};
-
     };
 }

@@ -1,10 +1,7 @@
-#include <QPainter>
-#include <QLayout>
-#include <QEvent>
-#include <QMenu>
-#include <QContextMenuEvent>
-
 #include "PinBodyWidget.hpp"
+
+#include <QPainter>
+
 #include "src/Logger/Logger.hpp"
 
 using namespace Bloom::Widgets::InsightTargetWidgets::Dip;

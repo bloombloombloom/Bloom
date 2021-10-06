@@ -3,7 +3,6 @@
 #include <QVBoxLayout>
 #include <QScrollArea>
 #include <QMargins>
-#include <set>
 
 #include "BitBodyWidget.hpp"
 

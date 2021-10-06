@@ -19,28 +19,10 @@ namespace Bloom::Widgets
 
     class Q_WIDGETS_EXPORT PanelWidget: public QFrame
     {
-    Q_OBJECT
+        Q_OBJECT
         Q_PROPERTY(int handleSize READ getHandleSize WRITE setHandleSize DESIGNABLE true)
         Q_PROPERTY(int minimumResize READ getMinimumResize WRITE setMinimumResize DESIGNABLE true)
         Q_PROPERTY(Bloom::Widgets::PanelWidgetType panelType READ getPanelType WRITE setPanelType DESIGNABLE true)
-
-    protected:
-        int handleSize = 10;
-        int minimumResize = 10;
-        int maximumResize = 500;
-
-        PanelWidgetType panelType = PanelWidgetType::LEFT;
-        QCursor resizeCursor = Qt::SplitHCursor;
-        bool resizingActive = false;
-        int resizingOffset = 0;
-
-        void mousePressEvent(QMouseEvent* event) override;
-        void mouseReleaseEvent(QMouseEvent* event) override;
-        bool event(QEvent* event) override;
-        void mouseMoveEvent(QMouseEvent* event) override;
-
-        std::pair<QPoint, QPoint> getHandleArea() const;
-        bool isPositionWithinHandleArea(const QPoint& position) const;
 
     public:
         explicit PanelWidget(QWidget* parent);
@@ -73,5 +55,23 @@ namespace Bloom::Widgets
         PanelWidgetType getPanelType() {
             return this->panelType;
         }
+
+    protected:
+        int handleSize = 10;
+        int minimumResize = 10;
+        int maximumResize = 500;
+
+        PanelWidgetType panelType = PanelWidgetType::LEFT;
+        QCursor resizeCursor = Qt::SplitHCursor;
+        bool resizingActive = false;
+        int resizingOffset = 0;
+
+        bool event(QEvent* event) override;
+        void mousePressEvent(QMouseEvent* event) override;
+        void mouseReleaseEvent(QMouseEvent* event) override;
+        void mouseMoveEvent(QMouseEvent* event) override;
+
+        std::pair<QPoint, QPoint> getHandleArea() const;
+        bool isPositionWithinHandleArea(const QPoint& position) const;
     };
 }

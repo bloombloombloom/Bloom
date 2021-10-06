@@ -18,8 +18,10 @@ namespace Bloom
 
     class Thread
     {
-    private:
-        SyncSafe<ThreadState> state = SyncSafe<ThreadState>(ThreadState::UNINITIALISED);
+    public:
+        virtual ThreadState getThreadState() {
+            return this->state.getValue();
+        };
 
     protected:
         virtual void setThreadState(ThreadState state) {
@@ -42,9 +44,7 @@ namespace Bloom
             pthread_setname_np(pthread_self(), name.c_str());
         }
 
-    public:
-        virtual ThreadState getThreadState() {
-            return this->state.getValue();
-        };
+    private:
+        SyncSafe<ThreadState> state = SyncSafe<ThreadState>(ThreadState::UNINITIALISED);
     };
 }

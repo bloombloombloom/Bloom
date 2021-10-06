@@ -7,51 +7,6 @@
 using namespace Bloom::DebugServers::Gdb;
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 
-std::unique_ptr<CommandPacket> CommandPacketFactory::create(std::vector<unsigned char> rawPacket) {
-    if (rawPacket.size() == 5 && rawPacket[1] == 0x03) {
-        // This is an interrupt request - create a fake packet for it
-        return std::make_unique<CommandPackets::InterruptExecution>(rawPacket);
-    }
-
-    auto rawPacketString = std::string(rawPacket.begin(), rawPacket.end());
-
-    if (rawPacketString.size() >= 2) {
-        /*
-         * First byte of the raw packet will be 0x24 ('$'), so find() should return 1, not 0, when
-         * looking for a command identifier string.
-         */
-        if (rawPacketString.find("qSupported") == 1) {
-            return std::make_unique<CommandPackets::SupportedFeaturesQuery>(rawPacket);
-
-        } else if (rawPacketString[1] == 'g' || rawPacketString[1] == 'p') {
-            return std::make_unique<CommandPackets::ReadRegisters>(rawPacket);
-
-        } else if (rawPacketString[1] == 'P') {
-            return std::make_unique<CommandPackets::WriteRegister>(rawPacket);
-
-        } else if (rawPacketString[1] == 'c') {
-            return std::make_unique<CommandPackets::ContinueExecution>(rawPacket);
-
-        } else if (rawPacketString[1] == 's') {
-            return std::make_unique<CommandPackets::StepExecution>(rawPacket);
-
-        } else if (rawPacketString[1] == 'm') {
-            return std::make_unique<CommandPackets::ReadMemory>(rawPacket);
-
-        }  else if (rawPacketString[1] == 'M') {
-            return std::make_unique<CommandPackets::WriteMemory>(rawPacket);
-
-        } else if (rawPacketString[1] == 'Z') {
-            return std::make_unique<CommandPackets::SetBreakpoint>(rawPacket);
-
-        } else if (rawPacketString[1] == 'z') {
-            return std::make_unique<CommandPackets::RemoveBreakpoint>(rawPacket);
-        }
-    }
-
-    return std::make_unique<CommandPacket>(rawPacket);
-}
-
 std::vector<std::vector<unsigned char>> CommandPacketFactory::extractRawPackets(std::vector<unsigned char> buffer) {
     std::vector<std::vector<unsigned char>> output;
 
@@ -126,4 +81,49 @@ std::vector<std::vector<unsigned char>> CommandPacketFactory::extractRawPackets(
     }
 
     return output;
+}
+
+std::unique_ptr<CommandPacket> CommandPacketFactory::create(std::vector<unsigned char> rawPacket) {
+    if (rawPacket.size() == 5 && rawPacket[1] == 0x03) {
+        // This is an interrupt request - create a fake packet for it
+        return std::make_unique<CommandPackets::InterruptExecution>(rawPacket);
+    }
+
+    auto rawPacketString = std::string(rawPacket.begin(), rawPacket.end());
+
+    if (rawPacketString.size() >= 2) {
+        /*
+         * First byte of the raw packet will be 0x24 ('$'), so find() should return 1, not 0, when
+         * looking for a command identifier string.
+         */
+        if (rawPacketString.find("qSupported") == 1) {
+            return std::make_unique<CommandPackets::SupportedFeaturesQuery>(rawPacket);
+
+        } else if (rawPacketString[1] == 'g' || rawPacketString[1] == 'p') {
+            return std::make_unique<CommandPackets::ReadRegisters>(rawPacket);
+
+        } else if (rawPacketString[1] == 'P') {
+            return std::make_unique<CommandPackets::WriteRegister>(rawPacket);
+
+        } else if (rawPacketString[1] == 'c') {
+            return std::make_unique<CommandPackets::ContinueExecution>(rawPacket);
+
+        } else if (rawPacketString[1] == 's') {
+            return std::make_unique<CommandPackets::StepExecution>(rawPacket);
+
+        } else if (rawPacketString[1] == 'm') {
+            return std::make_unique<CommandPackets::ReadMemory>(rawPacket);
+
+        }  else if (rawPacketString[1] == 'M') {
+            return std::make_unique<CommandPackets::WriteMemory>(rawPacket);
+
+        } else if (rawPacketString[1] == 'Z') {
+            return std::make_unique<CommandPackets::SetBreakpoint>(rawPacket);
+
+        } else if (rawPacketString[1] == 'z') {
+            return std::make_unique<CommandPackets::RemoveBreakpoint>(rawPacket);
+        }
+    }
+
+    return std::make_unique<CommandPacket>(rawPacket);
 }

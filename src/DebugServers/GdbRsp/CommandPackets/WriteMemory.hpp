@@ -14,9 +14,6 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
      */
     class WriteMemory: public CommandPacket
     {
-    private:
-        void init();
-
     public:
         /**
          * Like with the ReadMemory command packet, the start address carries additional bits that indicate
@@ -31,5 +28,8 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         };
 
         void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+
+    private:
+        void init();
     };
 }

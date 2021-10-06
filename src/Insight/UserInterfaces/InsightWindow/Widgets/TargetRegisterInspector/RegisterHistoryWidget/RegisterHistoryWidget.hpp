@@ -23,26 +23,7 @@ namespace Bloom::Widgets
 {
     class RegisterHistoryWidget: public QWidget
     {
-    Q_OBJECT
-    private:
-        Targets::TargetRegisterDescriptor registerDescriptor;
-        InsightWorker& insightWorker;
-
-        QWidget* container = nullptr;
-        QWidget* itemContainer = nullptr;
-        QVBoxLayout* itemContainerLayout = nullptr;
-
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
-        CurrentItem* currentItem = nullptr;
-        Item* selectedItemWidget = nullptr;
-
-    private slots:
-        void onTargetStateChanged(Targets::TargetState newState);
-        void onItemSelectionChange(Item* newlySelectedWidget);
-        void onRegistersWritten(Targets::TargetRegisters targetRegisters, const QDateTime& changeDate);
-
-    protected:
-        void resizeEvent(QResizeEvent* event) override;
+        Q_OBJECT
 
     public:
         RegisterHistoryWidget(
@@ -64,5 +45,25 @@ namespace Bloom::Widgets
     signals:
         void historyItemSelected(const Targets::TargetMemoryBuffer& registerValue);
 
+
+    protected:
+        void resizeEvent(QResizeEvent* event) override;
+
+    private:
+        Targets::TargetRegisterDescriptor registerDescriptor;
+        InsightWorker& insightWorker;
+
+        QWidget* container = nullptr;
+        QWidget* itemContainer = nullptr;
+        QVBoxLayout* itemContainerLayout = nullptr;
+
+        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+        CurrentItem* currentItem = nullptr;
+        Item* selectedItemWidget = nullptr;
+
+    private slots:
+        void onTargetStateChanged(Targets::TargetState newState);
+        void onItemSelectionChange(Item* newlySelectedWidget);
+        void onRegistersWritten(Targets::TargetRegisters targetRegisters, const QDateTime& changeDate);
     };
 }

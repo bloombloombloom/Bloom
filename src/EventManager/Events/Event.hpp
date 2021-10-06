@@ -55,9 +55,6 @@ namespace Bloom::Events
 
     class Event
     {
-    private:
-        static inline std::atomic<int> lastEventId = 0;
-
     public:
         int id = ++(Event::lastEventId);
         QDateTime createdTimestamp = DateTime::currentDateTime();
@@ -73,5 +70,8 @@ namespace Bloom::Events
         [[nodiscard]] virtual EventType getType() const {
             return Event::type;
         }
+
+    private:
+        static inline std::atomic<int> lastEventId = 0;
     };
 }

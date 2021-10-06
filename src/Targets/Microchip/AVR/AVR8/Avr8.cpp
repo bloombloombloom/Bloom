@@ -8,7 +8,6 @@
 #include <limits>
 
 #include "PadDescriptor.hpp"
-#include "PhysicalInterface.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Targets/TargetRegister.hpp"
@@ -24,110 +23,6 @@ using namespace Bloom::Targets;
 using namespace Bloom::Targets::Microchip::Avr;
 using namespace Bloom::Targets::Microchip::Avr::Avr8Bit;
 using namespace Exceptions;
-
-void Avr8::loadTargetDescriptionFile() {
-    this->targetDescriptionFile = TargetDescription::TargetDescriptionFile(
-        this->getId(),
-        (!this->name.empty()) ? std::optional(this->name) : std::nullopt
-    );
-}
-
-void Avr8::initFromTargetDescriptionFile() {
-    assert(this->targetDescriptionFile.has_value());
-    this->name = this->targetDescriptionFile->getTargetName();
-    this->family = this->targetDescriptionFile->getFamily();
-
-    this->targetParameters = this->targetDescriptionFile->getTargetParameters();
-    this->padDescriptorsByName = this->targetDescriptionFile->getPadDescriptorsMappedByName();
-    this->targetVariantsById = this->targetDescriptionFile->getVariantsMappedById();
-
-    if (!this->targetParameters->stackPointerRegisterLowAddress.has_value()) {
-        throw Exception("Failed to load sufficient AVR8 target paramters - missting stack pointer start address");
-    }
-
-    if (!this->targetParameters->statusRegisterStartAddress.has_value()) {
-        throw Exception("Failed to load sufficient AVR8 target parameters - missting status register start address");
-    }
-
-    this->loadTargetRegisterDescriptors();
-}
-
-void Avr8::loadTargetRegisterDescriptors() {
-    this->targetRegisterDescriptorsByType = this->targetDescriptionFile->getRegisterDescriptorsMappedByType();
-
-    /*
-     * All AVR8 targets possess 32 general purpose CPU registers. These are not described in the TDF, so we
-     * construct the descriptors for them here.
-     */
-    auto gpRegisterStartAddress = this->targetParameters->gpRegisterStartAddress.value_or(0);
-    for (std::uint8_t i = 0; i <= 31; i++) {
-        auto generalPurposeRegisterDescriptor = TargetRegisterDescriptor();
-        generalPurposeRegisterDescriptor.startAddress = gpRegisterStartAddress + i;
-        generalPurposeRegisterDescriptor.size = 1;
-        generalPurposeRegisterDescriptor.type = TargetRegisterType::GENERAL_PURPOSE_REGISTER;
-        generalPurposeRegisterDescriptor.name = "r" + std::to_string(i);
-        generalPurposeRegisterDescriptor.groupName = "general purpose cpu";
-        generalPurposeRegisterDescriptor.readable = true;
-        generalPurposeRegisterDescriptor.writable = true;
-
-        this->targetRegisterDescriptorsByType[generalPurposeRegisterDescriptor.type].insert(
-            generalPurposeRegisterDescriptor
-        );
-    }
-
-    /*
-     * The SP and SREG registers are described in the TDF, so we could just use the descriptors extracted from the
-     * TDF. The problem with that is, sometimes the SP register consists of two bytes; an SPL and an SPH. These need
-     * to be combined into one register descriptor. This is why we just use what we already have in
-     * this->targetParameters.
-     */
-    auto stackPointerRegisterDescriptor = TargetRegisterDescriptor();
-    stackPointerRegisterDescriptor.type = TargetRegisterType::STACK_POINTER;
-    stackPointerRegisterDescriptor.startAddress = this->targetParameters->stackPointerRegisterLowAddress.value();
-    stackPointerRegisterDescriptor.size = this->targetParameters->stackPointerRegisterSize.value();
-    stackPointerRegisterDescriptor.name = "SP";
-    stackPointerRegisterDescriptor.groupName = "CPU";
-    stackPointerRegisterDescriptor.description = "Stack Pointer Register";
-    stackPointerRegisterDescriptor.readable = true;
-    stackPointerRegisterDescriptor.writable = true;
-
-    auto statusRegisterDescriptor = TargetRegisterDescriptor();
-    statusRegisterDescriptor.type = TargetRegisterType::STATUS_REGISTER;
-    statusRegisterDescriptor.startAddress = this->targetParameters->statusRegisterStartAddress.value();
-    statusRegisterDescriptor.size = this->targetParameters->statusRegisterSize.value();
-    statusRegisterDescriptor.name = "SREG";
-    statusRegisterDescriptor.groupName = "CPU";
-    statusRegisterDescriptor.description = "Status Register";
-    statusRegisterDescriptor.readable = true;
-    statusRegisterDescriptor.writable = true;
-
-    auto programCounterRegisterDescriptor = TargetRegisterDescriptor();
-    programCounterRegisterDescriptor.type = TargetRegisterType::PROGRAM_COUNTER;
-    programCounterRegisterDescriptor.size = 4;
-    programCounterRegisterDescriptor.name = "PC";
-    programCounterRegisterDescriptor.groupName = "CPU";
-    programCounterRegisterDescriptor.description = "Program Counter";
-    programCounterRegisterDescriptor.readable = true;
-    programCounterRegisterDescriptor.writable = true;
-
-    this->targetRegisterDescriptorsByType[stackPointerRegisterDescriptor.type].insert(
-        stackPointerRegisterDescriptor
-    );
-    this->targetRegisterDescriptorsByType[statusRegisterDescriptor.type].insert(
-        statusRegisterDescriptor
-    );
-    this->targetRegisterDescriptorsByType[programCounterRegisterDescriptor.type].insert(
-        programCounterRegisterDescriptor
-    );
-}
-
-TargetSignature Avr8::getId() {
-    if (!this->id.has_value()) {
-        this->id = this->avr8Interface->getDeviceId();
-    }
-
-    return this->id.value();
-}
 
 void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
     Target::preActivationConfigure(targetConfig);
@@ -188,6 +83,16 @@ void Avr8::activate() {
     this->activated = true;
 }
 
+void Avr8::deactivate() {
+    try {
+        this->avr8Interface->deactivate();
+        this->activated = false;
+
+    } catch (const Exception& exception) {
+        Logger::error("Failed to deactivate AVR8 target - " + exception.getMessage());
+    }
+}
+
 std::unique_ptr<Targets::Target> Avr8::promote() {
     std::unique_ptr<Targets::Target> promoted = nullptr;
 
@@ -216,16 +121,6 @@ std::unique_ptr<Targets::Target> Avr8::promote() {
     }
 
     return promoted;
-}
-
-void Avr8::deactivate() {
-    try {
-        this->avr8Interface->deactivate();
-        this->activated = false;
-
-    } catch (const Exception& exception) {
-        Logger::error("Failed to deactivate AVR8 target - " + exception.getMessage());
-    }
 }
 
 TargetDescriptor Avr8Bit::Avr8::getDescriptor() {
@@ -559,4 +454,108 @@ void Avr8::setPinState(const TargetPinDescriptor& pinDescriptor, const TargetPin
             );
         }
     }
+}
+
+void Avr8::loadTargetDescriptionFile() {
+    this->targetDescriptionFile = TargetDescription::TargetDescriptionFile(
+        this->getId(),
+        (!this->name.empty()) ? std::optional(this->name) : std::nullopt
+    );
+}
+
+void Avr8::initFromTargetDescriptionFile() {
+    assert(this->targetDescriptionFile.has_value());
+    this->name = this->targetDescriptionFile->getTargetName();
+    this->family = this->targetDescriptionFile->getFamily();
+
+    this->targetParameters = this->targetDescriptionFile->getTargetParameters();
+    this->padDescriptorsByName = this->targetDescriptionFile->getPadDescriptorsMappedByName();
+    this->targetVariantsById = this->targetDescriptionFile->getVariantsMappedById();
+
+    if (!this->targetParameters->stackPointerRegisterLowAddress.has_value()) {
+        throw Exception("Failed to load sufficient AVR8 target paramters - missting stack pointer start address");
+    }
+
+    if (!this->targetParameters->statusRegisterStartAddress.has_value()) {
+        throw Exception("Failed to load sufficient AVR8 target parameters - missting status register start address");
+    }
+
+    this->loadTargetRegisterDescriptors();
+}
+
+void Avr8::loadTargetRegisterDescriptors() {
+    this->targetRegisterDescriptorsByType = this->targetDescriptionFile->getRegisterDescriptorsMappedByType();
+
+    /*
+     * All AVR8 targets possess 32 general purpose CPU registers. These are not described in the TDF, so we
+     * construct the descriptors for them here.
+     */
+    auto gpRegisterStartAddress = this->targetParameters->gpRegisterStartAddress.value_or(0);
+    for (std::uint8_t i = 0; i <= 31; i++) {
+        auto generalPurposeRegisterDescriptor = TargetRegisterDescriptor();
+        generalPurposeRegisterDescriptor.startAddress = gpRegisterStartAddress + i;
+        generalPurposeRegisterDescriptor.size = 1;
+        generalPurposeRegisterDescriptor.type = TargetRegisterType::GENERAL_PURPOSE_REGISTER;
+        generalPurposeRegisterDescriptor.name = "r" + std::to_string(i);
+        generalPurposeRegisterDescriptor.groupName = "general purpose cpu";
+        generalPurposeRegisterDescriptor.readable = true;
+        generalPurposeRegisterDescriptor.writable = true;
+
+        this->targetRegisterDescriptorsByType[generalPurposeRegisterDescriptor.type].insert(
+            generalPurposeRegisterDescriptor
+        );
+    }
+
+    /*
+     * The SP and SREG registers are described in the TDF, so we could just use the descriptors extracted from the
+     * TDF. The problem with that is, sometimes the SP register consists of two bytes; an SPL and an SPH. These need
+     * to be combined into one register descriptor. This is why we just use what we already have in
+     * this->targetParameters.
+     */
+    auto stackPointerRegisterDescriptor = TargetRegisterDescriptor();
+    stackPointerRegisterDescriptor.type = TargetRegisterType::STACK_POINTER;
+    stackPointerRegisterDescriptor.startAddress = this->targetParameters->stackPointerRegisterLowAddress.value();
+    stackPointerRegisterDescriptor.size = this->targetParameters->stackPointerRegisterSize.value();
+    stackPointerRegisterDescriptor.name = "SP";
+    stackPointerRegisterDescriptor.groupName = "CPU";
+    stackPointerRegisterDescriptor.description = "Stack Pointer Register";
+    stackPointerRegisterDescriptor.readable = true;
+    stackPointerRegisterDescriptor.writable = true;
+
+    auto statusRegisterDescriptor = TargetRegisterDescriptor();
+    statusRegisterDescriptor.type = TargetRegisterType::STATUS_REGISTER;
+    statusRegisterDescriptor.startAddress = this->targetParameters->statusRegisterStartAddress.value();
+    statusRegisterDescriptor.size = this->targetParameters->statusRegisterSize.value();
+    statusRegisterDescriptor.name = "SREG";
+    statusRegisterDescriptor.groupName = "CPU";
+    statusRegisterDescriptor.description = "Status Register";
+    statusRegisterDescriptor.readable = true;
+    statusRegisterDescriptor.writable = true;
+
+    auto programCounterRegisterDescriptor = TargetRegisterDescriptor();
+    programCounterRegisterDescriptor.type = TargetRegisterType::PROGRAM_COUNTER;
+    programCounterRegisterDescriptor.size = 4;
+    programCounterRegisterDescriptor.name = "PC";
+    programCounterRegisterDescriptor.groupName = "CPU";
+    programCounterRegisterDescriptor.description = "Program Counter";
+    programCounterRegisterDescriptor.readable = true;
+    programCounterRegisterDescriptor.writable = true;
+
+    this->targetRegisterDescriptorsByType[stackPointerRegisterDescriptor.type].insert(
+        stackPointerRegisterDescriptor
+    );
+    this->targetRegisterDescriptorsByType[statusRegisterDescriptor.type].insert(
+        statusRegisterDescriptor
+    );
+    this->targetRegisterDescriptorsByType[programCounterRegisterDescriptor.type].insert(
+        programCounterRegisterDescriptor
+    );
+}
+
+TargetSignature Avr8::getId() {
+    if (!this->id.has_value()) {
+        this->id = this->avr8Interface->getDeviceId();
+    }
+
+    return this->id.value();
 }

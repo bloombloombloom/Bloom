@@ -13,9 +13,6 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
      */
     class ReadRegisters: public CommandPacket
     {
-    private:
-        void init();
-
     public:
         /**
          * "p" packets include a register number to indicate which register is requested for reading. When this is set,
@@ -31,5 +28,8 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         };
 
         void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+
+    private:
+        void init();
     };
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Avr8GenericResponseFrame.hpp"
+
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic

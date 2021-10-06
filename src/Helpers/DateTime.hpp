@@ -11,9 +11,6 @@ namespace Bloom
      */
     class DateTime
     {
-    private:
-        static inline std::mutex currentDateTimeMutex;
-
     public:
         /**
          * The QDateTime::currentDateTime() static function is not thread-safe. This may be caused by the
@@ -38,5 +35,8 @@ namespace Bloom
             auto lock = std::unique_lock(DateTime::currentDateTimeMutex);
             return dateTime.timeZoneAbbreviation();
         }
+
+    private:
+        static inline std::mutex currentDateTimeMutex;
     };
 }

@@ -17,27 +17,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
      */
     class CmsisDapInterface
     {
-    private:
-        /**
-         * All CMSIS-DAP devices employ the USB HID interface for communication.
-         *
-         * For many CMSIS-DAP devices, the USB HID interface parameters (interface number, endpoint config, etc) vary
-         * amongst devices, so we'll need to be able to preActivationConfigure the CMSISDAPInterface from a
-         * higher level. For an example, see the constructor of the AtmelIce device class.
-         */
-        Usb::HidInterface usbHidInterface = Usb::HidInterface();
-
-        /**
-         * Some CMSIS-DAP debug tools fail to operate properly when we send commands too quickly. Even if we've
-         * received a response from every previous command.
-         *
-         * Because of this, we may need to enforce a minimum time gap between sending CMSIS commands.
-         * Setting msSendCommandDelay to any value above 0 will enforce an x millisecond gap between each command
-         * being sent, where x is the value of msSendCommandDelay.
-         */
-        std::chrono::milliseconds msSendCommandDelay = std::chrono::milliseconds(0);
-        long lastCommandSentTimeStamp = 0;
-
     public:
         explicit CmsisDapInterface() = default;
 
@@ -81,5 +60,26 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
         virtual std::unique_ptr<Protocols::CmsisDap::Response> sendCommandAndWaitForResponse(
             const Protocols::CmsisDap::Command& cmsisDapCommand
         );
+
+    private:
+        /**
+         * All CMSIS-DAP devices employ the USB HID interface for communication.
+         *
+         * For many CMSIS-DAP devices, the USB HID interface parameters (interface number, endpoint config, etc) vary
+         * amongst devices, so we'll need to be able to preActivationConfigure the CMSISDAPInterface from a
+         * higher level. For an example, see the constructor of the AtmelIce device class.
+         */
+        Usb::HidInterface usbHidInterface = Usb::HidInterface();
+
+        /**
+         * Some CMSIS-DAP debug tools fail to operate properly when we send commands too quickly. Even if we've
+         * received a response from every previous command.
+         *
+         * Because of this, we may need to enforce a minimum time gap between sending CMSIS commands.
+         * Setting msSendCommandDelay to any value above 0 will enforce an x millisecond gap between each command
+         * being sent, where x is the value of msSendCommandDelay.
+         */
+        std::chrono::milliseconds msSendCommandDelay = std::chrono::milliseconds(0);
+        long lastCommandSentTimeStamp = 0;
     };
 }

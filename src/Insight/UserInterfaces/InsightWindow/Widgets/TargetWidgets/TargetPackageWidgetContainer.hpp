@@ -9,16 +9,17 @@ namespace Bloom::Widgets::InsightTargetWidgets
 {
     class TargetPackageWidgetContainer: public QWidget
     {
-    Q_OBJECT
-    private:
-        TargetPackageWidget* packageWidget = nullptr;
-
-    protected:
-        void resizeEvent(QResizeEvent* event) override;
+        Q_OBJECT
 
     public:
         TargetPackageWidgetContainer(QWidget* parent);
 
         void setPackageWidget(TargetPackageWidget* packageWidget);
+
+    protected:
+        void resizeEvent(QResizeEvent* event) override;
+
+    private:
+        TargetPackageWidget* packageWidget = nullptr;
     };
 }

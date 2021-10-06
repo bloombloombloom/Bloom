@@ -21,11 +21,6 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
      */
     class SupportedFeaturesQuery: public CommandPacket
     {
-    private:
-        std::set<Feature> supportedFeatures;
-
-        void init();
-
     public:
         explicit SupportedFeaturesQuery(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             this->init();
@@ -40,5 +35,10 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         }
 
         void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+
+    private:
+        std::set<Feature> supportedFeatures;
+
+        void init();
     };
 }

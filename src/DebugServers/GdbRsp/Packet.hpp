@@ -16,21 +16,12 @@ namespace Bloom::DebugServers::Gdb
      */
     class Packet
     {
-    protected:
-        std::vector<unsigned char> data;
-
-        void init(const std::vector<unsigned char>& rawPacket) {
-            this->data.insert(
-                this->data.begin(),
-                rawPacket.begin() + 1,
-                rawPacket.end() - 3
-            );
-        }
     public:
         Packet() = default;
         explicit Packet(const std::vector<unsigned char>& rawPacket) {
             this->init(rawPacket);
         }
+        virtual ~Packet() = default;
 
         [[nodiscard]] virtual std::vector<unsigned char> getData() const {
             return this->data;
@@ -118,6 +109,15 @@ namespace Bloom::DebugServers::Gdb
             return output;
         }
 
-        virtual ~Packet() = default;
+    protected:
+        std::vector<unsigned char> data;
+
+        void init(const std::vector<unsigned char>& rawPacket) {
+            this->data.insert(
+                this->data.begin(),
+                rawPacket.begin() + 1,
+                rawPacket.end() - 3
+            );
+        }
     };
 }

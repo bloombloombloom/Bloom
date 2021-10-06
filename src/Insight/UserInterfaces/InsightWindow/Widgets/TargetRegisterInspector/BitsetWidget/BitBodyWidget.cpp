@@ -16,17 +16,6 @@ BitBodyWidget::BitBodyWidget(
     this->setContentsMargins(0, 0, 0, 0);
 }
 
-void BitBodyWidget::mouseReleaseEvent(QMouseEvent* event) {
-    if (this->isEnabled()) {
-        if (!this->readOnly && event->button() == Qt::MouseButton::LeftButton) {
-            this->bit = !this->bit;
-            this->update();
-        }
-
-        ClickableWidget::mouseReleaseEvent(event);
-    }
-}
-
 bool BitBodyWidget::event(QEvent* event) {
     if (this->isEnabled() && !this->readOnly) {
         switch (event->type()) {
@@ -47,6 +36,17 @@ bool BitBodyWidget::event(QEvent* event) {
     }
 
     return QWidget::event(event);
+}
+
+void BitBodyWidget::mouseReleaseEvent(QMouseEvent* event) {
+    if (this->isEnabled()) {
+        if (!this->readOnly && event->button() == Qt::MouseButton::LeftButton) {
+            this->bit = !this->bit;
+            this->update();
+        }
+
+        ClickableWidget::mouseReleaseEvent(event);
+    }
 }
 
 void BitBodyWidget::paintEvent(QPaintEvent* event) {

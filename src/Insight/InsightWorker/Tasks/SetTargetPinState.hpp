@@ -7,16 +7,17 @@ namespace Bloom
 {
     class SetTargetPinState: public InsightWorkerTask
     {
-    Q_OBJECT
-    private:
-        Targets::TargetPinDescriptor pinDescriptor;
-        Targets::TargetPinState pinState;
-
-    protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        Q_OBJECT
 
     public:
         SetTargetPinState(const Targets::TargetPinDescriptor& pinDescriptor, const Targets::TargetPinState& pinState):
         InsightWorkerTask(), pinDescriptor(pinDescriptor), pinState(pinState) {}
+
+    protected:
+        void run(TargetControllerConsole& targetControllerConsole) override;
+
+    private:
+        Targets::TargetPinDescriptor pinDescriptor;
+        Targets::TargetPinState pinState;
     };
 }

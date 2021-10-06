@@ -81,6 +81,10 @@ int Application::run(const std::vector<std::string>& arguments) {
     return EXIT_SUCCESS;
 }
 
+bool Application::isRunningAsRoot() {
+    return geteuid() == 0;
+}
+
 void Application::startup() {
     auto applicationEventListener = this->applicationEventListener;
     this->eventManager.registerListener(applicationEventListener);
@@ -129,6 +133,37 @@ void Application::startup() {
     this->startDebugServer();
 
     Thread::setThreadState(ThreadState::READY);
+}
+
+void Application::shutdown() {
+    auto appState = Thread::getThreadState();
+    if (appState == ThreadState::STOPPED || appState == ThreadState::SHUTDOWN_INITIATED) {
+        return;
+    }
+
+    Thread::setThreadState(ThreadState::SHUTDOWN_INITIATED);
+    Logger::info("Shutting down Bloom");
+
+    this->stopDebugServer();
+    this->stopTargetController();
+
+    if (this->signalHandler.getThreadState() != ThreadState::STOPPED
+        && this->signalHandler.getThreadState() != ThreadState::UNINITIALISED
+    ) {
+        // Signal handler is still running
+        this->signalHandler.triggerShutdown();
+
+        // Send meaningless signal to the SignalHandler thread to have it shutdown.
+        pthread_kill(this->signalHandlerThread.native_handle(), SIGUSR1);
+    }
+
+    if (this->signalHandlerThread.joinable()) {
+        Logger::debug("Joining SignalHandler thread");
+        this->signalHandlerThread.join();
+        Logger::debug("SignalHandler thread joined");
+    }
+
+    Thread::setThreadState(ThreadState::STOPPED);
 }
 
 ApplicationConfig Application::extractConfig() {
@@ -227,37 +262,6 @@ int Application::initProject() {
     return EXIT_SUCCESS;
 }
 
-void Application::shutdown() {
-    auto appState = Thread::getThreadState();
-    if (appState == ThreadState::STOPPED || appState == ThreadState::SHUTDOWN_INITIATED) {
-        return;
-    }
-
-    Thread::setThreadState(ThreadState::SHUTDOWN_INITIATED);
-    Logger::info("Shutting down Bloom");
-
-    this->stopDebugServer();
-    this->stopTargetController();
-
-    if (this->signalHandler.getThreadState() != ThreadState::STOPPED
-        && this->signalHandler.getThreadState() != ThreadState::UNINITIALISED
-    ) {
-        // Signal handler is still running
-        this->signalHandler.triggerShutdown();
-
-        // Send meaningless signal to the SignalHandler thread to have it shutdown.
-        pthread_kill(this->signalHandlerThread.native_handle(), SIGUSR1);
-    }
-
-    if (this->signalHandlerThread.joinable()) {
-        Logger::debug("Joining SignalHandler thread");
-        this->signalHandlerThread.join();
-        Logger::debug("SignalHandler thread joined");
-    }
-
-    Thread::setThreadState(ThreadState::STOPPED);
-}
-
 void Application::startTargetController() {
     this->targetController.setApplicationConfig(this->applicationConfig);
     this->targetController.setEnvironmentConfig(this->environmentConfig);
@@ -353,8 +357,4 @@ void Application::onDebugServerThreadStateChanged(const Events::DebugServerThrea
         // DebugServer has unexpectedly shutdown - it must have encountered a fatal error.
         this->shutdown();
     }
-}
-
-bool Application::isRunningAsRoot() {
-    return geteuid() == 0;
 }

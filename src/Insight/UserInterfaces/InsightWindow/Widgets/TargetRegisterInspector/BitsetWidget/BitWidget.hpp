@@ -17,19 +17,10 @@ namespace Bloom::Widgets
 {
     class BitWidget: public QWidget
     {
-    Q_OBJECT
+        Q_OBJECT
+
     private:
         const static int VERTICAL_SPACING = 3;
-
-        int bitIndex = 0;
-        int bitNumber = 0;
-        std::bitset<std::numeric_limits<unsigned char>::digits>& bitset;
-        bool readOnly = true;
-
-        BitBodyWidget* body = nullptr;
-
-        QLabel* bitLabel = nullptr;
-        QLabel* bitNumberLabel = nullptr;
 
     public:
         constexpr static int LABEL_HEIGHT = 14;
@@ -49,5 +40,16 @@ namespace Bloom::Widgets
 
     signals:
         void bitChanged();
+
+    private:
+        int bitIndex = 0;
+        int bitNumber = 0;
+        std::bitset<std::numeric_limits<unsigned char>::digits>& bitset;
+        bool readOnly = true;
+
+        BitBodyWidget* body = nullptr;
+
+        QLabel* bitLabel = nullptr;
+        QLabel* bitNumberLabel = nullptr;
     };
 }

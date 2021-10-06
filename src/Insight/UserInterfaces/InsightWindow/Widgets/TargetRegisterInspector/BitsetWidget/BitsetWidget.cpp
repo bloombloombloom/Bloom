@@ -45,6 +45,11 @@ QWidget(parent), byteNumber(byteNumber), byte(byte), readOnly(readOnly) {
     }
 }
 
+void BitsetWidget::updateValue() {
+    this->bitset = {this->byte};
+    this->update();
+}
+
 void BitsetWidget::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
     auto painter = QPainter(this);
@@ -100,9 +105,4 @@ void BitsetWidget::drawWidget(QPainter& painter) {
         Qt::AlignCenter,
         byteHex
     );
-}
-
-void BitsetWidget::updateValue() {
-    this->bitset = {this->byte};
-    this->update();
 }

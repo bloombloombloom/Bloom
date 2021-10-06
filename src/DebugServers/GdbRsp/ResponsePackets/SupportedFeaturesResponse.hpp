@@ -13,14 +13,14 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
      */
     class SupportedFeaturesResponse: public ResponsePacket
     {
-    protected:
-        std::set<std::pair<Feature, std::optional<std::string>>> supportedFeatures;
-
     public:
         SupportedFeaturesResponse() = default;
         explicit SupportedFeaturesResponse(std::set<std::pair<Feature, std::optional<std::string>>> supportedFeatures)
         : supportedFeatures(std::move(supportedFeatures)) {};
 
         [[nodiscard]] std::vector<unsigned char> getData() const override;
+
+    protected:
+        std::set<std::pair<Feature, std::optional<std::string>>> supportedFeatures;
     };
 }

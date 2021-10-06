@@ -6,6 +6,10 @@
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 using namespace Bloom::Exceptions;
 
+void WriteRegister::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
+    gdbRspDebugServer.handleGdbPacket(*this);
+}
+
 void WriteRegister::init() {
     // The P packet updates a single register
     auto packet = std::string(this->data.begin(), this->data.end());
@@ -22,8 +26,4 @@ void WriteRegister::init() {
     this->registerNumber = static_cast<int>(packetSegments.front().mid(1).toUInt(nullptr, 16));
     this->registerValue = Packet::hexToData(packetSegments.back().toStdString());
     std::reverse(this->registerValue.begin(), this->registerValue.end());
-}
-
-void WriteRegister::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
-    gdbRspDebugServer.handleGdbPacket(*this);
 }

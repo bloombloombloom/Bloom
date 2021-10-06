@@ -9,11 +9,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class WriteMemory: public Avr8GenericCommandFrame
     {
-    private:
-        Avr8MemoryType type = Avr8MemoryType::SRAM;
-        std::uint32_t address = 0;
-        Targets::TargetMemoryBuffer buffer;
-
     public:
         WriteMemory() = default;
 
@@ -62,5 +57,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        Avr8MemoryType type = Avr8MemoryType::SRAM;
+        std::uint32_t address = 0;
+        Targets::TargetMemoryBuffer buffer;
     };
 }

@@ -6,10 +6,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class SetParameter: public Avr8GenericCommandFrame
     {
-    private:
-        Avr8EdbgParameter parameter;
-        std::vector<unsigned char> value;
-
     public:
         SetParameter() = default;
 
@@ -57,5 +53,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        Avr8EdbgParameter parameter;
+        std::vector<unsigned char> value;
     };
 }

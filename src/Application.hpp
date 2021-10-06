@@ -31,6 +31,44 @@ namespace Bloom
     public:
         static const inline std::string VERSION_STR = "0.4.2";
 
+        explicit Application() = default;
+
+        /**
+         * This mapping is used to map debug server names from project configuration files to polymorphic instances of
+         * the DebugServer class.
+         *
+         * See Application::startDebugServer() for more on this.
+         *
+         * @return
+         */
+        auto getSupportedDebugServers() {
+            return std::map<std::string, std::function<std::unique_ptr<DebugServers::DebugServer>()>> {
+                {
+                    "avr-gdb-rsp",
+                    [this]() -> std::unique_ptr<DebugServers::DebugServer> {
+                        return std::make_unique<DebugServers::Gdb::AvrGdbRsp>(this->eventManager);
+                    }
+                },
+            };
+        };
+
+        /**
+         * Main entry-point for the Bloom program.
+         *
+         * @param arguments
+         *  A vector of string arguments passed from the user via the cli.
+         *
+         * @return
+         */
+        int run(const std::vector<std::string>& arguments);
+
+        /**
+         * Checks if the current effective user running Bloom has root privileges.
+         *
+         * @return
+         */
+        static bool isRunningAsRoot();
+
     private:
         /**
          * This is the application wide event manager. It should be the only instance of the EventManager class at
@@ -140,6 +178,18 @@ namespace Bloom
         }
 
         /**
+         * Kicks off the application.
+         *
+         * Will start the TargetController and DebugServer. And register the main application's event handlers.
+         */
+        void startup();
+
+        /**
+         * Will cleanly shutdown the application. This should never fail.
+         */
+        void shutdown();
+
+        /**
          * Extracts config from the user's JSON config file and generates an ApplicationConfig object.
          *
          * @see ApplicationConfig declaration for more on this.
@@ -169,18 +219,6 @@ namespace Bloom
         int initProject();
 
         /**
-         * Kicks off the application.
-         *
-         * Will start the TargetController and DebugServer. And register the main application's event handlers.
-         */
-        void startup();
-
-        /**
-         * Will cleanly shutdown the application. This should never fail.
-         */
-        void shutdown();
-
-        /**
          * Prepares a dedicated thread for the TargetController and kicks it off.
          */
         void startTargetController();
@@ -203,38 +241,6 @@ namespace Bloom
          */
         void stopDebugServer();
 
-    public:
-        explicit Application() = default;
-
-        /**
-         * This mapping is used to map debug server names from project configuration files to polymorphic instances of
-         * the DebugServer class.
-         *
-         * See Application::startDebugServer() for more on this.
-         *
-         * @return
-         */
-        auto getSupportedDebugServers() {
-            return std::map<std::string, std::function<std::unique_ptr<DebugServers::DebugServer>()>> {
-                {
-                    "avr-gdb-rsp",
-                    [this]() -> std::unique_ptr<DebugServers::DebugServer> {
-                        return std::make_unique<DebugServers::Gdb::AvrGdbRsp>(this->eventManager);
-                    }
-                },
-            };
-        };
-
-        /**
-         * Main entry-point for the Bloom program.
-         *
-         * @param arguments
-         *  A vector of string arguments passed from the user via the cli.
-         *
-         * @return
-         */
-        int run(const std::vector<std::string>& arguments);
-
         /**
          * If the TargetController unexpectedly shuts down, the rest of the application will follow.
          *
@@ -254,12 +260,5 @@ namespace Bloom
          * Triggers a shutdown of Bloom and all of its components.
          */
         void onShutdownApplicationRequest(const Events::ShutdownApplication&);
-
-        /**
-         * Checks if the current effective user running Bloom has root privileges.
-         *
-         * @return
-         */
-        static bool isRunningAsRoot();
     };
 }

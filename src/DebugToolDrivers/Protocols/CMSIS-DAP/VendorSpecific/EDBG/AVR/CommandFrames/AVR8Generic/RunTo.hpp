@@ -8,9 +8,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class RunTo: public Avr8GenericCommandFrame
     {
-    private:
-        std::uint32_t address = 0;
-
     public:
         RunTo() = default;
 
@@ -41,5 +38,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        std::uint32_t address = 0;
     };
 }

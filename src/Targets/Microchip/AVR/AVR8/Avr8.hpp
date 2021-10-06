@@ -21,41 +21,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
     class Avr8: public Target
     {
-    protected:
-        DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* avr8Interface = nullptr;
-        std::string name;
-        std::optional<Family> family;
-        std::optional<TargetDescription::TargetDescriptionFile> targetDescriptionFile;
-        std::optional<TargetParameters> targetParameters;
-        std::map<std::string, PadDescriptor> padDescriptorsByName;
-        std::map<int, TargetVariant> targetVariantsById;
-        std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
-
-        /**
-         * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.
-         */
-        void loadTargetDescriptionFile();
-
-        /**
-         * Initiates the AVR8 instance from data extracted from the TDF.
-         */
-        void initFromTargetDescriptionFile();
-
-        /**
-         * Populates this->targetRegisterDescriptorsByType with registers extracted from the TDF, as well as general
-         * purpose and other CPU registers.
-         */
-        void loadTargetRegisterDescriptors();
-
-        /**
-         * Extracts the ID from the target's memory.
-         *
-         * This function will cache the ID value and use the cached version for any subsequent calls.
-         *
-         * @return
-         */
-        TargetSignature getId() override;
-
     public:
         explicit Avr8() = default;
         Avr8(std::string name, const TargetSignature& signature): name(std::move(name)) {
@@ -149,5 +114,40 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             const TargetPinDescriptor& pinDescriptor,
             const TargetPinState& state
         ) override;
+
+    protected:
+        DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* avr8Interface = nullptr;
+        std::string name;
+        std::optional<Family> family;
+        std::optional<TargetDescription::TargetDescriptionFile> targetDescriptionFile;
+        std::optional<TargetParameters> targetParameters;
+        std::map<std::string, PadDescriptor> padDescriptorsByName;
+        std::map<int, TargetVariant> targetVariantsById;
+        std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
+
+        /**
+         * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.
+         */
+        void loadTargetDescriptionFile();
+
+        /**
+         * Initiates the AVR8 instance from data extracted from the TDF.
+         */
+        void initFromTargetDescriptionFile();
+
+        /**
+         * Populates this->targetRegisterDescriptorsByType with registers extracted from the TDF, as well as general
+         * purpose and other CPU registers.
+         */
+        void loadTargetRegisterDescriptors();
+
+        /**
+         * Extracts the ID from the target's memory.
+         *
+         * This function will cache the ID value and use the cached version for any subsequent calls.
+         *
+         * @return
+         */
+        TargetSignature getId() override;
     };
 }

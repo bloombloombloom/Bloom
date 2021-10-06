@@ -6,9 +6,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class Stop: public Avr8GenericCommandFrame
     {
-    private:
-        bool stopImmediately = true;
-
     public:
         Stop() = default;
         explicit Stop(bool stopImmediately): stopImmediately(stopImmediately) {};
@@ -31,5 +28,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        bool stopImmediately = true;
     };
 }

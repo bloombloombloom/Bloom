@@ -17,9 +17,7 @@ namespace Bloom
 
     class InsightWorkerTask: public QObject
     {
-    Q_OBJECT
-    protected:
-        virtual void run(TargetControllerConsole& targetControllerConsole) = 0;
+        Q_OBJECT
 
     public:
         InsightWorkerTaskState state;
@@ -32,5 +30,8 @@ namespace Bloom
         void started();
         void failed(QString errorMessage);
         void completed();
+
+    protected:
+        virtual void run(TargetControllerConsole& targetControllerConsole) = 0;
     };
 }

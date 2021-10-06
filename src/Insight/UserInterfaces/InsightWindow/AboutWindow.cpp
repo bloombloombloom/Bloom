@@ -1,11 +1,10 @@
+#include "AboutWindow.hpp"
+
 #include <QtUiTools>
 
-#include "AboutWindow.hpp"
-#include "Widgets/TargetWidgets/DIP/DualInlinePackageWidget.hpp"
-#include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
-#include "src/Application.hpp"
 #include "src/Helpers/Paths.hpp"
+#include "src/Application.hpp"
 
 using namespace Bloom;
 using namespace Exceptions;

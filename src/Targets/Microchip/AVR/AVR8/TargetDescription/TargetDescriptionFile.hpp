@@ -27,6 +27,87 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
      */
     class TargetDescriptionFile: public Targets::TargetDescription::TargetDescriptionFile
     {
+    public:
+        /**
+         * Will resolve the target description file using the target description JSON mapping and a given target signature.
+         *
+         * @param targetSignatureHex
+         * @param targetName
+         */
+        TargetDescriptionFile(const TargetSignature& targetSignature, std::optional<std::string> targetName);
+
+        /**
+         * Extends TDF initialisation to include the loading of physical interfaces for debugging AVR8 targets, among
+         * other things.
+         *
+         * @param xml
+         */
+        void init(const QDomDocument& xml) override;
+
+        /**
+         * Loads the AVR8 target description JSON mapping file.
+         *
+         * @return
+         */
+        static QJsonObject getTargetDescriptionMapping();
+
+        /**
+         * Extracts the AVR8 target signature from the TDF.
+         *
+         * @return
+         */
+        [[nodiscard]] TargetSignature getTargetSignature() const;
+
+        /**
+         * Extracts the AVR8 target family from the TDF.
+         *
+         * @return
+         */
+        [[nodiscard]] Family getFamily() const;
+
+        /**
+         * Constructs an instance of TargetParameters, for the AVR8 target, with data from the TDF.
+         *
+         * @return
+         */
+        [[nodiscard]] TargetParameters getTargetParameters() const;
+
+        /**
+         * Returns a set of all supported physical interfaces for debugging.
+         *
+         * @return
+         */
+        [[nodiscard]] const auto& getSupportedDebugPhysicalInterfaces() const {
+            return this->supportedDebugPhysicalInterfaces;
+        }
+
+        /**
+         * Returns a mapping of all pad descriptors extracted from TDF, mapped by name.
+         *
+         * @return
+         */
+        [[nodiscard]] const auto& getPadDescriptorsMappedByName() const {
+            return this->padDescriptorsByName;
+        }
+
+        /**
+         * Returns a mapping of all target variants extracted from the TDF, mapped by ID.
+         *
+         * @return
+         */
+        [[nodiscard]] const auto& getVariantsMappedById() const {
+            return this->targetVariantsById;
+        }
+
+        /**
+         * Returns a mapping of all target register descriptors extracted from the TDF, by type.
+         *
+         * @return
+         */
+        [[nodiscard]] const auto& getRegisterDescriptorsMappedByType() const {
+            return this->targetRegisterDescriptorsByType;
+        }
+
     private:
         /**`
          * AVR8 target description files include the target family name. This method returns a mapping of part
@@ -124,94 +205,5 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @param targetParameters
          */
         virtual void loadUpdiTargetParameters(TargetParameters& targetParameters) const;
-
-        /**
-         * Extracts the register address offset, for registers from a particular module.
-         *
-         * @param moduleName
-         * @return
-         */
-        [[nodiscard]] virtual std::uint32_t getRegisterAddressOffsetByModuleName(const std::string& moduleName) const;
-
-    public:
-        /**
-         * Will resolve the target description file using the target description JSON mapping and a given target signature.
-         *
-         * @param targetSignatureHex
-         * @param targetName
-         */
-        TargetDescriptionFile(const TargetSignature& targetSignature, std::optional<std::string> targetName);
-
-        /**
-         * Extends TDF initialisation to include the loading of physical interfaces for debugging AVR8 targets, among
-         * other things.
-         *
-         * @param xml
-         */
-        void init(const QDomDocument& xml) override;
-
-        /**
-         * Loads the AVR8 target description JSON mapping file.
-         *
-         * @return
-         */
-        static QJsonObject getTargetDescriptionMapping();
-
-        /**
-         * Extracts the AVR8 target signature from the TDF.
-         *
-         * @return
-         */
-        [[nodiscard]] TargetSignature getTargetSignature() const;
-
-        /**
-         * Extracts the AVR8 target family from the TDF.
-         *
-         * @return
-         */
-        [[nodiscard]] Family getFamily() const;
-
-        /**
-         * Constructs an instance of TargetParameters, for the AVR8 target, with data from the TDF.
-         *
-         * @return
-         */
-        [[nodiscard]] TargetParameters getTargetParameters() const;
-
-        /**
-         * Returns a set of all supported physical interfaces for debugging.
-         *
-         * @return
-         */
-        [[nodiscard]] const auto& getSupportedDebugPhysicalInterfaces() const {
-            return this->supportedDebugPhysicalInterfaces;
-        }
-
-        /**
-         * Returns a mapping of all pad descriptors extracted from TDF, mapped by name.
-         *
-         * @return
-         */
-        [[nodiscard]] const auto& getPadDescriptorsMappedByName() const {
-            return this->padDescriptorsByName;
-        }
-
-        /**
-         * Returns a mapping of all target variants extracted from the TDF, mapped by ID.
-         *
-         * @return
-         */
-        [[nodiscard]] const auto& getVariantsMappedById() const {
-            return this->targetVariantsById;
-        }
-
-        /**
-         * Returns a mapping of all target register descriptors extracted from the TDF, by type.
-         *
-         * @return
-         */
-        [[nodiscard]] const auto& getRegisterDescriptorsMappedByType() const {
-            return this->targetRegisterDescriptorsByType;
-        }
     };
 }

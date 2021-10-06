@@ -6,9 +6,7 @@ namespace Bloom::Widgets
 {
     class ItemWidget: public ClickableWidget
     {
-    Q_OBJECT
-    protected:
-        virtual void postSetSelected(bool selected) {};
+        Q_OBJECT
 
     public:
         ItemWidget(QWidget *parent);
@@ -18,5 +16,8 @@ namespace Bloom::Widgets
 
     signals:
         void selected(ItemWidget*);
+
+    protected:
+        virtual void postSetSelected(bool selected) {};
     };
 }

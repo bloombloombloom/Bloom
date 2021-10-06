@@ -1,6 +1,5 @@
 #include "InsightWorker.hpp"
 
-#include <filesystem>
 #include <QObject>
 #include <QTimer>
 
@@ -11,6 +10,16 @@ using namespace Bloom;
 using namespace Bloom::Exceptions;
 
 using Bloom::Targets::TargetState;
+
+InsightWorker::InsightWorker(EventManager& eventManager): eventManager(eventManager) {}
+
+void InsightWorker::queueTask(InsightWorkerTask* task) {
+    auto taskQueueLock = this->queuedTasks.acquireLock();
+    task->moveToThread(this->thread());
+    task->setParent(this);
+    this->queuedTasks.getReference().push(task);
+    emit this->taskQueued();
+}
 
 void InsightWorker::startup() {
     Logger::debug("Starting InsightWorker thread");
@@ -43,12 +52,8 @@ void InsightWorker::startup() {
     );
 }
 
-void InsightWorker::queueTask(InsightWorkerTask* task) {
-    auto taskQueueLock = this->queuedTasks.acquireLock();
-    task->moveToThread(this->thread());
-    task->setParent(this);
-    this->queuedTasks.getReference().push(task);
-    emit this->taskQueued();
+void InsightWorker::requestPinStates(int variantId) {
+    this->targetControllerConsole.requestPinStates(variantId);
 }
 
 std::optional<InsightWorkerTask*> InsightWorker::getQueuedTask() {
@@ -63,18 +68,6 @@ std::optional<InsightWorkerTask*> InsightWorker::getQueuedTask() {
     }
 
     return task;
-}
-
-void InsightWorker::executeTasks() {
-    auto task = std::optional<InsightWorkerTask*>();
-
-    while ((task = this->getQueuedTask()).has_value()) {
-        task.value()->execute(this->targetControllerConsole);
-    }
-}
-
-void InsightWorker::requestPinStates(int variantId) {
-    this->targetControllerConsole.requestPinStates(variantId);
 }
 
 void InsightWorker::onTargetStoppedEvent(const Events::TargetExecutionStopped& event) {
@@ -134,4 +127,12 @@ void InsightWorker::onTargetControllerStateReportedEvent(const Events::TargetCon
         }
     }
     this->lastTargetControllerState = event.state;
+}
+
+void InsightWorker::executeTasks() {
+    auto task = std::optional<InsightWorkerTask*>();
+
+    while ((task = this->getQueuedTask()).has_value()) {
+        task.value()->execute(this->targetControllerConsole);
+    }
 }

@@ -5,6 +5,10 @@
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 using namespace Bloom::Exceptions;
 
+void ReadMemory::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
+    gdbRspDebugServer.handleGdbPacket(*this);
+}
+
 void ReadMemory::init() {
     if (this->data.size() < 4) {
         throw Exception("Invalid packet length");
@@ -37,8 +41,4 @@ void ReadMemory::init() {
     if (!conversionStatus) {
         throw Exception("Failed to parse read length from read memory packet data");
     }
-}
-
-void ReadMemory::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
-    gdbRspDebugServer.handleGdbPacket(*this);
 }

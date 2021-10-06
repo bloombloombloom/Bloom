@@ -15,9 +15,6 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
      */
     class ContinueExecution: public CommandPacket
     {
-    private:
-        void init();
-
     public:
         /**
          * The "c" packet can contain an address which defines the point from which the execution should be resumed on
@@ -32,5 +29,8 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         }
 
         void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+
+    private:
+        void init();
     };
 }

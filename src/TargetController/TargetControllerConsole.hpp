@@ -23,78 +23,6 @@ namespace Bloom
      */
     class TargetControllerConsole
     {
-    private:
-        EventManager& eventManager;
-        EventListener& eventListener;
-
-        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(10000);
-
-        /**
-         * Triggers an event for the TargetController and waits for a response.
-         *
-         * To use this method, the triggered event must define a 'TargetControllerResponseType' alias, which should
-         * specify the type of response expected by the TargetController.
-         * For an example of this, see the Events::ExtractTargetDescriptor class.
-         *
-         * If the TargetController fails to respond within the given time specified by the timeout parameter, or it
-         * responds with an instance of Events::TargetControllerErrorOccurred, this method will throw an exception.
-         *
-         * @tparam TriggerEventType
-         *
-         * @param event
-         *  Event to trigger.
-         *
-         * @param timeout
-         *  The time, in milliseconds, to wait for the TargetController to respond to the event. If this is not
-         *  supplied, this->defaultTimeout will be used.
-         *
-         * @return
-         */
-        template<class TriggerEventType>
-        auto triggerTargetControllerEventAndWaitForResponse(
-            const Events::SharedEventPointerNonConst<TriggerEventType> event,
-            std::optional<std::chrono::milliseconds> timeout = {}
-        ) {
-            using Bloom::Events::SharedEventPointer;
-            using Bloom::Events::TargetControllerErrorOccurred;
-
-            using ResponseEventType = typename TriggerEventType::TargetControllerResponseType;
-
-            bool deRegisterEventType = false;
-
-            if (!this->eventListener.isEventTypeRegistered<ResponseEventType>()) {
-                this->eventListener.registerEventType<ResponseEventType>();
-                deRegisterEventType = true;
-            }
-
-            this->eventManager.triggerEvent(event);
-
-            auto responseEvent = this->eventListener.waitForEvent<
-                ResponseEventType,
-                TargetControllerErrorOccurred
-            >(timeout.value_or(this->defaultTimeout), event->id);
-
-            if (deRegisterEventType) {
-                this->eventListener.deRegisterEventType<ResponseEventType>();
-            }
-
-            if (!responseEvent.has_value()) {
-                throw Bloom::Exceptions::Exception("Timed out waiting for response from TargetController.");
-            }
-
-            if (!std::holds_alternative<SharedEventPointer<ResponseEventType>>(responseEvent.value())) {
-                if (std::holds_alternative<SharedEventPointer<TargetControllerErrorOccurred>>(responseEvent.value())) {
-                    auto& tcErrorEvent = std::get<SharedEventPointer<TargetControllerErrorOccurred>>(responseEvent.value());
-                    throw Bloom::Exceptions::Exception(tcErrorEvent->errorMessage);
-
-                } else {
-                    throw Bloom::Exceptions::Exception("Unexpected response from TargetController");
-                }
-            }
-
-            return std::get<SharedEventPointer<ResponseEventType>>(responseEvent.value());
-        }
-
     public:
         TargetControllerConsole(EventManager& eventManager, EventListener& eventListener):
         eventManager(eventManager), eventListener(eventListener) {};
@@ -212,5 +140,77 @@ namespace Bloom
          * @param pinState
          */
         void setPinState(Targets::TargetPinDescriptor pinDescriptor, Targets::TargetPinState pinState);
+
+    private:
+        EventManager& eventManager;
+        EventListener& eventListener;
+
+        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(10000);
+
+        /**
+         * Triggers an event for the TargetController and waits for a response.
+         *
+         * To use this method, the triggered event must define a 'TargetControllerResponseType' alias, which should
+         * specify the type of response expected by the TargetController.
+         * For an example of this, see the Events::ExtractTargetDescriptor class.
+         *
+         * If the TargetController fails to respond within the given time specified by the timeout parameter, or it
+         * responds with an instance of Events::TargetControllerErrorOccurred, this method will throw an exception.
+         *
+         * @tparam TriggerEventType
+         *
+         * @param event
+         *  Event to trigger.
+         *
+         * @param timeout
+         *  The time, in milliseconds, to wait for the TargetController to respond to the event. If this is not
+         *  supplied, this->defaultTimeout will be used.
+         *
+         * @return
+         */
+        template<class TriggerEventType>
+        auto triggerTargetControllerEventAndWaitForResponse(
+            const Events::SharedEventPointerNonConst<TriggerEventType> event,
+            std::optional<std::chrono::milliseconds> timeout = {}
+        ) {
+            using Bloom::Events::SharedEventPointer;
+            using Bloom::Events::TargetControllerErrorOccurred;
+
+            using ResponseEventType = typename TriggerEventType::TargetControllerResponseType;
+
+            bool deRegisterEventType = false;
+
+            if (!this->eventListener.isEventTypeRegistered<ResponseEventType>()) {
+                this->eventListener.registerEventType<ResponseEventType>();
+                deRegisterEventType = true;
+            }
+
+            this->eventManager.triggerEvent(event);
+
+            auto responseEvent = this->eventListener.waitForEvent<
+                ResponseEventType,
+                TargetControllerErrorOccurred
+            >(timeout.value_or(this->defaultTimeout), event->id);
+
+            if (deRegisterEventType) {
+                this->eventListener.deRegisterEventType<ResponseEventType>();
+            }
+
+            if (!responseEvent.has_value()) {
+                throw Bloom::Exceptions::Exception("Timed out waiting for response from TargetController.");
+            }
+
+            if (!std::holds_alternative<SharedEventPointer<ResponseEventType>>(responseEvent.value())) {
+                if (std::holds_alternative<SharedEventPointer<TargetControllerErrorOccurred>>(responseEvent.value())) {
+                    auto& tcErrorEvent = std::get<SharedEventPointer<TargetControllerErrorOccurred>>(responseEvent.value());
+                    throw Bloom::Exceptions::Exception(tcErrorEvent->errorMessage);
+
+                } else {
+                    throw Bloom::Exceptions::Exception("Unexpected response from TargetController");
+                }
+            }
+
+            return std::get<SharedEventPointer<ResponseEventType>>(responseEvent.value());
+        }
     };
 }

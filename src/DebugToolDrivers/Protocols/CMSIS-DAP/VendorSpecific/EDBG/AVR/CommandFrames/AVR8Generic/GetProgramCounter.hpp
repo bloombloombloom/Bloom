@@ -7,6 +7,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class GetProgramCounter: public Avr8GenericCommandFrame
     {
+    public:
+        using ResponseFrameType = ResponseFrames::Avr8Generic::GetProgramCounter;
+
+        GetProgramCounter() {
+            init();
+        };
+
     private:
         void init() {
             /*
@@ -19,12 +26,5 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             payload[1] = 0x00;
             this->setPayload(payload);
         }
-
-    public:
-        using ResponseFrameType = ResponseFrames::Avr8Generic::GetProgramCounter;
-
-        GetProgramCounter() {
-            init();
-        };
     };
 }

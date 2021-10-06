@@ -19,10 +19,37 @@
 namespace Bloom::Widgets
 {
     class RegisterGroupWidget;
-
     class TargetRegistersPaneWidget: public QWidget
     {
-    Q_OBJECT
+        Q_OBJECT
+
+    public:
+        bool activated = false;
+
+        TargetRegistersPaneWidget(
+            const Targets::TargetDescriptor& targetDescriptor,
+            InsightWorker& insightWorker,
+            PanelWidget *parent
+        );
+
+        void filterRegisters(const QString& keyword);
+        void collapseAllRegisterGroups();
+        void expandAllRegisterGroups();
+
+        void refreshRegisterValues(std::optional<std::function<void(void)>> callback = std::nullopt);
+
+        void activate();
+        void deactivate();
+
+    public slots:
+        void onItemSelectionChange(ItemWidget* newlySelectedWidget);
+
+    protected:
+        void resizeEvent(QResizeEvent* event) override;
+
+        virtual void postActivate();
+        virtual void postDeactivate();
+
     private:
         const Targets::TargetDescriptor& targetDescriptor;
         InsightWorker& insightWorker;
@@ -48,32 +75,5 @@ namespace Bloom::Widgets
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);
         void onRegistersRead(const Targets::TargetRegisters& registers);
-
-    protected:
-        void resizeEvent(QResizeEvent* event) override;
-
-        virtual void postActivate();
-        virtual void postDeactivate();
-
-    public:
-        bool activated = false;
-
-        TargetRegistersPaneWidget(
-            const Targets::TargetDescriptor& targetDescriptor,
-            InsightWorker& insightWorker,
-            PanelWidget *parent
-        );
-
-        void filterRegisters(const QString& keyword);
-        void collapseAllRegisterGroups();
-        void expandAllRegisterGroups();
-
-        void refreshRegisterValues(std::optional<std::function<void(void)>> callback = std::nullopt);
-
-        void activate();
-        void deactivate();
-
-    public slots:
-        void onItemSelectionChange(ItemWidget* newlySelectedWidget);
     };
 }

@@ -7,7 +7,6 @@
 #include <QEvent>
 #include <QFile>
 
-#include "../../../InsightWindow.hpp"
 #include "src/Helpers/Paths.hpp"
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"

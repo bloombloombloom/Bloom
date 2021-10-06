@@ -35,6 +35,92 @@ namespace Bloom::DebugServers::Gdb
      */
     class GdbRspDebugServer: public DebugServer
     {
+    public:
+        explicit GdbRspDebugServer(EventManager& eventManager): DebugServer(eventManager) {};
+
+        std::string getName() const override {
+            return "GDB Remote Serial Protocol DebugServer";
+        };
+
+        /**
+         * Handles any other GDB command packet that has not been promoted to a more specific type.
+         * This would be packets like "?" and "qAttached".
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::CommandPacket& packet);
+
+        /**
+         * Handles the supported features query ("qSupported") command packet.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::SupportedFeaturesQuery& packet);
+
+        /**
+         * Handles the read registers ("g" and "p") command packet.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::ReadRegisters& packet);
+
+        /**
+         * Handles the write general register ("P") command packet.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::WriteRegister& packet);
+
+        /**
+         * Handles the continue execution ("c") command packet.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::ContinueExecution& packet);
+
+        /**
+         * Handles the step execution ("s") packet.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::StepExecution& packet);
+
+        /**
+         * Handles the read memory ("m") command packet.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::ReadMemory& packet);
+
+        /**
+         * Handles the write memory ("M") command packet.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::WriteMemory& packet);
+
+        /**
+         * Handles the set breakpoint ("Z") command packet.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::SetBreakpoint& packet);
+
+        /**
+         * Handles the remove breakpoint ("z") command packet.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::RemoveBreakpoint& packet);
+
+        /**
+         * Handles the interrupt command packet.
+         * Will attempt to halt execution on the target. Should respond with a "stop reply" packet, or an error code.
+         *
+         * @param packet
+         */
+        virtual void handleGdbPacket(CommandPackets::InterruptExecution& packet);
+
     protected:
         /**
          * The port number for the GDB server to listen on.
@@ -156,18 +242,11 @@ namespace Bloom::DebugServers::Gdb
 
             if (!mapping.contains(number)) {
                 throw Exceptions::Exception("Unknown register from GDB - register number ("
-                    + std::to_string(number) + ") not mapped to any register descriptor.");
+                                                + std::to_string(number) + ") not mapped to any register descriptor.");
             }
 
             return mapping.valueAt(number).value();
         }
-
-    public:
-        explicit GdbRspDebugServer(EventManager& eventManager): DebugServer(eventManager) {};
-
-        std::string getName() const override {
-            return "GDB Remote Serial Protocol DebugServer";
-        };
 
         void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
 
@@ -176,84 +255,5 @@ namespace Bloom::DebugServers::Gdb
          * a "stop reply" packet to the client once the target execution stops.
          */
         void onTargetExecutionStopped(const Events::TargetExecutionStopped&);
-
-        /**
-         * Handles any other GDB command packet that has not been promoted to a more specific type.
-         * This would be packets like "?" and "qAttached".
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::CommandPacket& packet);
-
-        /**
-         * Handles the supported features query ("qSupported") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::SupportedFeaturesQuery& packet);
-
-        /**
-         * Handles the read registers ("g" and "p") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::ReadRegisters& packet);
-
-        /**
-         * Handles the write general register ("P") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::WriteRegister& packet);
-
-        /**
-         * Handles the continue execution ("c") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::ContinueExecution& packet);
-
-        /**
-         * Handles the step execution ("s") packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::StepExecution& packet);
-
-        /**
-         * Handles the read memory ("m") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::ReadMemory& packet);
-
-        /**
-         * Handles the write memory ("M") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::WriteMemory& packet);
-
-        /**
-         * Handles the set breakpoint ("Z") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::SetBreakpoint& packet);
-
-        /**
-         * Handles the remove breakpoint ("z") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::RemoveBreakpoint& packet);
-
-        /**
-         * Handles the interrupt command packet.
-         * Will attempt to halt execution on the target. Should respond with a "stop reply" packet, or an error code.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::InterruptExecution& packet);
     };
 }

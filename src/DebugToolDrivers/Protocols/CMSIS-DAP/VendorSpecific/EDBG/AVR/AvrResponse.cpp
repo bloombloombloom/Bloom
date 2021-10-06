@@ -1,7 +1,5 @@
 #include "AvrResponse.hpp"
 
-#include <cstdint>
-
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;

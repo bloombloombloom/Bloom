@@ -14,24 +14,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     class AvrCommandFrame
     {
-    private:
-        unsigned char SOF = 0x0E;
-
-        unsigned char protocolVersion = 0x00;
-
-        /**
-         * Incrementing from 0x00
-         */
-        std::uint16_t sequenceId = 0;
-        inline static std::uint16_t lastSequenceId = 0;
-
-        /**
-         * Destination sub-protocol handler ID
-         */
-        ProtocolHandlerId protocolHandlerID = ProtocolHandlerId::DISCOVERY;
-
-        std::vector<unsigned char> payload;
-
     public:
         using ResponseFrameType = AvrResponseFrame;
 
@@ -102,6 +84,24 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @return
          */
         explicit virtual operator std::vector<unsigned char> () const;
+
+    private:
+        unsigned char SOF = 0x0E;
+
+        unsigned char protocolVersion = 0x00;
+
+        /**
+         * Incrementing from 0x00
+         */
+        std::uint16_t sequenceId = 0;
+        inline static std::uint16_t lastSequenceId = 0;
+
+        /**
+         * Destination sub-protocol handler ID
+         */
+        ProtocolHandlerId protocolHandlerID = ProtocolHandlerId::DISCOVERY;
+
+        std::vector<unsigned char> payload;
     };
 
 }

@@ -13,14 +13,16 @@ namespace Bloom::Widgets
 {
     class CurrentItem: public Item
     {
-    Q_OBJECT
-        QHBoxLayout* layout = new QHBoxLayout(this);
-        QLabel* titleLabel = new QLabel(this);
+        Q_OBJECT
 
     public:
         CurrentItem(
             const Targets::TargetMemoryBuffer& registerValue,
             QWidget *parent
         );
+
+    private:
+        QHBoxLayout* layout = new QHBoxLayout(this);
+        QLabel* titleLabel = new QLabel(this);
     };
 }

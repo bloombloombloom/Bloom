@@ -17,6 +17,54 @@ namespace Bloom::Usb
      */
     class HidInterface: public Interface
     {
+    public:
+        std::size_t getInputReportSize() const {
+             return this->inputReportSize;
+        }
+
+        /**
+         * Claims the USB HID interface and obtains a hid_device instance
+         */
+        void init() override;
+
+        /**
+         * Closes the hid_device and releases any claimed interfaces (via hid_close())
+         */
+        void close() override;
+
+        /**
+         * Reads as much data as the device has to offer, into a vector.
+         *
+         * If `timeout` is set to 0, this method will block until at least one HID report
+         * packet is received.
+         *
+         * @param timeout
+         *
+         * @return
+         *  A vector of the data received from the device.
+         */
+        std::vector<unsigned char> read(unsigned int timeout = 0);
+
+        /**
+         * Writes buffer to HID output endpoint.
+         *
+         * @param buffer
+         */
+        void write(std::vector<unsigned char> buffer);
+
+        /**
+         * Resolves a device path from a USB interface number.
+         *
+         * @param interfaceNumber
+         * @return
+         */
+        std::string getDevicePathByInterfaceNumber(const std::uint16_t& interfaceNumber);
+
+    protected:
+        hid_device* getHidDevice() const {
+            return this->hidDevice;
+        }
+
     private:
         /**
          * The HIDAPI library provides a hid_device data structure to represent a USB HID interface.
@@ -58,53 +106,5 @@ namespace Bloom::Usb
          *  Number of bytes read.
          */
         std::size_t read(unsigned char* buffer, std::size_t maxLength, unsigned int timeout);
-
-    protected:
-        hid_device* getHidDevice() const {
-            return this->hidDevice;
-        }
-
-    public:
-        std::size_t getInputReportSize() const {
-             return this->inputReportSize;
-        }
-
-        /**
-         * Claims the USB HID interface and obtains a hid_device instance
-         */
-        void init() override;
-
-        /**
-         * Closes the hid_device and releases any claimed interfaces (via hid_close())
-         */
-        void close() override;
-
-        /**
-         * Writes buffer to HID output endpoint.
-         *
-         * @param buffer
-         */
-        void write(std::vector<unsigned char> buffer);
-
-        /**
-         * Reads as much data as the device has to offer, into a vector.
-         *
-         * If `timeout` is set to 0, this method will block until at least one HID report
-         * packet is received.
-         *
-         * @param timeout
-         *
-         * @return
-         *  A vector of the data received from the device.
-         */
-        std::vector<unsigned char> read(unsigned int timeout = 0);
-
-        /**
-         * Resolves a device path from a USB interface number.
-         *
-         * @param interfaceNumber
-         * @return
-         */
-        std::string getDevicePathByInterfaceNumber(const std::uint16_t& interfaceNumber);
     };
 }

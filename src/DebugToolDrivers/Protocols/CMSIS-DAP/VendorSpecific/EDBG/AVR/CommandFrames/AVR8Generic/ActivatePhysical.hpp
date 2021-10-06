@@ -6,9 +6,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class ActivatePhysical: public Avr8GenericCommandFrame
     {
-    private:
-        bool reset = false;
-
     public:
         ActivatePhysical() = default;
         explicit ActivatePhysical(bool reset): reset(reset) {};
@@ -31,6 +28,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        bool reset = false;
     };
 
 }

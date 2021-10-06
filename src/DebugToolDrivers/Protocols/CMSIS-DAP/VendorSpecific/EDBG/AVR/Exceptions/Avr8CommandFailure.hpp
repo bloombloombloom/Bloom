@@ -7,6 +7,27 @@ namespace Bloom::Exceptions
 {
     class Avr8CommandFailure: public TargetOperationFailure
     {
+    public:
+        explicit Avr8CommandFailure(const std::string& message): TargetOperationFailure(message) {
+            this->message = message;
+        }
+
+        explicit Avr8CommandFailure(const char* message): TargetOperationFailure(message) {
+            this->message = std::string(message);
+        }
+
+        explicit Avr8CommandFailure(
+            const std::string& message,
+            DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic::Avr8GenericResponseFrame& responseFrame
+        ): TargetOperationFailure(message) {
+            this->message = message;
+
+            auto responsePayload = responseFrame.getPayload();
+            if (responsePayload.size() == 3 && this->failureCodeToDescription.contains(responsePayload[2])) {
+                this->message += " - Failure reason: " + this->failureCodeToDescription.find(responsePayload[2])->second;
+            }
+        }
+
     private:
         static inline auto failureCodeToDescription = std::map<unsigned char, std::string>({
             {0x10, "debugWIRE physical error"},
@@ -57,26 +78,5 @@ namespace Bloom::Exceptions
             {0x91, "Command has not been implemented"},
             {0xFF, "Unknown error reported by EDBG device"},
         });
-
-    public:
-        explicit Avr8CommandFailure(const std::string& message): TargetOperationFailure(message) {
-            this->message = message;
-        }
-
-        explicit Avr8CommandFailure(const char* message): TargetOperationFailure(message) {
-            this->message = std::string(message);
-        }
-
-        explicit Avr8CommandFailure(
-            const std::string& message,
-            DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic::Avr8GenericResponseFrame& responseFrame
-        ): TargetOperationFailure(message) {
-            this->message = message;
-
-            auto responsePayload = responseFrame.getPayload();
-            if (responsePayload.size() == 3 && this->failureCodeToDescription.contains(responsePayload[2])) {
-                this->message += " - Failure reason: " + this->failureCodeToDescription.find(responsePayload[2])->second;
-            }
-        }
     };
 }

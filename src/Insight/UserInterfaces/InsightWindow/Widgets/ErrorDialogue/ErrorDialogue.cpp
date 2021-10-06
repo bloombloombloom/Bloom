@@ -3,8 +3,8 @@
 #include <QHBoxLayout>
 #include <QFile>
 
-#include "src/Helpers/Paths.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
+#include "src/Helpers/Paths.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 using namespace Bloom::Widgets;

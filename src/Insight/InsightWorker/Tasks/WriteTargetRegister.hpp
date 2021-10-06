@@ -7,15 +7,16 @@ namespace Bloom
 {
     class WriteTargetRegister: public InsightWorkerTask
     {
-    Q_OBJECT
-    private:
-        Targets::TargetRegister targetRegister;
-
-    protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        Q_OBJECT
 
     public:
         WriteTargetRegister(const Targets::TargetRegister& targetRegister):
         InsightWorkerTask(), targetRegister(targetRegister) {}
+
+    protected:
+        void run(TargetControllerConsole& targetControllerConsole) override;
+
+    private:
+        Targets::TargetRegister targetRegister;
     };
 }

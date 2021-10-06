@@ -11,7 +11,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
 {
     class TargetPinBodyWidget: public QWidget
     {
-    Q_OBJECT
+        Q_OBJECT
         /*
          * Pin body colors can be set in QSS files.
          */
@@ -23,37 +23,11 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
         Q_PROPERTY(int disableAlphaLevel READ getDisableAlphaLevel WRITE setDisableAlphaLevel DESIGNABLE true)
 
-    protected:
-        Targets::TargetPinDescriptor pinDescriptor;
-        std::optional<Targets::TargetPinState> pinState;
-
-        bool hoverActive = false;
-
-        QColor defaultBodyColor = QColor("#908D85");
-        QColor vccBodyColor = QColor("#70383A");
-        QColor gndBodyColor = QColor("#484A4B");
-        QColor outputHighBodyColor = QColor("#3C5E62");
-        QColor inputHighBodyColor = QColor("#7B5E38");
-
-        int disableAlphaLevel = 100;
-
-        bool event(QEvent* event) override;
-
-        void mouseReleaseEvent(QMouseEvent* event) override {
-            if (event->button() == Qt::MouseButton::LeftButton) {
-                emit this->clicked();
-            }
-
-            QWidget::mouseReleaseEvent(event);
-        }
-
     public:
         TargetPinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor):
         QWidget(parent), pinDescriptor(std::move(pinDescriptor)) {
             this->setObjectName("target-pin-body");
         }
-
-        QColor getBodyColor();
 
         void setPinState(const Targets::TargetPinState& pinState) {
             this->pinState = pinState;
@@ -109,5 +83,31 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
     signals:
         void clicked();
+
+    protected:
+        Targets::TargetPinDescriptor pinDescriptor;
+        std::optional<Targets::TargetPinState> pinState;
+
+        bool hoverActive = false;
+
+        QColor defaultBodyColor = QColor("#908D85");
+        QColor vccBodyColor = QColor("#70383A");
+        QColor gndBodyColor = QColor("#484A4B");
+        QColor outputHighBodyColor = QColor("#3C5E62");
+        QColor inputHighBodyColor = QColor("#7B5E38");
+
+        int disableAlphaLevel = 100;
+
+        QColor getBodyColor();
+
+        bool event(QEvent* event) override;
+
+        void mouseReleaseEvent(QMouseEvent* event) override {
+            if (event->button() == Qt::MouseButton::LeftButton) {
+                emit this->clicked();
+            }
+
+            QWidget::mouseReleaseEvent(event);
+        }
     };
 }

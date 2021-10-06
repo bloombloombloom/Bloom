@@ -9,9 +9,6 @@ namespace Bloom::Events
 {
     class InsightThreadStateChanged: public Event
     {
-    private:
-        ThreadState state;
-
     public:
         explicit InsightThreadStateChanged(ThreadState state): state(state) {};
 
@@ -29,5 +26,8 @@ namespace Bloom::Events
         ThreadState getState() const {
             return this->state;
         }
+
+    private:
+        ThreadState state;
     };
 }

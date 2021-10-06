@@ -6,6 +6,10 @@
 
 using namespace Bloom::DebugServers::Gdb::CommandPackets;
 
+void SupportedFeaturesQuery::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
+    gdbRspDebugServer.handleGdbPacket(*this);
+}
+
 void SupportedFeaturesQuery::init() {
     /*
      * For qSupported packets, supported and unsupported GDB features are reported in the packet
@@ -36,8 +40,4 @@ void SupportedFeaturesQuery::init() {
             }
         }
     }
-}
-
-void SupportedFeaturesQuery::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
-    gdbRspDebugServer.handleGdbPacket(*this);
 }

@@ -13,9 +13,6 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
      */
     class WriteRegister: public CommandPacket
     {
-    private:
-        void init();
-
     public:
         int registerNumber = 0;
         std::vector<unsigned char> registerValue;
@@ -25,5 +22,8 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         };
 
         void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+
+    private:
+        void init();
     };
 }

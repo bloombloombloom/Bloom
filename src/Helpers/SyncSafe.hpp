@@ -17,10 +17,6 @@ namespace Bloom
     template<typename Type>
     class SyncSafe
     {
-    private:
-        std::mutex mutex;
-        Type value;
-
     public:
         SyncSafe() = default;
 
@@ -51,5 +47,9 @@ namespace Bloom
         std::unique_lock<std::mutex> acquireLock() {
             return std::unique_lock(this->mutex);
         };
+
+    private:
+        std::mutex mutex;
+        Type value;
     };
 }

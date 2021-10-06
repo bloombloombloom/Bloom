@@ -22,7 +22,21 @@ namespace Bloom::Widgets
 {
     class TargetRegisterInspectorWindow: public QWidget
     {
-    Q_OBJECT
+        Q_OBJECT
+
+    public:
+        TargetRegisterInspectorWindow(
+            const Targets::TargetRegisterDescriptor& registerDescriptor,
+            InsightWorker& insightWorker,
+            Targets::TargetState currentTargetState,
+            std::optional<Targets::TargetMemoryBuffer> registerValue = std::nullopt,
+            QWidget* parent = nullptr
+        );
+
+        static bool registerSupported(const Targets::TargetRegisterDescriptor& descriptor);
+
+        void setValue(const Targets::TargetMemoryBuffer& registerValue);
+
     private:
         Targets::TargetRegisterDescriptor registerDescriptor;
         Targets::TargetMemoryBuffer registerValue;
@@ -57,18 +71,5 @@ namespace Bloom::Widgets
         void refreshRegisterValue();
         void applyChanges();
         void openHelpPage();
-
-    public:
-        TargetRegisterInspectorWindow(
-            const Targets::TargetRegisterDescriptor& registerDescriptor,
-            InsightWorker& insightWorker,
-            Targets::TargetState currentTargetState,
-            std::optional<Targets::TargetMemoryBuffer> registerValue = std::nullopt,
-            QWidget* parent = nullptr
-        );
-
-        static bool registerSupported(const Targets::TargetRegisterDescriptor& descriptor);
-
-        void setValue(const Targets::TargetMemoryBuffer& registerValue);
     };
 }

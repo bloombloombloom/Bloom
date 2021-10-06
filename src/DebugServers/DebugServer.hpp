@@ -27,40 +27,28 @@ namespace Bloom::DebugServers
      */
     class DebugServer: public Thread
     {
-    private:
-        /**
-         * Prepares the debug server thread and then calls init().
-         *
-         * Derived classes should not override this method - they should instead use init().
-         */
-        void startup();
+    public:
+        explicit DebugServer(EventManager& eventManager): eventManager(eventManager) {};
+        virtual ~DebugServer() = default;
 
-        /**
-         * Calls close() and updates the thread state.
-         *
-         * As with startup(), derived classes should not override this method. They should use close() instead.
-         */
-        void shutdown();
+        void setApplicationConfig(const ApplicationConfig& applicationConfig) {
+            this->applicationConfig = applicationConfig;
+        }
 
-        /**
-         * Updates the state of the DebugServer and emits a state changed event.
-         *
-         * @param state
-         * @param emitEvent
-         */
-        void setThreadStateAndEmitEvent(ThreadState state) {
-            Thread::setThreadState(state);
-            this->eventManager.triggerEvent(
-                std::make_shared<Events::DebugServerThreadStateChanged>(state)
-            );
+        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
+            this->environmentConfig = environmentConfig;
+        }
+
+        void setDebugServerConfig(const DebugServerConfig& debugServerConfig) {
+            this->debugServerConfig = debugServerConfig;
         }
 
         /**
-         * Handles a shutdown request.
-         *
-         * @param event
+         * Entry point for the DebugServer. This must called from a dedicated thread.
          */
-        void onShutdownDebugServerEvent(const Events::ShutdownDebugServer& event);
+        void run();
+
+        virtual std::string getName() const = 0;
 
     protected:
         /**
@@ -100,28 +88,39 @@ namespace Bloom::DebugServers
          */
         virtual void close() = 0;
 
-    public:
-        explicit DebugServer(EventManager& eventManager): eventManager(eventManager) {};
+    private:
+        /**
+         * Prepares the debug server thread and then calls init().
+         *
+         * Derived classes should not override this method - they should instead use init().
+         */
+        void startup();
 
-        void setApplicationConfig(const ApplicationConfig& applicationConfig) {
-            this->applicationConfig = applicationConfig;
-        }
+        /**
+         * Calls close() and updates the thread state.
+         *
+         * As with startup(), derived classes should not override this method. They should use close() instead.
+         */
+        void shutdown();
 
-        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
-            this->environmentConfig = environmentConfig;
-        }
-
-        void setDebugServerConfig(const DebugServerConfig& debugServerConfig) {
-            this->debugServerConfig = debugServerConfig;
+        /**
+         * Updates the state of the DebugServer and emits a state changed event.
+         *
+         * @param state
+         * @param emitEvent
+         */
+        void setThreadStateAndEmitEvent(ThreadState state) {
+            Thread::setThreadState(state);
+            this->eventManager.triggerEvent(
+                std::make_shared<Events::DebugServerThreadStateChanged>(state)
+            );
         }
 
         /**
-         * Entry point for the DebugServer. This must called from a dedicated thread.
+         * Handles a shutdown request.
+         *
+         * @param event
          */
-        void run();
-
-        virtual std::string getName() const = 0;
-
-        virtual ~DebugServer() = default;
+        void onShutdownDebugServerEvent(const Events::ShutdownDebugServer& event);
     };
 }

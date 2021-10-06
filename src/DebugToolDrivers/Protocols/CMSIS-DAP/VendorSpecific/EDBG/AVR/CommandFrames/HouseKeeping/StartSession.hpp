@@ -9,6 +9,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
      */
     class StartSession: public HouseKeepingCommandFrame
     {
+    public:
+        StartSession(): HouseKeepingCommandFrame() {
+            this->init();
+        }
+
     private:
         void init() {
             /*
@@ -19,11 +24,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             payload[0] = 0x10;
             payload[1] = 0x00;
             this->setPayload(payload);
-        }
-
-    public:
-        StartSession(): HouseKeepingCommandFrame() {
-            this->init();
         }
     };
 }

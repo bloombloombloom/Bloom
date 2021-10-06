@@ -27,5 +27,4 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
             return static_cast<std::uint32_t>(payload[5] << 24 | payload[4] << 16 | payload[3] << 8 | payload[2]) * 2;
         }
     };
-
 }

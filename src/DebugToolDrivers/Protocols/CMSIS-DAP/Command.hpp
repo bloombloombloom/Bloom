@@ -7,11 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
 {
     class Command
     {
-    private:
-        unsigned char commandId = 0x00;
-        std::vector<unsigned char> data;
-
     public:
+        virtual ~Command() = default;
+
         [[nodiscard]] unsigned char getCommandId() const {
             return this->commandId;
         }
@@ -45,6 +43,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          */
         explicit virtual operator std::vector<unsigned char>() const;
 
-        virtual ~Command() = default;
+    private:
+        unsigned char commandId = 0x00;
+        std::vector<unsigned char> data;
     };
 }

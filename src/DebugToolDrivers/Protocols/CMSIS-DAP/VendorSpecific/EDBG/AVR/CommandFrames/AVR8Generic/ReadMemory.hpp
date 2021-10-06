@@ -10,12 +10,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class ReadMemory: public Avr8GenericCommandFrame
     {
-    private:
-        Avr8MemoryType type = Avr8MemoryType::SRAM;
-        std::uint32_t address = 0;
-        std::uint32_t bytes = 0;
-        std::set<std::uint32_t> excludedAddresses;
-
     public:
         using ResponseFrameType = ResponseFrames::Avr8Generic::ReadMemory;
 
@@ -38,5 +32,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         }
 
         [[nodiscard]] std::vector<unsigned char> getPayload() const override;
+
+    private:
+        Avr8MemoryType type = Avr8MemoryType::SRAM;
+        std::uint32_t address = 0;
+        std::uint32_t bytes = 0;
+        std::set<std::uint32_t> excludedAddresses;
     };
 }

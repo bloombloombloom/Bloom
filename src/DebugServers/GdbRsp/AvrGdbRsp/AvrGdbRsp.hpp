@@ -25,14 +25,12 @@ namespace Bloom::DebugServers::Gdb
      */
     class AvrGdbRsp: public GdbRspDebugServer
     {
-    private:
-        /**
-         * The mask used by the AVR GDB client to encode the memory type into memory addresses.
-         * See AvrGdbRsp::getMemoryTypeFromGdbAddress() for more.
-         */
-        unsigned int gdbInternalMemoryMask = 0xFE0000u;
+    public:
+        explicit AvrGdbRsp(EventManager& eventManager): GdbRspDebugServer(eventManager) {};
 
-        BiMap<GdbRegisterNumber, Targets::TargetRegisterDescriptor> registerNumberToDescriptorMapping = {};
+        std::string getName() const override {
+            return "AVR GDB Remote Serial Protocol Debug Server";
+        }
 
     protected:
         /**
@@ -80,11 +78,13 @@ namespace Bloom::DebugServers::Gdb
 
         void init() override;
 
-    public:
-        explicit AvrGdbRsp(EventManager& eventManager): GdbRspDebugServer(eventManager) {};
+    private:
+        /**
+         * The mask used by the AVR GDB client to encode the memory type into memory addresses.
+         * See AvrGdbRsp::getMemoryTypeFromGdbAddress() for more.
+         */
+        unsigned int gdbInternalMemoryMask = 0xFE0000u;
 
-        std::string getName() const override {
-            return "AVR GDB Remote Serial Protocol Debug Server";
-        }
+        BiMap<GdbRegisterNumber, Targets::TargetRegisterDescriptor> registerNumberToDescriptorMapping = {};
     };
 }

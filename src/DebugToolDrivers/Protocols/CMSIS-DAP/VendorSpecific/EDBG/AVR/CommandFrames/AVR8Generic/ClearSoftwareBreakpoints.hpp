@@ -9,9 +9,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class ClearSoftwareBreakpoints: public Avr8GenericCommandFrame
     {
-    private:
-        std::vector<std::uint32_t> addresses;
-
     public:
         ClearSoftwareBreakpoints() = default;
 
@@ -43,5 +40,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        std::vector<std::uint32_t> addresses;
     };
 }

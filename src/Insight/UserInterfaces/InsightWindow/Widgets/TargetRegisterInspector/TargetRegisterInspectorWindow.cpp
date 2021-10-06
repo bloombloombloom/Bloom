@@ -2,9 +2,6 @@
 
 #include <QVBoxLayout>
 #include <QMargins>
-#include <QTableWidget>
-#include <QScrollBar>
-#include <set>
 #include <QDesktopServices>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"

@@ -6,22 +6,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
 {
     class Response
     {
-    private:
-        unsigned char responseId = 0x00;
-
-        std::vector<unsigned char> data;
-
-    protected:
-        void setResponseId(unsigned char commandId) {
-            this->responseId = commandId;
-        }
-
-        void setData(const std::vector<unsigned char>& data) {
-            this->data = data;
-        }
-
     public:
         Response() = default;
+        virtual ~Response() = default;
+
         virtual void init(const std::vector<unsigned char>& rawResponse);
 
         [[nodiscard]] unsigned char getResponseId() const {
@@ -32,6 +20,17 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
             return this->data;
         }
 
-        virtual ~Response() = default;
+    protected:
+        void setResponseId(unsigned char commandId) {
+            this->responseId = commandId;
+        }
+
+        void setData(const std::vector<unsigned char>& data) {
+            this->data = data;
+        }
+
+    private:
+        unsigned char responseId = 0x00;
+        std::vector<unsigned char> data;
     };
 }

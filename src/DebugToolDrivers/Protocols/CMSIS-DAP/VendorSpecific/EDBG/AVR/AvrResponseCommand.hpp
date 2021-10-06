@@ -1,5 +1,7 @@
 #pragma once
+
 #include <vector>
+
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr

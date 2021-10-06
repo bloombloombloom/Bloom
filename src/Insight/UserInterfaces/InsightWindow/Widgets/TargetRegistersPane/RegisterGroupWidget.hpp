@@ -20,14 +20,7 @@ namespace Bloom::Widgets
     class RegisterWidget;
     class RegisterGroupWidget: public ItemWidget
     {
-    Q_OBJECT
-    private:
-        QVBoxLayout* layout = new QVBoxLayout(this);
-        ItemWidget* headerWidget = new ItemWidget(this);
-        SvgWidget* arrowIcon = new SvgWidget(this->headerWidget);
-        SvgWidget* registerGroupIcon = new SvgWidget(this->headerWidget);
-        QLabel* label = new QLabel(this->headerWidget);
-        QWidget* bodyWidget = new QWidget(this);
+        Q_OBJECT
 
     public:
         QString name;
@@ -48,5 +41,13 @@ namespace Bloom::Widgets
         void setAllRegistersVisible(bool visible);
 
         void filterRegisters(const std::string& keyword);
+
+    private:
+        QVBoxLayout* layout = new QVBoxLayout(this);
+        ItemWidget* headerWidget = new ItemWidget(this);
+        SvgWidget* arrowIcon = new SvgWidget(this->headerWidget);
+        SvgWidget* registerGroupIcon = new SvgWidget(this->headerWidget);
+        QLabel* label = new QLabel(this->headerWidget);
+        QWidget* bodyWidget = new QWidget(this);
     };
 }

@@ -12,20 +12,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 {
     class PinWidget: public TargetPinWidget
     {
-    Q_OBJECT
-    private:
-        QBoxLayout* layout = nullptr;
-        QLabel* pinNumberLabel = nullptr;
-        QLabel* pinNameLabel = nullptr;
-        QLabel* pinDirectionLabel = nullptr;
-        PinBodyWidget* bodyWidget = nullptr;
-
-        bool isLeftLayout = false;
-        bool isBottomLayout = false;
-        bool isRightLayout = false;
-        bool isTopLayout = false;
-
-        void setLabelColor(const QString& hexColor);
+        Q_OBJECT
 
     public:
         static const int PIN_WIDGET_LAYOUT_PADDING = 46;
@@ -49,5 +36,19 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         );
 
         void updatePinState(const Targets::TargetPinState& pinState) override;
+
+    private:
+        QBoxLayout* layout = nullptr;
+        QLabel* pinNumberLabel = nullptr;
+        QLabel* pinNameLabel = nullptr;
+        QLabel* pinDirectionLabel = nullptr;
+        PinBodyWidget* bodyWidget = nullptr;
+
+        bool isLeftLayout = false;
+        bool isBottomLayout = false;
+        bool isRightLayout = false;
+        bool isTopLayout = false;
+
+        void setLabelColor(const QString& hexColor);
     };
 }

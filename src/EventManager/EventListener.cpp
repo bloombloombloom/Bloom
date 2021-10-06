@@ -1,15 +1,12 @@
 #include "EventListener.hpp"
 
+#include "src/Logger/Logger.hpp"
+
 using namespace Bloom;
 using namespace Bloom::Events;
 
 std::set<Events::EventType> EventListener::getRegisteredEventTypes() {
     return this->registeredEventTypes.getValue();
-}
-
-void EventListener::clearAllCallbacks() {
-    auto lock = this->eventTypeToCallbacksMapping.acquireLock();
-    this->eventTypeToCallbacksMapping.getReference().clear();
 }
 
 void EventListener::registerEvent(SharedGenericEventPointer event) {
@@ -23,45 +20,6 @@ void EventListener::registerEvent(SharedGenericEventPointer event) {
 
     if (this->interruptEventNotifier != nullptr && this->interruptEventNotifier->isInitialised()) {
         this->interruptEventNotifier->notify();
-    }
-}
-
-std::vector<SharedGenericEventPointer> EventListener::getEvents() {
-    auto queueLock = this->eventQueueByEventType.acquireLock();
-    auto& eventQueueByType = this->eventQueueByEventType.getReference();
-    std::vector<SharedGenericEventPointer> output;
-
-    for (auto& eventQueue: eventQueueByType) {
-        if (!eventQueue.second.empty()) {
-            output.push_back(std::move(eventQueue.second.front()));
-            eventQueue.second.pop();
-        }
-    }
-
-    std::sort(output.begin(), output.end(), [](const SharedGenericEventPointer& a, const SharedGenericEventPointer& b) {
-        return a->id < b->id;
-    });
-
-    return output;
-}
-
-void EventListener::dispatchEvent(const SharedGenericEventPointer& event) {
-    Logger::debug("Dispatching event " + event->getName() + " (" + std::to_string(event->id) + ").");
-    // Dispatch the event to all registered handlers
-    auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
-    auto& callbacks = this->eventTypeToCallbacksMapping.getReference().find(event->getType())->second;
-    mappingLock.unlock();
-
-    for (auto& callback : callbacks) {
-        callback(*(event.get()));
-    }
-}
-
-void EventListener::dispatchCurrentEvents() {
-    auto events = this->getEvents();
-
-    for (auto const& event: events) {
-        dispatchEvent(event);
     }
 }
 
@@ -94,4 +52,48 @@ void EventListener::waitAndDispatch(int msTimeout) {
     queueLock.unlock();
 
     this->dispatchCurrentEvents();
+}
+
+void EventListener::dispatchEvent(const SharedGenericEventPointer& event) {
+    Logger::debug("Dispatching event " + event->getName() + " (" + std::to_string(event->id) + ").");
+    // Dispatch the event to all registered handlers
+    auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
+    auto& callbacks = this->eventTypeToCallbacksMapping.getReference().find(event->getType())->second;
+    mappingLock.unlock();
+
+    for (auto& callback : callbacks) {
+        callback(*(event.get()));
+    }
+}
+
+void EventListener::dispatchCurrentEvents() {
+    auto events = this->getEvents();
+
+    for (auto const& event: events) {
+        dispatchEvent(event);
+    }
+}
+
+std::vector<SharedGenericEventPointer> EventListener::getEvents() {
+    auto queueLock = this->eventQueueByEventType.acquireLock();
+    auto& eventQueueByType = this->eventQueueByEventType.getReference();
+    std::vector<SharedGenericEventPointer> output;
+
+    for (auto& eventQueue: eventQueueByType) {
+        if (!eventQueue.second.empty()) {
+            output.push_back(std::move(eventQueue.second.front()));
+            eventQueue.second.pop();
+        }
+    }
+
+    std::sort(output.begin(), output.end(), [](const SharedGenericEventPointer& a, const SharedGenericEventPointer& b) {
+        return a->id < b->id;
+    });
+
+    return output;
+}
+
+void EventListener::clearAllCallbacks() {
+    auto lock = this->eventTypeToCallbacksMapping.acquireLock();
+    this->eventTypeToCallbacksMapping.getReference().clear();
 }

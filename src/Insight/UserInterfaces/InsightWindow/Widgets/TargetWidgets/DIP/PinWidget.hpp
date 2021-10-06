@@ -1,9 +1,11 @@
 #pragma once
 
 #include <QWidget>
+#include <QVBoxLayout>
 #include <QLabel>
 
 #include "../TargetPinWidget.hpp"
+
 #include "PinBodyWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
@@ -11,20 +13,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
 {
     class PinWidget: public TargetPinWidget
     {
-    Q_OBJECT
-    private:
-        QVBoxLayout* layout = nullptr;
-        QLabel* pinNumberLabel = nullptr;
-        QLabel* pinNameLabel = nullptr;
-        QLabel* pinDirectionLabel = nullptr;
-        PinBodyWidget* bodyWidget = nullptr;
-
-        void setLabelColor(const QString& hexColor) {
-            auto style = QString("QLabel { color: " + hexColor + "; }");
-            if (this->pinNameLabel != nullptr) {
-                this->pinNameLabel->setStyleSheet(style);
-            }
-        }
+        Q_OBJECT
 
     public:
         static const int MINIMUM_WIDTH = 30;
@@ -58,6 +47,20 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
             }
 
             this->setLabelColor(this->pinStateChanged ? "#4d7bba" : "#a6a7aa");
+        }
+
+    private:
+        QVBoxLayout* layout = nullptr;
+        QLabel* pinNumberLabel = nullptr;
+        QLabel* pinNameLabel = nullptr;
+        QLabel* pinDirectionLabel = nullptr;
+        PinBodyWidget* bodyWidget = nullptr;
+
+        void setLabelColor(const QString& hexColor) {
+            auto style = QString("QLabel { color: " + hexColor + "; }");
+            if (this->pinNameLabel != nullptr) {
+                this->pinNameLabel->setStyleSheet(style);
+            }
         }
     };
 }

@@ -21,9 +21,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
      */
     class Query: public DiscoveryCommandFrame
     {
-    private:
-        QueryContext context = QueryContext::COMMAND_HANDLERS;
-
     public:
         Query(): DiscoveryCommandFrame() {}
 
@@ -45,5 +42,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        QueryContext context = QueryContext::COMMAND_HANDLERS;
     };
 }

@@ -18,18 +18,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
      */
     class TargetPackageWidget: public QWidget
     {
-    Q_OBJECT
-    protected:
-        Targets::TargetVariant targetVariant;
-        InsightWorker& insightWorker;
-        std::vector<TargetPinWidget*> pinWidgets;
-
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
-
-    protected slots:
-        virtual void updatePinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber);
-        void onTargetStateChanged(Targets::TargetState newState);
-        void onRegistersWritten(Targets::TargetRegisters targetRegisters);
+        Q_OBJECT
 
     public:
         TargetPackageWidget(Targets::TargetVariant targetVariant, InsightWorker& insightWorker, QWidget* parent);
@@ -46,5 +35,17 @@ namespace Bloom::Widgets::InsightTargetWidgets
         QSize minimumSizeHint() const override {
             return this->sizeHint();
         }
+
+    protected:
+        Targets::TargetVariant targetVariant;
+        InsightWorker& insightWorker;
+        std::vector<TargetPinWidget*> pinWidgets;
+
+        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+
+    protected slots:
+        virtual void updatePinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber);
+        void onTargetStateChanged(Targets::TargetState newState);
+        void onRegistersWritten(Targets::TargetRegisters targetRegisters);
     };
 }

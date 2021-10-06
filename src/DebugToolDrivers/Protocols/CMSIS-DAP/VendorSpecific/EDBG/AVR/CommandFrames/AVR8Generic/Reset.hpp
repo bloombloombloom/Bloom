@@ -6,9 +6,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class Reset: public Avr8GenericCommandFrame
     {
-    private:
-        bool stopAtMainAddress = false;
-
     public:
         Reset() = default;
         explicit Reset(bool stopAtMainAddress): stopAtMainAddress(stopAtMainAddress) {};
@@ -31,5 +28,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        bool stopAtMainAddress = false;
     };
 }

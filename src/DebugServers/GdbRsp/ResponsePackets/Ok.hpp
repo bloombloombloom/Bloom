@@ -1,7 +1,5 @@
 #pragma once
 
-#include <set>
-
 #include "ResponsePacket.hpp"
 
 namespace Bloom::DebugServers::Gdb {

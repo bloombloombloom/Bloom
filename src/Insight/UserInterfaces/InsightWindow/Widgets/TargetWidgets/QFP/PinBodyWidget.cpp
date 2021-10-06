@@ -1,7 +1,7 @@
+#include "PinBodyWidget.hpp"
+
 #include <QPainter>
 #include <QEvent>
-
-#include "PinBodyWidget.hpp"
 
 using namespace Bloom::Widgets::InsightTargetWidgets::Qfp;
 using namespace Bloom::Targets;

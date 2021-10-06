@@ -7,11 +7,16 @@ namespace Bloom::Widgets
 {
     class RotatableLabel: public QLabel
     {
-    Q_OBJECT
-    private:
-        int angle = 90;
+        Q_OBJECT
 
-        [[nodiscard]] QSize getContainerSize() const;
+    public:
+        RotatableLabel(const QString& text, QWidget* parent): QLabel(text, parent) {};
+        RotatableLabel(int angleDegrees, const QString& text, QWidget* parent)
+        : QLabel(text, parent), angle(angleDegrees) {};
+
+        void setAngle(int angleDegrees) {
+            this->angle = angleDegrees;
+        }
 
     protected:
         void paintEvent(QPaintEvent* event) override;
@@ -24,14 +29,9 @@ namespace Bloom::Widgets
             return this->getContainerSize();
         };
 
-    public:
-        RotatableLabel(const QString& text, QWidget* parent): QLabel(text, parent) {};
-        RotatableLabel(int angleDegrees, const QString& text, QWidget* parent): QLabel(text, parent) {
-            this->setAngle(angleDegrees);
-        };
+    private:
+        int angle = 90;
 
-        void setAngle(int angleDegrees) {
-            this->angle = angleDegrees;
-        }
+        [[nodiscard]] QSize getContainerSize() const;
     };
 }

@@ -34,17 +34,6 @@ namespace Bloom::DebugToolDrivers
      */
     class MplabSnap: public DebugTool, public Usb::UsbDevice
     {
-    private:
-        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
-
-        /**
-         * The MPLAB Snap employs the EDBG AVR8 Generic protocol, for debugging AVR8 targets. This protocol is
-         * implemented in EdbgAvr8Interface. See the EdbgAvr8Interface class for more information.
-         */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
-
-        bool sessionStarted = false;
-
     public:
         static const std::uint16_t USB_VENDOR_ID = 1003;
         static const std::uint16_t USB_PRODUCT_ID = 8576;
@@ -83,5 +72,16 @@ namespace Bloom::DebugToolDrivers
          * Ends the active session with the debug tool.
          */
         void endSession();
+
+    private:
+        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
+
+        /**
+         * The MPLAB Snap employs the EDBG AVR8 Generic protocol, for debugging AVR8 targets. This protocol is
+         * implemented in EdbgAvr8Interface. See the EdbgAvr8Interface class for more information.
+         */
+        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
+
+        bool sessionStarted = false;
     };
 }

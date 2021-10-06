@@ -12,9 +12,6 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
      */
     class StepExecution: public CommandPacket
     {
-    private:
-        void init();
-
     public:
         /**
          * The address from which to begin the step.
@@ -26,5 +23,8 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         };
 
         void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+
+    private:
+        void init();
     };
 }

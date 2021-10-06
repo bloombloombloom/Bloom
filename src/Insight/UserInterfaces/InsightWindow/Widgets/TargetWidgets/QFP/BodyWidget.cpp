@@ -1,7 +1,6 @@
-#include <QPainter>
-
 #include "BodyWidget.hpp"
-#include "src/Logger/Logger.hpp"
+
+#include <QPainter>
 
 using namespace Bloom::Widgets::InsightTargetWidgets::Qfp;
 

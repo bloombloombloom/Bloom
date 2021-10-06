@@ -20,9 +20,6 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
      */
     class SetBreakpoint: public CommandPacket
     {
-    private:
-        void init();
-
     public:
         /**
          * Breakpoint type (Software or Hardware)
@@ -39,5 +36,8 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         };
 
         void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+
+    private:
+        void init();
     };
 }

@@ -92,6 +92,35 @@ void RegisterWidget::clearInlineValue() {
     this->valueLabel->clear();
 }
 
+void RegisterWidget::contextMenuEvent(QContextMenuEvent* event) {
+    this->setSelected(true);
+
+    auto menu = new QMenu(this);
+    menu->addAction(this->openInspectionWindowAction);
+    menu->addAction(this->refreshValueAction);
+    menu->addSeparator();
+
+    auto copyMenu = new QMenu("Copy", this);
+    copyMenu->addAction(this->copyValueNameAction);
+    copyMenu->addSeparator();
+    copyMenu->addAction(this->copyValueDecimalAction);
+    copyMenu->addAction(this->copyValueHexAction);
+    copyMenu->addAction(this->copyValueBinaryAction);
+
+    menu->addMenu(copyMenu);
+
+    this->openInspectionWindowAction->setEnabled(TargetRegisterInspectorWindow::registerSupported(this->descriptor));
+
+    const auto targetStopped = this->targetState == Targets::TargetState::STOPPED;
+    const auto targetStoppedAndValuePresent = targetStopped && this->currentRegister.has_value();
+    this->refreshValueAction->setEnabled(targetStopped);
+    this->copyValueDecimalAction->setEnabled(targetStoppedAndValuePresent);
+    this->copyValueHexAction->setEnabled(targetStoppedAndValuePresent);
+    this->copyValueBinaryAction->setEnabled(targetStoppedAndValuePresent);
+
+    menu->exec(event->globalPos());
+}
+
 void RegisterWidget::openInspectionWindow() {
     if (!TargetRegisterInspectorWindow::registerSupported(this->descriptor)) {
         return;
@@ -181,35 +210,6 @@ void RegisterWidget::copyValueBinary() {
 
         QApplication::clipboard()->setText(bitString);
     }
-}
-
-void RegisterWidget::contextMenuEvent(QContextMenuEvent* event) {
-    this->setSelected(true);
-
-    auto menu = new QMenu(this);
-    menu->addAction(this->openInspectionWindowAction);
-    menu->addAction(this->refreshValueAction);
-    menu->addSeparator();
-
-    auto copyMenu = new QMenu("Copy", this);
-    copyMenu->addAction(this->copyValueNameAction);
-    copyMenu->addSeparator();
-    copyMenu->addAction(this->copyValueDecimalAction);
-    copyMenu->addAction(this->copyValueHexAction);
-    copyMenu->addAction(this->copyValueBinaryAction);
-
-    menu->addMenu(copyMenu);
-
-    this->openInspectionWindowAction->setEnabled(TargetRegisterInspectorWindow::registerSupported(this->descriptor));
-
-    const auto targetStopped = this->targetState == Targets::TargetState::STOPPED;
-    const auto targetStoppedAndValuePresent = targetStopped && this->currentRegister.has_value();
-    this->refreshValueAction->setEnabled(targetStopped);
-    this->copyValueDecimalAction->setEnabled(targetStoppedAndValuePresent);
-    this->copyValueHexAction->setEnabled(targetStoppedAndValuePresent);
-    this->copyValueBinaryAction->setEnabled(targetStoppedAndValuePresent);
-
-    menu->exec(event->globalPos());
 }
 
 void RegisterWidget::postSetSelected(bool selected) {

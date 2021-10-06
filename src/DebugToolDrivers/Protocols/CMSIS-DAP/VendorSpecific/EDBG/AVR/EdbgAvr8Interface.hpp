@@ -25,6 +25,198 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
      */
     class EdbgAvr8Interface: public TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface
     {
+    public:
+        explicit EdbgAvr8Interface(EdbgInterface& edbgInterface)
+        : edbgInterface(edbgInterface) {};
+
+        /**
+         * Disables use of the masked read memory EDBG command. Masking will be performed at the driver-side.
+         *
+         * @param avoidMaskedMemoryRead
+         */
+        void setAvoidMaskedMemoryRead(bool avoidMaskedMemoryRead) {
+            this->avoidMaskedMemoryRead = avoidMaskedMemoryRead;
+        }
+
+        /*
+         * The public methods below implement the interface defined by the Avr8Interface class.
+         * See the comments in that class for more info on the expected behaviour of each method.
+         */
+
+        /**
+         * As already mentioned in numerous comments above, the EdbgAvr8Interface requires some configuration from
+         * the user. This is supplied via the user's Bloom configuration.
+         *
+         * @param targetConfig
+         */
+        void configure(const TargetConfig& targetConfig) override;
+
+        /**
+         * Configures the target family. For some physical interfaces, the target family is required in order
+         * properly configure the EDBG tool. See EdbgAvr8Interface::resolveConfigVariant() for more.
+         *
+         * @param family
+         */
+        void setFamily(Targets::Microchip::Avr::Avr8Bit::Family family) override {
+            this->family = family;
+        }
+
+        /**
+         * Accepts target parameters from the AVR8 target instance and sends the necessary target parameters to the
+         * debug tool.
+         *
+         * @param config
+         */
+        void setTargetParameters(const Targets::Microchip::Avr::Avr8Bit::TargetParameters& config) override;
+
+        /**
+         * Initialises the AVR8 Generic protocol interface by setting the appropriate parameters on the debug tool.
+         */
+        void init() override;
+
+        /**
+         * Issues the "stop" command to the debug tool, halting target execution.
+         */
+        void stop() override;
+
+        /**
+         * Issues the "run" command to the debug tool, resuming execution on the target.
+         */
+        void run() override;
+
+        /**
+         * Issues the "run to" command to the debug tool, resuming execution on the target, up to a specific byte
+         * address. The target will dispatch an AVR BREAK event once it reaches the specified address.
+         *
+         * @param address
+         *  The (byte) address to run to.
+         */
+        void runTo(std::uint32_t address) override;
+
+        /**
+         * Issues the "step" command to the debug tool, stepping the execution on the target. The stepping can be
+         * configured to step in, out or over. But currently we only support stepping in. The target will dispatch
+         * an AVR BREAK event once it reaches the next instruction.
+         */
+        void step() override;
+
+        /**
+         * Issues the "reset" command to the debug tool, resetting target execution.
+         */
+        void reset() override;
+
+        /**
+         * Activates the physical interface and starts a debug session on the target (via attach()).
+         */
+        void activate() override;
+
+        /**
+         * Terminates any active debug session on the target and severs the connection between the debug tool and
+         * the target (by deactivating the physical interface).
+         */
+        void deactivate() override;
+
+        /**
+         * Issues the "PC Read" command to the debug tool, to extract the current program counter.
+         *
+         * @return
+         */
+        std::uint32_t getProgramCounter() override;
+
+        /**
+         * Issues the "PC Write" command to the debug tool, setting the program counter on the target.
+         *
+         * @param programCounter
+         *  The byte address to set as the program counter.
+         */
+        void setProgramCounter(std::uint32_t programCounter) override;
+
+        /**
+         * Issues the "Get ID" command to the debug tool, to extract the signature from the target.
+         *
+         * @return
+         */
+        Targets::Microchip::Avr::TargetSignature getDeviceId() override;
+
+        /**
+         * Issues the "Software Breakpoint Set" command to the debug tool, setting a software breakpoint at the given
+         * byte address.
+         *
+         * @param address
+         *  The byte address to position the breakpoint.
+         */
+        void setBreakpoint(std::uint32_t address) override;
+
+        /**
+         * Issues the "Software Breakpoint Clear" command to the debug tool, clearing any breakpoint at the given
+         * byte address.
+         *
+         * @param address
+         *  The byte address of the breakpoint to clear.
+         */
+        void clearBreakpoint(std::uint32_t address) override;
+
+        /**
+         * Issues the "Software Breakpoint Clear All" command to the debug tool, clearing all software breakpoints
+         * that were set *in the current debug session*.
+         *
+         * If the debug session ended before any of the set breakpoints were cleared, this will *not* clear them.
+         */
+        void clearAllBreakpoints() override;
+
+        /**
+         * Reads registers from the target.
+         *
+         * @param descriptors
+         * @return
+         */
+        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors) override;
+
+        /**
+         * Writes registers to target.
+         *
+         * @param registers
+         */
+        void writeRegisters(const Targets::TargetRegisters& registers) override;
+
+        /**
+         * This is an overloaded method.
+         *
+         * Resolves the correct Avr8MemoryType from the given TargetMemoryType and calls readMemory().
+         *
+         * @param memoryType
+         * @param startAddress
+         * @param bytes
+         * @return
+         */
+        Targets::TargetMemoryBuffer readMemory(
+            Targets::TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            std::uint32_t bytes
+        ) override;
+
+        /**
+         * This is an overloaded method.
+         *
+         * Resolves the correct Avr8MemoryType from the given TargetMemoryType and calls writeMemory().
+         *
+         * @param memoryType
+         * @param startAddress
+         * @param buffer
+         */
+        void writeMemory(
+            Targets::TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            const Targets::TargetMemoryBuffer& buffer
+        ) override;
+
+        /**
+         * Returns the current state of the target.
+         *
+         * @return
+         */
+        Targets::TargetState getTargetState() override;
+
     private:
         /**
          * The AVR8 Generic protocol is a sub-protocol of the EDBG AVR protocol, which is served via CMSIS-DAP vendor
@@ -459,197 +651,5 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * This should only be used when a BreakEvent is always expected.
          */
         void waitForStoppedEvent();
-
-    public:
-        explicit EdbgAvr8Interface(EdbgInterface& edbgInterface)
-        : edbgInterface(edbgInterface) {};
-
-        /**
-         * Disables use of the masked read memory EDBG command. Masking will be performed at the driver-side.
-         *
-         * @param avoidMaskedMemoryRead
-         */
-        void setAvoidMaskedMemoryRead(bool avoidMaskedMemoryRead) {
-            this->avoidMaskedMemoryRead = avoidMaskedMemoryRead;
-        }
-
-        /*
-         * The public methods below implement the interface defined by the Avr8Interface class.
-         * See the comments in that class for more info on the expected behaviour of each method.
-         */
-
-        /**
-         * As already mentioned in numerous comments above, the EdbgAvr8Interface requires some configuration from
-         * the user. This is supplied via the user's Bloom configuration.
-         *
-         * @param targetConfig
-         */
-        void configure(const TargetConfig& targetConfig) override;
-
-        /**
-         * Configures the target family. For some physical interfaces, the target family is required in order
-         * properly configure the EDBG tool. See EdbgAvr8Interface::resolveConfigVariant() for more.
-         *
-         * @param family
-         */
-        void setFamily(Targets::Microchip::Avr::Avr8Bit::Family family) override {
-            this->family = family;
-        }
-
-        /**
-         * Accepts target parameters from the AVR8 target instance and sends the necessary target parameters to the
-         * debug tool.
-         *
-         * @param config
-         */
-        void setTargetParameters(const Targets::Microchip::Avr::Avr8Bit::TargetParameters& config) override;
-
-        /**
-         * Initialises the AVR8 Generic protocol interface by setting the appropriate parameters on the debug tool.
-         */
-        void init() override;
-
-        /**
-         * Issues the "stop" command to the debug tool, halting target execution.
-         */
-        void stop() override;
-
-        /**
-         * Issues the "run" command to the debug tool, resuming execution on the target.
-         */
-        void run() override;
-
-        /**
-         * Issues the "run to" command to the debug tool, resuming execution on the target, up to a specific byte
-         * address. The target will dispatch an AVR BREAK event once it reaches the specified address.
-         *
-         * @param address
-         *  The (byte) address to run to.
-         */
-        void runTo(std::uint32_t address) override;
-
-        /**
-         * Issues the "step" command to the debug tool, stepping the execution on the target. The stepping can be
-         * configured to step in, out or over. But currently we only support stepping in. The target will dispatch
-         * an AVR BREAK event once it reaches the next instruction.
-         */
-        void step() override;
-
-        /**
-         * Issues the "reset" command to the debug tool, resetting target execution.
-         */
-        void reset() override;
-
-        /**
-         * Activates the physical interface and starts a debug session on the target (via attach()).
-         */
-        void activate() override;
-
-        /**
-         * Terminates any active debug session on the target and severs the connection between the debug tool and
-         * the target (by deactivating the physical interface).
-         */
-        void deactivate() override;
-
-        /**
-         * Issues the "PC Read" command to the debug tool, to extract the current program counter.
-         *
-         * @return
-         */
-        std::uint32_t getProgramCounter() override;
-
-        /**
-         * Issues the "PC Write" command to the debug tool, setting the program counter on the target.
-         *
-         * @param programCounter
-         *  The byte address to set as the program counter.
-         */
-        void setProgramCounter(std::uint32_t programCounter) override;
-
-        /**
-         * Issues the "Get ID" command to the debug tool, to extract the signature from the target.
-         *
-         * @return
-         */
-        Targets::Microchip::Avr::TargetSignature getDeviceId() override;
-
-        /**
-         * Issues the "Software Breakpoint Set" command to the debug tool, setting a software breakpoint at the given
-         * byte address.
-         *
-         * @param address
-         *  The byte address to position the breakpoint.
-         */
-        void setBreakpoint(std::uint32_t address) override;
-
-        /**
-         * Issues the "Software Breakpoint Clear" command to the debug tool, clearing any breakpoint at the given
-         * byte address.
-         *
-         * @param address
-         *  The byte address of the breakpoint to clear.
-         */
-        void clearBreakpoint(std::uint32_t address) override;
-
-        /**
-         * Issues the "Software Breakpoint Clear All" command to the debug tool, clearing all software breakpoints
-         * that were set *in the current debug session*.
-         *
-         * If the debug session ended before any of the set breakpoints were cleared, this will *not* clear them.
-         */
-        void clearAllBreakpoints() override;
-
-        /**
-         * Reads registers from the target.
-         *
-         * @param descriptors
-         * @return
-         */
-        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors) override;
-
-        /**
-         * Writes registers to target.
-         *
-         * @param registers
-         */
-        void writeRegisters(const Targets::TargetRegisters& registers) override;
-
-        /**
-         * This is an overloaded method.
-         *
-         * Resolves the correct Avr8MemoryType from the given TargetMemoryType and calls readMemory().
-         *
-         * @param memoryType
-         * @param startAddress
-         * @param bytes
-         * @return
-         */
-        Targets::TargetMemoryBuffer readMemory(
-            Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t bytes
-        ) override;
-
-        /**
-         * This is an overloaded method.
-         *
-         * Resolves the correct Avr8MemoryType from the given TargetMemoryType and calls writeMemory().
-         *
-         * @param memoryType
-         * @param startAddress
-         * @param buffer
-         */
-        void writeMemory(
-            Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            const Targets::TargetMemoryBuffer& buffer
-        ) override;
-
-        /**
-         * Returns the current state of the target.
-         *
-         * @return
-         */
-        Targets::TargetState getTargetState() override;
     };
 }

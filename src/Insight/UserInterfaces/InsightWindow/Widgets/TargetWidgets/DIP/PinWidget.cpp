@@ -1,12 +1,4 @@
-#include <QWidget>
-#include <QPainter>
-#include <QLayout>
-#include <cmath>
-#include <QEvent>
-
 #include "PinWidget.hpp"
-#include "PinBodyWidget.hpp"
-#include "src/Logger/Logger.hpp"
 
 using namespace Bloom::Widgets::InsightTargetWidgets::Dip;
 using namespace Bloom::Targets;

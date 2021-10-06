@@ -6,9 +6,6 @@ namespace Bloom::Exceptions
 {
     class Exception: public std::runtime_error
     {
-    protected:
-        std::string message;
-
     public:
         explicit Exception(): std::runtime_error("") {}
 
@@ -27,5 +24,8 @@ namespace Bloom::Exceptions
         std::string getMessage() const {
             return this->message;
         }
+
+    protected:
+        std::string message;
     };
 }

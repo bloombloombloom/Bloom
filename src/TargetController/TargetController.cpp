@@ -7,6 +7,7 @@
 
 #include "src/Application.hpp"
 #include "src/Helpers/Paths.hpp"
+#include "src/Logger/Logger.hpp"
 
 #include "src/TargetController/Exceptions/DeviceFailure.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
@@ -261,78 +262,6 @@ void TargetController::resume() {
     }
 }
 
-void TargetController::loadRegisterDescriptors() {
-    auto& targetDescriptor = this->getTargetDescriptor();
-
-    for (const auto& [registerType, registerDescriptors] : targetDescriptor.registerDescriptorsByType) {
-        for (const auto& registerDescriptor : registerDescriptors) {
-            auto startAddress = registerDescriptor.startAddress.value_or(0);
-            auto endAddress = startAddress + (registerDescriptor.size - 1);
-
-            if (!this->registerAddressRangeByMemoryType.contains(registerDescriptor.memoryType)) {
-                auto addressRange = TargetMemoryAddressRange();
-                addressRange.startAddress = startAddress;
-                addressRange.endAddress = endAddress;
-                this->registerAddressRangeByMemoryType.insert(
-                    std::pair(registerDescriptor.memoryType, addressRange)
-                );
-
-            } else {
-                auto& addressRange = this->registerAddressRangeByMemoryType.at(registerDescriptor.memoryType);
-
-                if (startAddress < addressRange.startAddress) {
-                    addressRange.startAddress = startAddress;
-                }
-
-                if (endAddress > addressRange.endAddress) {
-                    addressRange.endAddress = endAddress;
-                }
-            }
-
-            this->registerDescriptorsByMemoryType[registerDescriptor.memoryType].insert(registerDescriptor);
-        }
-    }
-}
-
-TargetRegisterDescriptors TargetController::getRegisterDescriptorsWithinAddressRange(
-    std::uint32_t startAddress,
-    std::uint32_t endAddress,
-    Targets::TargetMemoryType memoryType
-) {
-    auto output = TargetRegisterDescriptors();
-
-    if (this->registerAddressRangeByMemoryType.contains(memoryType)
-        && this->registerDescriptorsByMemoryType.contains(memoryType)
-    ) {
-        auto& registersAddressRange = this->registerAddressRangeByMemoryType.at(memoryType);
-
-        if (
-            (startAddress <= registersAddressRange.startAddress && endAddress >= registersAddressRange.startAddress)
-            || (startAddress <= registersAddressRange.endAddress && endAddress >= registersAddressRange.startAddress)
-        ) {
-            auto& registerDescriptors = this->registerDescriptorsByMemoryType.at(memoryType);
-
-            for (const auto& registerDescriptor : registerDescriptors) {
-                if (!registerDescriptor.startAddress.has_value() || registerDescriptor.size < 1) {
-                    continue;
-                }
-
-                auto registerStartAddress = registerDescriptor.startAddress.value();
-                auto registerEndAddress = registerStartAddress + registerDescriptor.size;
-
-                if (
-                    (startAddress <= registerStartAddress && endAddress >= registerStartAddress)
-                    || (startAddress <= registerEndAddress && endAddress >= registerStartAddress)
-                ) {
-                    output.insert(registerDescriptor);
-                }
-            }
-        }
-    }
-
-    return output;
-}
-
 void TargetController::acquireHardware() {
     auto debugToolName = this->environmentConfig.debugToolConfig.name;
     auto targetName = this->environmentConfig.targetConfig.name;
@@ -418,6 +347,78 @@ void TargetController::releaseHardware() {
     this->target.reset();
 }
 
+void TargetController::loadRegisterDescriptors() {
+    auto& targetDescriptor = this->getTargetDescriptor();
+
+    for (const auto& [registerType, registerDescriptors] : targetDescriptor.registerDescriptorsByType) {
+        for (const auto& registerDescriptor : registerDescriptors) {
+            auto startAddress = registerDescriptor.startAddress.value_or(0);
+            auto endAddress = startAddress + (registerDescriptor.size - 1);
+
+            if (!this->registerAddressRangeByMemoryType.contains(registerDescriptor.memoryType)) {
+                auto addressRange = TargetMemoryAddressRange();
+                addressRange.startAddress = startAddress;
+                addressRange.endAddress = endAddress;
+                this->registerAddressRangeByMemoryType.insert(
+                    std::pair(registerDescriptor.memoryType, addressRange)
+                );
+
+            } else {
+                auto& addressRange = this->registerAddressRangeByMemoryType.at(registerDescriptor.memoryType);
+
+                if (startAddress < addressRange.startAddress) {
+                    addressRange.startAddress = startAddress;
+                }
+
+                if (endAddress > addressRange.endAddress) {
+                    addressRange.endAddress = endAddress;
+                }
+            }
+
+            this->registerDescriptorsByMemoryType[registerDescriptor.memoryType].insert(registerDescriptor);
+        }
+    }
+}
+
+TargetRegisterDescriptors TargetController::getRegisterDescriptorsWithinAddressRange(
+    std::uint32_t startAddress,
+    std::uint32_t endAddress,
+    Targets::TargetMemoryType memoryType
+) {
+    auto output = TargetRegisterDescriptors();
+
+    if (this->registerAddressRangeByMemoryType.contains(memoryType)
+        && this->registerDescriptorsByMemoryType.contains(memoryType)
+    ) {
+        auto& registersAddressRange = this->registerAddressRangeByMemoryType.at(memoryType);
+
+        if (
+            (startAddress <= registersAddressRange.startAddress && endAddress >= registersAddressRange.startAddress)
+            || (startAddress <= registersAddressRange.endAddress && endAddress >= registersAddressRange.startAddress)
+        ) {
+            auto& registerDescriptors = this->registerDescriptorsByMemoryType.at(memoryType);
+
+            for (const auto& registerDescriptor : registerDescriptors) {
+                if (!registerDescriptor.startAddress.has_value() || registerDescriptor.size < 1) {
+                    continue;
+                }
+
+                auto registerStartAddress = registerDescriptor.startAddress.value();
+                auto registerEndAddress = registerStartAddress + registerDescriptor.size;
+
+                if (
+                    (startAddress <= registerStartAddress && endAddress >= registerStartAddress)
+                    || (startAddress <= registerEndAddress && endAddress >= registerStartAddress)
+                ) {
+                    output.insert(registerDescriptor);
+                }
+            }
+        }
+    }
+
+    return output;
+}
+
 void TargetController::fireTargetEvents() {
     auto newTargetState = this->target->getState();
 
@@ -464,6 +465,14 @@ void TargetController::onStateReportRequest(const Events::ReportTargetController
     this->eventManager.triggerEvent(stateEvent);
 }
 
+void TargetController::onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event) {
+    auto targetDescriptorExtracted = std::make_shared<TargetDescriptorExtracted>();
+    targetDescriptorExtracted->targetDescriptor = this->getTargetDescriptor();
+
+    targetDescriptorExtracted->correlationId = event.id;
+    this->eventManager.triggerEvent(targetDescriptorExtracted);
+}
+
 void TargetController::onDebugSessionStartedEvent(const Events::DebugSessionStarted&) {
     if (this->state == TargetControllerState::SUSPENDED) {
         Logger::debug("Waking TargetController");
@@ -488,14 +497,6 @@ void TargetController::onDebugSessionFinishedEvent(const DebugSessionFinished&) 
     if (this->environmentConfig.debugToolConfig.releasePostDebugSession) {
         this->suspend();
     }
-}
-
-void TargetController::onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event) {
-    auto targetDescriptorExtracted = std::make_shared<TargetDescriptorExtracted>();
-    targetDescriptorExtracted->targetDescriptor = this->getTargetDescriptor();
-
-    targetDescriptorExtracted->correlationId = event.id;
-    this->eventManager.triggerEvent(targetDescriptorExtracted);
 }
 
 void TargetController::onStopTargetExecutionEvent(const Events::StopTargetExecution& event) {

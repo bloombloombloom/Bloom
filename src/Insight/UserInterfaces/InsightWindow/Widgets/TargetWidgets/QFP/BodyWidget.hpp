@@ -6,18 +6,9 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 {
     class BodyWidget: public QWidget
     {
-    Q_OBJECT
-    Q_PROPERTY(QColor bodyColor READ getBodyColor WRITE setBodyColor DESIGNABLE true)
-    Q_PROPERTY(int disableAlphaLevel READ getDisableAlphaLevel WRITE setDisableAlphaLevel DESIGNABLE true)
-
-    private:
-        // These properties can be modified via Qt style sheets (see Stylesheets/QuadFlatPackage.qss)
-        QColor bodyColor = QColor("#8E8B83");
-        int disableAlphaLevel = 100;
-
-    protected:
-        void paintEvent(QPaintEvent* event) override;
-        void drawWidget(QPainter& painter);
+        Q_OBJECT
+        Q_PROPERTY(QColor bodyColor READ getBodyColor WRITE setBodyColor DESIGNABLE true)
+        Q_PROPERTY(int disableAlphaLevel READ getDisableAlphaLevel WRITE setDisableAlphaLevel DESIGNABLE true)
 
     public:
         explicit BodyWidget(QWidget* parent): QWidget(parent) {
@@ -39,5 +30,14 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         void setDisableAlphaLevel(int level) {
             this->disableAlphaLevel = level;
         }
+
+    protected:
+        void paintEvent(QPaintEvent* event) override;
+        void drawWidget(QPainter& painter);
+
+    private:
+        // These properties can be modified via Qt style sheets (see Stylesheets/QuadFlatPackage.qss)
+        QColor bodyColor = QColor("#8E8B83");
+        int disableAlphaLevel = 100;
     };
 }

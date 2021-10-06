@@ -8,9 +8,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     class SetProgramCounter: public Avr8GenericCommandFrame
     {
-    private:
-        std::uint32_t programCounter = 0;
-
     public:
         explicit SetProgramCounter(std::uint32_t programCounter): programCounter(programCounter) {}
 
@@ -31,5 +28,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 
             return output;
         }
+
+    private:
+        std::uint32_t programCounter = 0;
     };
 }

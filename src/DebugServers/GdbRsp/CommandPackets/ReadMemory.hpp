@@ -13,9 +13,6 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
      */
     class ReadMemory: public CommandPacket
     {
-    private:
-        void init();
-
     public:
         /**
          * The startAddress sent from the GDB client may include additional bits used to indicate the memory type.
@@ -36,5 +33,8 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         };
 
         void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+
+    private:
+        void init();
     };
 }

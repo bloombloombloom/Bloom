@@ -29,17 +29,10 @@ namespace Bloom::Targets
      */
     class Target
     {
-    protected:
-        /**
-         * Target related configuration provided by the user. This is passed in via the first stage of target
-         * configuration. See Target::preActivationConfigure() for more.
-         */
-        TargetConfig config;
-
-        bool activated = false;
-
     public:
         explicit Target() = default;
+
+        virtual ~Target() = default;
 
         bool isActivated() const {
             return this->activated;
@@ -300,6 +293,13 @@ namespace Bloom::Targets
             const TargetPinState& state
         ) = 0;
 
-        virtual ~Target() = default;
+    protected:
+        /**
+         * Target related configuration provided by the user. This is passed in via the first stage of target
+         * configuration. See Target::preActivationConfigure() for more.
+         */
+        TargetConfig config;
+
+        bool activated = false;
     };
 }

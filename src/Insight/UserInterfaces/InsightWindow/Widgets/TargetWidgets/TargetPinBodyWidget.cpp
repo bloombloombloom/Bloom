@@ -5,28 +5,6 @@
 using namespace Bloom::Widgets::InsightTargetWidgets;
 using namespace Bloom::Targets;
 
-bool TargetPinBodyWidget::event(QEvent* event) {
-    if (this->pinState.has_value() && this->pinState->ioDirection == TargetPinState::IoDirection::OUTPUT) {
-        switch (event->type()) {
-            case QEvent::Enter: {
-                this->hoverActive = true;
-                this->repaint();
-                break;
-            }
-            case QEvent::Leave: {
-                this->hoverActive = false;
-                this->repaint();
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-    }
-
-    return QWidget::event(event);
-}
-
 QColor TargetPinBodyWidget::getBodyColor() {
     auto pinColor = this->defaultBodyColor;
 
@@ -64,4 +42,26 @@ QColor TargetPinBodyWidget::getBodyColor() {
     }
 
     return pinColor;
+}
+
+bool TargetPinBodyWidget::event(QEvent* event) {
+    if (this->pinState.has_value() && this->pinState->ioDirection == TargetPinState::IoDirection::OUTPUT) {
+        switch (event->type()) {
+            case QEvent::Enter: {
+                this->hoverActive = true;
+                this->repaint();
+                break;
+            }
+            case QEvent::Leave: {
+                this->hoverActive = false;
+                this->repaint();
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+
+    return QWidget::event(event);
 }

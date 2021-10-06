@@ -22,16 +22,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     class AvrEvent: public Response
     {
-    private:
-        unsigned char eventId = 0;
-
-        std::vector<unsigned char> eventData;
-
-    protected:
-        void setEventData(const std::vector<unsigned char>& eventData) {
-            this->eventData = eventData;
-        }
-
     public:
         AvrEvent() = default;
 
@@ -59,5 +49,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         [[nodiscard]] AvrEventId getEventId() const {
             return static_cast<AvrEventId>(this->eventId);
         }
+
+    protected:
+        void setEventData(const std::vector<unsigned char>& eventData) {
+            this->eventData = eventData;
+        }
+
+    private:
+        unsigned char eventId = 0;
+        std::vector<unsigned char> eventData;
     };
 }

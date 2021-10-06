@@ -9,8 +9,6 @@ namespace Bloom::Events
 {
     class DebugServerThreadStateChanged: public Event
     {
-    private:
-        ThreadState state;
     public:
         static inline EventType type = EventType::DEBUG_SERVER_THREAD_STATE_CHANGED;
         static inline const std::string name = "DebugServerThreadStateChanged";
@@ -28,5 +26,8 @@ namespace Bloom::Events
         [[nodiscard]] ThreadState getState() const {
             return this->state;
         }
+
+    private:
+        ThreadState state;
     };
 }

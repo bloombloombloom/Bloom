@@ -9,9 +9,6 @@ namespace Bloom::Events
 {
     class TargetControllerThreadStateChanged: public Event
     {
-    private:
-        ThreadState state;
-
     public:
         static inline EventType type = EventType::TARGET_CONTROLLER_THREAD_STATE_CHANGED;
         static inline const std::string name = "TargetControllerThreadStateChanged";
@@ -29,5 +26,8 @@ namespace Bloom::Events
         ThreadState getState() const {
             return this->state;
         }
+
+    private:
+        ThreadState state;
     };
 }

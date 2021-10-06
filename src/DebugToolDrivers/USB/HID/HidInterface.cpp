@@ -1,35 +1,12 @@
 #include "HidInterface.hpp"
 
-#include <cstdint>
-#include <string>
-
-#include "hidapi.hpp"
 #include "src/Logger/Logger.hpp"
+
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
 using namespace Bloom::Usb;
 using namespace Bloom::Exceptions;
-
-std::string HidInterface::getDevicePathByInterfaceNumber(const std::uint16_t& interfaceNumber) {
-    hid_device_info* hidDeviceInfoList = hid_enumerate(this->getVendorId(), this->getProductId());
-
-    while (hidDeviceInfoList != nullptr) {
-        if (hidDeviceInfoList->interface_number == interfaceNumber) {
-            break;
-        }
-
-        hidDeviceInfoList = hidDeviceInfoList->next;
-    }
-
-    if (hidDeviceInfoList == nullptr) {
-        throw DeviceInitializationFailure("Failed to match interface number with HID interface.");
-    }
-
-    auto path = std::string(hidDeviceInfoList->path);
-    hid_free_enumeration(hidDeviceInfoList);
-    return path;
-}
 
 void HidInterface::init() {
     if (this->libUsbDevice == nullptr) {
@@ -72,20 +49,24 @@ void HidInterface::close() {
     Interface::close();
 }
 
-std::size_t HidInterface::read(unsigned char* buffer, std::size_t maxLength, unsigned int timeout) {
-    int transferred;
+std::vector<unsigned char> HidInterface::read(unsigned int timeout) {
+    std::vector<unsigned char> output;
+    auto readSize = this->getInputReportSize();
 
-    if ((transferred = hid_read_timeout(
-            this->hidDevice,
-            buffer,
-            maxLength,
-            timeout == 0 ? -1 : static_cast<int>(timeout))
-        ) == -1
-    ) {
-        throw DeviceCommunicationFailure("Failed to read from HID device.");
+    // Attempt to read the first HID report packet, and whatever is left after that.
+    output.resize(readSize);
+    auto transferredByteCount = this->read(output.data(), readSize, timeout);
+    auto totalByteCount = transferredByteCount;
+
+    while (transferredByteCount >= readSize) {
+        output.resize(totalByteCount + readSize);
+
+        transferredByteCount = this->read(output.data() + totalByteCount, readSize, 1);
+        totalByteCount += transferredByteCount;
     }
 
-    return static_cast<std::size_t>(transferred);
+    output.resize(totalByteCount);
+    return output;
 }
 
 void HidInterface::write(std::vector<unsigned char> buffer) {
@@ -107,27 +88,43 @@ void HidInterface::write(std::vector<unsigned char> buffer) {
 
     if ((transferred = hid_write(this->getHidDevice(), buffer.data(), length)) != length) {
         Logger::debug("Attempted to write " + std::to_string(length)
-            + " bytes to HID interface. Bytes written: " + std::to_string(transferred));
+                          + " bytes to HID interface. Bytes written: " + std::to_string(transferred));
         throw DeviceCommunicationFailure("Failed to write data to HID interface.");
     }
 }
 
-std::vector<unsigned char> HidInterface::read(unsigned int timeout) {
-    std::vector<unsigned char> output;
-    auto readSize = this->getInputReportSize();
+std::size_t HidInterface::read(unsigned char* buffer, std::size_t maxLength, unsigned int timeout) {
+    int transferred;
 
-    // Attempt to read the first HID report packet, and whatever is left after that.
-    output.resize(readSize);
-    auto transferredByteCount = this->read(output.data(), readSize, timeout);
-    auto totalByteCount = transferredByteCount;
-
-    while (transferredByteCount >= readSize) {
-        output.resize(totalByteCount + readSize);
-
-        transferredByteCount = this->read(output.data() + totalByteCount, readSize, 1);
-        totalByteCount += transferredByteCount;
+    if ((transferred = hid_read_timeout(
+            this->hidDevice,
+            buffer,
+            maxLength,
+            timeout == 0 ? -1 : static_cast<int>(timeout))
+        ) == -1
+    ) {
+        throw DeviceCommunicationFailure("Failed to read from HID device.");
     }
 
-    output.resize(totalByteCount);
-    return output;
+    return static_cast<std::size_t>(transferred);
+}
+
+std::string HidInterface::getDevicePathByInterfaceNumber(const std::uint16_t& interfaceNumber) {
+    hid_device_info* hidDeviceInfoList = hid_enumerate(this->getVendorId(), this->getProductId());
+
+    while (hidDeviceInfoList != nullptr) {
+        if (hidDeviceInfoList->interface_number == interfaceNumber) {
+            break;
+        }
+
+        hidDeviceInfoList = hidDeviceInfoList->next;
+    }
+
+    if (hidDeviceInfoList == nullptr) {
+        throw DeviceInitializationFailure("Failed to match interface number with HID interface.");
+    }
+
+    auto path = std::string(hidDeviceInfoList->path);
+    hid_free_enumeration(hidDeviceInfoList);
+    return path;
 }

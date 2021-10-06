@@ -9,9 +9,7 @@ namespace Bloom
 {
     class AboutWindow: public QObject
     {
-    Q_OBJECT
-    private:
-        QWidget* windowWidget = nullptr;
+        Q_OBJECT
 
     public:
         explicit AboutWindow(QWidget* parent);
@@ -24,5 +22,8 @@ namespace Bloom
                 this->windowWidget->show();
             }
         }
+
+    private:
+        QWidget* windowWidget = nullptr;
     };
 }

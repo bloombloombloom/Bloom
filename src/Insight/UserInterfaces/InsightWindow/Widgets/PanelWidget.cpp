@@ -35,6 +35,20 @@ void PanelWidget::setMaximumResize(int maximumResize) {
     }
 }
 
+bool PanelWidget::event(QEvent* event) {
+    if (event->type() == QEvent::Type::HoverMove) {
+        auto hoverEvent = static_cast<QHoverEvent*>(event);
+        if (this->resizingActive || this->isPositionWithinHandleArea(hoverEvent->position().toPoint())) {
+            this->setCursor(this->resizeCursor);
+
+        } else {
+            this->setCursor(Qt::ArrowCursor);
+        }
+    }
+
+    return QFrame::event(event);
+}
+
 void PanelWidget::mousePressEvent(QMouseEvent* event) {
     const auto position = event->pos();
 
@@ -59,20 +73,6 @@ void PanelWidget::mouseReleaseEvent(QMouseEvent* event) {
         this->resizingActive = false;
         this->resizingOffset = 0;
     }
-}
-
-bool PanelWidget::event(QEvent* event) {
-    if (event->type() == QEvent::Type::HoverMove) {
-        auto hoverEvent = static_cast<QHoverEvent*>(event);
-        if (this->resizingActive || this->isPositionWithinHandleArea(hoverEvent->position().toPoint())) {
-            this->setCursor(this->resizeCursor);
-
-        } else {
-            this->setCursor(Qt::ArrowCursor);
-        }
-    }
-
-    return QFrame::event(event);
 }
 
 void PanelWidget::mouseMoveEvent(QMouseEvent* event) {
