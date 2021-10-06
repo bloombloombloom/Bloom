@@ -49,6 +49,7 @@ namespace Bloom
         void openGettingStartedUrl();
         void openAboutWindow();
         void toggleTargetRegistersPane();
+        void toggleRamInspectionPane();
 
     signals:
         void refreshTargetPinStates(int variantId);
@@ -83,13 +84,14 @@ namespace Bloom
         Widgets::PanelWidget* leftPanel = nullptr;
         Widgets::TargetRegistersPaneWidget* targetRegistersSidePane = nullptr;
         QToolButton* targetRegistersButton = nullptr;
-        Widgets::InsightTargetWidgets::TargetPackageWidgetContainer* ioContainerWidget = nullptr;
 
         QLabel* ioUnavailableWidget = nullptr;
+        Widgets::InsightTargetWidgets::TargetPackageWidgetContainer* ioContainerWidget = nullptr;
         Widgets::InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
 
         QWidget* bottomMenuBar = nullptr;
         Widgets::PanelWidget* bottomPanel = nullptr;
+        QToolButton* ramInspectionButton = nullptr;
 
         QWidget* footer = nullptr;
         QLabel* targetStatusLabel = nullptr;

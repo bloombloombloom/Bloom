@@ -129,6 +129,10 @@ InsightWindow::InsightWindow(InsightWorker& insightWorker): QMainWindow(nullptr)
     this->bottomMenuBar = this->container->findChild<QWidget*>("bottom-menu-bar");
     this->bottomPanel = this->container->findChild<PanelWidget*>("bottom-panel");
 
+    this->ramInspectionButton = this->container->findChild<QToolButton*>("ram-inspection-btn");
+
+    connect(this->ramInspectionButton, &QToolButton::clicked, this, &InsightWindow::toggleRamInspectionPane);
+
     this->footer = this->windowContainer->findChild<QWidget*>("footer");
     this->targetStatusLabel = this->footer->findChild<QLabel*>("target-state");
     this->programCounterValueLabel = this->footer->findChild<QLabel*>("target-program-counter-value");
@@ -230,6 +234,17 @@ void InsightWindow::toggleTargetRegistersPane() {
         this->targetRegistersSidePane->activate();
         this->targetRegistersButton->setChecked(true);
         this->leftPanel->setVisible(true);
+    }
+}
+
+void InsightWindow::toggleRamInspectionPane() {
+    if (this->bottomPanel->isVisible()) {
+        this->bottomPanel->hide();
+        this->ramInspectionButton->setChecked(false);
+
+    } else {
+        this->bottomPanel->show();
+        this->ramInspectionButton->setChecked(true);
     }
 }
 
