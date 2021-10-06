@@ -121,6 +121,9 @@
                                     </property>
                                     <item>
                                         <widget class="QWidget" name="left-side-menu-bar">
+                                            <property name="sizePolicy">
+                                                <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding"/>
+                                            </property>
                                             <property name="layoutDirection">
                                                 <enum>Qt::LeftToRight</enum>
                                             </property>
@@ -206,7 +209,7 @@
                                     <item>
                                         <widget class="TargetPackageWidgetContainer" name="io-container">
                                             <property name="sizePolicy">
-                                                <sizepolicy hsizetype="Ignored" vsizetype="Ignored"/>
+                                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
                                             </property>
                                             <layout class="QHBoxLayout">
                                                 <item alignment="Qt::AlignHCenter">
@@ -254,6 +257,9 @@
                             </item>
                             <item>
                                 <widget class="QWidget" name="bottom-menu-bar">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                                    </property>
                                     <layout class="QHBoxLayout">
                                         <property name="spacing">
                                             <number>1</number>

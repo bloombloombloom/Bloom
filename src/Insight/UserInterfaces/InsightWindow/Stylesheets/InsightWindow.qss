@@ -194,6 +194,7 @@ QScrollBar::sub-line:vertical {
 /* Left-side panel */
 #left-side-menu-bar {
     max-width: 22px;
+    min-width: 22px;
     background-color: transparent;
     height: auto;
     border-right: 1px solid #2F2F2D;
@@ -294,6 +295,7 @@ QScrollBar::sub-line:vertical {
 #bottom-menu-bar {
     background-color: transparent;
     max-height: 22px;
+    min-height: 22px;
     border-top: 1px solid #2F2F2D;
 }
 
