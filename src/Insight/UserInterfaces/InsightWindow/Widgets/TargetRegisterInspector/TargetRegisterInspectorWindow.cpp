@@ -210,6 +210,10 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
 
     this->updateRegisterValueInputField();
     this->onTargetStateChanged(currentTargetState);
+
+    // Position the inspection window at the center of the main Insight window
+    this->move(parent->window()->geometry().center() - this->rect().center());
+
     this->show();
 }
 
