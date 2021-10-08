@@ -126,7 +126,6 @@ namespace Bloom::Targets::TargetDescription
         virtual void init(const QDomDocument& xml);
         void init(const QString& xmlFilePath);
 
-    private:
         /**
          * Constructs an AddressSpace object from an XML element.
          *
