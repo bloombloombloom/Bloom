@@ -156,7 +156,7 @@ void RegisterWidget::refreshValue() {
         readRegisterTask,
         &ReadTargetRegisters::targetRegistersRead,
         this,
-        [this](Targets::TargetRegisters registers) {
+        [this] (Targets::TargetRegisters registers) {
             for (const auto& targetRegister : registers) {
                 if (targetRegister.descriptor == this->descriptor) {
                     this->setRegisterValue(targetRegister);

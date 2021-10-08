@@ -100,7 +100,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadRegisters& packet) {
             std::remove_if(
                 registerSet.begin(),
                 registerSet.end(),
-                [&registerNumberToDescriptorMapping](const TargetRegister& reg) {
+                [&registerNumberToDescriptorMapping] (const TargetRegister& reg) {
                     return !registerNumberToDescriptorMapping.contains(reg.descriptor);
                 }
             ),
@@ -114,7 +114,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadRegisters& packet) {
         std::sort(
             registerSet.begin(),
             registerSet.end(),
-            [this, &registerNumberToDescriptorMapping](const TargetRegister& registerA, const TargetRegister& registerB) {
+            [this, &registerNumberToDescriptorMapping] (const TargetRegister& registerA, const TargetRegister& registerB) {
                 return registerNumberToDescriptorMapping.valueAt(registerA.descriptor) <
                     registerNumberToDescriptorMapping.valueAt(registerB.descriptor);
             }

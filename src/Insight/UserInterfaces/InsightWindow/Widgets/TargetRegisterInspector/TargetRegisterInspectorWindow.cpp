@@ -314,7 +314,7 @@ void TargetRegisterInspectorWindow::refreshRegisterValue() {
         readTargetRegisterTask,
         &ReadTargetRegisters::targetRegistersRead,
         this,
-        [this](Targets::TargetRegisters targetRegisters) {
+        [this] (Targets::TargetRegisters targetRegisters) {
             this->registerValueContainer->setDisabled(false);
 
             for (const auto& targetRegister : targetRegisters) {
@@ -352,7 +352,7 @@ void TargetRegisterInspectorWindow::applyChanges() {
         this->registerHistoryWidget->selectCurrentItem();
     });
 
-    this->connect(writeRegisterTask, &InsightWorkerTask::failed, this, [this](QString errorMessage) {
+    this->connect(writeRegisterTask, &InsightWorkerTask::failed, this, [this] (QString errorMessage) {
         this->registerValueContainer->setDisabled(false);
         auto errorDialogue = new ErrorDialogue(
             "Error",

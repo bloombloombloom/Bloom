@@ -385,11 +385,11 @@ void InsightWindow::activate() {
      * considered a duplicate.
      */
     auto processedVariants = std::vector<TargetVariant>();
-    auto isDuplicateVariant = [&processedVariants](const TargetVariant& variantA) {
+    auto isDuplicateVariant = [&processedVariants] (const TargetVariant& variantA) {
         return std::ranges::any_of(
             processedVariants.begin(),
             processedVariants.end(),
-            [&variantA, &processedVariants](const TargetVariant& variantB) {
+            [&variantA, &processedVariants] (const TargetVariant& variantB) {
                 if (variantA.package != variantB.package) {
                     return false;
                 }

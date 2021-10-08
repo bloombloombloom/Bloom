@@ -29,7 +29,7 @@ void EventListener::waitAndDispatch(int msTimeout) {
     auto registeredEventTypes = this->getRegisteredEventTypes();
     std::optional<SharedGenericEventPointer> event;
 
-    auto eventsFound = [&registeredEventTypes, &event, &eventQueueByType]() -> bool {
+    auto eventsFound = [&registeredEventTypes, &event, &eventQueueByType] () -> bool {
         for (auto& eventQueue: eventQueueByType) {
             if (registeredEventTypes.contains(eventQueue.first) && !eventQueue.second.empty()) {
                 return true;
@@ -86,7 +86,7 @@ std::vector<SharedGenericEventPointer> EventListener::getEvents() {
         }
     }
 
-    std::sort(output.begin(), output.end(), [](const SharedGenericEventPointer& a, const SharedGenericEventPointer& b) {
+    std::sort(output.begin(), output.end(), [] (const SharedGenericEventPointer& a, const SharedGenericEventPointer& b) {
         return a->id < b->id;
     });
 

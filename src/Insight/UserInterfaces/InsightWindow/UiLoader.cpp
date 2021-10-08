@@ -17,7 +17,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
     this->customWidgetConstructorsByWidgetName = decltype(this->customWidgetConstructorsByWidgetName) {
         {
             "PanelWidget",
-            [this](QWidget* parent, const QString& name) {
+            [this] (QWidget* parent, const QString& name) {
                 auto widget = new PanelWidget(parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
@@ -26,7 +26,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         },
         {
             "RotatableLabel",
-            [this](QWidget* parent, const QString& name) {
+            [this] (QWidget* parent, const QString& name) {
                 auto widget = new RotatableLabel("", parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
@@ -35,7 +35,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         },
         {
             "ExpandingHeightScrollAreaWidget",
-            [this](QWidget* parent, const QString& name) {
+            [this] (QWidget* parent, const QString& name) {
                 auto widget = new ExpandingHeightScrollAreaWidget(parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
@@ -44,7 +44,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         },
         {
             "SvgWidget",
-            [this](QWidget* parent, const QString& name) {
+            [this] (QWidget* parent, const QString& name) {
                 auto widget = new SvgWidget(parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
@@ -53,7 +53,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         },
         {
             "SvgToolButton",
-            [this](QWidget* parent, const QString& name) {
+            [this] (QWidget* parent, const QString& name) {
                 auto widget = new SvgToolButton(parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
@@ -62,7 +62,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         },
         {
             "TargetPackageWidgetContainer",
-            [this](QWidget* parent, const QString& name) {
+            [this] (QWidget* parent, const QString& name) {
                 auto widget = new InsightTargetWidgets::TargetPackageWidgetContainer(parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());

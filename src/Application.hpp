@@ -45,7 +45,7 @@ namespace Bloom
             return std::map<std::string, std::function<std::unique_ptr<DebugServers::DebugServer>()>> {
                 {
                     "avr-gdb-rsp",
-                    [this]() -> std::unique_ptr<DebugServers::DebugServer> {
+                    [this] () -> std::unique_ptr<DebugServers::DebugServer> {
                         return std::make_unique<DebugServers::Gdb::AvrGdbRsp>(this->eventManager);
                     }
                 },

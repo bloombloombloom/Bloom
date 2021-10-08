@@ -134,7 +134,7 @@ TargetDescriptor Avr8Bit::Avr8::getDescriptor() {
         this->targetVariantsById.begin(),
         this->targetVariantsById.end(),
         std::back_inserter(descriptor.variants),
-        [](auto& variantToIdPair) {
+        [] (auto& variantToIdPair) {
             return variantToIdPair.second;
         }
     );
@@ -272,7 +272,7 @@ std::map<int, TargetPinState> Avr8::getPinStates(int variantId) {
      * be considered when the need for it becomes apparent.
      */
     std::map<std::uint16_t, TargetMemoryBuffer> cachedMemoryByStartAddress;
-    auto readMemoryBitset = [this, &cachedMemoryByStartAddress](std::uint16_t startAddress) {
+    auto readMemoryBitset = [this, &cachedMemoryByStartAddress] (std::uint16_t startAddress) {
         if (!cachedMemoryByStartAddress.contains(startAddress)) {
             cachedMemoryByStartAddress.insert(
                 std::pair(

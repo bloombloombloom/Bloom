@@ -102,19 +102,19 @@ namespace Bloom
             static auto mapping = std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
                 {
                     "atmel-ice",
-                    []() {
+                    [] {
                         return std::make_unique<DebugToolDrivers::AtmelIce>();
                     }
                 },
                 {
                     "power-debugger",
-                    []() {
+                    [] {
                         return std::make_unique<DebugToolDrivers::PowerDebugger>();
                     }
                 },
                 {
                     "snap",
-                    []() {
+                    [] {
                         return std::make_unique<DebugToolDrivers::MplabSnap>();
                     }
                 },
@@ -136,7 +136,7 @@ namespace Bloom
                 mapping = {
                     {
                         "avr8",
-                        []() {
+                        [] {
                             return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>();
                         }
                     },
@@ -158,7 +158,7 @@ namespace Bloom
                         if (!mapping.contains(targetName)) {
                             mapping.insert({
                                 targetName,
-                                [targetName, targetSignatureHex]() {
+                                [targetName, targetSignatureHex] {
                                     return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>(
                                         targetName,
                                         Targets::Microchip::Avr::TargetSignature(targetSignatureHex)
