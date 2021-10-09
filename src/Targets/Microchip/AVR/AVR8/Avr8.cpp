@@ -127,8 +127,8 @@ TargetDescriptor Avr8Bit::Avr8::getDescriptor() {
     auto descriptor = TargetDescriptor();
     descriptor.id = this->getHumanReadableId();
     descriptor.name = this->getName();
-    descriptor.ramSize = this->targetParameters.value().ramSize.value_or(0);
     descriptor.registerDescriptorsByType = this->targetRegisterDescriptorsByType;
+    descriptor.memoryDescriptorsByType = this->targetMemoryDescriptorsByType;
 
     std::transform(
         this->targetVariantsById.begin(),
@@ -481,6 +481,7 @@ void Avr8::initFromTargetDescriptionFile() {
     }
 
     this->loadTargetRegisterDescriptors();
+    this->loadTargetMemoryDescriptors();
 }
 
 void Avr8::loadTargetRegisterDescriptors() {
@@ -550,6 +551,19 @@ void Avr8::loadTargetRegisterDescriptors() {
     this->targetRegisterDescriptorsByType[programCounterRegisterDescriptor.type].insert(
         programCounterRegisterDescriptor
     );
+}
+
+void Avr8::loadTargetMemoryDescriptors() {
+    this->targetMemoryDescriptorsByType.insert(std::pair(
+        TargetMemoryType::RAM,
+        TargetMemoryDescriptor(
+            TargetMemoryType::RAM,
+            TargetMemoryAddressRange(
+                this->targetParameters->ramStartAddress.value(),
+                this->targetParameters->ramSize.value()
+            )
+        )
+    ));
 }
 
 TargetSignature Avr8::getId() {

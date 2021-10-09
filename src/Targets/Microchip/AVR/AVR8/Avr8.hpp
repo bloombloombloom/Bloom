@@ -124,6 +124,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
         std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
+        std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
 
         /**
          * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.
@@ -140,6 +141,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * purpose and other CPU registers.
          */
         void loadTargetRegisterDescriptors();
+
+        void loadTargetMemoryDescriptors();
 
         /**
          * Extracts the ID from the target's memory.
