@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 
+#include "TargetMemory.hpp"
 #include "TargetRegister.hpp"
 #include "TargetVariant.hpp"
 
@@ -14,7 +15,7 @@ namespace Bloom::Targets
     {
         std::string name;
         std::string id;
-        std::uint32_t ramSize;
+        std::map<TargetMemoryType, TargetMemoryDescriptor> memoryDescriptorsByType;
         std::map<TargetRegisterType, TargetRegisterDescriptors> registerDescriptorsByType;
         std::vector<TargetVariant> variants;
     };

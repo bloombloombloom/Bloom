@@ -22,6 +22,18 @@ namespace Bloom::Targets
         TargetMemoryAddressRange(std::uint32_t startAddress, std::uint32_t endAddress)
         : startAddress(startAddress), endAddress(endAddress) {};
     };
+
+    struct TargetMemoryDescriptor
+    {
+        TargetMemoryType type;
+        TargetMemoryAddressRange addressRange;
+
+        TargetMemoryDescriptor(TargetMemoryType type, TargetMemoryAddressRange addressRange)
+        : type(type), addressRange(addressRange) {};
+
+        std::uint32_t size() const {
+            return this->addressRange.endAddress - this->addressRange.startAddress;
+        }
     };
 
     using TargetMemoryBuffer = std::vector<unsigned char>;
