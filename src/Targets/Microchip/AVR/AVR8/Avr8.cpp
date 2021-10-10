@@ -554,13 +554,16 @@ void Avr8::loadTargetRegisterDescriptors() {
 }
 
 void Avr8::loadTargetMemoryDescriptors() {
+    auto ramSize = this->targetParameters->ramSize.value();
+    auto ramStartAddress = this->targetParameters->ramStartAddress.value();
+
     this->targetMemoryDescriptorsByType.insert(std::pair(
         TargetMemoryType::RAM,
         TargetMemoryDescriptor(
             TargetMemoryType::RAM,
             TargetMemoryAddressRange(
-                this->targetParameters->ramStartAddress.value(),
-                this->targetParameters->ramSize.value()
+                ramStartAddress,
+                ramStartAddress + ramSize
             )
         )
     ));
