@@ -72,6 +72,7 @@ void PanelWidget::mouseReleaseEvent(QMouseEvent* event) {
     if (this->resizingActive) {
         this->resizingActive = false;
         this->resizingOffset = 0;
+        this->setCursor(Qt::ArrowCursor);
     }
 }
 
