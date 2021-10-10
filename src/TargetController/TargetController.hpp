@@ -25,7 +25,7 @@ namespace Bloom
     /**
      * The TargetController possesses full control of the debugging target and the debug tool.
      *
-`    * The TargetController runs on a dedicated thread. Its sole purpose is to handle communication to & from the
+     * The TargetController runs on a dedicated thread. Its sole purpose is to handle communication to & from the
      * debug tool and target.
      *
      * The TargetController should be oblivious to any manufacture/device specific functionality. It should

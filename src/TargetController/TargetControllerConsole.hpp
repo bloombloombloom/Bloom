@@ -18,8 +18,7 @@
 namespace Bloom
 {
     /**
-     * The TargetControllerConsole provides an interface to the TargetController, for components within Bloom that
-     * require access to common functionality from the TargetController.
+     * The TargetControllerConsole provides an interface to the TargetController.
      */
     class TargetControllerConsole
     {
@@ -31,8 +30,23 @@ namespace Bloom
             this->defaultTimeout = timeout;
         }
 
+        /**
+         * Requests the current TargetController state from the TargetController. The TargetController should always
+         * respond to such a request, even when it's in a suspended state.
+         *
+         * To check if the TargetController is in an active state, isTargetControllerInService() can be used for
+         * convenience.
+         *
+         * @return
+         */
         TargetControllerState getTargetControllerState();
 
+        /**
+         * Retrieves the TargetController state and checks if it's currently active.
+         *
+         * @return
+         *  True if the TargetController is currently in an active state, otherwise false.
+         */
         bool isTargetControllerInService() noexcept;
 
         /**
@@ -151,11 +165,11 @@ namespace Bloom
          * Triggers an event for the TargetController and waits for a response.
          *
          * To use this method, the triggered event must define a 'TargetControllerResponseType' alias, which should
-         * specify the type of response expected by the TargetController.
+         * specify the type of response expected from the TargetController.
          * For an example of this, see the Events::ExtractTargetDescriptor class.
          *
-         * If the TargetController fails to respond within the given time specified by the timeout parameter, or it
-         * responds with an instance of Events::TargetControllerErrorOccurred, this method will throw an exception.
+         * If the TargetController fails to respond within the given time specified by the timeout argument, or it
+         * responds with an instance of Events::TargetControllerErrorOccurred, this function will throw an exception.
          *
          * @tparam TriggerEventType
          *
