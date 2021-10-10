@@ -259,7 +259,7 @@
                                                         <number>200</number>
                                                     </property>
                                                     <property name="handleSize">
-                                                        <number>6</number>
+                                                        <number>10</number>
                                                     </property>
                                                     <layout class="QHBoxLayout" name="bottom-panel-layout">
                                                         <property name="spacing">
