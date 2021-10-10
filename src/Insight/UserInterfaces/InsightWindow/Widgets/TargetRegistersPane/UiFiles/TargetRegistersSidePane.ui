@@ -39,7 +39,7 @@
                             </spacer>
                         </item>
                         <item>
-                            <widget class="SvgToolButton" name="expand-all-button">
+                            <widget class="SvgToolButton" name="expand-all-btn">
                                 <property name="svgFilePath">
                                     <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/expand-all.svg</string>
                                 </property>
@@ -49,7 +49,7 @@
                             </widget>
                         </item>
                         <item>
-                            <widget class="SvgToolButton" name="collapse-all-button">
+                            <widget class="SvgToolButton" name="collapse-all-btn">
                                 <property name="svgFilePath">
                                     <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/collapse-all.svg</string>
                                 </property>

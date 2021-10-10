@@ -46,8 +46,8 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
     layout->addWidget(this->container);
 
     this->toolBar = this->container->findChild<QWidget*>("tool-bar");
-    this->collapseAllButton = this->toolBar->findChild<SvgToolButton*>("collapse-all-button");
-    this->expandAllButton = this->toolBar->findChild<SvgToolButton*>("expand-all-button");
+    this->collapseAllButton = this->toolBar->findChild<SvgToolButton*>("collapse-all-btn");
+    this->expandAllButton = this->toolBar->findChild<SvgToolButton*>("expand-all-btn");
     this->toolBar->layout()->setContentsMargins(5, 0, 5, 0);
     this->searchInput = this->container->findChild<QLineEdit*>("search-input");
 
