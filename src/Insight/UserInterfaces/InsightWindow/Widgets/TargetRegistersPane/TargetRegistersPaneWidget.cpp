@@ -217,10 +217,7 @@ void TargetRegistersPaneWidget::resizeEvent(QResizeEvent* event) {
      * In order to avoid the panel resize handle overlapping the scroll bar handle, we reduce the size of
      * the scroll area.
      */
-    this->itemScrollArea->setFixedSize(
-        width - this->parent->getHandleSize(),
-        parentSize.height() - this->toolBar->height() - this->searchInput->height() - 5
-    );
+    this->itemScrollArea->setFixedWidth(width - this->parent->getHandleSize());
 }
 
 void TargetRegistersPaneWidget::postActivate() {

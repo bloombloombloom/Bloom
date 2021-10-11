@@ -116,12 +116,15 @@
                     </layout>
                 </widget>
             </item>
-            <item alignment="Qt::AlignTop">
+            <item>
                 <widget class="QScrollArea" name="item-scroll-area">
                     <property name="widgetResizable"><bool>true</bool></property>
                     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAsNeeded</enum></property>
                     <property name="sizeAdjustPolicy"><enum>QAbstractScrollArea::AdjustToContents</enum></property>
                     <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                    </property>
 
                     <widget class="QWidget" name="item-container">
                         <layout class="QVBoxLayout">
@@ -138,13 +141,6 @@
                         </layout>
                     </widget>
                 </widget>
-            </item>
-            <item alignment="Qt::AlignTop">
-                <spacer name="vertical-spacer">
-                    <property name="orientation">
-                        <enum>Qt::Vertical</enum>
-                    </property>
-                </spacer>
             </item>
         </layout>
     </widget>
