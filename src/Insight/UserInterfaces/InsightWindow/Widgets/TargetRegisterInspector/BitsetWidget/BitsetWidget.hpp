@@ -16,9 +16,9 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        constexpr static int VALUE_GRAPHIC_HEIGHT = 20;
-        constexpr static int HEIGHT = BitWidget::HEIGHT + BitsetWidget::VALUE_GRAPHIC_HEIGHT + 8;
-        constexpr static int WIDTH = (BitWidget::WIDTH + BitWidget::SPACING) * 8;
+        static constexpr int VALUE_GRAPHIC_HEIGHT = 20;
+        static constexpr int HEIGHT = BitWidget::HEIGHT + BitsetWidget::VALUE_GRAPHIC_HEIGHT + 8;
+        static constexpr int WIDTH = (BitWidget::WIDTH + BitWidget::SPACING) * 8;
 
         BitsetWidget(int byteNumber, unsigned char& byte, bool readOnly, QWidget* parent);
 

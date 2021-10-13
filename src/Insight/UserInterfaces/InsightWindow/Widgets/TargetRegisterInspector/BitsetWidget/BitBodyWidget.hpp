@@ -18,8 +18,8 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        constexpr static int WIDTH = 23;
-        constexpr static int HEIGHT = 30;
+        static constexpr int WIDTH = 23;
+        static constexpr int HEIGHT = 30;
 
         BitBodyWidget(
             int bitIndex,

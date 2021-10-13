@@ -69,7 +69,7 @@ void EventListener::dispatchEvent(const SharedGenericEventPointer& event) {
 void EventListener::dispatchCurrentEvents() {
     auto events = this->getEvents();
 
-    for (auto const& event: events) {
+    for (const auto& event: events) {
         dispatchEvent(event);
     }
 }

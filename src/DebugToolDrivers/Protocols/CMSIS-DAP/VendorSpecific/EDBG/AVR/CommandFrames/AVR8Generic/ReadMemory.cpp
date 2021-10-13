@@ -29,7 +29,7 @@ std::vector<unsigned char> ReadMemory::getPayload() const {
     output[10] = static_cast<unsigned char>(this->bytes >> 24);
 
     if (!this->excludedAddresses.empty()) {
-        auto const endAddress = this->address + (this->bytes - 1);
+        const auto endAddress = this->address + (this->bytes - 1);
 
         constexpr auto byteBitSize = std::numeric_limits<unsigned char>::digits;
         auto byteBitset = std::bitset<byteBitSize>();

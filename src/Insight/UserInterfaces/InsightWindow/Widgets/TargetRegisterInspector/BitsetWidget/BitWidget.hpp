@@ -20,15 +20,15 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     private:
-        const static int VERTICAL_SPACING = 3;
+        static const int VERTICAL_SPACING = 3;
 
     public:
-        constexpr static int LABEL_HEIGHT = 14;
-        constexpr static int LABEL_COUNT = 2;
-        constexpr static int WIDTH = BitBodyWidget::WIDTH;
-        constexpr static int HEIGHT = BitBodyWidget::HEIGHT + (BitWidget::LABEL_HEIGHT * BitWidget::LABEL_COUNT)
+        static constexpr int LABEL_HEIGHT = 14;
+        static constexpr int LABEL_COUNT = 2;
+        static constexpr int WIDTH = BitBodyWidget::WIDTH;
+        static constexpr int HEIGHT = BitBodyWidget::HEIGHT + (BitWidget::LABEL_HEIGHT * BitWidget::LABEL_COUNT)
             + BitWidget::VERTICAL_SPACING;
-        constexpr static int SPACING = 6;
+        static constexpr int SPACING = 6;
 
         BitWidget(
             int bitIndex,
