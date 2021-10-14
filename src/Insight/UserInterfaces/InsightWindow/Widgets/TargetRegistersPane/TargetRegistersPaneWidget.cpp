@@ -210,7 +210,7 @@ void TargetRegistersPaneWidget::onItemSelectionChange(ItemWidget* newlySelectedW
 void TargetRegistersPaneWidget::resizeEvent(QResizeEvent* event) {
     const auto parentSize = this->parent->size();
     const auto width = parentSize.width() - 1;
-    this->container->setFixedSize(width, parentSize.height());
+    this->container->setFixedWidth(width);
     this->searchInput->setFixedWidth(width - 20);
 
     /*

@@ -77,9 +77,9 @@ void PanelWidget::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void PanelWidget::mouseMoveEvent(QMouseEvent* event) {
-    const auto position = event->pos();
-
     if (this->resizingActive) {
+        const auto position = event->pos();
+
         if (this->panelType == PanelWidgetType::LEFT) {
             this->setFixedWidth(
                 std::max(
