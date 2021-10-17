@@ -252,11 +252,8 @@
                                                     <property name="panelType">
                                                         <enum>PanelWidgetType::BOTTOM</enum>
                                                     </property>
-                                                    <property name="maximumHeight">
-                                                        <number>200</number>
-                                                    </property>
                                                     <property name="minimumResize">
-                                                        <number>200</number>
+                                                        <number>300</number>
                                                     </property>
                                                     <property name="handleSize">
                                                         <number>10</number>
@@ -275,14 +272,14 @@
                                     </item>
                                 </layout>
                             </item>
-                            <item>
+                            <item alignment="Qt::AlignBottom">
                                 <widget class="QWidget" name="bottom-menu-bar">
                                     <property name="sizePolicy">
                                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
                                     </property>
                                     <layout class="QHBoxLayout">
                                         <property name="spacing">
-                                            <number>1</number>
+                                            <number>0</number>
                                         </property>
                                         <property name="margin">
                                             <number>0</number>
@@ -323,20 +320,71 @@
                                                                 <number>22</number>
                                                             </property>
                                                             <property name="containerWidth">
-                                                                <number>15</number>
+                                                                <number>22</number>
                                                             </property>
                                                             <property name="svgFilePath">
-                                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers.svg</string>
+                                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon.svg</string>
                                                             </property>
                                                             <property name="disabledSvgFilePath">
-                                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg</string>
+                                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon-disabled.svg</string>
                                                             </property>
                                                         </widget>
                                                     </item>
                                                     <item alignment="Qt::AlignLeft">
                                                         <widget class="QLabel" name="ram-inspection-btn-label">
                                                             <property name="text">
-                                                                <string>Memory</string>
+                                                                <string>RAM</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <spacer name="horizontal-spacer">
+                                                            <property name="orientation">
+                                                                <enum>Qt::Horizontal</enum>
+                                                            </property>
+                                                        </spacer>
+                                                    </item>
+                                                </layout>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QToolButton" name="eeprom-inspection-btn">
+                                                <property name="toolTip">
+                                                    <string>Inspect EEPROM</string>
+                                                </property>
+                                                <property name="checkable">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="disabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <layout class="QHBoxLayout">
+                                                    <property name="spacing">
+                                                        <number>0</number>
+                                                    </property>
+                                                    <property name="margin">
+                                                        <number>0</number>
+                                                    </property>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="SvgWidget" name="eeprom-inspection-btn-icon">
+                                                            <property name="containerHeight">
+                                                                <number>22</number>
+                                                            </property>
+                                                            <property name="containerWidth">
+                                                                <number>22</number>
+                                                            </property>
+                                                            <property name="svgFilePath">
+                                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon.svg</string>
+                                                            </property>
+                                                            <property name="disabledSvgFilePath">
+                                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon-disabled.svg</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="QLabel" name="eeprom-inspection-btn-label">
+                                                            <property name="text">
+                                                                <string>EEPROM</string>
                                                             </property>
                                                         </widget>
                                                     </item>

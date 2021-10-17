@@ -171,6 +171,11 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitBodyWidget.cpp
 
+    # Target memory inspection pane
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPane.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/HexViewerWidget.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ByteWidgetContainer.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ByteWidget.cpp
 )
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)

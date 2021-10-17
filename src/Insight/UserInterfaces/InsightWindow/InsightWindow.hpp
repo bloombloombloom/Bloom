@@ -18,6 +18,7 @@
 #include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
 #include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
+#include "Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPane.hpp"
 #include "AboutWindow.hpp"
 
 namespace Bloom
@@ -91,6 +92,7 @@ namespace Bloom
 
         QWidget* bottomMenuBar = nullptr;
         Widgets::PanelWidget* bottomPanel = nullptr;
+        Widgets::TargetMemoryInspectionPane* ramInspectionPane = nullptr;
         QToolButton* ramInspectionButton = nullptr;
 
         QWidget* footer = nullptr;

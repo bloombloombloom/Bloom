@@ -27,6 +27,7 @@ using Bloom::Targets::TargetPinState;
 using Bloom::Targets::TargetVariant;
 using Bloom::Targets::TargetPackage;
 using Bloom::Targets::TargetPinDescriptor;
+using Bloom::Targets::TargetMemoryType;
 
 InsightWindow::InsightWindow(InsightWorker& insightWorker): QMainWindow(nullptr), insightWorker(insightWorker) {
     this->setObjectName("main-window");
@@ -239,10 +240,12 @@ void InsightWindow::toggleTargetRegistersPane() {
 
 void InsightWindow::toggleRamInspectionPane() {
     if (this->bottomPanel->isVisible()) {
+        this->ramInspectionPane->deactivate();
         this->bottomPanel->hide();
         this->ramInspectionButton->setChecked(false);
 
     } else {
+        this->ramInspectionPane->activate();
         this->bottomPanel->show();
         this->ramInspectionButton->setChecked(true);
     }
@@ -486,12 +489,25 @@ void InsightWindow::activate() {
     auto leftPanelLayout = this->leftPanel->layout();
     this->targetRegistersSidePane = new TargetRegistersPaneWidget(
         this->targetDescriptor,
-        insightWorker,
+        this->insightWorker,
         this->leftPanel
     );
     leftPanelLayout->addWidget(this->targetRegistersSidePane);
     this->targetRegistersButton->setChecked(false);
     this->targetRegistersButton->setDisabled(false);
+
+    auto bottomPanelLayout = this->bottomPanel->layout();
+    if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::RAM)) {
+        auto& ramDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::RAM);
+        this->ramInspectionPane = new TargetMemoryInspectionPane(
+            ramDescriptor,
+            this->insightWorker,
+            this->bottomPanel
+        );
+        bottomPanelLayout->addWidget(this->ramInspectionPane);
+        this->ramInspectionButton->setChecked(false);
+        this->ramInspectionButton->setDisabled(false);
+    }
 
     this->toggleUi(this->targetState != TargetState::STOPPED);
     this->activated = true;
