@@ -26,35 +26,7 @@ namespace Bloom
      */
     class Insight: public QObject, public Thread
     {
-    Q_OBJECT
-    private:
-        std::string qtApplicationName = "Bloom";
-        std::array<char*, 1> qtApplicationArgv = {this->qtApplicationName.data()};
-        int qtApplicationArgc = 1;
-
-        ApplicationConfig applicationConfig;
-        EnvironmentConfig environmentConfig;
-        InsightConfig insightConfig;
-
-        EventManager& eventManager;
-        EventListenerPointer eventListener = std::make_shared<EventListener>("InsightEventListener");
-
-        QApplication application;
-        InsightWorker* insightWorker = new InsightWorker(this->eventManager);
-        InsightWindow* mainWindow = new InsightWindow(*(this->insightWorker));
-
-        TargetControllerConsole targetControllerConsole = TargetControllerConsole(
-            this->eventManager,
-            *(this->eventListener)
-        );
-
-        /**
-         * Insight consists of two threads - the main thread where the main Qt event loop runs (for the GUI), and
-         * a single worker thread to handle any blocking/time-expensive operations.
-         */
-        QThread* workerThread = nullptr;
-
-        void startup();
+        Q_OBJECT
 
     public:
         /**
@@ -93,6 +65,35 @@ namespace Bloom
          * Entry point for Insight.
          */
         void run();
+
+    private:
+        std::string qtApplicationName = "Bloom";
+        std::array<char*, 1> qtApplicationArgv = {this->qtApplicationName.data()};
+        int qtApplicationArgc = 1;
+
+        ApplicationConfig applicationConfig;
+        EnvironmentConfig environmentConfig;
+        InsightConfig insightConfig;
+
+        EventManager& eventManager;
+        EventListenerPointer eventListener = std::make_shared<EventListener>("InsightEventListener");
+
+        QApplication application;
+        InsightWorker* insightWorker = new InsightWorker(this->eventManager);
+        InsightWindow* mainWindow = new InsightWindow(*(this->insightWorker));
+
+        TargetControllerConsole targetControllerConsole = TargetControllerConsole(
+            this->eventManager,
+            *(this->eventListener)
+        );
+
+        /**
+         * Insight consists of two threads - the main thread where the main Qt event loop runs (for the GUI), and
+         * a single worker thread to handle any blocking/time-expensive operations.
+         */
+        QThread* workerThread = nullptr;
+
+        void startup();
 
         /**
          * Shuts down Insight. Called when the user closes the Insight window.
