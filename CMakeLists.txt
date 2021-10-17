@@ -244,7 +244,7 @@ target_compile_options(
     PUBLIC -fno-sized-deallocation
     PUBLIC $<$<CONFIG:DEBUG>:-g>
     PUBLIC $<$<CONFIG:DEBUG>:-O0>
-#    PUBLIC $<$<CONFIG:DEBUG>:-Os>
+#    PUBLIC $<$<CONFIG:DEBUG>:-O3>
     PUBLIC $<$<CONFIG:RELEASE>:-Ofast>
     PUBLIC $<$<CONFIG:DEBUG>:-fno-inline>
     PUBLIC $<$<CONFIG:DEBUG>:-fkeep-static-functions>
