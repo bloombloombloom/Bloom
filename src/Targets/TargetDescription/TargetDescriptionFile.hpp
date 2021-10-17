@@ -36,8 +36,6 @@ namespace Bloom::Targets::TargetDescription
     class TargetDescriptionFile
     {
     public:
-        TargetDescriptionFile() = default;
-
         /**
          * Will construct a TargetDescriptionFile instance from the XML of a target description file, the path to which
          * is given via xmlFilePath.
@@ -122,6 +120,7 @@ namespace Bloom::Targets::TargetDescription
         std::map<std::string, Pinout> pinoutsMappedByName;
         std::map<std::string, Interface> interfacesByName;
 
+        TargetDescriptionFile() = default;
 
         virtual void init(const QDomDocument& xml);
         void init(const QString& xmlFilePath);
