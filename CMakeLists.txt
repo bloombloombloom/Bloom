@@ -136,6 +136,10 @@ add_executable(Bloom
     src/Insight/InsightWorker/Tasks/WriteTargetRegister.cpp
     src/Insight/InsightWorker/Tasks/RefreshTargetPinStates.cpp
     src/Insight/InsightWorker/Tasks/SetTargetPinState.cpp
+    src/Insight/InsightWorker/Tasks/ReadTargetMemory.cpp
+
+    # Error dialogue window
+    src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.cpp
 
     # Target package widgets
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidgetContainer.cpp
@@ -167,8 +171,6 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitBodyWidget.cpp
 
-    # Error dialogue window
-    src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.cpp
 )
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
