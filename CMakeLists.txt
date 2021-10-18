@@ -26,6 +26,7 @@ find_package(Qt6Xml)
 find_package(Qt6Svg)
 find_package(Qt6UiTools)
 find_package(Qt6SvgWidgets)
+find_package(Qt6Network)
 
 set(CMAKE_SKIP_BUILD_RPATH false)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
@@ -137,6 +138,7 @@ add_executable(Bloom
     src/Insight/InsightWorker/Tasks/RefreshTargetPinStates.cpp
     src/Insight/InsightWorker/Tasks/SetTargetPinState.cpp
     src/Insight/InsightWorker/Tasks/ReadTargetMemory.cpp
+    src/Insight/InsightWorker/Tasks/QueryLatestVersionNumber.cpp
 
     # Error dialogue window
     src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.cpp
@@ -235,6 +237,7 @@ target_link_libraries(Bloom Qt6::Widgets)
 target_link_libraries(Bloom Qt6::Xml)
 target_link_libraries(Bloom Qt6::Svg)
 target_link_libraries(Bloom Qt6::SvgWidgets)
+target_link_libraries(Bloom Qt6::Network)
 
 target_compile_options(
     Bloom
