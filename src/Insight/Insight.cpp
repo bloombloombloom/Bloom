@@ -9,6 +9,9 @@
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Targets/TargetState.hpp"
 
+#include "src/Application.hpp"
+#include "InsightWorker/Tasks/QueryLatestVersionNumber.hpp"
+
 using namespace Bloom;
 using namespace Bloom::Exceptions;
 
@@ -132,6 +135,10 @@ void Insight::startup() {
     this->connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);
     this->connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
 
+    this->connect(this->insightWorker, &InsightWorker::ready, this, [this] {
+        this->checkBloomVersion();
+    });
+
     this->mainWindow->show();
 }
 
@@ -150,6 +157,30 @@ void Insight::shutdown() {
     this->application.exit(0);
 
     this->setThreadState(ThreadState::STOPPED);
+}
+
+void Insight::checkBloomVersion() {
+    auto currentVersionNumber = QString::fromStdString(Application::VERSION_STR);
+
+    auto versionQueryTask = new QueryLatestVersionNumber(
+        QString::fromStdString(Application::VERSION_STR)
+    );
+
+    this->connect(
+        versionQueryTask,
+        &QueryLatestVersionNumber::latestVersionNumberRetrieved,
+        this,
+        [this, currentVersionNumber] (const QString& latestVersionNumber) {
+            if (latestVersionNumber != currentVersionNumber) {
+                Logger::warning(
+                    "Bloom v" + latestVersionNumber.toStdString()
+                        + " is available to download - upgrade via https://bloom.oscillate.io"
+                );
+            }
+        }
+    );
+
+    this->insightWorker->queueTask(versionQueryTask);
 }
 
 void Insight::onShutdownApplicationEvent(const Events::ShutdownApplication&) {
