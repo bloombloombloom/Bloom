@@ -36,6 +36,7 @@ namespace Bloom
         void requestPinStates(int variantId);
 
     signals:
+        void ready();
         void taskQueued();
         void targetStateUpdated(Bloom::Targets::TargetState newState);
         void targetProgramCounterUpdated(quint32 programCounter);

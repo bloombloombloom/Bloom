@@ -50,6 +50,8 @@ void InsightWorker::startup() {
     this->eventManager.triggerEvent(
         std::make_shared<Events::InsightThreadStateChanged>(ThreadState::READY)
     );
+
+    emit this->ready();
 }
 
 void InsightWorker::requestPinStates(int variantId) {
