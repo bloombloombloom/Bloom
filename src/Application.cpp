@@ -207,7 +207,7 @@ int Application::presentHelpText() {
         throw Exception("Failed to open help file - please report this issue at https://bloom.oscillate.io/report-issue");
     }
 
-    std::cout << "Bloom v" << Application::VERSION_STR << "\n";
+    std::cout << "Bloom v" << Application::VERSION.toString() << "\n";
     std::cout << QTextStream(&helpFile).readAll().toUtf8().constData() << "\n";
     return EXIT_SUCCESS;
 }
@@ -215,7 +215,7 @@ int Application::presentHelpText() {
 int Application::presentVersionText() {
     Logger::silence();
 
-    std::cout << "Bloom v" << Application::VERSION_STR << "\n";
+    std::cout << "Bloom v" << Application::VERSION.toString() << "\n";
 
 #ifdef BLOOM_DEBUG_BUILD
     std::cout << "DEBUG BUILD - Compilation timestamp: " << __DATE__ << " " << __TIME__ << "\n";

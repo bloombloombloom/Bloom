@@ -7,14 +7,17 @@
 #include <QtCore/QtCore>
 #include <thread>
 
+#include "src/Helpers/Thread.hpp"
+
 #include "src/SignalHandler/SignalHandler.hpp"
 #include "src/TargetController/TargetController.hpp"
 #include "src/DebugServers/GdbRsp/AvrGdbRsp/AvrGdbRsp.hpp"
 #include "src/Insight/Insight.hpp"
-#include "src/Helpers/Thread.hpp"
+
 #include "src/Logger/Logger.hpp"
 #include "src/ApplicationConfig.hpp"
-#include "src/Exceptions/Exception.hpp"
+#include "src/VersionNumber.hpp"
+
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
 
@@ -29,7 +32,7 @@ namespace Bloom
     class Application: public Thread
     {
     public:
-        static const inline std::string VERSION_STR = "0.4.2";
+        static const inline VersionNumber VERSION = VersionNumber(0, 4, 2);
 
         explicit Application() = default;
 

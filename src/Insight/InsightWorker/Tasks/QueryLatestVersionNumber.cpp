@@ -13,7 +13,7 @@ void QueryLatestVersionNumber::run(TargetControllerConsole& targetControllerCons
     auto networkAccessManager = new QNetworkAccessManager(this);
     auto queryVersionEndpointUrl = QUrl("http://bloom.local/latest-version");
     queryVersionEndpointUrl.setQuery(QUrlQuery({
-        {"currentVersionNumber", this->currentVersionNumber}
+        {"currentVersionNumber", QString::fromStdString(this->currentVersionNumber.toString())}
     }));
 
     auto response = networkAccessManager->get(QNetworkRequest(queryVersionEndpointUrl));
@@ -22,7 +22,9 @@ void QueryLatestVersionNumber::run(TargetControllerConsole& targetControllerCons
 
         if (jsonResponseObject.contains("latestVersionNumber")) {
             emit this->latestVersionNumberRetrieved(
-                jsonResponseObject.value("latestVersionNumber").toString()
+                VersionNumber(
+                    jsonResponseObject.value("latestVersionNumber").toString().toStdString()
+                )
             );
         }
     });

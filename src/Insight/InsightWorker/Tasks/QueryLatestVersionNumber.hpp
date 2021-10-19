@@ -2,6 +2,8 @@
 
 #include "InsightWorkerTask.hpp"
 
+#include "src/VersionNumber.hpp"
+
 namespace Bloom
 {
     class QueryLatestVersionNumber: public InsightWorkerTask
@@ -9,16 +11,16 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        QueryLatestVersionNumber(const QString& currentVersionNumber):
+        QueryLatestVersionNumber(const VersionNumber& currentVersionNumber):
         InsightWorkerTask(), currentVersionNumber(currentVersionNumber) {}
 
     signals:
-        void latestVersionNumberRetrieved(const QString& latestVersionNumber);
+        void latestVersionNumberRetrieved(const VersionNumber& latestVersionNumber);
 
     protected:
         void run(TargetControllerConsole& targetControllerConsole) override;
 
     private:
-        QString currentVersionNumber;
+        VersionNumber currentVersionNumber;
     };
 }

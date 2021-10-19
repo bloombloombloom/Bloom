@@ -11,6 +11,7 @@
 
 #include "src/Application.hpp"
 #include "InsightWorker/Tasks/QueryLatestVersionNumber.hpp"
+#include "src/VersionNumber.hpp"
 
 using namespace Bloom;
 using namespace Bloom::Exceptions;
@@ -160,20 +161,20 @@ void Insight::shutdown() {
 }
 
 void Insight::checkBloomVersion() {
-    auto currentVersionNumber = QString::fromStdString(Application::VERSION_STR);
+    auto currentVersionNumber = Application::VERSION;
 
     auto versionQueryTask = new QueryLatestVersionNumber(
-        QString::fromStdString(Application::VERSION_STR)
+        currentVersionNumber
     );
 
     this->connect(
         versionQueryTask,
         &QueryLatestVersionNumber::latestVersionNumberRetrieved,
         this,
-        [this, currentVersionNumber] (const QString& latestVersionNumber) {
-            if (latestVersionNumber != currentVersionNumber) {
+        [this, currentVersionNumber] (const VersionNumber& latestVersionNumber) {
+            if (latestVersionNumber > currentVersionNumber) {
                 Logger::warning(
-                    "Bloom v" + latestVersionNumber.toStdString()
+                    "Bloom v" + latestVersionNumber.toString()
                         + " is available to download - upgrade via https://bloom.oscillate.io"
                 );
             }

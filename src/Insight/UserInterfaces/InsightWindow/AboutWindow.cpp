@@ -37,6 +37,6 @@ AboutWindow::AboutWindow(QWidget* parent): QObject(parent) {
     auto versionLabel = this->windowWidget->findChild<QLabel*>("version-label");
 
     if (versionLabel != nullptr) {
-        versionLabel->setText("Bloom v" + QString::fromStdString(Application::VERSION_STR));
+        versionLabel->setText("Bloom v" + QString::fromStdString(Application::VERSION.toString()));
     }
 }
