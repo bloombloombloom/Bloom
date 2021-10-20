@@ -44,11 +44,13 @@ namespace Bloom::Widgets
 
         QWidget* container = nullptr;
         QWidget* toolBar = nullptr;
+        QWidget* bottomBar = nullptr;
 
         ByteWidgetContainer* byteWidgetContainer = nullptr;
         QWidget* byteWidgetScrollArea = nullptr;
         QWidget* byteWidgetAddressContainer = nullptr;
         QVBoxLayout* byteWidgetAddressLayout = nullptr;
+        QLabel* hoveredAddressLabel = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 

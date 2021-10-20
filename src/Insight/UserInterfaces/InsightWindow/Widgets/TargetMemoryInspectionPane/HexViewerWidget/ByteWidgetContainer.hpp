@@ -34,6 +34,7 @@ namespace Bloom::Widgets
         ByteWidgetContainer(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             InsightWorker& insightWorker,
+            QLabel* hoveredAddressLabel,
             QWidget* parent
         );
 
@@ -47,11 +48,11 @@ namespace Bloom::Widgets
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
+        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
         InsightWorker& insightWorker;
 
         QWidget* parent = nullptr;
-
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+        QLabel* hoveredAddressLabel = nullptr;
 
         void adjustByteWidgets();
 

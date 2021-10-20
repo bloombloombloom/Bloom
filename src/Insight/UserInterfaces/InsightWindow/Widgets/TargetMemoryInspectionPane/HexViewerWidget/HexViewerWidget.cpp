@@ -42,10 +42,16 @@ HexViewerWidget::HexViewerWidget(
     this->container->setContentsMargins(0, 0, 0, 0);
 
     this->toolBar = this->container->findChild<QWidget*>("tool-bar");
+    this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
     this->refreshButton = this->container->findChild<QToolButton*>("refresh-memory-btn");
 
     this->toolBar->setContentsMargins(0, 0, 0, 0);
     this->toolBar->layout()->setContentsMargins(5, 0, 5, 0);
+
+    this->bottomBar->setContentsMargins(0, 0, 0, 0);
+    this->bottomBar->layout()->setContentsMargins(5, 0, 5, 0);
+
+    this->hoveredAddressLabel = this->bottomBar->findChild<QLabel*>("byte-address-label");
 
     this->byteWidgetScrollArea = this->container->findChild<QScrollArea*>("byte-widget-scroll-area");
     auto byteWidgetScrollAreaWidgetContainer = this->byteWidgetScrollArea->findChild<QWidget*>(
@@ -58,6 +64,7 @@ HexViewerWidget::HexViewerWidget(
     this->byteWidgetContainer = new ByteWidgetContainer(
         targetMemoryDescriptor,
         insightWorker,
+        this->hoveredAddressLabel,
         byteWidgetScrollAreaHorizontalLayout->parentWidget()
     );
 

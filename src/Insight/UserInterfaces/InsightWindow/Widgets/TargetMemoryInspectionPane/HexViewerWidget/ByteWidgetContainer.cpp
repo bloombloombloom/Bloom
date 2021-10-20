@@ -14,8 +14,13 @@ using Bloom::Targets::TargetMemoryDescriptor;
 ByteWidgetContainer::ByteWidgetContainer(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
     InsightWorker& insightWorker,
+    QLabel* hoveredAddressLabel,
     QWidget* parent
-): QWidget(parent), targetMemoryDescriptor(targetMemoryDescriptor), insightWorker(insightWorker), parent(parent) {
+): QWidget(parent),
+targetMemoryDescriptor(targetMemoryDescriptor),
+insightWorker(insightWorker),
+hoveredAddressLabel(hoveredAddressLabel),
+parent(parent) {
     this->setObjectName("byte-widget-container");
     this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
 
@@ -126,6 +131,10 @@ void ByteWidgetContainer::onTargetStateChanged(Targets::TargetState newState) {
 void ByteWidgetContainer::onByteWidgetEnter(ByteWidget* widget) {
     this->hoveredByteWidget = widget;
 
+    this->hoveredAddressLabel->setText(
+        "Relative Address (Absolute Address): " + widget->relativeAddressHex + " (" + widget->addressHex + ")"
+    );
+
     if (!this->byteWidgetsByRowIndex.empty()) {
         for (auto& byteWidget : this->byteWidgetsByColumnIndex.at(widget->currentColumnIndex)) {
             byteWidget->update();
@@ -139,6 +148,8 @@ void ByteWidgetContainer::onByteWidgetEnter(ByteWidget* widget) {
 
 void ByteWidgetContainer::onByteWidgetLeave(ByteWidget* widget) {
     this->hoveredByteWidget = std::nullopt;
+
+    this->hoveredAddressLabel->setText("Relative Address (Absolute Address):");
 
     if (!this->byteWidgetsByRowIndex.empty()) {
         for (auto& byteWidget : this->byteWidgetsByColumnIndex.at(widget->currentColumnIndex)) {

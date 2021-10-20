@@ -349,6 +349,18 @@ QScrollBar::sub-line:vertical {
 #hex-viewer-container #tool-bar,
 #hex-viewer-container #search-bar {
     border-bottom: 1px solid #2F2F2D;
+
+#hex-viewer-container #bottom-bar {
+    border-top: 1px solid #41423f;
+}
+
+#hex-viewer-container #bottom-bar QLabel {
+    font-size: 13px;
+    color: rgba(175, 177, 179, 0.72);
+}
+
+#hex-viewer-container #bottom-bar QLabel:disabled {
+    color: rgba(175, 177, 179, 0.3);
 }
 
 #hex-viewer-container #tool-bar QToolButton {
