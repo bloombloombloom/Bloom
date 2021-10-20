@@ -348,7 +348,8 @@ QScrollBar::sub-line:vertical {
 
 #hex-viewer-container #tool-bar,
 #hex-viewer-container #search-bar {
-    border-bottom: 1px solid #2F2F2D;
+    border-bottom: 1px solid #41423f;
+}
 
 #hex-viewer-container #bottom-bar {
     border-top: 1px solid #41423f;
@@ -379,13 +380,13 @@ QScrollBar::sub-line:vertical {
 
 #hex-viewer-container QScrollArea,
 #hex-viewer-container #byte-widget-scroll-area-container {
-    background-color: transparent;
+    background-color: #323330;
     border: none;
 }
 
 #hex-viewer-container #byte-widget-scroll-area-container #address-container {
-    background-color: transparent;
-    border-right: 1px solid #2F2F2D;
+    background-color: #353633;
+    border-right: 1px solid #41423f;
 }
 
 #hex-viewer-container #byte-widget-scroll-area-container #address-container QLabel {
