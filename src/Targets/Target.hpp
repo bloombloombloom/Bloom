@@ -7,13 +7,15 @@
 #include <set>
 #include <map>
 
-#include "src/DebugToolDrivers/DebugTool.hpp"
 #include "src/ApplicationConfig.hpp"
+
 #include "TargetDescriptor.hpp"
 #include "TargetState.hpp"
 #include "TargetRegister.hpp"
 #include "TargetMemory.hpp"
 #include "TargetBreakpoint.hpp"
+
+#include "src/DebugToolDrivers/DebugTool.hpp"
 
 namespace Bloom::Targets
 {
@@ -25,7 +27,7 @@ namespace Bloom::Targets
      * A single implementation of this interface can represent a single target, or an entire family of targets.
      * For an example, see the Avr8 implementation. The Avr8 target class was written in a way that would allow it to
      * work, to *at least* the point of target promotion, for all AVR8 targets. For more on target promotion, see the
-     * Target::promote() method.
+     * Target::promote() function.
      */
     class Target
     {
@@ -41,24 +43,24 @@ namespace Bloom::Targets
         /**
          * There are three stages of configuration for targets.
          *
-         * preActivationConfigure() - The first stage is just before target activation (Target::activate() being called).
-         * At this point, we will not have interacted with the target in any way. This method should cover any
-         * configuration that can be done without the target being activated. It should also cover any configuration
-         * that is required in order for us to successfully activate the target. For an example, we use this method in
-         * the Avr8 target class to configure the debug tool with the correct physical interface and config variant
-         * parameters (taken from the user's settings, via the TargetConfig instance). Without these being configured,
+         * preActivationConfigure() - The first stage is just before target activation (Target::activate() being
+         * called). At this point, we will not have interacted with the target in any way. This function should cover
+         * any configuration that can be done without the target being activated. It should also cover any configuration
+         * that is required in order for us to successfully activate the target. For an example, we use this function
+         * in the Avr8 target class to configure the debug tool with the correct physical interface and config variant
+         * parameters (taken from the user's settings, via the TargetConfig object). Without these being configured,
          * the debug tool would not be able to interface with the AVR8 target, and thus target activation would fail.
          *
          * postActivationConfigure() - The second stage is right after target activation (successful invocation of
          * Target::activate()). At this point, we will have established a connection with the target and so interaction
-         * with the target is permitted here. We use this method in the Avr8 target class to extract the target signature
-         * from the target's memory, which we then use to find & load the correct target description file.
+         * with the target is permitted here. We use this function in the Avr8 target class to extract the target
+         * signature from the target's memory, which we then use to find & load the correct target description file.
          *
          * postPromotionConfigure() - The final stage of configuration occurs just after the target instance has been
-         * promoted to a different class. See the Target::promote() method for more in this.
+         * promoted to a different class. See the Target::promote() function for more on this.
          *
-         * If any of the three configuration methods throw an exception, the exception will be treated as a fatal error.
-         * In response, the TargetController will shutdown, along with the rest of Bloom.
+         * If any of the three configuration functions throw an exception, the exception will be treated as a fatal
+         * error. In response, the TargetController will shutdown, along with the rest of Bloom.
          *
          * @param targetConfig
          */
@@ -69,10 +71,10 @@ namespace Bloom::Targets
         virtual void postPromotionConfigure() = 0;
 
         /**
-         * This method should attempt to establish a connection with the target, and put it in a state where debugging
-         * can be performed. This method will be called after Target::preActivationConfigure().
+         * This function should attempt to establish a connection with the target, and put it in a state where
+         * debugging can be performed. This function will be called after Target::preActivationConfigure().
          *
-         * If an exception is thrown from this method, the TargetController will treat it as a fatal error, and thus
+         * If an exception is thrown from this function, the TargetController will treat it as a fatal error, and thus
          * will shutdown, along with the rest of Bloom.
          */
         virtual void activate() = 0;
@@ -82,7 +84,7 @@ namespace Bloom::Targets
          *
          * This is typically called on TargetController shutdown, but keep in mind that it's called regardless of
          * whether or not Target::activate() was previously called. In other words, the TargetController will always
-         * call this method on shutdown, even if the TargetController did not call Target::activate() before it began
+         * call this function on shutdown, even if the TargetController did not call Target::activate() before it began
          * shutting down. The reason behind this is to give the target a chance to deactivate in cases where the call
          * to Target::activate() failed and thus triggered a shutdown (via an exception being thrown from
          * Target::activate()).
@@ -90,7 +92,7 @@ namespace Bloom::Targets
         virtual void deactivate() = 0;
 
         /**
-         * Should check if the given debugTool is compatible with the target. Returning false in this method will
+         * Should check if the given debugTool is compatible with the target. Returning false in this function will
          * prevent Bloom from attempting to use the selected debug tool with the selected target. An InvalidConfig
          * exception will be raised and Bloom will shutdown.
          *
@@ -105,7 +107,7 @@ namespace Bloom::Targets
         virtual bool isDebugToolSupported(DebugTool* debugTool) = 0;
 
         /**
-         * Assuming the Target::isDebugToolSupported() check passed, this method will be called shortly after, by the
+         * Assuming the Target::isDebugToolSupported() check passed, this function will be called shortly after, by the
          * TargetController.
          *
          * @param debugTool
@@ -139,13 +141,13 @@ namespace Bloom::Targets
          * own, if required, where they could promote to a class that's not only specific to an AVR8 family, but to a
          * particular target model (for example, a target class that was written specifically for the ATmega328P target).
          *
-         * This method should attempt to promote the current target class to one that is more specific to the connected
-         * target, with the information it currently holds on the target.
+         * This function should attempt to promote the current target class to one that is more specific to the
+         * connected target, with the information it currently holds on the target.
          *
-         * If this method fails to promote the target, it should return an std::unique_ptr(nullptr).
+         * If this function fails to promote the target, it should return an std::unique_ptr(nullptr).
          *
          * After activating the target, assuming the first call to Target::supportsPromotion() returns true, the
-         * TargetController will enter a loop, where it will repeatedly call this method and update the target
+         * TargetController will enter a loop, where it will repeatedly call this function and update the target
          * instance, until at least one of the following conditions are met:
          *   - The call to Target::supportsPromotion() on the current target instance returns false
          *   - The call to Target::promote() on the current target instance returns an std::unique_ptr(nullptr)
