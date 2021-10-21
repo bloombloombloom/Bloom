@@ -19,8 +19,8 @@ ByteWidget::ByteWidget(
     this->addressHex = "0x" + QString::number(this->address, 16).rightJustified(8, '0').toUpper();
     this->relativeAddressHex = "0x" + QString::number(this->byteIndex, 16).rightJustified(8, '0').toUpper();
 
-    this->connect(this, &ClickableWidget::clicked, this, onClick);
-    this->connect(this, &ClickableWidget::rightClicked, this, onClick);
+    QObject::connect(this, &ClickableWidget::clicked, this, onClick);
+    QObject::connect(this, &ClickableWidget::rightClicked, this, onClick);
 
     this->setSelected(false);
 }

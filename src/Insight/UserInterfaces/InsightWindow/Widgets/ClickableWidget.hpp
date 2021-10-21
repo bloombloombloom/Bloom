@@ -6,7 +6,7 @@
 
 namespace Bloom::Widgets
 {
-    class Q_WIDGETS_EXPORT ClickableWidget: public QFrame
+    class ClickableWidget: public QFrame
     {
         Q_OBJECT
 

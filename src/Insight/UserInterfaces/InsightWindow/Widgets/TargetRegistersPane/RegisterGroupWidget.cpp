@@ -66,7 +66,7 @@ RegisterGroupWidget::RegisterGroupWidget(
         auto registerWidget = new RegisterWidget(descriptor, insightWorker, this->bodyWidget);
         bodyLayout->addWidget(registerWidget, 0, Qt::AlignmentFlag::AlignTop);
 
-        this->connect(
+        QObject::connect(
             registerWidget,
             &ItemWidget::selected,
             parent,
@@ -87,7 +87,7 @@ RegisterGroupWidget::RegisterGroupWidget(
 
     this->collapse();
 
-    this->connect(this->headerWidget, &ClickableWidget::doubleClicked, [this] {
+    QObject::connect(this->headerWidget, &ClickableWidget::doubleClicked, [this] {
         if (this->collapsed) {
             this->expand();
 
@@ -96,7 +96,7 @@ RegisterGroupWidget::RegisterGroupWidget(
         }
     });
 
-    this->connect(
+    QObject::connect(
         this->headerWidget,
         &ItemWidget::selected,
         parent,

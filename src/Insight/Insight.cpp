@@ -114,14 +114,14 @@ void Insight::startup() {
      * This allows us to use Qt's event loop whilst still being able to process our own events.
      */
     auto eventDispatchTimer = new QTimer(&(this->application));
-    this->connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
+    QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
     eventDispatchTimer->start(100);
 
-    this->connect(this->insightWorker, &InsightWorker::targetControllerSuspended, this->mainWindow, &InsightWindow::onTargetControllerSuspended);
-    this->connect(this->insightWorker, &InsightWorker::targetControllerResumed, this->mainWindow, &InsightWindow::onTargetControllerResumed);
-    this->connect(this->insightWorker, &InsightWorker::targetStateUpdated, this->mainWindow, &InsightWindow::onTargetStateUpdate);
-    this->connect(this->insightWorker, &InsightWorker::targetProgramCounterUpdated, this->mainWindow, &InsightWindow::onTargetProgramCounterUpdate);
-    this->connect(this->mainWindow, &InsightWindow::refreshTargetPinStates, this->insightWorker, &InsightWorker::requestPinStates);
+    QObject::connect(this->insightWorker, &InsightWorker::targetControllerSuspended, this->mainWindow, &InsightWindow::onTargetControllerSuspended);
+    QObject::connect(this->insightWorker, &InsightWorker::targetControllerResumed, this->mainWindow, &InsightWindow::onTargetControllerResumed);
+    QObject::connect(this->insightWorker, &InsightWorker::targetStateUpdated, this->mainWindow, &InsightWindow::onTargetStateUpdate);
+    QObject::connect(this->insightWorker, &InsightWorker::targetProgramCounterUpdated, this->mainWindow, &InsightWindow::onTargetProgramCounterUpdate);
+    QObject::connect(this->mainWindow, &InsightWindow::refreshTargetPinStates, this->insightWorker, &InsightWorker::requestPinStates);
 
     this->mainWindow->setInsightConfig(this->insightConfig);
     this->mainWindow->setEnvironmentConfig(this->environmentConfig);
@@ -132,11 +132,11 @@ void Insight::startup() {
     this->workerThread = new QThread();
     this->workerThread->setObjectName("IW");
     this->insightWorker->moveToThread(this->workerThread);
-    this->connect(this->workerThread, &QThread::started, this->insightWorker, &InsightWorker::startup);
-    this->connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);
-    this->connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
+    QObject::connect(this->workerThread, &QThread::started, this->insightWorker, &InsightWorker::startup);
+    QObject::connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);
+    QObject::connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
 
-    this->connect(this->insightWorker, &InsightWorker::ready, this, [this] {
+    QObject::connect(this->insightWorker, &InsightWorker::ready, this, [this] {
         this->checkBloomVersion();
     });
 
@@ -167,7 +167,7 @@ void Insight::checkBloomVersion() {
         currentVersionNumber
     );
 
-    this->connect(
+    QObject::connect(
         versionQueryTask,
         &QueryLatestVersionNumber::latestVersionNumberRetrieved,
         this,

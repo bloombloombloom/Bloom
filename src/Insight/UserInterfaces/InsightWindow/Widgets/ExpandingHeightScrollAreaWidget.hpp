@@ -6,7 +6,7 @@
 
 namespace Bloom::Widgets
 {
-    class Q_WIDGETS_EXPORT ExpandingHeightScrollAreaWidget: public QScrollArea
+    class ExpandingHeightScrollAreaWidget: public QScrollArea
     {
         Q_OBJECT
 

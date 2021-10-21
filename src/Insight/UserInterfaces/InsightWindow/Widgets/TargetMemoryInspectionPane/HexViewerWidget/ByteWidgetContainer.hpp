@@ -58,7 +58,7 @@ namespace Bloom::Widgets
 
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);
-        void onByteWidgetEnter(ByteWidget* widget);
-        void onByteWidgetLeave(ByteWidget* widget);
+        void onByteWidgetEnter(Bloom::Widgets::ByteWidget* widget);
+        void onByteWidgetLeave(Bloom::Widgets::ByteWidget* widget);
     };
 }

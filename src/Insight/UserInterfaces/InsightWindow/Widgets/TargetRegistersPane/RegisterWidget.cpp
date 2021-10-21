@@ -43,15 +43,15 @@ RegisterWidget::RegisterWidget(
     this->layout->addWidget(this->valueLabel);
     this->layout->addStretch(1);
 
-    this->connect(this, &ClickableWidget::doubleClicked, this, &RegisterWidget::openInspectionWindow);
-    this->connect(this->openInspectionWindowAction, &QAction::triggered, this, &RegisterWidget::openInspectionWindow);
-    this->connect(this->refreshValueAction, &QAction::triggered, this, &RegisterWidget::refreshValue);
-    this->connect(this->copyValueNameAction, &QAction::triggered, this, &RegisterWidget::copyName);
-    this->connect(this->copyValueHexAction, &QAction::triggered, this, &RegisterWidget::copyValueHex);
-    this->connect(this->copyValueDecimalAction, &QAction::triggered, this, &RegisterWidget::copyValueDecimal);
-    this->connect(this->copyValueBinaryAction, &QAction::triggered, this, &RegisterWidget::copyValueBinary);
+    QObject::connect(this, &ClickableWidget::doubleClicked, this, &RegisterWidget::openInspectionWindow);
+    QObject::connect(this->openInspectionWindowAction, &QAction::triggered, this, &RegisterWidget::openInspectionWindow);
+    QObject::connect(this->refreshValueAction, &QAction::triggered, this, &RegisterWidget::refreshValue);
+    QObject::connect(this->copyValueNameAction, &QAction::triggered, this, &RegisterWidget::copyName);
+    QObject::connect(this->copyValueHexAction, &QAction::triggered, this, &RegisterWidget::copyValueHex);
+    QObject::connect(this->copyValueDecimalAction, &QAction::triggered, this, &RegisterWidget::copyValueDecimal);
+    QObject::connect(this->copyValueBinaryAction, &QAction::triggered, this, &RegisterWidget::copyValueBinary);
 
-    this->connect(
+    QObject::connect(
         &(this->insightWorker),
         &InsightWorker::targetStateUpdated,
         this,
@@ -152,7 +152,7 @@ void RegisterWidget::openInspectionWindow() {
 void RegisterWidget::refreshValue() {
     auto readRegisterTask = new ReadTargetRegisters({this->descriptor});
 
-    this->connect(
+    QObject::connect(
         readRegisterTask,
         &ReadTargetRegisters::targetRegistersRead,
         this,

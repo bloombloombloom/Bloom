@@ -43,8 +43,8 @@ RegisterHistoryItem::RegisterHistoryItem(
         this->setSelected(true);
     };
 
-    this->connect(this, &ClickableWidget::clicked, this, onClick);
-    this->connect(this, &ClickableWidget::rightClicked, this, onClick);
+    QObject::connect(this, &ClickableWidget::clicked, this, onClick);
+    QObject::connect(this, &ClickableWidget::rightClicked, this, onClick);
 
     this->setSelected(false);
 }

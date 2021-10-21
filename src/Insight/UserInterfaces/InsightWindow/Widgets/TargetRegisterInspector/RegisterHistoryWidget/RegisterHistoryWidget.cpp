@@ -52,14 +52,14 @@ RegisterHistoryWidget::RegisterHistoryWidget(
     titleBar->setContentsMargins(0, 0, 0, 0);
     title->setFixedHeight(titleBar->height());
 
-    this->connect(
+    QObject::connect(
         &insightWorker,
         &InsightWorker::targetStateUpdated,
         this,
         &RegisterHistoryWidget::onTargetStateChanged
     );
 
-    this->connect(
+    QObject::connect(
         &insightWorker,
         &InsightWorker::targetRegistersWritten,
         this,
@@ -67,7 +67,7 @@ RegisterHistoryWidget::RegisterHistoryWidget(
     );
 
     this->currentItem = new CurrentItem(currentValue, this);
-    this->connect(this->currentItem, &Item::selected, this, &RegisterHistoryWidget::onItemSelectionChange);
+    QObject::connect(this->currentItem, &Item::selected, this, &RegisterHistoryWidget::onItemSelectionChange);
     this->itemContainerLayout->addWidget(this->currentItem);
     this->currentItem->setSelected(true);
 
@@ -98,7 +98,7 @@ void RegisterHistoryWidget::selectCurrentItem() {
 
 void RegisterHistoryWidget::addItem(const Targets::TargetMemoryBuffer& registerValue, const QDateTime& changeDate) {
     auto item = new RegisterHistoryItem(registerValue, changeDate, this->itemContainer);
-    this->connect(item, &Item::selected, this, &RegisterHistoryWidget::onItemSelectionChange);
+    QObject::connect(item, &Item::selected, this, &RegisterHistoryWidget::onItemSelectionChange);
     this->itemContainerLayout->insertWidget(2, item);
 }
 

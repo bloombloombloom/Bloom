@@ -41,9 +41,9 @@ namespace Bloom::Widgets
         void setSelected(bool selected);
 
     signals:
-        void selected(ByteWidget*);
-        void enter(ByteWidget*);
-        void leave(ByteWidget*);
+        void selected(Bloom::Widgets::ByteWidget*);
+        void enter(Bloom::Widgets::ByteWidget*);
+        void leave(Bloom::Widgets::ByteWidget*);
 
     protected:
         virtual void postSetSelected(bool selected) {};

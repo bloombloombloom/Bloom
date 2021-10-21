@@ -14,14 +14,14 @@ TargetPackageWidget::TargetPackageWidget(
     InsightWorker& insightWorker,
     QWidget* parent
 ): QWidget(parent), targetVariant(std::move(targetVariant)), insightWorker(insightWorker) {
-    this->connect(
+    QObject::connect(
         &(this->insightWorker),
         &InsightWorker::targetStateUpdated,
         this,
         &TargetPackageWidget::onTargetStateChanged
     );
 
-    this->connect(
+    QObject::connect(
         &(this->insightWorker),
         &InsightWorker::targetRegistersWritten,
         this,
@@ -33,7 +33,7 @@ TargetPackageWidget::TargetPackageWidget(
 
 void TargetPackageWidget::refreshPinStates(std::optional<std::function<void(void)>> callback) {
     auto refreshTask = new RefreshTargetPinStates(this->targetVariant.id);
-    this->connect(
+    QObject::connect(
         refreshTask,
         &RefreshTargetPinStates::targetPinStatesRetrieved,
         this,
@@ -41,7 +41,7 @@ void TargetPackageWidget::refreshPinStates(std::optional<std::function<void(void
     );
 
     if (callback.has_value()) {
-        this->connect(
+        QObject::connect(
             refreshTask,
             &InsightWorkerTask::completed,
             this,

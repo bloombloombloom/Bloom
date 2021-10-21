@@ -47,11 +47,11 @@ parent(parent) {
             byteWidget
         ));
 
-        this->connect(byteWidget, &ByteWidget::enter, this, &ByteWidgetContainer::onByteWidgetEnter);
-        this->connect(byteWidget, &ByteWidget::leave, this, &ByteWidgetContainer::onByteWidgetLeave);
+        QObject::connect(byteWidget, &ByteWidget::enter, this, &ByteWidgetContainer::onByteWidgetEnter);
+        QObject::connect(byteWidget, &ByteWidget::leave, this, &ByteWidgetContainer::onByteWidgetLeave);
     }
 
-    this->connect(
+    QObject::connect(
         &insightWorker,
         &InsightWorker::targetStateUpdated,
         this,
@@ -117,8 +117,8 @@ void ByteWidgetContainer::adjustByteWidgets() {
     this->setMinimumHeight(minHeight);
     this->parent->setMinimumHeight(minHeight);
 
-    this->byteWidgetsByRowIndex.swap(byteWidgetsByRowIndex);
-    this->byteWidgetsByColumnIndex.swap(byteWidgetsByColumnIndex);
+    this->byteWidgetsByRowIndex = std::move(byteWidgetsByRowIndex);
+    this->byteWidgetsByColumnIndex = std::move(byteWidgetsByColumnIndex);
 
     emit this->byteWidgetsAdjusted();
 }

@@ -48,7 +48,7 @@ BitWidget::BitWidget(
     layout->addStretch(1);
 
     if (!this->readOnly) {
-        this->connect(this->body, &BitBodyWidget::clicked, this, [this] {
+        QObject::connect(this->body, &BitBodyWidget::clicked, this, [this] {
             emit this->bitChanged();
         });
     }

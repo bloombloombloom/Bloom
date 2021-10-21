@@ -6,7 +6,7 @@
 
 namespace Bloom::Widgets
 {
-    class Q_WIDGETS_EXPORT ErrorDialogue: public QDialog
+    class ErrorDialogue: public QDialog
     {
         Q_OBJECT
 

@@ -51,15 +51,15 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
     this->toolBar->layout()->setContentsMargins(5, 0, 5, 0);
     this->searchInput = this->container->findChild<QLineEdit*>("search-input");
 
-    this->connect(this->expandAllButton, &QToolButton::clicked, [this] {
+    QObject::connect(this->expandAllButton, &QToolButton::clicked, [this] {
         this->expandAllRegisterGroups();
     });
 
-    this->connect(this->collapseAllButton, &QToolButton::clicked, [this] {
+    QObject::connect(this->collapseAllButton, &QToolButton::clicked, [this] {
         this->collapseAllRegisterGroups();
     });
 
-    this->connect(this->searchInput, &QLineEdit::textChanged, [this] {
+    QObject::connect(this->searchInput, &QLineEdit::textChanged, [this] {
         this->filterRegisters(this->searchInput->text());
     });
 
@@ -108,14 +108,14 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
 
     itemLayout->addStretch(1);
 
-    this->connect(
+    QObject::connect(
         &insightWorker,
         &InsightWorker::targetStateUpdated,
         this,
         &TargetRegistersPaneWidget::onTargetStateChanged
     );
 
-    this->connect(
+    QObject::connect(
         &insightWorker,
         &InsightWorker::targetRegistersWritten,
         this,
@@ -165,7 +165,7 @@ void TargetRegistersPaneWidget::refreshRegisterValues(std::optional<std::functio
     }
 
     auto readRegisterTask = new ReadTargetRegisters(descriptors);
-    this->connect(
+    QObject::connect(
         readRegisterTask,
         &ReadTargetRegisters::targetRegistersRead,
         this,
@@ -173,7 +173,7 @@ void TargetRegistersPaneWidget::refreshRegisterValues(std::optional<std::functio
     );
 
     if (callback.has_value()) {
-        this->connect(
+        QObject::connect(
             readRegisterTask,
             &InsightWorkerTask::completed,
             this,

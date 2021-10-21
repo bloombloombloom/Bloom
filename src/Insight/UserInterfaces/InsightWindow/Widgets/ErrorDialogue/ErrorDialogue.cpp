@@ -54,5 +54,5 @@ ErrorDialogue::ErrorDialogue(
 
     this->errorMessageLabel->setText(errorMessage);
 
-    this->connect(this->okButton, &QPushButton::clicked, this, &QDialog::close);
+    QObject::connect(this->okButton, &QPushButton::clicked, this, &QDialog::close);
 }

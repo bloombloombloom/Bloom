@@ -154,7 +154,7 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
         );
 
         bitsetSingleHorizontalLayout->addWidget(bitsetWidget, 0, Qt::AlignmentFlag::AlignLeft);
-        this->connect(
+        QObject::connect(
             bitsetWidget,
             &BitsetWidget::byteChanged,
             this,
@@ -177,31 +177,31 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
 
     this->registerHistoryWidget->setFixedHeight(this->contentContainer->sizeHint().height());
 
-    this->connect(this->helpButton, &QPushButton::clicked, this, &TargetRegisterInspectorWindow::openHelpPage);
-    this->connect(this->closeButton, &QPushButton::clicked, this, &QWidget::close);
-    this->connect(
+    QObject::connect(this->helpButton, &QPushButton::clicked, this, &TargetRegisterInspectorWindow::openHelpPage);
+    QObject::connect(this->closeButton, &QPushButton::clicked, this, &QWidget::close);
+    QObject::connect(
         this->refreshValueButton,
         &QPushButton::clicked,
         this,
         &TargetRegisterInspectorWindow::refreshRegisterValue
     );
-    this->connect(this->applyButton, &QPushButton::clicked, this, &TargetRegisterInspectorWindow::applyChanges);
+    QObject::connect(this->applyButton, &QPushButton::clicked, this, &TargetRegisterInspectorWindow::applyChanges);
 
-    this->connect(
+    QObject::connect(
         this->registerHistoryWidget,
         &RegisterHistoryWidget::historyItemSelected,
         this,
         &TargetRegisterInspectorWindow::onHistoryItemSelected
     );
 
-    this->connect(
+    QObject::connect(
         this->registerValueTextInput,
         &QLineEdit::textEdited,
         this,
         &TargetRegisterInspectorWindow::onValueTextInputChanged
     );
 
-    this->connect(
+    QObject::connect(
         &insightWorker,
         &InsightWorker::targetStateUpdated,
         this,
@@ -310,7 +310,7 @@ void TargetRegisterInspectorWindow::refreshRegisterValue() {
     this->registerValueContainer->setDisabled(true);
     auto readTargetRegisterTask = new ReadTargetRegisters({this->registerDescriptor});
 
-    this->connect(
+    QObject::connect(
         readTargetRegisterTask,
         &ReadTargetRegisters::targetRegistersRead,
         this,
@@ -325,7 +325,7 @@ void TargetRegisterInspectorWindow::refreshRegisterValue() {
         }
     );
 
-    this->connect(
+    QObject::connect(
         readTargetRegisterTask,
         &InsightWorkerTask::failed,
         this,
@@ -342,7 +342,7 @@ void TargetRegisterInspectorWindow::applyChanges() {
     const auto targetRegister = Targets::TargetRegister(this->registerDescriptor, this->registerValue);
     auto writeRegisterTask = new WriteTargetRegister(targetRegister);
 
-    this->connect(writeRegisterTask, &InsightWorkerTask::completed, this, [this, targetRegister] {
+    QObject::connect(writeRegisterTask, &InsightWorkerTask::completed, this, [this, targetRegister] {
         this->registerValueContainer->setDisabled(false);
         emit this->insightWorker.targetRegistersWritten(
             {targetRegister},
@@ -352,7 +352,7 @@ void TargetRegisterInspectorWindow::applyChanges() {
         this->registerHistoryWidget->selectCurrentItem();
     });
 
-    this->connect(writeRegisterTask, &InsightWorkerTask::failed, this, [this] (QString errorMessage) {
+    QObject::connect(writeRegisterTask, &InsightWorkerTask::failed, this, [this] (QString errorMessage) {
         this->registerValueContainer->setDisabled(false);
         auto errorDialogue = new ErrorDialogue(
             "Error",

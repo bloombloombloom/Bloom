@@ -17,7 +17,7 @@ void QueryLatestVersionNumber::run(TargetControllerConsole& targetControllerCons
     }));
 
     auto response = networkAccessManager->get(QNetworkRequest(queryVersionEndpointUrl));
-    this->connect(response, &QNetworkReply::finished, this, [this, response] {
+    QObject::connect(response, &QNetworkReply::finished, this, [this, response] {
         const auto jsonResponseObject = QJsonDocument::fromJson(response->readAll()).object();
 
         if (jsonResponseObject.contains("latestVersionNumber")) {

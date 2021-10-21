@@ -52,14 +52,14 @@ TargetMemoryInspectionPane::TargetMemoryInspectionPane(
 
     subContainerLayout->addWidget(this->hexViewerWidget);
 
-    this->connect(
+    QObject::connect(
         &insightWorker,
         &InsightWorker::targetStateUpdated,
         this,
         &TargetMemoryInspectionPane::onTargetStateChanged
     );
 
-    this->connect(
+    QObject::connect(
         this->hexViewerWidget->refreshButton,
         &QToolButton::clicked,
         this,
@@ -78,14 +78,14 @@ void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function
         this->targetMemoryDescriptor.size()
     );
 
-    this->connect(
+    QObject::connect(
         readMemoryTask,
         &ReadTargetMemory::targetMemoryRead,
         this,
         &TargetMemoryInspectionPane::onMemoryRead
     );
 
-    this->connect(
+    QObject::connect(
         readMemoryTask,
         &InsightWorkerTask::completed,
         this,
@@ -95,7 +95,7 @@ void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function
     );
 
     if (callback.has_value()) {
-        this->connect(
+        QObject::connect(
             readMemoryTask,
             &InsightWorkerTask::completed,
             this,

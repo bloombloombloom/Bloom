@@ -32,7 +32,7 @@ QWidget(parent), byteNumber(byteNumber), byte(byte), readOnly(readOnly) {
         );
 
         bitLayout->addWidget(bitWidget, 0, Qt::AlignmentFlag::AlignHCenter | Qt::AlignmentFlag::AlignTop);
-        this->connect(
+        QObject::connect(
             bitWidget,
             &BitWidget::bitChanged,
             this,

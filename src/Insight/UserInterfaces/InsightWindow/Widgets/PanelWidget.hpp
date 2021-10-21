@@ -17,7 +17,7 @@ namespace Bloom::Widgets
     };
     Q_ENUM_NS(PanelWidgetType)
 
-    class Q_WIDGETS_EXPORT PanelWidget: public QFrame
+    class PanelWidget: public QFrame
     {
         Q_OBJECT
         Q_PROPERTY(int handleSize READ getHandleSize WRITE setHandleSize DESIGNABLE true)
@@ -40,15 +40,15 @@ namespace Bloom::Widgets
             this->resizeCursor = this->panelType == PanelWidgetType::LEFT ? Qt::SplitHCursor : Qt::SplitVCursor;
         }
 
-        int getHandleSize() {
+        [[nodiscard]] int getHandleSize() const {
             return this->handleSize;
         }
 
-        int getMinimumResize() {
+        [[nodiscard]] int getMinimumResize() const {
             return this->minimumResize;
         }
 
-        int getMaximumResize() {
+        [[nodiscard]] int getMaximumResize() const {
             return this->maximumResize;
         }
 
@@ -71,7 +71,7 @@ namespace Bloom::Widgets
         void mouseReleaseEvent(QMouseEvent* event) override;
         void mouseMoveEvent(QMouseEvent* event) override;
 
-        std::pair<QPoint, QPoint> getHandleArea() const;
-        bool isPositionWithinHandleArea(const QPoint& position) const;
+        [[nodiscard]] std::pair<QPoint, QPoint> getHandleArea() const;
+        [[nodiscard]] bool isPositionWithinHandleArea(const QPoint& position) const;
     };
 }

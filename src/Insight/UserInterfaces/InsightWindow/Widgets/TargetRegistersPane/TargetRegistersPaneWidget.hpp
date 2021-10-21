@@ -42,7 +42,7 @@ namespace Bloom::Widgets
         void deactivate();
 
     public slots:
-        void onItemSelectionChange(ItemWidget* newlySelectedWidget);
+        void onItemSelectionChange(Bloom::Widgets::ItemWidget* newlySelectedWidget);
 
     protected:
         void resizeEvent(QResizeEvent* event) override;

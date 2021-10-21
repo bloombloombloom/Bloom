@@ -76,13 +76,13 @@ HexViewerWidget::HexViewerWidget(
     this->byteWidgetAddressLayout = this->byteWidgetAddressContainer->findChild<QVBoxLayout*>();
     this->byteWidgetAddressLayout->setContentsMargins(5, 10, 0, 5);
 
-    this->connect(
+    QObject::connect(
         this->byteWidgetContainer,
         &ByteWidgetContainer::byteWidgetsAdjusted,
         this,
         &HexViewerWidget::onByteWidgetsAdjusted
     );
-    this->connect(
+    QObject::connect(
         &insightWorker,
         &InsightWorker::targetStateUpdated,
         this,
