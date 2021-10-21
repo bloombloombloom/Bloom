@@ -560,7 +560,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param type
          *  The type of memory to access (Flash, EEPROM, SRAM, etc). See protocol documentation for more on this.
          *
-         * @param address
+         * @param startAddress
          *  The start address (byte address)
          *
          * @param bytes
@@ -574,9 +574,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         Targets::TargetMemoryBuffer readMemory(
             Avr8MemoryType type,
-            std::uint32_t address,
+            std::uint32_t startAddress,
             std::uint32_t bytes,
-            std::set<std::uint32_t> excludedAddresses = {}
+            const std::set<std::uint32_t>& excludedAddresses = {}
         );
 
         /**

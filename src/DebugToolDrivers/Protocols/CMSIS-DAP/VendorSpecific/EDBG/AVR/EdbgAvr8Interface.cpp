@@ -1166,9 +1166,9 @@ void EdbgAvr8Interface::clearEvents() {
 
 TargetMemoryBuffer EdbgAvr8Interface::readMemory(
     Avr8MemoryType type,
-    std::uint32_t address,
+    std::uint32_t startAddress,
     std::uint32_t bytes,
-    std::set<std::uint32_t> excludedAddresses
+    const std::set<std::uint32_t>& excludedAddresses
 ) {
     if (!excludedAddresses.empty() && this->avoidMaskedMemoryRead) {
         /*
@@ -1180,33 +1180,39 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
          * of the masked read memory EDBG command.
          */
         auto output = TargetMemoryBuffer();
-        auto segmentStartAddress = address;
+        output.reserve(bytes);
 
-        for (std::uint32_t i = 0; i < bytes; i++) {
-            const auto byteAddress = address + i;
+        auto segmentStartAddress = startAddress;
+        const auto endAddress = startAddress + bytes - 1;
 
-            if (excludedAddresses.contains(byteAddress)) {
-                auto segmentBuffer = this->readMemory(
-                    type,
-                    segmentStartAddress,
-                    (byteAddress - segmentStartAddress)
-                );
-
-                output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
-                output.emplace_back(0x00);
-
-                segmentStartAddress = byteAddress + 1;
-
-            } else if (i == (bytes - 1)) {
-                // Read final segment
-                auto segmentBuffer = this->readMemory(
-                    type,
-                    segmentStartAddress,
-                    (byteAddress - segmentStartAddress + 1)
-                );
-
-                output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
+        for (const auto excludedAddress : excludedAddresses) {
+            if (excludedAddress < startAddress || excludedAddress > endAddress) {
+                // This excluded address is outside of the range from which we are reading, so it can be ignored.
+                continue;
             }
+
+            auto segmentBuffer = this->readMemory(
+                type,
+                segmentStartAddress,
+                (excludedAddress - segmentStartAddress)
+            );
+
+            output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
+            output.emplace_back(0x00);
+
+            segmentStartAddress = excludedAddress + 1;
+        }
+
+        // Read final segment
+        const auto finalReadBytes = (endAddress - segmentStartAddress) + 1;
+        if (finalReadBytes > 0) {
+            auto segmentBuffer = this->readMemory(
+                type,
+                segmentStartAddress,
+                finalReadBytes
+            );
+
+            output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
         }
 
         return output;
@@ -1220,13 +1226,13 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
         // Flash reads must be done in pages
         auto pageSize = this->targetParameters.flashPageSize.value();
 
-        if ((bytes % pageSize) != 0 || (address % pageSize) != 0) {
+        if ((bytes % pageSize) != 0 || (startAddress % pageSize) != 0) {
             /*
              * The number of bytes to read and/or the start address are not aligned.
              *
              * Align both and call this function again.
              */
-            auto alignedAddress = address;
+            auto alignedAddress = startAddress;
             auto alignedBytesToRead = bytes;
 
             if ((bytes % pageSize) != 0) {
@@ -1237,9 +1243,9 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
                 alignedBytesToRead = (pagesRequired * pageSize);
             }
 
-            if ((address % pageSize) != 0) {
+            if ((startAddress % pageSize) != 0) {
                 alignedAddress = static_cast<std::uint32_t>(std::floor(
-                    static_cast<float>(address) / static_cast<float>(pageSize)
+                    static_cast<float>(startAddress) / static_cast<float>(pageSize)
                 ) * pageSize);
 
                 /*
@@ -1276,9 +1282,9 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
                  * align them for us, but it will result in an unnecessary recursion, so we'll just align the
                  * additional bytes here.
                  */
-                if ((address - alignedAddress) > (alignedBytesToRead - bytes)) {
+                if ((startAddress - alignedAddress) > (alignedBytesToRead - bytes)) {
                     alignedBytesToRead += static_cast<std::uint32_t>(std::ceil(
-                        static_cast<float>(address - alignedAddress) / static_cast<float>(pageSize)
+                        static_cast<float>(startAddress - alignedAddress) / static_cast<float>(pageSize)
                     )) * pageSize;
                 }
             }
@@ -1289,8 +1295,8 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
              */
             auto memoryBuffer = this->readMemory(type, alignedAddress, alignedBytesToRead, excludedAddresses);
             return TargetMemoryBuffer(
-                memoryBuffer.begin() + (address - alignedAddress),
-                memoryBuffer.begin() + (address - alignedAddress) + bytes
+                memoryBuffer.begin() + (startAddress - alignedAddress),
+                memoryBuffer.begin() + (startAddress - alignedAddress) + bytes
             );
         }
 
@@ -1302,7 +1308,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
             TargetMemoryBuffer memoryBuffer;
 
             for (auto i = 1; i <= pagesRequired; i++) {
-                auto pageBuffer = this->readMemory(type, address + (pageSize * i), pageSize);
+                auto pageBuffer = this->readMemory(type, startAddress + (pageSize * i), pageSize);
                 memoryBuffer.insert(memoryBuffer.end(), pageBuffer.begin(), pageBuffer.end());
             }
 
@@ -1339,7 +1345,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
                     (singlePacketSize * 2) : bytes - output.size());
                 auto data = this->readMemory(
                     type,
-                    static_cast<std::uint32_t>(address + output.size()),
+                    static_cast<std::uint32_t>(startAddress + output.size()),
                     bytesToRead,
                     excludedAddresses
                 );
@@ -1352,7 +1358,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
 
     auto commandFrame = CommandFrames::Avr8Generic::ReadMemory();
     commandFrame.setType(type);
-    commandFrame.setAddress(address);
+    commandFrame.setAddress(startAddress);
     commandFrame.setBytes(bytes);
     commandFrame.setExcludedAddresses(excludedAddresses);
 
