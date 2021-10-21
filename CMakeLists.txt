@@ -183,6 +183,7 @@ add_executable(Bloom
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
 target_include_directories(Bloom PUBLIC ./)
+target_include_directories(Bloom PUBLIC /opt/Qt/6.1.2/Src)
 
 # Copy AVR8 TDFs to build directory and construct JSON mapping of AVR8 target signatures to TDF paths.
 add_custom_command(
@@ -245,6 +246,8 @@ target_compile_options(
     PUBLIC -std=c++2a
     PUBLIC -pedantic
     PUBLIC -Wconversion
+    PUBLIC -Wpessimizing-move
+    PUBLIC -Wredundant-move
     PUBLIC -fno-sized-deallocation
     PUBLIC $<$<CONFIG:DEBUG>:-g>
     PUBLIC $<$<CONFIG:DEBUG>:-O0>
