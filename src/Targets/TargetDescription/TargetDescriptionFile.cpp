@@ -222,6 +222,9 @@ Register TargetDescriptionFile::generateRegisterFromXml(const QDomElement& xmlEl
 
     if (xmlElement.hasAttribute("ocd-rw")) {
         reg.readWriteAccess = xmlElement.attribute("ocd-rw").toLower().toStdString();
+
+    } else if (xmlElement.hasAttribute("rw")) {
+        reg.readWriteAccess = xmlElement.attribute("rw").toLower().toStdString();
     }
 
     bool conversionStatus;
