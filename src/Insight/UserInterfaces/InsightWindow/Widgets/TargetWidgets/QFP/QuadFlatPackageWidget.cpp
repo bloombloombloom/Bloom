@@ -41,6 +41,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     this->topPinLayout = new QHBoxLayout();
     this->topPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
     this->topPinLayout->setDirection(QBoxLayout::Direction::RightToLeft);
+    this->topPinLayout->setAlignment(Qt::AlignmentFlag::AlignHCenter);
 
     this->rightPinLayout = new QVBoxLayout();
     this->rightPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
@@ -49,6 +50,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     this->bottomPinLayout = new QHBoxLayout();
     this->bottomPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
     this->bottomPinLayout->setDirection(QBoxLayout::Direction::LeftToRight);
+    this->bottomPinLayout->setAlignment(Qt::AlignmentFlag::AlignHCenter);
 
     this->leftPinLayout = new QVBoxLayout();
     this->leftPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
