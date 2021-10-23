@@ -14,8 +14,8 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         Q_OBJECT
 
     public:
-        static const int WIDTH = 30;
-        static const int HEIGHT = 40;
+        static const int WIDTH = 25;
+        static const int HEIGHT = 34;
 
         PinBodyWidget(
             QWidget* parent,

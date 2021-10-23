@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QWidget>
+#include <cstdint>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QPainter>
 
 #include "../TargetPinWidget.hpp"
 
@@ -11,17 +13,23 @@
 
 namespace Bloom::Widgets::InsightTargetWidgets::Dip
 {
+    enum Position : std::uint8_t
+    {
+        TOP,
+        BOTTOM
+    };
+
     class PinWidget: public TargetPinWidget
     {
         Q_OBJECT
 
     public:
-        static const int MINIMUM_WIDTH = 30;
-        static const int WIDTH_SPACING = 8;
+        static const int MINIMUM_WIDTH = PinBodyWidget::WIDTH;
+        static const int WIDTH_SPACING = 6;
         static const int MAXIMUM_LABEL_COUNT = 3;
         static const int LABEL_HEIGHT = 20;
         static const int MAXIMUM_HEIGHT = PinBodyWidget::HEIGHT
-            + (PinWidget::LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT);
+            + (PinWidget::LABEL_HEIGHT * PinWidget::MAXIMUM_LABEL_COUNT) + 40;
 
         PinWidget(
             const Targets::TargetPinDescriptor& pinDescriptor,
@@ -49,7 +57,12 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
             this->setLabelColor(this->pinStateChanged ? "#4d7bba" : "#a6a7aa");
         }
 
+    protected:
+        void paintEvent(QPaintEvent* event) override;
+        void drawWidget(QPainter& painter);
+
     private:
+        Position position = Position::TOP;
         QVBoxLayout* layout = nullptr;
         QLabel* pinNumberLabel = nullptr;
         QLabel* pinNameLabel = nullptr;

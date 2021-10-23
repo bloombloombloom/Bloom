@@ -31,7 +31,7 @@ void BodyWidget::drawWidget(QPainter& painter) {
 
     painter.setPen(Qt::PenStyle::NoPen);
     painter.setBrush(targetBodyColor);
-    auto targetBodyHeight = this->height();
+    const auto targetBodyHeight = this->height();
 
     auto targetBodyPoint = QPoint(
         0,
@@ -50,14 +50,14 @@ void BodyWidget::drawWidget(QPainter& painter) {
     painter.drawEllipse(QRectF(
         targetBodyPoint.x() + 10,
         targetBodyPoint.y() + (targetBodyHeight - 30),
-        20,
-        20
+        18,
+        18
     ));
 
     painter.drawEllipse(QRectF(
         targetBodyPoint.x() - 15,
         targetBodyPoint.y() + (targetBodyHeight / 2) - 15,
-        30,
-        30
+        28,
+        28
     ));
 }
