@@ -1,10 +1,8 @@
-#target-pin-number,
 #target-pin-number {
-    font-size: 14px;
+    font-size: 12px;
 }
 
-#target-pin-name,
-#target-pin-direction {
+#target-pin-name {
     font-size: 11px;
 }
 
@@ -14,6 +12,7 @@
 
 #target-pin-direction {
     color: #8a8a8d;
+    font-size: 10px;
 }
 
 #target-pin-body {

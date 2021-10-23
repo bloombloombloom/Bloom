@@ -23,8 +23,8 @@ void BodyWidget::drawWidget(QPainter& painter) {
     painter.setBrush(targetBodyColor);
 
     const auto containerSize = this->size();
-    auto targetBodyWidth = containerSize.width() - 16;
-    auto targetBodyHeight = containerSize.height() - 16;
+    auto targetBodyWidth = containerSize.width() - 14;
+    auto targetBodyHeight = containerSize.height() - 14;
 
     auto targetBodyPoint = QPoint(
         (containerSize.width() / 2) - (targetBodyWidth / 2),
@@ -42,7 +42,7 @@ void BodyWidget::drawWidget(QPainter& painter) {
     painter.drawEllipse(QRectF(
         targetBodyPoint.x() + 13,
         targetBodyPoint.y() + 13,
-        20,
-        20
+        18,
+        18
     ));
 }
