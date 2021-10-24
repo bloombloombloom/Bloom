@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QGraphicsScene>
 #include <QWidget>
 #include <QLabel>
 #include <QToolButton>
@@ -8,7 +9,7 @@
 #include <vector>
 #include <QSize>
 #include <QString>
-#include <QEvent>
+#include <QGraphicsSceneMouseEvent>
 #include <optional>
 
 #include "src/Targets/TargetMemory.hpp"
@@ -16,22 +17,22 @@
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
-#include "ByteWidget.hpp"
+#include "ByteItem.hpp"
 
 namespace Bloom::Widgets
 {
-    class ByteWidgetContainer: public QWidget
+    class ByteItemGraphicsScene: public QGraphicsScene
     {
         Q_OBJECT
 
     public:
-        std::optional<ByteWidget*> hoveredByteWidget;
+        std::optional<ByteItem*> hoveredByteWidget;
 
-        std::map<std::uint32_t, ByteWidget*> byteWidgetsByAddress;
-        std::map<std::size_t, std::vector<ByteWidget*>> byteWidgetsByRowIndex;
-        std::map<std::size_t, std::vector<ByteWidget*>> byteWidgetsByColumnIndex;
+        std::map<std::uint32_t, ByteItem*> byteWidgetsByAddress;
+        std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByRowIndex;
+        std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByColumnIndex;
 
-        ByteWidgetContainer(
+        ByteItemGraphicsScene(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             InsightWorker& insightWorker,
             QLabel* hoveredAddressLabel,
@@ -40,11 +41,13 @@ namespace Bloom::Widgets
 
         void updateValues(const Targets::TargetMemoryBuffer& buffer);
 
+        void adjustByteWidgets();
+
     signals:
         void byteWidgetsAdjusted();
 
     protected:
-        void resizeEvent(QResizeEvent* event) override;
+        void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
@@ -54,11 +57,9 @@ namespace Bloom::Widgets
         QWidget* parent = nullptr;
         QLabel* hoveredAddressLabel = nullptr;
 
-        void adjustByteWidgets();
-
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);
-        void onByteWidgetEnter(Bloom::Widgets::ByteWidget* widget);
-        void onByteWidgetLeave(Bloom::Widgets::ByteWidget* widget);
+        void onByteWidgetEnter(Bloom::Widgets::ByteItem* widget);
+        void onByteWidgetLeave();
     };
 }

@@ -2,16 +2,15 @@
 
 #include <cstdint>
 #include <QEvent>
+#include <QGraphicsItem>
 #include <optional>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.hpp"
 
 namespace Bloom::Widgets
 {
-    class ByteWidget: public ClickableWidget
+    class ByteItem: public QGraphicsItem
     {
-        Q_OBJECT
-
     public:
         static constexpr int WIDTH = 25;
         static constexpr int HEIGHT = 20;
@@ -29,35 +28,34 @@ namespace Bloom::Widgets
         std::size_t currentRowIndex = 0;
         std::size_t currentColumnIndex = 0;
 
-        ByteWidget(
+        ByteItem(
             std::size_t byteNumber,
             std::uint32_t address,
-            std::optional<ByteWidget*>& hoveredByteWidget,
-            QWidget* parent
+            std::optional<ByteItem*>& hoveredByteItem
         );
         void setValue(unsigned char value);
 
-    public slots:
-        void setSelected(bool selected);
+        [[nodiscard]] QRectF boundingRect() const override {
+            return QRectF(
+                0,
+                0,
+                ByteItem::WIDTH,
+                ByteItem::HEIGHT
+            );
+        }
+        void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     signals:
-        void selected(Bloom::Widgets::ByteWidget*);
-        void enter(Bloom::Widgets::ByteWidget*);
-        void leave(Bloom::Widgets::ByteWidget*);
-
-    protected:
-        virtual void postSetSelected(bool selected) {};
-        bool event(QEvent* event) override;
-        void paintEvent(QPaintEvent* event) override;
-        void drawWidget(QPainter& painter);
+        void selected(Bloom::Widgets::ByteItem*);
+        void enter(Bloom::Widgets::ByteItem*);
+        void leave(Bloom::Widgets::ByteItem*);
 
     private:
-        bool hoverActive = false;
         bool valueChanged = false;
 
         QString hexValue;
         std::optional<QString> asciiValue;
 
-        std::optional<ByteWidget*>& hoveredByteWidget;
+        std::optional<ByteItem*>& hoveredByteItem;
     };
 }

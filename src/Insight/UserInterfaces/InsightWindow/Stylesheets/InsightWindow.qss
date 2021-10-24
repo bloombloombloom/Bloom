@@ -179,6 +179,7 @@ QScrollBar:vertical {
 QScrollBar:handle:vertical {
     border: none;
     background-color: rgba(69, 69, 66, 0.6);
+    min-height: 30px;
 }
 
 QScrollBar:handle:vertical:hover {
@@ -379,26 +380,29 @@ QScrollBar::sub-line:vertical {
 }
 
 #hex-viewer-container QScrollArea,
-#hex-viewer-container #byte-widget-scroll-area-container {
+#hex-viewer-container #graphics-view-container,
+#hex-viewer-container #graphics-view-container #graphics-view {
     background-color: #323330;
+    border: none;
+    font-size: 11px;
+}
+
+#hex-viewer-container #graphics-view-container {
+    background-color: #50504b;
     border: none;
 }
 
-#hex-viewer-container #byte-widget-scroll-area-container #address-container {
+#hex-viewer-container #graphics-view-container #address-container {
     background-color: #353633;
     border-right: 1px solid #41423f;
 }
 
-#hex-viewer-container #byte-widget-scroll-area-container #address-container QLabel {
+#hex-viewer-container #graphics-view-container #address-container QLabel {
     background-color: transparent;
     font-size: 12px;
     color: rgba(175, 177, 179, 0.72);
 }
 
-#hex-viewer-container #byte-widget-scroll-area-container #address-container QLabel:disabled {
+#hex-viewer-container #graphics-view-container #address-container QLabel:disabled {
     color: rgba(175, 177, 179, 0.3);
-}
-
-#hex-viewer-container #byte {
-    font-size: 11px;
 }

@@ -1,4 +1,4 @@
-#include "ByteWidgetContainer.hpp"
+#include "ByteItemGraphicsScene.hpp"
 
 #include <QVBoxLayout>
 #include <QTableWidget>
@@ -6,30 +6,24 @@
 #include <QPainter>
 #include <cmath>
 
+#include "src/Logger/Logger.hpp"
+
 using namespace Bloom::Widgets;
 using namespace Bloom::Exceptions;
 
 using Bloom::Targets::TargetMemoryDescriptor;
 
-ByteWidgetContainer::ByteWidgetContainer(
+ByteItemGraphicsScene::ByteItemGraphicsScene(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
     InsightWorker& insightWorker,
     QLabel* hoveredAddressLabel,
     QWidget* parent
-): QWidget(parent),
+): QGraphicsScene(parent),
 targetMemoryDescriptor(targetMemoryDescriptor),
 insightWorker(insightWorker),
 hoveredAddressLabel(hoveredAddressLabel),
 parent(parent) {
     this->setObjectName("byte-widget-container");
-    this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
-
-    this->setContentsMargins(
-        10,
-        10,
-        10,
-        10
-    );
 
     /*
      * Construct ByteWidget objects
@@ -38,49 +32,45 @@ parent(parent) {
      */
     const auto memorySize = this->targetMemoryDescriptor.size();
     const auto startAddress = this->targetMemoryDescriptor.addressRange.startAddress;
+    Logger::error("Constructing bytes begin");
     for (std::size_t i = 0; i < memorySize; i++) {
         const auto address = static_cast<std::uint32_t>(startAddress + i);
 
-        auto byteWidget = new ByteWidget(i, address, this->hoveredByteWidget, this);
+        auto byteWidget = new ByteItem(i, address, this->hoveredByteWidget);
         this->byteWidgetsByAddress.insert(std::pair(
             address,
             byteWidget
         ));
 
-        QObject::connect(byteWidget, &ByteWidget::enter, this, &ByteWidgetContainer::onByteWidgetEnter);
-        QObject::connect(byteWidget, &ByteWidget::leave, this, &ByteWidgetContainer::onByteWidgetLeave);
+        this->addItem(byteWidget);
     }
+    Logger::error("Constructing bytes end");
+    this->adjustByteWidgets();
 
     QObject::connect(
         &insightWorker,
         &InsightWorker::targetStateUpdated,
         this,
-        &ByteWidgetContainer::onTargetStateChanged
+        &ByteItemGraphicsScene::onTargetStateChanged
     );
-
-    this->show();
 }
 
-void ByteWidgetContainer::updateValues(const Targets::TargetMemoryBuffer& buffer) {
+void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buffer) {
     for (auto& [address, byteWidget] : this->byteWidgetsByAddress) {
         byteWidget->setValue(buffer.at(byteWidget->byteIndex));
         byteWidget->update();
     }
 }
 
-void ByteWidgetContainer::resizeEvent(QResizeEvent* event) {
-    this->adjustByteWidgets();
-}
+void ByteItemGraphicsScene::adjustByteWidgets() {
+    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByRowIndex;
+    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByColumnIndex;
 
-void ByteWidgetContainer::adjustByteWidgets() {
-    std::map<std::size_t, std::vector<ByteWidget*>> byteWidgetsByRowIndex;
-    std::map<std::size_t, std::vector<ByteWidget*>> byteWidgetsByColumnIndex;
+    const auto margins = QMargins(10, 10, 10, 10);
+    const auto width = std::max(600, static_cast<int>(this->parent->width()));
 
-    const auto margins = this->contentsMargins();
-    const auto width = this->width();
-
-    constexpr auto byteWidgetWidth = ByteWidget::WIDTH + ByteWidget::RIGHT_MARGIN;
-    constexpr auto byteWidgetHeight = ByteWidget::HEIGHT + ByteWidget::BOTTOM_MARGIN;
+    constexpr auto byteWidgetWidth = ByteItem::WIDTH + ByteItem::RIGHT_MARGIN;
+    constexpr auto byteWidgetHeight = ByteItem::HEIGHT + ByteItem::BOTTOM_MARGIN;
     const auto rowCapacity = static_cast<std::size_t>(
         std::floor((width - margins.left() - margins.right()) / byteWidgetWidth)
     );
@@ -97,12 +87,10 @@ void ByteWidgetContainer::adjustByteWidgets() {
             - (std::floor(byteWidget->byteIndex / rowCapacity) * static_cast<double>(rowCapacity))
         );
 
-        byteWidget->setGeometry(QRect(
+        byteWidget->setPos(
             static_cast<int>(columnIndex * byteWidgetWidth + static_cast<std::size_t>(margins.left())),
-            static_cast<int>(rowIndex * byteWidgetHeight + static_cast<std::size_t>(margins.top())),
-            ByteWidget::WIDTH,
-            ByteWidget::HEIGHT
-        ));
+            static_cast<int>(rowIndex * byteWidgetHeight + static_cast<std::size_t>(margins.top()))
+        );
 
         byteWidget->currentRowIndex = static_cast<std::size_t>(rowIndex);
         byteWidget->currentColumnIndex = static_cast<std::size_t>(columnIndex);
@@ -114,8 +102,9 @@ void ByteWidgetContainer::adjustByteWidgets() {
     }
 
     const auto minHeight = (rowCount * byteWidgetHeight) + margins.top() + margins.bottom();
-    this->setMinimumHeight(minHeight);
-    this->parent->setMinimumHeight(minHeight);
+//    this->setMinimumHeight(minHeight);
+    this->setSceneRect(0, 0, width, minHeight);
+//    this->parent->setMinimumHeight(minHeight);
 
     this->byteWidgetsByRowIndex = std::move(byteWidgetsByRowIndex);
     this->byteWidgetsByColumnIndex = std::move(byteWidgetsByColumnIndex);
@@ -123,12 +112,22 @@ void ByteWidgetContainer::adjustByteWidgets() {
     emit this->byteWidgetsAdjusted();
 }
 
-void ByteWidgetContainer::onTargetStateChanged(Targets::TargetState newState) {
+void ByteItemGraphicsScene::onTargetStateChanged(Targets::TargetState newState) {
     using Targets::TargetState;
     this->targetState = newState;
 }
 
-void ByteWidgetContainer::onByteWidgetEnter(ByteWidget* widget) {
+void ByteItemGraphicsScene::onByteWidgetEnter(ByteItem* widget) {
+    if (this->hoveredByteWidget.has_value()) {
+        if (this->hoveredByteWidget.value() == widget) {
+            // This byte item is already marked as hovered
+            return;
+
+        } else {
+            this->onByteWidgetLeave();
+        }
+    }
+
     this->hoveredByteWidget = widget;
 
     this->hoveredAddressLabel->setText(
@@ -146,18 +145,33 @@ void ByteWidgetContainer::onByteWidgetEnter(ByteWidget* widget) {
     }
 }
 
-void ByteWidgetContainer::onByteWidgetLeave(ByteWidget* widget) {
+void ByteItemGraphicsScene::onByteWidgetLeave() {
+    const auto byteItem = this->hoveredByteWidget.value();
     this->hoveredByteWidget = std::nullopt;
 
     this->hoveredAddressLabel->setText("Relative Address (Absolute Address):");
 
     if (!this->byteWidgetsByRowIndex.empty()) {
-        for (auto& byteWidget : this->byteWidgetsByColumnIndex.at(widget->currentColumnIndex)) {
+        for (auto& byteWidget : this->byteWidgetsByColumnIndex.at(byteItem->currentColumnIndex)) {
             byteWidget->update();
         }
 
-        for (auto& byteWidget : this->byteWidgetsByRowIndex.at(widget->currentRowIndex)) {
+        for (auto& byteWidget : this->byteWidgetsByRowIndex.at(byteItem->currentRowIndex)) {
             byteWidget->update();
         }
+    }
+}
+
+void ByteItemGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) {
+    auto hoveredItems = this->items(mouseEvent->scenePos());
+    if (!hoveredItems.empty()) {
+        auto hoveredByteWidget = dynamic_cast<ByteItem*>(hoveredItems.at(0));
+
+        if (hoveredByteWidget != nullptr) {
+            this->onByteWidgetEnter(hoveredByteWidget);
+        }
+
+    } else if (this->hoveredByteWidget.has_value()) {
+        this->onByteWidgetLeave();
     }
 }

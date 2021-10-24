@@ -2,7 +2,7 @@
 
 #include <QWidget>
 #include <QLabel>
-#include <QToolButton>
+#include <QGraphicsView>
 #include <QVBoxLayout>
 #include <set>
 #include <map>
@@ -16,7 +16,7 @@
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
-#include "ByteWidgetContainer.hpp"
+#include "ByteItemContainerGraphicsView.hpp"
 
 namespace Bloom::Widgets
 {
@@ -46,7 +46,8 @@ namespace Bloom::Widgets
         QWidget* toolBar = nullptr;
         QWidget* bottomBar = nullptr;
 
-        ByteWidgetContainer* byteWidgetContainer = nullptr;
+        ByteItemContainerGraphicsView* byteItemGraphicsView = nullptr;
+        ByteItemGraphicsScene* byteItemGraphicsScene = nullptr;
         QWidget* byteWidgetScrollArea = nullptr;
         QWidget* byteWidgetAddressContainer = nullptr;
         QVBoxLayout* byteWidgetAddressLayout = nullptr;

@@ -1,7 +1,6 @@
 #include "HexViewerWidget.hpp"
 
 #include <QVBoxLayout>
-#include <QTableWidget>
 #include <QScrollBar>
 #include <QScrollArea>
 #include <QPainter>
@@ -11,6 +10,7 @@
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Exceptions/Exception.hpp"
+#include "src/Logger/Logger.hpp"
 
 using namespace Bloom::Widgets;
 using namespace Bloom::Exceptions;
@@ -53,35 +53,19 @@ HexViewerWidget::HexViewerWidget(
 
     this->hoveredAddressLabel = this->bottomBar->findChild<QLabel*>("byte-address-label");
 
-    this->byteWidgetScrollArea = this->container->findChild<QScrollArea*>("byte-widget-scroll-area");
-    auto byteWidgetScrollAreaWidgetContainer = this->byteWidgetScrollArea->findChild<QWidget*>(
-        "byte-widget-scroll-area-container"
+    auto byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
+    auto byteItemGraphicsViewLayout = byteItemGraphicsViewContainer->findChild<QVBoxLayout*>(
+        "byte-item-container-layout"
     );
-    auto byteWidgetScrollAreaHorizontalLayout = byteWidgetScrollAreaWidgetContainer->findChild<QHBoxLayout*>(
-        "byte-widget-scroll-area-horizontal-layout"
-    );
-
-    this->byteWidgetContainer = new ByteWidgetContainer(
+    this->byteItemGraphicsView = new ByteItemContainerGraphicsView(
         targetMemoryDescriptor,
         insightWorker,
         this->hoveredAddressLabel,
-        byteWidgetScrollAreaHorizontalLayout->parentWidget()
+        byteItemGraphicsViewContainer
     );
+    this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
+    byteItemGraphicsViewLayout->insertWidget(0, this->byteItemGraphicsView);
 
-    byteWidgetScrollAreaHorizontalLayout->addWidget(this->byteWidgetContainer);
-
-    this->byteWidgetAddressContainer = byteWidgetScrollAreaWidgetContainer->findChild<QWidget*>(
-        "address-container"
-    );
-    this->byteWidgetAddressLayout = this->byteWidgetAddressContainer->findChild<QVBoxLayout*>();
-    this->byteWidgetAddressLayout->setContentsMargins(5, 10, 0, 5);
-
-    QObject::connect(
-        this->byteWidgetContainer,
-        &ByteWidgetContainer::byteWidgetsAdjusted,
-        this,
-        &HexViewerWidget::onByteWidgetsAdjusted
-    );
     QObject::connect(
         &insightWorker,
         &InsightWorker::targetStateUpdated,
@@ -93,7 +77,7 @@ HexViewerWidget::HexViewerWidget(
 }
 
 void HexViewerWidget::updateValues(const Targets::TargetMemoryBuffer& buffer) {
-    this->byteWidgetContainer->updateValues(buffer);
+    this->byteItemGraphicsScene->updateValues(buffer);
 }
 
 void HexViewerWidget::resizeEvent(QResizeEvent* event) {
@@ -109,36 +93,36 @@ void HexViewerWidget::onTargetStateChanged(Targets::TargetState newState) {
 }
 
 void HexViewerWidget::onByteWidgetsAdjusted() {
-    const auto& byteWidgetsByRowIndex = this->byteWidgetContainer->byteWidgetsByRowIndex;
-
-    int layoutItemMaxIndex = this->byteWidgetAddressLayout->count() - 1;
-    for (const auto& mappingPair : byteWidgetsByRowIndex) {
-        const auto rowIndex = static_cast<int>(mappingPair.first);
-        const auto& byteWidgets = mappingPair.second;
-
-        if (byteWidgets.empty()) {
-            continue;
-        }
-
-        QLabel* labelWidget;
-        if (rowIndex > layoutItemMaxIndex) {
-            labelWidget = new QLabel(this->byteWidgetAddressContainer);
-            labelWidget->setFixedSize(75, 20);
-            labelWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
-            this->byteWidgetAddressLayout->addWidget(labelWidget);
-            layoutItemMaxIndex++;
-
-        } else {
-            labelWidget = qobject_cast<QLabel*>(this->byteWidgetAddressLayout->itemAt(rowIndex)->widget());
-        }
-
-        labelWidget->setText(byteWidgets.front()->relativeAddressHex);
-    }
-
-    const auto rowCount = static_cast<int>(byteWidgetsByRowIndex.size());
-    QLayoutItem* labelItem;
-    while ((labelItem = this->byteWidgetAddressLayout->takeAt(rowCount)) != nullptr) {
-        labelItem->widget()->deleteLater();
-    }
+//    const auto& byteWidgetsByRowIndex = this->byteWidgetContainer->byteWidgetsByRowIndex;
+//
+//    int layoutItemMaxIndex = this->byteWidgetAddressLayout->count() - 1;
+//    for (const auto& mappingPair : byteWidgetsByRowIndex) {
+//        const auto rowIndex = static_cast<int>(mappingPair.first);
+//        const auto& byteWidgets = mappingPair.second;
+//
+//        if (byteWidgets.empty()) {
+//            continue;
+//        }
+//
+//        QLabel* labelWidget;
+//        if (rowIndex > layoutItemMaxIndex) {
+//            labelWidget = new QLabel(this->byteWidgetAddressContainer);
+//            labelWidget->setFixedSize(75, 20);
+//            labelWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+//
+//            this->byteWidgetAddressLayout->addWidget(labelWidget);
+//            layoutItemMaxIndex++;
+//
+//        } else {
+//            labelWidget = qobject_cast<QLabel*>(this->byteWidgetAddressLayout->itemAt(rowIndex)->widget());
+//        }
+//
+//        labelWidget->setText(byteWidgets.front()->relativeAddressHex);
+//    }
+//
+//    const auto rowCount = static_cast<int>(byteWidgetsByRowIndex.size());
+//    QLayoutItem* labelItem;
+//    while ((labelItem = this->byteWidgetAddressLayout->takeAt(rowCount)) != nullptr) {
+//        labelItem->widget()->deleteLater();
+//    }
 }
