@@ -47,7 +47,7 @@ namespace Bloom
          *
          * @param jsonObject
          */
-        void init(QJsonObject jsonObject);
+        void init(const QJsonObject& jsonObject);
 
         /**
          * The name of the selected target.
@@ -78,7 +78,7 @@ namespace Bloom
          *
          * @param jsonObject
          */
-        void init(QJsonObject jsonObject);
+        void init(const QJsonObject& jsonObject);
 
         /**
          * The name of the selected debug tool.
@@ -107,7 +107,7 @@ namespace Bloom
          *
          * @param jsonObject
          */
-        void init(QJsonObject jsonObject);
+        void init(const QJsonObject& jsonObject);
 
         std::string name;
         QJsonObject jsonObject;
@@ -120,7 +120,7 @@ namespace Bloom
          *
          * @param jsonObject
          */
-        void init(QJsonObject jsonObject);
+        void init(const QJsonObject& jsonObject);
 
         bool insightEnabled = true;
     };
@@ -183,7 +183,7 @@ namespace Bloom
          *
          * @param jsonObject
          */
-        void init(QJsonObject jsonObject);
+        void init(const QJsonObject& jsonObject);
 
         /**
          * A mapping of environment names to EnvironmentConfig objects.

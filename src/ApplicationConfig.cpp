@@ -5,7 +5,7 @@
 
 using namespace Bloom;
 
-void ApplicationConfig::init(QJsonObject jsonObject) {
+void ApplicationConfig::init(const QJsonObject& jsonObject) {
     if (!jsonObject.contains("environments")) {
         throw Exceptions::InvalidConfig("No environments found.");
     }
@@ -43,7 +43,7 @@ void ApplicationConfig::init(QJsonObject jsonObject) {
     }
 }
 
-void InsightConfig::init(QJsonObject jsonObject) {
+void InsightConfig::init(const QJsonObject& jsonObject) {
     if (jsonObject.contains("enabled")) {
         this->insightEnabled = jsonObject.find("enabled").value().toBool();
     }
@@ -75,7 +75,7 @@ void EnvironmentConfig::init(std::string name, QJsonObject jsonObject) {
     }
 }
 
-void TargetConfig::init(QJsonObject jsonObject) {
+void TargetConfig::init(const QJsonObject& jsonObject) {
     if (!jsonObject.contains("name")) {
         throw Exceptions::InvalidConfig("No target name found.");
     }
@@ -89,7 +89,7 @@ void TargetConfig::init(QJsonObject jsonObject) {
     this->jsonObject = jsonObject;
 }
 
-void DebugToolConfig::init(QJsonObject jsonObject) {
+void DebugToolConfig::init(const QJsonObject& jsonObject) {
     if (!jsonObject.contains("name")) {
         throw Exceptions::InvalidConfig("No debug tool name found.");
     }
@@ -103,7 +103,7 @@ void DebugToolConfig::init(QJsonObject jsonObject) {
     this->jsonObject = jsonObject;
 }
 
-void DebugServerConfig::init(QJsonObject jsonObject) {
+void DebugServerConfig::init(const QJsonObject& jsonObject) {
     this->name = jsonObject.find("name")->toString().toLower().toStdString();
     this->jsonObject = jsonObject;
 }
