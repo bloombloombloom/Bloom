@@ -1,0 +1,22 @@
+Checks: >
+  -*,
+  bugprone-*,
+  cert-dcl21-cpp,
+  cert-dcl50-cpp,
+  cert-err52-cpp,
+  cert-err60-cpp,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-*,
+  google-explicit-constructor,
+  google-global-names-in-headers,
+  google-readability-casting,
+  google-runtime-int,
+  google-runtime-operator,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -readability-named-parameter
+CheckOptions:
+  - key: bugprone-argument-comment.StrictMode
+    value: 1
+FormatStyle: 'none'
