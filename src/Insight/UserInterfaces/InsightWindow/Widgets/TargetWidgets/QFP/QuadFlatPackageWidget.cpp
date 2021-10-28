@@ -58,7 +58,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
 
     const auto pinCountPerLayout = static_cast<int>(targetVariant.pinDescriptorsByNumber.size() / 4);
     for (const auto& [targetPinNumber, targetPinDescriptor]: targetVariant.pinDescriptorsByNumber) {
-        auto pinWidget = new PinWidget(targetPinDescriptor, targetVariant, insightWorker, this);
+        auto* pinWidget = new PinWidget(targetPinDescriptor, targetVariant, insightWorker, this);
         this->pinWidgets.push_back(pinWidget);
 
         if (targetPinNumber <= pinCountPerLayout) {

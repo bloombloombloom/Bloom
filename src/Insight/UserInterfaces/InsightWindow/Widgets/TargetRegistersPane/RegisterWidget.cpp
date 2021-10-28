@@ -95,12 +95,12 @@ void RegisterWidget::clearInlineValue() {
 void RegisterWidget::contextMenuEvent(QContextMenuEvent* event) {
     this->setSelected(true);
 
-    auto menu = new QMenu(this);
+    auto* menu = new QMenu(this);
     menu->addAction(this->openInspectionWindowAction);
     menu->addAction(this->refreshValueAction);
     menu->addSeparator();
 
-    auto copyMenu = new QMenu("Copy", this);
+    auto* copyMenu = new QMenu("Copy", this);
     copyMenu->addAction(this->copyValueNameAction);
     copyMenu->addSeparator();
     copyMenu->addAction(this->copyValueDecimalAction);
@@ -150,7 +150,7 @@ void RegisterWidget::openInspectionWindow() {
 }
 
 void RegisterWidget::refreshValue() {
-    auto readRegisterTask = new ReadTargetRegisters({this->descriptor});
+    auto* readRegisterTask = new ReadTargetRegisters({this->descriptor});
 
     QObject::connect(
         readRegisterTask,

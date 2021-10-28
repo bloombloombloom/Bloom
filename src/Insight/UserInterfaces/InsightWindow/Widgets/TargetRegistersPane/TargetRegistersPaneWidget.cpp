@@ -41,7 +41,7 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
     this->container = uiLoader.load(&targetRegistersPaneUiFile, this);
     this->container->setFixedSize(parent->width(), parent->maximumHeight());
 
-    auto layout = new QVBoxLayout(this);
+    auto* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(this->container);
 
@@ -74,7 +74,7 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
         registerDescriptors.at(TargetRegisterType::GENERAL_PURPOSE_REGISTER).end()
     );
 
-    auto generalPurposeRegisterGroupWidget = new RegisterGroupWidget(
+    auto* generalPurposeRegisterGroupWidget = new RegisterGroupWidget(
         "CPU General Purpose",
         this->renderedDescriptors,
         insightWorker,
@@ -94,7 +94,7 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
     }
 
     for (const auto& [groupName, registerDescriptors] : registerDescriptorsByGroupName) {
-        auto registerGroupWidget = new RegisterGroupWidget(
+        auto* registerGroupWidget = new RegisterGroupWidget(
             QString::fromStdString(groupName).toUpper(),
             registerDescriptors,
             insightWorker,
@@ -164,7 +164,7 @@ void TargetRegistersPaneWidget::refreshRegisterValues(std::optional<std::functio
         return;
     }
 
-    auto readRegisterTask = new ReadTargetRegisters(descriptors);
+    auto* readRegisterTask = new ReadTargetRegisters(descriptors);
     QObject::connect(
         readRegisterTask,
         &ReadTargetRegisters::targetRegistersRead,

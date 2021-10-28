@@ -40,7 +40,7 @@ DualInlinePackageWidget::DualInlinePackageWidget(
     this->bottomPinLayout->setAlignment(Qt::AlignmentFlag::AlignHCenter);
 
     for (const auto& [targetPinNumber, targetPinDescriptor]: targetVariant.pinDescriptorsByNumber) {
-        auto pinWidget = new PinWidget(targetPinDescriptor, targetVariant, insightWorker, this);
+        auto* pinWidget = new PinWidget(targetPinDescriptor, targetVariant, insightWorker, this);
         this->pinWidgets.push_back(pinWidget);
 
         if (targetPinNumber <= (targetVariant.pinDescriptorsByNumber.size() / 2)) {

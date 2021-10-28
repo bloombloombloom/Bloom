@@ -23,7 +23,7 @@ RegisterGroupWidget::RegisterGroupWidget(
 
     this->headerWidget->setObjectName("register-group-header");
     this->headerWidget->setFixedHeight(25);
-    auto headerLayout = new QHBoxLayout(this->headerWidget);
+    auto* headerLayout = new QHBoxLayout(this->headerWidget);
     headerLayout->setContentsMargins(5, 0, 0, 0);
 
     this->label->setText(this->name);
@@ -50,7 +50,7 @@ RegisterGroupWidget::RegisterGroupWidget(
     headerLayout->addWidget(this->registerGroupIcon);
     headerLayout->addWidget(this->label);
 
-    auto bodyLayout = new QVBoxLayout(this->bodyWidget);
+    auto* bodyLayout = new QVBoxLayout(this->bodyWidget);
     bodyLayout->setContentsMargins(0, 0,0,0);
     bodyLayout->setSpacing(0);
 
@@ -63,7 +63,7 @@ RegisterGroupWidget::RegisterGroupWidget(
             continue;
         }
 
-        auto registerWidget = new RegisterWidget(descriptor, insightWorker, this->bodyWidget);
+        auto* registerWidget = new RegisterWidget(descriptor, insightWorker, this->bodyWidget);
         bodyLayout->addWidget(registerWidget, 0, Qt::AlignmentFlag::AlignTop);
 
         QObject::connect(

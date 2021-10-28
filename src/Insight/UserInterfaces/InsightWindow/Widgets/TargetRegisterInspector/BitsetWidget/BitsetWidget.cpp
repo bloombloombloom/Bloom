@@ -13,7 +13,7 @@ using namespace Bloom::Widgets;
 BitsetWidget::BitsetWidget(int byteNumber, unsigned char& byte, bool readOnly, QWidget* parent):
 QWidget(parent), byteNumber(byteNumber), byte(byte), readOnly(readOnly) {
     this->setObjectName("bitset-widget");
-    auto bitLayout = new QHBoxLayout(this);
+    auto* bitLayout = new QHBoxLayout(this);
     bitLayout->setSpacing(BitWidget::SPACING);
     bitLayout->setContentsMargins(0, 0, 0, 0);
     this->setContentsMargins(0, 0, 0, 0);
@@ -23,7 +23,7 @@ QWidget(parent), byteNumber(byteNumber), byte(byte), readOnly(readOnly) {
     );
 
     for (int bitIndex = (std::numeric_limits<unsigned char>::digits - 1); bitIndex >= 0; bitIndex--) {
-        auto bitWidget = new BitWidget(
+        auto* bitWidget = new BitWidget(
             bitIndex,
             (this->byteNumber * 8) + bitIndex,
             this->bitset,

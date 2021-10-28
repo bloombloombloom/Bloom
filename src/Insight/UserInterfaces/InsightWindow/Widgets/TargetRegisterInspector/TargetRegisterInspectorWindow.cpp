@@ -139,14 +139,14 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
      * Each row of the BitsetWidget container should hold two BitsetWidgets. So we have a horizontal layout nested
      * within a vertical layout.
      */
-    auto bitsetSingleHorizontalLayout = new QHBoxLayout();
+    auto* bitsetSingleHorizontalLayout = new QHBoxLayout();
     bitsetSingleHorizontalLayout->setSpacing(BitWidget::SPACING);
     bitsetSingleHorizontalLayout->setContentsMargins(0, 0, 0, 0);
 
     // The register value will be in MSB, which is OK for us as we present the bit widgets in MSB.
     auto byteNumber = static_cast<int>(this->registerValue.size() - 1);
     for (std::uint32_t registerByteIndex = 0; registerByteIndex < this->registerValue.size(); registerByteIndex++) {
-        auto bitsetWidget = new BitsetWidget(
+        auto* bitsetWidget = new BitsetWidget(
             byteNumber,
             this->registerValue.at(registerByteIndex),
             !this->registerDescriptor.writable,
@@ -308,7 +308,7 @@ void TargetRegisterInspectorWindow::updateValue() {
 
 void TargetRegisterInspectorWindow::refreshRegisterValue() {
     this->registerValueContainer->setDisabled(true);
-    auto readTargetRegisterTask = new ReadTargetRegisters({this->registerDescriptor});
+    auto* readTargetRegisterTask = new ReadTargetRegisters({this->registerDescriptor});
 
     QObject::connect(
         readTargetRegisterTask,
@@ -340,7 +340,7 @@ void TargetRegisterInspectorWindow::refreshRegisterValue() {
 void TargetRegisterInspectorWindow::applyChanges() {
     this->registerValueContainer->setDisabled(true);
     const auto targetRegister = Targets::TargetRegister(this->registerDescriptor, this->registerValue);
-    auto writeRegisterTask = new WriteTargetRegister(targetRegister);
+    auto* writeRegisterTask = new WriteTargetRegister(targetRegister);
 
     QObject::connect(writeRegisterTask, &InsightWorkerTask::completed, this, [this, targetRegister] {
         this->registerValueContainer->setDisabled(false);
@@ -354,7 +354,7 @@ void TargetRegisterInspectorWindow::applyChanges() {
 
     QObject::connect(writeRegisterTask, &InsightWorkerTask::failed, this, [this] (QString errorMessage) {
         this->registerValueContainer->setDisabled(false);
-        auto errorDialogue = new ErrorDialogue(
+        auto* errorDialogue = new ErrorDialogue(
             "Error",
             "Failed to update " + QString::fromStdString(
                 this->registerDescriptor.name.value_or("")

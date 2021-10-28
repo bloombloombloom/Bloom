@@ -113,7 +113,7 @@ void Insight::startup() {
      *
      * This allows us to use Qt's event loop whilst still being able to process our own events.
      */
-    auto eventDispatchTimer = new QTimer(&(this->application));
+    auto* eventDispatchTimer = new QTimer(&(this->application));
     QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
     eventDispatchTimer->start(100);
 
@@ -163,7 +163,7 @@ void Insight::shutdown() {
 void Insight::checkBloomVersion() {
     auto currentVersionNumber = Application::VERSION;
 
-    auto versionQueryTask = new QueryLatestVersionNumber(
+    auto* versionQueryTask = new QueryLatestVersionNumber(
         currentVersionNumber
     );
 

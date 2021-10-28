@@ -10,7 +10,7 @@
 using namespace Bloom;
 
 void QueryLatestVersionNumber::run(TargetControllerConsole& targetControllerConsole) {
-    auto networkAccessManager = new QNetworkAccessManager(this);
+    auto* networkAccessManager = new QNetworkAccessManager(this);
     auto queryVersionEndpointUrl = QUrl("http://bloom.local/latest-version");
     queryVersionEndpointUrl.setQuery(QUrlQuery({
         {"currentVersionNumber", QString::fromStdString(this->currentVersionNumber.toString())}

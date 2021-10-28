@@ -74,7 +74,7 @@ PinWidget::PinWidget(
     this->layout->addSpacing(3);
 
     if (this->isLeftLayout || this->isRightLayout) {
-        auto stackedLabelLayout = new QVBoxLayout();
+        auto* stackedLabelLayout = new QVBoxLayout();
         stackedLabelLayout->addWidget(this->pinNameLabel);
         stackedLabelLayout->addSpacing(2);
         stackedLabelLayout->addWidget(this->pinNumberLabel);

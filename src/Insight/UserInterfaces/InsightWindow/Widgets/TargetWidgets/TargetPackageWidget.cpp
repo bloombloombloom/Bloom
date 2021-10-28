@@ -32,7 +32,7 @@ TargetPackageWidget::TargetPackageWidget(
 }
 
 void TargetPackageWidget::refreshPinStates(std::optional<std::function<void(void)>> callback) {
-    auto refreshTask = new RefreshTargetPinStates(this->targetVariant.id);
+    auto* refreshTask = new RefreshTargetPinStates(this->targetVariant.id);
     QObject::connect(
         refreshTask,
         &RefreshTargetPinStates::targetPinStatesRetrieved,

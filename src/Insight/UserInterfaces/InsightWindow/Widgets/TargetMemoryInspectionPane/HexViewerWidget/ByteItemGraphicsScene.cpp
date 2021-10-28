@@ -36,7 +36,7 @@ parent(parent) {
     for (std::size_t i = 0; i < memorySize; i++) {
         const auto address = static_cast<std::uint32_t>(startAddress + i);
 
-        auto byteWidget = new ByteItem(i, address, this->hoveredByteWidget);
+        auto* byteWidget = new ByteItem(i, address, this->hoveredByteWidget);
         this->byteWidgetsByAddress.insert(std::pair(
             address,
             byteWidget

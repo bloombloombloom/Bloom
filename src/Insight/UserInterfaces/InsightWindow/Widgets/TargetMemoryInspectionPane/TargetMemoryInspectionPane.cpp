@@ -72,7 +72,7 @@ TargetMemoryInspectionPane::TargetMemoryInspectionPane(
 void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function<void(void)>> callback) {
     this->hexViewerWidget->refreshButton->setDisabled(true);
 
-    auto readMemoryTask = new ReadTargetMemory(
+    auto* readMemoryTask = new ReadTargetMemory(
         this->targetMemoryDescriptor.type,
         this->targetMemoryDescriptor.addressRange.startAddress,
         this->targetMemoryDescriptor.size()

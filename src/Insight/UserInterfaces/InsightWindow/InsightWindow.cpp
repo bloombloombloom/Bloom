@@ -120,7 +120,7 @@ InsightWindow::InsightWindow(InsightWorker& insightWorker): QMainWindow(nullptr)
 
     this->targetRegistersButton = this->container->findChild<QToolButton*>("target-registers-btn");
     auto targetRegisterButtonLayout = this->targetRegistersButton->findChild<QVBoxLayout*>();
-    auto registersBtnLabel = new RotatableLabel(270, "Registers", this->targetRegistersButton);
+    auto* registersBtnLabel = new RotatableLabel(270, "Registers", this->targetRegistersButton);
     registersBtnLabel->setObjectName("target-registers-btn-label");
     registersBtnLabel->setContentsMargins(5,0,9,0);
     targetRegisterButtonLayout->insertWidget(0, registersBtnLabel, 0, Qt::AlignTop);
@@ -415,7 +415,7 @@ void InsightWindow::activate() {
             continue;
         }
 
-        auto variantAction = new QAction(this->variantMenu);
+        auto* variantAction = new QAction(this->variantMenu);
         variantAction->setText(
             QString::fromStdString(targetVariant.name + " (" + targetVariant.packageName + ")")
         );

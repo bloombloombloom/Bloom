@@ -27,7 +27,7 @@ RegisterHistoryItem::RegisterHistoryItem(
     this->descriptionLayout->setText("Register Written");
     this->descriptionLayout->setObjectName("description-label");
 
-    auto subLabelLayout = new QHBoxLayout();
+    auto* subLabelLayout = new QHBoxLayout();
     subLabelLayout->setSpacing(0);
     subLabelLayout->setContentsMargins(0, 0, 0, 0);
     subLabelLayout->addWidget(this->valueLabel, 0, Qt::AlignmentFlag::AlignLeft);

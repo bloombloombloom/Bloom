@@ -35,7 +35,7 @@ void TargetPinWidget::onWidgetBodyClicked() {
         pinState.ioState = (pinState.ioState == TargetPinState::IoState::HIGH) ?
             TargetPinState::IoState::LOW : TargetPinState::IoState::HIGH;
 
-        auto setPinStateTask = new SetTargetPinState(this->pinDescriptor, pinState);
+        auto* setPinStateTask = new SetTargetPinState(this->pinDescriptor, pinState);
         QObject::connect(setPinStateTask, &InsightWorkerTask::completed, this, [this, pinState] {
             this->updatePinState(pinState);
             this->setDisabled(false);

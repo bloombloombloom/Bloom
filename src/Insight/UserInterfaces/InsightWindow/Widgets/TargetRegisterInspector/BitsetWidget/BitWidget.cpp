@@ -17,7 +17,7 @@ BitWidget::BitWidget(
 ): QWidget(parent), bitIndex(bitIndex), bitNumber(bitNumber), bitset(bitset), readOnly(readOnly) {
     this->setFixedSize(BitWidget::WIDTH, BitWidget::HEIGHT);
 
-    auto layout = new QVBoxLayout(this);
+    auto* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setAlignment(Qt::AlignmentFlag::AlignTop);

@@ -71,9 +71,9 @@ RegisterHistoryWidget::RegisterHistoryWidget(
     this->itemContainerLayout->addWidget(this->currentItem);
     this->currentItem->setSelected(true);
 
-    auto separatorWidget = new QWidget(this);
-    auto separatorLayout = new QHBoxLayout(separatorWidget);
-    auto separatorLabel = new QLabel("Select an item to restore", separatorWidget);
+    auto* separatorWidget = new QWidget(this);
+    auto* separatorLayout = new QHBoxLayout(separatorWidget);
+    auto* separatorLabel = new QLabel("Select an item to restore", separatorWidget);
     separatorWidget->setFixedHeight(40);
     separatorWidget->setObjectName("separator-widget");
     separatorLayout->setContentsMargins(0, 10, 0, 10);
@@ -97,7 +97,7 @@ void RegisterHistoryWidget::selectCurrentItem() {
 }
 
 void RegisterHistoryWidget::addItem(const Targets::TargetMemoryBuffer& registerValue, const QDateTime& changeDate) {
-    auto item = new RegisterHistoryItem(registerValue, changeDate, this->itemContainer);
+    auto* item = new RegisterHistoryItem(registerValue, changeDate, this->itemContainer);
     QObject::connect(item, &Item::selected, this, &RegisterHistoryWidget::onItemSelectionChange);
     this->itemContainerLayout->insertWidget(2, item);
 }
