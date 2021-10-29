@@ -36,8 +36,8 @@ parent(parent) {
     const auto memorySize = this->targetMemoryDescriptor.size();
     const auto startAddress = this->targetMemoryDescriptor.addressRange.startAddress;
     Logger::error("Constructing bytes begin");
-    for (std::size_t i = 0; i < memorySize; i++) {
-        const auto address = static_cast<std::uint32_t>(startAddress + i);
+    for (std::uint32_t i = 0; i < memorySize; i++) {
+        const auto address = startAddress + i;
 
         auto* byteWidget = new ByteItem(i, address, this->hoveredByteWidget);
         this->byteWidgetsByAddress.insert(std::pair(
@@ -87,7 +87,7 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
         );
         const auto columnIndex = static_cast<std::size_t>(
             static_cast<double>(byteWidget->byteIndex)
-            - (std::floor(byteWidget->byteIndex / rowCapacity) * static_cast<double>(rowCapacity))
+                - (std::floor(byteWidget->byteIndex / rowCapacity) * static_cast<double>(rowCapacity))
         );
 
         byteWidget->setPos(

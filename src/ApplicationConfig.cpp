@@ -58,7 +58,7 @@ void EnvironmentConfig::init(std::string name, QJsonObject jsonObject) {
         throw Exceptions::InvalidConfig("No target configuration provided.");
     }
 
-    this->name = name;
+    this->name = std::move(name);
     this->debugToolConfig.init(jsonObject.find("debugTool")->toObject());
     this->targetConfig.init(jsonObject.find("target")->toObject());
 

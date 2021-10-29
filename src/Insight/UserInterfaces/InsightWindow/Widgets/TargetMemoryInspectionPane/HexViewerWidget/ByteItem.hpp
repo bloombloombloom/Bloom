@@ -29,7 +29,7 @@ namespace Bloom::Widgets
         std::size_t currentColumnIndex = 0;
 
         ByteItem(
-            std::size_t byteNumber,
+            std::size_t byteIndex,
             std::uint32_t address,
             std::optional<ByteItem*>& hoveredByteItem
         );
@@ -44,11 +44,6 @@ namespace Bloom::Widgets
             );
         }
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-
-    signals:
-        void selected(Bloom::Widgets::ByteItem*);
-        void enter(Bloom::Widgets::ByteItem*);
-        void leave(Bloom::Widgets::ByteItem*);
 
     private:
         bool valueChanged = false;
