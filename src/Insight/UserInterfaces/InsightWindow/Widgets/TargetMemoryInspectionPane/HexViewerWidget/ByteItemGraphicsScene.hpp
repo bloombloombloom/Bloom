@@ -18,6 +18,7 @@
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
 #include "ByteItem.hpp"
+#include "ByteAddressContainer.hpp"
 
 namespace Bloom::Widgets
 {
@@ -56,6 +57,8 @@ namespace Bloom::Widgets
 
         QWidget* parent = nullptr;
         QLabel* hoveredAddressLabel = nullptr;
+
+        ByteAddressContainer* byteAddressContainer = nullptr;
 
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);

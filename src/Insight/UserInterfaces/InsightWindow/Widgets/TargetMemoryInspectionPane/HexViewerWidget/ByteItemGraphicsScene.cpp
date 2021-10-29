@@ -25,6 +25,9 @@ hoveredAddressLabel(hoveredAddressLabel),
 parent(parent) {
     this->setObjectName("byte-widget-container");
 
+    this->byteAddressContainer = new ByteAddressContainer();
+    this->addItem(this->byteAddressContainer);
+
     /*
      * Construct ByteWidget objects
      *
@@ -72,7 +75,7 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
     constexpr auto byteWidgetWidth = ByteItem::WIDTH + ByteItem::RIGHT_MARGIN;
     constexpr auto byteWidgetHeight = ByteItem::HEIGHT + ByteItem::BOTTOM_MARGIN;
     const auto rowCapacity = static_cast<std::size_t>(
-        std::floor((width - margins.left() - margins.right()) / byteWidgetWidth)
+        std::floor((width - margins.left() - margins.right() - ByteAddressContainer::WIDTH) / byteWidgetWidth)
     );
     const auto rowCount = static_cast<int>(
         std::ceil(static_cast<double>(this->byteWidgetsByAddress.size()) / static_cast<double>(rowCapacity))
@@ -88,7 +91,7 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
         );
 
         byteWidget->setPos(
-            static_cast<int>(columnIndex * byteWidgetWidth + static_cast<std::size_t>(margins.left())),
+            static_cast<int>(columnIndex * byteWidgetWidth + margins.left() + ByteAddressContainer::WIDTH),
             static_cast<int>(rowIndex * byteWidgetHeight + static_cast<std::size_t>(margins.top()))
         );
 
@@ -109,7 +112,7 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
     this->byteWidgetsByRowIndex = std::move(byteWidgetsByRowIndex);
     this->byteWidgetsByColumnIndex = std::move(byteWidgetsByColumnIndex);
 
-    emit this->byteWidgetsAdjusted();
+    this->byteAddressContainer->adjustAddressLabels(this->byteWidgetsByRowIndex);
 }
 
 void ByteItemGraphicsScene::onTargetStateChanged(Targets::TargetState newState) {
