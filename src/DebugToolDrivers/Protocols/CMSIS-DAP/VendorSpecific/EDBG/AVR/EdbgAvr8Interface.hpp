@@ -157,6 +157,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     {
                         {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
                         {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                     }
                 },
                 {
@@ -164,6 +165,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     {
                         {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
                         {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                     }
                 },
                 {
