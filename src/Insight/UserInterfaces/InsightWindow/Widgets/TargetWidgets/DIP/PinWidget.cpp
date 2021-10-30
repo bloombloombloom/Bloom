@@ -9,7 +9,8 @@ PinWidget::PinWidget(
     InsightWorker& insightWorker,
     QWidget* parent
 ): TargetPinWidget(pinDescriptor, targetVariant, insightWorker, parent) {
-    this->setFixedSize(PinWidget::MINIMUM_WIDTH + PinWidget::WIDTH_SPACING, PinWidget::MAXIMUM_HEIGHT);
+    static constexpr auto width = PinWidget::MINIMUM_WIDTH + PinWidget::WIDTH_SPACING;
+    this->setFixedSize(width, PinWidget::MAXIMUM_HEIGHT);
 
     this->layout = new QVBoxLayout();
     this->layout->setContentsMargins(0, 0, 0, 0);
@@ -38,6 +39,7 @@ PinWidget::PinWidget(
     this->pinNameLabel->setText(pinName);
     this->pinNameLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
     this->pinNameLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    this->pinNameLabel->setFixedWidth(width);
 
     this->pinNumberLabel = new QLabel(this);
     this->pinNumberLabel->setObjectName("target-pin-number");
