@@ -66,9 +66,6 @@ void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buff
 }
 
 void ByteItemGraphicsScene::adjustByteWidgets() {
-    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByRowIndex;
-    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByColumnIndex;
-
     const auto margins = QMargins(10, 10, 10, 10);
     const auto width = std::max(600, static_cast<int>(this->parent->width()));
 
@@ -80,6 +77,21 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
     const auto rowCount = static_cast<int>(
         std::ceil(static_cast<double>(this->byteWidgetsByAddress.size()) / static_cast<double>(rowCapacity))
     );
+
+    this->setSceneRect(
+        0,
+        0,
+        width,
+        (rowCount * byteWidgetHeight) + margins.top() + margins.bottom()
+    );
+
+    // Don't bother recalculating the byte item positions if the number of rows have not changed.
+    if (rowCount == this->byteWidgetsByRowIndex.size()) {
+        return;
+    }
+
+    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByRowIndex;
+    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByColumnIndex;
 
     for (auto& [address, byteWidget] : this->byteWidgetsByAddress) {
         const auto rowIndex = static_cast<std::size_t>(
@@ -103,11 +115,6 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
 
         byteWidget->update();
     }
-
-    const auto minHeight = (rowCount * byteWidgetHeight) + margins.top() + margins.bottom();
-//    this->setMinimumHeight(minHeight);
-    this->setSceneRect(0, 0, width, minHeight);
-//    this->parent->setMinimumHeight(minHeight);
 
     this->byteWidgetsByRowIndex = std::move(byteWidgetsByRowIndex);
     this->byteWidgetsByColumnIndex = std::move(byteWidgetsByColumnIndex);
