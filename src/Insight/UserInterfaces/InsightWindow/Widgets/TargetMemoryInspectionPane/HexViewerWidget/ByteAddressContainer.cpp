@@ -18,9 +18,9 @@ void ByteAddressContainer::adjustAddressLabels(
 ) {
     static const auto margins = QMargins(0, 10, 0, 0);
 
-    const auto rowCount = byteItemsByRowIndex.size();
-    const auto addressLabelCount = this->addressItemsByRowIndex.size();
-    const auto layoutItemMaxIndex = static_cast<int>(addressLabelCount - 1);
+    const auto newRowCount = byteItemsByRowIndex.size();
+    const auto layoutItemMaxIndex = static_cast<int>(this->addressItemsByRowIndex.size() - 1);
+
     for (const auto& mappingPair : byteItemsByRowIndex) {
         const auto rowIndex = static_cast<std::size_t>(mappingPair.first);
         const auto& byteWidgets = mappingPair.second;
@@ -45,9 +45,11 @@ void ByteAddressContainer::adjustAddressLabels(
         );
     }
 
-    if (rowCount > 0 && rowCount > byteItemsByRowIndex.size()) {
-        const auto rowCount = static_cast<int>(byteItemsByRowIndex.size());
-        for (std::size_t i = rowCount - 1; i >= rowCount; i--) {
+    // Delete any address items we no longer need
+    const auto addressItemCount = this->addressItemsByRowIndex.size();
+
+    if (newRowCount > 0 && newRowCount < addressItemCount) {
+        for (auto i = (addressItemCount - 1); i >= newRowCount; i--) {
             delete this->addressItemsByRowIndex.at(i);
             this->addressItemsByRowIndex.erase(i);
         }
