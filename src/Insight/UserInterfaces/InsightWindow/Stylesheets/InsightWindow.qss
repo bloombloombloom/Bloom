@@ -399,7 +399,7 @@ QScrollBar::sub-line:vertical {
 
 #hex-viewer-container #graphics-view-container #address-container QLabel {
     background-color: transparent;
-    font-size: 12px;
+    font-size: 5px;
     color: rgba(175, 177, 179, 0.72);
 }
 
