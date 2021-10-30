@@ -172,6 +172,14 @@ void ByteItemGraphicsScene::onByteWidgetLeave() {
     }
 }
 
+bool ByteItemGraphicsScene::event(QEvent* event) {
+    if (event->type() == QEvent::Type::GraphicsSceneLeave && this->hoveredByteWidget.has_value()) {
+        this->onByteWidgetLeave();
+    }
+
+    return QGraphicsScene::event(event);
+}
+
 void ByteItemGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) {
     auto hoveredItems = this->items(mouseEvent->scenePos());
     if (!hoveredItems.empty()) {

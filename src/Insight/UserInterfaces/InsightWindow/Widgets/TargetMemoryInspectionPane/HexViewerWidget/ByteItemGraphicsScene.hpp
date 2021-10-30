@@ -48,6 +48,7 @@ namespace Bloom::Widgets
         void byteWidgetsAdjusted();
 
     protected:
+        bool event(QEvent* event) override;
         void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
 
     private:
