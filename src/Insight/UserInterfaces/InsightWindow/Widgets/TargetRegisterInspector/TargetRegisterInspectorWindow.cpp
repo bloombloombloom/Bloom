@@ -123,6 +123,8 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
     );
 
     this->registerValueTextInput->setFixedWidth(BitsetWidget::WIDTH * 2);
+    this->registerValueTextInput->setContextMenuPolicy(Qt::NoContextMenu);
+
     if (!this->registerDescriptor.writable) {
         this->registerValueTextInput->setDisabled(true);
         this->applyButton->setVisible(false);
