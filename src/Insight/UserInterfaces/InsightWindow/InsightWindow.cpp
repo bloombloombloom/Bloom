@@ -184,7 +184,7 @@ void InsightWindow::onTargetProgramCounterUpdate(quint32 programCounter) {
 }
 
 void InsightWindow::openReportIssuesUrl() {
-    auto url = QUrl("https://bloom.oscillate.io/report-issue");
+    auto url = QUrl(QString::fromStdString(Paths::homeDomainName() + "/report-issue"));
     /*
      * The https://bloom.oscillate.io/report-issue URL just redirects to the Bloom GitHub issue page.
      *
@@ -209,7 +209,7 @@ void InsightWindow::openReportIssuesUrl() {
 }
 
 void InsightWindow::openGettingStartedUrl() {
-    QDesktopServices::openUrl(QUrl("https://bloom.oscillate.io/docs/getting-started"));
+    QDesktopServices::openUrl(QUrl(QString::fromStdString(Paths::homeDomainName() + "/docs/getting-started")));
 }
 
 void InsightWindow::openAboutWindow() {

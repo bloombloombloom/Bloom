@@ -44,6 +44,12 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     # See Paths::compiledResourcesPath() for more.
     add_compile_definitions(BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE="${CMAKE_CURRENT_SOURCE_DIR}")
 
+    # BLOOM_HOME_DOMAIN_NAME_OVERRIDE can be used to override the domain name used in URLs to the Bloom website.
+    # I (Nav) use this in debug builds, so I can test local changes that involve the Bloom website as well as Bloom
+    # itself. Other users can comment out this override if they don't have a copy of the Bloom website running on their
+    # local machine. See Paths::homeDomainName() for more.
+    add_compile_definitions(BLOOM_HOME_DOMAIN_NAME_OVERRIDE="http://bloom.local")
+
     # CMAKE_SKIP_BUILD_RPATH needs to be set to true to use Gammaray during development.
     # This is because the distributed Qt binaries may not be compatible with the local installation of Gammaray
     set(CMAKE_BUILD_RPATH /opt/Qt/6.1.2/gcc_64/lib/)

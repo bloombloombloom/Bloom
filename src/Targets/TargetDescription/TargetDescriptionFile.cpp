@@ -5,6 +5,7 @@
 
 #include "Exceptions/TargetDescriptionParsingFailureException.hpp"
 #include "src/Logger/Logger.hpp"
+#include "src/Helpers/Paths.hpp"
 
 using namespace Bloom::Targets::TargetDescription;
 using namespace Bloom::Exceptions;
@@ -24,7 +25,7 @@ void TargetDescriptionFile::init(const QString& xmlFilePath) {
     auto xml = QDomDocument();
     if (!xml.setContent(file.readAll())) {
         throw Exception("Failed to parse target description file - please report this error "
-            "to Bloom developers via https://bloom.oscillate.io/report-issue");
+            "to Bloom developers via " + Paths::homeDomainName() + "/report-issue");
     }
 
     this->init(xml);

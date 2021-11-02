@@ -8,6 +8,7 @@
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Exceptions/Avr8CommandFailure.hpp"
 #include "src/Logger/Logger.hpp"
+#include "src/Helpers/Paths.hpp"
 
 // Command frames
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/SetParameter.hpp"
@@ -72,13 +73,13 @@ void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
         if (this->physicalInterface == PhysicalInterface::JTAG) {
             throw InvalidConfig("The JTAG physical interface cannot be used with an ambiguous target name"
                 " - please specify the exact name of the target in your configuration file. "
-                "See https://bloom.oscillate.io/docs/supported-targets"
+                "See " + Paths::homeDomainName() + "/docs/supported-targets"
             );
 
         } else if (this->physicalInterface == PhysicalInterface::UPDI) {
             throw InvalidConfig("The UPDI physical interface cannot be used with an ambiguous target name"
                 " - please specify the exact name of the target in your configuration file. "
-                "See https://bloom.oscillate.io/docs/supported-targets"
+                "See " + Paths::homeDomainName() + "/docs/supported-targets"
             );
         }
     }

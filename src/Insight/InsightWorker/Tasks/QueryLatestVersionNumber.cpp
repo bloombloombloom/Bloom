@@ -7,11 +7,13 @@
 #include <QUrlQuery>
 #include <QJsonDocument>
 
+#include "src/Helpers/Paths.hpp"
+
 using namespace Bloom;
 
 void QueryLatestVersionNumber::run(TargetControllerConsole& targetControllerConsole) {
     auto* networkAccessManager = new QNetworkAccessManager(this);
-    auto queryVersionEndpointUrl = QUrl("http://bloom.local/latest-version");
+    auto queryVersionEndpointUrl = QUrl(QString::fromStdString(Paths::homeDomainName() + "/latest-version"));
     queryVersionEndpointUrl.setQuery(QUrlQuery({
         {"currentVersionNumber", QString::fromStdString(this->currentVersionNumber.toString())}
     }));

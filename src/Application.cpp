@@ -204,7 +204,9 @@ int Application::presentHelpText() {
 
     if (!helpFile.open(QIODevice::ReadOnly)) {
         // This should never happen - if it does, something has gone very wrong
-        throw Exception("Failed to open help file - please report this issue at https://bloom.oscillate.io/report-issue");
+        throw Exception(
+            "Failed to open help file - please report this issue at " + Paths::homeDomainName() + "/report-issue"
+        );
     }
 
     std::cout << "Bloom v" << Application::VERSION.toString() << "\n";
@@ -221,7 +223,7 @@ int Application::presentVersionText() {
     std::cout << "DEBUG BUILD - Compilation timestamp: " << __DATE__ << " " << __TIME__ << "\n";
 #endif
 
-    std::cout << "https://bloom.oscillate.io/\n";
+    std::cout << Paths::homeDomainName() + "/\n";
     std::cout << "Nav Mohammed\n";
     return EXIT_SUCCESS;
 }
@@ -246,7 +248,10 @@ int Application::initProject() {
     );
 
     if (!templateConfigFile.open(QIODevice::ReadOnly)) {
-        throw Exception("Failed to open template configuration file - please report this issue at https://bloom.oscillate.io/report-issue");
+        throw Exception(
+            "Failed to open template configuration file - please report this issue at "
+                + Paths::homeDomainName() + "/report-issue"
+        );
     }
 
     if (!configFile.open(QIODevice::ReadWrite)) {

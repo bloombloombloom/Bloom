@@ -175,7 +175,7 @@ void Insight::checkBloomVersion() {
             if (latestVersionNumber > currentVersionNumber) {
                 Logger::warning(
                     "Bloom v" + latestVersionNumber.toString()
-                        + " is available to download - upgrade via https://bloom.oscillate.io"
+                        + " is available to download - upgrade via " + Paths::homeDomainName()
                 );
             }
         }
