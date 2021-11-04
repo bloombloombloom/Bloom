@@ -19,11 +19,10 @@ namespace Bloom::Widgets
         static constexpr int BOTTOM_MARGIN = 5;
 
         std::size_t byteIndex;
-        unsigned char value = 0x00;
         std::uint32_t address = 0x00;
+
         QString addressHex;
         QString relativeAddressHex;
-        bool valueInitialised = false;
 
         std::size_t currentRowIndex = 0;
         std::size_t currentColumnIndex = 0;
@@ -33,6 +32,7 @@ namespace Bloom::Widgets
             std::uint32_t address,
             std::optional<ByteItem*>& hoveredByteItem
         );
+
         void setValue(unsigned char value);
 
         [[nodiscard]] QRectF boundingRect() const override {
@@ -46,6 +46,8 @@ namespace Bloom::Widgets
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     private:
+        unsigned char value = 0x00;
+        bool valueInitialised = false;
         bool valueChanged = false;
 
         QString hexValue;

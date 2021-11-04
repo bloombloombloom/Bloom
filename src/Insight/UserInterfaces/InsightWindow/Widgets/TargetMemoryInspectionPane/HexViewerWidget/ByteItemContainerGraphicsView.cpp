@@ -35,6 +35,14 @@ ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
     this->setScene(this->scene);
 }
 
+bool ByteItemContainerGraphicsView::event(QEvent* event) {
+    if (event->type() == QEvent::Type::EnabledChange) {
+        this->scene->setEnabled(this->isEnabled());
+    }
+
+    return QGraphicsView::event(event);
+}
+
 void ByteItemContainerGraphicsView::resizeEvent(QResizeEvent* event) {
     Logger::warning("Resizing");
     this->scene->adjustByteWidgets();

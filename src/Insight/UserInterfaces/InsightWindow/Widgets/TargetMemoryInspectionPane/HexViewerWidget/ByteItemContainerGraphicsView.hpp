@@ -39,6 +39,7 @@ namespace Bloom::Widgets
         }
 
     protected:
+        bool event(QEvent* event) override;
         void resizeEvent(QResizeEvent* event) override;
 
     private:

@@ -29,9 +29,9 @@ namespace Bloom::Widgets
     public:
         std::optional<ByteItem*> hoveredByteWidget;
 
-        std::map<std::uint32_t, ByteItem*> byteWidgetsByAddress;
-        std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByRowIndex;
-        std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByColumnIndex;
+        std::map<std::uint32_t, ByteItem*> byteItemsByAddress;
+        std::map<std::size_t, std::vector<ByteItem*>> byteItemsByRowIndex;
+        std::map<std::size_t, std::vector<ByteItem*>> byteItemsByColumnIndex;
 
         ByteItemGraphicsScene(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
@@ -43,6 +43,8 @@ namespace Bloom::Widgets
         void updateValues(const Targets::TargetMemoryBuffer& buffer);
 
         void adjustByteWidgets();
+
+        void setEnabled(bool enabled);
 
     signals:
         void byteWidgetsAdjusted();
@@ -60,6 +62,8 @@ namespace Bloom::Widgets
         QLabel* hoveredAddressLabel = nullptr;
 
         ByteAddressContainer* byteAddressContainer = nullptr;
+
+        bool enabled = true;
 
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);

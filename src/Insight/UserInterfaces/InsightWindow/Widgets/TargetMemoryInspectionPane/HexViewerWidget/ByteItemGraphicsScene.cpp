@@ -40,7 +40,7 @@ parent(parent) {
         const auto address = startAddress + i;
 
         auto* byteWidget = new ByteItem(i, address, this->hoveredByteWidget);
-        this->byteWidgetsByAddress.insert(std::pair(
+        this->byteItemsByAddress.insert(std::pair(
             address,
             byteWidget
         ));
@@ -59,7 +59,7 @@ parent(parent) {
 }
 
 void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buffer) {
-    for (auto& [address, byteWidget] : this->byteWidgetsByAddress) {
+    for (auto& [address, byteWidget] : this->byteItemsByAddress) {
         byteWidget->setValue(buffer.at(byteWidget->byteIndex));
         byteWidget->update();
     }
@@ -75,7 +75,7 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
         std::floor((width - margins.left() - margins.right() - ByteAddressContainer::WIDTH) / byteWidgetWidth)
     );
     const auto rowCount = static_cast<int>(
-        std::ceil(static_cast<double>(this->byteWidgetsByAddress.size()) / static_cast<double>(rowCapacity))
+        std::ceil(static_cast<double>(this->byteItemsByAddress.size()) / static_cast<double>(rowCapacity))
     );
 
     this->setSceneRect(
@@ -86,14 +86,14 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
     );
 
     // Don't bother recalculating the byte item positions if the number of rows have not changed.
-    if (rowCount == this->byteWidgetsByRowIndex.size()) {
+    if (rowCount == this->byteItemsByRowIndex.size()) {
         return;
     }
 
     std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByRowIndex;
     std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByColumnIndex;
 
-    for (auto& [address, byteWidget] : this->byteWidgetsByAddress) {
+    for (auto& [address, byteWidget] : this->byteItemsByAddress) {
         const auto rowIndex = static_cast<std::size_t>(
             std::ceil(static_cast<double>(byteWidget->byteIndex + 1) / static_cast<double>(rowCapacity)) - 1
         );
@@ -116,10 +116,23 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
         byteWidget->update();
     }
 
-    this->byteWidgetsByRowIndex = std::move(byteWidgetsByRowIndex);
-    this->byteWidgetsByColumnIndex = std::move(byteWidgetsByColumnIndex);
+    this->byteItemsByRowIndex = std::move(byteWidgetsByRowIndex);
+    this->byteItemsByColumnIndex = std::move(byteWidgetsByColumnIndex);
 
-    this->byteAddressContainer->adjustAddressLabels(this->byteWidgetsByRowIndex);
+    this->byteAddressContainer->adjustAddressLabels(this->byteItemsByRowIndex);
+}
+
+void ByteItemGraphicsScene::setEnabled(bool enabled) {
+    if (this->enabled != enabled) {
+        this->enabled = enabled;
+
+        for (auto& [byteAddress, byteItem] : this->byteItemsByAddress) {
+            byteItem->setEnabled(this->enabled);
+        }
+
+        this->byteAddressContainer->setEnabled(enabled);
+        this->update();
+    }
 }
 
 void ByteItemGraphicsScene::onTargetStateChanged(Targets::TargetState newState) {
@@ -144,12 +157,12 @@ void ByteItemGraphicsScene::onByteWidgetEnter(ByteItem* widget) {
         "Relative Address (Absolute Address): " + widget->relativeAddressHex + " (" + widget->addressHex + ")"
     );
 
-    if (!this->byteWidgetsByRowIndex.empty()) {
-        for (auto& byteWidget : this->byteWidgetsByColumnIndex.at(widget->currentColumnIndex)) {
+    if (!this->byteItemsByRowIndex.empty()) {
+        for (auto& byteWidget : this->byteItemsByColumnIndex.at(widget->currentColumnIndex)) {
             byteWidget->update();
         }
 
-        for (auto& byteWidget : this->byteWidgetsByRowIndex.at(widget->currentRowIndex)) {
+        for (auto& byteWidget : this->byteItemsByRowIndex.at(widget->currentRowIndex)) {
             byteWidget->update();
         }
     }
@@ -161,12 +174,12 @@ void ByteItemGraphicsScene::onByteWidgetLeave() {
 
     this->hoveredAddressLabel->setText("Relative Address (Absolute Address):");
 
-    if (!this->byteWidgetsByRowIndex.empty()) {
-        for (auto& byteWidget : this->byteWidgetsByColumnIndex.at(byteItem->currentColumnIndex)) {
+    if (!this->byteItemsByRowIndex.empty()) {
+        for (auto& byteWidget : this->byteItemsByColumnIndex.at(byteItem->currentColumnIndex)) {
             byteWidget->update();
         }
 
-        for (auto& byteWidget : this->byteWidgetsByRowIndex.at(byteItem->currentRowIndex)) {
+        for (auto& byteWidget : this->byteItemsByRowIndex.at(byteItem->currentRowIndex)) {
             byteWidget->update();
         }
     }
