@@ -12,7 +12,7 @@
 
 #target-pin-direction {
     color: #8a8a8d;
-    font-size: 11px;
+    font-size: 10px;
 }
 
 #target-pin-body {
