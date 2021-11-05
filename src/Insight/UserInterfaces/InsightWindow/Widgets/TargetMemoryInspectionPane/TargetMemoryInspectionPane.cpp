@@ -126,7 +126,9 @@ void TargetMemoryInspectionPane::resizeEvent(QResizeEvent* event) {
 
 void TargetMemoryInspectionPane::postActivate() {
     if (this->targetState == Targets::TargetState::STOPPED) {
-        this->refreshMemoryValues();
+        this->refreshMemoryValues([this] {
+            this->hexViewerWidget->setDisabled(false);
+        });
     }
 }
 

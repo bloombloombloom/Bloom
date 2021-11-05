@@ -131,8 +131,10 @@ InsightWindow::InsightWindow(InsightWorker& insightWorker): QMainWindow(nullptr)
     this->bottomPanel = this->container->findChild<PanelWidget*>("bottom-panel");
 
     this->ramInspectionButton = this->container->findChild<QToolButton*>("ram-inspection-btn");
+    this->eepromInspectionButton = this->container->findChild<QToolButton*>("eeprom-inspection-btn");
 
     connect(this->ramInspectionButton, &QToolButton::clicked, this, &InsightWindow::toggleRamInspectionPane);
+    connect(this->eepromInspectionButton, &QToolButton::clicked, this, &InsightWindow::toggleEepromInspectionPane);
 
     this->footer = this->windowContainer->findChild<QWidget*>("footer");
     this->targetStatusLabel = this->footer->findChild<QLabel*>("target-state");
@@ -239,15 +241,36 @@ void InsightWindow::toggleTargetRegistersPane() {
 }
 
 void InsightWindow::toggleRamInspectionPane() {
-    if (this->bottomPanel->isVisible()) {
+    if (this->ramInspectionPane->activated) {
         this->ramInspectionPane->deactivate();
         this->bottomPanel->hide();
         this->ramInspectionButton->setChecked(false);
 
     } else {
+        if (this->eepromInspectionPane != nullptr && this->eepromInspectionPane->activated) {
+            this->toggleEepromInspectionPane();
+        }
+
         this->ramInspectionPane->activate();
         this->bottomPanel->show();
         this->ramInspectionButton->setChecked(true);
+    }
+}
+
+void InsightWindow::toggleEepromInspectionPane() {
+    if (this->eepromInspectionPane->activated) {
+        this->eepromInspectionPane->deactivate();
+        this->bottomPanel->hide();
+        this->eepromInspectionButton->setChecked(false);
+
+    } else {
+        if (this->ramInspectionPane != nullptr && this->ramInspectionPane->activated) {
+            this->toggleRamInspectionPane();
+        }
+
+        this->eepromInspectionPane->activate();
+        this->bottomPanel->show();
+        this->eepromInspectionButton->setChecked(true);
     }
 }
 
@@ -505,6 +528,18 @@ void InsightWindow::activate() {
             this->bottomPanel
         );
         bottomPanelLayout->addWidget(this->ramInspectionPane);
+        this->ramInspectionButton->setChecked(false);
+        this->ramInspectionButton->setDisabled(false);
+    }
+
+    if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::EEPROM)) {
+        auto& eepromDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::EEPROM);
+        this->eepromInspectionPane = new TargetMemoryInspectionPane(
+            eepromDescriptor,
+            this->insightWorker,
+            this->bottomPanel
+        );
+        bottomPanelLayout->addWidget(this->eepromInspectionPane);
         this->ramInspectionButton->setChecked(false);
         this->ramInspectionButton->setDisabled(false);
     }

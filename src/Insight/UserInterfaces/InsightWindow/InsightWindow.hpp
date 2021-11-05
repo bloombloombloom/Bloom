@@ -51,6 +51,7 @@ namespace Bloom
         void openAboutWindow();
         void toggleTargetRegistersPane();
         void toggleRamInspectionPane();
+        void toggleEepromInspectionPane();
 
     signals:
         void refreshTargetPinStates(int variantId);
@@ -93,7 +94,9 @@ namespace Bloom
         QWidget* bottomMenuBar = nullptr;
         Widgets::PanelWidget* bottomPanel = nullptr;
         Widgets::TargetMemoryInspectionPane* ramInspectionPane = nullptr;
+        Widgets::TargetMemoryInspectionPane* eepromInspectionPane = nullptr;
         QToolButton* ramInspectionButton = nullptr;
+        QToolButton* eepromInspectionButton = nullptr;
 
         QWidget* footer = nullptr;
         QLabel* targetStatusLabel = nullptr;
