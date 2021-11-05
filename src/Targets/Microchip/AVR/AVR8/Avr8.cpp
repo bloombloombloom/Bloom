@@ -554,8 +554,7 @@ void Avr8::loadTargetRegisterDescriptors() {
 }
 
 void Avr8::loadTargetMemoryDescriptors() {
-    auto ramSize = this->targetParameters->ramSize.value();
-    auto ramStartAddress = this->targetParameters->ramStartAddress.value();
+    const auto ramStartAddress = this->targetParameters->ramStartAddress.value();
 
     this->targetMemoryDescriptorsByType.insert(std::pair(
         TargetMemoryType::RAM,
@@ -563,10 +562,25 @@ void Avr8::loadTargetMemoryDescriptors() {
             TargetMemoryType::RAM,
             TargetMemoryAddressRange(
                 ramStartAddress,
-                ramStartAddress + ramSize
+                ramStartAddress + this->targetParameters->ramSize.value()
             )
         )
     ));
+
+    if (this->targetParameters->eepromStartAddress.has_value() && this->targetParameters->eepromSize.has_value()) {
+        const auto eepromStartAddress = this->targetParameters->eepromStartAddress.value();
+
+        this->targetMemoryDescriptorsByType.insert(std::pair(
+            TargetMemoryType::EEPROM,
+            TargetMemoryDescriptor(
+                TargetMemoryType::EEPROM,
+                TargetMemoryAddressRange(
+                    eepromStartAddress,
+                    eepromStartAddress + this->targetParameters->eepromSize.value()
+                )
+            )
+        ));
+    }
 }
 
 TargetSignature Avr8::getId() {
