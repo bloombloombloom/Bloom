@@ -542,8 +542,8 @@ void InsightWindow::activate() {
         );
         bottomPanelLayout->addWidget(this->eepromInspectionPane);
         this->eepromInspectionPane->deactivate();
-        this->ramInspectionButton->setChecked(false);
-        this->ramInspectionButton->setDisabled(false);
+        this->eepromInspectionButton->setChecked(false);
+        this->eepromInspectionButton->setDisabled(false);
     }
 
     this->toggleUi(this->targetState != TargetState::STOPPED);
