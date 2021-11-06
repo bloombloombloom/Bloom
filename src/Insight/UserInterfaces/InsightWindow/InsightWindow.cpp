@@ -528,6 +528,7 @@ void InsightWindow::activate() {
             this->bottomPanel
         );
         bottomPanelLayout->addWidget(this->ramInspectionPane);
+        this->ramInspectionPane->deactivate();
         this->ramInspectionButton->setChecked(false);
         this->ramInspectionButton->setDisabled(false);
     }
@@ -540,6 +541,7 @@ void InsightWindow::activate() {
             this->bottomPanel
         );
         bottomPanelLayout->addWidget(this->eepromInspectionPane);
+        this->eepromInspectionPane->deactivate();
         this->ramInspectionButton->setChecked(false);
         this->ramInspectionButton->setDisabled(false);
     }
