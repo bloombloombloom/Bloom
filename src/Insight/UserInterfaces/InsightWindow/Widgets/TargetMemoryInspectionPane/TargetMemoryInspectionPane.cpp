@@ -44,7 +44,9 @@ TargetMemoryInspectionPane::TargetMemoryInspectionPane(
 
     this->titleBar->layout()->setContentsMargins(7, 0, 7, 0);
     auto titleLabel = this->titleBar->findChild<QLabel*>("title");
-    titleLabel->setText("Internal RAM");
+    titleLabel->setText(
+        this->targetMemoryDescriptor.type == TargetMemoryType::EEPROM ? "Internal EEPROM" : "Internal RAM"
+    );
 
     auto subContainerLayout = this->container->findChild<QHBoxLayout*>("sub-container-layout");
     this->hexViewerWidget = new HexViewerWidget(this->targetMemoryDescriptor, this->insightWorker, this);
