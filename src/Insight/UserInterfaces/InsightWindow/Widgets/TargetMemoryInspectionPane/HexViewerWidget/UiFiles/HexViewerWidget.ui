@@ -42,6 +42,38 @@
                                 </property>
                             </widget>
                         </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="highlight-stack-memory-btn">
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-stack-memory.svg</string>
+                                </property>
+                                <property name="disabledSvgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-stack-memory-disabled.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Highlight Stack Memory</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="highlight-focused-memory-btn">
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-focused-memory.svg</string>
+                                </property>
+                                <property name="disabledSvgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-focused-memory-disabled.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Highlight Focused Regions</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
                         <item alignment="Qt::AlignTop">
                             <spacer name="horizontal-spacer">
                                 <property name="orientation">

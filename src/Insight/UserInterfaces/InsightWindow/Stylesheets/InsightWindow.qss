@@ -370,13 +370,26 @@ QScrollBar::sub-line:vertical {
     border: none;
     padding: 0;
     qproperty-buttonWidth: 24;
-    qproperty-buttonHeight: 20;
+    qproperty-buttonHeight: 21;
 }
 
 #hex-viewer-container #tool-bar QToolButton:hover {
     background-color: #454541;
     border: none;
     padding: 0;
+}
+
+#hex-viewer-container #tool-bar #separator {
+    background-color: transparent;
+    border-right: 1px solid #41423f;
+    padding: 0;
+    min-width: 1px;
+    max-width: 1px;
+}
+
+#hex-viewer-container #tool-bar #highlight-stack-memory-btn,
+#hex-viewer-container #tool-bar #highlight-focused-memory-btn {
+    qproperty-buttonWidth: 25;
 }
 
 #hex-viewer-container QScrollArea,

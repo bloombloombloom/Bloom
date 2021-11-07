@@ -46,7 +46,7 @@ HexViewerWidget::HexViewerWidget(
     this->refreshButton = this->container->findChild<QToolButton*>("refresh-memory-btn");
 
     this->toolBar->setContentsMargins(0, 0, 0, 0);
-    this->toolBar->layout()->setContentsMargins(5, 0, 5, 0);
+    this->toolBar->layout()->setContentsMargins(5, 0, 5, 1);
 
     this->bottomBar->setContentsMargins(0, 0, 0, 0);
     this->bottomBar->layout()->setContentsMargins(5, 0, 5, 0);
