@@ -51,5 +51,9 @@
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg</file>
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon.svg</file>
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-disabled-icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-disabled-icon.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-stack-memory.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-stack-memory.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-stack-memory-disabled.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-stack-memory-disabled.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-focused-memory.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-focused-memory.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-focused-memory-disabled.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-focused-memory-disabled.svg</file>
     </qresource>
 </RCC>
