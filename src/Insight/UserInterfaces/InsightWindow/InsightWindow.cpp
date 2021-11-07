@@ -373,7 +373,7 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
             this->targetPackageWidget->height() + 450
         );
 
-        this->adjustSize();
+        this->adjustPanels();
         this->targetPackageWidget->show();
     }
 }
