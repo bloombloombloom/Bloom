@@ -42,7 +42,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<std::uint8_t> spmcRegisterStartAddress;
         std::optional<std::uint8_t> osccalAddress;
 
-        // XMega/PDI specific target params
+        // XMega/PDI/UPDI specific target params
         std::optional<std::uint32_t> appSectionPdiOffset;
         std::optional<std::uint16_t> bootSectionSize;
         std::optional<std::uint32_t> bootSectionPdiOffset;
