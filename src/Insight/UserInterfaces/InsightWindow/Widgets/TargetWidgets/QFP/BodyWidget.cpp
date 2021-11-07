@@ -23,8 +23,8 @@ void BodyWidget::drawWidget(QPainter& painter) {
     painter.setBrush(targetBodyColor);
 
     const auto containerSize = this->size();
-    auto targetBodyWidth = containerSize.width() - 14;
-    auto targetBodyHeight = containerSize.height() - 14;
+    const auto targetBodyWidth = containerSize.width() - 12;
+    const auto targetBodyHeight = containerSize.height() - 12;
 
     auto targetBodyPoint = QPoint(
         (containerSize.width() / 2) - (targetBodyWidth / 2),
