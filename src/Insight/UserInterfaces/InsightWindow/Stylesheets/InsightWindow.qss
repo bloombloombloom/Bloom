@@ -308,22 +308,22 @@ QScrollBar::sub-line:vertical {
 }
 
 #bottom-menu-bar #ram-inspection-btn {
-    min-width: 71px;
+    min-width: 73px;
 }
 
 #bottom-menu-bar #eeprom-inspection-btn {
-    min-width: 97px;
+    min-width: 99px;
 }
 
 #bottom-menu-bar #ram-inspection-btn #ram-inspection-btn-icon,
 #bottom-menu-bar #eeprom-inspection-btn #eeprom-inspection-btn-icon {
-    margin-left: 7px;
+    margin-left: 6px;
     margin-top: 1px;
 }
 
 #bottom-menu-bar #ram-inspection-btn #ram-inspection-btn-label,
 #bottom-menu-bar #eeprom-inspection-btn #eeprom-inspection-btn-label {
-    margin-left: 1px;
+    margin-left: 5px;
 }
 
 #bottom-menu-bar QToolButton:hover,

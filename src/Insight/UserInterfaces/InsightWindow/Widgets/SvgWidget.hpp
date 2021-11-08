@@ -39,6 +39,7 @@ namespace Bloom::Widgets
 
         void setContainerWidth(int containerWidth) {
             this->containerWidth = containerWidth;
+            this->setFixedWidth(this->containerWidth);
         }
 
         [[nodiscard]] int getContainerWidth() const {
@@ -47,6 +48,7 @@ namespace Bloom::Widgets
 
         void setContainerHeight(int containerHeight) {
             this->containerHeight = containerHeight;
+            this->setFixedHeight(this->containerHeight);
         }
 
         [[nodiscard]] int getContainerHeight() const {

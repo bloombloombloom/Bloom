@@ -320,7 +320,7 @@
                                                                 <number>22</number>
                                                             </property>
                                                             <property name="containerWidth">
-                                                                <number>22</number>
+                                                                <number>26</number>
                                                             </property>
                                                             <property name="svgFilePath">
                                                                 <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon.svg</string>
@@ -371,7 +371,7 @@
                                                                 <number>22</number>
                                                             </property>
                                                             <property name="containerWidth">
-                                                                <number>22</number>
+                                                                <number>26</number>
                                                             </property>
                                                             <property name="svgFilePath">
                                                                 <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon.svg</string>
