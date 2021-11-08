@@ -370,7 +370,7 @@ QScrollBar::sub-line:vertical {
     border: none;
     padding: 0;
     qproperty-buttonWidth: 24;
-    qproperty-buttonHeight: 21;
+    qproperty-buttonHeight: 20;
 }
 
 #hex-viewer-container #tool-bar QToolButton:hover {
@@ -390,6 +390,7 @@ QScrollBar::sub-line:vertical {
 #hex-viewer-container #tool-bar #highlight-stack-memory-btn,
 #hex-viewer-container #tool-bar #highlight-focused-memory-btn {
     qproperty-buttonWidth: 25;
+    qproperty-buttonHeight: 21;
 }
 
 #hex-viewer-container QScrollArea,

@@ -14,10 +14,10 @@
             <item alignment="Qt::AlignTop">
                 <widget class="QWidget" name="tool-bar">
                     <property name="minimumHeight">
-                        <number>27</number>
+                        <number>28</number>
                     </property>
                     <property name="maximumHeight">
-                        <number>27</number>
+                        <number>28</number>
                     </property>
                     <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
@@ -44,6 +44,18 @@
                         </item>
                         <item>
                             <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>1</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
                         </item>
                         <item>
                             <widget class="SvgToolButton" name="highlight-stack-memory-btn">
@@ -74,7 +86,7 @@
                         <item>
                             <widget class="QFrame" name="separator"/>
                         </item>
-                        <item alignment="Qt::AlignTop">
+                        <item>
                             <spacer name="horizontal-spacer">
                                 <property name="orientation">
                                     <enum>Qt::Horizontal</enum>
