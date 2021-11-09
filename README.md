@@ -14,7 +14,7 @@ Currently, Bloom only supports AVR8 targets from Microchip. Bloom was designed t
 families and architectures. Support for other target families will be considered as and when requested.
 
 ### License
-Bloom is released under the LGPLv3 license. See LICENSE.txt
+Bloom is released under the LGPLv3 license. See LICENSE.md
 
 ---
 
