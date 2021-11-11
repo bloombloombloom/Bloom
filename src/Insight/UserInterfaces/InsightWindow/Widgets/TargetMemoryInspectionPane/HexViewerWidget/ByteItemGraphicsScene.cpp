@@ -16,6 +16,7 @@ using Bloom::Targets::TargetMemoryDescriptor;
 ByteItemGraphicsScene::ByteItemGraphicsScene(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
     InsightWorker& insightWorker,
+    const HexViewerWidgetSettings& settings,
     QLabel* hoveredAddressLabel,
     QWidget* parent
 ): QGraphicsScene(parent),
@@ -39,7 +40,7 @@ parent(parent) {
     for (std::uint32_t i = 0; i < memorySize; i++) {
         const auto address = startAddress + i;
 
-        auto* byteWidget = new ByteItem(i, address, this->hoveredByteWidget);
+        auto* byteWidget = new ByteItem(i, address, this->hoveredByteWidget, settings);
         this->byteItemsByAddress.insert(std::pair(
             address,
             byteWidget

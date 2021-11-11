@@ -19,6 +19,7 @@
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
 #include "ByteItemGraphicsScene.hpp"
+#include "HexViewerWidgetSettings.hpp"
 
 namespace Bloom::Widgets
 {
@@ -30,6 +31,7 @@ namespace Bloom::Widgets
         ByteItemContainerGraphicsView(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             InsightWorker& insightWorker,
+            const HexViewerWidgetSettings& settings,
             QLabel* hoveredAddressLabel,
             QWidget* parent
         );

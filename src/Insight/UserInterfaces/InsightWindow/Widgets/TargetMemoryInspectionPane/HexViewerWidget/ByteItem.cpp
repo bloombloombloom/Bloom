@@ -10,8 +10,15 @@ using namespace Bloom::Widgets;
 ByteItem::ByteItem(
     std::size_t byteIndex,
     std::uint32_t address,
-    std::optional<ByteItem*>& hoveredByteItem
-): QGraphicsItem(nullptr), byteIndex(byteIndex), address(address), hoveredByteItem(hoveredByteItem) {
+    std::optional<ByteItem*>& hoveredByteItem,
+    const HexViewerWidgetSettings& settings
+):
+QGraphicsItem(nullptr),
+byteIndex(byteIndex),
+address(address),
+hoveredByteItem(hoveredByteItem),
+settings(settings)
+{
     this->setAcceptHoverEvents(true);
 
     this->addressHex = "0x" + QString::number(this->address, 16).rightJustified(8, '0').toUpper();
@@ -37,15 +44,22 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
 
     static const auto widgetRect = this->boundingRect();
 
-    if (this->hoveredByteItem.has_value()) {
-        const auto hoveredWidget = this->hoveredByteItem.value();
+    if (this->settings.highlightStackMemory && this->settings.stackPointerAddress.has_value()
+        && this->address > this->settings.stackPointerAddress
+    ) {
+        // This byte is within the stack memory
+        painter->setBrush(QColor(0x5E, 0x50, 0x27, 255));
+        painter->drawRect(widgetRect);
+    }
 
-        if (hoveredWidget->currentColumnIndex == this->currentColumnIndex
-            || hoveredWidget->currentRowIndex == this->currentRowIndex
-        ){
-            painter->setBrush(QColor(0x8E, 0x8B, 0x83, hoveredWidget == this ? 70 : 30));
-            painter->drawRect(widgetRect);
-        }
+    const auto hoveredByteItem = this->hoveredByteItem.value_or(nullptr);
+    if (hoveredByteItem != nullptr && (
+            hoveredByteItem->currentColumnIndex == this->currentColumnIndex
+            || hoveredByteItem->currentRowIndex == this->currentRowIndex
+        )
+    ) {
+        painter->setBrush(QColor(0x8E, 0x8B, 0x83, hoveredByteItem == this ? 70 : 30));
+        painter->drawRect(widgetRect);
     }
 
     auto textColor = QColor(this->valueChanged ? "#547fba" : "#afb1b3");

@@ -60,6 +60,7 @@ HexViewerWidget::HexViewerWidget(
     this->byteItemGraphicsView = new ByteItemContainerGraphicsView(
         targetMemoryDescriptor,
         insightWorker,
+        this->settings,
         this->hoveredAddressLabel,
         byteItemGraphicsViewContainer
     );

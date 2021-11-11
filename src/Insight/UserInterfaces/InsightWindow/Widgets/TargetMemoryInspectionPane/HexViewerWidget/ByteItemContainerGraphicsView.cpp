@@ -16,6 +16,7 @@ using Bloom::Targets::TargetMemoryDescriptor;
 ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
     InsightWorker& insightWorker,
+    const HexViewerWidgetSettings& settings,
     QLabel* hoveredAddressLabel,
     QWidget* parent
 ): QGraphicsView(parent) {
@@ -28,6 +29,7 @@ ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
     this->scene = new ByteItemGraphicsScene(
         targetMemoryDescriptor,
         insightWorker,
+        settings,
         hoveredAddressLabel,
         this
     );

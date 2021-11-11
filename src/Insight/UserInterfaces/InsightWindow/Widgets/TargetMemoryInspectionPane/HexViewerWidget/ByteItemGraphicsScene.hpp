@@ -19,6 +19,7 @@
 
 #include "ByteItem.hpp"
 #include "ByteAddressContainer.hpp"
+#include "HexViewerWidgetSettings.hpp"
 
 namespace Bloom::Widgets
 {
@@ -36,6 +37,7 @@ namespace Bloom::Widgets
         ByteItemGraphicsScene(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             InsightWorker& insightWorker,
+            const HexViewerWidgetSettings& settings,
             QLabel* hoveredAddressLabel,
             QWidget* parent
         );

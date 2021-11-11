@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.hpp"
+#include "HexViewerWidgetSettings.hpp"
 
 namespace Bloom::Widgets
 {
@@ -30,7 +31,8 @@ namespace Bloom::Widgets
         ByteItem(
             std::size_t byteIndex,
             std::uint32_t address,
-            std::optional<ByteItem*>& hoveredByteItem
+            std::optional<ByteItem*>& hoveredByteItem,
+            const HexViewerWidgetSettings& settings
         );
 
         void setValue(unsigned char value);
@@ -49,6 +51,8 @@ namespace Bloom::Widgets
         unsigned char value = 0x00;
         bool valueInitialised = false;
         bool valueChanged = false;
+
+        const HexViewerWidgetSettings& settings;
 
         QString hexValue;
         std::optional<QString> asciiValue;

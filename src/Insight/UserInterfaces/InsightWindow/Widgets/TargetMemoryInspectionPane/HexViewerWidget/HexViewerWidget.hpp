@@ -16,6 +16,7 @@
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
+#include "HexViewerWidgetSettings.hpp"
 #include "ByteItemContainerGraphicsView.hpp"
 
 namespace Bloom::Widgets
@@ -41,6 +42,8 @@ namespace Bloom::Widgets
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
         InsightWorker& insightWorker;
+
+        HexViewerWidgetSettings settings = HexViewerWidgetSettings();
 
         QWidget* container = nullptr;
         QWidget* toolBar = nullptr;
