@@ -379,6 +379,16 @@ QScrollBar::sub-line:vertical {
     padding: 0;
 }
 
+#hex-viewer-container #tool-bar QToolButton:checked {
+    background-color: #484842;
+    border: none;
+}
+
+#hex-viewer-container #tool-bar QToolButton:checked:disabled {
+    background-color: #3d3d39;
+    border: none;
+}
+
 #hex-viewer-container #tool-bar #separator {
     background-color: transparent;
     border-right: 1px solid #41423f;
