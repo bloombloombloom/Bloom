@@ -109,6 +109,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         TargetRegister getProgramCounterRegister();
         void setProgramCounter(std::uint32_t programCounter) override;
 
+        std::uint32_t getStackPointer() override;
+
         std::map<int, TargetPinState> getPinStates(int variantId) override;
         void setPinState(
             const TargetPinDescriptor& pinDescriptor,

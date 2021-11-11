@@ -254,6 +254,19 @@ void Avr8::setProgramCounter(std::uint32_t programCounter) {
     this->avr8Interface->setProgramCounter(programCounter);
 }
 
+std::uint32_t Avr8::getStackPointer() {
+    const auto stackPointerRegister = this->readRegisters(
+        {this->targetRegisterDescriptorsByType.at(TargetRegisterType::STACK_POINTER)}
+    ).front();
+
+    std::uint32_t stackPointer = 0;
+    for (std::size_t i = 0; i < stackPointerRegister.size() && i < 4; i++) {
+        stackPointer = (stackPointer << (8 * i)) | stackPointerRegister.value[i];
+    }
+
+    return stackPointer;
+}
+
 std::map<int, TargetPinState> Avr8::getPinStates(int variantId) {
     if (!this->targetVariantsById.contains(variantId)) {
         throw Exception("Invalid target variant ID");

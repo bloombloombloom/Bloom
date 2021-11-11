@@ -276,6 +276,13 @@ namespace Bloom::Targets
         virtual void setProgramCounter(std::uint32_t programCounter) = 0;
 
         /**
+         * Should fetch the current stack pointer value.
+         *
+         * @return
+         */
+        virtual std::uint32_t getStackPointer() = 0;
+
+        /**
          * Should get the current pin states for each pin on the target, mapped by pin number
          *
          * @param variantId
