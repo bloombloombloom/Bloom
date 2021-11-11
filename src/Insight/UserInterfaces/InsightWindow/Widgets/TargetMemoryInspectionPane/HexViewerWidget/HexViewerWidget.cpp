@@ -43,7 +43,10 @@ HexViewerWidget::HexViewerWidget(
 
     this->toolBar = this->container->findChild<QWidget*>("tool-bar");
     this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
+
     this->refreshButton = this->container->findChild<QToolButton*>("refresh-memory-btn");
+    this->highlightStackMemoryButton = this->container->findChild<SvgToolButton*>("highlight-stack-memory-btn");
+    this->highlightFocusedMemoryButton = this->container->findChild<SvgToolButton*>("highlight-focused-memory-btn");
 
     this->toolBar->setContentsMargins(0, 0, 0, 0);
     this->toolBar->layout()->setContentsMargins(5, 0, 5, 1);
@@ -66,6 +69,20 @@ HexViewerWidget::HexViewerWidget(
     );
     this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
     byteItemGraphicsViewLayout->insertWidget(0, this->byteItemGraphicsView);
+
+    QObject::connect(
+        this->highlightStackMemoryButton,
+        &QToolButton::clicked,
+        this,
+        &HexViewerWidget::toggleStackMemoryHighlighting
+    );
+
+    QObject::connect(
+        this->highlightFocusedMemoryButton,
+        &QToolButton::clicked,
+        this,
+        &HexViewerWidget::toggleFocusedMemoryHighlighting
+    );
 
     QObject::connect(
         &insightWorker,
@@ -126,4 +143,22 @@ void HexViewerWidget::onByteWidgetsAdjusted() {
 //    while ((labelItem = this->byteWidgetAddressLayout->takeAt(rowCount)) != nullptr) {
 //        labelItem->widget()->deleteLater();
 //    }
+}
+
+void HexViewerWidget::toggleStackMemoryHighlighting() {
+    auto enable = !this->settings.highlightStackMemory;
+
+    this->highlightStackMemoryButton->setChecked(enable);
+    this->settings.highlightStackMemory = enable;
+
+    this->byteItemGraphicsScene->update();
+}
+
+void HexViewerWidget::toggleFocusedMemoryHighlighting() {
+    auto enable = !this->settings.highlightFocusedMemory;
+
+    this->highlightFocusedMemoryButton->setChecked(enable);
+    this->settings.highlightFocusedMemory = enable;
+
+    this->byteItemGraphicsScene->update();
 }

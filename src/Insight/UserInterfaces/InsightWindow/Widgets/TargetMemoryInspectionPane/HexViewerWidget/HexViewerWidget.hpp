@@ -19,6 +19,8 @@
 #include "HexViewerWidgetSettings.hpp"
 #include "ByteItemContainerGraphicsView.hpp"
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
+
 namespace Bloom::Widgets
 {
     class HexViewerWidget: public QWidget
@@ -51,15 +53,17 @@ namespace Bloom::Widgets
 
         ByteItemContainerGraphicsView* byteItemGraphicsView = nullptr;
         ByteItemGraphicsScene* byteItemGraphicsScene = nullptr;
-        QWidget* byteWidgetScrollArea = nullptr;
-        QWidget* byteWidgetAddressContainer = nullptr;
-        QVBoxLayout* byteWidgetAddressLayout = nullptr;
         QLabel* hoveredAddressLabel = nullptr;
+
+        SvgToolButton* highlightStackMemoryButton = nullptr;
+        SvgToolButton* highlightFocusedMemoryButton = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);
         void onByteWidgetsAdjusted();
+        void toggleStackMemoryHighlighting();
+        void toggleFocusedMemoryHighlighting();
     };
 }
