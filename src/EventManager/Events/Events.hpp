@@ -39,6 +39,8 @@
 #include "RetrieveTargetPinStates.hpp"
 #include "TargetPinStatesRetrieved.hpp"
 #include "SetTargetPinState.hpp"
+#include "RetrieveStackPointerFromTarget.hpp"
+#include "StackPointerRetrievedFromTarget.hpp"
 
 namespace Bloom::Events
 {

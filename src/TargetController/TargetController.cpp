@@ -174,6 +174,7 @@ void TargetController::suspend() {
     this->eventListener->deregisterCallbacksForEventType<Events::InsightThreadStateChanged>();
     this->eventListener->deregisterCallbacksForEventType<Events::RetrieveTargetPinStates>();
     this->eventListener->deregisterCallbacksForEventType<Events::SetTargetPinState>();
+    this->eventListener->deregisterCallbacksForEventType<Events::RetrieveStackPointerFromTarget>();
 
     this->lastTargetState = TargetState::UNKNOWN;
     this->cachedTargetDescriptor = std::nullopt;
@@ -250,6 +251,10 @@ void TargetController::resume() {
 
     this->eventListener->registerCallbackForEventType<Events::SetTargetPinState>(
         std::bind(&TargetController::onSetPinStateEvent, this, std::placeholders::_1)
+    );
+
+    this->eventListener->registerCallbackForEventType<Events::RetrieveStackPointerFromTarget>(
+        std::bind(&TargetController::onRetrieveStackPointerEvent, this, std::placeholders::_1)
     );
 
     this->state = TargetControllerState::ACTIVE;
@@ -766,6 +771,26 @@ void TargetController::onSetPinStateEvent(const Events::SetTargetPinState& event
     } catch (const TargetOperationFailure& exception) {
         Logger::error("Failed to set target pin state for pin " + event.pinDescriptor.name + " - "
             + exception.getMessage());
+        this->emitErrorEvent(event.id, exception.getMessage());
+    }
+}
+
+void TargetController::onRetrieveStackPointerEvent(const Events::RetrieveStackPointerFromTarget& event) {
+    try {
+        if (this->target->getState() != TargetState::STOPPED) {
+            throw TargetOperationFailure(
+                "Invalid target state - target must be stopped before stack pointer can be retrieved"
+            );
+        }
+
+        auto stackPointerRetrieved = std::make_shared<Events::StackPointerRetrievedFromTarget>();
+        stackPointerRetrieved->correlationId = event.id;
+        stackPointerRetrieved->stackPointer = this->target->getStackPointer();
+
+        this->eventManager.triggerEvent(stackPointerRetrieved);
+
+    } catch (const TargetOperationFailure& exception) {
+        Logger::error("Failed to retrieve stack pointer value from target - " + exception.getMessage());
         this->emitErrorEvent(event.id, exception.getMessage());
     }
 }

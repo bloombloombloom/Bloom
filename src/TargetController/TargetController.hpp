@@ -401,5 +401,13 @@ namespace Bloom
          * @param event
          */
         void onSetPinStateEvent(const Events::SetTargetPinState& event);
+
+        /**
+         * Will retrieve the current stack pointer from the target. Will emit a StackPointerRetrievedFromTarget event
+         * containing the retrieved stack pointer value.
+         *
+         * @param event
+         */
+        void onRetrieveStackPointerEvent(const Events::RetrieveStackPointerFromTarget& event);
     };
 }
