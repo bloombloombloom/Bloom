@@ -8,6 +8,9 @@ using namespace Bloom::Targets;
 using namespace Bloom::Events;
 using namespace Bloom::Exceptions;
 
+TargetControllerConsole::TargetControllerConsole(EventManager& eventManager, EventListener& eventListener)
+    :eventManager(eventManager), eventListener(eventListener) {}
+
 TargetControllerState TargetControllerConsole::getTargetControllerState() {
     return this->triggerTargetControllerEventAndWaitForResponse(
         std::make_shared<ReportTargetControllerState>()
@@ -127,4 +130,10 @@ void TargetControllerConsole::setPinState(TargetPinDescriptor pinDescriptor, Tar
     updateEvent->pinState = pinState;
 
     this->triggerTargetControllerEventAndWaitForResponse(updateEvent);
+}
+
+std::uint32_t TargetControllerConsole::getStackPointer() {
+    return this->triggerTargetControllerEventAndWaitForResponse(
+        std::make_shared<RetrieveStackPointerFromTarget>()
+    )->stackPointer;
 }

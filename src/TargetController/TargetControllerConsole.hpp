@@ -23,8 +23,7 @@ namespace Bloom
     class TargetControllerConsole
     {
     public:
-        TargetControllerConsole(EventManager& eventManager, EventListener& eventListener):
-        eventManager(eventManager), eventListener(eventListener) {};
+        TargetControllerConsole(EventManager& eventManager, EventListener& eventListener);
 
         void setDefaultTimeout(std::chrono::milliseconds timeout) {
             this->defaultTimeout = timeout;
@@ -154,6 +153,13 @@ namespace Bloom
          * @param pinState
          */
         void setPinState(Targets::TargetPinDescriptor pinDescriptor, Targets::TargetPinState pinState);
+
+        /**
+         * Retrieves the current stack pointer value from the target.
+         *
+         * @return
+         */
+        std::uint32_t getStackPointer();
 
     private:
         EventManager& eventManager;
