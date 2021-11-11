@@ -145,6 +145,7 @@ add_executable(Bloom
     src/Insight/InsightWorker/Tasks/RefreshTargetPinStates.cpp
     src/Insight/InsightWorker/Tasks/SetTargetPinState.cpp
     src/Insight/InsightWorker/Tasks/ReadTargetMemory.cpp
+    src/Insight/InsightWorker/Tasks/ReadStackPointer.cpp
     src/Insight/InsightWorker/Tasks/QueryLatestVersionNumber.cpp
 
     # Error dialogue window
