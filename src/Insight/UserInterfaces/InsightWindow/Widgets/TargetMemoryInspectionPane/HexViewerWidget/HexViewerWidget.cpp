@@ -98,6 +98,11 @@ void HexViewerWidget::updateValues(const Targets::TargetMemoryBuffer& buffer) {
     this->byteItemGraphicsScene->updateValues(buffer);
 }
 
+void HexViewerWidget::setStackPointer(std::uint32_t stackPointer) {
+    this->settings.stackPointerAddress = stackPointer;
+    this->byteItemGraphicsScene->update();
+}
+
 void HexViewerWidget::resizeEvent(QResizeEvent* event) {
     this->container->setFixedSize(
         this->width(),

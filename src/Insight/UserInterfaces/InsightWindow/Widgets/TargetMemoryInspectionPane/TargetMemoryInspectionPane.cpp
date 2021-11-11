@@ -8,6 +8,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/ReadTargetMemory.hpp"
+#include "src/Insight/InsightWorker/Tasks/ReadStackPointer.hpp"
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Exceptions/Exception.hpp"
@@ -84,7 +85,21 @@ void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function
         readMemoryTask,
         &ReadTargetMemory::targetMemoryRead,
         this,
-        &TargetMemoryInspectionPane::onMemoryRead
+        [this] (const Targets::TargetMemoryBuffer& buffer) {
+            this->onMemoryRead(buffer);
+
+            auto* readStackPointerTask = new ReadStackPointer();
+            QObject::connect(
+                readStackPointerTask,
+                &ReadStackPointer::stackPointerRead,
+                this,
+                [this] (std::uint32_t stackPointer) {
+                    this->hexViewerWidget->setStackPointer(stackPointer);
+                }
+            );
+
+            this->insightWorker.queueTask(readStackPointerTask);
+        }
     );
 
     QObject::connect(
