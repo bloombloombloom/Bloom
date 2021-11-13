@@ -22,6 +22,7 @@ ByteItemGraphicsScene::ByteItemGraphicsScene(
 ): QGraphicsScene(parent),
 targetMemoryDescriptor(targetMemoryDescriptor),
 insightWorker(insightWorker),
+settings(settings),
 hoveredAddressLabel(hoveredAddressLabel),
 parent(parent) {
     this->setObjectName("byte-widget-container");
@@ -158,7 +159,7 @@ void ByteItemGraphicsScene::onByteWidgetEnter(ByteItem* widget) {
         "Relative Address (Absolute Address): " + widget->relativeAddressHex + " (" + widget->addressHex + ")"
     );
 
-    if (!this->byteItemsByRowIndex.empty()) {
+    if (this->settings.highlightHoveredRowAndCol && !this->byteItemsByRowIndex.empty()) {
         for (auto& byteWidget : this->byteItemsByColumnIndex.at(widget->currentColumnIndex)) {
             byteWidget->update();
         }
@@ -166,6 +167,9 @@ void ByteItemGraphicsScene::onByteWidgetEnter(ByteItem* widget) {
         for (auto& byteWidget : this->byteItemsByRowIndex.at(widget->currentRowIndex)) {
             byteWidget->update();
         }
+
+    } else {
+        widget->update();
     }
 }
 
@@ -175,7 +179,7 @@ void ByteItemGraphicsScene::onByteWidgetLeave() {
 
     this->hoveredAddressLabel->setText("Relative Address (Absolute Address):");
 
-    if (!this->byteItemsByRowIndex.empty()) {
+    if (this->settings.highlightHoveredRowAndCol && !this->byteItemsByRowIndex.empty()) {
         for (auto& byteWidget : this->byteItemsByColumnIndex.at(byteItem->currentColumnIndex)) {
             byteWidget->update();
         }
@@ -183,6 +187,9 @@ void ByteItemGraphicsScene::onByteWidgetLeave() {
         for (auto& byteWidget : this->byteItemsByRowIndex.at(byteItem->currentRowIndex)) {
             byteWidget->update();
         }
+
+    } else {
+        byteItem->update();
     }
 }
 

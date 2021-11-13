@@ -60,6 +60,8 @@ namespace Bloom::Widgets
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
         InsightWorker& insightWorker;
 
+        const HexViewerWidgetSettings& settings;
+
         QWidget* parent = nullptr;
         QLabel* hoveredAddressLabel = nullptr;
 

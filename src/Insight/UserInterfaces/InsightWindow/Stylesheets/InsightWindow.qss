@@ -398,7 +398,8 @@ QScrollBar::sub-line:vertical {
 }
 
 #hex-viewer-container #tool-bar #highlight-stack-memory-btn,
-#hex-viewer-container #tool-bar #highlight-focused-memory-btn {
+#hex-viewer-container #tool-bar #highlight-focused-memory-btn,
+#hex-viewer-container #tool-bar #highlight-hovered-rows-columns-btn {
     qproperty-buttonWidth: 25;
     qproperty-buttonHeight: 21;
 }

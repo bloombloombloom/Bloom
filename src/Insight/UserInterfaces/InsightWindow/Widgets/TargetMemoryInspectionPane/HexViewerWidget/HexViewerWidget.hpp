@@ -59,13 +59,15 @@ namespace Bloom::Widgets
 
         SvgToolButton* highlightStackMemoryButton = nullptr;
         SvgToolButton* highlightFocusedMemoryButton = nullptr;
+        SvgToolButton* highlightHoveredRowAndColumnButton = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);
         void onByteWidgetsAdjusted();
-        void toggleStackMemoryHighlighting();
-        void toggleFocusedMemoryHighlighting();
+        void setStackMemoryHighlightingEnabled(bool enabled);
+        void setHoveredRowAndColumnHighlightingEnabled(bool enabled);
+        void setFocusedMemoryHighlightingEnabled(bool enabled);
     };
 }

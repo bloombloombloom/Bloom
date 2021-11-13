@@ -54,8 +54,11 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
 
     const auto hoveredByteItem = this->hoveredByteItem.value_or(nullptr);
     if (hoveredByteItem != nullptr && (
-            hoveredByteItem->currentColumnIndex == this->currentColumnIndex
-            || hoveredByteItem->currentRowIndex == this->currentRowIndex
+            hoveredByteItem == this || (this->settings.highlightHoveredRowAndCol && (
+                    hoveredByteItem->currentColumnIndex == this->currentColumnIndex
+                    || hoveredByteItem->currentRowIndex == this->currentRowIndex
+                )
+            )
         )
     ) {
         painter->setBrush(QColor(0x8E, 0x8B, 0x83, hoveredByteItem == this ? 70 : 30));

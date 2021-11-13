@@ -44,9 +44,14 @@ HexViewerWidget::HexViewerWidget(
     this->toolBar = this->container->findChild<QWidget*>("tool-bar");
     this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
 
-    this->refreshButton = this->container->findChild<QToolButton*>("refresh-memory-btn");
-    this->highlightStackMemoryButton = this->container->findChild<SvgToolButton*>("highlight-stack-memory-btn");
-    this->highlightFocusedMemoryButton = this->container->findChild<SvgToolButton*>("highlight-focused-memory-btn");
+    this->refreshButton = this->toolBar->findChild<QToolButton*>("refresh-memory-btn");
+    this->highlightStackMemoryButton = this->toolBar->findChild<SvgToolButton*>("highlight-stack-memory-btn");
+    this->highlightHoveredRowAndColumnButton = this->toolBar->findChild<SvgToolButton*>(
+        "highlight-hovered-rows-columns-btn"
+    );
+    this->highlightFocusedMemoryButton = this->container->findChild<SvgToolButton*>(
+        "highlight-focused-memory-btn"
+    );
 
     this->toolBar->setContentsMargins(0, 0, 0, 0);
     this->toolBar->layout()->setContentsMargins(5, 0, 5, 1);
@@ -70,18 +75,35 @@ HexViewerWidget::HexViewerWidget(
     this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
     byteItemGraphicsViewLayout->insertWidget(0, this->byteItemGraphicsView);
 
+    this->setStackMemoryHighlightingEnabled(true);
+    this->setHoveredRowAndColumnHighlightingEnabled(true);
+    this->setFocusedMemoryHighlightingEnabled(true);
+
     QObject::connect(
         this->highlightStackMemoryButton,
         &QToolButton::clicked,
         this,
-        &HexViewerWidget::toggleStackMemoryHighlighting
+        [this] {
+            this->setStackMemoryHighlightingEnabled(!this->settings.highlightStackMemory);
+        }
+    );
+
+    QObject::connect(
+        this->highlightHoveredRowAndColumnButton,
+        &QToolButton::clicked,
+        this,
+        [this] {
+            this->setHoveredRowAndColumnHighlightingEnabled(!this->settings.highlightHoveredRowAndCol);
+        }
     );
 
     QObject::connect(
         this->highlightFocusedMemoryButton,
         &QToolButton::clicked,
         this,
-        &HexViewerWidget::toggleFocusedMemoryHighlighting
+        [this] {
+            this->setFocusedMemoryHighlightingEnabled(!this->settings.highlightFocusedMemory);
+        }
     );
 
     QObject::connect(
@@ -150,20 +172,23 @@ void HexViewerWidget::onByteWidgetsAdjusted() {
 //    }
 }
 
-void HexViewerWidget::toggleStackMemoryHighlighting() {
-    auto enable = !this->settings.highlightStackMemory;
-
-    this->highlightStackMemoryButton->setChecked(enable);
-    this->settings.highlightStackMemory = enable;
+void HexViewerWidget::setStackMemoryHighlightingEnabled(bool enabled) {
+    this->highlightStackMemoryButton->setChecked(enabled);
+    this->settings.highlightStackMemory = enabled;
 
     this->byteItemGraphicsScene->update();
 }
 
-void HexViewerWidget::toggleFocusedMemoryHighlighting() {
-    auto enable = !this->settings.highlightFocusedMemory;
+void HexViewerWidget::setHoveredRowAndColumnHighlightingEnabled(bool enabled) {
+    this->highlightHoveredRowAndColumnButton->setChecked(enabled);
+    this->settings.highlightHoveredRowAndCol = enabled;
 
-    this->highlightFocusedMemoryButton->setChecked(enable);
-    this->settings.highlightFocusedMemory = enable;
+    this->byteItemGraphicsScene->update();
+}
+
+void HexViewerWidget::setFocusedMemoryHighlightingEnabled(bool enabled) {
+    this->highlightFocusedMemoryButton->setChecked(enabled);
+    this->settings.highlightFocusedMemory = enabled;
 
     this->byteItemGraphicsScene->update();
 }
