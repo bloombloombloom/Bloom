@@ -347,6 +347,23 @@ QScrollBar::sub-line:vertical {
     color: #afb1b3;
 }
 
+#target-memory-inspection-pane #lh-side-bar {
+    border-right: 1px solid #41423f;
+}
+
+#target-memory-inspection-pane #lh-side-bar QToolButton {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    qproperty-buttonWidth: 23;
+    qproperty-buttonHeight: 21;
+}
+
+#target-memory-inspection-pane #lh-side-bar QToolButton:hover {
+    background-color: #454541;
+    border: none;
+}
+
 #hex-viewer-container #tool-bar,
 #hex-viewer-container #search-bar {
     border-bottom: 1px solid #41423f;
