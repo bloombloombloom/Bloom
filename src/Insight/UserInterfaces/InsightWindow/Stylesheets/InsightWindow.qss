@@ -391,13 +391,13 @@ QScrollBar::sub-line:vertical {
 }
 
 #hex-viewer-container #tool-bar QToolButton:hover {
-    background-color: #454541;
+    background-color: #41413b;
     border: none;
     padding: 0;
 }
 
 #hex-viewer-container #tool-bar QToolButton:checked {
-    background-color: #484842;
+    background-color: #43433d;
     border: none;
 }
 
