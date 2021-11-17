@@ -288,13 +288,15 @@ void InsightWindow::showEvent(QShowEvent* event) {
 }
 
 bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
+    const auto pinCount = variant.pinDescriptorsByNumber.size();
+
     /*
      * Because the size of the pin body widget is fixed, for all of our target package widgets, we run out of screen
      * estate for target variants with more than 100 pins.
      *
      * This will be addressed at some point, but for now, we just won't support variants with more than 100 pins.
      */
-    if (variant.pinDescriptorsByNumber.size() > 100) {
+    if (pinCount > 100) {
         return false;
     }
 
@@ -303,14 +305,17 @@ bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
         || variant.package == TargetPackage::SSOP
     ) {
         // All DIP, SOIC and SSOP variants must have a pin count that is a multiple of two
-        if (variant.pinDescriptorsByNumber.size() % 2 == 0) {
+        if (pinCount % 2 == 0) {
             return true;
         }
     }
 
     if (variant.package == TargetPackage::QFP || variant.package == TargetPackage::QFN) {
-        // All QFP and QFN variants must have a pin count that is a multiple of four
-        if (variant.pinDescriptorsByNumber.size() % 4 == 0) {
+        /*
+         * All QFP and QFN variants must have a pin count that is a multiple of four. And there must be
+         * more than one pin per side.
+         */
+        if (pinCount % 4 == 0 && pinCount > 4) {
             return true;
         }
     }
@@ -369,8 +374,8 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
         }
 
         this->setMinimumSize(
-            this->targetPackageWidget->width() + 700,
-            this->targetPackageWidget->height() + 450
+            this->targetPackageWidget->width() + 400,
+            this->targetPackageWidget->height() + 150
         );
 
         this->adjustPanels();
