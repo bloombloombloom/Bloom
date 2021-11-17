@@ -601,10 +601,15 @@ void InsightWindow::adjustPanels() {
             containerSize.width() - targetPackageWidgetSize.width() - this->leftMenuBar->width() - 20
         )
     );
+
+    /*
+     * Allow the bottom panel to overlap the target package widget (because the target package widget can
+     * occupy a lot of space and become an annoyance if the bottom panel is restricted too much).
+     */
     this->bottomPanel->setMaximumResize(
         std::max(
             this->bottomPanel->getMinimumResize(),
-            containerSize.height() - targetPackageWidgetSize.height() - this->bottomMenuBar->height() - 20
+            (containerSize.height() / 2) - this->bottomMenuBar->height()
         )
     );
 }
