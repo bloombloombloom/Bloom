@@ -254,6 +254,14 @@ void InsightWindow::toggleRamInspectionPane() {
         this->ramInspectionPane->activate();
         this->bottomPanel->show();
         this->ramInspectionButton->setChecked(true);
+
+        if (this->targetPackageWidget != nullptr) {
+            this->setMinimumHeight(std::max(
+                this->minimumHeight(),
+                this->targetPackageWidget->height() + this->header->height() + this->footer->height()
+                    + this->menuBar()->height() + this->bottomPanel->getMinimumResize() + 30
+            ));
+        }
     }
 }
 
@@ -271,6 +279,14 @@ void InsightWindow::toggleEepromInspectionPane() {
         this->eepromInspectionPane->activate();
         this->bottomPanel->show();
         this->eepromInspectionButton->setChecked(true);
+
+        if (this->targetPackageWidget != nullptr) {
+            this->setMinimumHeight(std::max(
+                this->minimumHeight(),
+                this->targetPackageWidget->height() + this->header->height() + this->footer->height()
+                    + this->menuBar()->height() + this->bottomPanel->getMinimumResize() + 30
+            ));
+        }
     }
 }
 
