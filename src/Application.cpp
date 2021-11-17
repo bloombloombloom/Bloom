@@ -99,7 +99,7 @@ void Application::startup() {
     this->blockAllSignalsOnCurrentThread();
     this->signalHandlerThread = std::thread(&SignalHandler::run, std::ref(this->signalHandler));
 
-    Logger::info("Selected environment: " + this->selectedEnvironmentName);
+    Logger::info("Selected environment: \"" + this->selectedEnvironmentName + "\"");
     Logger::debug("Number of environments extracted from config: "
         + std::to_string(this->applicationConfig.environments.size()));
 
@@ -153,7 +153,10 @@ void Application::shutdown() {
         // Signal handler is still running
         this->signalHandler.triggerShutdown();
 
-        // Send meaningless signal to the SignalHandler thread to have it shutdown.
+        /*
+         * Send meaningless signal to the SignalHandler thread to have it shutdown. The signal will pull it out of a
+         * blocking state and allow it to action the shutdown. See SignalHandler::run() for more.
+         */
         pthread_kill(this->signalHandlerThread.native_handle(), SIGUSR1);
     }
 

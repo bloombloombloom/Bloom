@@ -7,7 +7,10 @@ using namespace Bloom;
 
 void ApplicationConfig::init(const QJsonObject& jsonObject) {
     if (!jsonObject.contains("environments")) {
-        throw Exceptions::InvalidConfig("No environments found.");
+        throw Exceptions::InvalidConfig(
+            "No environments found - please review the bloom.json configuration file and ensure that "
+            "no syntax errors are present."
+        );
     }
 
     // Extract all environment objects from JSON config.

@@ -41,7 +41,7 @@ void SignalHandler::startup() {
     auto signalSet = this->getRegisteredSignalSet();
     sigprocmask(SIG_SETMASK, &signalSet, NULL);
 
-    // Register handlers here
+    // Register handlers
     this->handlersMappedBySignalNum.insert(std::pair(
         SIGINT,
         std::bind(&SignalHandler::triggerApplicationShutdown, this)
