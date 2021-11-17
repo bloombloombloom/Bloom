@@ -35,6 +35,19 @@ void PanelWidget::setMaximumResize(int maximumResize) {
     }
 }
 
+void PanelWidget::setPanelType(PanelWidgetType panelType) {
+    this->panelType = panelType;
+
+    if (this->panelType == PanelWidgetType::LEFT) {
+        this->resizeCursor = Qt::SplitHCursor;
+        this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+
+    } else {
+        this->resizeCursor = Qt::SplitVCursor;
+        this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    }
+}
+
 bool PanelWidget::event(QEvent* event) {
     if (event->type() == QEvent::Type::HoverMove) {
         auto hoverEvent = static_cast<QHoverEvent*>(event);

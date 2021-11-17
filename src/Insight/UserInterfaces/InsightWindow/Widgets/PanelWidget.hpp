@@ -35,10 +35,7 @@ namespace Bloom::Widgets
 
         void setMaximumResize(int maximumResize);
 
-        void setPanelType(PanelWidgetType panelType) {
-            this->panelType = panelType;
-            this->resizeCursor = this->panelType == PanelWidgetType::LEFT ? Qt::SplitHCursor : Qt::SplitVCursor;
-        }
+        void setPanelType(PanelWidgetType panelType);
 
         [[nodiscard]] int getHandleSize() const {
             return this->handleSize;
