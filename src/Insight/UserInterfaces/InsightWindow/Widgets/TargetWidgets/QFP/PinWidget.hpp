@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <cstdint>
 #include <QBoxLayout>
 #include <QLabel>
 
@@ -10,23 +11,37 @@
 
 namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 {
+    enum Position: std::uint8_t
+    {
+        TOP,
+        BOTTOM,
+        LEFT,
+        RIGHT,
+    };
+
     class PinWidget: public TargetPinWidget
     {
         Q_OBJECT
 
     public:
-        static const int PIN_WIDGET_LAYOUT_PADDING = 46;
-        static const int WIDTH_SPACING = 6;
-        static const int MAXIMUM_LABEL_COUNT = 3;
-        static const int LABEL_HEIGHT = 20;
-        static const int MAXIMUM_LABEL_WIDTH = PinBodyWidget::WIDTH;
-        static const int MAXIMUM_LABEL_HEIGHT = 20;
-        static const int MAXIMUM_HORIZONTAL_WIDTH = PinBodyWidget::HEIGHT
-            + ((PinWidget::MAXIMUM_LABEL_WIDTH + 15) * (PinWidget::MAXIMUM_LABEL_COUNT - 1)) - 15;
-        static const int MAXIMUM_HORIZONTAL_HEIGHT = PinBodyWidget::WIDTH;
-        static const int MAXIMUM_VERTICAL_HEIGHT = PinBodyWidget::HEIGHT
-            + ((PinWidget::MAXIMUM_LABEL_HEIGHT + 8) * PinWidget::MAXIMUM_LABEL_COUNT) - 8;
-        static const int MAXIMUM_VERTICAL_WIDTH = PinBodyWidget::WIDTH;
+        static constexpr int PIN_WIDGET_LAYOUT_PADDING = 46;
+        static constexpr int WIDTH_SPACING = 4;
+        static constexpr int MAXIMUM_LABEL_COUNT = 3;
+        static constexpr int PIN_LABEL_LONG_LINE_LENGTH = 25;
+        static constexpr int PIN_LABEL_SHORT_LINE_LENGTH = 5;
+        static constexpr int PIN_LABEL_SPACING = 2;
+        static constexpr int LABEL_HEIGHT = 20;
+        static constexpr int MAXIMUM_PIN_NUMBER_LABEL_WIDTH = 26;
+        static constexpr int MAXIMUM_PIN_DIRECTION_LABEL_WIDTH = 24;
+        static constexpr int MAXIMUM_LABEL_WIDTH = 32;
+        static constexpr int MAXIMUM_LABEL_HEIGHT = 20;
+        static constexpr int MAXIMUM_HORIZONTAL_WIDTH = PinBodyWidget::HEIGHT + PinWidget::MAXIMUM_PIN_NUMBER_LABEL_WIDTH + 3;
+        static constexpr int MAXIMUM_HORIZONTAL_HEIGHT = PinBodyWidget::WIDTH;
+        static constexpr int MAXIMUM_VERTICAL_HEIGHT = PinBodyWidget::HEIGHT + PinWidget::LABEL_HEIGHT + 3;
+        static constexpr int MAXIMUM_VERTICAL_WIDTH = PinBodyWidget::WIDTH;
+
+        Position position;
+        QString pinNameLabelText;
 
         PinWidget(
             const Targets::TargetPinDescriptor& pinDescriptor,
@@ -43,12 +58,5 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         QLabel* pinNameLabel = nullptr;
         QLabel* pinDirectionLabel = nullptr;
         PinBodyWidget* bodyWidget = nullptr;
-
-        bool isLeftLayout = false;
-        bool isBottomLayout = false;
-        bool isRightLayout = false;
-        bool isTopLayout = false;
-
-        void setLabelColor(const QString& hexColor);
     };
 }

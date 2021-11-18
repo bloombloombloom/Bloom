@@ -21,26 +21,28 @@ PinWidget::PinWidget(
     this->layout->setSpacing(0);
 
     auto pinCountPerLayout = (targetVariant.pinDescriptorsByNumber.size() / 4);
-    this->isLeftLayout = pinDescriptor.number <= pinCountPerLayout;
-    this->isBottomLayout = pinDescriptor.number > pinCountPerLayout && pinDescriptor.number <= (pinCountPerLayout * 2);
-    this->isRightLayout = pinDescriptor.number > (pinCountPerLayout * 2) && pinDescriptor.number <= (pinCountPerLayout * 3);
-    this->isTopLayout = pinDescriptor.number > (pinCountPerLayout * 3) && pinDescriptor.number <= (pinCountPerLayout * 4);
 
-    this->bodyWidget = new PinBodyWidget(this, this->pinDescriptor, (this->isTopLayout || this->isBottomLayout));
+    if (pinDescriptor.number <= pinCountPerLayout) {
+        this->position = Position::LEFT;
 
-    this->pinDirectionLabel = new QLabel(this);
-    this->pinDirectionLabel->setObjectName("target-pin-direction");
-    this->pinDirectionLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
+    } else if (pinDescriptor.number > pinCountPerLayout && pinDescriptor.number <= (pinCountPerLayout * 2)) {
+        this->position = Position::BOTTOM;
 
-    auto pinName = QString::fromStdString(pinDescriptor.name).toUpper();
-    this->pinNameLabel = new QLabel(this);
-    this->pinNameLabel->setObjectName("target-pin-name");
-    this->pinNameLabel->setToolTip(pinName);
-    if (pinName.size() > 4) {
-        pinName.truncate(4);
+    } else if (pinDescriptor.number > (pinCountPerLayout * 2) && pinDescriptor.number <= (pinCountPerLayout * 3)) {
+        this->position = Position::RIGHT;
+
+    } else if (pinDescriptor.number > (pinCountPerLayout * 3) && pinDescriptor.number <= (pinCountPerLayout * 4)) {
+        this->position = Position::TOP;
     }
-    this->pinNameLabel->setText(pinName);
-    this->pinNameLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
+
+    this->bodyWidget = new PinBodyWidget(
+        this,
+        this->pinDescriptor,
+        (this->position == Position::TOP || this->position == Position::BOTTOM)
+    );
+
+    this->pinNameLabelText = QString::fromStdString(pinDescriptor.name).toUpper();
+    this->pinNameLabelText.truncate(5);
 
     this->pinNumberLabel = new QLabel(this);
     this->pinNumberLabel->setObjectName("target-pin-number");
@@ -49,22 +51,22 @@ PinWidget::PinWidget(
     this->pinNumberLabel->setText(QString::number(pinDescriptor.number));
     this->pinNumberLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
-    if (this->isLeftLayout) {
+    if (this->position == Position::LEFT) {
         this->layout->setAlignment((Qt::AlignmentFlag::AlignVCenter | Qt::AlignmentFlag::AlignRight));
         this->layout->setDirection(QBoxLayout::Direction::RightToLeft);
         this->setFixedSize(PinWidget::MAXIMUM_HORIZONTAL_WIDTH, PinWidget::MAXIMUM_HORIZONTAL_HEIGHT);
 
-    } else if (this->isBottomLayout) {
+    } else if (this->position == Position::BOTTOM) {
         this->layout->setAlignment(Qt::AlignmentFlag::AlignHCenter | Qt::AlignmentFlag::AlignTop);
         this->layout->setDirection(QBoxLayout::Direction::TopToBottom);
         this->setFixedSize(PinWidget::MAXIMUM_VERTICAL_WIDTH, PinWidget::MAXIMUM_VERTICAL_HEIGHT);
 
-    } else if (this->isRightLayout) {
+    } else if (this->position == Position::RIGHT) {
         this->layout->setAlignment((Qt::AlignmentFlag::AlignVCenter | Qt::AlignmentFlag::AlignLeft));
         this->layout->setDirection(QBoxLayout::Direction::LeftToRight);
         this->setFixedSize(PinWidget::MAXIMUM_HORIZONTAL_WIDTH, PinWidget::MAXIMUM_HORIZONTAL_HEIGHT);
 
-    } else if (this->isTopLayout) {
+    } else if (this->position == Position::TOP) {
         this->layout->setAlignment((Qt::AlignmentFlag::AlignHCenter | Qt::AlignmentFlag::AlignBottom));
         this->layout->setDirection(QBoxLayout::Direction::BottomToTop);
         this->setFixedSize(PinWidget::MAXIMUM_VERTICAL_WIDTH, PinWidget::MAXIMUM_VERTICAL_HEIGHT);
@@ -72,32 +74,19 @@ PinWidget::PinWidget(
 
     this->layout->addWidget(this->bodyWidget);
     this->layout->addSpacing(3);
+    this->layout->addWidget(this->pinNumberLabel);
 
-    if (this->isLeftLayout || this->isRightLayout) {
-        auto* stackedLabelLayout = new QVBoxLayout();
-        stackedLabelLayout->addWidget(this->pinNameLabel);
-        stackedLabelLayout->addSpacing(2);
-        stackedLabelLayout->addWidget(this->pinNumberLabel);
-        this->layout->addSpacing(4);
-        this->layout->addLayout(stackedLabelLayout);
+    if (this->position == Position::LEFT || this->position == Position::RIGHT) {
+        this->pinNumberLabel->setFixedSize(
+            PinWidget::MAXIMUM_PIN_NUMBER_LABEL_WIDTH,
+            PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2
+        );
 
-        // Adjust the pin name label width for horizontal pins to accommodate for pin names up to 5 characters in length
-        this->pinNameLabel->setFixedSize(PinWidget::MAXIMUM_LABEL_WIDTH + 5, PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2);
-        this->pinNumberLabel->setFixedSize(PinWidget::MAXIMUM_LABEL_WIDTH + 5, PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2);
-
-    } else if (this-isTopLayout || this->isBottomLayout) {
-        this->layout->addWidget(this->pinNumberLabel);
-        this->layout->addSpacing(2);
-        this->layout->addWidget(this->pinNameLabel);
-
-        this->pinNameLabel->setFixedSize(PinBodyWidget::WIDTH, PinWidget::LABEL_HEIGHT - 2);
+    } else if (this->position == Position::TOP || this->position == Position::BOTTOM) {
         this->pinNumberLabel->setFixedSize(PinBodyWidget::WIDTH, PinWidget::LABEL_HEIGHT - 2);
     }
 
-    this->layout->addSpacing(2);
-    this->layout->addWidget(this->pinDirectionLabel);
     this->layout->addStretch(1);
-
     this->setLayout(this->layout);
 
     connect(this->bodyWidget, &PinBodyWidget::clicked, this, &TargetPinWidget::onWidgetBodyClicked);
@@ -106,26 +95,7 @@ PinWidget::PinWidget(
 void PinWidget::updatePinState(const Targets::TargetPinState& pinState) {
     TargetPinWidget::updatePinState(pinState);
 
-    if (pinState.ioDirection.has_value()) {
-        this->pinDirectionLabel->setText(
-            pinState.ioDirection.value() == Targets::TargetPinState::IoDirection::INPUT ? "IN" : "OUT"
-        );
-
-    } else {
-        this->pinDirectionLabel->setText("");
-    }
-
     if (this->bodyWidget != nullptr) {
         this->bodyWidget->setPinState(pinState);
-    }
-
-    this->setLabelColor(this->pinStateChanged ? "#4d7bba" : "#a6a7aa");
-}
-
-void PinWidget::setLabelColor(const QString& hexColor) {
-    auto style = QString("QLabel { color: " + hexColor + "; }");
-
-    if (this->pinNameLabel != nullptr) {
-        this->pinNameLabel->setStyleSheet(style);
     }
 }
