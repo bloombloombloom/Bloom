@@ -15,8 +15,8 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         Q_OBJECT
 
     public:
-        static const int WIDTH = 25;
-        static const int HEIGHT = 34;
+        static const int WIDTH = 19;
+        static const int HEIGHT = 28;
 
         PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor, bool isVertical):
         TargetPinBodyWidget(parent, std::move(pinDescriptor)), isVertical(isVertical) {
