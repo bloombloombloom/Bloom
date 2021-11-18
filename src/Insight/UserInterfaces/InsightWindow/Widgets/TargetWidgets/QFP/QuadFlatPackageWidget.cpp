@@ -37,6 +37,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     this->horizontalLayout = new QHBoxLayout();
     this->horizontalLayout->setSpacing(0);
     this->horizontalLayout->setDirection(QBoxLayout::Direction::LeftToRight);
+    this->horizontalLayout->setAlignment(Qt::AlignmentFlag::AlignHCenter);
 
     this->topPinLayout = new QHBoxLayout();
     this->topPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
@@ -46,6 +47,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     this->rightPinLayout = new QVBoxLayout();
     this->rightPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
     this->rightPinLayout->setDirection(QBoxLayout::Direction::BottomToTop);
+    this->rightPinLayout->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
     this->bottomPinLayout = new QHBoxLayout();
     this->bottomPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
@@ -55,6 +57,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     this->leftPinLayout = new QVBoxLayout();
     this->leftPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
     this->leftPinLayout->setDirection(QBoxLayout::Direction::TopToBottom);
+    this->leftPinLayout->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
     const auto pinCountPerLayout = static_cast<int>(targetVariant.pinDescriptorsByNumber.size() / 4);
     for (const auto& [targetPinNumber, targetPinDescriptor]: targetVariant.pinDescriptorsByNumber) {
