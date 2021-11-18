@@ -34,5 +34,8 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         QHBoxLayout* bottomPinLayout = nullptr;
         QVBoxLayout* leftPinLayout = nullptr;
         BodyWidget* bodyWidget = nullptr;
+
+        std::vector<PinWidget*> pinWidgets;
+
     };
 }
