@@ -1,18 +1,5 @@
 #target-pin-number {
-    font-size: 14px;
-}
-
-#target-pin-name {
-    font-size: 11px;
-}
-
-#target-pin-name {
-    color: #a6a7aa;
-}
-
-#target-pin-direction {
-    color: #8a8a8d;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 #target-pin-body {

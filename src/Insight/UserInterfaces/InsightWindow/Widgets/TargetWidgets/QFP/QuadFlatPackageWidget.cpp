@@ -65,16 +65,16 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
         this->pinWidgets.push_back(pinWidget);
         TargetPackageWidget::pinWidgets.push_back(pinWidget);
 
-        if (targetPinNumber <= pinCountPerLayout) {
+        if (pinWidget->position == Position::LEFT) {
             this->leftPinLayout->addWidget(pinWidget, 0, Qt::AlignmentFlag::AlignRight);
 
-        } else if (targetPinNumber > pinCountPerLayout && targetPinNumber <= (pinCountPerLayout * 2)) {
+        } else if (pinWidget->position == Position::BOTTOM) {
             this->bottomPinLayout->addWidget(pinWidget, 0, Qt::AlignmentFlag::AlignTop);
 
-        } else if (targetPinNumber > (pinCountPerLayout * 2) && targetPinNumber <= (pinCountPerLayout * 3)) {
+        } else if (pinWidget->position == Position::RIGHT) {
             this->rightPinLayout->addWidget(pinWidget, 0, Qt::AlignmentFlag::AlignLeft);
 
-        } else if (targetPinNumber > (pinCountPerLayout * 3) && targetPinNumber <= (pinCountPerLayout * 4)) {
+        } else if (pinWidget->position == Position::TOP) {
             this->topPinLayout->addWidget(pinWidget, 0, Qt::AlignmentFlag::AlignBottom);
         }
     }
