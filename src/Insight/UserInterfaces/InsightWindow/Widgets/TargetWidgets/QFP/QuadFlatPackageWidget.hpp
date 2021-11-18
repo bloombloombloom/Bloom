@@ -26,6 +26,10 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
             QWidget* parent
         );
 
+    protected:
+        void paintEvent(QPaintEvent* event) override;
+        void drawWidget(QPainter& painter);
+
     private:
         QVBoxLayout* layout = nullptr;
         QHBoxLayout* horizontalLayout = nullptr;

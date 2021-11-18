@@ -4,8 +4,8 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <vector>
-#include <QEvent>
 #include <QFile>
+#include <QLine>
 
 #include "src/Helpers/Paths.hpp"
 #include "PinWidget.hpp"
@@ -104,14 +104,22 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
     const auto verticalLayoutWidth = ((verticalPinWidgetWidth + PinWidget::WIDTH_SPACING) * pinCountPerLayout
         + PinWidget::PIN_WIDGET_LAYOUT_PADDING - PinWidget::WIDTH_SPACING);
 
-    /*
-     * + 16 for the spacing between the package body and the pins (8 pixels on each side)
-     *
-     * Also, the width is a little smaller than the height because of the layout of the horizontal pin labels, but
-     * we just use the same value as the height here (to contain and center the widget), as it looks nicer.
-     */
-    const auto height = horizontalLayoutHeight + (verticalPinWidgetHeight * 2);
-    const auto width = height;
+    const auto height = horizontalLayoutHeight + (verticalPinWidgetHeight * 2) + (
+        (
+            PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+            + PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
+            + (PinWidget::MAXIMUM_LABEL_HEIGHT * 2)
+            + (PinWidget::PIN_LABEL_SPACING * 3)
+        ) * 2
+    );
+    const auto width = verticalLayoutWidth + (horizontalPinWidgetWidth * 2) + (
+        (
+            PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+            + PinWidget::MAXIMUM_LABEL_WIDTH
+            + PinWidget::MAXIMUM_PIN_DIRECTION_LABEL_WIDTH
+            + (PinWidget::PIN_LABEL_SPACING * 2)
+        ) * 2
+    );
 
     this->topPinLayout->insertSpacing(0, horizontalPinWidgetWidth);
     this->topPinLayout->addSpacing(horizontalPinWidgetWidth);
@@ -174,4 +182,233 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
         width,
         height
     );
+}
+
+void QuadFlatPackageWidget::paintEvent(QPaintEvent* event) {
+    auto painter = QPainter(this);
+    this->drawWidget(painter);
+}
+
+void QuadFlatPackageWidget::drawWidget(QPainter& painter) {
+    static auto pinNameFont = QFont("'Ubuntu', sans-serif");
+    static auto pinDirectionFont = pinNameFont;
+    pinNameFont.setPixelSize(11);
+    pinDirectionFont.setPixelSize(10);
+
+    static const auto lineColor = QColor(0x4F, 0x4F, 0x4F);
+    static const auto pinNameFontColor = QColor(0xA6, 0xA7, 0xAA);
+    static const auto pinDirectionFontColor = QColor(0x8A, 0x8A, 0x8D);
+    static const auto pinChangedFontColor = QColor(0x4D, 0x7B, 0xBA);
+
+    static const auto inDirectionText = QString("IN");
+    static const auto outDirectionText = QString("OUT");
+
+    for (const auto* pinWidget : this->pinWidgets) {
+        const auto pinGeoPosition = pinWidget->pos();
+        const auto& pinState = pinWidget->getPinState();
+        const auto pinStateChanged = pinWidget->hasPinStateChanged();
+
+        painter.setFont(pinNameFont);
+
+        if (pinWidget->position == Position::LEFT) {
+            painter.setPen(lineColor);
+            painter.drawLine(QLine(
+                pinGeoPosition.x() - PinWidget::PIN_LABEL_LONG_LINE_LENGTH,
+                pinGeoPosition.y() + (PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2),
+                pinGeoPosition.x(),
+                pinGeoPosition.y() + (PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2)
+            ));
+
+            painter.setPen(pinStateChanged ? pinChangedFontColor : pinNameFontColor);
+            painter.drawText(
+                QRect(
+                    pinGeoPosition.x() - PinWidget::PIN_LABEL_LONG_LINE_LENGTH - PinWidget::MAXIMUM_LABEL_WIDTH
+                        - (PinWidget::PIN_LABEL_SPACING * 2),
+                    pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
+                        - (PinWidget::MAXIMUM_LABEL_HEIGHT / 2),
+                    PinWidget::MAXIMUM_LABEL_WIDTH,
+                    PinWidget::MAXIMUM_LABEL_HEIGHT
+                ),
+                Qt::AlignCenter,
+                pinWidget->pinNameLabelText
+            );
+
+            if (pinState.has_value() && pinState->ioDirection.has_value()) {
+                painter.setFont(pinDirectionFont);
+
+                painter.setPen(pinDirectionFontColor);
+                painter.drawText(
+                    QRect(
+                        pinGeoPosition.x() - PinWidget::PIN_LABEL_LONG_LINE_LENGTH - PinWidget::MAXIMUM_LABEL_WIDTH
+                            - (PinWidget::PIN_LABEL_SPACING * 3) - PinWidget::MAXIMUM_PIN_DIRECTION_LABEL_WIDTH,
+                        pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
+                            - (PinWidget::MAXIMUM_LABEL_HEIGHT / 2),
+                        PinWidget::MAXIMUM_PIN_DIRECTION_LABEL_WIDTH,
+                        PinWidget::MAXIMUM_LABEL_HEIGHT
+                    ),
+                    Qt::AlignCenter,
+                    pinState->ioDirection == TargetPinState::IoDirection::INPUT ? inDirectionText : outDirectionText
+                );
+            }
+
+        } else if (pinWidget->position == Position::RIGHT) {
+            painter.setPen(lineColor);
+            painter.drawLine(QLine(
+                pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH,
+                pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
+                pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH + PinWidget::PIN_LABEL_LONG_LINE_LENGTH,
+                pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
+            ));
+
+            painter.setPen(pinStateChanged ? pinChangedFontColor : pinNameFontColor);
+            painter.drawText(
+                QRect(
+                    pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH
+                        + PinWidget::PIN_LABEL_LONG_LINE_LENGTH + 8,
+                    pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
+                        - (PinWidget::MAXIMUM_LABEL_HEIGHT / 2),
+                    PinWidget::MAXIMUM_LABEL_WIDTH,
+                    PinWidget::MAXIMUM_LABEL_HEIGHT
+                ),
+                Qt::AlignCenter,
+                pinWidget->pinNameLabelText
+            );
+
+            if (pinState.has_value() && pinState->ioDirection.has_value()) {
+                painter.setFont(pinDirectionFont);
+
+                painter.setPen(pinDirectionFontColor);
+                painter.drawText(
+                    QRect(
+                        pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH
+                            + PinWidget::PIN_LABEL_LONG_LINE_LENGTH + PinWidget::MAXIMUM_LABEL_WIDTH
+                            + (PinWidget::PIN_LABEL_SPACING * 3),
+                        pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
+                            - (PinWidget::MAXIMUM_LABEL_HEIGHT / 2),
+                        PinWidget::MAXIMUM_PIN_DIRECTION_LABEL_WIDTH,
+                        PinWidget::MAXIMUM_LABEL_HEIGHT
+                    ),
+                    Qt::AlignCenter,
+                    pinState->ioDirection == TargetPinState::IoDirection::INPUT ? inDirectionText : outDirectionText
+                );
+            }
+
+        } else if (pinWidget->position == Position::TOP) {
+            painter.setPen(lineColor);
+            const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
+                PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+                : 5
+            );
+            const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
+                5
+                : PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+            );
+
+            painter.drawLine(QLine(
+                pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
+                pinGeoPosition.y() - pinNameLabelLineLength,
+                pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
+                pinGeoPosition.y()
+            ));
+
+            painter.setPen(pinStateChanged ? pinChangedFontColor : pinNameFontColor);
+            painter.drawText(
+                QRect(
+                    pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
+                        - (PinWidget::MAXIMUM_LABEL_WIDTH / 2),
+                    pinGeoPosition.y() - pinNameLabelLineLength - PinWidget::MAXIMUM_LABEL_HEIGHT,
+                    PinWidget::MAXIMUM_LABEL_WIDTH,
+                    PinWidget::MAXIMUM_LABEL_HEIGHT
+                ),
+                Qt::AlignCenter,
+                pinWidget->pinNameLabelText
+            );
+
+            if (pinState.has_value() && pinState->ioDirection.has_value()) {
+                painter.setFont(pinDirectionFont);
+
+                painter.setPen(lineColor);
+                painter.drawLine(QLine(
+                    pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
+                    pinGeoPosition.y() - pinNameLabelLineLength - PinWidget::MAXIMUM_LABEL_HEIGHT
+                        - pinDirectionLabelLineLength,
+                    pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
+                    pinGeoPosition.y() - pinNameLabelLineLength - PinWidget::MAXIMUM_LABEL_HEIGHT
+                ));
+
+                painter.setPen(pinDirectionFontColor);
+                painter.drawText(
+                    QRect(
+                        pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
+                            - (PinWidget::MAXIMUM_LABEL_WIDTH / 2),
+                        pinGeoPosition.y() - pinNameLabelLineLength - pinDirectionLabelLineLength
+                            - (PinWidget::MAXIMUM_LABEL_HEIGHT * 2),
+                        PinWidget::MAXIMUM_LABEL_WIDTH,
+                        PinWidget::MAXIMUM_LABEL_HEIGHT
+                    ),
+                    Qt::AlignCenter,
+                    pinState->ioDirection == TargetPinState::IoDirection::INPUT ? inDirectionText : outDirectionText
+                );
+            }
+
+        } else if (pinWidget->position == Position::BOTTOM) {
+            painter.setPen(lineColor);
+            const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
+                PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+                : 5
+            );
+            const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
+                5
+                : PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+            );
+
+            painter.drawLine(QLine(
+                pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
+                pinGeoPosition.y() + PinWidget::MAXIMUM_VERTICAL_HEIGHT,
+                pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
+                pinGeoPosition.y() + PinWidget::MAXIMUM_VERTICAL_HEIGHT + pinNameLabelLineLength
+            ));
+
+            painter.setPen(pinStateChanged ? pinChangedFontColor : pinNameFontColor);
+            painter.drawText(
+                QRect(
+                    pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
+                        - (PinWidget::MAXIMUM_LABEL_WIDTH / 2),
+                    pinGeoPosition.y() + + PinWidget::MAXIMUM_VERTICAL_HEIGHT + pinNameLabelLineLength,
+                    PinWidget::MAXIMUM_LABEL_WIDTH,
+                    PinWidget::MAXIMUM_LABEL_HEIGHT
+                ),
+                Qt::AlignCenter,
+                pinWidget->pinNameLabelText
+            );
+
+            if (pinState.has_value() && pinState->ioDirection.has_value()) {
+                painter.setFont(pinDirectionFont);
+
+                painter.setPen(lineColor);
+                painter.drawLine(QLine(
+                    pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
+                    pinGeoPosition.y() + PinWidget::MAXIMUM_VERTICAL_HEIGHT + pinNameLabelLineLength
+                        + PinWidget::MAXIMUM_LABEL_HEIGHT,
+                    pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
+                    pinGeoPosition.y() + PinWidget::MAXIMUM_VERTICAL_HEIGHT + pinNameLabelLineLength
+                        + PinWidget::MAXIMUM_LABEL_HEIGHT + pinDirectionLabelLineLength
+                ));
+
+                painter.setPen(pinDirectionFontColor);
+                painter.drawText(
+                    QRect(
+                        pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
+                            - (PinWidget::MAXIMUM_LABEL_WIDTH / 2),
+                        pinGeoPosition.y() + PinWidget::MAXIMUM_VERTICAL_HEIGHT + pinNameLabelLineLength
+                            + PinWidget::MAXIMUM_LABEL_HEIGHT + pinDirectionLabelLineLength,
+                        PinWidget::MAXIMUM_LABEL_WIDTH,
+                        PinWidget::MAXIMUM_LABEL_HEIGHT
+                    ),
+                    Qt::AlignCenter,
+                    pinState->ioDirection == TargetPinState::IoDirection::INPUT ? inDirectionText : outDirectionText
+                );
+            }
+        }
+    }
 }
