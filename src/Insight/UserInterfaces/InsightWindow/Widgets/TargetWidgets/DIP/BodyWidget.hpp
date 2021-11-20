@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QPainter>
 
 namespace Bloom::Widgets::InsightTargetWidgets::Dip
 {
@@ -11,9 +12,9 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         Q_PROPERTY(int disableAlphaLevel READ getDisableAlphaLevel WRITE setDisableAlphaLevel DESIGNABLE true)
 
     public:
-        explicit BodyWidget(QWidget* parent): QWidget(parent) {
-            this->setObjectName("target-body");
-        }
+        static constexpr int HEIGHT = 130;
+
+        explicit BodyWidget(QWidget* parent);
 
         [[nodiscard]] QColor getBodyColor() const {
             return this->bodyColor;

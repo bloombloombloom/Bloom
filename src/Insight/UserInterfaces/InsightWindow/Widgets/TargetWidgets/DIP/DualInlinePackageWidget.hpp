@@ -4,6 +4,8 @@
 #include <vector>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QPaintEvent>
+#include <QPainter>
 
 #include "../TargetPackageWidget.hpp"
 
@@ -27,10 +29,16 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
             QWidget* parent
         );
 
+    protected:
+        void paintEvent(QPaintEvent* event) override;
+        void drawWidget(QPainter& painter);
+
     private:
         QVBoxLayout* layout = nullptr;
         QHBoxLayout* topPinLayout = nullptr;
         QHBoxLayout* bottomPinLayout = nullptr;
         BodyWidget* bodyWidget = nullptr;
+
+        std::vector<PinWidget*> pinWidgets;
     };
 }

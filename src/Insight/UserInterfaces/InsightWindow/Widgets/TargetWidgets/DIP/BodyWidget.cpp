@@ -1,11 +1,12 @@
 #include "BodyWidget.hpp"
 
-#include <QPainter>
-
-#include "src/Exceptions/Exception.hpp"
-
 using namespace Bloom::Widgets::InsightTargetWidgets::Dip;
-using namespace Bloom::Exceptions;
+
+BodyWidget::BodyWidget(QWidget* parent): QWidget(parent) {
+    this->setObjectName("target-body");
+
+    this->setFixedHeight(BodyWidget::HEIGHT);
+}
 
 void BodyWidget::paintEvent(QPaintEvent* event) {
     auto painter = QPainter(this);
@@ -13,17 +14,11 @@ void BodyWidget::paintEvent(QPaintEvent* event) {
 }
 
 void BodyWidget::drawWidget(QPainter& painter) {
-    auto parentWidget = this->parentWidget();
-
-    if (parentWidget == nullptr) {
-        throw Exception("BodyWidget requires a parent widget");
-    }
-
     painter.setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
 
     // Draw target body
     auto targetBodyColor = this->getBodyColor();
-    auto backgroundColor = QColor("#373835");
+    auto backgroundColor = QColor(0x37, 0x38, 0x35);
 
     if (!this->isEnabled()) {
         targetBodyColor.setAlpha(this->getDisableAlphaLevel());
@@ -31,7 +26,6 @@ void BodyWidget::drawWidget(QPainter& painter) {
 
     painter.setPen(Qt::PenStyle::NoPen);
     painter.setBrush(targetBodyColor);
-    const auto targetBodyHeight = this->height();
 
     auto targetBodyPoint = QPoint(
         0,
@@ -42,22 +36,22 @@ void BodyWidget::drawWidget(QPainter& painter) {
         targetBodyPoint.x(),
         targetBodyPoint.y(),
         this->width(),
-        targetBodyHeight
+        BodyWidget::HEIGHT
     );
 
     painter.setPen(Qt::PenStyle::NoPen);
     painter.setBrush(backgroundColor);
     painter.drawEllipse(QRectF(
         targetBodyPoint.x() + 10,
-        targetBodyPoint.y() + (targetBodyHeight - 30),
+        targetBodyPoint.y() + (BodyWidget::HEIGHT - 30),
         18,
         18
     ));
 
     painter.drawEllipse(QRectF(
         targetBodyPoint.x() - 15,
-        targetBodyPoint.y() + (targetBodyHeight / 2) - 15,
-        28,
-        28
+        targetBodyPoint.y() + (BodyWidget::HEIGHT / 2) - 15,
+        24,
+        24
     ));
 }
