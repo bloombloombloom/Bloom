@@ -23,7 +23,7 @@ QuadFlatPackageWidget::QuadFlatPackageWidget(
 
     auto stylesheetFile = QFile(QString::fromStdString(
             Paths::compiledResourcesPath()
-            + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets//QFP/Stylesheets/QuadFlatPackage.qss"
+            + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss"
         )
     );
     stylesheetFile.open(QFile::ReadOnly);
@@ -297,10 +297,10 @@ void QuadFlatPackageWidget::drawWidget(QPainter& painter) {
             painter.setPen(lineColor);
             const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
                 PinWidget::PIN_LABEL_LONG_LINE_LENGTH
-                : 5
+                : PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
             );
             const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                5
+                PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
                 : PinWidget::PIN_LABEL_LONG_LINE_LENGTH
             );
 
@@ -355,10 +355,10 @@ void QuadFlatPackageWidget::drawWidget(QPainter& painter) {
             painter.setPen(lineColor);
             const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
                 PinWidget::PIN_LABEL_LONG_LINE_LENGTH
-                : 5
+                : PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
             );
             const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                5
+                PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
                 : PinWidget::PIN_LABEL_LONG_LINE_LENGTH
             );
 
