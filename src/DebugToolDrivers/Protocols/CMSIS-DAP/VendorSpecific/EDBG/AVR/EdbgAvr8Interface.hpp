@@ -30,7 +30,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         : edbgInterface(edbgInterface) {};
 
         /**
-         * Disables use of the masked read memory EDBG command. Masking will be performed at the driver-side.
+         * Some EDBG devices don't seem to operate correctly when actioning the masked memory read EDBG command. The
+         * data returned in response to the command appears to be completely incorrect. This appears to only occur
+         * with the MPLAB Snap device.
+         *
+         * Setting this flag to true will disable the EdbgAvr8Interface driver's use of the masked memory read command.
+         * The driver will perform the masking itself, and then issue standard read memory commands. See the
+         * implementation of EdbgAvr8Interface::readMemory() for more.
          *
          * @param avoidMaskedMemoryRead
          */
@@ -285,16 +291,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         Targets::Microchip::Avr::Avr8Bit::TargetParameters targetParameters;
 
         /**
-         * Some EDBG devices don't seem to operate correctly when actioning the masked memory read EDBG command. The
-         * data returned in response to the command appears to be completely incorrect. This appears to only occur
-         * with the MPLAB Snap device.
-         *
-         * Setting this flag to true will disable the EdbgAvr8Interface driver's use of the masked memory read command.
-         * The driver will perform the masking itself, and then issue standard read memory commands. See the
-         * implementation of EdbgAvr8Interface::readMemory() for more.
+         * See the comment for EdbgAvr8Interface::setAvoidMaskedMemoryRead().
          */
         bool avoidMaskedMemoryRead = false;
 
+        /**
+         * See the comment for EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest().
+         */
         std::optional<std::uint32_t> maximumMemoryAccessSizePerRequest;
 
         /**

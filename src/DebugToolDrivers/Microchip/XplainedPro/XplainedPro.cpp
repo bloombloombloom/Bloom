@@ -36,7 +36,7 @@ void XplainedPro::init() {
      * size of the read request, despite the fact that the HID report size is 512 bytes. The debug tool doesn't
      * report any error, it just returns incorrect data.
      *
-     * This means we must enforce a hard limit on the number of bytes we attempt to read, per request.
+     * This means we must enforce a hard limit on the number of bytes we attempt to access, per request.
      */
     this->edbgAvr8Interface->setMaximumMemoryAccessSizePerRequest(256);
 
