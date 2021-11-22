@@ -38,6 +38,26 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->avoidMaskedMemoryRead = avoidMaskedMemoryRead;
         }
 
+        /**
+         * Some EDBG AVR8 debug tools behave in a really weird way when servicing read memory requests that exceed a
+         * certain size. For example, the ATMEGA4809-XPRO Xplained Pro debug tool returns incorrect data for any read
+         * memory command that exceeds 256 bytes in the size of the read request, despite the fact that the HID report
+         * size is 512 bytes. The debug tool doesn't report any error, it just returns incorrect data.
+         *
+         * To address this, debug tool drivers can set a hard limit on the number of bytes this EdbgAvr8Interface instance
+         * will attempt to access in a single request, using the EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest()
+         * function.
+         *
+         * This limit will be enforced in all forms of memory access on the AVR8 target, including register access.
+         *
+         * @TODO: Enforce the limit on memory writes.
+         *
+         * @param maximumSize
+         */
+        void setMaximumMemoryAccessSizePerRequest(std::uint32_t maximumSize) {
+            this->maximumMemoryAccessSizePerRequest = maximumSize;
+        }
+
         /*
          * The public methods below implement the interface defined by the Avr8Interface class.
          * See the comments in that class for more info on the expected behaviour of each method.
@@ -274,6 +294,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * implementation of EdbgAvr8Interface::readMemory() for more.
          */
         bool avoidMaskedMemoryRead = false;
+
+        std::optional<std::uint32_t> maximumMemoryAccessSizePerRequest;
 
         /**
          * We keep record of the current target state for caching purposes. We'll only refresh the target state if the

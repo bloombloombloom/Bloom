@@ -1220,12 +1220,17 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
     }
 
     if (type == Avr8MemoryType::FLASH_PAGE) {
-        if (this->targetParameters.flashPageSize.value_or(0) < 1) {
+        // Flash reads must be done in pages
+        auto pageSize = this->targetParameters.flashPageSize.value_or(0);
+
+        if (pageSize < 1
+            || (
+                this->maximumMemoryAccessSizePerRequest.has_value()
+                && pageSize > this->maximumMemoryAccessSizePerRequest
+            )
+        ) {
             throw Exception("Missing/invalid flash page size parameter");
         }
-
-        // Flash reads must be done in pages
-        auto pageSize = this->targetParameters.flashPageSize.value();
 
         if ((bytes % pageSize) != 0 || (startAddress % pageSize) != 0) {
             /*
@@ -1316,7 +1321,35 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
             return memoryBuffer;
         }
 
-    } else {
+    }
+
+    /*
+     * Enforce a maximum memory access request size.
+     *
+     * See the comment for EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest() for more on this.
+     */
+    if (this->maximumMemoryAccessSizePerRequest.has_value() && bytes > this->maximumMemoryAccessSizePerRequest) {
+        auto maximumRequestSize = this->maximumMemoryAccessSizePerRequest.value();
+        auto totalReadsRequired = std::ceil(static_cast<float>(bytes) / static_cast<float>(maximumRequestSize));
+        auto output = std::vector<unsigned char>();
+        output.reserve(bytes);
+
+        for (float i = 1; i <= totalReadsRequired; i++) {
+            auto bytesToRead = static_cast<std::uint32_t>((bytes - output.size()) > maximumRequestSize ?
+                maximumRequestSize : bytes - output.size());
+            auto data = this->readMemory(
+                type,
+                static_cast<std::uint32_t>(startAddress + output.size()),
+                bytesToRead,
+                excludedAddresses
+            );
+            output.insert(output.end(), data.begin(), data.end());
+        }
+
+        return output;
+    }
+
+    if (type != Avr8MemoryType::FLASH_PAGE) {
         /*
          * EDBG AVR8 debug tools behave in a really weird way when responding with more than two packets
          * for a single read (non-flash) memory command. The data they return in this case appears to be of little use.
