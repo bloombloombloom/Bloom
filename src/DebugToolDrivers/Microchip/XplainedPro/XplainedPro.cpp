@@ -31,6 +31,15 @@ void XplainedPro::init() {
 
     this->edbgAvr8Interface = std::make_unique<EdbgAvr8Interface>(this->edbgInterface);
 
+    /*
+     * The Xplained Pro debug tool returns incorrect data for any read memory command that exceeds 256 bytes in the
+     * size of the read request, despite the fact that the HID report size is 512 bytes. The debug tool doesn't
+     * report any error, it just returns incorrect data.
+     *
+     * This means we must enforce a hard limit on the number of bytes we attempt to read, per request.
+     */
+    this->edbgAvr8Interface->setMaximumMemoryAccessSizePerRequest(256);
+
     this->setInitialised(true);
 }
 
