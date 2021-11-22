@@ -118,6 +118,12 @@ namespace Bloom
                         return std::make_unique<DebugToolDrivers::MplabSnap>();
                     }
                 },
+                {
+                    "xplained-pro",
+                    [] {
+                        return std::make_unique<DebugToolDrivers::XplainedPro>();
+                    }
+                },
             };
 
             return mapping;
