@@ -50,7 +50,7 @@ namespace Bloom::Exceptions
             {0x25, "Configured device bits do not add up to detected bits"},
             {0x31, "Physical not activated"},
             {0x32, "Illegal run / stopped state"},
-            {0x33, "Invalid config for activate phy"},
+            {0x33, "Invalid config for activate physical"},
             {0x34, "Not a valid memtype"},
             {0x35, "Too many or too few bytes"},
             {0x36, "Asked for a bad address"},
