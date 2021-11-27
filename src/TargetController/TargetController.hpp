@@ -124,6 +124,12 @@ namespace Bloom
                         return std::make_unique<DebugToolDrivers::XplainedPro>();
                     }
                 },
+                {
+                    "curiosity-nano",
+                    [] {
+                        return std::make_unique<DebugToolDrivers::CuriosityNano>();
+                    }
+                },
             };
 
             return mapping;
