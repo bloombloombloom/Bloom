@@ -165,7 +165,7 @@ namespace Bloom
         EventManager& eventManager;
         EventListener& eventListener;
 
-        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(10000);
+        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(20000);
 
         /**
          * Triggers an event for the TargetController and waits for a response.
