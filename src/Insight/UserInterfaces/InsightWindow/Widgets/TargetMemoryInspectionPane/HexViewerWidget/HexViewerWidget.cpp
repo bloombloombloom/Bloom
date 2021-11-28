@@ -137,41 +137,6 @@ void HexViewerWidget::onTargetStateChanged(Targets::TargetState newState) {
     this->targetState = newState;
 }
 
-void HexViewerWidget::onByteWidgetsAdjusted() {
-//    const auto& byteWidgetsByRowIndex = this->byteWidgetContainer->byteWidgetsByRowIndex;
-//
-//    int layoutItemMaxIndex = this->byteWidgetAddressLayout->count() - 1;
-//    for (const auto& mappingPair : byteWidgetsByRowIndex) {
-//        const auto rowIndex = static_cast<int>(mappingPair.first);
-//        const auto& byteWidgets = mappingPair.second;
-//
-//        if (byteWidgets.empty()) {
-//            continue;
-//        }
-//
-//        QLabel* labelWidget;
-//        if (rowIndex > layoutItemMaxIndex) {
-//            labelWidget = new QLabel(this->byteWidgetAddressContainer);
-//            labelWidget->setFixedSize(75, 20);
-//            labelWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-//
-//            this->byteWidgetAddressLayout->addWidget(labelWidget);
-//            layoutItemMaxIndex++;
-//
-//        } else {
-//            labelWidget = qobject_cast<QLabel*>(this->byteWidgetAddressLayout->itemAt(rowIndex)->widget());
-//        }
-//
-//        labelWidget->setText(byteWidgets.front()->relativeAddressHex);
-//    }
-//
-//    const auto rowCount = static_cast<int>(byteWidgetsByRowIndex.size());
-//    QLayoutItem* labelItem;
-//    while ((labelItem = this->byteWidgetAddressLayout->takeAt(rowCount)) != nullptr) {
-//        labelItem->widget()->deleteLater();
-//    }
-}
-
 void HexViewerWidget::setStackMemoryHighlightingEnabled(bool enabled) {
     this->highlightStackMemoryButton->setChecked(enabled);
     this->settings.highlightStackMemory = enabled;

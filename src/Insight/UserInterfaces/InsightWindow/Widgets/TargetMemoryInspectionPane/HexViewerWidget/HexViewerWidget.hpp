@@ -65,7 +65,6 @@ namespace Bloom::Widgets
 
     private slots:
         void onTargetStateChanged(Targets::TargetState newState);
-        void onByteWidgetsAdjusted();
         void setStackMemoryHighlightingEnabled(bool enabled);
         void setHoveredRowAndColumnHighlightingEnabled(bool enabled);
         void setFocusedMemoryHighlightingEnabled(bool enabled);
