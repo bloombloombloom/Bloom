@@ -88,6 +88,7 @@ add_executable(Bloom
     src/DebugToolDrivers/Microchip/MplabSnap/MplabSnap.cpp
     src/DebugToolDrivers/Microchip/XplainedPro/XplainedPro.cpp
     src/DebugToolDrivers/Microchip/XplainedMini/XplainedMini.cpp
+    src/DebugToolDrivers/Microchip/XplainedNano/XplainedNano.cpp
     src/DebugToolDrivers/Microchip/CuriosityNano/CuriosityNano.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/Response.cpp
