@@ -4,7 +4,7 @@
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 using namespace Bloom::DebugToolDrivers;
-using namespace Protocols::CmsisDap::Edbg::Avr;
+using namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr;
 using namespace Bloom::Exceptions;
 
 void CuriosityNano::init() {
