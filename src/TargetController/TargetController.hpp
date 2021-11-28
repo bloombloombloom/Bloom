@@ -119,6 +119,12 @@ namespace Bloom
                     }
                 },
                 {
+                    "pickit-4",
+                    [] {
+                        return std::make_unique<DebugToolDrivers::MplabPickit4>();
+                    }
+                },
+                {
                     "xplained-pro",
                     [] {
                         return std::make_unique<DebugToolDrivers::XplainedPro>();

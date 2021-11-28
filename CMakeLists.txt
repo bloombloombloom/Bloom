@@ -86,6 +86,7 @@ add_executable(Bloom
     src/DebugToolDrivers/Microchip/AtmelICE/AtmelIce.cpp
     src/DebugToolDrivers/Microchip/PowerDebugger/PowerDebugger.cpp
     src/DebugToolDrivers/Microchip/MplabSnap/MplabSnap.cpp
+    src/DebugToolDrivers/Microchip/MplabPickit4/MplabPickit4.cpp
     src/DebugToolDrivers/Microchip/XplainedPro/XplainedPro.cpp
     src/DebugToolDrivers/Microchip/XplainedMini/XplainedMini.cpp
     src/DebugToolDrivers/Microchip/XplainedNano/XplainedNano.cpp
