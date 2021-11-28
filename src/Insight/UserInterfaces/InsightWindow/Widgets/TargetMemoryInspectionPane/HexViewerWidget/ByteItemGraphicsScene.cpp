@@ -87,8 +87,8 @@ void ByteItemGraphicsScene::adjustByteWidgets() {
         std::max(((rowCount * byteWidgetHeight) + margins.top() + margins.bottom()), this->parent->height())
     );
 
-    // Don't bother recalculating the byte item positions if the number of rows have not changed.
-    if (rowCount == this->byteItemsByRowIndex.size()) {
+    // Don't bother recalculating the byte item positions if the number of rows & columns have not changed.
+    if (rowCount == this->byteItemsByRowIndex.size() && rowCapacity == this->byteItemsByColumnIndex.size()) {
         return;
     }
 
