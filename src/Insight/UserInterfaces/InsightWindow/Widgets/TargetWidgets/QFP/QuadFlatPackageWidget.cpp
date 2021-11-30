@@ -193,7 +193,7 @@ void QuadFlatPackageWidget::drawWidget(QPainter& painter) {
     static auto pinNameFont = QFont("'Ubuntu', sans-serif");
     static auto pinDirectionFont = pinNameFont;
     pinNameFont.setPixelSize(11);
-    pinDirectionFont.setPixelSize(10);
+    pinDirectionFont.setPixelSize(9);
 
     static const auto lineColor = QColor(0x4F, 0x4F, 0x4F);
     static const auto pinNameFontColor = QColor(0xA6, 0xA7, 0xAA);
