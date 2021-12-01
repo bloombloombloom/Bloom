@@ -12,9 +12,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         Q_PROPERTY(int disableAlphaLevel READ getDisableAlphaLevel WRITE setDisableAlphaLevel DESIGNABLE true)
 
     public:
-        static constexpr int HEIGHT = 130;
-
-        explicit BodyWidget(QWidget* parent);
+        explicit BodyWidget(QWidget* parent, std::size_t pinCount);
 
         [[nodiscard]] QColor getBodyColor() const {
             return this->bodyColor;
@@ -37,8 +35,15 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         void drawWidget(QPainter& painter);
 
     private:
+        static constexpr int MAXIMUM_BODY_HEIGHT = 156;
+        static constexpr int MINIMUM_BODY_HEIGHT = 80;
+        static constexpr int MAXIMUM_FIRST_PIN_INDICATOR_HEIGHT = 16;
+        static constexpr int MINIMUM_FIRST_PIN_INDICATOR_HEIGHT = 12;
+
         // These properties can be modified via Qt style sheets (see Stylesheets/DualInlinePackage.qss)
         QColor bodyColor = QColor("#8E8B83");
         int disableAlphaLevel = 100;
+        int firstPinIndicatorDiameter = 14;
+        int orientationIndicatorDiameter = 16;
     };
 }

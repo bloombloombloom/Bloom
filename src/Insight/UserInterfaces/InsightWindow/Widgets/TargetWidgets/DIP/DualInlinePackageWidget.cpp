@@ -52,14 +52,23 @@ DualInlinePackageWidget::DualInlinePackageWidget(
         }
     }
 
+    this->bodyWidget = new BodyWidget(this, targetVariant.pinDescriptorsByNumber.size());
+
     this->layout->addLayout(this->topPinLayout);
-    this->bodyWidget = new BodyWidget(this);
     this->layout->addWidget(this->bodyWidget, 0, Qt::AlignmentFlag::AlignVCenter);
     this->layout->addLayout(this->bottomPinLayout);
     this->setLayout(this->layout);
 
+    const auto bodyWidgetHeight = this->bodyWidget->height();
     const auto bodyWidgetWidth = ((PinWidget::MINIMUM_WIDTH + PinWidget::WIDTH_SPACING)
         * static_cast<int>(this->pinWidgets.size() / 2)) - PinWidget::WIDTH_SPACING + 46;
+
+    this->bodyWidget->setGeometry(
+        0,
+        PinWidget::MAXIMUM_HEIGHT + PinWidget::WIDTH_SPACING,
+        bodyWidgetWidth,
+        bodyWidgetHeight
+    );
 
     const auto width = bodyWidgetWidth;
     const auto height = (
@@ -68,19 +77,13 @@ DualInlinePackageWidget::DualInlinePackageWidget(
             + PinWidget::PIN_LABEL_SHORT_LINE_LENGTH + (
                 (PinWidget::LABEL_HEIGHT + PinWidget::PIN_LABEL_SPACING) * 2
             )
-        ) * 2) + BodyWidget::HEIGHT;
+        ) * 2) + bodyWidgetHeight;
 
-    this->bodyWidget->setGeometry(
-        0,
-        PinWidget::MAXIMUM_HEIGHT + PinWidget::WIDTH_SPACING,
-        width,
-        BodyWidget::HEIGHT
-    );
     this->topPinLayout->setGeometry(QRect(0, 0, width, PinWidget::MAXIMUM_HEIGHT));
     this->bottomPinLayout->setGeometry(
         QRect(
             0,
-            (PinWidget::MAXIMUM_HEIGHT + BodyWidget::HEIGHT + (PinWidget::WIDTH_SPACING * 2)),
+            (PinWidget::MAXIMUM_HEIGHT + bodyWidgetHeight + (PinWidget::WIDTH_SPACING * 2)),
             width,
             PinWidget::MAXIMUM_HEIGHT
         )
