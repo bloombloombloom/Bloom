@@ -100,7 +100,7 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
         this->registerDescriptor,
         this->registerValue,
         insightWorker,
-        this->contentContainer
+        this->container
     );
 
     auto contentLayout = this->container->findChild<QHBoxLayout*>("content-layout");
