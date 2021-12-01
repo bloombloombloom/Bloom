@@ -4,6 +4,13 @@ using namespace Bloom::Widgets::InsightTargetWidgets::Dip;
 
 BodyWidget::BodyWidget(QWidget* parent, std::size_t pinCount): QWidget(parent) {
     this->setObjectName("target-body");
+
+    /*
+     * The DIP package widget looks awkward when the body height is fixed. For this reason, the body height and
+     * indicator sizes are proportional to the pin count.
+     *
+     * The proportionality constants used below were chosen because they look the nicest. No other reason.
+     */
     this->setFixedHeight(
         std::min(
             BodyWidget::MAXIMUM_BODY_HEIGHT,
@@ -52,7 +59,7 @@ void BodyWidget::drawWidget(QPainter& painter) {
      * the first pin.
      */
     const auto orientationIndicatorRect = QRectF(
-        - (this->orientationIndicatorDiameter / 2),
+        -(this->orientationIndicatorDiameter / 2),
         (bodyHeight / 2) - (this->orientationIndicatorDiameter / 2),
         this->orientationIndicatorDiameter,
         this->orientationIndicatorDiameter
