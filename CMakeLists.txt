@@ -139,7 +139,7 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/RotatableLabel.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/SvgWidget.cpp
-    src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/ExpandingHeightScrollAreaWidget.hpp
 

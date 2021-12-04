@@ -2,6 +2,7 @@
 
 #include <QToolButton>
 #include <QString>
+#include <QChildEvent>
 
 #include "SvgWidget.hpp"
 
@@ -17,10 +18,7 @@ namespace Bloom::Widgets
         Q_PROPERTY(int buttonHeight READ getButtonHeight WRITE setButtonHeight DESIGNABLE true)
 
     public:
-        explicit SvgToolButton(QWidget* parent): QToolButton(parent) {
-            this->setButtonWidth(10);
-            this->setButtonHeight(10);
-        };
+        explicit SvgToolButton(QWidget* parent);
 
         void setSvgFilePath(const QString& svgFilePath) {
             this->svgWidget->setSvgFilePath(svgFilePath);
@@ -57,6 +55,9 @@ namespace Bloom::Widgets
         [[nodiscard]] int getButtonHeight() const {
             return this->buttonHeight;
         }
+
+    protected:
+        void childEvent(QChildEvent* childEvent) override;
 
     private:
         SvgWidget* svgWidget = new SvgWidget(this);
