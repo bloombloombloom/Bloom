@@ -6,7 +6,6 @@ Checks: >
   cert-err52-cpp,
   cert-err60-cpp,
   cppcoreguidelines-*,
-  -cppcoreguidelines-*,
   google-explicit-constructor,
   google-global-names-in-headers,
   google-readability-casting,
@@ -15,7 +14,11 @@ Checks: >
   modernize-*,
   performance-*,
   readability-*,
-  -readability-named-parameter
+  -modernize-use-trailing-return-type,
+  -readability-named-parameter,
+  -readability-magic-numbers,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-owning-memory,
 CheckOptions:
   - key: bugprone-argument-comment.StrictMode
     value: 1
