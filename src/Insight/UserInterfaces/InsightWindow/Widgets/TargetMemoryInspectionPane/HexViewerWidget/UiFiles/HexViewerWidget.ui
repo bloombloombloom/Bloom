@@ -63,10 +63,10 @@
                                     <bool>true</bool>
                                 </property>
                                 <property name="svgFilePath">
-                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-stack-memory.svg</string>
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-stack-memory.svg</string>
                                 </property>
                                 <property name="disabledSvgFilePath">
-                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-stack-memory-disabled.svg</string>
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-stack-memory-disabled.svg</string>
                                 </property>
                                 <property name="toolTip">
                                     <string>Highlight Stack Memory</string>
@@ -79,10 +79,10 @@
                                     <bool>true</bool>
                                 </property>
                                 <property name="svgFilePath">
-                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-focused-memory.svg</string>
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-focused-memory.svg</string>
                                 </property>
                                 <property name="disabledSvgFilePath">
-                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-focused-memory-disabled.svg</string>
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-focused-memory-disabled.svg</string>
                                 </property>
                                 <property name="toolTip">
                                     <string>Highlight Focused Regions</string>
@@ -95,10 +95,10 @@
                                     <bool>true</bool>
                                 </property>
                                 <property name="svgFilePath">
-                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-hovered-rows-columns.svg</string>
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-hovered-rows-columns.svg</string>
                                 </property>
                                 <property name="disabledSvgFilePath">
-                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/highlight-hovered-rows-columns-disabled.svg</string>
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-hovered-rows-columns-disabled.svg</string>
                                 </property>
                                 <property name="toolTip">
                                     <string>Highlight Row And Column On Hover</string>
