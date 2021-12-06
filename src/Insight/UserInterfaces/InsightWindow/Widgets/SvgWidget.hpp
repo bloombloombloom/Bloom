@@ -5,6 +5,7 @@
 #include <QString>
 #include <QEvent>
 #include <QSize>
+#include <QPropertyAnimation>
 
 namespace Bloom::Widgets
 {
@@ -57,11 +58,28 @@ namespace Bloom::Widgets
 
         void setAngle(int angle) {
             this->angle = angle;
+
+            if (this->spinningAnimation != nullptr) {
+                this->update();
+            }
         }
 
         [[nodiscard]] int getAngle() const {
             return this->angle;
         }
+
+        /**
+         * Starts a spinning animation, where the widget will rotate on its center, indefinitely.
+         *
+         * This is typically used in SvgToolButton instances, where the spinning of the tool button icon indicates
+         * some action being in progress (see the refresh tool button in the TargetMemoryInspectionPane widget).
+         */
+        void startSpin();
+
+        /**
+         * Stops the spinning animation.
+         */
+        void stopSpin();
 
     protected:
         void paintEvent(QPaintEvent* paintEvent) override;
@@ -74,5 +92,6 @@ namespace Bloom::Widgets
         int containerWidth = 0;
         int containerHeight = 0;
         int angle = 0;
+        QPropertyAnimation* spinningAnimation = nullptr;
     };
 }

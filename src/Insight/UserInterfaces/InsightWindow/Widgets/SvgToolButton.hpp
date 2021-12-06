@@ -56,6 +56,13 @@ namespace Bloom::Widgets
             return this->buttonHeight;
         }
 
+        void startSpin() {
+            this->svgWidget->startSpin();
+        }
+
+        void stopSpin() {
+            this->svgWidget->stopSpin();
+        }
     protected:
         void childEvent(QChildEvent* childEvent) override;
 

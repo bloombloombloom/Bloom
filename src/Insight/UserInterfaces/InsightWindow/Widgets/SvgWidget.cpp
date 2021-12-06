@@ -9,6 +9,28 @@ SvgWidget::SvgWidget(QWidget* parent): QFrame(parent) {
     this->renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatioByExpanding);
 }
 
+void SvgWidget::startSpin() {
+    if (this->spinningAnimation == nullptr) {
+        this->spinningAnimation = new QPropertyAnimation(this, "angle", this);
+        this->spinningAnimation->setDuration(2000);
+        this->spinningAnimation->setStartValue(0);
+        this->spinningAnimation->setEndValue(360);
+
+        QObject::connect(this->spinningAnimation, &QPropertyAnimation::finished, this, [this] {
+            this->spinningAnimation->start();
+        });
+    }
+
+    this->spinningAnimation->start();
+}
+
+void SvgWidget::stopSpin() {
+    if (this->spinningAnimation != nullptr) {
+        this->spinningAnimation->stop();
+        this->setAngle(0);
+    }
+}
+
 void SvgWidget::paintEvent(QPaintEvent* paintEvent) {
     auto painter = QPainter(this);
     auto svgSize = this->renderer.defaultSize();
