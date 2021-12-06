@@ -18,7 +18,7 @@ RegisterWidget::RegisterWidget(
     TargetRegisterDescriptor descriptor,
     InsightWorker& insightWorker,
     QWidget *parent
-): ItemWidget(parent), descriptor(descriptor), insightWorker(insightWorker) {
+): ItemWidget(parent), descriptor(std::move(descriptor)), insightWorker(insightWorker) {
     this->setObjectName("register-item");
     this->setFixedHeight(25);
 
