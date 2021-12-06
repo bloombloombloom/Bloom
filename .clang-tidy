@@ -22,4 +22,6 @@ Checks: >
 CheckOptions:
   - key: bugprone-argument-comment.StrictMode
     value: 1
+  - key: cppcoreguidelines-non-private-member-variables-in-classes.IgnorePublicMemberVariables
+    value: 1
 FormatStyle: 'none'
