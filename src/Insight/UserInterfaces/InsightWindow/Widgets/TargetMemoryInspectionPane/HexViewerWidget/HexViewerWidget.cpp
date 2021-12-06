@@ -44,7 +44,7 @@ HexViewerWidget::HexViewerWidget(
     this->toolBar = this->container->findChild<QWidget*>("tool-bar");
     this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
 
-    this->refreshButton = this->toolBar->findChild<QToolButton*>("refresh-memory-btn");
+    this->refreshButton = this->toolBar->findChild<SvgToolButton*>("refresh-memory-btn");
     this->highlightStackMemoryButton = this->toolBar->findChild<SvgToolButton*>("highlight-stack-memory-btn");
     this->highlightHoveredRowAndColumnButton = this->toolBar->findChild<SvgToolButton*>(
         "highlight-hovered-rows-columns-btn"
