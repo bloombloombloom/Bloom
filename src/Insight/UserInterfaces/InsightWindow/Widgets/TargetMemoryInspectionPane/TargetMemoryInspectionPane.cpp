@@ -159,15 +159,13 @@ void TargetMemoryInspectionPane::onTargetStateChanged(Targets::TargetState newSt
     using Targets::TargetState;
     this->targetState = newState;
 
-    if (this->activated) {
-        if (newState == TargetState::STOPPED) {
-            this->refreshMemoryValues([this] {
-                this->hexViewerWidget->setDisabled(false);
-            });
+    if (newState == TargetState::STOPPED && this->activated) {
+        this->refreshMemoryValues([this] {
+            this->hexViewerWidget->setDisabled(false);
+        });
 
-        } else {
-            this->hexViewerWidget->setDisabled(true);
-        }
+    } else if (newState == TargetState::RUNNING) {
+        this->hexViewerWidget->setDisabled(true);
     }
 }
 
