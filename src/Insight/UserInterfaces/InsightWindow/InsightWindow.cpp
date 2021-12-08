@@ -75,43 +75,31 @@ InsightWindow::InsightWindow(InsightWorker& insightWorker): QMainWindow(nullptr)
     );
     this->ioUnavailableWidget = this->windowContainer->findChild<QLabel*>("io-inspection-unavailable");
 
-    auto fileMenu = this->mainMenuBar->findChild<QMenu*>("file-menu");
-    auto helpMenu = this->mainMenuBar->findChild<QMenu*>("help-menu");
-    auto quitAction = fileMenu->findChild<QAction*>("close-insight");
-    auto openReportIssuesUrlAction = helpMenu->findChild<QAction*>("open-report-issues-url");
-    auto openGettingStartedUrlAction = helpMenu->findChild<QAction*>("open-getting-started-url");
-    auto openAboutWindowAction = helpMenu->findChild<QAction*>("open-about-dialogue");
-
-    connect(quitAction, &QAction::triggered, this, &InsightWindow::close);
-    connect(openReportIssuesUrlAction, &QAction::triggered, this, &InsightWindow::openReportIssuesUrl);
-    connect(openGettingStartedUrlAction, &QAction::triggered, this, &InsightWindow::openGettingStartedUrl);
-    connect(openAboutWindowAction, &QAction::triggered, this, &InsightWindow::openAboutWindow);
+    auto* fileMenu = this->mainMenuBar->findChild<QMenu*>("file-menu");
+    auto* helpMenu = this->mainMenuBar->findChild<QMenu*>("help-menu");
+    auto* quitAction = fileMenu->findChild<QAction*>("close-insight");
+    auto* openReportIssuesUrlAction = helpMenu->findChild<QAction*>("open-report-issues-url");
+    auto* openGettingStartedUrlAction = helpMenu->findChild<QAction*>("open-getting-started-url");
+    auto* openAboutWindowAction = helpMenu->findChild<QAction*>("open-about-dialogue");
 
     this->header = this->windowContainer->findChild<QWidget*>("header");
     this->refreshIoInspectionButton = this->header->findChild<SvgToolButton*>("refresh-io-inspection-btn");
-
-    connect(this->refreshIoInspectionButton, &QToolButton::clicked, this, &InsightWindow::refresh);
 
     this->leftMenuBar = this->container->findChild<QWidget*>("left-side-menu-bar");
     this->leftPanel = this->container->findChild<PanelWidget*>("left-panel");
 
     this->targetRegistersButton = this->container->findChild<QToolButton*>("target-registers-btn");
-    auto targetRegisterButtonLayout = this->targetRegistersButton->findChild<QVBoxLayout*>();
+    auto* targetRegisterButtonLayout = this->targetRegistersButton->findChild<QVBoxLayout*>();
     auto* registersBtnLabel = new RotatableLabel(270, "Registers", this->targetRegistersButton);
     registersBtnLabel->setObjectName("target-registers-btn-label");
     registersBtnLabel->setContentsMargins(5,0,9,0);
     targetRegisterButtonLayout->insertWidget(0, registersBtnLabel, 0, Qt::AlignTop);
-
-    connect(this->targetRegistersButton, &QToolButton::clicked, this, &InsightWindow::toggleTargetRegistersPane);
 
     this->bottomMenuBar = this->container->findChild<QWidget*>("bottom-menu-bar");
     this->bottomPanel = this->container->findChild<PanelWidget*>("bottom-panel");
 
     this->ramInspectionButton = this->container->findChild<QToolButton*>("ram-inspection-btn");
     this->eepromInspectionButton = this->container->findChild<QToolButton*>("eeprom-inspection-btn");
-
-    connect(this->ramInspectionButton, &QToolButton::clicked, this, &InsightWindow::toggleRamInspectionPane);
-    connect(this->eepromInspectionButton, &QToolButton::clicked, this, &InsightWindow::toggleEepromInspectionPane);
 
     this->footer = this->windowContainer->findChild<QWidget*>("footer");
     this->targetStatusLabel = this->footer->findChild<QLabel*>("target-state");
@@ -120,182 +108,91 @@ InsightWindow::InsightWindow(InsightWorker& insightWorker): QMainWindow(nullptr)
     const auto windowSize = this->size();
     this->windowContainer->setFixedSize(windowSize);
     this->layoutContainer->setFixedSize(windowSize);
+
+    // Main menu connections
+    QObject::connect(
+        quitAction,
+        &QAction::triggered,
+        this,
+        &InsightWindow::close
+    );
+    QObject::connect(
+        openReportIssuesUrlAction,
+        &QAction::triggered,
+        this,
+        &InsightWindow::openReportIssuesUrl
+    );
+    QObject::connect(
+        openGettingStartedUrlAction,
+        &QAction::triggered,
+        this,
+        &InsightWindow::openGettingStartedUrl
+    );
+    QObject::connect(
+        openAboutWindowAction,
+        &QAction::triggered,
+        this,
+        &InsightWindow::openAboutWindow
+    );
+
+    // Tool bar button connections
+    QObject::connect(
+        this->refreshIoInspectionButton,
+        &QToolButton::clicked,
+        this,
+        &InsightWindow::refresh
+    );
+
+    // Panel button connections
+    QObject::connect(
+        this->targetRegistersButton,
+        &QToolButton::clicked,
+        this,
+        &InsightWindow::toggleTargetRegistersPane
+    );
+    QObject::connect(
+        this->ramInspectionButton,
+        &QToolButton::clicked,
+        this,
+        &InsightWindow::toggleRamInspectionPane
+    );
+    QObject::connect(
+        this->eepromInspectionButton,
+        &QToolButton::clicked,
+        this,
+        &InsightWindow::toggleEepromInspectionPane
+    );
+
+    // InsightWorker connections
+    QObject::connect(
+        &(this->insightWorker),
+        &InsightWorker::targetControllerSuspended,
+        this,
+        &InsightWindow::onTargetControllerSuspended
+    );
+    QObject::connect(
+        &(this->insightWorker),
+        &InsightWorker::targetControllerResumed,
+        this,
+        &InsightWindow::onTargetControllerResumed
+    );
+    QObject::connect(
+        &(this->insightWorker),
+        &InsightWorker::targetStateUpdated,
+        this,
+        &InsightWindow::onTargetStateUpdate
+    );
+    QObject::connect(
+        &(this->insightWorker),
+        &InsightWorker::targetProgramCounterUpdated,
+        this,
+        &InsightWindow::onTargetProgramCounterUpdate
+    );
 }
 
 void InsightWindow::init(TargetDescriptor targetDescriptor) {
     this->targetDescriptor = std::move(targetDescriptor);
     this->activate();
-}
-
-void InsightWindow::onTargetControllerSuspended() {
-    if (this->activated) {
-        this->deactivate();
-    }
-}
-
-void InsightWindow::onTargetControllerResumed(const TargetDescriptor& targetDescriptor) {
-    if (!this->activated) {
-        this->targetDescriptor = targetDescriptor;
-        this->activate();
-    }
-}
-
-void InsightWindow::onTargetStateUpdate(TargetState newState) {
-    this->targetState = newState;
-
-    if (newState == TargetState::RUNNING) {
-        this->targetStatusLabel->setText("Running");
-        this->programCounterValueLabel->setText("-");
-        this->toggleUi(true);
-
-    } else if (newState == TargetState::STOPPED) {
-        this->targetStatusLabel->setText("Stopped");
-        this->toggleUi(false);
-
-    } else {
-        this->targetStatusLabel->setText("Unknown");
-    }
-}
-
-void InsightWindow::onTargetProgramCounterUpdate(quint32 programCounter) {
-    this->programCounterValueLabel->setText(
-        "0x" + QString::number(programCounter, 16).toUpper() + " (" + QString::number(programCounter) + ")"
-    );
-}
-
-void InsightWindow::refresh() {
-    if (this->targetState != TargetState::STOPPED || this->selectedVariant == nullptr) {
-        return;
-    }
-
-    this->toggleUi(true);
-    this->refreshIoInspectionButton->startSpin();
-
-    if (this->targetPackageWidget != nullptr) {
-        this->targetPackageWidget->setDisabled(true);
-        this->targetPackageWidget->refreshPinStates([this] {
-            if (this->targetState == TargetState::STOPPED) {
-                this->targetPackageWidget->setDisabled(false);
-
-                if (this->targetRegistersSidePane == nullptr || !this->targetRegistersSidePane->activated) {
-                    this->refreshIoInspectionButton->stopSpin();
-                    this->toggleUi(false);
-                }
-            }
-        });
-    }
-
-    if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->activated) {
-        this->targetRegistersSidePane->refreshRegisterValues([this] {
-            this->refreshIoInspectionButton->stopSpin();
-            this->toggleUi(false);
-        });
-    }
-}
-
-void InsightWindow::openReportIssuesUrl() {
-    auto url = QUrl(QString::fromStdString(Paths::homeDomainName() + "/report-issue"));
-    /*
-     * The https://bloom.oscillate.io/report-issue URL just redirects to the Bloom GitHub issue page.
-     *
-     * We can use query parameters in the URL to pre-fill the body of the issue. We use this to include some
-     * target information.
-     */
-    auto urlQuery = QUrlQuery();
-    auto issueBody = QString("Issue reported via Bloom Insight.\nTarget name: "
-        + QString::fromStdString(this->targetDescriptor.name) + "\n"
-        + "Target ID: " + QString::fromStdString(this->targetDescriptor.id) + "\n"
-    );
-
-    if (this->selectedVariant != nullptr) {
-        issueBody += "Target variant: " + QString::fromStdString(this->selectedVariant->name) + "\n";
-    }
-
-    issueBody += "\nPlease describe your issue below. Include as much detail as possible.";
-    urlQuery.addQueryItem("body", issueBody);
-    url.setQuery(urlQuery);
-
-    QDesktopServices::openUrl(url);
-}
-
-void InsightWindow::openGettingStartedUrl() {
-    QDesktopServices::openUrl(QUrl(QString::fromStdString(Paths::homeDomainName() + "/docs/getting-started")));
-}
-
-void InsightWindow::openAboutWindow() {
-    if (this->aboutWindowWidget == nullptr) {
-        this->aboutWindowWidget = new AboutWindow(this);
-    }
-
-    this->aboutWindowWidget->show();
-}
-
-void InsightWindow::toggleTargetRegistersPane() {
-    if (this->targetRegistersSidePane->activated) {
-        this->targetRegistersSidePane->deactivate();
-        this->targetRegistersButton->setChecked(false);
-
-        /*
-         * Given that the target registers side pane is currently the only pane in the left panel, the panel will be
-         * empty so no need to leave it visible.
-         */
-        this->leftPanel->setVisible(false);
-
-    } else {
-        this->targetRegistersSidePane->activate();
-        this->targetRegistersButton->setChecked(true);
-        this->leftPanel->setVisible(true);
-    }
-}
-
-void InsightWindow::toggleRamInspectionPane() {
-    if (this->ramInspectionPane->activated) {
-        this->ramInspectionPane->deactivate();
-        this->bottomPanel->hide();
-        this->ramInspectionButton->setChecked(false);
-
-    } else {
-        if (this->eepromInspectionPane != nullptr && this->eepromInspectionPane->activated) {
-            this->toggleEepromInspectionPane();
-        }
-
-        this->ramInspectionPane->activate();
-        this->bottomPanel->show();
-        this->ramInspectionButton->setChecked(true);
-
-        if (this->targetPackageWidget != nullptr) {
-            this->setMinimumHeight(std::max(
-                this->minimumHeight(),
-                this->targetPackageWidget->height() + this->header->height() + this->footer->height()
-                    + this->menuBar()->height() + this->bottomPanel->getMinimumResize() + 30
-            ));
-        }
-    }
-}
-
-void InsightWindow::toggleEepromInspectionPane() {
-    if (this->eepromInspectionPane->activated) {
-        this->eepromInspectionPane->deactivate();
-        this->bottomPanel->hide();
-        this->eepromInspectionButton->setChecked(false);
-
-    } else {
-        if (this->ramInspectionPane != nullptr && this->ramInspectionPane->activated) {
-            this->toggleRamInspectionPane();
-        }
-
-        this->eepromInspectionPane->activate();
-        this->bottomPanel->show();
-        this->eepromInspectionButton->setChecked(true);
-
-        if (this->targetPackageWidget != nullptr) {
-            this->setMinimumHeight(std::max(
-                this->minimumHeight(),
-                this->targetPackageWidget->height() + this->header->height() + this->footer->height()
-                    + this->menuBar()->height() + this->bottomPanel->getMinimumResize() + 30
-            ));
-        }
-    }
 }
 
 void InsightWindow::resizeEvent(QResizeEvent* event) {
@@ -407,7 +304,7 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
     }
 }
 
-void InsightWindow::toggleUi(bool disable) {
+void InsightWindow::setUiDisabled(bool disable) {
     this->uiDisabled = disable;
 
     if (this->refreshIoInspectionButton != nullptr) {
@@ -417,8 +314,8 @@ void InsightWindow::toggleUi(bool disable) {
 }
 
 void InsightWindow::activate() {
-    auto targetNameLabel = this->footer->findChild<QLabel*>("target-name");
-    auto targetIdLabel = this->footer->findChild<QLabel*>("target-id");
+    auto* targetNameLabel = this->footer->findChild<QLabel*>("target-name");
+    auto* targetIdLabel = this->footer->findChild<QLabel*>("target-id");
     targetNameLabel->setText(QString::fromStdString(this->targetDescriptor.name));
     targetIdLabel->setText("0x" + QString::fromStdString(this->targetDescriptor.id).remove("0x").toUpper());
     this->variantMenu = this->footer->findChild<QMenu*>("target-variant-menu");
@@ -473,11 +370,11 @@ void InsightWindow::activate() {
         );
 
         if (InsightWindow::isVariantSupported(targetVariant)) {
-            auto supportedVariantPtr = &(this->supportedVariantsByName.insert(
+            auto* supportedVariantPtr = &(this->supportedVariantsByName.insert(
                 std::pair(QString::fromStdString(targetVariant.name).toLower(), targetVariant)
             ).first->second);
 
-            connect(
+            QObject::connect(
                 variantAction,
                 &QAction::triggered,
                 this,
@@ -538,7 +435,7 @@ void InsightWindow::activate() {
         this->ioUnavailableWidget->show();
     }
 
-    auto leftPanelLayout = this->leftPanel->layout();
+    auto* leftPanelLayout = this->leftPanel->layout();
     this->targetRegistersSidePane = new TargetRegistersPaneWidget(
         this->targetDescriptor,
         this->insightWorker,
@@ -548,7 +445,7 @@ void InsightWindow::activate() {
     this->targetRegistersButton->setChecked(false);
     this->targetRegistersButton->setDisabled(false);
 
-    auto bottomPanelLayout = this->bottomPanel->layout();
+    auto* bottomPanelLayout = this->bottomPanel->layout();
     if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::RAM)) {
         auto& ramDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::RAM);
         this->ramInspectionPane = new TargetMemoryInspectionPane(
@@ -575,7 +472,7 @@ void InsightWindow::activate() {
         this->eepromInspectionButton->setDisabled(false);
     }
 
-    this->toggleUi(this->targetState != TargetState::STOPPED);
+    this->setUiDisabled(this->targetState != TargetState::STOPPED);
     this->activated = true;
 }
 
@@ -606,7 +503,7 @@ void InsightWindow::deactivate() {
     this->variantMenu->clear();
     this->variantMenu->setEnabled(false);
 
-    this->toggleUi(true);
+    this->setUiDisabled(true);
     this->activated = false;
 }
 
@@ -636,4 +533,176 @@ void InsightWindow::adjustPanels() {
             (containerSize.height() / 2) - this->bottomMenuBar->height()
         )
     );
+}
+
+
+void InsightWindow::onTargetControllerSuspended() {
+    if (this->activated) {
+        this->deactivate();
+    }
+}
+
+void InsightWindow::onTargetControllerResumed(const TargetDescriptor& targetDescriptor) {
+    if (!this->activated) {
+        this->targetDescriptor = targetDescriptor;
+        this->activate();
+    }
+}
+
+void InsightWindow::onTargetStateUpdate(TargetState newState) {
+    this->targetState = newState;
+
+    if (newState == TargetState::RUNNING) {
+        this->targetStatusLabel->setText("Running");
+        this->programCounterValueLabel->setText("-");
+        this->setUiDisabled(true);
+
+    } else if (newState == TargetState::STOPPED) {
+        this->targetStatusLabel->setText("Stopped");
+        this->setUiDisabled(false);
+
+    } else {
+        this->targetStatusLabel->setText("Unknown");
+    }
+}
+
+void InsightWindow::onTargetProgramCounterUpdate(quint32 programCounter) {
+    this->programCounterValueLabel->setText(
+        "0x" + QString::number(programCounter, 16).toUpper() + " (" + QString::number(programCounter) + ")"
+    );
+}
+
+void InsightWindow::refresh() {
+    if (this->targetState != TargetState::STOPPED || this->selectedVariant == nullptr) {
+        return;
+    }
+
+    this->setUiDisabled(true);
+    this->refreshIoInspectionButton->startSpin();
+
+    if (this->targetPackageWidget != nullptr) {
+        this->targetPackageWidget->setDisabled(true);
+        this->targetPackageWidget->refreshPinStates([this] {
+            if (this->targetState == TargetState::STOPPED) {
+                this->targetPackageWidget->setDisabled(false);
+
+                if (this->targetRegistersSidePane == nullptr || !this->targetRegistersSidePane->activated) {
+                    this->refreshIoInspectionButton->stopSpin();
+                    this->setUiDisabled(false);
+                }
+            }
+        });
+    }
+
+    if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->activated) {
+        this->targetRegistersSidePane->refreshRegisterValues([this] {
+            this->refreshIoInspectionButton->stopSpin();
+            this->setUiDisabled(false);
+        });
+    }
+}
+
+void InsightWindow::openReportIssuesUrl() {
+    auto url = QUrl(QString::fromStdString(Paths::homeDomainName() + "/report-issue"));
+    /*
+     * The https://bloom.oscillate.io/report-issue URL just redirects to the Bloom GitHub issue page.
+     *
+     * We can use query parameters in the URL to pre-fill the body of the issue. We use this to include some
+     * target information.
+     */
+    auto urlQuery = QUrlQuery();
+    auto issueBody = QString("Issue reported via Bloom Insight.\nTarget name: "
+        + QString::fromStdString(this->targetDescriptor.name) + "\n"
+        + "Target ID: " + QString::fromStdString(this->targetDescriptor.id) + "\n"
+    );
+
+    if (this->selectedVariant != nullptr) {
+        issueBody += "Target variant: " + QString::fromStdString(this->selectedVariant->name) + "\n";
+    }
+
+    issueBody += "\nPlease describe your issue below. Include as much detail as possible.";
+    urlQuery.addQueryItem("body", issueBody);
+    url.setQuery(urlQuery);
+
+    QDesktopServices::openUrl(url);
+}
+
+void InsightWindow::openGettingStartedUrl() {
+    QDesktopServices::openUrl(QUrl(QString::fromStdString(Paths::homeDomainName() + "/docs/getting-started")));
+}
+
+void InsightWindow::openAboutWindow() {
+    if (this->aboutWindowWidget == nullptr) {
+        this->aboutWindowWidget = new AboutWindow(this);
+    }
+
+    this->aboutWindowWidget->show();
+}
+
+void InsightWindow::toggleTargetRegistersPane() {
+    if (this->targetRegistersSidePane->activated) {
+        this->targetRegistersSidePane->deactivate();
+        this->targetRegistersButton->setChecked(false);
+
+        /*
+         * Given that the target registers side pane is currently the only pane in the left panel, the panel will be
+         * empty so no need to leave it visible.
+         */
+        this->leftPanel->setVisible(false);
+
+    } else {
+        this->targetRegistersSidePane->activate();
+        this->targetRegistersButton->setChecked(true);
+        this->leftPanel->setVisible(true);
+    }
+}
+
+void InsightWindow::toggleRamInspectionPane() {
+    if (this->ramInspectionPane->activated) {
+        this->ramInspectionPane->deactivate();
+        this->bottomPanel->hide();
+        this->ramInspectionButton->setChecked(false);
+
+    } else {
+        if (this->eepromInspectionPane != nullptr && this->eepromInspectionPane->activated) {
+            this->toggleEepromInspectionPane();
+        }
+
+        this->ramInspectionPane->activate();
+        this->bottomPanel->show();
+        this->ramInspectionButton->setChecked(true);
+
+        if (this->targetPackageWidget != nullptr) {
+            this->setMinimumHeight(std::max(
+                this->minimumHeight(),
+                this->targetPackageWidget->height() + this->header->height() + this->footer->height()
+                    + this->menuBar()->height() + this->bottomPanel->getMinimumResize() + 30
+            ));
+        }
+    }
+}
+
+void InsightWindow::toggleEepromInspectionPane() {
+    if (this->eepromInspectionPane->activated) {
+        this->eepromInspectionPane->deactivate();
+        this->bottomPanel->hide();
+        this->eepromInspectionButton->setChecked(false);
+
+    } else {
+        if (this->ramInspectionPane != nullptr && this->ramInspectionPane->activated) {
+            this->toggleRamInspectionPane();
+        }
+
+        this->eepromInspectionPane->activate();
+        this->bottomPanel->show();
+        this->eepromInspectionButton->setChecked(true);
+
+        if (this->targetPackageWidget != nullptr) {
+            this->setMinimumHeight(std::max(
+                this->minimumHeight(),
+                this->targetPackageWidget->height() + this->header->height() + this->footer->height()
+                    + this->menuBar()->height() + this->bottomPanel->getMinimumResize() + 30
+            ));
+        }
+    }
 }

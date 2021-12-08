@@ -117,12 +117,6 @@ void Insight::startup() {
     QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
     eventDispatchTimer->start(100);
 
-    QObject::connect(this->insightWorker, &InsightWorker::targetControllerSuspended, this->mainWindow, &InsightWindow::onTargetControllerSuspended);
-    QObject::connect(this->insightWorker, &InsightWorker::targetControllerResumed, this->mainWindow, &InsightWindow::onTargetControllerResumed);
-    QObject::connect(this->insightWorker, &InsightWorker::targetStateUpdated, this->mainWindow, &InsightWindow::onTargetStateUpdate);
-    QObject::connect(this->insightWorker, &InsightWorker::targetProgramCounterUpdated, this->mainWindow, &InsightWindow::onTargetProgramCounterUpdate);
-    QObject::connect(this->mainWindow, &InsightWindow::refreshTargetPinStates, this->insightWorker, &InsightWorker::requestPinStates);
-
     this->mainWindow->setInsightConfig(this->insightConfig);
     this->mainWindow->setEnvironmentConfig(this->environmentConfig);
 

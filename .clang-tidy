@@ -15,6 +15,7 @@ Checks: >
   performance-*,
   readability-*,
   -modernize-use-trailing-return-type,
+  -modernize-avoid-bind,
   -readability-named-parameter,
   -readability-magic-numbers,
   -cppcoreguidelines-avoid-magic-numbers,
@@ -23,5 +24,7 @@ CheckOptions:
   - key: bugprone-argument-comment.StrictMode
     value: 1
   - key: cppcoreguidelines-non-private-member-variables-in-classes.IgnorePublicMemberVariables
+    value: 1
+  - key: readability-function-cognitive-complexity.DescribeBasicIncrements
     value: 1
 FormatStyle: 'none'

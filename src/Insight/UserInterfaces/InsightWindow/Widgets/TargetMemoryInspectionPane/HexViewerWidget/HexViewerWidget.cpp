@@ -61,8 +61,8 @@ HexViewerWidget::HexViewerWidget(
 
     this->hoveredAddressLabel = this->bottomBar->findChild<QLabel*>("byte-address-label");
 
-    auto byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
-    auto byteItemGraphicsViewLayout = byteItemGraphicsViewContainer->findChild<QVBoxLayout*>(
+    auto* byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
+    auto* byteItemGraphicsViewLayout = byteItemGraphicsViewContainer->findChild<QVBoxLayout*>(
         "byte-item-container-layout"
     );
     this->byteItemGraphicsView = new ByteItemContainerGraphicsView(

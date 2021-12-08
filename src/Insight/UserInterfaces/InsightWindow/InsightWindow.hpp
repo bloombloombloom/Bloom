@@ -42,22 +42,6 @@ namespace Bloom
 
         void init(Targets::TargetDescriptor targetDescriptor);
 
-    public slots:
-        void onTargetControllerSuspended();
-        void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
-        void onTargetStateUpdate(Targets::TargetState newState);
-        void onTargetProgramCounterUpdate(quint32 programCounter);
-        void refresh();
-        void openReportIssuesUrl();
-        void openGettingStartedUrl();
-        void openAboutWindow();
-        void toggleTargetRegistersPane();
-        void toggleRamInspectionPane();
-        void toggleEepromInspectionPane();
-
-    signals:
-        void refreshTargetPinStates(int variantId);
-
     protected:
         void resizeEvent(QResizeEvent* event) override;
         void showEvent(QShowEvent* event) override;
@@ -112,10 +96,22 @@ namespace Bloom
 
         void selectVariant(const Targets::TargetVariant* variant);
 
-        void toggleUi(bool disable);
+        void setUiDisabled(bool disable);
         void activate();
         void deactivate();
 
         void adjustPanels();
+
+        void onTargetControllerSuspended();
+        void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
+        void onTargetStateUpdate(Targets::TargetState newState);
+        void onTargetProgramCounterUpdate(quint32 programCounter);
+        void refresh();
+        void openReportIssuesUrl();
+        void openGettingStartedUrl();
+        void openAboutWindow();
+        void toggleTargetRegistersPane();
+        void toggleRamInspectionPane();
+        void toggleEepromInspectionPane();
     };
 }
