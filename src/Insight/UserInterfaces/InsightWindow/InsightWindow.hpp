@@ -15,6 +15,7 @@
 
 #include "Widgets/PanelWidget.hpp"
 
+#include "Widgets/SvgToolButton.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
 #include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
@@ -46,6 +47,7 @@ namespace Bloom
         void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void onTargetStateUpdate(Targets::TargetState newState);
         void onTargetProgramCounterUpdate(quint32 programCounter);
+        void refresh();
         void openReportIssuesUrl();
         void openGettingStartedUrl();
         void openAboutWindow();
@@ -80,7 +82,7 @@ namespace Bloom
         AboutWindow* aboutWindowWidget = nullptr;
 
         QWidget* header = nullptr;
-        QToolButton* refreshIoInspectionButton = nullptr;
+        Widgets::SvgToolButton* refreshIoInspectionButton = nullptr;
 
         QWidget* leftMenuBar = nullptr;
         Widgets::PanelWidget* leftPanel = nullptr;

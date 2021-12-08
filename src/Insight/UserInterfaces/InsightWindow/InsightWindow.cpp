@@ -88,32 +88,9 @@ InsightWindow::InsightWindow(InsightWorker& insightWorker): QMainWindow(nullptr)
     connect(openAboutWindowAction, &QAction::triggered, this, &InsightWindow::openAboutWindow);
 
     this->header = this->windowContainer->findChild<QWidget*>("header");
-    this->refreshIoInspectionButton = this->header->findChild<QToolButton*>("refresh-io-inspection-btn");
+    this->refreshIoInspectionButton = this->header->findChild<SvgToolButton*>("refresh-io-inspection-btn");
 
-    connect(this->refreshIoInspectionButton, &QToolButton::clicked, this, [this] {
-        // TODO: Move this into a member function - getting too big for a lambda
-        if (this->targetState == TargetState::STOPPED && this->selectedVariant != nullptr) {
-            this->toggleUi(true);
-            if (this->targetPackageWidget != nullptr) {
-                this->targetPackageWidget->setDisabled(true);
-                this->targetPackageWidget->refreshPinStates([this] {
-                    if (this->targetState == TargetState::STOPPED) {
-                        this->targetPackageWidget->setDisabled(false);
-
-                        if (this->targetRegistersSidePane == nullptr || !this->targetRegistersSidePane->activated) {
-                            this->toggleUi(false);
-                        }
-                    }
-                });
-            }
-
-            if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->activated) {
-                this->targetRegistersSidePane->refreshRegisterValues([this] {
-                    this->toggleUi(false);
-                });
-            }
-        }
-    });
+    connect(this->refreshIoInspectionButton, &QToolButton::clicked, this, &InsightWindow::refresh);
 
     this->leftMenuBar = this->container->findChild<QWidget*>("left-side-menu-bar");
     this->leftPanel = this->container->findChild<PanelWidget*>("left-panel");
@@ -184,6 +161,36 @@ void InsightWindow::onTargetProgramCounterUpdate(quint32 programCounter) {
     this->programCounterValueLabel->setText(
         "0x" + QString::number(programCounter, 16).toUpper() + " (" + QString::number(programCounter) + ")"
     );
+}
+
+void InsightWindow::refresh() {
+    if (this->targetState != TargetState::STOPPED || this->selectedVariant == nullptr) {
+        return;
+    }
+
+    this->toggleUi(true);
+    this->refreshIoInspectionButton->startSpin();
+
+    if (this->targetPackageWidget != nullptr) {
+        this->targetPackageWidget->setDisabled(true);
+        this->targetPackageWidget->refreshPinStates([this] {
+            if (this->targetState == TargetState::STOPPED) {
+                this->targetPackageWidget->setDisabled(false);
+
+                if (this->targetRegistersSidePane == nullptr || !this->targetRegistersSidePane->activated) {
+                    this->refreshIoInspectionButton->stopSpin();
+                    this->toggleUi(false);
+                }
+            }
+        });
+    }
+
+    if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->activated) {
+        this->targetRegistersSidePane->refreshRegisterValues([this] {
+            this->refreshIoInspectionButton->stopSpin();
+            this->toggleUi(false);
+        });
+    }
 }
 
 void InsightWindow::openReportIssuesUrl() {
