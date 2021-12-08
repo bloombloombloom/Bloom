@@ -169,6 +169,7 @@ void InsightWindow::onTargetStateUpdate(TargetState newState) {
     if (newState == TargetState::RUNNING) {
         this->targetStatusLabel->setText("Running");
         this->programCounterValueLabel->setText("-");
+        this->toggleUi(true);
 
     } else if (newState == TargetState::STOPPED) {
         this->targetStatusLabel->setText("Stopped");
