@@ -104,6 +104,9 @@ InsightWindow::InsightWindow(InsightWorker& insightWorker): QMainWindow(nullptr)
     this->footer = this->windowContainer->findChild<QWidget*>("footer");
     this->targetStatusLabel = this->footer->findChild<QLabel*>("target-state");
     this->programCounterValueLabel = this->footer->findChild<QLabel*>("target-program-counter-value");
+    this->targetNameLabel = this->footer->findChild<QLabel*>("target-name");
+    this->targetIdLabel = this->footer->findChild<QLabel*>("target-id");
+    this->variantMenu = this->footer->findChild<QMenu*>("target-variant-menu");
 
     const auto windowSize = this->size();
     this->windowContainer->setFixedSize(windowSize);
@@ -244,66 +247,6 @@ bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
     return false;
 }
 
-void InsightWindow::selectVariant(const TargetVariant* variant) {
-    if (!this->isVariantSupported(*variant)) {
-        Logger::error("Attempted to select unsupported target variant.");
-        return;
-    }
-
-    if (this->selectedVariant != nullptr && this->selectedVariant->id == variant->id) {
-        return;
-    }
-
-    if (this->targetPackageWidget != nullptr) {
-        this->targetPackageWidget->hide();
-        this->targetPackageWidget->deleteLater();
-        this->targetPackageWidget = nullptr;
-        this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
-    }
-
-    this->selectedVariant = variant;
-    this->variantMenu->setTitle(QString::fromStdString(variant->name + " (" + variant->packageName + ")"));
-
-    if (variant->package == TargetPackage::DIP
-        || variant->package == TargetPackage::SOIC
-        || variant->package == TargetPackage::SSOP
-    ) {
-        this->targetPackageWidget = new InsightTargetWidgets::Dip::DualInlinePackageWidget(
-            *variant,
-            this->insightWorker,
-            this->ioContainerWidget
-        );
-
-    } else if (variant->package == TargetPackage::QFP || variant->package == TargetPackage::QFN) {
-        this->targetPackageWidget = new InsightTargetWidgets::Qfp::QuadFlatPackageWidget(
-            *variant,
-            this->insightWorker,
-            this->ioContainerWidget
-        );
-    }
-
-    if (this->targetPackageWidget != nullptr) {
-        this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
-        this->targetPackageWidget->setTargetState(this->targetState);
-
-        if (this->targetState == TargetState::STOPPED) {
-            this->targetPackageWidget->refreshPinStates([this] {
-                if (this->targetState == TargetState::STOPPED) {
-                    this->targetPackageWidget->setDisabled(false);
-                }
-            });
-        }
-
-        this->setMinimumSize(
-            this->targetPackageWidget->width() + 400,
-            this->targetPackageWidget->height() + 150
-        );
-
-        this->adjustPanels();
-        this->targetPackageWidget->show();
-    }
-}
-
 void InsightWindow::setUiDisabled(bool disable) {
     this->uiDisabled = disable;
 
@@ -314,30 +257,47 @@ void InsightWindow::setUiDisabled(bool disable) {
 }
 
 void InsightWindow::activate() {
-    auto* targetNameLabel = this->footer->findChild<QLabel*>("target-name");
-    auto* targetIdLabel = this->footer->findChild<QLabel*>("target-id");
-    targetNameLabel->setText(QString::fromStdString(this->targetDescriptor.name));
-    targetIdLabel->setText("0x" + QString::fromStdString(this->targetDescriptor.id).remove("0x").toUpper());
-    this->variantMenu = this->footer->findChild<QMenu*>("target-variant-menu");
+    this->targetNameLabel->setText(QString::fromStdString(this->targetDescriptor.name));
+    this->targetIdLabel->setText("0x" + QString::fromStdString(this->targetDescriptor.id).remove("0x").toUpper());
 
     this->ioUnavailableWidget->hide();
 
-    std::optional<QString> previouslySelectedVariantName;
-    if (this->selectedVariant != nullptr) {
-        previouslySelectedVariantName = QString::fromStdString(this->selectedVariant->name).toLower();
-        this->selectedVariant = nullptr;
+    this->populateVariantMenu();
+    this->variantMenu->setEnabled(true);
+
+    Logger::debug("Number of target variants supported by Insight: "
+        + std::to_string(supportedVariantsByName.size()));
+
+    if (this->supportedVariantsByName.empty()) {
+        if (this->targetDescriptor.variants.empty()) {
+            this->variantMenu->parentWidget()->hide();
+        }
+
+        this->ioUnavailableWidget->setText(
+            "GPIO inspection is not available for this target. "
+            "Please report this to Bloom developers by clicking Help -> Report An Issue"
+        );
+        this->ioUnavailableWidget->show();
+
+    } else {
+        this->selectDefaultVariant();
     }
 
-    this->supportedVariantsByName.clear();
+    this->createPanes();
 
+    this->setUiDisabled(this->targetState != TargetState::STOPPED);
+    this->activated = true;
+}
+
+void InsightWindow::populateVariantMenu() {
     /*
      * We don't want to present the user with duplicate target variants.
      *
-     * In the context of Insight, a variant that doesn't differ in package type or pinout configuration is
-     * considered a duplicate.
+     * In the context of the Insight window, two variants are considered to be duplicates if they do not differ in
+     * package type and pinout configuration.
      */
     auto processedVariants = std::vector<TargetVariant>();
-    auto isDuplicateVariant = [&processedVariants] (const TargetVariant& variantA) {
+    const auto isDuplicateVariant = [&processedVariants] (const TargetVariant& variantA) {
         return std::ranges::any_of(
             processedVariants.begin(),
             processedVariants.end(),
@@ -391,50 +351,106 @@ void InsightWindow::activate() {
         this->variantMenu->addAction(variantAction);
         processedVariants.push_back(targetVariant);
     }
+}
 
-    this->variantMenu->setEnabled(true);
-
-    Logger::debug("Number of target variants supported by Insight: "
-        + std::to_string(supportedVariantsByName.size()));
-
-    if (!this->supportedVariantsByName.empty()) {
-        if (previouslySelectedVariantName.has_value()
-            && this->supportedVariantsByName.contains(previouslySelectedVariantName.value())
-            ) {
-            this->selectVariant(&(this->supportedVariantsByName.at(previouslySelectedVariantName.value())));
-
-        } else if (this->targetConfig.variantName.has_value()) {
-            auto selectedVariantName = QString::fromStdString(this->targetConfig.variantName.value());
-            if (this->supportedVariantsByName.contains(selectedVariantName)) {
-                // The user has specified a valid variant name in their config file, so use that as the default
-                this->selectVariant(&(this->supportedVariantsByName.at(selectedVariantName)));
-
-            } else {
-                Logger::error("Invalid target variant name \"" + this->targetConfig.variantName.value()
-                    + "\" - no such variant with the given name was found.");
-            }
-        }
-
-        if (this->selectedVariant == nullptr) {
-            /*
-             * Given that we haven't been able to select a variant at this point, we will just fallback to the first
-             * one that is available.
-             */
-            this->selectVariant(&(this->supportedVariantsByName.begin()->second));
-        }
-
-    } else {
-        if (this->targetDescriptor.variants.empty()) {
-            this->variantMenu->parentWidget()->hide();
-        }
-
-        this->ioUnavailableWidget->setText(
-            "GPIO inspection is not available for this target. "
-            "Please report this to Bloom developers by clicking Help -> Report An Issue"
-        );
-        this->ioUnavailableWidget->show();
+void InsightWindow::selectDefaultVariant() {
+    if (this->supportedVariantsByName.empty()) {
+        return;
     }
 
+    std::optional<QString> previouslySelectedVariantName = (this->previouslySelectedVariant.has_value()) ?
+        std::optional(QString::fromStdString(this->previouslySelectedVariant->name).toLower())
+        : std::nullopt;
+
+    if (previouslySelectedVariantName.has_value()
+        && this->supportedVariantsByName.contains(previouslySelectedVariantName.value())
+    ) {
+        this->selectVariant(&(this->supportedVariantsByName.at(previouslySelectedVariantName.value())));
+
+    } else if (this->targetConfig.variantName.has_value()) {
+        auto selectedVariantName = QString::fromStdString(this->targetConfig.variantName.value());
+        if (this->supportedVariantsByName.contains(selectedVariantName)) {
+            // The user has specified a valid variant name in their config file, so use that as the default
+            this->selectVariant(&(this->supportedVariantsByName.at(selectedVariantName)));
+
+        } else {
+            Logger::error("Invalid target variant name \"" + this->targetConfig.variantName.value()
+                + "\" - no such variant with the given name was found.");
+        }
+    }
+
+    if (this->selectedVariant == nullptr) {
+        /*
+         * Given that we haven't been able to select a variant at this point, we will just fallback to the first
+         * one that is available.
+         */
+        this->selectVariant(&(this->supportedVariantsByName.begin()->second));
+    }
+}
+
+void InsightWindow::selectVariant(const TargetVariant* variant) {
+    if (!this->isVariantSupported(*variant)) {
+        Logger::error("Attempted to select unsupported target variant.");
+        return;
+    }
+
+    if (this->selectedVariant != nullptr && this->selectedVariant->id == variant->id) {
+        // The variant is already selected.
+        return;
+    }
+
+    if (this->targetPackageWidget != nullptr) {
+        this->targetPackageWidget->hide();
+        this->targetPackageWidget->deleteLater();
+        this->targetPackageWidget = nullptr;
+        this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
+    }
+
+    this->selectedVariant = variant;
+    this->variantMenu->setTitle(QString::fromStdString(variant->name + " (" + variant->packageName + ")"));
+
+    if (variant->package == TargetPackage::DIP
+        || variant->package == TargetPackage::SOIC
+        || variant->package == TargetPackage::SSOP
+    ) {
+        this->targetPackageWidget = new InsightTargetWidgets::Dip::DualInlinePackageWidget(
+            *variant,
+            this->insightWorker,
+            this->ioContainerWidget
+        );
+
+    } else if (variant->package == TargetPackage::QFP || variant->package == TargetPackage::QFN) {
+        this->targetPackageWidget = new InsightTargetWidgets::Qfp::QuadFlatPackageWidget(
+            *variant,
+            this->insightWorker,
+            this->ioContainerWidget
+        );
+    }
+
+    if (this->targetPackageWidget != nullptr) {
+        this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
+        this->targetPackageWidget->setTargetState(this->targetState);
+
+        if (this->targetState == TargetState::STOPPED) {
+            this->targetPackageWidget->refreshPinStates([this] {
+                if (this->targetState == TargetState::STOPPED) {
+                    this->targetPackageWidget->setDisabled(false);
+                }
+            });
+        }
+
+        this->setMinimumSize(
+            this->targetPackageWidget->width() + 400,
+            this->targetPackageWidget->height() + 150
+        );
+
+        this->adjustPanels();
+        this->targetPackageWidget->show();
+    }
+}
+
+void InsightWindow::createPanes() {
+    // Target registers pane
     auto* leftPanelLayout = this->leftPanel->layout();
     this->targetRegistersSidePane = new TargetRegistersPaneWidget(
         this->targetDescriptor,
@@ -445,6 +461,7 @@ void InsightWindow::activate() {
     this->targetRegistersButton->setChecked(false);
     this->targetRegistersButton->setDisabled(false);
 
+    // Target memory inspection panes
     auto* bottomPanelLayout = this->bottomPanel->layout();
     if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::RAM)) {
         auto& ramDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::RAM);
@@ -471,18 +488,9 @@ void InsightWindow::activate() {
         this->eepromInspectionButton->setChecked(false);
         this->eepromInspectionButton->setDisabled(false);
     }
-
-    this->setUiDisabled(this->targetState != TargetState::STOPPED);
-    this->activated = true;
 }
 
-void InsightWindow::deactivate() {
-    if (this->targetPackageWidget != nullptr) {
-        this->targetPackageWidget->hide();
-        this->targetPackageWidget->deleteLater();
-        this->targetPackageWidget = nullptr;
-    }
-
+void InsightWindow::destroyPanes() {
     if (this->targetRegistersSidePane != nullptr) {
         this->targetRegistersSidePane->deactivate();
         this->targetRegistersSidePane->deleteLater();
@@ -490,6 +498,21 @@ void InsightWindow::deactivate() {
         this->targetRegistersButton->setChecked(false);
         this->targetRegistersButton->setDisabled(true);
     }
+}
+
+void InsightWindow::deactivate() {
+    if (this->selectedVariant != nullptr) {
+        this->previouslySelectedVariant = *(this->selectedVariant);
+        this->selectedVariant = nullptr;
+    }
+
+    if (this->targetPackageWidget != nullptr) {
+        this->targetPackageWidget->hide();
+        this->targetPackageWidget->deleteLater();
+        this->targetPackageWidget = nullptr;
+    }
+
+    this->destroyPanes();
 
     this->ioUnavailableWidget->setText(
         "Insight deactivated - Bloom has been disconnected from the target.\n\n"
@@ -502,6 +525,8 @@ void InsightWindow::deactivate() {
 
     this->variantMenu->clear();
     this->variantMenu->setEnabled(false);
+
+    this->supportedVariantsByName.clear();
 
     this->setUiDisabled(true);
     this->activated = false;
@@ -534,7 +559,6 @@ void InsightWindow::adjustPanels() {
         )
     );
 }
-
 
 void InsightWindow::onTargetControllerSuspended() {
     if (this->activated) {

@@ -2,7 +2,7 @@
 
 #include <QtCore>
 #include <QMainWindow>
-#include <QtUiTools/QtUiTools>
+#include <QLabel>
 #include <memory>
 #include <optional>
 
@@ -63,6 +63,8 @@ namespace Bloom
         QWidget* layoutContainer = nullptr;
         QWidget* container = nullptr;
         QMenu* variantMenu = nullptr;
+        QLabel* targetNameLabel = nullptr;
+        QLabel* targetIdLabel = nullptr;
         AboutWindow* aboutWindowWidget = nullptr;
 
         QWidget* header = nullptr;
@@ -90,14 +92,19 @@ namespace Bloom
 
         std::map<QString, Targets::TargetVariant> supportedVariantsByName;
         const Targets::TargetVariant* selectedVariant = nullptr;
+        std::optional<Targets::TargetVariant> previouslySelectedVariant;
         bool uiDisabled = false;
 
         static bool isVariantSupported(const Targets::TargetVariant& variant);
 
-        void selectVariant(const Targets::TargetVariant* variant);
-
         void setUiDisabled(bool disable);
+
         void activate();
+        void populateVariantMenu();
+        void selectDefaultVariant();
+        void selectVariant(const Targets::TargetVariant* variant);
+        void createPanes();
+        void destroyPanes();
         void deactivate();
 
         void adjustPanels();
