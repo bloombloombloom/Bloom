@@ -43,29 +43,39 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     painter->setPen(Qt::PenStyle::NoPen);
 
     static const auto widgetRect = this->boundingRect();
+    static const auto standardTextColor = QColor(0xAF, 0xB1, 0xB3);
+    static const auto valueChangedTextColor = QColor(0x54, 0x7F, 0xBA);
+
+    static const auto stackMemoryBackgroundColor = QColor(0x5E, 0x50, 0x27, 255);
+    static const auto hoveredBackgroundColor = QColor(0x8E, 0x8B, 0x83, 70);
+    static const auto hoveredNeighbourBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
 
     if (this->settings.highlightStackMemory && this->settings.stackPointerAddress.has_value()
         && this->address > this->settings.stackPointerAddress
     ) {
         // This byte is within the stack memory
-        painter->setBrush(QColor(0x5E, 0x50, 0x27, 255));
+        painter->setBrush(stackMemoryBackgroundColor);
         painter->drawRect(widgetRect);
     }
 
-    const auto hoveredByteItem = this->hoveredByteItem.value_or(nullptr);
-    if (hoveredByteItem != nullptr && (
-            hoveredByteItem == this || (this->settings.highlightHoveredRowAndCol && (
-                    hoveredByteItem->currentColumnIndex == this->currentColumnIndex
-                    || hoveredByteItem->currentRowIndex == this->currentRowIndex
-                )
+    const auto* hoveredByteItem = this->hoveredByteItem.value_or(nullptr);
+    if (hoveredByteItem != nullptr) {
+        if (hoveredByteItem == this) {
+            painter->setBrush(hoveredBackgroundColor);
+
+        } else if (this->settings.highlightHoveredRowAndCol
+            && (
+                hoveredByteItem->currentColumnIndex == this->currentColumnIndex
+                || hoveredByteItem->currentRowIndex == this->currentRowIndex
             )
-        )
-    ) {
-        painter->setBrush(QColor(0x8E, 0x8B, 0x83, hoveredByteItem == this ? 70 : 30));
+        ) {
+            painter->setBrush(hoveredNeighbourBackgroundColor);
+        }
+
         painter->drawRect(widgetRect);
     }
 
-    auto textColor = QColor(this->valueChanged ? "#547fba" : "#afb1b3");
+    auto textColor = this->valueChanged ? valueChangedTextColor : standardTextColor;
 
     if (this->valueInitialised) {
         if (!this->isEnabled()) {
