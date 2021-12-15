@@ -253,7 +253,7 @@
                                                         <enum>PanelWidgetType::BOTTOM</enum>
                                                     </property>
                                                     <property name="minimumResize">
-                                                        <number>300</number>
+                                                        <number>400</number>
                                                     </property>
                                                     <property name="handleSize">
                                                         <number>10</number>
