@@ -25,6 +25,7 @@ ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
     this->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
     this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    this->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
 
     this->scene = new ByteItemGraphicsScene(
         targetMemoryDescriptor,
@@ -35,10 +36,12 @@ ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
     );
 
     this->setScene(this->scene);
+
 }
 
 bool ByteItemContainerGraphicsView::event(QEvent* event) {
-    if (event->type() == QEvent::Type::EnabledChange) {
+    const auto eventType = event->type();
+    if (eventType == QEvent::Type::EnabledChange) {
         this->scene->setEnabled(this->isEnabled());
     }
 
