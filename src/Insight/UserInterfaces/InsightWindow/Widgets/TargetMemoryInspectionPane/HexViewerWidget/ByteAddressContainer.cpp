@@ -23,13 +23,13 @@ void ByteAddressContainer::adjustAddressLabels(
 
     for (const auto& mappingPair : byteItemsByRowIndex) {
         const auto rowIndex = static_cast<std::size_t>(mappingPair.first);
-        const auto& byteWidgets = mappingPair.second;
+        const auto& byteItems = mappingPair.second;
 
-        if (byteWidgets.empty()) {
+        if (byteItems.empty()) {
             continue;
         }
 
-        ByteAddressItem* addressLabel;
+        ByteAddressItem* addressLabel = nullptr;
         if (static_cast<int>(rowIndex) > layoutItemMaxIndex) {
             addressLabel = new ByteAddressItem(this);
             this->addressItemsByRowIndex.insert(std::pair(rowIndex, addressLabel));
@@ -38,10 +38,11 @@ void ByteAddressContainer::adjustAddressLabels(
             addressLabel = this->addressItemsByRowIndex.at(rowIndex);
         }
 
-        addressLabel->setAddressHex(byteWidgets.front()->relativeAddressHex);
+        const auto& firstByteItem = byteItems.front();
+        addressLabel->setAddressHex(firstByteItem->relativeAddressHex);
         addressLabel->setPos(
             0,
-            margins.top() + static_cast<double>(rowIndex * (ByteAddressItem::HEIGHT + ByteItem::BOTTOM_MARGIN))
+            firstByteItem->pos().y()
         );
     }
 
