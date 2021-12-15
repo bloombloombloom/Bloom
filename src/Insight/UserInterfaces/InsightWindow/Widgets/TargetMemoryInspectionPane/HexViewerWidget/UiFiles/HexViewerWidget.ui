@@ -121,16 +121,8 @@
             <item>
                 <widget class="QWidget" name="graphics-view-container">
                     <property name="sizePolicy">
-                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored"/>
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
                     </property>
-                    <layout class="QVBoxLayout" name="byte-item-container-layout">
-                        <property name="spacing">
-                            <number>0</number>
-                        </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                    </layout>
                 </widget>
             </item>
             <item>

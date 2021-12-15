@@ -9,6 +9,7 @@
 #include <QSize>
 #include <QString>
 #include <QEvent>
+#include <QShowEvent>
 #include <optional>
 
 #include "src/Targets/TargetMemory.hpp"
@@ -42,6 +43,7 @@ namespace Bloom::Widgets
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
+        void showEvent(QShowEvent* event) override;
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
@@ -53,6 +55,7 @@ namespace Bloom::Widgets
         QWidget* toolBar = nullptr;
         QWidget* bottomBar = nullptr;
 
+        QWidget* byteItemGraphicsViewContainer = nullptr;
         ByteItemContainerGraphicsView* byteItemGraphicsView = nullptr;
         ByteItemGraphicsScene* byteItemGraphicsScene = nullptr;
         QLabel* hoveredAddressLabel = nullptr;

@@ -61,19 +61,15 @@ HexViewerWidget::HexViewerWidget(
 
     this->hoveredAddressLabel = this->bottomBar->findChild<QLabel*>("byte-address-label");
 
-    auto* byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
-    auto* byteItemGraphicsViewLayout = byteItemGraphicsViewContainer->findChild<QVBoxLayout*>(
-        "byte-item-container-layout"
-    );
+    this->byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
     this->byteItemGraphicsView = new ByteItemContainerGraphicsView(
         targetMemoryDescriptor,
         insightWorker,
         this->settings,
         this->hoveredAddressLabel,
-        byteItemGraphicsViewContainer
+        this->byteItemGraphicsViewContainer
     );
     this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
-    byteItemGraphicsViewLayout->insertWidget(0, this->byteItemGraphicsView);
 
     this->setStackMemoryHighlightingEnabled(true);
     this->setHoveredRowAndColumnHighlightingEnabled(true);
@@ -130,6 +126,12 @@ void HexViewerWidget::resizeEvent(QResizeEvent* event) {
         this->width(),
         this->height()
     );
+
+    this->byteItemGraphicsView->setFixedSize(this->byteItemGraphicsViewContainer->size());
+}
+
+void HexViewerWidget::showEvent(QShowEvent* event) {
+    this->byteItemGraphicsView->setFixedSize(this->byteItemGraphicsViewContainer->size());
 }
 
 void HexViewerWidget::onTargetStateChanged(Targets::TargetState newState) {
