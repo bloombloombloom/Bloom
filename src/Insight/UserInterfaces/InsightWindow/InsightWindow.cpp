@@ -440,7 +440,7 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
         }
 
         this->setMinimumSize(
-            this->targetPackageWidget->width() + 400,
+            this->targetPackageWidget->width() + 800,
             this->targetPackageWidget->height() + 150
         );
 
