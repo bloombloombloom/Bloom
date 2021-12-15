@@ -18,11 +18,10 @@ Checks: >
   -modernize-avoid-bind,
   -readability-named-parameter,
   -readability-magic-numbers,
+  -readability-convert-member-functions-to-static,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-owning-memory,
 CheckOptions:
-  - key: bugprone-argument-comment.StrictMode
-    value: 1
   - key: cppcoreguidelines-non-private-member-variables-in-classes.IgnorePublicMemberVariables
     value: 1
   - key: readability-function-cognitive-complexity.DescribeBasicIncrements
