@@ -19,6 +19,10 @@ address(address),
 hoveredByteItem(hoveredByteItem),
 settings(settings)
 {
+    this->setCacheMode(
+        QGraphicsItem::CacheMode::ItemCoordinateCache,
+        QSize(ByteItem::WIDTH, ByteItem::HEIGHT)
+    );
     this->setAcceptHoverEvents(true);
 
     this->addressHex = "0x" + QString::number(this->address, 16).rightJustified(8, '0').toUpper();
@@ -45,10 +49,14 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     static const auto widgetRect = this->boundingRect();
     static const auto standardTextColor = QColor(0xAF, 0xB1, 0xB3);
     static const auto valueChangedTextColor = QColor(0x54, 0x7F, 0xBA);
+    static auto font = QFont("'Ubuntu', sans-serif");
 
     static const auto stackMemoryBackgroundColor = QColor(0x5E, 0x50, 0x27, 255);
     static const auto hoveredBackgroundColor = QColor(0x8E, 0x8B, 0x83, 70);
     static const auto hoveredNeighbourBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
+
+    font.setPixelSize(11);
+    painter->setFont(font);
 
     if (this->settings.highlightStackMemory && this->settings.stackPointerAddress.has_value()
         && this->address > this->settings.stackPointerAddress

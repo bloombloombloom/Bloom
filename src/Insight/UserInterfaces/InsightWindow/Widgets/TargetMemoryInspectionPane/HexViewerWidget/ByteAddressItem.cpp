@@ -6,6 +6,10 @@
 using namespace Bloom::Widgets;
 
 void ByteAddressItem::setAddressHex(const QString& addressHex) {
+    this->setCacheMode(
+        QGraphicsItem::CacheMode::ItemCoordinateCache,
+        QSize(ByteAddressItem::WIDTH, ByteAddressItem::HEIGHT)
+    );
     this->addressHex = addressHex;
 }
 
@@ -13,13 +17,10 @@ void ByteAddressItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
     painter->setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
 
     static const auto widgetRect = this->boundingRect();
-    auto fontColor = QColor(0x8F, 0x91, 0x92);
-    static auto font = painter->font();
+    static auto fontColor = QColor(0x8F, 0x91, 0x92);
+    static auto font = QFont("'Ubuntu', sans-serif");
     font.setPixelSize(12);
-
-    if (!this->isEnabled()) {
-        fontColor.setAlpha(100);
-    }
+    fontColor.setAlpha(!this->isEnabled() ? 100 : 255);
 
     painter->setFont(font);
     painter->setPen(fontColor);
