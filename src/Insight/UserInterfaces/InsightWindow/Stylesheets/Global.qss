@@ -1,0 +1,173 @@
+/*
+    This is an application-wide stylesheet. Common styles for common widgets should reside in here.
+ */
+
+* {
+    color: #afb1b3;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+}
+
+#window-container {
+    background-color: #373835;
+}
+
+QMenuBar::item {
+    position: relative;
+    margin: 0;
+    top: 0;
+    padding-top: 0;
+    padding-bottom: 1px;
+    padding-right: 4px;
+    padding-left: 4px;
+    background-color: transparent;
+    float: left;
+    font-size: 14px;
+    border: none;
+}
+
+QMenuBar::item:pressed {
+    background-color: #355A80;
+}
+
+QMenuBar {
+    border: none;
+    margin: 0;
+    padding: 0;
+    min-height: 24px;
+    background-color: transparent;
+    spacing: 0;
+    color: #afb1b3;
+    font-size: 14px;
+}
+
+QMenu {
+    margin: 0;
+    padding: 0;
+    background-color: #373835;
+    color: #afb1b3;
+    border: 1px solid #41423f;
+    min-width: 200px;
+    font-size: 14px;
+}
+
+QMenu::item {
+    padding: 4px 5px 4px 25px;
+    min-width: 200px;
+}
+
+QMenu::item:selected {
+    background-color: #355A80;
+}
+
+QMenu::item:disabled {
+    color: #808484;
+}
+
+QMenu::separator {
+    border-top: 1px solid #41423f;
+    height: 1px;
+}
+
+QMenu#help-menu::separator {
+    margin: 1px 0;
+}
+
+QToolTip {
+    background-color: #474949;
+    border: 1px solid #616365;
+    color: #afb1b3;
+    padding: 1px 2px;
+    font-size: 13px;
+}
+
+QScrollBar:vertical {
+    background-color: transparent;
+    width: 12px;
+    margin: 1px;
+}
+
+QScrollBar:handle:vertical {
+    border: none;
+    background-color: rgba(69, 69, 66, 0.6);
+    min-height: 30px;
+}
+
+QScrollBar:handle:vertical:hover {
+    background-color: rgba(69, 69, 66, 0.91);
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+}
+
+QComboBox,
+QLineEdit {
+    background-color: #2F2F2D;
+    border: 1px solid #41423f;
+}
+
+QLineEdit {
+    padding: 3px;
+}
+
+QComboBox {
+    padding: 3px 5px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 18px;
+    height: 26px;
+    padding-right: 4px;
+    border: none;
+    background-color: transparent;
+}
+
+QComboBox::down-arrow {
+    image: url(":/compiled/src/Insight/UserInterfaces/InsightWindow/Images/down-arrow.svg")
+}
+
+QComboBox QAbstractItemView  {
+    border: 1px solid #41423f;
+    padding: 0;
+    margin: 0;
+    background-color: #373835;
+}
+
+QComboBox QAbstractItemView:item  {
+    color: #afb1b3;
+    padding: 5px;
+}
+
+QComboBox QAbstractItemView::item:selected  {
+    background-color: #355A80;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    color: #afb1b3;
+}
+
+QLineEdit:disabled {
+    font-style: italic;
+    color: #7d7d7d;
+}
+
+QPushButton {
+    background-color: #373937;
+    border: 1px solid #484A49;
+    padding: 3px 25px;
+}
+
+QPushButton:disabled {
+    background-color: #303230;
+    color: #8d8d90;
+}
+
+Bloom--Widgets--LabeledSeparator {
+    qProperty-lineColor: #454545;
+    color: #a6a6a6;
+}

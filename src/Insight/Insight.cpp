@@ -55,6 +55,19 @@ void Insight::startup() {
 
     QApplication::setQuitOnLastWindowClosed(true);
     QApplication::setStyle(new BloomProxyStyle());
+
+    auto globalStylesheet = QFile(
+        QString::fromStdString(
+            Paths::compiledResourcesPath() + "/src/Insight/UserInterfaces/InsightWindow/Stylesheets/Global.qss"
+        )
+    );
+
+    if (!globalStylesheet.open(QFile::ReadOnly)) {
+        throw Exception("Failed to open global stylesheet file");
+    }
+
+    this->application.setStyleSheet(globalStylesheet.readAll());
+
     qRegisterMetaType<Bloom::Targets::TargetDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinState>();

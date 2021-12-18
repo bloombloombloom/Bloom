@@ -1,9 +1,3 @@
-* {
-    color: #afb1b3;
-    font-family: 'Ubuntu', sans-serif;
-    font-size: 14px;
-}
-
 #main-window #window-container {
     background-color: #373835;
 }
@@ -257,8 +251,8 @@ QScrollBar::sub-line:vertical {
 
 #target-registers-side-pane #search-input {
     background-color: transparent;
-    /*font-size: 13px;*/
     color: #9b9b9e;
+    border: none;
 }
 
 #target-registers-side-pane QScrollArea {

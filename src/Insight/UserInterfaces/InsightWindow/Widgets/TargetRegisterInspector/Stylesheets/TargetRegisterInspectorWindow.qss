@@ -1,9 +1,3 @@
-* {
-    color: #afb1b3;
-    font-family: 'Ubuntu', sans-serif;
-    font-size: 14px;
-}
-
 #target-register-inspector-window {
     background-color: #373835;
 }
@@ -21,31 +15,9 @@
     border-top: 1px solid #41423f;
 }
 
-QLineEdit {
-    background-color: #2F2F2D;
-    border: 1px solid #41423f;
-    padding: 3px;
-}
-
-QLineEdit:disabled {
-    font-style: italic;
-    color: #7d7d7d;
-}
-
-QPushButton {
-    background-color: #373937;
-    border: 1px solid #484A49;
-    padding: 3px 25px;
-}
-
 #apply-btn {
     background-color: #353C41;
     border: 1px solid #454C52;
-}
-
-QPushButton:disabled {
-    background-color: #303230;
-    color: #8d8d90;
 }
 
 #register-bit-number-label {
@@ -119,25 +91,4 @@ QPushButton:disabled {
 #target-register-history-widget #separator-label {
     /*font-style: italic;*/
     color: #8a8a8d;
-}
-
-QScrollBar:vertical {
-    background-color: transparent;
-    width: 15px;
-    margin: 1px 1px 1px 5px;
-}
-
-QScrollBar:handle:vertical {
-    border: none;
-    background-color: rgba(69, 69, 66, 0.6);
-}
-
-QScrollBar:handle:vertical:hover {
-    background-color: rgba(69, 69, 66, 0.91);
-}
-
-QScrollBar::add-line:vertical,
-QScrollBar::sub-line:vertical {
-    border: none;
-    background: none;
 }

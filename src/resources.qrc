@@ -17,6 +17,7 @@
         <file alias="/compiled/resources/bloom.template.json">../resources/bloom.template.json</file>
 
         <!-- Insight window -->
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/Global.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/Global.qss</file>
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui</file>
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss</file>
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui</file>
