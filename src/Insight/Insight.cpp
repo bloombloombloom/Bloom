@@ -1,17 +1,14 @@
 #include "Insight.hpp"
 
-#include <typeindex>
 #include <QTimer>
 #include <QFontDatabase>
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Logger/Logger.hpp"
-#include "src/Exceptions/InvalidConfig.hpp"
-#include "src/Targets/TargetState.hpp"
+#include "UserInterfaces/InsightWindow/BloomProxyStyle.hpp"
 
 #include "src/Application.hpp"
 #include "InsightWorker/Tasks/QueryLatestVersionNumber.hpp"
-#include "src/VersionNumber.hpp"
 
 using namespace Bloom;
 using namespace Bloom::Exceptions;
@@ -56,7 +53,8 @@ void Insight::startup() {
 
     auto targetDescriptor = this->targetControllerConsole.getTargetDescriptor();
 
-    this->application.setQuitOnLastWindowClosed(true);
+    QApplication::setQuitOnLastWindowClosed(true);
+    QApplication::setStyle(new BloomProxyStyle());
     qRegisterMetaType<Bloom::Targets::TargetDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinDescriptor>();
     qRegisterMetaType<Bloom::Targets::TargetPinState>();

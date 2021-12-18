@@ -134,6 +134,7 @@ add_executable(Bloom
     src/Insight/Insight.cpp
     src/Insight/InsightWorker/InsightWorker.cpp
     src/Insight/UserInterfaces/InsightWindow/UiLoader.cpp
+    src/Insight/UserInterfaces/InsightWindow/BloomProxyStyle.cpp
     src/Insight/UserInterfaces/InsightWindow/InsightWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/AboutWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.cpp
