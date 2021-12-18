@@ -5,6 +5,7 @@
 // Custom widgets
 #include "Widgets/PanelWidget.hpp"
 #include "Widgets/RotatableLabel.hpp"
+#include "Widgets/LabeledSeparator.hpp"
 #include "Widgets/SvgWidget.hpp"
 #include "Widgets/SvgToolButton.hpp"
 #include "Widgets/ExpandingHeightScrollAreaWidget.hpp"
@@ -28,6 +29,15 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
             "RotatableLabel",
             [this] (QWidget* parent, const QString& name) {
                 auto* widget = new RotatableLabel("", parent);
+                widget->setObjectName(name);
+                widget->setStyleSheet(parent->styleSheet());
+                return widget;
+            }
+        },
+        {
+            "LabeledSeparator",
+            [this] (QWidget* parent, const QString& name) {
+                auto* widget = new LabeledSeparator(parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
