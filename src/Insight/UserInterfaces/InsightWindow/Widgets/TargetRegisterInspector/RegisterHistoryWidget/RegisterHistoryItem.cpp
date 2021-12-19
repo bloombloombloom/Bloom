@@ -38,13 +38,4 @@ RegisterHistoryItem::RegisterHistoryItem(
     this->layout->addWidget(this->dateLabel, 0, Qt::AlignmentFlag::AlignTop);
     this->layout->addLayout(subLabelLayout);
     this->layout->addStretch(1);
-
-    auto onClick = [this] {
-        this->setSelected(true);
-    };
-
-    QObject::connect(this, &ClickableWidget::clicked, this, onClick);
-    QObject::connect(this, &ClickableWidget::rightClicked, this, onClick);
-
-    this->setSelected(false);
 }
