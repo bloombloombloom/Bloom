@@ -103,17 +103,17 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
         this->container
     );
 
-    auto contentLayout = this->container->findChild<QHBoxLayout*>("content-layout");
+    auto* contentLayout = this->container->findChild<QHBoxLayout*>("content-layout");
     contentLayout->insertWidget(0, this->registerHistoryWidget, 0, Qt::AlignmentFlag::AlignTop);
 
-    auto registerDetailsContainer = this->container->findChild<QWidget*>("register-details-container");
-    auto registerValueContainer = this->container->findChild<QWidget*>("register-value-container");
+    auto* registerDetailsContainer = this->container->findChild<QWidget*>("register-details-container");
+    auto* registerValueContainer = this->container->findChild<QWidget*>("register-value-container");
     registerValueContainer->setContentsMargins(15, 15, 15, 15);
     registerDetailsContainer->setContentsMargins(15, 15, 15, 15);
 
-    auto registerDetailsNameInput = registerDetailsContainer->findChild<QLineEdit*>("register-details-name-input");
-    auto registerDetailsSizeInput = registerDetailsContainer->findChild<QLineEdit*>("register-details-size-input");
-    auto registerDetailsStartAddressInput = registerDetailsContainer->findChild<QLineEdit*>(
+    auto* registerDetailsNameInput = registerDetailsContainer->findChild<QLineEdit*>("register-details-name-input");
+    auto* registerDetailsSizeInput = registerDetailsContainer->findChild<QLineEdit*>("register-details-size-input");
+    auto* registerDetailsStartAddressInput = registerDetailsContainer->findChild<QLineEdit*>(
         "register-details-start-address-input"
     );
     registerDetailsNameInput->setText(registerName);
@@ -128,11 +128,11 @@ TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
         this->registerValueTextInput->setDisabled(true);
         this->applyButton->setVisible(false);
 
-        auto readOnlyIndicatorLabel = this->registerValueContainer->findChild<QLabel*>("read-only-indicator-label");
+        auto* readOnlyIndicatorLabel = this->registerValueContainer->findChild<QLabel*>("read-only-indicator-label");
         readOnlyIndicatorLabel->show();
     }
 
-    auto registerBitsetWidgetLayout = this->registerValueBitsetWidgetContainer->findChild<QVBoxLayout*>(
+    auto* registerBitsetWidgetLayout = this->registerValueBitsetWidgetContainer->findChild<QVBoxLayout*>(
         "register-value-bitset-widget-layout"
     );
 

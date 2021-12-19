@@ -168,6 +168,6 @@ QPushButton:disabled {
 }
 
 Bloom--Widgets--LabeledSeparator {
-    qProperty-lineColor: #454545;
+    qproperty-lineColor: #454545;
     color: #a6a6a6;
 }

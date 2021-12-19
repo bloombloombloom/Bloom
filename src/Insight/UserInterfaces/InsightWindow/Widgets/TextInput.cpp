@@ -8,7 +8,7 @@ using namespace Bloom::Widgets;
 TextInput::TextInput(QWidget* parent): QLineEdit(parent) {}
 
 void TextInput::contextMenuEvent(QContextMenuEvent* event) {
-    if (QMenu *menu = createStandardContextMenu()) {
+    if (QMenu* menu = this->createStandardContextMenu()) {
         menu->setAttribute(Qt::WA_DeleteOnClose);
 
         // Remove default icons
