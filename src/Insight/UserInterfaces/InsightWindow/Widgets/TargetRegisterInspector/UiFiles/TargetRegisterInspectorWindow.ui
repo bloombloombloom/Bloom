@@ -70,7 +70,7 @@
                                                         </widget>
                                                     </item>
                                                     <item alignment="Qt::AlignLeft">
-                                                        <widget class="QLineEdit" name="register-details-name-input">
+                                                        <widget class="TextInput" name="register-details-name-input">
                                                             <property name="enabled">
                                                                 <bool>false</bool>
                                                             </property>
@@ -94,7 +94,7 @@
                                                         </widget>
                                                     </item>
                                                     <item alignment="Qt::AlignLeft">
-                                                        <widget class="QLineEdit" name="register-details-size-input">
+                                                        <widget class="TextInput" name="register-details-size-input">
                                                             <property name="enabled">
                                                                 <bool>false</bool>
                                                             </property>
@@ -118,7 +118,7 @@
                                                         </widget>
                                                     </item>
                                                     <item alignment="Qt::AlignLeft">
-                                                        <widget class="QLineEdit" name="register-details-start-address-input">
+                                                        <widget class="TextInput" name="register-details-start-address-input">
                                                             <property name="enabled">
                                                                 <bool>false</bool>
                                                             </property>
@@ -157,7 +157,7 @@ Insight.</string>
                                                 </widget>
                                             </item>
                                             <item alignment="Qt::AlignLeft">
-                                                <widget class="QLineEdit" name="register-value-text-input"/>
+                                                <widget class="TextInput" name="register-value-text-input"/>
                                             </item>
                                             <item alignment="Qt::AlignLeft">
                                                 <widget class="QWidget" name="register-value-bitset-widget-container">

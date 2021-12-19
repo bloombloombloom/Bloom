@@ -6,6 +6,7 @@
 #include "Widgets/PanelWidget.hpp"
 #include "Widgets/RotatableLabel.hpp"
 #include "Widgets/LabeledSeparator.hpp"
+#include "Widgets/TextInput.hpp"
 #include "Widgets/SvgWidget.hpp"
 #include "Widgets/SvgToolButton.hpp"
 #include "Widgets/ExpandingHeightScrollAreaWidget.hpp"
@@ -38,6 +39,15 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
             "LabeledSeparator",
             [this] (QWidget* parent, const QString& name) {
                 auto* widget = new LabeledSeparator(parent);
+                widget->setObjectName(name);
+                widget->setStyleSheet(parent->styleSheet());
+                return widget;
+            }
+        },
+        {
+            "TextInput",
+            [this] (QWidget* parent, const QString& name) {
+                auto* widget = new TextInput(parent);
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;

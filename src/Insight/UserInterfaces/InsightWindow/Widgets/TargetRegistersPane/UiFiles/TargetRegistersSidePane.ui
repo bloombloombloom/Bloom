@@ -94,7 +94,7 @@
                             </widget>
                         </item>
                         <item alignment="Qt::AlignLeft">
-                            <widget class="QLineEdit" name="search-input">
+                            <widget class="TextInput" name="search-input">
                                 <property name="minimumHeight">
                                     <number>25</number>
                                 </property>
