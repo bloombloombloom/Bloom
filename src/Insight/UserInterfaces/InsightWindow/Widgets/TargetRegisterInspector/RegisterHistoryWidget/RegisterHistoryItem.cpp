@@ -24,15 +24,15 @@ RegisterHistoryItem::RegisterHistoryItem(
     ).toHex()).toUpper());
     this->valueLabel->setObjectName("value-label");
 
-    this->descriptionLayout->setText("Register Written");
-    this->descriptionLayout->setObjectName("description-label");
+    this->descriptionLabel->setText("Register Written");
+    this->descriptionLabel->setObjectName("description-label");
 
     auto* subLabelLayout = new QHBoxLayout();
     subLabelLayout->setSpacing(0);
     subLabelLayout->setContentsMargins(0, 0, 0, 0);
     subLabelLayout->addWidget(this->valueLabel, 0, Qt::AlignmentFlag::AlignLeft);
     subLabelLayout->addStretch(1);
-    subLabelLayout->addWidget(this->descriptionLayout, 0, Qt::AlignmentFlag::AlignRight);
+    subLabelLayout->addWidget(this->descriptionLabel, 0, Qt::AlignmentFlag::AlignRight);
 
     this->layout->setSpacing(5);
     this->layout->addWidget(this->dateLabel, 0, Qt::AlignmentFlag::AlignTop);

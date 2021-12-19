@@ -23,6 +23,6 @@ namespace Bloom::Widgets
         QVBoxLayout* layout = new QVBoxLayout(this);
         QLabel* dateLabel = new QLabel(this);
         QLabel* valueLabel = new QLabel(this);
-        QLabel* descriptionLayout = new QLabel(this);
+        QLabel* descriptionLabel = new QLabel(this);
     };
 }
