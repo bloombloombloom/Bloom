@@ -21,9 +21,9 @@ Checks: >
   -readability-convert-member-functions-to-static,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -misc-non-private-member-variables-in-classes,
 CheckOptions:
-  - key: cppcoreguidelines-non-private-member-variables-in-classes.IgnorePublicMemberVariables
-    value: 1
   - key: readability-function-cognitive-complexity.DescribeBasicIncrements
     value: 1
 FormatStyle: 'none'
