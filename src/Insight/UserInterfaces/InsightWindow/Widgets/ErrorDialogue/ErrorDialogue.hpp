@@ -3,6 +3,7 @@
 #include <QDialog>
 #include <QLabel>
 #include <QPushButton>
+#include <QShowEvent>
 
 namespace Bloom::Widgets
 {
@@ -13,9 +14,12 @@ namespace Bloom::Widgets
     public:
         ErrorDialogue(const QString& windowTitle, const QString& errorMessage, QWidget* parent);
 
+    protected:
+        void showEvent(QShowEvent* event) override;
+
     private:
         QWidget* container = nullptr;
-        QLabel* errorMessageLabel = nullptr;
+        QLabel* errorMessageDescriptionLabel = nullptr;
         QPushButton* okButton = nullptr;
     };
 }

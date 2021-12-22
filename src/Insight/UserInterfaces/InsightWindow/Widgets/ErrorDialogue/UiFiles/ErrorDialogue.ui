@@ -2,24 +2,59 @@
 <ui version="4.0">
     <widget class="QWidget" name="container">
         <layout class="QVBoxLayout">
-            <item alignment="Qt::AlignHCenter">
-                <widget class="SvgWidget" name="icon">
-                    <property name="svgFilePath">
-                        <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg</string>
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <item>
+                <layout class="QHBoxLayout">
+                    <property name="spacing">
+                        <number>0</number>
                     </property>
-                    <property name="containerHeight">
-                        <number>64</number>
-                    </property>
-                    <property name="containerWidth">
-                        <number>74</number>
-                    </property>
-                </widget>
+                    <item alignment="Qt::AlignTop">
+                        <widget class="SvgWidget" name="icon">
+                            <property name="svgFilePath">
+                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg</string>
+                            </property>
+                            <property name="containerHeight">
+                                <number>44</number>
+                            </property>
+                            <property name="containerWidth">
+                                <number>40</number>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>10</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QLabel" name="error-message-description-label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+                            </property>
+                            <property name="wordWrap">
+                                <bool>true</bool>
+                            </property>
+                            <property name="alignment">
+                                <enum>Qt::AlignLeft</enum>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
             </item>
             <item>
                 <spacer name="vertical-spacer">
                     <property name="sizeHint">
                         <size>
-                            <height>20</height>
+                            <height>10</height>
                         </size>
                     </property>
                     <property name="sizeType">
@@ -27,23 +62,7 @@
                     </property>
                 </spacer>
             </item>
-            <item alignment="Qt::AlignHCenter">
-                <widget class="QLabel" name="error-message-label">
-                    <property name="wordWrap">
-                        <bool>true</bool>
-                    </property>
-                    <property name="alignment">
-                        <enum>Qt::AlignHCenter</enum>
-                    </property>
-                    <property name="minimumHeight">
-                        <number>65</number>
-                    </property>
-                    <property name="minimumWidth">
-                        <number>480</number>
-                    </property>
-                </widget>
-            </item>
-            <item alignment="Qt::AlignHCenter">
+            <item alignment="Qt::AlignLeft">
                 <spacer name="vertical-spacer">
                     <property name="orientation">
                         <enum>Qt::Vertical</enum>

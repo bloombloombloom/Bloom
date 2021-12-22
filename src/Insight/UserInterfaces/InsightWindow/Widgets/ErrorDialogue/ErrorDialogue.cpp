@@ -19,7 +19,6 @@ ErrorDialogue::ErrorDialogue(
     this->setObjectName("error-dialogue");
     this->setAttribute(Qt::WA_DeleteOnClose, true);
     this->setWindowTitle(windowTitle);
-    this->setFixedSize(500, 180);
 
     auto dialogueUiFile = QFile(
         QString::fromStdString(Paths::compiledResourcesPath()
@@ -46,13 +45,20 @@ ErrorDialogue::ErrorDialogue(
     auto uiLoader = UiLoader(this);
     this->container = uiLoader.load(&dialogueUiFile, this);
 
-    this->container->setFixedSize(this->size());
-    this->container->setContentsMargins(15, 15, 15, 15);
-
-    this->errorMessageLabel = this->container->findChild<QLabel*>("error-message-label");
+    this->errorMessageDescriptionLabel = this->container->findChild<QLabel*>("error-message-description-label");
     this->okButton = this->container->findChild<QPushButton*>("ok-btn");
 
-    this->errorMessageLabel->setText(errorMessage);
+    this->container->setContentsMargins(15, 10, 15, 15);
+
+    this->errorMessageDescriptionLabel->setText(errorMessage);
 
     QObject::connect(this->okButton, &QPushButton::clicked, this, &QDialog::close);
+}
+
+void ErrorDialogue::showEvent(QShowEvent* event) {
+    const auto containerSize = this->container->sizeHint();
+    const auto windowSize = QSize(std::max(containerSize.width(), 500), std::max(containerSize.height(), 100));
+
+    this->setFixedSize(windowSize);
+    this->container->setFixedSize(windowSize);
 }
