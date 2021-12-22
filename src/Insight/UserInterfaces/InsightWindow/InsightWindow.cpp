@@ -498,6 +498,22 @@ void InsightWindow::destroyPanes() {
         this->targetRegistersButton->setChecked(false);
         this->targetRegistersButton->setDisabled(true);
     }
+
+    if (this->ramInspectionPane != nullptr) {
+        this->ramInspectionPane->deactivate();
+        this->ramInspectionPane->deleteLater();
+        this->bottomPanel->setVisible(false);
+        this->ramInspectionButton->setChecked(false);
+        this->ramInspectionButton->setDisabled(true);
+    }
+
+    if (this->eepromInspectionPane != nullptr) {
+        this->eepromInspectionPane->deactivate();
+        this->eepromInspectionPane->deleteLater();
+        this->bottomPanel->setVisible(false);
+        this->eepromInspectionButton->setChecked(false);
+        this->eepromInspectionButton->setDisabled(true);
+    }
 }
 
 void InsightWindow::deactivate() {
