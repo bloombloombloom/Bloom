@@ -16,6 +16,7 @@ Checks: >
   readability-*,
   -modernize-use-trailing-return-type,
   -modernize-avoid-bind,
+  -modernize-pass-by-value,
   -readability-named-parameter,
   -readability-magic-numbers,
   -readability-convert-member-functions-to-static,

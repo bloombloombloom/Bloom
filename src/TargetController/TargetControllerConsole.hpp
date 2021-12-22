@@ -224,10 +224,9 @@ namespace Bloom
                 if (std::holds_alternative<SharedEventPointer<TargetControllerErrorOccurred>>(responseEvent.value())) {
                     auto& tcErrorEvent = std::get<SharedEventPointer<TargetControllerErrorOccurred>>(responseEvent.value());
                     throw Bloom::Exceptions::Exception(tcErrorEvent->errorMessage);
-
-                } else {
-                    throw Bloom::Exceptions::Exception("Unexpected response from TargetController");
                 }
+
+                throw Bloom::Exceptions::Exception("Unexpected response from TargetController");
             }
 
             return std::get<SharedEventPointer<ResponseEventType>>(responseEvent.value());

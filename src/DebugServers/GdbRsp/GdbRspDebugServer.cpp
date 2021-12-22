@@ -419,17 +419,18 @@ void GdbRspDebugServer::waitForConnection() {
         throw Exception("Failed to listen on server socket");
     }
 
-    std::array<struct epoll_event, 5> events = {};
+    constexpr int maxEvents = 5;
+    std::array<struct epoll_event, maxEvents> events = {};
     int eventCount = ::epoll_wait(
         this->eventFileDescriptor,
         events.data(),
-        5,
+        maxEvents,
         -1
     );
 
     if (eventCount > 0) {
         for (size_t i = 0; i < eventCount; i++) {
-            auto fileDescriptor = events[i].data.fd;
+            auto fileDescriptor = events.at(i).data.fd;
 
             if (fileDescriptor == this->interruptEventNotifier->getFileDescriptor()) {
                 // Interrupted
