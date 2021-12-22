@@ -21,6 +21,13 @@ namespace Bloom::Targets
         TargetMemoryAddressRange() = default;
         TargetMemoryAddressRange(std::uint32_t startAddress, std::uint32_t endAddress)
         : startAddress(startAddress), endAddress(endAddress) {};
+
+        [[nodiscard]] bool intersectsWith(const TargetMemoryAddressRange& other) const {
+            return
+                (other.startAddress <= this->startAddress && other.endAddress >= this->startAddress)
+                || (other.endAddress >= this->endAddress && other.startAddress <= this->endAddress)
+            ;
+        }
     };
 
     struct TargetMemoryDescriptor
