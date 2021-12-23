@@ -80,7 +80,7 @@
                                             <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/manage-focused-regions.svg</string>
                                         </property>
                                         <property name="toolTip">
-                                            <string>Manage Focused Memory Regions</string>
+                                            <string>Manage Memory Regions</string>
                                         </property>
                                     </widget>
                                 </item>
@@ -97,13 +97,6 @@
 
                 </layout>
             </item>
-<!--            <item alignment="Qt::AlignTop">-->
-<!--                <spacer name="vertical-spacer">-->
-<!--                    <property name="orientation">-->
-<!--                        <enum>Qt::Vertical</enum>-->
-<!--                    </property>-->
-<!--                </spacer>-->
-<!--            </item>-->
         </layout>
     </widget>
 </ui>
