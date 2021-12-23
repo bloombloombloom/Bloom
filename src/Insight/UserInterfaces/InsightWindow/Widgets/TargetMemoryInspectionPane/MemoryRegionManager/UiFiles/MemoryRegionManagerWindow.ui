@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <widget class="QWidget" name="container">
+        <layout class="QVBoxLayout">
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <property name="margin">
+                <number>0</number>
+            </property>
+            <item alignment="Qt::AlignLeft">
+                <layout class="QHBoxLayout" name="content-layout">
+                    <property name="spacing">
+                        <number>0</number>
+                    </property>
+                    <property name="margin">
+                        <number>0</number>
+                    </property>
+                    <item alignment="Qt::AlignLeft">
+                        <widget class="QWidget" name="region-selector">
+                            <property name="minimumWidth">
+                                <number>300</number>
+                            </property>
+                            <property name="maximumWidth">
+                                <number>300</number>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Expanding"/>
+                            </property>
+                            <layout class="QVBoxLayout" name="region-selector-layout">
+                                <property name="spacing">
+                                    <number>0</number>
+                                </property>
+                                <property name="margin">
+                                    <number>0</number>
+                                </property>
+                                <item>
+                                    <widget class="QWidget" name="region-selector-tool-bar">
+                                        <property name="minimumHeight">
+                                            <number>30</number>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+                                        </property>
+                                        <layout class="QHBoxLayout">
+                                            <property name="spacing">
+                                                <number>3</number>
+                                            </property>
+                                            <property name="margin">
+                                                <number>0</number>
+                                            </property>
+                                            <item>
+                                                <spacer name="horizontal-spacer">
+                                                    <property name="sizeHint">
+                                                        <size>
+                                                            <width>5</width>
+                                                        </size>
+                                                    </property>
+                                                    <property name="sizeType">
+                                                        <enum>QSizePolicy::Fixed</enum>
+                                                    </property>
+                                                </spacer>
+                                            </item>
+                                            <item>
+                                                <widget class="SvgToolButton" name="add-region-btn">
+                                                    <property name="checkable">
+                                                        <bool>false</bool>
+                                                    </property>
+                                                    <property name="popupMode">
+                                                        <enum>QToolButton::InstantPopup</enum>
+                                                    </property>
+                                                    <property name="svgFilePath">
+                                                        <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/add-region.svg</string>
+                                                    </property>
+                                                    <property name="disabledSvgFilePath">
+                                                        <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/add-region.svg</string>
+                                                    </property>
+                                                    <property name="toolTip">
+                                                        <string>Add Memory Region</string>
+                                                    </property>
+                                                    <widget class="QMenu" name="add-region-menu">
+                                                        <addaction name="add-focused-region"/>
+                                                        <addaction name="add-excluded-region"/>
+                                                        <action name="add-focused-region">
+                                                            <property name="text">
+                                                                <string>Focused Region</string>
+                                                            </property>
+                                                        </action>
+                                                        <action name="add-excluded-region">
+                                                            <property name="text">
+                                                                <string>Excluded Region</string>
+                                                            </property>
+                                                        </action>
+                                                    </widget>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="SvgToolButton" name="remove-region-btn">
+                                                    <property name="checkable">
+                                                        <bool>false</bool>
+                                                    </property>
+                                                    <property name="svgFilePath">
+                                                        <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/remove-region.svg</string>
+                                                    </property>
+                                                    <property name="disabledSvgFilePath">
+                                                        <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/remove-region.svg</string>
+                                                    </property>
+                                                    <property name="toolTip">
+                                                        <string>Remove Memory Region</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item alignment="Qt::AlignLeft">
+                                                <spacer name="horizontal-spacer">
+                                                    <property name="orientation">
+                                                        <enum>Qt::Horizontal</enum>
+                                                    </property>
+                                                </spacer>
+                                            </item>
+                                        </layout>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QScrollArea" name="region-item-scroll-area">
+                                        <property name="widgetResizable"><bool>true</bool></property>
+                                        <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAsNeeded</enum></property>
+                                        <property name="sizeAdjustPolicy"><enum>QAbstractScrollArea::AdjustToContents</enum></property>
+                                        <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                                        </property>
+                                        <widget class="QWidget" name="item-container">
+                                            <property name="sizePolicy">
+                                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                                            </property>
+                                            <layout class="QVBoxLayout" name="item-container-layout">
+                                                <property name="spacing">
+                                                    <number>0</number>
+                                                </property>
+                                                <property name="margin">
+                                                    <number>0</number>
+                                                </property>
+                                                <property name="sizeConstraint">
+                                                    <enum>QLayout::SetMinAndMaxSize</enum>
+                                                </property>
+                                            </layout>
+                                        </widget>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignLeft">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>10</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignLeft">
+                        <layout class="QStackedLayout" name="stacked-form-layout"/>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <widget class="QWidget" name="actions">
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>15</number>
+                        </property>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>10</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="QPushButton" name="help-btn">
+                                <property name="text">
+                                    <string>Help</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="orientation">
+                                    <enum>Qt::Horizontal</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="QPushButton" name="close-btn">
+                                <property name="text">
+                                    <string>Close</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QPushButton" name="apply-btn">
+                                <property name="text">
+                                    <string>OK</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>10</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+</ui>

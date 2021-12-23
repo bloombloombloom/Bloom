@@ -1,22 +1,23 @@
 #pragma once
 
 #include <QWidget>
-#include <QLineEdit>
-#include <QScrollArea>
-#include <set>
-#include <QSize>
-#include <QString>
-#include <QEvent>
-#include <optional>
+#include <QResizeEvent>
+#include <vector>
 
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
-
-#include "HexViewerWidget/HexViewerWidget.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"
+
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
+
+#include "HexViewerWidget/HexViewerWidget.hpp"
+
+#include "MemoryRegionManager/MemoryRegionManagerWindow.hpp"
+#include "MemoryRegion.hpp"
+#include "FocusedMemoryRegion.hpp"
+#include "ExcludedMemoryRegion.hpp"
 
 namespace Bloom::Widgets
 {
@@ -34,7 +35,6 @@ namespace Bloom::Widgets
         );
 
         void refreshMemoryValues(std::optional<std::function<void(void)>> callback = std::nullopt);
-
         void activate();
         void deactivate();
 
@@ -52,12 +52,17 @@ namespace Bloom::Widgets
         QWidget* container = nullptr;
 
         QWidget* titleBar = nullptr;
+        SvgToolButton* manageMemoryRegionsButton = nullptr;
         HexViewerWidget* hexViewerWidget = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
-    private slots:
+        std::vector<FocusedMemoryRegion> focusedMemoryRegions;
+        std::vector<ExcludedMemoryRegion> excludedMemoryRegions;
+        MemoryRegionManagerWindow* memoryRegionManagerWindow = nullptr;
+
         void onTargetStateChanged(Targets::TargetState newState);
         void onMemoryRead(const Targets::TargetMemoryBuffer& buffer);
+        void openMemoryRegionManagerWindow();
     };
 }

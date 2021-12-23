@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <widget class="QWidget" name="form-container">
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+        </property>
+        <layout class="QVBoxLayout" name="form-container-layout">
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>10</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="name-row">
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QLabel" name="name-label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                            </property>
+                            <property name="text">
+                                <string>Name:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="TextInput" name="name-input">
+                            <property name="minimumWidth">
+                                <number>300</number>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>300</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>15</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <widget class="LabeledSeparator" name="address-range-separator">
+                    <property name="title">
+                        <string>Address Range</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>15</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <widget class="QLabel" name="address-range-description-label">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <property name="wordWrap">
+                        <bool>true</bool>
+                    </property>
+                    <property name="text">
+                        <string>The region's address range can be specified in relative or absolute form. Absolute addresses must account for any relevant offsets. Address ranges displayed in the region selector will always be in absolute form.</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>15</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="address-type-row">
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QLabel" name="address-type-label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                            </property>
+                            <property name="text">
+                                <string>Address type:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QComboBox" name="address-type-input">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                            </property>
+                            <property name="minimumWidth">
+                                <number>350</number>
+                            </property>
+                            <property name="frame">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>10</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>10</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="start-address-row">
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QLabel" name="start-address-label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                            </property>
+                            <property name="text">
+                                <string>Start address:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="TextInput" name="start-address-input">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                            </property>
+                            <property name="minimumWidth">
+                                <number>350</number>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>10</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>10</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="end-address-row">
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QLabel" name="end-address-label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                            </property>
+                            <property name="text">
+                                <string>End address:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="TextInput" name="end-address-input">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                            </property>
+                            <property name="minimumWidth">
+                                <number>150</number>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>10</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QLabel" name="size-label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                            </property>
+                            <property name="text">
+                                <string>Size:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>5</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="TextInput" name="size-input">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                            </property>
+                            <property name="maximumWidth">
+                                <number>60</number>
+                            </property>
+                            <property name="minimumWidth">
+                                <number>60</number>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>10</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>20</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <widget class="LabeledSeparator" name="value-annotations-separator">
+                    <property name="title">
+                        <string>Value Annotation</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>15</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <widget class="QLabel" name="value-annotations-description-label">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <property name="wordWrap">
+                        <bool>true</bool>
+                    </property>
+                    <property name="text">
+                        <string>Specifying the type of data stored in this region will allow Bloom to present the current value of the data, in the form of a value annotation.</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>15</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="data-type-row">
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QLabel" name="data-type-label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                            </property>
+                            <property name="text">
+                                <string>Data type:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QComboBox" name="data-type-input">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                            </property>
+                            <property name="minimumWidth">
+                                <number>150</number>
+                            </property>
+                            <property name="frame">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>10</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                </spacer>
+            </item>
+        </layout>
+    </widget>
+</ui>

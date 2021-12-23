@@ -1,0 +1,122 @@
+#memory-region-manager-window {
+    background-color: #373835;
+}
+
+#title-label {
+    font-size: 15px;
+}
+
+#region-selector {
+    border-right: 1px solid #2F2F2D;
+}
+
+#region-selector #region-item-scroll-area {
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+}
+
+#region-selector-tool-bar {
+    border-bottom: 1px solid #2F2F2D;
+    margin: 0;
+}
+
+#region-selector-tool-bar QToolButton {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    qproperty-buttonWidth: 20;
+    qproperty-buttonHeight: 18;
+}
+
+#region-selector-tool-bar QToolButton::menu-indicator {
+    image: none;
+}
+
+#region-selector-tool-bar QToolButton:hover {
+    background-color: #41413b;
+    border: none;
+    padding: 0;
+}
+
+#region-selector-tool-bar QToolButton:checked {
+    background-color: #43433d;
+    border: none;
+}
+
+#region-selector-tool-bar QToolButton:checked:disabled {
+    background-color: #3d3d39;
+    border: none;
+}
+
+#region-selector-tool-bar #separator {
+    background-color: transparent;
+    border-right: 1px solid #41423f;
+    padding: 0;
+    min-width: 1px;
+    max-width: 1px;
+}
+
+#region-selector #region-item-scroll-area,
+#region-selector #region-item-scroll-area #item-container {
+    background-color: transparent;
+}
+
+#region-selector #region-item {
+    border-bottom: 1px solid #2e2e2e;
+    background-color: transparent;
+}
+
+#region-selector #region-item[selected=true] {
+    background-color: #355A80;
+}
+
+#region-selector #region-item #name-label {
+    font-size: 14px
+}
+
+#region-selector #region-item #address-label {
+    font-size: 13px;
+    font-style: italic;
+    color: #8a8a8d;
+}
+
+#region-selector #region-item #type-label,
+#region-selector #region-item #time-label {
+    font-size: 13px;
+    color: #8a8a8d;
+}
+
+/* Region form */
+#form-container #name-label {
+    min-width: 60px;
+    max-width: 60px;
+}
+
+#form-container #address-type-label,
+#form-container #start-address-label,
+#form-container #end-address-label {
+    min-width: 130px;
+    max-width: 130px;
+}
+
+#form-container #size-label {
+    min-width: 30px;
+    max-width: 30px;
+}
+
+#form-container #address-range-description-label,
+#form-container #value-annotations-description-label {
+    color: #8a8a8d;
+}
+
+/* Actions */
+#actions {
+    border-top: 1px solid #2F2F2D;
+    min-height: 50px;
+}
+
+#apply-btn {
+    background-color: #353C41;
+    border: 1px solid #454C52;
+}

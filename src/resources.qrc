@@ -56,6 +56,15 @@
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui</file>
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg</file>
 
+        <!-- Focused memory region manager window -->
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/MemoryRegionManagerWindow.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/MemoryRegionManagerWindow.ui</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Stylesheets/MemoryRegionManagerWindow.qss">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Stylesheets/MemoryRegionManagerWindow.qss</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/FocusedMemoryRegionForm.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/FocusedMemoryRegionForm.ui</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/ExcludedMemoryRegionForm.ui">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/ExcludedMemoryRegionForm.ui</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/icon.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/icon.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/add-region.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/add-region.svg</file>
+        <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/remove-region.svg">./Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/remove-region.svg</file>
+
         <!-- About window -->
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui">./Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui</file>
         <file alias="/compiled/src/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss">./Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss</file>

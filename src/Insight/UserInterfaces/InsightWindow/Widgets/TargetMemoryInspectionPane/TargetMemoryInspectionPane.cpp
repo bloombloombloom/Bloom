@@ -1,9 +1,8 @@
 #include "TargetMemoryInspectionPane.hpp"
 
-#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QToolButton>
-#include <set>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 
@@ -12,7 +11,6 @@
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Exceptions/Exception.hpp"
-#include "src/Logger/Logger.hpp"
 
 using namespace Bloom::Widgets;
 using namespace Bloom::Exceptions;
@@ -44,16 +42,24 @@ TargetMemoryInspectionPane::TargetMemoryInspectionPane(
     this->titleBar = this->container->findChild<QWidget*>("title-bar");
 
     this->titleBar->layout()->setContentsMargins(7, 0, 7, 0);
-    auto titleLabel = this->titleBar->findChild<QLabel*>("title");
+    auto* titleLabel = this->titleBar->findChild<QLabel*>("title");
     titleLabel->setText(
         this->targetMemoryDescriptor.type == TargetMemoryType::EEPROM ? "Internal EEPROM" : "Internal RAM"
     );
 
-    auto subContainerLayout = this->container->findChild<QHBoxLayout*>("sub-container-layout");
+    auto* subContainerLayout = this->container->findChild<QHBoxLayout*>("sub-container-layout");
+    this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
     this->hexViewerWidget = new HexViewerWidget(this->targetMemoryDescriptor, this->insightWorker, this);
     this->hexViewerWidget->setDisabled(true);
 
     subContainerLayout->addWidget(this->hexViewerWidget);
+
+    QObject::connect(
+        this->manageMemoryRegionsButton,
+        &QToolButton::clicked,
+        this,
+        &TargetMemoryInspectionPane::openMemoryRegionManagerWindow
+    );
 
     QObject::connect(
         &insightWorker,
@@ -171,4 +177,23 @@ void TargetMemoryInspectionPane::onTargetStateChanged(Targets::TargetState newSt
 
 void TargetMemoryInspectionPane::onMemoryRead(const Targets::TargetMemoryBuffer& buffer) {
     this->hexViewerWidget->updateValues(buffer);
+}
+
+void TargetMemoryInspectionPane::openMemoryRegionManagerWindow() {
+    if (this->memoryRegionManagerWindow == nullptr) {
+        this->memoryRegionManagerWindow = new MemoryRegionManagerWindow(
+            this->targetMemoryDescriptor,
+            this->focusedMemoryRegions,
+            this->excludedMemoryRegions,
+            this
+        );
+    }
+
+    if (!this->memoryRegionManagerWindow->isVisible()) {
+        this->memoryRegionManagerWindow->refreshRegions();
+        this->memoryRegionManagerWindow->show();
+
+    } else {
+        this->memoryRegionManagerWindow->activateWindow();
+    }
 }
