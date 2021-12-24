@@ -61,6 +61,9 @@ void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buff
         byteWidget->setValue(buffer.at(byteWidget->byteIndex));
         byteWidget->update();
     }
+
+    this->updateAnnotationValues(buffer);
+    this->lastValueBuffer = buffer;
 }
 
 void ByteItemGraphicsScene::refreshRegions() {
@@ -88,23 +91,29 @@ void ByteItemGraphicsScene::refreshRegions() {
     }
 
     // Refresh annotation items
-    for (auto [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
+    for (auto* annotationItem : this->annotationItems) {
         this->removeItem(annotationItem);
         delete annotationItem;
     }
 
-    this->annotationItemsByStartAddress.clear();
+    this->annotationItems.clear();
+    this->valueAnnotationItems.clear();
 
     for (const auto& focusedRegion : this->focusedMemoryRegions) {
-        const auto addressRange = focusedRegion.getAbsoluteAddressRange();
-        auto* annotationItem = new AnnotationItem(
-            addressRange.startAddress,
-            addressRange.endAddress - addressRange.startAddress + 1,
-            focusedRegion.name,
-            AnnotationItemPosition::BOTTOM
-        );
+        auto* annotationItem = new AnnotationItem(focusedRegion, AnnotationItemPosition::BOTTOM);
         this->addItem(annotationItem);
-        this->annotationItemsByStartAddress.insert(std::pair(addressRange.startAddress, annotationItem));
+        this->annotationItems.emplace_back(annotationItem);
+
+        if (focusedRegion.dataType != MemoryRegionDataType::UNKNOWN) {
+            auto* valueAnnotationItem = new ValueAnnotationItem(focusedRegion);
+            this->addItem(valueAnnotationItem);
+            this->annotationItems.emplace_back(valueAnnotationItem);
+            this->valueAnnotationItems.emplace_back(valueAnnotationItem);
+        }
+    }
+
+    if (this->targetState == Targets::TargetState::STOPPED && this->enabled && !this->lastValueBuffer.empty()) {
+        this->updateAnnotationValues(this->lastValueBuffer);
     }
 
     this->adjustSize(true);
@@ -168,7 +177,7 @@ void ByteItemGraphicsScene::setEnabled(bool enabled) {
             byteItem->setEnabled(this->enabled);
         }
 
-        for (auto& [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
+        for (auto* annotationItem : this->annotationItems) {
             annotationItem->setEnabled(this->enabled);
         }
 
@@ -183,7 +192,7 @@ void ByteItemGraphicsScene::invalidateChildItemCaches() {
         byteWidget->update();
     }
 
-    for (auto& [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
+    for (auto* annotationItem : this->annotationItems) {
         annotationItem->update();
     }
 }
@@ -225,6 +234,23 @@ void ByteItemGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent)
     }
 }
 
+void ByteItemGraphicsScene::updateAnnotationValues(const Targets::TargetMemoryBuffer& buffer) {
+    const auto memoryStartAddress = this->targetMemoryDescriptor.addressRange.startAddress;
+    for (auto* valueAnnotationItem : this->valueAnnotationItems) {
+        if (valueAnnotationItem->size > buffer.size()) {
+            continue;
+        }
+
+        const auto relativeStartAddress = valueAnnotationItem->startAddress - memoryStartAddress;
+        const auto relativeEndAddress = valueAnnotationItem->endAddress - memoryStartAddress;
+
+        valueAnnotationItem->setValue(Targets::TargetMemoryBuffer(
+            buffer.begin() + relativeStartAddress,
+            buffer.begin() + relativeEndAddress + 1
+        ));
+    }
+}
+
 void ByteItemGraphicsScene::adjustByteItemPositions() {
     const auto columnCount = static_cast<std::size_t>(
         std::floor(
@@ -240,9 +266,9 @@ void ByteItemGraphicsScene::adjustByteItemPositions() {
     auto rowIndicesWithBottomAnnotations = std::set<std::size_t>();
     const auto& memoryAddressRange = this->targetMemoryDescriptor.addressRange;
 
-    for (auto [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
+    for (auto* annotationItem : this->annotationItems) {
         const auto firstByteRowIndex = static_cast<std::size_t>(
-            std::ceil(static_cast<double>((startAddress - memoryAddressRange.startAddress) + 1)
+            std::ceil(static_cast<double>((annotationItem->startAddress - memoryAddressRange.startAddress) + 1)
                 / static_cast<double>(columnCount)) - 1
         );
 
@@ -254,7 +280,13 @@ void ByteItemGraphicsScene::adjustByteItemPositions() {
         // We only display annotations that span a single row.
         if (firstByteRowIndex == lastByteRowIndex) {
             annotationItem->show();
-            rowIndicesWithBottomAnnotations.insert(firstByteRowIndex);
+
+            if (annotationItem->position == AnnotationItemPosition::TOP) {
+                rowIndicesWithTopAnnotations.insert(firstByteRowIndex);
+
+            } else if (annotationItem->position == AnnotationItemPosition::BOTTOM) {
+                rowIndicesWithBottomAnnotations.insert(firstByteRowIndex);
+            }
 
         } else {
             annotationItem->hide();
@@ -317,18 +349,18 @@ void ByteItemGraphicsScene::adjustAnnotationItemPositions() {
         return;
     }
 
-    for (auto& [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
-        if (!this->byteItemsByAddress.contains(startAddress)) {
+    for (auto* annotationItem : this->annotationItems) {
+        if (!this->byteItemsByAddress.contains(annotationItem->startAddress)) {
             annotationItem->hide();
             continue;
         }
 
-        const auto firstByteItemPosition = this->byteItemsByAddress.at(startAddress)->pos();
+        const auto firstByteItemPosition = this->byteItemsByAddress.at(annotationItem->startAddress)->pos();
 
         if (annotationItem->position == AnnotationItemPosition::TOP) {
             annotationItem->setPos(
                 firstByteItemPosition.x(),
-                firstByteItemPosition.y() - AnnotationItem::TOP_HEIGHT
+                firstByteItemPosition.y() - AnnotationItem::TOP_HEIGHT - 1
             );
 
         } else if (annotationItem->position == AnnotationItemPosition::BOTTOM) {

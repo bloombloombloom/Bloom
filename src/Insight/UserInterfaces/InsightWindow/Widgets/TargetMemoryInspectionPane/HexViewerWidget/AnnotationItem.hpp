@@ -3,6 +3,8 @@
 #include <QGraphicsItem>
 #include <cstdint>
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
+
 namespace Bloom::Widgets
 {
     enum class AnnotationItemPosition: std::uint8_t
@@ -30,6 +32,15 @@ namespace Bloom::Widgets
             QString labelText,
             AnnotationItemPosition position
         );
+
+        AnnotationItem(
+            const Targets::TargetMemoryAddressRange&
+            addressRange,
+            const QString& labelText,
+            AnnotationItemPosition position
+        );
+
+        AnnotationItem(const FocusedMemoryRegion& focusedMemoryRegion, AnnotationItemPosition position);
 
         [[nodiscard]] QRectF boundingRect() const override {
             return QRectF(0, 0, this->width, this->height);

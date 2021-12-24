@@ -24,6 +24,7 @@
 #include "ByteItem.hpp"
 #include "ByteAddressContainer.hpp"
 #include "AnnotationItem.hpp"
+#include "ValueAnnotationItem.hpp"
 #include "HexViewerWidgetSettings.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
@@ -68,8 +69,11 @@ namespace Bloom::Widgets
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 
+        Targets::TargetMemoryBuffer lastValueBuffer;
+
         std::map<std::uint32_t, ByteItem*> byteItemsByAddress;
-        std::map<std::uint32_t, AnnotationItem*> annotationItemsByStartAddress;
+        std::vector<AnnotationItem*> annotationItems;
+        std::vector<ValueAnnotationItem*> valueAnnotationItems;
         std::map<std::size_t, std::vector<ByteItem*>> byteItemsByRowIndex;
         std::map<std::size_t, std::vector<ByteItem*>> byteItemsByColumnIndex;
 
@@ -96,6 +100,7 @@ namespace Bloom::Widgets
             return std::max(this->parent->viewport()->width(), 400) - 2;
         }
 
+        void updateAnnotationValues(const Targets::TargetMemoryBuffer& buffer);
         void adjustByteItemPositions();
         void adjustAnnotationItemPositions();
         void onTargetStateChanged(Targets::TargetState newState);

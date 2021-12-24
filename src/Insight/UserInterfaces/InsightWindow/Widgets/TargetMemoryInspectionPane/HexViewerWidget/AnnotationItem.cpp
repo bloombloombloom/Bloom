@@ -19,6 +19,24 @@ height(position == AnnotationItemPosition::TOP ? AnnotationItem::TOP_HEIGHT : An
     this->setToolTip(this->labelText);
 }
 
+AnnotationItem::AnnotationItem(
+    const Targets::TargetMemoryAddressRange& addressRange,
+    const QString& labelText,
+    AnnotationItemPosition position
+): AnnotationItem(
+    addressRange.startAddress,
+    addressRange.endAddress - addressRange.startAddress + 1,
+    labelText,
+    position
+) {}
+
+AnnotationItem::AnnotationItem(const FocusedMemoryRegion& focusedMemoryRegion, AnnotationItemPosition position)
+: AnnotationItem(
+    focusedMemoryRegion.getAbsoluteAddressRange(),
+    focusedMemoryRegion.name,
+    position
+) {}
+
 void AnnotationItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
     auto lineColor = this->getLineColor();
     auto labelFontColor = this->getLabelFontColor();
