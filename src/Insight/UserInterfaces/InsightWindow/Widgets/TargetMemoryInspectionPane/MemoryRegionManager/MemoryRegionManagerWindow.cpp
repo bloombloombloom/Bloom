@@ -306,7 +306,7 @@ void MemoryRegionManagerWindow::applyChanges() {
 
         if (!validationFailures.empty()) {
             auto* errorDialogue = new ErrorDialogue(
-                "Invalid memory region",
+                "Invalid Memory Region",
                 "Invalid memory region \"" + focusedRegionItem->getRegionNameInputValue() + "\""
                     + "<br/><br/>- " + validationFailures.join("<br/>- "),
                 this
@@ -319,7 +319,7 @@ void MemoryRegionManagerWindow::applyChanges() {
         for (const auto& processedFocusedRegion : processedFocusedMemoryRegions) {
             if (processedFocusedRegion.intersectsWith(focusedRegion)) {
                 auto* errorDialogue = new ErrorDialogue(
-                    "Intersection region found",
+                    "Intersecting Region Found",
                     "Region \"" + focusedRegionItem->getRegionNameInputValue()
                         + "\" intersects with region \"" + processedFocusedRegion.name + "\". "
                         + "Regions cannot intersect. Please review the relevant address ranges.",
@@ -338,7 +338,7 @@ void MemoryRegionManagerWindow::applyChanges() {
 
         if (!validationFailures.empty()) {
             auto* errorDialogue = new ErrorDialogue(
-                "Invalid memory region",
+                "Invalid Memory Region",
                 "Invalid memory region \"" + excludedRegionItem->getRegionNameInputValue() + "\""
                     + "<br/><br/>- " + validationFailures.join("<br/>- "),
                 this
@@ -351,7 +351,7 @@ void MemoryRegionManagerWindow::applyChanges() {
         for (const auto& processedFocusedRegion : processedFocusedMemoryRegions) {
             if (processedFocusedRegion.intersectsWith(excludedRegion)) {
                 auto* errorDialogue = new ErrorDialogue(
-                    "Intersecting region found",
+                    "Intersecting Region Found",
                     "Region \"" + excludedRegionItem->getRegionNameInputValue()
                         + "\" intersects with region \"" + processedFocusedRegion.name + "\". "
                         + "Regions cannot intersect. Please review the relevant address ranges.",
@@ -365,7 +365,7 @@ void MemoryRegionManagerWindow::applyChanges() {
         for (const auto& processedExcludedRegion : processedExcludedMemoryRegions) {
             if (processedExcludedRegion.intersectsWith(excludedRegion)) {
                 auto* errorDialogue = new ErrorDialogue(
-                    "Intersecting region found",
+                    "Intersecting Region Found",
                     "Region \"" + excludedRegionItem->getRegionNameInputValue()
                         + "\" intersects with region \"" + processedExcludedRegion.name + "\". "
                         + "Regions cannot intersect. Please review the relevant address ranges.",
