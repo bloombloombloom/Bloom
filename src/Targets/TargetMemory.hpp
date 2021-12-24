@@ -38,8 +38,8 @@ namespace Bloom::Targets
         TargetMemoryDescriptor(TargetMemoryType type, TargetMemoryAddressRange addressRange)
         : type(type), addressRange(addressRange) {};
 
-        std::uint32_t size() const {
-            return this->addressRange.endAddress - this->addressRange.startAddress;
+        [[nodiscard]] std::uint32_t size() const {
+            return (this->addressRange.endAddress - this->addressRange.startAddress) + 1;
         }
     };
 
