@@ -15,7 +15,7 @@ ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
 ): QGraphicsView(parent) {
     this->setObjectName("graphics-view");
     this->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    this->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
     this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     this->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
