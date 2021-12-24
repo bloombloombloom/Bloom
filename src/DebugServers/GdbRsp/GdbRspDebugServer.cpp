@@ -147,8 +147,8 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteRegister& packet) {
     try {
         auto registerDescriptor = this->getRegisterDescriptorFromNumber(packet.registerNumber);
         this->targetControllerConsole.writeRegisters({
-                                                         TargetRegister(registerDescriptor, packet.registerValue)
-                                                     });
+            TargetRegister(registerDescriptor, packet.registerValue)
+        });
         this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
 
     } catch (const Exception& exception) {

@@ -1,17 +1,6 @@
 #include "ByteAddressContainer.hpp"
 
-#include <QVBoxLayout>
-#include <QTableWidget>
-#include <QScrollBar>
-#include <QPainter>
-#include <cmath>
-
-#include "src/Logger/Logger.hpp"
-
 using namespace Bloom::Widgets;
-
-ByteAddressContainer::ByteAddressContainer() {
-}
 
 void ByteAddressContainer::adjustAddressLabels(
     const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex
@@ -55,8 +44,6 @@ void ByteAddressContainer::adjustAddressLabels(
             this->addressItemsByRowIndex.erase(i);
         }
     }
-
-    Logger::error("Done with rows: " + std::to_string(this->addressItemsByRowIndex.size()));
 
     this->update();
 }

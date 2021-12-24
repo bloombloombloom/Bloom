@@ -2,12 +2,10 @@
 
 #include <QGraphicsItem>
 #include <cstdint>
-#include <QEvent>
+#include <QPainter>
 #include <QGraphicsScene>
-#include <QFont>
-#include <QColor>
-#include <optional>
 #include <map>
+#include <vector>
 
 #include "ByteItem.hpp"
 #include "ByteAddressItem.hpp"
@@ -19,7 +17,7 @@ namespace Bloom::Widgets
     public:
         static constexpr int WIDTH = 85;
 
-        ByteAddressContainer();
+        ByteAddressContainer() = default;
 
         [[nodiscard]] QRectF boundingRect() const override {
             return QRectF(
