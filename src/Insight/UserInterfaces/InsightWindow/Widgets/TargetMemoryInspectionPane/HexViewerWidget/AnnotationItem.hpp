@@ -21,6 +21,7 @@ namespace Bloom::Widgets
         const int height;
         const std::uint32_t startAddress;
         const std::uint32_t endAddress;
+        const std::size_t size;
         AnnotationItemPosition position = AnnotationItemPosition::TOP;
 
         AnnotationItem(
@@ -36,16 +37,14 @@ namespace Bloom::Widgets
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     protected:
-        [[nodiscard]] QColor getLineColor() const {
+        QString labelText;
+
+        [[nodiscard]] virtual QColor getLineColor() const {
             return QColor(0x4F, 0x4F, 0x4F);
         }
 
-        [[nodiscard]] QColor getLabelFontColor() const {
+        [[nodiscard]] virtual QColor getLabelFontColor() const {
             return QColor(0x8A, 0x8A, 0x8D);
         }
-
-    private:
-        std::size_t size = 0;
-        QString labelText;
     };
 }

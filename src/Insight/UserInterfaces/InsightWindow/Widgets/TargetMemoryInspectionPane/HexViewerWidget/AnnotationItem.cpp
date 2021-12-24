@@ -20,8 +20,8 @@ height(position == AnnotationItemPosition::TOP ? AnnotationItem::TOP_HEIGHT : An
 }
 
 void AnnotationItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-    static auto lineColor = this->getLineColor();
-    static auto labelFontColor = this->getLabelFontColor();
+    auto lineColor = this->getLineColor();
+    auto labelFontColor = this->getLabelFontColor();
 
     const auto isEnabled = this->isEnabled();
 
