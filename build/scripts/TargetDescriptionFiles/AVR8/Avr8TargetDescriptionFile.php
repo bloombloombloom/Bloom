@@ -455,6 +455,15 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'Missing stack pointer register start address.';
         }
 
+        if ($this->stackPointerRegisterSize > 2) {
+            // The AVR architecture implementation in GDB expects all SP registers to be a maximum of two bytes in size.
+            $failures[] = 'Stack pointer register size (' . $this->stackPointerRegisterSize . ') exceeds maximum (2).';
+        }
+
+        if ($this->stackPointerRegisterSize < 1) {
+            $failures[] = 'Stack pointer register size (' . $this->stackPointerRegisterSize . ') is less than 1.';
+        }
+
         if (is_null($this->stackPointerRegisterSize)) {
             $failures[] = 'Missing stack pointer register size.';
         }
