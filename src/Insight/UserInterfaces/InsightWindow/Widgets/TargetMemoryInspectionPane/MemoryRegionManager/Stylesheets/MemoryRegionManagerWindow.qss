@@ -88,6 +88,10 @@
 }
 
 /* Region form */
+#stacked-form-placeholder-label {
+    color: #8a8a8d;
+}
+
 #form-container #name-label {
     min-width: 60px;
     max-width: 60px;
