@@ -15,8 +15,6 @@
 #include "src/Helpers/Paths.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 
-#include "AboutWindow.hpp"
-
 using namespace Bloom;
 using namespace Bloom::Exceptions;
 using namespace Bloom::Widgets;
@@ -502,6 +500,8 @@ void InsightWindow::destroyPanes() {
     if (this->ramInspectionPane != nullptr) {
         this->ramInspectionPane->deactivate();
         this->ramInspectionPane->deleteLater();
+        this->ramInspectionPane = nullptr;
+
         this->bottomPanel->setVisible(false);
         this->ramInspectionButton->setChecked(false);
         this->ramInspectionButton->setDisabled(true);
@@ -510,6 +510,8 @@ void InsightWindow::destroyPanes() {
     if (this->eepromInspectionPane != nullptr) {
         this->eepromInspectionPane->deactivate();
         this->eepromInspectionPane->deleteLater();
+        this->eepromInspectionPane = nullptr;
+
         this->bottomPanel->setVisible(false);
         this->eepromInspectionButton->setChecked(false);
         this->eepromInspectionButton->setDisabled(true);
@@ -526,6 +528,7 @@ void InsightWindow::deactivate() {
         this->targetPackageWidget->hide();
         this->targetPackageWidget->deleteLater();
         this->targetPackageWidget = nullptr;
+        this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
     }
 
     this->destroyPanes();
