@@ -64,5 +64,6 @@ namespace Bloom::Widgets
         void onTargetStateChanged(Targets::TargetState newState);
         void onMemoryRead(const Targets::TargetMemoryBuffer& buffer);
         void openMemoryRegionManagerWindow();
+        void onMemoryRegionsChange();
     };
 }

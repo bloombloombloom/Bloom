@@ -37,6 +37,9 @@ namespace Bloom::Widgets
 
         void refreshRegions();
 
+    signals:
+        void changesApplied();
+
     protected:
         void showEvent(QShowEvent* event) override;
 

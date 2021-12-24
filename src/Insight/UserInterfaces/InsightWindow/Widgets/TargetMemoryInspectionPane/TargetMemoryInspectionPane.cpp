@@ -49,7 +49,13 @@ TargetMemoryInspectionPane::TargetMemoryInspectionPane(
 
     auto* subContainerLayout = this->container->findChild<QHBoxLayout*>("sub-container-layout");
     this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
-    this->hexViewerWidget = new HexViewerWidget(this->targetMemoryDescriptor, this->insightWorker, this);
+    this->hexViewerWidget = new HexViewerWidget(
+        this->targetMemoryDescriptor,
+        this->focusedMemoryRegions,
+        this->excludedMemoryRegions,
+        this->insightWorker,
+        this
+    );
     this->hexViewerWidget->setDisabled(true);
 
     subContainerLayout->addWidget(this->hexViewerWidget);
@@ -187,6 +193,13 @@ void TargetMemoryInspectionPane::openMemoryRegionManagerWindow() {
             this->excludedMemoryRegions,
             this
         );
+
+        QObject::connect(
+            this->memoryRegionManagerWindow,
+            &MemoryRegionManagerWindow::changesApplied,
+            this,
+            &TargetMemoryInspectionPane::onMemoryRegionsChange
+        );
     }
 
     if (!this->memoryRegionManagerWindow->isVisible()) {
@@ -196,4 +209,8 @@ void TargetMemoryInspectionPane::openMemoryRegionManagerWindow() {
     } else {
         this->memoryRegionManagerWindow->activateWindow();
     }
+}
+
+void TargetMemoryInspectionPane::onMemoryRegionsChange() {
+    this->hexViewerWidget->refreshRegions();
 }

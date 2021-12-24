@@ -5,8 +5,11 @@
 #include <QGraphicsItem>
 #include <optional>
 
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.hpp"
 #include "HexViewerWidgetSettings.hpp"
+#include "AnnotationItem.hpp"
+
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
 
 namespace Bloom::Widgets
 {
@@ -28,10 +31,14 @@ namespace Bloom::Widgets
         std::size_t currentRowIndex = 0;
         std::size_t currentColumnIndex = 0;
 
+        const FocusedMemoryRegion* focusedMemoryRegion = nullptr;
+        const ExcludedMemoryRegion* excludedMemoryRegion = nullptr;
+
         ByteItem(
             std::size_t byteIndex,
             std::uint32_t address,
             std::optional<ByteItem*>& hoveredByteItem,
+            std::optional<AnnotationItem*>& hoveredAnnotationItem,
             const HexViewerWidgetSettings& settings
         );
 
@@ -58,5 +65,6 @@ namespace Bloom::Widgets
         std::optional<QString> asciiValue;
 
         std::optional<ByteItem*>& hoveredByteItem;
+        std::optional<AnnotationItem*>& hoveredAnnotationItem;
     };
 }

@@ -1,16 +1,9 @@
 #include "HexViewerWidget.hpp"
 
-#include <QVBoxLayout>
-#include <QScrollBar>
-#include <QScrollArea>
-#include <QPainter>
-#include <cmath>
-
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Exceptions/Exception.hpp"
-#include "src/Logger/Logger.hpp"
 
 using namespace Bloom::Widgets;
 using namespace Bloom::Exceptions;
@@ -19,9 +12,17 @@ using Bloom::Targets::TargetMemoryDescriptor;
 
 HexViewerWidget::HexViewerWidget(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
+    std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+    std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
     InsightWorker& insightWorker,
     QWidget* parent
-): QWidget(parent), targetMemoryDescriptor(targetMemoryDescriptor), insightWorker(insightWorker) {
+):
+    QWidget(parent),
+    targetMemoryDescriptor(targetMemoryDescriptor),
+    focusedMemoryRegions(focusedMemoryRegions),
+    excludedMemoryRegions(excludedMemoryRegions),
+    insightWorker(insightWorker)
+{
     this->setObjectName("hex-viewer-widget");
     this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
@@ -63,8 +64,10 @@ HexViewerWidget::HexViewerWidget(
 
     this->byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
     this->byteItemGraphicsView = new ByteItemContainerGraphicsView(
-        targetMemoryDescriptor,
-        insightWorker,
+        this->targetMemoryDescriptor,
+        this->focusedMemoryRegions,
+        this->excludedMemoryRegions,
+        this->insightWorker,
         this->settings,
         this->hoveredAddressLabel,
         this->byteItemGraphicsViewContainer
@@ -116,9 +119,13 @@ void HexViewerWidget::updateValues(const Targets::TargetMemoryBuffer& buffer) {
     this->byteItemGraphicsScene->updateValues(buffer);
 }
 
+void HexViewerWidget::refreshRegions() {
+    this->byteItemGraphicsScene->refreshRegions();
+}
+
 void HexViewerWidget::setStackPointer(std::uint32_t stackPointer) {
     this->settings.stackPointerAddress = stackPointer;
-    this->byteItemGraphicsScene->update();
+    this->byteItemGraphicsScene->invalidateChildItemCaches();
 }
 
 void HexViewerWidget::resizeEvent(QResizeEvent* event) {
@@ -143,19 +150,19 @@ void HexViewerWidget::setStackMemoryHighlightingEnabled(bool enabled) {
     this->highlightStackMemoryButton->setChecked(enabled);
     this->settings.highlightStackMemory = enabled;
 
-    this->byteItemGraphicsScene->update();
+    this->byteItemGraphicsScene->invalidateChildItemCaches();
 }
 
 void HexViewerWidget::setHoveredRowAndColumnHighlightingEnabled(bool enabled) {
     this->highlightHoveredRowAndColumnButton->setChecked(enabled);
     this->settings.highlightHoveredRowAndCol = enabled;
 
-    this->byteItemGraphicsScene->update();
+    this->byteItemGraphicsScene->invalidateChildItemCaches();
 }
 
 void HexViewerWidget::setFocusedMemoryHighlightingEnabled(bool enabled) {
     this->highlightFocusedMemoryButton->setChecked(enabled);
     this->settings.highlightFocusedMemory = enabled;
 
-    this->byteItemGraphicsScene->update();
+    this->byteItemGraphicsScene->invalidateChildItemCaches();
 }

@@ -1,20 +1,13 @@
 #include "ByteItemContainerGraphicsView.hpp"
 
-#include <QVBoxLayout>
-#include <QTableWidget>
-#include <QScrollBar>
-#include <QPainter>
-#include <cmath>
-
-#include "src/Logger/Logger.hpp"
-
 using namespace Bloom::Widgets;
-using namespace Bloom::Exceptions;
 
 using Bloom::Targets::TargetMemoryDescriptor;
 
 ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
+    std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+    std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
     InsightWorker& insightWorker,
     const HexViewerWidgetSettings& settings,
     QLabel* hoveredAddressLabel,
@@ -29,6 +22,8 @@ ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
 
     this->scene = new ByteItemGraphicsScene(
         targetMemoryDescriptor,
+        focusedMemoryRegions,
+        excludedMemoryRegions,
         insightWorker,
         settings,
         hoveredAddressLabel,
@@ -49,6 +44,6 @@ bool ByteItemContainerGraphicsView::event(QEvent* event) {
 }
 
 void ByteItemContainerGraphicsView::resizeEvent(QResizeEvent* event) {
-    this->scene->adjustByteWidgets();
     QGraphicsView::resizeEvent(event);
+    this->scene->adjustSize();
 }

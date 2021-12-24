@@ -1,12 +1,6 @@
 #include "ByteItemGraphicsScene.hpp"
 
-#include <QVBoxLayout>
-#include <QTableWidget>
-#include <QScrollBar>
-#include <QPainter>
 #include <cmath>
-
-#include "src/Logger/Logger.hpp"
 
 using namespace Bloom::Widgets;
 using namespace Bloom::Exceptions;
@@ -15,33 +9,34 @@ using Bloom::Targets::TargetMemoryDescriptor;
 
 ByteItemGraphicsScene::ByteItemGraphicsScene(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
+    std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+    std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
     InsightWorker& insightWorker,
     const HexViewerWidgetSettings& settings,
     QLabel* hoveredAddressLabel,
-    QWidget* parent
-): QGraphicsScene(parent),
-targetMemoryDescriptor(targetMemoryDescriptor),
-insightWorker(insightWorker),
-settings(settings),
-hoveredAddressLabel(hoveredAddressLabel),
-parent(parent) {
+    QGraphicsView* parent
+):
+    QGraphicsScene(parent),
+    targetMemoryDescriptor(targetMemoryDescriptor),
+    focusedMemoryRegions(focusedMemoryRegions),
+    excludedMemoryRegions(excludedMemoryRegions),
+    insightWorker(insightWorker),
+    settings(settings),
+    hoveredAddressLabel(hoveredAddressLabel),
+    parent(parent)
+{
     this->setObjectName("byte-widget-container");
 
     this->byteAddressContainer = new ByteAddressContainer();
     this->addItem(this->byteAddressContainer);
 
-    /*
-     * Construct ByteWidget objects
-     *
-     * No need to position them here - the subsequent call to resizeEvent() will do that.
-     */
+    // Construct ByteWidget objects
     const auto memorySize = this->targetMemoryDescriptor.size();
     const auto startAddress = this->targetMemoryDescriptor.addressRange.startAddress;
-    Logger::error("Constructing bytes begin");
     for (std::uint32_t i = 0; i < memorySize; i++) {
         const auto address = startAddress + i;
 
-        auto* byteWidget = new ByteItem(i, address, this->hoveredByteWidget, settings);
+        auto* byteWidget = new ByteItem(i, address, this->hoveredByteWidget, this->hoveredAnnotationItem, settings);
         this->byteItemsByAddress.insert(std::pair(
             address,
             byteWidget
@@ -49,8 +44,6 @@ parent(parent) {
 
         this->addItem(byteWidget);
     }
-    Logger::error("Constructing bytes end");
-    this->adjustByteWidgets();
 
     QObject::connect(
         &insightWorker,
@@ -58,6 +51,9 @@ parent(parent) {
         this,
         &ByteItemGraphicsScene::onTargetStateChanged
     );
+
+    this->refreshRegions();
+    this->adjustSize();
 }
 
 void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buffer) {
@@ -67,61 +63,101 @@ void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buff
     }
 }
 
-void ByteItemGraphicsScene::adjustByteWidgets() {
-    const auto margins = QMargins(10, 10, 10, 10);
-    const auto width = std::max(600, static_cast<int>(this->parent->width()));
+void ByteItemGraphicsScene::refreshRegions() {
+    for (auto& [byteAddress, byteWidget] : this->byteItemsByAddress) {
+        byteWidget->focusedMemoryRegion = nullptr;
+        byteWidget->excludedMemoryRegion = nullptr;
 
-    constexpr auto byteWidgetWidth = ByteItem::WIDTH + ByteItem::RIGHT_MARGIN;
-    constexpr auto byteWidgetHeight = ByteItem::HEIGHT + ByteItem::BOTTOM_MARGIN;
-    const auto rowCapacity = static_cast<std::size_t>(
-        std::floor((width - margins.left() - margins.right() - ByteAddressContainer::WIDTH) / byteWidgetWidth)
-    );
-    const auto rowCount = static_cast<int>(
-        std::ceil(static_cast<double>(this->byteItemsByAddress.size()) / static_cast<double>(rowCapacity))
-    );
+        for (const auto& focusedRegion : this->focusedMemoryRegions) {
+            const auto addressRange = focusedRegion.getAbsoluteAddressRange();
+            if (byteAddress >= addressRange.startAddress && byteAddress <= addressRange.endAddress) {
+                byteWidget->focusedMemoryRegion = &focusedRegion;
+                break;
+            }
+        }
 
-    this->setSceneRect(
-        0,
-        0,
-        width,
-        std::max(((rowCount * byteWidgetHeight) + margins.top() + margins.bottom()), this->parent->height())
-    );
-
-    // Don't bother recalculating the byte item positions if the number of rows & columns have not changed.
-    if (rowCount == this->byteItemsByRowIndex.size() && rowCapacity == this->byteItemsByColumnIndex.size()) {
-        return;
-    }
-
-    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByRowIndex;
-    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByColumnIndex;
-
-    for (auto& [address, byteWidget] : this->byteItemsByAddress) {
-        const auto rowIndex = static_cast<std::size_t>(
-            std::ceil(static_cast<double>(byteWidget->byteIndex + 1) / static_cast<double>(rowCapacity)) - 1
-        );
-        const auto columnIndex = static_cast<std::size_t>(
-            static_cast<double>(byteWidget->byteIndex)
-                - (std::floor(byteWidget->byteIndex / rowCapacity) * static_cast<double>(rowCapacity))
-        );
-
-        byteWidget->setPos(
-            static_cast<int>(columnIndex * byteWidgetWidth + margins.left() + ByteAddressContainer::WIDTH),
-            static_cast<int>(rowIndex * byteWidgetHeight + static_cast<std::size_t>(margins.top()))
-        );
-
-        byteWidget->currentRowIndex = static_cast<std::size_t>(rowIndex);
-        byteWidget->currentColumnIndex = static_cast<std::size_t>(columnIndex);
-
-        byteWidgetsByRowIndex[byteWidget->currentRowIndex].emplace_back(byteWidget);
-        byteWidgetsByColumnIndex[byteWidget->currentColumnIndex].emplace_back(byteWidget);
+        for (const auto& excludedRegion : this->excludedMemoryRegions) {
+            const auto addressRange = excludedRegion.getAbsoluteAddressRange();
+            if (byteAddress >= addressRange.startAddress && byteAddress <= addressRange.endAddress) {
+                byteWidget->excludedMemoryRegion = &excludedRegion;
+                break;
+            }
+        }
 
         byteWidget->update();
     }
 
-    this->byteItemsByRowIndex = std::move(byteWidgetsByRowIndex);
-    this->byteItemsByColumnIndex = std::move(byteWidgetsByColumnIndex);
+    // Refresh annotation items
+    for (auto [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
+        this->removeItem(annotationItem);
+        delete annotationItem;
+    }
 
-    this->byteAddressContainer->adjustAddressLabels(this->byteItemsByRowIndex);
+    this->annotationItemsByStartAddress.clear();
+
+    for (const auto& focusedRegion : this->focusedMemoryRegions) {
+        const auto addressRange = focusedRegion.getAbsoluteAddressRange();
+        auto* annotationItem = new AnnotationItem(
+            addressRange.startAddress,
+            addressRange.endAddress - addressRange.startAddress + 1,
+            focusedRegion.name,
+            AnnotationItemPosition::BOTTOM
+        );
+        this->addItem(annotationItem);
+        this->annotationItemsByStartAddress.insert(std::pair(addressRange.startAddress, annotationItem));
+    }
+
+    this->adjustSize(true);
+}
+
+void ByteItemGraphicsScene::adjustSize(bool forced) {
+    const auto width = this->getSceneWidth();
+
+    const auto columnCount = static_cast<std::size_t>(
+        std::floor(
+            (width - this->margins.left() - this->margins.right() - ByteAddressContainer::WIDTH + ByteItem::RIGHT_MARGIN)
+                / (ByteItem::WIDTH + ByteItem::RIGHT_MARGIN)
+        )
+    );
+    const auto rowCount = static_cast<int>(
+        std::ceil(static_cast<double>(this->byteItemsByAddress.size()) / static_cast<double>(columnCount))
+    );
+
+    // Don't bother recalculating the byte item & annotation positions if the number of rows & columns have not changed.
+    if (this->byteItemsByAddress.empty()
+        || (
+            !forced
+            && rowCount == this->byteItemsByRowIndex.size()
+            && columnCount == this->byteItemsByColumnIndex.size()
+        )
+    ) {
+        this->setSceneRect(
+            0,
+            0,
+            width,
+            std::max(static_cast<int>(this->sceneRect().height()), this->parent->viewport()->height())
+        );
+
+        return;
+    }
+
+    if (!this->byteItemsByAddress.empty()) {
+        this->adjustByteItemPositions();
+        this->adjustAnnotationItemPositions();
+
+        const auto lastByteItemPosition = (--this->byteItemsByAddress.end())->second->pos();
+        this->setSceneRect(
+            0,
+            0,
+            width,
+            std::max(
+                static_cast<int>(lastByteItemPosition.y() + ByteItem::HEIGHT + this->margins.bottom()),
+                this->parent->height()
+            )
+        );
+    }
+
+    this->update();
 }
 
 void ByteItemGraphicsScene::setEnabled(bool enabled) {
@@ -132,8 +168,175 @@ void ByteItemGraphicsScene::setEnabled(bool enabled) {
             byteItem->setEnabled(this->enabled);
         }
 
+        for (auto& [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
+            annotationItem->setEnabled(this->enabled);
+        }
+
         this->byteAddressContainer->setEnabled(enabled);
+        this->byteAddressContainer->update();
         this->update();
+    }
+}
+
+void ByteItemGraphicsScene::invalidateChildItemCaches() {
+    for (auto& [address, byteWidget] : this->byteItemsByAddress) {
+        byteWidget->update();
+    }
+
+    for (auto& [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
+        annotationItem->update();
+    }
+}
+
+bool ByteItemGraphicsScene::event(QEvent* event) {
+    if (event->type() == QEvent::Type::GraphicsSceneLeave && this->hoveredByteWidget.has_value()) {
+        this->onByteWidgetLeave();
+    }
+
+    return QGraphicsScene::event(event);
+}
+
+void ByteItemGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) {
+    auto hoveredItems = this->items(mouseEvent->scenePos());
+    ByteItem* hoveredByteItem = nullptr;
+    AnnotationItem* hoveredAnnotationItem = nullptr;
+
+    if (!hoveredItems.empty()) {
+        hoveredByteItem = dynamic_cast<ByteItem*>(hoveredItems.at(0));
+        hoveredAnnotationItem = dynamic_cast<AnnotationItem*>(hoveredItems.at(0));
+    }
+
+    if (hoveredByteItem != nullptr) {
+        this->onByteWidgetEnter(hoveredByteItem);
+        return;
+    }
+
+    if (this->hoveredByteWidget.has_value()) {
+        this->onByteWidgetLeave();
+    }
+
+    if (hoveredAnnotationItem != nullptr) {
+        this->onAnnotationItemEnter(hoveredAnnotationItem);
+        return;
+    }
+
+    if (this->hoveredAnnotationItem.has_value()) {
+        this->onAnnotationItemLeave();
+    }
+}
+
+void ByteItemGraphicsScene::adjustByteItemPositions() {
+    const auto columnCount = static_cast<std::size_t>(
+        std::floor(
+            (this->getSceneWidth() - this->margins.left() - this->margins.right() - ByteAddressContainer::WIDTH + ByteItem::RIGHT_MARGIN)
+                / (ByteItem::WIDTH + ByteItem::RIGHT_MARGIN)
+        )
+    );
+
+    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByRowIndex;
+    std::map<std::size_t, std::vector<ByteItem*>> byteWidgetsByColumnIndex;
+
+    auto rowIndicesWithTopAnnotations = std::set<std::size_t>();
+    auto rowIndicesWithBottomAnnotations = std::set<std::size_t>();
+    const auto& memoryAddressRange = this->targetMemoryDescriptor.addressRange;
+
+    for (auto [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
+        const auto firstByteRowIndex = static_cast<std::size_t>(
+            std::ceil(static_cast<double>((startAddress - memoryAddressRange.startAddress) + 1)
+                / static_cast<double>(columnCount)) - 1
+        );
+
+        const auto lastByteRowIndex = static_cast<std::size_t>(
+            std::ceil(static_cast<double>((annotationItem->endAddress - memoryAddressRange.startAddress) + 1)
+                / static_cast<double>(columnCount)) - 1
+        );
+
+        // We only display annotations that span a single row.
+        if (firstByteRowIndex == lastByteRowIndex) {
+            annotationItem->show();
+            rowIndicesWithBottomAnnotations.insert(firstByteRowIndex);
+
+        } else {
+            annotationItem->hide();
+        }
+    }
+
+    constexpr auto annotationTopHeight = AnnotationItem::TOP_HEIGHT;
+    constexpr auto annotationBottomHeight = AnnotationItem::BOTTOM_HEIGHT;
+
+    std::size_t lastRowIndex = 0;
+    int rowYPosition = margins.top();
+    auto currentRowAnnotatedTop = false;
+
+    for (auto& [address, byteWidget] : this->byteItemsByAddress) {
+        const auto rowIndex = static_cast<std::size_t>(
+            std::ceil(static_cast<double>(byteWidget->byteIndex + 1) / static_cast<double>(columnCount)) - 1
+        );
+        const auto columnIndex = static_cast<std::size_t>(
+            static_cast<double>(byteWidget->byteIndex)
+                - (std::floor(byteWidget->byteIndex / columnCount) * static_cast<double>(columnCount))
+        );
+
+        if (rowIndex != lastRowIndex) {
+            rowYPosition += ByteItem::HEIGHT + ByteItem::BOTTOM_MARGIN;
+            currentRowAnnotatedTop = false;
+
+            if (rowIndicesWithBottomAnnotations.contains(lastRowIndex)) {
+                rowYPosition += annotationBottomHeight;
+            }
+        }
+
+        if (!currentRowAnnotatedTop && rowIndicesWithTopAnnotations.contains(rowIndex)) {
+            rowYPosition += annotationTopHeight;
+            currentRowAnnotatedTop = true;
+        }
+
+        byteWidget->setPos(
+            static_cast<int>(
+                columnIndex * (ByteItem::WIDTH + ByteItem::RIGHT_MARGIN) + this->margins.left() + ByteAddressContainer::WIDTH),
+            rowYPosition
+        );
+
+        byteWidget->currentRowIndex = rowIndex;
+        byteWidget->currentColumnIndex = columnIndex;
+
+        byteWidgetsByRowIndex[byteWidget->currentRowIndex].emplace_back(byteWidget);
+        byteWidgetsByColumnIndex[byteWidget->currentColumnIndex].emplace_back(byteWidget);
+
+        lastRowIndex = rowIndex;
+    }
+
+    this->byteItemsByRowIndex = std::move(byteWidgetsByRowIndex);
+    this->byteItemsByColumnIndex = std::move(byteWidgetsByColumnIndex);
+
+    this->byteAddressContainer->adjustAddressLabels(this->byteItemsByRowIndex);
+}
+
+void ByteItemGraphicsScene::adjustAnnotationItemPositions() {
+    if (this->byteItemsByAddress.empty()) {
+        return;
+    }
+
+    for (auto& [startAddress, annotationItem] : this->annotationItemsByStartAddress) {
+        if (!this->byteItemsByAddress.contains(startAddress)) {
+            annotationItem->hide();
+            continue;
+        }
+
+        const auto firstByteItemPosition = this->byteItemsByAddress.at(startAddress)->pos();
+
+        if (annotationItem->position == AnnotationItemPosition::TOP) {
+            annotationItem->setPos(
+                firstByteItemPosition.x(),
+                firstByteItemPosition.y() - AnnotationItem::TOP_HEIGHT
+            );
+
+        } else if (annotationItem->position == AnnotationItemPosition::BOTTOM) {
+            annotationItem->setPos(
+                firstByteItemPosition.x(),
+                firstByteItemPosition.y() + ByteItem::HEIGHT
+            );
+        }
     }
 }
 
@@ -147,10 +350,9 @@ void ByteItemGraphicsScene::onByteWidgetEnter(ByteItem* widget) {
         if (this->hoveredByteWidget.value() == widget) {
             // This byte item is already marked as hovered
             return;
-
-        } else {
-            this->onByteWidgetLeave();
         }
+
+        this->onByteWidgetLeave();
     }
 
     this->hoveredByteWidget = widget;
@@ -174,7 +376,7 @@ void ByteItemGraphicsScene::onByteWidgetEnter(ByteItem* widget) {
 }
 
 void ByteItemGraphicsScene::onByteWidgetLeave() {
-    const auto byteItem = this->hoveredByteWidget.value();
+    auto* byteItem = this->hoveredByteWidget.value();
     this->hoveredByteWidget = std::nullopt;
 
     this->hoveredAddressLabel->setText("Relative Address (Absolute Address):");
@@ -193,24 +395,35 @@ void ByteItemGraphicsScene::onByteWidgetLeave() {
     }
 }
 
-bool ByteItemGraphicsScene::event(QEvent* event) {
-    if (event->type() == QEvent::Type::GraphicsSceneLeave && this->hoveredByteWidget.has_value()) {
-        this->onByteWidgetLeave();
-    }
-
-    return QGraphicsScene::event(event);
-}
-
-void ByteItemGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) {
-    auto hoveredItems = this->items(mouseEvent->scenePos());
-    if (!hoveredItems.empty()) {
-        auto hoveredByteWidget = dynamic_cast<ByteItem*>(hoveredItems.at(0));
-
-        if (hoveredByteWidget != nullptr) {
-            this->onByteWidgetEnter(hoveredByteWidget);
+void ByteItemGraphicsScene::onAnnotationItemEnter(AnnotationItem* annotationItem) {
+    if (this->hoveredAnnotationItem.has_value()) {
+        if (this->hoveredAnnotationItem.value() == annotationItem) {
+            return;
         }
 
-    } else if (this->hoveredByteWidget.has_value()) {
-        this->onByteWidgetLeave();
+        this->onAnnotationItemLeave();
+    }
+
+    this->hoveredAnnotationItem = annotationItem;
+
+    for (
+        auto byteItemAddress = annotationItem->startAddress;
+        byteItemAddress <= annotationItem->endAddress;
+        byteItemAddress++
+    ) {
+        this->byteItemsByAddress.at(byteItemAddress)->update();
+    }
+}
+
+void ByteItemGraphicsScene::onAnnotationItemLeave() {
+    auto* annotationItem = this->hoveredAnnotationItem.value();
+    this->hoveredAnnotationItem = std::nullopt;
+
+    for (
+        auto byteItemAddress = annotationItem->startAddress;
+        byteItemAddress <= annotationItem->endAddress;
+        byteItemAddress++
+    ) {
+        this->byteItemsByAddress.at(byteItemAddress)->update();
     }
 }

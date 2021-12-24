@@ -3,18 +3,10 @@
 #include <QGraphicsView>
 #include <QWidget>
 #include <QLabel>
-#include <QToolButton>
-#include <QVBoxLayout>
-#include <map>
 #include <vector>
-#include <QSize>
-#include <QString>
 #include <QEvent>
-#include <QGraphicsSceneMouseEvent>
-#include <optional>
 
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Targets/TargetState.hpp"
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
@@ -30,6 +22,8 @@ namespace Bloom::Widgets
     public:
         ByteItemContainerGraphicsView(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+            std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             InsightWorker& insightWorker,
             const HexViewerWidgetSettings& settings,
             QLabel* hoveredAddressLabel,

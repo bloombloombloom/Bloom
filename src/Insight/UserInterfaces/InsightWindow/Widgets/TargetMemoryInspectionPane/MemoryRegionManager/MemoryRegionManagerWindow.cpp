@@ -382,6 +382,7 @@ void MemoryRegionManagerWindow::applyChanges() {
     this->focusedMemoryRegions = std::move(processedFocusedMemoryRegions);
     this->excludedMemoryRegions = std::move(processedExcludedMemoryRegions);
     this->close();
+    emit this->changesApplied();
 }
 
 void MemoryRegionManagerWindow::openHelpPage() {

@@ -3,20 +3,20 @@
 #include <QPainter>
 #include <QStyle>
 
-#include "src/Logger/Logger.hpp"
-
 using namespace Bloom::Widgets;
 
 ByteItem::ByteItem(
     std::size_t byteIndex,
     std::uint32_t address,
     std::optional<ByteItem*>& hoveredByteItem,
+    std::optional<AnnotationItem*>& hoveredAnnotationItem,
     const HexViewerWidgetSettings& settings
 ):
 QGraphicsItem(nullptr),
 byteIndex(byteIndex),
 address(address),
 hoveredByteItem(hoveredByteItem),
+hoveredAnnotationItem(hoveredAnnotationItem),
 settings(settings)
 {
     this->setCacheMode(
@@ -51,25 +51,40 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     static const auto valueChangedTextColor = QColor(0x54, 0x7F, 0xBA);
     static auto font = QFont("'Ubuntu', sans-serif");
 
-    static const auto stackMemoryBackgroundColor = QColor(0x5E, 0x50, 0x27, 255);
+    static const auto focusedRegionBackgroundColor = QColor(0x25, 0x5A, 0x49, 210);
+    static const auto stackMemoryBackgroundColor = QColor(0x67, 0x57, 0x20, 210);
     static const auto hoveredBackgroundColor = QColor(0x8E, 0x8B, 0x83, 70);
     static const auto hoveredNeighbourBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
+    static const auto hoveredAnnotationBackgroundColor = QColor(0x8E, 0x8B, 0x83, 50);
+
+    const auto isEnabled = this->isEnabled();
+    auto textColor = this->valueChanged ? valueChangedTextColor : standardTextColor;
+    auto backgroundColor = std::optional<QColor>();
 
     font.setPixelSize(11);
     painter->setFont(font);
 
-    if (this->settings.highlightStackMemory && this->settings.stackPointerAddress.has_value()
+    if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
+        // This byte is within a focused region
+        backgroundColor = focusedRegionBackgroundColor;
+
+    } else if (this->settings.highlightStackMemory && this->settings.stackPointerAddress.has_value()
         && this->address > this->settings.stackPointerAddress
     ) {
         // This byte is within the stack memory
-        painter->setBrush(stackMemoryBackgroundColor);
-        painter->drawRect(widgetRect);
+        backgroundColor = stackMemoryBackgroundColor;
     }
 
     const auto* hoveredByteItem = this->hoveredByteItem.value_or(nullptr);
+    const auto* hoveredAnnotationItem = this->hoveredAnnotationItem.value_or(nullptr);
     if (hoveredByteItem != nullptr) {
         if (hoveredByteItem == this) {
-            painter->setBrush(hoveredBackgroundColor);
+            if (backgroundColor.has_value()) {
+                backgroundColor->setAlpha(255);
+
+            } else {
+                backgroundColor = hoveredBackgroundColor;
+            }
 
         } else if (this->settings.highlightHoveredRowAndCol
             && (
@@ -77,16 +92,34 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
                 || hoveredByteItem->currentRowIndex == this->currentRowIndex
             )
         ) {
-            painter->setBrush(hoveredNeighbourBackgroundColor);
+            if (backgroundColor.has_value()) {
+                backgroundColor->setAlpha(220);
+
+            } else {
+                backgroundColor = hoveredNeighbourBackgroundColor;
+            }
         }
 
+    } else if (
+        !this->settings.highlightFocusedMemory
+        && hoveredAnnotationItem != nullptr
+        && this->address >= hoveredAnnotationItem->startAddress
+        && this->address <= hoveredAnnotationItem->endAddress
+    ) {
+        backgroundColor = hoveredAnnotationBackgroundColor;
+    }
+
+    if (backgroundColor.has_value()) {
+        if (!isEnabled) {
+            backgroundColor->setAlpha(100);
+        }
+
+        painter->setBrush(backgroundColor.value());
         painter->drawRect(widgetRect);
     }
 
-    auto textColor = this->valueChanged ? valueChangedTextColor : standardTextColor;
-
-    if (this->valueInitialised) {
-        if (!this->isEnabled()) {
+    if (this->valueInitialised && this->excludedMemoryRegion == nullptr) {
+        if (!isEnabled) {
             textColor.setAlpha(100);
         }
 

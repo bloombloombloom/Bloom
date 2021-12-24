@@ -2,25 +2,23 @@
 
 #include <QWidget>
 #include <QLabel>
-#include <QGraphicsView>
-#include <QVBoxLayout>
-#include <set>
-#include <map>
-#include <QSize>
-#include <QString>
-#include <QEvent>
+#include <QResizeEvent>
 #include <QShowEvent>
-#include <optional>
+#include <vector>
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
+
 #include "HexViewerWidgetSettings.hpp"
 #include "ByteItemContainerGraphicsView.hpp"
 
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
 
 namespace Bloom::Widgets
 {
@@ -33,12 +31,14 @@ namespace Bloom::Widgets
 
         HexViewerWidget(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+            std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             InsightWorker& insightWorker,
             QWidget* parent
         );
 
         void updateValues(const Targets::TargetMemoryBuffer& buffer);
-
+        void refreshRegions();
         void setStackPointer(std::uint32_t stackPointer);
 
     protected:
@@ -47,6 +47,9 @@ namespace Bloom::Widgets
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
+        std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
+        std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
+
         InsightWorker& insightWorker;
 
         HexViewerWidgetSettings settings = HexViewerWidgetSettings();
@@ -66,7 +69,6 @@ namespace Bloom::Widgets
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
-    private slots:
         void onTargetStateChanged(Targets::TargetState newState);
         void setStackMemoryHighlightingEnabled(bool enabled);
         void setHoveredRowAndColumnHighlightingEnabled(bool enabled);
