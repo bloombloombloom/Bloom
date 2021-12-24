@@ -575,7 +575,7 @@ void Avr8::loadTargetMemoryDescriptors() {
             TargetMemoryType::RAM,
             TargetMemoryAddressRange(
                 ramStartAddress,
-                ramStartAddress + this->targetParameters->ramSize.value()
+                ramStartAddress + this->targetParameters->ramSize.value() - 1
             )
         )
     ));
@@ -589,7 +589,7 @@ void Avr8::loadTargetMemoryDescriptors() {
                 TargetMemoryType::EEPROM,
                 TargetMemoryAddressRange(
                     eepromStartAddress,
-                    eepromStartAddress + this->targetParameters->eepromSize.value()
+                    eepromStartAddress + this->targetParameters->eepromSize.value() - 1
                 )
             )
         ));
