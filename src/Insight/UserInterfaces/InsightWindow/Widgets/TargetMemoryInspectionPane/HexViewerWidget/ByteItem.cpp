@@ -40,6 +40,7 @@ void ByteItem::setValue(unsigned char value) {
         ? std::optional(QString(QChar(this->value))) : std::nullopt;
 
     this->valueInitialised = true;
+    this->update();
 }
 
 void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {

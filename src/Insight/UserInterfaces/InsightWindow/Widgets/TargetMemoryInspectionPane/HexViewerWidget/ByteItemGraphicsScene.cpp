@@ -59,7 +59,6 @@ ByteItemGraphicsScene::ByteItemGraphicsScene(
 void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buffer) {
     for (auto& [address, byteWidget] : this->byteItemsByAddress) {
         byteWidget->setValue(buffer.at(byteWidget->byteIndex));
-        byteWidget->update();
     }
 
     this->updateAnnotationValues(buffer);
