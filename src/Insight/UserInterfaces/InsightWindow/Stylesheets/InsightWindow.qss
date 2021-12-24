@@ -326,6 +326,10 @@ QScrollBar::sub-line:vertical {
     border: none;
 }
 
+#bottom-menu-bar QToolButton QLabel:disabled {
+    color: #808484;
+}
+
 #bottom-panel {
     border-top: 1px solid #2F2F2D;
     background-color: transparent;
