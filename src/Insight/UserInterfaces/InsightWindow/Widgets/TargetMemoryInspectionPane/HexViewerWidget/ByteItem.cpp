@@ -41,7 +41,7 @@ void ByteItem::setValue(unsigned char value) {
     this->asciiValue = (this->value >= 32 && this->value <= 126)
         ? std::optional(QString(QChar(this->value))) : std::nullopt;
 
-    this->valueInitialised = true;
+    this->valueInitialised = this->excludedMemoryRegion == nullptr;
     this->update();
 }
 
