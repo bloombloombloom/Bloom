@@ -8,5 +8,6 @@ namespace Bloom::Widgets
         bool highlightFocusedMemory = true;
         bool highlightHoveredRowAndCol = true;
         bool displayAsciiValues = false;
+        bool displayAnnotations = true;
     };
 }

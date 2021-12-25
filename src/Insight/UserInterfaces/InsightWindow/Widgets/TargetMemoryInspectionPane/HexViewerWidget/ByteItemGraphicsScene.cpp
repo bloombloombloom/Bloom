@@ -166,7 +166,10 @@ void ByteItemGraphicsScene::adjustSize(bool forced) {
 
     if (!this->byteItemsByAddress.empty()) {
         this->adjustByteItemPositions();
-        this->adjustAnnotationItemPositions();
+
+        if (this->settings.displayAnnotations) {
+            this->adjustAnnotationItemPositions();
+        }
 
         const auto* lastByteItem = (--this->byteItemsByAddress.end())->second;
         const auto sceneHeight = static_cast<int>(
@@ -293,7 +296,7 @@ void ByteItemGraphicsScene::adjustByteItemPositions() {
         );
 
         // We only display annotations that span a single row.
-        if (firstByteRowIndex == lastByteRowIndex) {
+        if (this->settings.displayAnnotations && firstByteRowIndex == lastByteRowIndex) {
             annotationItem->show();
 
             if (annotationItem->position == AnnotationItemPosition::TOP) {
@@ -360,7 +363,7 @@ void ByteItemGraphicsScene::adjustByteItemPositions() {
 }
 
 void ByteItemGraphicsScene::adjustAnnotationItemPositions() {
-    if (this->byteItemsByAddress.empty()) {
+    if (this->byteItemsByAddress.empty() || !this->settings.displayAnnotations) {
         return;
     }
 
