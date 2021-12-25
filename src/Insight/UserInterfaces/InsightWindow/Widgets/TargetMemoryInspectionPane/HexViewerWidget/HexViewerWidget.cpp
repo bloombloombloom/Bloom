@@ -55,6 +55,7 @@ HexViewerWidget::HexViewerWidget(
     this->highlightFocusedMemoryButton = this->container->findChild<SvgToolButton*>(
         "highlight-focused-memory-btn"
     );
+    this->displayAnnotationsButton = this->container->findChild<SvgToolButton*>("display-annotations-btn");
 
     this->toolBar->setContentsMargins(0, 0, 0, 0);
     this->toolBar->layout()->setContentsMargins(5, 0, 5, 1);
@@ -79,6 +80,7 @@ HexViewerWidget::HexViewerWidget(
     this->setStackMemoryHighlightingEnabled(this->settings.highlightStackMemory);
     this->setHoveredRowAndColumnHighlightingEnabled(this->settings.highlightHoveredRowAndCol);
     this->setFocusedMemoryHighlightingEnabled(this->settings.highlightFocusedMemory);
+    this->setAnnotationsEnabled(this->settings.displayAnnotations);
 
     QObject::connect(
         this->highlightStackMemoryButton,
@@ -104,6 +106,15 @@ HexViewerWidget::HexViewerWidget(
         this,
         [this] {
             this->setFocusedMemoryHighlightingEnabled(!this->settings.highlightFocusedMemory);
+        }
+    );
+
+    QObject::connect(
+        this->displayAnnotationsButton,
+        &QToolButton::clicked,
+        this,
+        [this] {
+            this->setAnnotationsEnabled(!this->settings.displayAnnotations);
         }
     );
 
@@ -166,4 +177,11 @@ void HexViewerWidget::setFocusedMemoryHighlightingEnabled(bool enabled) {
     this->settings.highlightFocusedMemory = enabled;
 
     this->byteItemGraphicsScene->invalidateChildItemCaches();
+}
+
+void HexViewerWidget::setAnnotationsEnabled(bool enabled) {
+    this->displayAnnotationsButton->setChecked(enabled);
+    this->settings.displayAnnotations = enabled;
+
+    this->byteItemGraphicsScene->adjustSize(true);
 }

@@ -106,6 +106,22 @@
                             </widget>
                         </item>
                         <item>
+                            <widget class="SvgToolButton" name="display-annotations-btn">
+                                <property name="checkable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/display-annotations.svg</string>
+                                </property>
+                                <property name="disabledSvgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/display-annotations-disabled.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Display Annotations</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
                             <widget class="QFrame" name="separator"/>
                         </item>
                         <item>
@@ -160,13 +176,6 @@
                     </layout>
                 </widget>
             </item>
-            <!--            <item>-->
-<!--                <spacer name="vertical-spacer">-->
-<!--                    <property name="orientation">-->
-<!--                        <enum>Qt::Vertical</enum>-->
-<!--                    </property>-->
-<!--                </spacer>-->
-<!--            </item>-->
         </layout>
     </widget>
 </ui>
