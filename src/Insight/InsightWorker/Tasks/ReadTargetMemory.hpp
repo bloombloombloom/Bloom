@@ -13,8 +13,16 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        ReadTargetMemory(Targets::TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t size):
-        InsightWorkerTask(), memoryType(memoryType), startAddress(startAddress), size(size) {}
+        ReadTargetMemory(
+            Targets::TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            std::uint32_t size,
+            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
+        ):
+            memoryType(memoryType),
+            startAddress(startAddress),
+            size(size),
+            excludedAddressRanges(excludedAddressRanges) {}
 
     signals:
         void targetMemoryRead(Targets::TargetMemoryBuffer buffer);
@@ -26,5 +34,6 @@ namespace Bloom
         Targets::TargetMemoryType memoryType;
         std::uint32_t startAddress;
         std::uint32_t size;
+        std::set<Targets::TargetMemoryAddressRange> excludedAddressRanges;
     };
 }
