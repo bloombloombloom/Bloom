@@ -90,6 +90,7 @@ void ByteItemGraphicsScene::refreshRegions() {
     }
 
     // Refresh annotation items
+    this->hoveredAnnotationItem = std::nullopt;
     for (auto* annotationItem : this->annotationItems) {
         this->removeItem(annotationItem);
         delete annotationItem;
