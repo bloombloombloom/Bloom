@@ -26,6 +26,10 @@ namespace Bloom::Targets
             return this->startAddress == rhs.startAddress && this->endAddress == rhs.endAddress;
         }
 
+        bool operator < (const TargetMemoryAddressRange& rhs) const {
+            return this->startAddress < rhs.startAddress;
+        }
+
         [[nodiscard]] bool intersectsWith(const TargetMemoryAddressRange& other) const {
             return
                 (other.startAddress <= this->startAddress && other.endAddress >= this->startAddress)
