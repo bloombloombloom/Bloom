@@ -40,6 +40,9 @@ void XplainedPro::init() {
      */
     this->edbgAvr8Interface->setMaximumMemoryAccessSizePerRequest(256);
 
+    // Masked read memory commands are not available on the Xplained Pro debug tool.
+    this->edbgAvr8Interface->setAvoidMaskedMemoryRead(true);
+
     this->setInitialised(true);
 }
 
