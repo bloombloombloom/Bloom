@@ -59,6 +59,13 @@
                         </item>
                         <item>
                             <widget class="SvgToolButton" name="highlight-stack-memory-btn">
+                                <!--
+                                    This button is hidden by default. Only to be displayed for the RAM inspection pane.
+                                -->
+                                <property name="visible">
+                                    <bool>false</bool>
+                                </property>
+
                                 <property name="checkable">
                                     <bool>true</bool>
                                 </property>

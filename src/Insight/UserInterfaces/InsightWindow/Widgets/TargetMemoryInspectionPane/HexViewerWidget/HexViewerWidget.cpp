@@ -77,19 +77,27 @@ HexViewerWidget::HexViewerWidget(
     );
     this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
 
-    this->setStackMemoryHighlightingEnabled(this->settings.highlightStackMemory);
     this->setHoveredRowAndColumnHighlightingEnabled(this->settings.highlightHoveredRowAndCol);
     this->setFocusedMemoryHighlightingEnabled(this->settings.highlightFocusedMemory);
     this->setAnnotationsEnabled(this->settings.displayAnnotations);
 
-    QObject::connect(
-        this->highlightStackMemoryButton,
-        &QToolButton::clicked,
-        this,
-        [this] {
-            this->setStackMemoryHighlightingEnabled(!this->settings.highlightStackMemory);
-        }
-    );
+    if (this->targetMemoryDescriptor.type == Targets::TargetMemoryType::RAM) {
+        this->highlightStackMemoryButton->show();
+        this->setStackMemoryHighlightingEnabled(this->settings.highlightStackMemory);
+
+        QObject::connect(
+            this->highlightStackMemoryButton,
+            &QToolButton::clicked,
+            this,
+            [this] {
+                this->setStackMemoryHighlightingEnabled(!this->settings.highlightStackMemory);
+            }
+        );
+
+    } else {
+        this->highlightStackMemoryButton->hide();
+        this->setStackMemoryHighlightingEnabled(false);
+    }
 
     QObject::connect(
         this->highlightHoveredRowAndColumnButton,
