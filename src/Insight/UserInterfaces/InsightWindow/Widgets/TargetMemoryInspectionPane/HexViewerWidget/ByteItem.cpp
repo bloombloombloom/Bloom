@@ -54,7 +54,7 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     static const auto valueChangedTextColor = QColor(0x54, 0x7F, 0xBA);
     static auto font = QFont("'Ubuntu', sans-serif");
 
-    static const auto focusedRegionBackgroundColor = QColor(0x25, 0x5A, 0x49, 210);
+    static const auto focusedRegionBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
     static const auto stackMemoryBackgroundColor = QColor(0x67, 0x57, 0x20, 210);
     static const auto hoveredBackgroundColor = QColor(0x8E, 0x8B, 0x83, 70);
     static const auto hoveredNeighbourBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
@@ -67,15 +67,15 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     font.setPixelSize(11);
     painter->setFont(font);
 
-    if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
-        // This byte is within a focused region
-        backgroundColor = focusedRegionBackgroundColor;
-
-    } else if (this->settings.highlightStackMemory && this->currentStackPointer.has_value()
+    if (this->settings.highlightStackMemory && this->currentStackPointer.has_value()
         && this->address > this->currentStackPointer
-    ) {
+        ) {
         // This byte is within the stack memory
         backgroundColor = stackMemoryBackgroundColor;
+
+    } else if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
+        // This byte is within a focused region
+        backgroundColor = focusedRegionBackgroundColor;
     }
 
     const auto* hoveredByteItem = this->hoveredByteItem.value_or(nullptr);
