@@ -31,6 +31,7 @@ namespace Bloom::Widgets
 
         HexViewerWidget(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            HexViewerWidgetSettings& settings,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             InsightWorker& insightWorker,
@@ -52,7 +53,7 @@ namespace Bloom::Widgets
 
         InsightWorker& insightWorker;
 
-        HexViewerWidgetSettings settings = HexViewerWidgetSettings();
+        HexViewerWidgetSettings& settings;
 
         QWidget* container = nullptr;
         QWidget* toolBar = nullptr;

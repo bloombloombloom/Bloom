@@ -4,9 +4,9 @@ namespace Bloom::Widgets
 {
     struct HexViewerWidgetSettings
     {
-        bool highlightStackMemory = false;
-        bool highlightFocusedMemory = false;
-        bool highlightHoveredRowAndCol = false;
+        bool highlightStackMemory = true;
+        bool highlightFocusedMemory = true;
+        bool highlightHoveredRowAndCol = true;
         bool displayAsciiValues = false;
     };
 }

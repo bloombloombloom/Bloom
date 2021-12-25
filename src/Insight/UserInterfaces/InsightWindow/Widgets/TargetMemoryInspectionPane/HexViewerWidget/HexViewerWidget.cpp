@@ -12,6 +12,7 @@ using Bloom::Targets::TargetMemoryDescriptor;
 
 HexViewerWidget::HexViewerWidget(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
+    HexViewerWidgetSettings& settings,
     std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
     std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
     InsightWorker& insightWorker,
@@ -19,6 +20,7 @@ HexViewerWidget::HexViewerWidget(
 ):
     QWidget(parent),
     targetMemoryDescriptor(targetMemoryDescriptor),
+    settings(settings),
     focusedMemoryRegions(focusedMemoryRegions),
     excludedMemoryRegions(excludedMemoryRegions),
     insightWorker(insightWorker)
@@ -74,9 +76,9 @@ HexViewerWidget::HexViewerWidget(
     );
     this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
 
-    this->setStackMemoryHighlightingEnabled(true);
-    this->setHoveredRowAndColumnHighlightingEnabled(true);
-    this->setFocusedMemoryHighlightingEnabled(true);
+    this->setStackMemoryHighlightingEnabled(this->settings.highlightStackMemory);
+    this->setHoveredRowAndColumnHighlightingEnabled(this->settings.highlightHoveredRowAndCol);
+    this->setFocusedMemoryHighlightingEnabled(this->settings.highlightFocusedMemory);
 
     QObject::connect(
         this->highlightStackMemoryButton,

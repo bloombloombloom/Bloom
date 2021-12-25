@@ -61,6 +61,7 @@ TargetMemoryInspectionPane::TargetMemoryInspectionPane(
     this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
     this->hexViewerWidget = new HexViewerWidget(
         this->targetMemoryDescriptor,
+        this->settings.hexViewerWidgetSettings,
         this->settings.focusedMemoryRegions,
         this->settings.excludedMemoryRegions,
         this->insightWorker,
