@@ -24,6 +24,10 @@ namespace Bloom::Widgets
             return QColor(0x94, 0x6F, 0x30);
         }
 
+        [[nodiscard]] int getLabelFontSize() const override {
+            return 11;
+        }
+
     private:
         static constexpr auto DEFAULT_LABEL_TEXT = "??";
 

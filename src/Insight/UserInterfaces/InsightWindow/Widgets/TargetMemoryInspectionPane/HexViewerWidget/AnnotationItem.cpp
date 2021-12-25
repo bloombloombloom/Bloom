@@ -41,6 +41,10 @@ void AnnotationItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* op
     auto lineColor = this->getLineColor();
     auto labelFontColor = this->getLabelFontColor();
 
+    auto font = painter->font();
+    font.setPixelSize(this->getLabelFontSize());
+    painter->setFont(font);
+
     const auto isEnabled = this->isEnabled();
 
     lineColor.setAlpha(isEnabled ? 255 : 100);

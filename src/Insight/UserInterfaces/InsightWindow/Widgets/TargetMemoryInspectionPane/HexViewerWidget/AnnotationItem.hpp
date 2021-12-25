@@ -57,6 +57,9 @@ namespace Bloom::Widgets
         [[nodiscard]] virtual QColor getLabelFontColor() const {
             return QColor(0x68, 0x68, 0x68);
         }
+
+        [[nodiscard]] virtual int getLabelFontSize() const {
+            return 12;
         }
     };
 }
