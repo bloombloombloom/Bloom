@@ -173,7 +173,7 @@
                                         <enum>Qt::AlignCenter</enum>
                                     </property>
                                     <property name="text">
-                                        <string>Add a new memory region to get started.</string>
+                                        <string>Add a memory region to get started.</string>
                                     </property>
                                 </widget>
                             </item>
