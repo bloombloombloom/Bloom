@@ -168,15 +168,16 @@ void ByteItemGraphicsScene::adjustSize(bool forced) {
         this->adjustByteItemPositions();
         this->adjustAnnotationItemPositions();
 
-        const auto lastByteItemPosition = (--this->byteItemsByAddress.end())->second->pos();
+        const auto* lastByteItem = (--this->byteItemsByAddress.end())->second;
+        const auto sceneHeight = static_cast<int>(
+            lastByteItem->pos().y() + ByteItem::HEIGHT + AnnotationItem::BOTTOM_HEIGHT + this->margins.bottom()
+        );
+
         this->setSceneRect(
             0,
             0,
             width,
-            std::max(
-                static_cast<int>(lastByteItemPosition.y() + ByteItem::HEIGHT + this->margins.bottom()),
-                this->parent->height()
-            )
+            std::max(sceneHeight, this->parent->height())
         );
     }
 
