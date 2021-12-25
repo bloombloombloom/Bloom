@@ -61,7 +61,7 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     static const auto hoveredAnnotationBackgroundColor = QColor(0x8E, 0x8B, 0x83, 50);
 
     const auto isEnabled = this->isEnabled();
-    auto textColor = this->valueChanged ? valueChangedTextColor : standardTextColor;
+    auto textColor = standardTextColor;
     auto backgroundColor = std::optional<QColor>();
 
     font.setPixelSize(11);
