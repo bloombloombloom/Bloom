@@ -3,7 +3,6 @@
 #include <cmath>
 
 using namespace Bloom::Widgets;
-using namespace Bloom::Exceptions;
 
 using Bloom::Targets::TargetMemoryDescriptor;
 
@@ -36,7 +35,15 @@ ByteItemGraphicsScene::ByteItemGraphicsScene(
     for (std::uint32_t i = 0; i < memorySize; i++) {
         const auto address = startAddress + i;
 
-        auto* byteWidget = new ByteItem(i, address, this->hoveredByteWidget, this->hoveredAnnotationItem, settings);
+        auto* byteWidget = new ByteItem(
+            i,
+            address,
+            this->currentStackPointer,
+            this->hoveredByteWidget,
+            this->hoveredAnnotationItem,
+            settings
+        );
+
         this->byteItemsByAddress.insert(std::pair(
             address,
             byteWidget
@@ -63,6 +70,11 @@ void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buff
 
     this->updateAnnotationValues(buffer);
     this->lastValueBuffer = buffer;
+}
+
+void ByteItemGraphicsScene::updateStackPointer(std::uint32_t stackPointer) {
+    this->currentStackPointer = stackPointer;
+    this->invalidateChildItemCaches();
 }
 
 void ByteItemGraphicsScene::refreshRegions() {

@@ -8,6 +8,7 @@ using namespace Bloom::Widgets;
 ByteItem::ByteItem(
     std::size_t byteIndex,
     std::uint32_t address,
+    std::optional<std::uint32_t>& currentStackPointer,
     std::optional<ByteItem*>& hoveredByteItem,
     std::optional<AnnotationItem*>& hoveredAnnotationItem,
     const HexViewerWidgetSettings& settings
@@ -15,6 +16,7 @@ ByteItem::ByteItem(
 QGraphicsItem(nullptr),
 byteIndex(byteIndex),
 address(address),
+currentStackPointer(currentStackPointer),
 hoveredByteItem(hoveredByteItem),
 hoveredAnnotationItem(hoveredAnnotationItem),
 settings(settings)
@@ -69,8 +71,8 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
         // This byte is within a focused region
         backgroundColor = focusedRegionBackgroundColor;
 
-    } else if (this->settings.highlightStackMemory && this->settings.stackPointerAddress.has_value()
-        && this->address > this->settings.stackPointerAddress
+    } else if (this->settings.highlightStackMemory && this->currentStackPointer.has_value()
+        && this->address > this->currentStackPointer
     ) {
         // This byte is within the stack memory
         backgroundColor = stackMemoryBackgroundColor;

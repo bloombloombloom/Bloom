@@ -52,6 +52,7 @@ namespace Bloom::Widgets
         );
 
         void updateValues(const Targets::TargetMemoryBuffer& buffer);
+        void updateStackPointer(std::uint32_t stackPointer);
         void refreshRegions();
         void adjustSize(bool forced = false);
         void setEnabled(bool enabled);
@@ -68,6 +69,8 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
+
+        std::optional<std::uint32_t> currentStackPointer;
 
         Targets::TargetMemoryBuffer lastValueBuffer;
 

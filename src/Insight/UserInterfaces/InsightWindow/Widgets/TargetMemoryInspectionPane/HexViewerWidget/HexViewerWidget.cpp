@@ -124,8 +124,7 @@ void HexViewerWidget::refreshRegions() {
 }
 
 void HexViewerWidget::setStackPointer(std::uint32_t stackPointer) {
-    this->settings.stackPointerAddress = stackPointer;
-    this->byteItemGraphicsScene->invalidateChildItemCaches();
+    this->byteItemGraphicsScene->updateStackPointer(stackPointer);
 }
 
 void HexViewerWidget::resizeEvent(QResizeEvent* event) {

@@ -37,6 +37,7 @@ namespace Bloom::Widgets
         ByteItem(
             std::size_t byteIndex,
             std::uint32_t address,
+            std::optional<std::uint32_t>& currentStackPointer,
             std::optional<ByteItem*>& hoveredByteItem,
             std::optional<AnnotationItem*>& hoveredAnnotationItem,
             const HexViewerWidgetSettings& settings
@@ -66,5 +67,6 @@ namespace Bloom::Widgets
 
         std::optional<ByteItem*>& hoveredByteItem;
         std::optional<AnnotationItem*>& hoveredAnnotationItem;
+        std::optional<std::uint32_t>& currentStackPointer;
     };
 }
