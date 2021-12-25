@@ -13,11 +13,9 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 
 #include "HexViewerWidget/HexViewerWidget.hpp"
-
 #include "MemoryRegionManager/MemoryRegionManagerWindow.hpp"
-#include "MemoryRegion.hpp"
-#include "FocusedMemoryRegion.hpp"
-#include "ExcludedMemoryRegion.hpp"
+
+#include "TargetMemoryInspectionPaneSettings.hpp"
 
 namespace Bloom::Widgets
 {
@@ -26,10 +24,12 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
+        TargetMemoryInspectionPaneSettings settings;
         bool activated = false;
 
         TargetMemoryInspectionPane(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            const TargetMemoryInspectionPaneSettings& settings,
             InsightWorker& insightWorker,
             PanelWidget *parent
         );
@@ -57,10 +57,9 @@ namespace Bloom::Widgets
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
-        std::vector<FocusedMemoryRegion> focusedMemoryRegions;
-        std::vector<ExcludedMemoryRegion> excludedMemoryRegions;
         MemoryRegionManagerWindow* memoryRegionManagerWindow = nullptr;
 
+        void sanitiseSettings();
         void onTargetStateChanged(Targets::TargetState newState);
         void onMemoryRead(const Targets::TargetMemoryBuffer& buffer);
         void openMemoryRegionManagerWindow();

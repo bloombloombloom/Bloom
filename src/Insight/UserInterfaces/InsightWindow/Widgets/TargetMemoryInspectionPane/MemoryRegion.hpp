@@ -29,7 +29,7 @@ namespace Bloom
         QString name;
         QDateTime createdDate = DateTime::currentDateTime();
         MemoryRegionType type;
-        const Targets::TargetMemoryDescriptor& memoryDescriptor;
+        Targets::TargetMemoryDescriptor memoryDescriptor;
         Targets::TargetMemoryAddressRange addressRange;
         MemoryRegionAddressType addressRangeType = MemoryRegionAddressType::ABSOLUTE;
 

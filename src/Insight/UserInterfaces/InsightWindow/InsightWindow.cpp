@@ -465,6 +465,9 @@ void InsightWindow::createPanes() {
         auto& ramDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::RAM);
         this->ramInspectionPane = new TargetMemoryInspectionPane(
             ramDescriptor,
+            this->memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::RAM) ?
+                this->memoryInspectionPaneSettingsByMemoryType.at(TargetMemoryType::RAM)
+                : TargetMemoryInspectionPaneSettings(),
             this->insightWorker,
             this->bottomPanel
         );
@@ -478,6 +481,9 @@ void InsightWindow::createPanes() {
         auto& eepromDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::EEPROM);
         this->eepromInspectionPane = new TargetMemoryInspectionPane(
             eepromDescriptor,
+            this->memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::EEPROM) ?
+                this->memoryInspectionPaneSettingsByMemoryType.at(TargetMemoryType::EEPROM)
+                : TargetMemoryInspectionPaneSettings(),
             this->insightWorker,
             this->bottomPanel
         );
@@ -497,7 +503,13 @@ void InsightWindow::destroyPanes() {
         this->targetRegistersButton->setDisabled(true);
     }
 
+    /*
+     * Before we destroy the memory inspection pane widgets, we take a copy of their current settings (memory regions,
+     * hex viewer settings, etc), in order to persist them through debug sessions.
+     */
     if (this->ramInspectionPane != nullptr) {
+        this->memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::RAM] = this->ramInspectionPane->settings;
+
         this->ramInspectionPane->deactivate();
         this->ramInspectionPane->deleteLater();
         this->ramInspectionPane = nullptr;
@@ -508,6 +520,8 @@ void InsightWindow::destroyPanes() {
     }
 
     if (this->eepromInspectionPane != nullptr) {
+        this->memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::EEPROM] = this->eepromInspectionPane->settings;
+
         this->eepromInspectionPane->deactivate();
         this->eepromInspectionPane->deleteLater();
         this->eepromInspectionPane = nullptr;

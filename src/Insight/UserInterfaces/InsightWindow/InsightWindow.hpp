@@ -20,6 +20,7 @@
 #include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
 #include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
 #include "Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPane.hpp"
+#include "Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPaneSettings.hpp"
 #include "AboutWindow.hpp"
 
 namespace Bloom
@@ -83,6 +84,10 @@ namespace Bloom
         Widgets::PanelWidget* bottomPanel = nullptr;
         Widgets::TargetMemoryInspectionPane* ramInspectionPane = nullptr;
         Widgets::TargetMemoryInspectionPane* eepromInspectionPane = nullptr;
+        std::map<
+            Targets::TargetMemoryType,
+            Widgets::TargetMemoryInspectionPaneSettings
+        > memoryInspectionPaneSettingsByMemoryType;
         QToolButton* ramInspectionButton = nullptr;
         QToolButton* eepromInspectionButton = nullptr;
 

@@ -20,9 +20,16 @@ using Bloom::Targets::TargetMemoryType;
 
 TargetMemoryInspectionPane::TargetMemoryInspectionPane(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
+    const TargetMemoryInspectionPaneSettings& settings,
     InsightWorker& insightWorker,
     PanelWidget* parent
-): QWidget(parent), parent(parent), targetMemoryDescriptor(targetMemoryDescriptor), insightWorker(insightWorker) {
+):
+    QWidget(parent),
+    targetMemoryDescriptor(targetMemoryDescriptor),
+    settings(settings),
+    insightWorker(insightWorker),
+    parent(parent)
+{
     this->setObjectName("target-memory-inspection-pane");
 
     auto memoryInspectionPaneUiFile = QFile(
@@ -47,12 +54,15 @@ TargetMemoryInspectionPane::TargetMemoryInspectionPane(
         this->targetMemoryDescriptor.type == TargetMemoryType::EEPROM ? "Internal EEPROM" : "Internal RAM"
     );
 
+    // Quick sanity check to ensure the validity of persisted settings.
+    this->sanitiseSettings();
+
     auto* subContainerLayout = this->container->findChild<QHBoxLayout*>("sub-container-layout");
     this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
     this->hexViewerWidget = new HexViewerWidget(
         this->targetMemoryDescriptor,
-        this->focusedMemoryRegions,
-        this->excludedMemoryRegions,
+        this->settings.focusedMemoryRegions,
+        this->settings.excludedMemoryRegions,
         this->insightWorker,
         this
     );
@@ -167,6 +177,31 @@ void TargetMemoryInspectionPane::postDeactivate() {
 
 }
 
+void TargetMemoryInspectionPane::sanitiseSettings() {
+    // Remove any invalid memory regions. It's very unlikely that there will be any, but not impossible.
+    this->settings.focusedMemoryRegions.erase(
+        std::remove_if(
+            this->settings.focusedMemoryRegions.begin(),
+            this->settings.focusedMemoryRegions.end(),
+            [this] (const FocusedMemoryRegion& region) {
+                return region.memoryDescriptor != this->targetMemoryDescriptor;
+            }
+        ),
+        this->settings.focusedMemoryRegions.end()
+    );
+
+    this->settings.excludedMemoryRegions.erase(
+        std::remove_if(
+            this->settings.excludedMemoryRegions.begin(),
+            this->settings.excludedMemoryRegions.end(),
+            [this] (const ExcludedMemoryRegion& region) {
+                return region.memoryDescriptor != this->targetMemoryDescriptor;
+            }
+        ),
+        this->settings.excludedMemoryRegions.end()
+    );
+}
+
 void TargetMemoryInspectionPane::onTargetStateChanged(Targets::TargetState newState) {
     using Targets::TargetState;
     this->targetState = newState;
@@ -189,9 +224,10 @@ void TargetMemoryInspectionPane::openMemoryRegionManagerWindow() {
     if (this->memoryRegionManagerWindow == nullptr) {
         this->memoryRegionManagerWindow = new MemoryRegionManagerWindow(
             this->targetMemoryDescriptor,
-            this->focusedMemoryRegions,
-            this->excludedMemoryRegions,
+            this->settings.focusedMemoryRegions,
+            this->settings.excludedMemoryRegions,
             this
+
         );
 
         QObject::connect(
