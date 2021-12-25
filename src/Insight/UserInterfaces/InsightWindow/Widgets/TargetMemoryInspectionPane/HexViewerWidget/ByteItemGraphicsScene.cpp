@@ -100,11 +100,13 @@ void ByteItemGraphicsScene::refreshRegions() {
 
     for (const auto& focusedRegion : this->focusedMemoryRegions) {
         auto* annotationItem = new AnnotationItem(focusedRegion, AnnotationItemPosition::BOTTOM);
+        annotationItem->setEnabled(this->enabled);
         this->addItem(annotationItem);
         this->annotationItems.emplace_back(annotationItem);
 
         if (focusedRegion.dataType != MemoryRegionDataType::UNKNOWN) {
             auto* valueAnnotationItem = new ValueAnnotationItem(focusedRegion);
+            valueAnnotationItem->setEnabled(this->enabled);
             this->addItem(valueAnnotationItem);
             this->annotationItems.emplace_back(valueAnnotationItem);
             this->valueAnnotationItems.emplace_back(valueAnnotationItem);
