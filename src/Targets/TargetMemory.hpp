@@ -22,6 +22,10 @@ namespace Bloom::Targets
         TargetMemoryAddressRange(std::uint32_t startAddress, std::uint32_t endAddress)
         : startAddress(startAddress), endAddress(endAddress) {};
 
+        bool operator == (const TargetMemoryAddressRange& rhs) const {
+            return this->startAddress == rhs.startAddress && this->endAddress == rhs.endAddress;
+        }
+
         [[nodiscard]] bool intersectsWith(const TargetMemoryAddressRange& other) const {
             return
                 (other.startAddress <= this->startAddress && other.endAddress >= this->startAddress)
@@ -37,6 +41,10 @@ namespace Bloom::Targets
 
         TargetMemoryDescriptor(TargetMemoryType type, TargetMemoryAddressRange addressRange)
         : type(type), addressRange(addressRange) {};
+
+        bool operator == (const TargetMemoryDescriptor& rhs) const {
+            return this->type == rhs.type && this->addressRange == rhs.addressRange;
+        }
 
         [[nodiscard]] std::uint32_t size() const {
             return (this->addressRange.endAddress - this->addressRange.startAddress) + 1;
