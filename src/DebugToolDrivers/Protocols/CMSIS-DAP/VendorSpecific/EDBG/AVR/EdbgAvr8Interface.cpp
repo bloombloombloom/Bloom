@@ -1233,13 +1233,17 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
                 continue;
             }
 
-            auto segmentBuffer = this->readMemory(
-                type,
-                segmentStartAddress,
-                (excludedAddress - segmentStartAddress)
-            );
+            const auto segmentSize = excludedAddress - segmentStartAddress;
+            if (segmentSize > 0) {
+                auto segmentBuffer = this->readMemory(
+                    type,
+                    segmentStartAddress,
+                    segmentSize
+                );
 
-            output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
+                output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
+            }
+
             output.emplace_back(0x00);
 
             segmentStartAddress = excludedAddress + 1;
