@@ -123,17 +123,20 @@ void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function
         [this] (const Targets::TargetMemoryBuffer& buffer) {
             this->onMemoryRead(buffer);
 
-            auto* readStackPointerTask = new ReadStackPointer();
-            QObject::connect(
-                readStackPointerTask,
-                &ReadStackPointer::stackPointerRead,
-                this,
-                [this] (std::uint32_t stackPointer) {
-                    this->hexViewerWidget->setStackPointer(stackPointer);
-                }
-            );
+            // Refresh the stack pointer if this is RAM.
+            if (this->targetMemoryDescriptor.type == Targets::TargetMemoryType::RAM) {
+                auto* readStackPointerTask = new ReadStackPointer();
+                QObject::connect(
+                    readStackPointerTask,
+                    &ReadStackPointer::stackPointerRead,
+                    this,
+                    [this] (std::uint32_t stackPointer) {
+                        this->hexViewerWidget->setStackPointer(stackPointer);
+                    }
+                );
 
-            this->insightWorker.queueTask(readStackPointerTask);
+                this->insightWorker.queueTask(readStackPointerTask);
+            }
         }
     );
 
