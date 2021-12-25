@@ -14,7 +14,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = BreakpointSetOnTarget;
 
-        static inline EventType type = EventType::SET_BREAKPOINT_ON_TARGET;
+        static constexpr EventType type = EventType::SET_BREAKPOINT_ON_TARGET;
         static inline const std::string name = "SetBreakpointOnTarget";
         Targets::TargetBreakpoint breakpoint;
 

@@ -10,7 +10,7 @@ namespace Bloom::Events
     class RegistersRetrievedFromTarget: public Event
     {
     public:
-        static inline EventType type = EventType::REGISTERS_RETRIEVED_FROM_TARGET;
+        static constexpr EventType type = EventType::REGISTERS_RETRIEVED_FROM_TARGET;
         static inline const std::string name = "RegistersRetrievedFromTarget";
         Targets::TargetRegisters registers;
 

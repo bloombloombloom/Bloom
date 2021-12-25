@@ -20,7 +20,7 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        InsightWorkerTaskState state;
+        InsightWorkerTaskState state = InsightWorkerTaskState::CREATED;
 
         InsightWorkerTask(): QObject(nullptr) {};
 

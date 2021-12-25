@@ -10,7 +10,7 @@ namespace Bloom::Events
     class MemoryWrittenToTarget: public Event
     {
     public:
-        static inline EventType type = EventType::MEMORY_WRITTEN_TO_TARGET;
+        static constexpr EventType type = EventType::MEMORY_WRITTEN_TO_TARGET;
         static inline const std::string name = "MemoryWrittenToTarget";
 
         MemoryWrittenToTarget() = default;

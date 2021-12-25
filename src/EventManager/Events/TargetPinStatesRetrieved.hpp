@@ -11,7 +11,7 @@ namespace Bloom::Events
     class TargetPinStatesRetrieved: public Event
     {
     public:
-        static inline EventType type = EventType::TARGET_PIN_STATES_RETRIEVED;
+        static constexpr EventType type = EventType::TARGET_PIN_STATES_RETRIEVED;
         static inline const std::string name = "TargetPinStatesRetrieved";
         int variantId = 0;
         std::map<int, Targets::TargetPinState> pinSatesByNumber;

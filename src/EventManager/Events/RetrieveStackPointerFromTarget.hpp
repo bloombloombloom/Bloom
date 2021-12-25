@@ -12,7 +12,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = StackPointerRetrievedFromTarget;
 
-        static inline EventType type = EventType::RETRIEVE_STACK_POINTER_FROM_TARGET;
+        static constexpr EventType type = EventType::RETRIEVE_STACK_POINTER_FROM_TARGET;
         static inline const std::string name = "RetrieveStackPointerFromTarget";
 
         [[nodiscard]] EventType getType() const override {

@@ -1118,12 +1118,12 @@ void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
     if (response.getResponseId() == Avr8ResponseId::FAILED) {
         if (!applyExternalReset) {
             // Try again with external reset applied
-            Logger::debug("Failed to activate physical interface on AVR8 target - retrying with external reset applied.");
+            Logger::debug("Failed to activate physical interface on AVR8 target "
+                "- retrying with external reset applied.");
             return this->activatePhysical(true);
-
-        } else {
-            throw Avr8CommandFailure("AVR8 Activate physical interface command failed", response);
         }
+
+        throw Avr8CommandFailure("AVR8 Activate physical interface command failed", response);
     }
 
     this->physicalInterfaceActivated = true;

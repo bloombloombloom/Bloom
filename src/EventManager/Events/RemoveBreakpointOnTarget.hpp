@@ -14,7 +14,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = BreakpointRemovedOnTarget;
 
-        static inline EventType type = EventType::REMOVE_BREAKPOINT_ON_TARGET;
+        static constexpr EventType type = EventType::REMOVE_BREAKPOINT_ON_TARGET;
         static inline const std::string name = "RemoveBreakpointOnTarget";
         Targets::TargetBreakpoint breakpoint;
 

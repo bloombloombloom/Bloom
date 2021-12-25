@@ -9,7 +9,7 @@ namespace Bloom::Events
     class TargetControllerErrorOccurred: public Event
     {
     public:
-        static inline EventType type = EventType::TARGET_CONTROLLER_ERROR_OCCURRED;
+        static constexpr EventType type = EventType::TARGET_CONTROLLER_ERROR_OCCURRED;
         static inline const std::string name = "TargetControllerErrorOccurred";
 
         std::string errorMessage;

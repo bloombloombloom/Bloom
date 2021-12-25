@@ -12,7 +12,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = TargetPinStatesRetrieved;
 
-        static inline EventType type = EventType::RETRIEVE_TARGET_PIN_STATES;
+        static constexpr EventType type = EventType::RETRIEVE_TARGET_PIN_STATES;
         static inline const std::string name = "RetrieveTargetPinStates";
         int variantId = 0;
 

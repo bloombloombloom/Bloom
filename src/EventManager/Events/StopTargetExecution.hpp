@@ -12,7 +12,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = TargetExecutionStopped;
 
-        static inline EventType type = EventType::STOP_TARGET_EXECUTION;
+        static constexpr EventType type = EventType::STOP_TARGET_EXECUTION;
         static inline const std::string name = "StopTargetExecution";
 
         [[nodiscard]] EventType getType() const override {

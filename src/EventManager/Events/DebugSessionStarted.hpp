@@ -9,7 +9,7 @@ namespace Bloom::Events
     class DebugSessionStarted: public Event
     {
     public:
-        static inline EventType type = EventType::DEBUG_SESSION_STARTED;
+        static constexpr EventType type = EventType::DEBUG_SESSION_STARTED;
         static inline const std::string name = "DebugSessionStarted";
 
         [[nodiscard]] EventType getType() const override {

@@ -13,7 +13,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = ProgramCounterSetOnTarget;
 
-        static inline EventType type = EventType::SET_PROGRAM_COUNTER_ON_TARGET;
+        static constexpr EventType type = EventType::SET_PROGRAM_COUNTER_ON_TARGET;
         static inline const std::string name = "SetProgramCounterOnTarget";
         std::uint32_t address = 0;
 

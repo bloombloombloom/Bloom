@@ -9,7 +9,7 @@ namespace Bloom::Events
     class ResetTarget: public Event
     {
     public:
-        static inline EventType type = EventType::RESET_TARGET;
+        static constexpr EventType type = EventType::RESET_TARGET;
         static inline const std::string name = "ResetTargetEvent";
 
         [[nodiscard]] EventType getType() const override {

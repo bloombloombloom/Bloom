@@ -14,7 +14,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = RegistersWrittenToTarget;
 
-        static inline EventType type = EventType::WRITE_REGISTERS_TO_TARGET;
+        static constexpr EventType type = EventType::WRITE_REGISTERS_TO_TARGET;
         static inline const std::string name = "WriteRegistersToTarget";
         Targets::TargetRegisters registers;
 

@@ -13,7 +13,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = RegistersRetrievedFromTarget;
 
-        static inline EventType type = EventType::RETRIEVE_REGISTERS_FROM_TARGET;
+        static constexpr EventType type = EventType::RETRIEVE_REGISTERS_FROM_TARGET;
         static inline const std::string name = "RetrieveRegistersFromTarget";
         Targets::TargetRegisterDescriptors descriptors;
 

@@ -12,7 +12,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = TargetControllerStateReported;
 
-        static inline EventType type = EventType::REPORT_TARGET_CONTROLLER_STATE;
+        static constexpr EventType type = EventType::REPORT_TARGET_CONTROLLER_STATE;
         static inline const std::string name = "ReportTargetControllerState";
 
         ReportTargetControllerState() {};

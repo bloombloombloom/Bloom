@@ -9,7 +9,7 @@ namespace Bloom::Events
     class ShutdownTargetController: public Event
     {
     public:
-        static inline EventType type = EventType::SHUTDOWN_TARGET_CONTROLLER;
+        static constexpr EventType type = EventType::SHUTDOWN_TARGET_CONTROLLER;
         static inline const std::string name = "ShutdownTargetControllerEvent";
 
         [[nodiscard]] EventType getType() const override {

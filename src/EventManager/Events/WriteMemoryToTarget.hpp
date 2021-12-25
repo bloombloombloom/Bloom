@@ -15,7 +15,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = MemoryWrittenToTarget;
 
-        static inline EventType type = EventType::WRITE_MEMORY_TO_TARGET;
+        static constexpr EventType type = EventType::WRITE_MEMORY_TO_TARGET;
         static inline const std::string name = "WriteMemoryToTarget";
         Targets::TargetMemoryType memoryType = Targets::TargetMemoryType::RAM;
         std::uint32_t startAddress = 0;

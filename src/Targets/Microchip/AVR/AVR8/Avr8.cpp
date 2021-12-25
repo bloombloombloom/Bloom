@@ -203,7 +203,7 @@ TargetRegisters Avr8::readRegisters(TargetRegisterDescriptors descriptors) {
     TargetRegisters registers;
 
     for (auto registerDescriptorIt = descriptors.begin(); registerDescriptorIt != descriptors.end();) {
-        auto& descriptor = *registerDescriptorIt;
+        const auto& descriptor = *registerDescriptorIt;
 
         if (descriptor.type == TargetRegisterType::PROGRAM_COUNTER) {
             registers.push_back(this->getProgramCounterRegister());

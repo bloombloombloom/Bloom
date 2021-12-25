@@ -14,7 +14,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = MemoryRetrievedFromTarget;
 
-        static inline EventType type = EventType::RETRIEVE_MEMORY_FROM_TARGET;
+        static constexpr EventType type = EventType::RETRIEVE_MEMORY_FROM_TARGET;
         static inline const std::string name = "RetrieveMemoryFromTarget";
         Targets::TargetMemoryType memoryType = Targets::TargetMemoryType::RAM;
         std::uint32_t startAddress = 0;

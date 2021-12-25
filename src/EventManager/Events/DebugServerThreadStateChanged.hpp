@@ -10,7 +10,7 @@ namespace Bloom::Events
     class DebugServerThreadStateChanged: public Event
     {
     public:
-        static inline EventType type = EventType::DEBUG_SERVER_THREAD_STATE_CHANGED;
+        static constexpr EventType type = EventType::DEBUG_SERVER_THREAD_STATE_CHANGED;
         static inline const std::string name = "DebugServerThreadStateChanged";
 
         explicit DebugServerThreadStateChanged(ThreadState state): state(state) {};

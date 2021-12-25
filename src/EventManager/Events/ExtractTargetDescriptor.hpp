@@ -13,7 +13,7 @@ namespace Bloom::Events
     public:
         using TargetControllerResponseType = TargetDescriptorExtracted;
 
-        static inline EventType type = EventType::EXTRACT_TARGET_DESCRIPTOR;
+        static constexpr EventType type = EventType::EXTRACT_TARGET_DESCRIPTOR;
         static inline const std::string name = "ExtractTargetDescriptor";
 
         [[nodiscard]] EventType getType() const override {

@@ -9,7 +9,7 @@ namespace Bloom::Events
     class TargetExecutionResumed: public Event
     {
     public:
-        static inline EventType type = EventType::TARGET_EXECUTION_RESUMED;
+        static constexpr EventType type = EventType::TARGET_EXECUTION_RESUMED;
         static inline const std::string name = "TargetExecutionResumed";
 
         TargetExecutionResumed() = default;
