@@ -98,10 +98,21 @@ void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function
     this->hexViewerWidget->refreshButton->setDisabled(true);
     this->hexViewerWidget->refreshButton->startSpin();
 
+    auto excludedAddressRanges = std::set<Targets::TargetMemoryAddressRange>();
+    std::transform(
+        this->settings.excludedMemoryRegions.begin(),
+        this->settings.excludedMemoryRegions.end(),
+        std::inserter(excludedAddressRanges, excludedAddressRanges.begin()),
+        [] (const ExcludedMemoryRegion& excludedRegion) {
+            return excludedRegion.getAbsoluteAddressRange();
+        }
+    );
+
     auto* readMemoryTask = new ReadTargetMemory(
         this->targetMemoryDescriptor.type,
         this->targetMemoryDescriptor.addressRange.startAddress,
-        this->targetMemoryDescriptor.size()
+        this->targetMemoryDescriptor.size(),
+        excludedAddressRanges
     );
 
     QObject::connect(
