@@ -556,7 +556,12 @@ void EdbgAvr8Interface::writeRegisters(const Targets::TargetRegisters& registers
     }
 }
 
-TargetMemoryBuffer EdbgAvr8Interface::readMemory(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes) {
+TargetMemoryBuffer EdbgAvr8Interface::readMemory(
+    TargetMemoryType memoryType,
+    std::uint32_t startAddress,
+    std::uint32_t bytes,
+    const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
+) {
     auto avr8MemoryType = Avr8MemoryType::SRAM;
 
     switch (memoryType) {
@@ -579,9 +584,32 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(TargetMemoryType memoryType, st
         case TargetMemoryType::EEPROM: {
             avr8MemoryType = Avr8MemoryType::EEPROM;
         }
+        default: {
+            break;
+        }
     }
 
-    return this->readMemory(avr8MemoryType, startAddress, bytes);
+    /*
+     * The internal readMemory() function accepts excluded addresses in the form of a set of addresses, as
+     * opposed to a set of address ranges.
+     *
+     * We will perform the conversion here.
+     */
+    auto excludedAddresses = std::set<std::uint32_t>();
+    auto endAddress = startAddress + bytes - 1;
+
+    for (const auto& addressRange : excludedAddressRanges) {
+        if (addressRange.startAddress > endAddress) {
+            // This address range is outside of the range from which we will be reading
+            continue;
+        }
+
+        for (auto i = addressRange.startAddress; i <= addressRange.endAddress; i++) {
+            excludedAddresses.insert(i);
+        }
+    }
+
+    return this->readMemory(avr8MemoryType, startAddress, bytes, excludedAddresses);
 }
 
 void EdbgAvr8Interface::writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
@@ -610,6 +638,9 @@ void EdbgAvr8Interface::writeMemory(TargetMemoryType memoryType, std::uint32_t s
         }
         case TargetMemoryType::EEPROM: {
             avr8MemoryType = Avr8MemoryType::EEPROM;
+        }
+        default: {
+            break;
         }
     }
 

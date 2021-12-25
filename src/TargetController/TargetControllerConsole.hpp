@@ -97,12 +97,14 @@ namespace Bloom
          * @param memoryType
          * @param startAddress
          * @param bytes
+         * @param excludedAddressRanges
          * @return
          */
         Targets::TargetMemoryBuffer readMemory(
             Targets::TargetMemoryType memoryType,
             std::uint32_t startAddress,
-            std::uint32_t bytes
+            std::uint32_t bytes,
+            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         );
 
         /**

@@ -223,8 +223,13 @@ TargetRegisters Avr8::readRegisters(TargetRegisterDescriptors descriptors) {
     return registers;
 }
 
-TargetMemoryBuffer Avr8::readMemory(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes) {
-    return this->avr8Interface->readMemory(memoryType, startAddress, bytes);
+TargetMemoryBuffer Avr8::readMemory(
+    TargetMemoryType memoryType,
+    std::uint32_t startAddress,
+    std::uint32_t bytes,
+    const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
+) {
+    return this->avr8Interface->readMemory(memoryType, startAddress, bytes, excludedAddressRanges);
 }
 
 void Avr8::writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {

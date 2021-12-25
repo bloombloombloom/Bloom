@@ -601,7 +601,12 @@ void TargetController::onReadMemoryEvent(const Events::RetrieveMemoryFromTarget&
     try {
         auto memoryReadEvent = std::make_shared<Events::MemoryRetrievedFromTarget>();
         memoryReadEvent->correlationId = event.id;
-        memoryReadEvent->data = this->target->readMemory(event.memoryType, event.startAddress, event.bytes);
+        memoryReadEvent->data = this->target->readMemory(
+            event.memoryType,
+            event.startAddress,
+            event.bytes,
+            event.excludedAddressRanges
+        );
 
         this->eventManager.triggerEvent(memoryReadEvent);
 

@@ -19,6 +19,7 @@ namespace Bloom::Events
         Targets::TargetMemoryType memoryType = Targets::TargetMemoryType::RAM;
         std::uint32_t startAddress = 0;
         std::uint32_t bytes = 0;
+        std::set<Targets::TargetMemoryAddressRange> excludedAddressRanges;
 
         [[nodiscard]] EventType getType() const override {
             return RetrieveMemoryFromTarget::type;

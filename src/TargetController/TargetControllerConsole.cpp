@@ -73,12 +73,14 @@ void TargetControllerConsole::writeRegisters(const TargetRegisters& registers) {
 TargetMemoryBuffer TargetControllerConsole::readMemory(
     TargetMemoryType memoryType,
     std::uint32_t startAddress,
-    std::uint32_t bytes
+    std::uint32_t bytes,
+    const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
 ) {
     auto readMemoryEvent = std::make_shared<RetrieveMemoryFromTarget>();
     readMemoryEvent->memoryType = memoryType;
     readMemoryEvent->startAddress = startAddress;
     readMemoryEvent->bytes = bytes;
+    readMemoryEvent->excludedAddressRanges = excludedAddressRanges;
 
     return this->triggerTargetControllerEventAndWaitForResponse(readMemoryEvent)->data;
 }

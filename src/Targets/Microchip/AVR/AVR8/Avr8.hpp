@@ -95,7 +95,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         TargetMemoryBuffer readMemory(
             TargetMemoryType memoryType,
             std::uint32_t startAddress,
-            std::uint32_t bytes
+            std::uint32_t bytes,
+            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) override;
         void writeMemory(
             TargetMemoryType memoryType,

@@ -157,12 +157,14 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          * @param memoryType
          * @param startAddress
          * @param bytes
+         * @param excludedAddressRanges
          * @return
          */
         virtual Targets::TargetMemoryBuffer readMemory(
             Targets::TargetMemoryType memoryType,
             std::uint32_t startAddress,
-            std::uint32_t bytes
+            std::uint32_t bytes,
+            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) = 0;
 
         /**

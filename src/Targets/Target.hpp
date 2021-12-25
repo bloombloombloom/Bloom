@@ -240,10 +240,16 @@ namespace Bloom::Targets
          * @param memoryType
          * @param startAddress
          * @param bytes
+         * @param excludedAddressRanges
          *
          * @return
          */
-        virtual TargetMemoryBuffer readMemory(TargetMemoryType memoryType, std::uint32_t startAddress, std::uint32_t bytes) = 0;
+        virtual TargetMemoryBuffer readMemory(
+            TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            std::uint32_t bytes,
+            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
+        ) = 0;
 
         /**
          * Should write memory to the target.
