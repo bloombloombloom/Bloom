@@ -6,15 +6,21 @@
 
 using namespace Bloom::Widgets;
 
-AnnotationItem::AnnotationItem(std::uint32_t startAddress, std::size_t size, QString labelText, AnnotationItemPosition position)
-: QGraphicsItem(nullptr),
-startAddress(startAddress),
-size(size),
-endAddress(static_cast<std::uint32_t>(startAddress + size - 1)),
-labelText(std::move(labelText)),
-position(position),
-width(static_cast<int>((ByteItem::WIDTH + ByteItem::RIGHT_MARGIN) * size - ByteItem::RIGHT_MARGIN)),
-height(position == AnnotationItemPosition::TOP ? AnnotationItem::TOP_HEIGHT : AnnotationItem::BOTTOM_HEIGHT) {
+AnnotationItem::AnnotationItem(
+    std::uint32_t startAddress,
+    std::size_t size,
+    QString labelText,
+    AnnotationItemPosition position
+):
+    QGraphicsItem(nullptr),
+    startAddress(startAddress),
+    size(size),
+    endAddress(static_cast<std::uint32_t>(startAddress + size - 1)),
+    labelText(std::move(labelText)),
+    position(position),
+    width(static_cast<int>((ByteItem::WIDTH + ByteItem::RIGHT_MARGIN) * size - ByteItem::RIGHT_MARGIN)),
+    height(position == AnnotationItemPosition::TOP ? AnnotationItem::TOP_HEIGHT : AnnotationItem::BOTTOM_HEIGHT
+) {
     this->setAcceptHoverEvents(true);
     this->setToolTip(this->labelText);
 }
