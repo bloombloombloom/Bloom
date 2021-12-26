@@ -31,12 +31,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         /**
          * Some EDBG devices don't seem to operate correctly when actioning the masked memory read EDBG command. The
-         * data returned in response to the command appears to be completely incorrect. This appears to only occur
-         * with the MPLAB Snap device.
+         * data returned in response to the command appears to be completely incorrect.
          *
          * Setting this flag to true will disable the EdbgAvr8Interface driver's use of the masked memory read command.
          * The driver will perform the masking itself, and then issue standard read memory commands. See the
          * implementation of EdbgAvr8Interface::readMemory() for more.
+         *
+         * NOTE: Masked memory read commands are only implemented for SRAM reads. EDBG debug tools report EEPROM and
+         * FLASH as invalid memory types, when using the masked memory read command. So any masked reads to non-SRAM
+         * will result in driver-side masking, regardless of the value of this flag.
          *
          * @param avoidMaskedMemoryRead
          */

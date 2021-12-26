@@ -1212,7 +1212,7 @@ TargetMemoryBuffer EdbgAvr8Interface::readMemory(
     std::uint32_t bytes,
     const std::set<std::uint32_t>& excludedAddresses
 ) {
-    if (!excludedAddresses.empty() && this->avoidMaskedMemoryRead) {
+    if (!excludedAddresses.empty() && (this->avoidMaskedMemoryRead || type != Avr8MemoryType::SRAM)) {
         /*
          * Driver-side masked memory read.
          *
