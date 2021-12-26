@@ -133,6 +133,37 @@
                         </item>
                         <item>
                             <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>1</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="display-ascii-btn">
+                                <property name="checkable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/ascii-view.svg</string>
+                                </property>
+                                <property name="disabledSvgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/ascii-view-disabled.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Display As ASCII</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
                                 <property name="orientation">
                                     <enum>Qt::Horizontal</enum>
                                 </property>
