@@ -70,26 +70,29 @@ void AnnotationItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* op
     );
 
     painter->setPen(lineColor);
-    painter->drawLine(QLine(
-        ByteItem::WIDTH / 2,
-        verticalLineYStart,
-        ByteItem::WIDTH / 2,
-        verticalLineYEnd
-    ));
 
-    painter->drawLine(QLine(
-        this->width - (ByteItem::WIDTH / 2),
-        verticalLineYStart,
-        this->width - (ByteItem::WIDTH / 2),
-        verticalLineYEnd
-    ));
+    if (this->size > 1) {
+        painter->drawLine(QLine(
+            ByteItem::WIDTH / 2,
+            verticalLineYStart,
+            ByteItem::WIDTH / 2,
+            verticalLineYEnd
+        ));
 
-    painter->drawLine(QLine(
-        ByteItem::WIDTH / 2,
-        verticalLineYEnd,
-        (ByteItem::WIDTH / 2) + (this->width - ByteItem::WIDTH),
-        verticalLineYEnd
-    ));
+        painter->drawLine(QLine(
+            this->width - (ByteItem::WIDTH / 2),
+            verticalLineYStart,
+            this->width - (ByteItem::WIDTH / 2),
+            verticalLineYEnd
+        ));
+
+        painter->drawLine(QLine(
+            ByteItem::WIDTH / 2,
+            verticalLineYEnd,
+            (ByteItem::WIDTH / 2) + (this->width - ByteItem::WIDTH),
+            verticalLineYEnd
+        ));
+    }
 
     painter->drawLine(QLine(
         this->width / 2,
