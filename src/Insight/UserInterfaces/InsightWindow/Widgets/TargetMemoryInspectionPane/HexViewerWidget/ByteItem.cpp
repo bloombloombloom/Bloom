@@ -39,7 +39,7 @@ void ByteItem::setValue(unsigned char value) {
     this->value = value;
     this->hexValue = QString::number(this->value, 16).rightJustified(2, '0').toUpper();
     this->asciiValue = (this->value >= 32 && this->value <= 126)
-        ? std::optional(QString(QChar(this->value))) : std::nullopt;
+        ? std::optional("'" + QString(QChar(this->value)) + "'") : std::nullopt;
 
     this->valueInitialised = this->excludedMemoryRegion == nullptr;
     this->update();
@@ -52,6 +52,7 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     static const auto widgetRect = this->boundingRect();
     static const auto standardTextColor = QColor(0xAF, 0xB1, 0xB3);
     static const auto valueChangedTextColor = QColor(0x54, 0x7F, 0xBA);
+    auto asciiTextColor = QColor(0xA7, 0x77, 0x26);
     static auto font = QFont("'Ubuntu', sans-serif");
 
     static const auto focusedRegionBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
@@ -72,6 +73,7 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
         ) {
         // This byte is within the stack memory
         backgroundColor = stackMemoryBackgroundColor;
+        asciiTextColor = standardTextColor;
 
     } else if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
         // This byte is within a focused region
@@ -122,12 +124,23 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     }
 
     if (this->valueInitialised && this->excludedMemoryRegion == nullptr) {
-        if (!isEnabled) {
-            textColor.setAlpha(100);
-        }
+        if (this->settings.displayAsciiValues && this->asciiValue.has_value()) {
+            if (!isEnabled) {
+                asciiTextColor.setAlpha(100);
+            }
 
-        painter->setPen(textColor);
-        painter->drawText(widgetRect, Qt::AlignCenter, this->hexValue);
+            painter->setPen(asciiTextColor);
+            painter->drawText(widgetRect, Qt::AlignCenter, this->asciiValue.value());
+
+        } else {
+            if (!isEnabled || this->settings.displayAsciiValues) {
+                textColor.setAlpha(100);
+            }
+
+            painter->setPen(textColor);
+            painter->drawText(widgetRect, Qt::AlignCenter, this->hexValue);
+            return;
+        }
 
     } else {
         textColor.setAlpha(100);
