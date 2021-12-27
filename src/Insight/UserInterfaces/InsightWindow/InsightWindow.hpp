@@ -113,6 +113,7 @@ namespace Bloom
         void deactivate();
 
         void adjustPanels();
+        void adjustMinimumSize();
 
         void onTargetControllerSuspended();
         void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);

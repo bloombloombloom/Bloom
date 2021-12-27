@@ -207,6 +207,7 @@ void InsightWindow::resizeEvent(QResizeEvent* event) {
 
 void InsightWindow::showEvent(QShowEvent* event) {
     this->adjustPanels();
+    this->adjustMinimumSize();
 }
 
 bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
@@ -437,12 +438,8 @@ void InsightWindow::selectVariant(const TargetVariant* variant) {
             });
         }
 
-        this->setMinimumSize(
-            this->targetPackageWidget->width() + 800,
-            this->targetPackageWidget->height() + 150
-        );
-
         this->adjustPanels();
+        this->adjustMinimumSize();
         this->targetPackageWidget->show();
     }
 }
@@ -593,6 +590,21 @@ void InsightWindow::adjustPanels() {
     );
 }
 
+void InsightWindow::adjustMinimumSize() {
+    auto minSize = QSize(800, 500);
+
+    if (this->targetPackageWidget != nullptr) {
+        minSize.setWidth(this->targetPackageWidget->width() + 700);
+        minSize.setHeight(this->targetPackageWidget->height() + 150);
+    }
+
+    if (this->bottomPanel->isVisible()) {
+        minSize.setHeight(minSize.height() + this->bottomPanel->getMinimumResize());
+    }
+
+    this->setMinimumSize(minSize);
+}
+
 void InsightWindow::onTargetControllerSuspended() {
     if (this->activated) {
         this->deactivate();
@@ -728,15 +740,9 @@ void InsightWindow::toggleRamInspectionPane() {
         this->ramInspectionPane->activate();
         this->bottomPanel->show();
         this->ramInspectionButton->setChecked(true);
-
-        if (this->targetPackageWidget != nullptr) {
-            this->setMinimumHeight(std::max(
-                this->minimumHeight(),
-                this->targetPackageWidget->height() + this->header->height() + this->footer->height()
-                    + this->menuBar()->height() + this->bottomPanel->getMinimumResize() + 30
-            ));
-        }
     }
+
+    this->adjustMinimumSize();
 }
 
 void InsightWindow::toggleEepromInspectionPane() {
@@ -753,13 +759,7 @@ void InsightWindow::toggleEepromInspectionPane() {
         this->eepromInspectionPane->activate();
         this->bottomPanel->show();
         this->eepromInspectionButton->setChecked(true);
-
-        if (this->targetPackageWidget != nullptr) {
-            this->setMinimumHeight(std::max(
-                this->minimumHeight(),
-                this->targetPackageWidget->height() + this->header->height() + this->footer->height()
-                    + this->menuBar()->height() + this->bottomPanel->getMinimumResize() + 30
-            ));
-        }
     }
+
+    this->adjustMinimumSize();
 }
