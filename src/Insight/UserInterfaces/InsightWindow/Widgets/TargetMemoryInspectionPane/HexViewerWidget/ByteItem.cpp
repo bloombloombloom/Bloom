@@ -11,6 +11,7 @@ ByteItem::ByteItem(
     std::optional<std::uint32_t>& currentStackPointer,
     std::optional<ByteItem*>& hoveredByteItem,
     std::optional<AnnotationItem*>& hoveredAnnotationItem,
+    std::set<std::uint32_t>& highlightedAddresses,
     const HexViewerWidgetSettings& settings
 ):
 QGraphicsItem(nullptr),
@@ -19,6 +20,7 @@ address(address),
 currentStackPointer(currentStackPointer),
 hoveredByteItem(hoveredByteItem),
 hoveredAnnotationItem(hoveredAnnotationItem),
+highlightedAddresses(highlightedAddresses),
 settings(settings)
 {
     this->setCacheMode(
@@ -49,12 +51,14 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     painter->setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
     painter->setPen(Qt::PenStyle::NoPen);
 
+    // TODO: This code could do with some tidying. It's getting quite messy.
+
     static const auto widgetRect = this->boundingRect();
     static const auto standardTextColor = QColor(0xAF, 0xB1, 0xB3);
     static const auto valueChangedTextColor = QColor(0x54, 0x7F, 0xBA);
-    auto asciiTextColor = QColor(0xA7, 0x77, 0x26);
     static auto font = QFont("'Ubuntu', sans-serif");
 
+    static const auto highlightedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
     static const auto focusedRegionBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
     static const auto stackMemoryBackgroundColor = QColor(0x67, 0x57, 0x20, 210);
     static const auto hoveredBackgroundColor = QColor(0x8E, 0x8B, 0x83, 70);
@@ -62,15 +66,25 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     static const auto hoveredAnnotationBackgroundColor = QColor(0x8E, 0x8B, 0x83, 50);
 
     const auto isEnabled = this->isEnabled();
+
+    const auto highlightingEnabled = !this->highlightedAddresses.empty();
+    const auto highlightedByte = highlightingEnabled && this->highlightedAddresses.contains(this->address);
+
     auto textColor = standardTextColor;
+    auto asciiTextColor = QColor(0xA7, 0x77, 0x26);
+
     auto backgroundColor = std::optional<QColor>();
 
     font.setPixelSize(11);
     painter->setFont(font);
 
-    if (this->settings.highlightStackMemory && this->currentStackPointer.has_value()
+    if (highlightedByte) {
+        backgroundColor = highlightedBackgroundColor;
+        asciiTextColor = standardTextColor;
+
+    } else if (this->settings.highlightStackMemory && this->currentStackPointer.has_value()
         && this->address > this->currentStackPointer
-        ) {
+    ) {
         // This byte is within the stack memory
         backgroundColor = stackMemoryBackgroundColor;
         asciiTextColor = standardTextColor;
@@ -115,7 +129,7 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     }
 
     if (backgroundColor.has_value()) {
-        if (!isEnabled) {
+        if (!isEnabled || (highlightingEnabled && !highlightedByte)) {
             backgroundColor->setAlpha(100);
         }
 
@@ -125,7 +139,7 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
 
     if (this->valueInitialised && this->excludedMemoryRegion == nullptr) {
         if (this->settings.displayAsciiValues && this->asciiValue.has_value()) {
-            if (!isEnabled) {
+            if (!isEnabled || (highlightingEnabled && !highlightedByte)) {
                 asciiTextColor.setAlpha(100);
             }
 
@@ -133,7 +147,7 @@ void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
             painter->drawText(widgetRect, Qt::AlignCenter, this->asciiValue.value());
 
         } else {
-            if (!isEnabled || this->settings.displayAsciiValues) {
+            if (!isEnabled || (highlightingEnabled && !highlightedByte) || this->settings.displayAsciiValues) {
                 textColor.setAlpha(100);
             }
 

@@ -38,9 +38,6 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        std::optional<ByteItem*> hoveredByteWidget;
-        std::optional<AnnotationItem*> hoveredAnnotationItem;
-
         ByteItemGraphicsScene(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
@@ -53,6 +50,7 @@ namespace Bloom::Widgets
 
         void updateValues(const Targets::TargetMemoryBuffer& buffer);
         void updateStackPointer(std::uint32_t stackPointer);
+        void setHighlightedAddresses(const std::set<std::uint32_t>& highlightedAddresses);
         void refreshRegions();
         void adjustSize(bool forced = false);
         void setEnabled(bool enabled);
@@ -69,6 +67,11 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
+
+        bool enabled = true;
+
+        std::optional<ByteItem*> hoveredByteWidget;
+        std::optional<AnnotationItem*> hoveredAnnotationItem;
 
         std::optional<std::uint32_t> currentStackPointer;
 
@@ -91,7 +94,7 @@ namespace Bloom::Widgets
 
         ByteAddressContainer* byteAddressContainer = nullptr;
 
-        bool enabled = true;
+        std::set<std::uint32_t> highlightedAddresses;
 
         int getSceneWidth() {
             /*

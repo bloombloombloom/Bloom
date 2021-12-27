@@ -41,6 +41,7 @@ ByteItemGraphicsScene::ByteItemGraphicsScene(
             this->currentStackPointer,
             this->hoveredByteWidget,
             this->hoveredAnnotationItem,
+            this->highlightedAddresses,
             settings
         );
 
@@ -74,6 +75,11 @@ void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buff
 
 void ByteItemGraphicsScene::updateStackPointer(std::uint32_t stackPointer) {
     this->currentStackPointer = stackPointer;
+    this->invalidateChildItemCaches();
+}
+
+void ByteItemGraphicsScene::setHighlightedAddresses(const std::set<std::uint32_t>& highlightedAddresses) {
+    this->highlightedAddresses = highlightedAddresses;
     this->invalidateChildItemCaches();
 }
 

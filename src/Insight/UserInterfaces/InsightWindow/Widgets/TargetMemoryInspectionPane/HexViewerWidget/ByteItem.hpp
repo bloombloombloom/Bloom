@@ -4,6 +4,7 @@
 #include <QEvent>
 #include <QGraphicsItem>
 #include <optional>
+#include <set>
 
 #include "HexViewerWidgetSettings.hpp"
 #include "AnnotationItem.hpp"
@@ -40,6 +41,7 @@ namespace Bloom::Widgets
             std::optional<std::uint32_t>& currentStackPointer,
             std::optional<ByteItem*>& hoveredByteItem,
             std::optional<AnnotationItem*>& hoveredAnnotationItem,
+            std::set<std::uint32_t>& highlightedAddresses,
             const HexViewerWidgetSettings& settings
         );
 
@@ -68,5 +70,6 @@ namespace Bloom::Widgets
         std::optional<ByteItem*>& hoveredByteItem;
         std::optional<AnnotationItem*>& hoveredAnnotationItem;
         std::optional<std::uint32_t>& currentStackPointer;
+        std::set<std::uint32_t>& highlightedAddresses;
     };
 }
