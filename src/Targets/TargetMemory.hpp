@@ -36,6 +36,10 @@ namespace Bloom::Targets
                 || (other.endAddress >= this->endAddress && other.startAddress <= this->endAddress)
             ;
         }
+
+        [[nodiscard]] bool contains(std::uint32_t address) const {
+            return address >= this->startAddress && address < this->endAddress;
+        }
     };
 
     struct TargetMemoryDescriptor
