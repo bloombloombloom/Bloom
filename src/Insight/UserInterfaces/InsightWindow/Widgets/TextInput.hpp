@@ -2,6 +2,7 @@
 
 #include <QLineEdit>
 #include <QContextMenuEvent>
+#include <QFocusEvent>
 
 namespace Bloom::Widgets
 {
@@ -12,8 +13,13 @@ namespace Bloom::Widgets
     public:
         explicit TextInput(QWidget* parent = nullptr);
 
+    signals:
+        void focusChanged();
+
     protected:
         void contextMenuEvent(QContextMenuEvent* event) override;
+        void focusInEvent(QFocusEvent* event) override;
+        void focusOutEvent(QFocusEvent* event) override;
 
     };
 }

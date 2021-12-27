@@ -19,3 +19,13 @@ void TextInput::contextMenuEvent(QContextMenuEvent* event) {
         menu->popup(event->globalPos());
     }
 }
+
+void TextInput::focusInEvent(QFocusEvent* event) {
+    QLineEdit::focusInEvent(event);
+    emit this->focusChanged();
+}
+
+void TextInput::focusOutEvent(QFocusEvent* event) {
+    QLineEdit::focusOutEvent(event);
+    emit this->focusChanged();
+}
