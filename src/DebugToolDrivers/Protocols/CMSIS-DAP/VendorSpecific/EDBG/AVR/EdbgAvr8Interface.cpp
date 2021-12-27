@@ -85,6 +85,12 @@ void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
     }
 
     this->configVariant = this->resolveConfigVariant().value_or(Avr8ConfigVariant::NONE);
+
+    if (targetConfig.jsonObject.contains("disableDebugWirePreDisconnect")) {
+        this->disableDebugWireOnDeactivate = targetConfig.jsonObject.find(
+            "disableDebugWirePreDisconnect"
+        )->toBool();
+    }
 }
 
 void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& config) {

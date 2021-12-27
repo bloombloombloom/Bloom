@@ -339,12 +339,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * ISP, after they've finished a debug session. After programming the target, the user will need to cycle the
          * target power before Bloom can gain access for another debug session.
          *
-         * NOTE: ATM, this isn't actually used anywhere. It will always be false. We may include this as a target
-         * config parameter, but we first need to consider the actual demand. AVRDUDE used to handle the disabling of
-         * the debugWire module, but a recent update resulted in it failing to do so. And that was some time ago, so
-         * we need to check if AVRDUDE and other programming software (MPLAB IPE) can handle the disabling of the
-         * debugWire module. If not, then we can come back to this.
-         *
          * See disableDebugWire() method below.
          */
         bool disableDebugWireOnDeactivate = false;
