@@ -34,6 +34,10 @@ ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
 
 }
 
+void ByteItemContainerGraphicsView::scrollToByteItemAtAddress(std::uint32_t address) {
+    this->centerOn(this->scene->getByteItemPositionByAddress(address));
+}
+
 bool ByteItemContainerGraphicsView::event(QEvent* event) {
     const auto eventType = event->type();
     if (eventType == QEvent::Type::EnabledChange) {

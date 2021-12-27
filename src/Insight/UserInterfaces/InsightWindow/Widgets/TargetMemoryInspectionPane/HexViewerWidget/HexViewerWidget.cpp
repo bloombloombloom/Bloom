@@ -58,6 +58,8 @@ HexViewerWidget::HexViewerWidget(
     this->displayAnnotationsButton = this->container->findChild<SvgToolButton*>("display-annotations-btn");
     this->displayAsciiButton = this->container->findChild<SvgToolButton*>("display-ascii-btn");
 
+    this->goToAddressInput = this->container->findChild<TextInput*>("go-to-address-input");
+
     this->toolBar->setContentsMargins(0, 0, 0, 0);
     this->toolBar->layout()->setContentsMargins(5, 0, 5, 1);
 
@@ -138,6 +140,20 @@ HexViewerWidget::HexViewerWidget(
     );
 
     QObject::connect(
+        this->goToAddressInput,
+        &QLineEdit::textEdited,
+        this,
+        &HexViewerWidget::onGoToAddressInputChanged
+    );
+
+    QObject::connect(
+        this->goToAddressInput,
+        &TextInput::focusChanged,
+        this,
+        &HexViewerWidget::onGoToAddressInputChanged
+    );
+
+    QObject::connect(
         &insightWorker,
         &InsightWorker::targetStateUpdated,
         this,
@@ -210,4 +226,19 @@ void HexViewerWidget::setDisplayAsciiEnabled(bool enabled) {
     this->settings.displayAsciiValues = enabled;
 
     this->byteItemGraphicsScene->invalidateChildItemCaches();
+}
+
+void HexViewerWidget::onGoToAddressInputChanged() {
+    auto addressConversionOk = false;
+    const auto address = this->goToAddressInput->text().toUInt(&addressConversionOk, 16);
+
+    const auto& memoryAddressRange = this->targetMemoryDescriptor.addressRange;
+
+    if (addressConversionOk && memoryAddressRange.contains(address) && this->goToAddressInput->hasFocus()) {
+        this->byteItemGraphicsScene->setHighlightedAddresses({address});
+        this->byteItemGraphicsView->scrollToByteItemAtAddress(address);
+        return;
+    }
+
+    this->byteItemGraphicsScene->setHighlightedAddresses({});
 }

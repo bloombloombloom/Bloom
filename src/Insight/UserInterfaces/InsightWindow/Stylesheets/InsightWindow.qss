@@ -421,6 +421,26 @@ QScrollBar::sub-line:vertical {
     qproperty-buttonHeight: 21;
 }
 
+#hex-viewer-container #tool-bar #go-to-address-input {
+    min-width: 100px;
+    max-width: 100px;
+    min-height: 15px;
+    max-height: 15px;
+    border: none;
+    background-color: transparent;
+    font-size: 13px;
+    color: #848486;
+}
+
+#hex-viewer-container #tool-bar #go-to-address-input:focus {
+    /*background-color: #2f312e;*/
+    color: #afb1b3;
+}
+
+#hex-viewer-container #tool-bar #go-to-address-input:disabled {
+    color: #686767;
+}
+
 #hex-viewer-container QScrollArea,
 #hex-viewer-container #graphics-view-container,
 #hex-viewer-container #graphics-view-container #graphics-view {

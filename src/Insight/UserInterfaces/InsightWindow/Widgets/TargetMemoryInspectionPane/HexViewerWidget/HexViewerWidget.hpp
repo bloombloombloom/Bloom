@@ -12,6 +12,7 @@
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TextInput.hpp"
 
 #include "HexViewerWidgetSettings.hpp"
 #include "ByteItemContainerGraphicsView.hpp"
@@ -70,6 +71,8 @@ namespace Bloom::Widgets
         SvgToolButton* displayAnnotationsButton = nullptr;
         SvgToolButton* displayAsciiButton = nullptr;
 
+        TextInput* goToAddressInput = nullptr;
+
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         void onTargetStateChanged(Targets::TargetState newState);
@@ -78,5 +81,6 @@ namespace Bloom::Widgets
         void setFocusedMemoryHighlightingEnabled(bool enabled);
         void setAnnotationsEnabled(bool enabled);
         void setDisplayAsciiEnabled(bool enabled);
+        void onGoToAddressInputChanged();
     };
 }

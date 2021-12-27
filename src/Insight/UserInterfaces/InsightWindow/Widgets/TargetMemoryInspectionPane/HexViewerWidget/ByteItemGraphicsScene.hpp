@@ -55,6 +55,7 @@ namespace Bloom::Widgets
         void adjustSize(bool forced = false);
         void setEnabled(bool enabled);
         void invalidateChildItemCaches();
+        QPointF getByteItemPositionByAddress(std::uint32_t address);
 
     signals:
         void byteWidgetsAdjusted();

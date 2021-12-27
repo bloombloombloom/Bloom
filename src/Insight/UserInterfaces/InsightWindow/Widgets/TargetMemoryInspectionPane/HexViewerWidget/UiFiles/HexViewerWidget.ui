@@ -164,6 +164,28 @@
                         </item>
                         <item>
                             <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>1</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="TextInput" name="go-to-address-input">
+                                <property name="placeholderText">
+                                    <string>Go to address...</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
                                 <property name="orientation">
                                     <enum>Qt::Horizontal</enum>
                                 </property>

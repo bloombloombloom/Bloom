@@ -221,6 +221,14 @@ void ByteItemGraphicsScene::invalidateChildItemCaches() {
     }
 }
 
+QPointF ByteItemGraphicsScene::getByteItemPositionByAddress(std::uint32_t address) {
+    if (this->byteItemsByAddress.contains(address)) {
+        return this->byteItemsByAddress.at(address)->pos();
+    }
+
+    return QPointF();
+}
+
 bool ByteItemGraphicsScene::event(QEvent* event) {
     if (event->type() == QEvent::Type::GraphicsSceneLeave && this->hoveredByteWidget.has_value()) {
         this->onByteWidgetLeave();
