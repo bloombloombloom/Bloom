@@ -60,6 +60,14 @@ namespace Bloom
             return output;
         }
 
+        const TypeB& at(TypeA key) const {
+            return this->map.at(key);
+        }
+
+        const TypeA& at(TypeB key) const {
+            return this->flippedMap.at(key);
+        }
+
         std::unordered_map<TypeA, TypeB> getMap() {
             return this->map;
         }
