@@ -6,9 +6,8 @@ Bloom is a debug interface for embedded systems development on Linux. This is th
 source code. For information on how to use Bloom, please visit https://bloom.oscillate.io.
 
 Bloom implements a number of user-space device drivers, enabling support for many debug tools (such as the Atmel-ICE, 
-the Power Debugger and the MPLAB SNAP). Bloom exposes an interface to the connected target, via a GDB 
-RSP server. This allows any IDE with GDB RSP client capabilities to interface with Bloom and gain full
-access to the target.
+Power Debugger, MPLAB SNAP, etc). Bloom exposes an interface to the connected target, via a GDB RSP server. This allows
+any IDE with GDB RSP client capabilities to interface with Bloom and gain full access to the target.
 
 Currently, Bloom only supports AVR8 targets from Microchip. Bloom was designed to accommodate targets from different 
 families and architectures. Support for other target families will be considered as and when requested.
@@ -40,10 +39,10 @@ Bloom and thus the connected target. The DebugServer runs on a dedicated thread.
 See source code in src/DebugServer/ for more.
 
 ##### Insight
-Insight is a graphical user interface that provides insight into the connected target. It presents the target's GPIO 
-pin states & registers, along with the ability to manipulate them. Insight occupies Bloom's main thread and employs a 
-single worker thread for background tasks. Unlike other components within Bloom, Insight relies heavily on the Qt 
-framework for its GUI capabilities and other useful utilities. See source code in src/Insight/ for more.
+Insight is a graphical user interface that provides insight into the connected target. It presents the target's 
+memories, GPIO pin states & registers, along with the ability to manipulate them. Insight occupies Bloom's main thread 
+and employs a single worker thread for background tasks. Unlike other components within Bloom, Insight relies heavily 
+on the Qt framework for its GUI capabilities and other useful utilities. See source code in src/Insight/ for more.
 
 ##### SignalHandler
 The SignalHandler is responsible for handling any UNIX signals issued to Bloom. It runs on a dedicated thread. All
