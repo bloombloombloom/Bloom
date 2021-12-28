@@ -32,7 +32,7 @@ namespace Bloom
     class Application: public Thread
     {
     public:
-        static const inline VersionNumber VERSION = VersionNumber(0, 4, 2);
+        static const inline VersionNumber VERSION = VersionNumber(0, 5, 0);
 
         explicit Application() = default;
 
