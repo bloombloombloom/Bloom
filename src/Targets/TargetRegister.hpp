@@ -47,14 +47,13 @@ namespace Bloom::Targets
         bool operator < (const TargetRegisterDescriptor& other) const {
             if (this->type == other.type) {
                 return this->startAddress.value_or(0) < other.startAddress.value_or(0);
-
-            } else {
-                /*
-                 * If the registers are of different type, there is no meaningful way to sort them, so we just use
-                 * the unique hash.
-                 */
-                return this->getHash() < other.getHash();
             }
+
+            /*
+             * If the registers are of different type, there is no meaningful way to sort them, so we just use
+             * the unique hash.
+             */
+            return this->getHash() < other.getHash();
         }
 
     private:
