@@ -36,7 +36,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
 
     private:
         static constexpr int MAXIMUM_BODY_HEIGHT = 156;
-        static constexpr int MINIMUM_BODY_HEIGHT = 80;
+        static constexpr int MINIMUM_BODY_HEIGHT = 96;
         static constexpr int MAXIMUM_FIRST_PIN_INDICATOR_HEIGHT = 16;
         static constexpr int MINIMUM_FIRST_PIN_INDICATOR_HEIGHT = 12;
 
