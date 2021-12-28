@@ -14,11 +14,12 @@ using namespace Bloom;
 void QueryLatestVersionNumber::run(TargetControllerConsole& targetControllerConsole) {
     auto* networkAccessManager = new QNetworkAccessManager(this);
     auto queryVersionEndpointUrl = QUrl(QString::fromStdString(Paths::homeDomainName() + "/latest-version"));
+    queryVersionEndpointUrl.setScheme("http");
     queryVersionEndpointUrl.setQuery(QUrlQuery({
         {"currentVersionNumber", QString::fromStdString(this->currentVersionNumber.toString())}
     }));
 
-    auto response = networkAccessManager->get(QNetworkRequest(queryVersionEndpointUrl));
+    auto* response = networkAccessManager->get(QNetworkRequest(queryVersionEndpointUrl));
     QObject::connect(response, &QNetworkReply::finished, this, [this, response] {
         const auto jsonResponseObject = QJsonDocument::fromJson(response->readAll()).object();
 
