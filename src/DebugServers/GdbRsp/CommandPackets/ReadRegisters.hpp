@@ -4,6 +4,8 @@
 
 #include "CommandPacket.hpp"
 
+#include "src/DebugServers/GdbRsp/RegisterDescriptor.hpp"
+
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
     /**
@@ -21,7 +23,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          * If the register number is not supplied (as is the case with "g" packets), the server is expected to respond
          * with values for all registers.
          */
-        std::optional<int> registerNumber;
+        std::optional<GdbRegisterNumberType> registerNumber;
 
         explicit ReadRegisters(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             init();

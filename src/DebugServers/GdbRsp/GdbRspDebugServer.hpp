@@ -9,7 +9,7 @@
 #include "../DebugServer.hpp"
 #include "Connection.hpp"
 #include "Signal.hpp"
-#include "Register.hpp"
+#include "RegisterDescriptor.hpp"
 #include "Feature.hpp"
 #include "src/Helpers/EventNotifier.hpp"
 #include "src/Helpers/BiMap.hpp"
