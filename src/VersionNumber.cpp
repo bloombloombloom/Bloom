@@ -6,7 +6,7 @@
 using namespace Bloom;
 
 VersionNumber::VersionNumber(std::uint16_t major, std::uint16_t minor, std::uint16_t patch)
-: major(major), minor(minor), patch(patch) {
+: major{major}, minor{minor}, patch{patch} {
     this->combined = static_cast<std::uint32_t>(
         std::stoul(std::to_string(this->major) + std::to_string(this->minor) + std::to_string(this->patch))
     );
