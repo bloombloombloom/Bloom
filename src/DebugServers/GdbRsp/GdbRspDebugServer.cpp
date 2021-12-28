@@ -73,39 +73,19 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadRegisters& packet) {
 
     try {
         auto descriptors = TargetRegisterDescriptors();
-        auto registerNumberToDescriptorMapping = this->getRegisterNumberToDescriptorMapping();
 
         if (packet.registerNumber.has_value()) {
             Logger::debug("Reading register number: " + std::to_string(packet.registerNumber.value()));
-            descriptors.insert(this->getRegisterDescriptorFromNumber(packet.registerNumber.value()));
+            descriptors.insert(this->getTargetRegisterDescriptorFromNumber(packet.registerNumber.value()));
 
         } else {
-            // Read all descriptors
-            for (auto& descriptor : registerNumberToDescriptorMapping.getMap()) {
-                descriptors.insert(descriptor.second);
+            // Read all target registers mapped to a GDB register
+            for (const auto& descriptor : this->getRegisterNumberToDescriptorMapping().getMap()) {
+                descriptors.insert(this->getTargetRegisterDescriptorFromNumber(descriptor.second.number));
             }
         }
 
         auto registerSet = this->targetControllerConsole.readRegisters(descriptors);
-
-        /*
-         * Remove any registers that are not mapped to GDB register numbers (as we won't know where to place
-         * them in our response to GDB). All registers that are expected from the GDB client should be mapped
-         * to register numbers.
-         *
-         * Registers that are not mapped to a GDB register number are presumed to be unknown to GDB, so GDB shouldn't
-         * complain about not receiving them.
-         */
-        registerSet.erase(
-            std::remove_if(
-                registerSet.begin(),
-                registerSet.end(),
-                [&registerNumberToDescriptorMapping] (const TargetRegister& reg) {
-                    return !registerNumberToDescriptorMapping.contains(reg.descriptor);
-                }
-            ),
-            registerSet.end()
-        );
 
         /*
          * Sort each register by their respective GDB register number - this will leave us with a collection of
@@ -114,19 +94,28 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadRegisters& packet) {
         std::sort(
             registerSet.begin(),
             registerSet.end(),
-            [this, &registerNumberToDescriptorMapping] (const TargetRegister& registerA, const TargetRegister& registerB) {
-                return registerNumberToDescriptorMapping.valueAt(registerA.descriptor) <
-                    registerNumberToDescriptorMapping.valueAt(registerB.descriptor);
+            [this] (const TargetRegister& registerA, const TargetRegister& registerB) {
+                return this->getRegisterNumberFromTargetRegisterDescriptor(registerA.descriptor) <
+                    this->getRegisterNumberFromTargetRegisterDescriptor(registerB.descriptor);
             }
         );
 
         /*
-         * Finally, reverse the register values (as they're all currently in MSB, but GDB expects them in LSB), implode
-         * the register values, convert to hexadecimal form and send to the GDB client.
+         * Finally, reverse the register values (as they're all currently in MSB, but GDB expects them in LSB), ensure
+         * that each register value size matches the size in the associated GDB register descriptor, implode the
+         * values, convert to hexadecimal form and send to the GDB client.
          */
         auto registers = std::vector<unsigned char>();
         for (auto& reg : registerSet) {
             std::reverse(reg.value.begin(), reg.value.end());
+
+            const auto gdbRegisterNumber = this->getRegisterNumberFromTargetRegisterDescriptor(reg.descriptor).value();
+            const auto& gdbRegisterDescriptor = this->getRegisterDescriptorFromNumber(gdbRegisterNumber);
+
+            if (reg.value.size() < gdbRegisterDescriptor.size) {
+                reg.value.insert(reg.value.end(), (gdbRegisterDescriptor.size - reg.value.size()), 0x00);
+            }
+
             registers.insert(registers.end(), reg.value.begin(), reg.value.end());
         }
 
@@ -145,7 +134,7 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteRegister& packet) {
     Logger::debug("Handling WriteRegister packet");
 
     try {
-        auto registerDescriptor = this->getRegisterDescriptorFromNumber(packet.registerNumber);
+        auto registerDescriptor = this->getTargetRegisterDescriptorFromNumber(packet.registerNumber);
         this->targetControllerConsole.writeRegisters({
             TargetRegister(registerDescriptor, packet.registerValue)
         });

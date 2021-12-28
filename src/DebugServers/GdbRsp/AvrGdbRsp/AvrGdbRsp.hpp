@@ -33,23 +33,9 @@ namespace Bloom::DebugServers::Gdb
         }
 
     protected:
-        /**
-         * For AVR targets, avr-gdb defines 35 registers in total:
-         *
-         * Register number 0 through 31 are general purpose registers
-         * Register number 32 is the status register (SREG)
-         * Register number 33 is the stack pointer register
-         * Register number 34 is the program counter register
-         *
-         * Only general purpose registers have register IDs. The others do not require an ID.
-         *
-         * @return
-         */
-        const BiMap<GdbRegisterNumber,Targets::TargetRegisterDescriptor>& getRegisterNumberToDescriptorMapping() override {
-            return this->registerNumberToDescriptorMapping;
-        };
+        void init() override;
 
-        void loadRegisterNumberToDescriptorMapping();
+        void loadRegisterMappings();
 
         /**
          * avr-gdb uses the most significant 15 bits in memory addresses to indicate the type of memory being
@@ -76,15 +62,47 @@ namespace Bloom::DebugServers::Gdb
             return address & this->gdbInternalMemoryMask ? (address & ~(this->gdbInternalMemoryMask)) : address;
         };
 
-        void init() override;
+        const BiMap<GdbRegisterNumberType, RegisterDescriptor>& getRegisterNumberToDescriptorMapping() override {
+            return this->registerDescriptorsByGdbNumber;
+        };
+
+        std::optional<GdbRegisterNumberType> getRegisterNumberFromTargetRegisterDescriptor(
+            const Targets::TargetRegisterDescriptor& registerDescriptor
+        ) override;
+
+        const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumberType number) override;
+
+        const Targets::TargetRegisterDescriptor& getTargetRegisterDescriptorFromNumber(
+            GdbRegisterNumberType number
+        ) override;
 
     private:
+        /*
+         * For AVR targets, avr-gdb defines 35 registers in total:
+         *
+         * Register number 0 through 31 are general purpose registers
+         * Register number 32 is the status register (SREG)
+         * Register number 33 is the stack pointer register
+         * Register number 34 is the program counter register
+         *
+         * In this class, we maintain two bidirectional mappings:
+         *
+         *  - registerDescriptorsByGdbNumber
+         *      A mapping of GDB register numbers to GDB register descriptors.
+         *
+         *  - targetRegisterDescriptorsByGdbNumber
+         *      A mapping of GDB register numbers to target register descriptors.
+         *
+         * The functions above provide an interface for the retrieval of GDB register descriptors and target register
+         * descriptors, by their respective GDB register number.
+         */
+        BiMap<GdbRegisterNumberType, RegisterDescriptor> registerDescriptorsByGdbNumber = {};
+        BiMap<GdbRegisterNumberType, Targets::TargetRegisterDescriptor> targetRegisterDescriptorsByGdbNumber = {};
+
         /**
          * The mask used by the AVR GDB client to encode the memory type into memory addresses.
          * See AvrGdbRsp::getMemoryTypeFromGdbAddress() for more.
          */
-        unsigned int gdbInternalMemoryMask = 0xFE0000u;
-
-        BiMap<GdbRegisterNumber, Targets::TargetRegisterDescriptor> registerNumberToDescriptorMapping = {};
+        unsigned int gdbInternalMemoryMask = 0xFE0000U;
     };
 }

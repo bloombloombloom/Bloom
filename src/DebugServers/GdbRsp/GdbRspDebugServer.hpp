@@ -218,35 +218,38 @@ namespace Bloom::DebugServers::Gdb
         virtual std::uint32_t removeMemoryTypeIndicatorFromGdbAddress(std::uint32_t address) = 0;
 
         /**
-         * Like with the method of encoding memory type information onto memory addresses, GDB clients also expect
-         * a pre-defined set of registers. The defined set being dependant on the target. This is hardcoded in the the
-         * GDB client source. The order of the registers is also pre-defined in the GDB client.
-         *
-         * For an example, see the implementation of this method in the AvrGdbRsp class.
-         *
-         * @return
+         * Should return the mapping of GDB register numbers to GDB register descriptors.
          */
-        virtual const BiMap<
-            GdbRegisterNumber,
-            Targets::TargetRegisterDescriptor
-        >& getRegisterNumberToDescriptorMapping() = 0;
+        virtual const BiMap<GdbRegisterNumberType, RegisterDescriptor>& getRegisterNumberToDescriptorMapping() = 0;
 
         /**
-         * Obtains the appropriate register descriptor from a register number.
+         * Should retrieve the GDB register number, given a target register descriptor. Or std::nullopt if the target
+         * register descriptor isn't mapped to any GDB register.
+         *
+         * @param registerDescriptor
+         * @return
+         */
+        virtual std::optional<GdbRegisterNumberType> getRegisterNumberFromTargetRegisterDescriptor(
+            const Targets::TargetRegisterDescriptor& registerDescriptor
+        ) = 0;
+
+        /**
+         * Should retrieve the GDB register descriptor for a given GDB register number.
          *
          * @param number
          * @return
          */
-        virtual Targets::TargetRegisterDescriptor getRegisterDescriptorFromNumber(GdbRegisterNumber number) {
-            auto mapping = this->getRegisterNumberToDescriptorMapping();
+        virtual const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumberType number) = 0;
 
-            if (!mapping.contains(number)) {
-                throw Exceptions::Exception("Unknown register from GDB - register number ("
-                                                + std::to_string(number) + ") not mapped to any register descriptor.");
-            }
-
-            return mapping.valueAt(number).value();
-        }
+        /**
+         * Should retrieve the mapped target register descriptor for a given GDB register number.
+         *
+         * @param number
+         * @return
+         */
+        virtual const Targets::TargetRegisterDescriptor& getTargetRegisterDescriptorFromNumber(
+            GdbRegisterNumberType number
+        ) = 0;
 
         void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
 
