@@ -134,14 +134,35 @@ void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteRegister& packet) {
     Logger::debug("Handling WriteRegister packet");
 
     try {
-        auto registerDescriptor = this->getTargetRegisterDescriptorFromNumber(packet.registerNumber);
+        auto targetRegisterDescriptor = this->getTargetRegisterDescriptorFromNumber(packet.registerNumber);
+
+        const auto valueSize = packet.registerValue.size();
+        if (valueSize > 0 && valueSize > targetRegisterDescriptor.size) {
+            // Attempt to trim the higher zero-value bytes from the register value, until we reach the correct size.
+            for (auto i = packet.registerValue.size() - 1; i >= targetRegisterDescriptor.size; i--) {
+                if (packet.registerValue.at(i) != 0x00) {
+                    // If we reach a non-zero byte, we cannot trim anymore without changing the data
+                    break;
+                }
+
+                packet.registerValue.erase(packet.registerValue.begin() + i);
+            }
+
+            if (packet.registerValue.size() > targetRegisterDescriptor.size) {
+                const auto& gdbRegisterDescriptor = this->getRegisterDescriptorFromNumber(packet.registerNumber);
+                throw Exception("Cannot set value for " + gdbRegisterDescriptor.name
+                    + " - value size exceeds register size."
+                );
+            }
+        }
+
         this->targetControllerConsole.writeRegisters({
-            TargetRegister(registerDescriptor, packet.registerValue)
+            TargetRegister(targetRegisterDescriptor, packet.registerValue)
         });
         this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
 
     } catch (const Exception& exception) {
-        Logger::error("Failed to write general registers - " + exception.getMessage());
+        Logger::error("Failed to write registers - " + exception.getMessage());
         this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
     }
 }
