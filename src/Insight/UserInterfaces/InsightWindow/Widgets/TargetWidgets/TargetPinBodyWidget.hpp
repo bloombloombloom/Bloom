@@ -24,10 +24,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
         Q_PROPERTY(int disableAlphaLevel READ getDisableAlphaLevel WRITE setDisableAlphaLevel DESIGNABLE true)
 
     public:
-        TargetPinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor):
-        QWidget(parent), pinDescriptor(std::move(pinDescriptor)) {
-            this->setObjectName("target-pin-body");
-        }
+        TargetPinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor);
 
         void setPinState(const Targets::TargetPinState& pinState) {
             this->pinState = pinState;

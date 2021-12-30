@@ -7,6 +7,11 @@
 using namespace Bloom::Widgets::InsightTargetWidgets::Dip;
 using namespace Bloom::Targets;
 
+PinBodyWidget::PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor)
+: TargetPinBodyWidget(parent, std::move(pinDescriptor)) {
+    this->setFixedSize(PinBodyWidget::WIDTH, PinBodyWidget::HEIGHT);
+}
+
 void PinBodyWidget::paintEvent(QPaintEvent* event) {
     auto painter = QPainter(this);
     this->drawWidget(painter);

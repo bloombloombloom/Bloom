@@ -6,6 +6,16 @@
 using namespace Bloom::Widgets::InsightTargetWidgets::Qfp;
 using namespace Bloom::Targets;
 
+PinBodyWidget::PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor, bool isVertical)
+: TargetPinBodyWidget(parent, std::move(pinDescriptor)), isVertical(isVertical) {
+    if (isVertical) {
+        this->setFixedSize(PinBodyWidget::WIDTH, PinBodyWidget::HEIGHT);
+
+    } else {
+        this->setFixedSize(PinBodyWidget::HEIGHT, PinBodyWidget::WIDTH);
+    }
+}
+
 void PinBodyWidget::paintEvent(QPaintEvent* event) {
     auto painter = QPainter(this);
     this->drawWidget(painter);

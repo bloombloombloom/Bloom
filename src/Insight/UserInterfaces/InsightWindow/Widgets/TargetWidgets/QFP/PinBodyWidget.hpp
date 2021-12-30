@@ -18,17 +18,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         static const int WIDTH = 19;
         static const int HEIGHT = 28;
 
-        PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor, bool isVertical):
-        TargetPinBodyWidget(parent, std::move(pinDescriptor)), isVertical(isVertical) {
-            this->setObjectName("target-pin-body");
-
-            if (isVertical) {
-                this->setFixedSize(PinBodyWidget::WIDTH, PinBodyWidget::HEIGHT);
-
-            } else {
-                this->setFixedSize(PinBodyWidget::HEIGHT, PinBodyWidget::WIDTH);
-            }
-        }
+        PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor, bool isVertical);
 
     protected:
         void paintEvent(QPaintEvent* event) override;

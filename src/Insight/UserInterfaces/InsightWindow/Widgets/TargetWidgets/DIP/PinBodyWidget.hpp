@@ -17,13 +17,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         static const int WIDTH = 19;
         static const int HEIGHT = 28;
 
-        PinBodyWidget(
-            QWidget* parent,
-            Targets::TargetPinDescriptor pinDescriptor
-        ): TargetPinBodyWidget(parent, std::move(pinDescriptor)) {
-            this->setFixedSize(PinBodyWidget::WIDTH, PinBodyWidget::HEIGHT);
-            this->setObjectName("target-pin-body");
-        }
+        PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor);
 
     protected:
         void paintEvent(QPaintEvent* event) override;
