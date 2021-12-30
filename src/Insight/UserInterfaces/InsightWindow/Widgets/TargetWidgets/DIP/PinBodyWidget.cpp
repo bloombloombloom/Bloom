@@ -2,8 +2,6 @@
 
 #include <QPainter>
 
-#include "src/Logger/Logger.hpp"
-
 using namespace Bloom::Widgets::InsightTargetWidgets::Dip;
 using namespace Bloom::Targets;
 
@@ -18,12 +16,6 @@ void PinBodyWidget::paintEvent(QPaintEvent* event) {
 }
 
 void PinBodyWidget::drawWidget(QPainter& painter) {
-    auto parentWidget = this->parentWidget();
-
-    if (parentWidget == nullptr) {
-        Logger::error("PinBodyWidget requires a parent widget");
-    }
-
     painter.setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
     auto pinWidth = PinBodyWidget::WIDTH;
     auto pinHeight = PinBodyWidget::HEIGHT;

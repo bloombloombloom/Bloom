@@ -6,7 +6,7 @@ using namespace Bloom::Widgets::InsightTargetWidgets;
 using namespace Bloom::Targets;
 
 TargetPinBodyWidget::TargetPinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor)
-:QWidget(parent), pinDescriptor(std::move(pinDescriptor)) {
+: QWidget(parent), pinDescriptor(std::move(pinDescriptor)) {
     this->setObjectName("target-pin-body");
     this->setToolTip(QString::fromStdString(this->pinDescriptor.name).toUpper());
 }
