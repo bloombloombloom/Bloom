@@ -33,7 +33,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         static constexpr int LABEL_HEIGHT = 20;
         static constexpr int MAXIMUM_PIN_NUMBER_LABEL_WIDTH = 26;
         static constexpr int MAXIMUM_PIN_DIRECTION_LABEL_WIDTH = 24;
-        static constexpr int MAXIMUM_LABEL_WIDTH = 32;
+        static constexpr int MAXIMUM_LABEL_WIDTH = 42;
         static constexpr int MAXIMUM_LABEL_HEIGHT = 20;
         static constexpr int MAXIMUM_HORIZONTAL_WIDTH = PinBodyWidget::HEIGHT + PinWidget::MAXIMUM_PIN_NUMBER_LABEL_WIDTH + 3;
         static constexpr int MAXIMUM_HORIZONTAL_HEIGHT = PinBodyWidget::WIDTH;
