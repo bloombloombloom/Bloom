@@ -38,7 +38,7 @@ namespace Bloom::Targets
         }
 
         [[nodiscard]] bool contains(std::uint32_t address) const {
-            return address >= this->startAddress && address < this->endAddress;
+            return address >= this->startAddress && address <= this->endAddress;
         }
     };
 
