@@ -16,7 +16,7 @@ namespace Bloom
      * can define multiple debugging environments, each object should be assigned a key in the config file. We use this
      * key to allow users to select different debugging environments between debugging sessions.
      *
-     * On application startup, we extract the config from this JSON file and generate an ApplicationConfig object.
+     * On application startup, we extract the config from this JSON file and generate an ProjectConfig object.
      * See Application::extractConfig() for more on this.
      *
      * Some config parameters are specific to certain entities within Bloom, but have no significance across the
@@ -174,9 +174,9 @@ namespace Bloom
     };
 
     /**
-     * This holds all user provided application configuration.
+     * This holds all user provided project configuration.
      */
-    struct ApplicationConfig
+    struct ProjectConfig
     {
         /**
          * Obtains config parameters from JSON object.

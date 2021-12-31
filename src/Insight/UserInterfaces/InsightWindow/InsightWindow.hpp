@@ -6,7 +6,7 @@
 #include <memory>
 #include <optional>
 
-#include "src/ApplicationConfig.hpp"
+#include "src/ProjectConfig.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetState.hpp"
 

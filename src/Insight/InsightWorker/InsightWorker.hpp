@@ -5,7 +5,7 @@
 
 #include "src/Helpers/Thread.hpp"
 #include "src/Helpers/SyncSafe.hpp"
-#include "src/ApplicationConfig.hpp"
+#include "src/ProjectConfig.hpp"
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
 #include "src/TargetController/TargetControllerConsole.hpp"

@@ -66,7 +66,7 @@ add_executable(Bloom
     src/Generated/resources.cpp
 
     # Project & application configuration
-    src/ApplicationConfig.cpp
+    src/ProjectConfig.cpp
 
     # Events
     src/EventManager/EventListener.cpp

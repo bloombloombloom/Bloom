@@ -7,7 +7,7 @@
 #include <set>
 #include <map>
 
-#include "src/ApplicationConfig.hpp"
+#include "src/ProjectConfig.hpp"
 
 #include "TargetDescriptor.hpp"
 #include "TargetState.hpp"

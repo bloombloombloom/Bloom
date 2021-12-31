@@ -9,7 +9,7 @@
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
-#include "src/ApplicationConfig.hpp"
+#include "src/ProjectConfig.hpp"
 
 namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
 {

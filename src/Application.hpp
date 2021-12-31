@@ -15,7 +15,7 @@
 #include "src/Insight/Insight.hpp"
 
 #include "src/Logger/Logger.hpp"
-#include "src/ApplicationConfig.hpp"
+#include "src/ProjectConfig.hpp"
 #include "src/VersionNumber.hpp"
 
 #include "src/EventManager/EventListener.hpp"
@@ -131,9 +131,9 @@ namespace Bloom
         /**
          * Configuration extracted from the user's project configuration file.
          *
-         * See ApplicationConfig.hpp for more on this.
+         * See ProjectConfig.hpp for more on this.
          */
-        ApplicationConfig applicationConfig;
+        ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
         DebugServerConfig debugServerConfig;
         InsightConfig insightConfig;
@@ -193,12 +193,12 @@ namespace Bloom
         void shutdown();
 
         /**
-         * Extracts config from the user's JSON config file and generates an ApplicationConfig object.
+         * Extracts config from the user's JSON config file and generates an ProjectConfig object.
          *
-         * @see ApplicationConfig declaration for more on this.
+         * @see ProjectConfig declaration for more on this.
          * @return
          */
-        static ApplicationConfig extractConfig();
+        static ProjectConfig extractConfig();
 
         /**
          * Presents application help text to user.

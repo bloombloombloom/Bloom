@@ -46,7 +46,7 @@ int Application::run(const std::vector<std::string>& arguments) {
 
         if (this->insightConfig.insightEnabled) {
             this->insight = std::make_unique<Insight>(this->eventManager);
-            this->insight->setApplicationConfig(this->applicationConfig);
+            this->insight->setProjectConfig(this->projectConfig);
             this->insight->setEnvironmentConfig(this->environmentConfig);
             this->insight->setInsightConfig(this->insightConfig);
 
@@ -92,8 +92,8 @@ void Application::startup() {
         std::bind(&Application::onShutdownApplicationRequest, this, std::placeholders::_1)
     );
 
-    this->applicationConfig = this->extractConfig();
-    Logger::configure(this->applicationConfig);
+    this->projectConfig = this->extractConfig();
+    Logger::configure(this->projectConfig);
 
     // Start signal handler
     this->blockAllSignalsOnCurrentThread();
@@ -101,21 +101,21 @@ void Application::startup() {
 
     Logger::info("Selected environment: \"" + this->selectedEnvironmentName + "\"");
     Logger::debug("Number of environments extracted from config: "
-        + std::to_string(this->applicationConfig.environments.size()));
+        + std::to_string(this->projectConfig.environments.size()));
 
     // Validate the selected environment
-    if (!applicationConfig.environments.contains(this->selectedEnvironmentName)) {
+    if (!projectConfig.environments.contains(this->selectedEnvironmentName)) {
         throw InvalidConfig("Environment (\"" + this->selectedEnvironmentName + "\") not found in configuration.");
     }
 
-    this->environmentConfig = applicationConfig.environments.at(this->selectedEnvironmentName);
-    this->insightConfig = this->environmentConfig.insightConfig.value_or(this->applicationConfig.insightConfig);
+    this->environmentConfig = projectConfig.environments.at(this->selectedEnvironmentName);
+    this->insightConfig = this->environmentConfig.insightConfig.value_or(this->projectConfig.insightConfig);
 
     if (this->environmentConfig.debugServerConfig.has_value()) {
         this->debugServerConfig = this->environmentConfig.debugServerConfig.value();
 
-    } else if (this->applicationConfig.debugServerConfig.has_value()) {
-        this->debugServerConfig = this->applicationConfig.debugServerConfig.value();
+    } else if (this->projectConfig.debugServerConfig.has_value()) {
+        this->debugServerConfig = this->projectConfig.debugServerConfig.value();
 
     } else {
         throw InvalidConfig("Debug server configuration missing.");
@@ -169,8 +169,8 @@ void Application::shutdown() {
     Thread::setThreadState(ThreadState::STOPPED);
 }
 
-ApplicationConfig Application::extractConfig() {
-    auto appConfig = ApplicationConfig();
+ProjectConfig Application::extractConfig() {
+    auto appConfig = ProjectConfig();
     auto currentPath = std::filesystem::current_path().string();
     auto jsonConfigFile = QFile(QString::fromStdString(currentPath + "/bloom.json"));
 
@@ -271,7 +271,7 @@ int Application::initProject() {
 }
 
 void Application::startTargetController() {
-    this->targetController.setApplicationConfig(this->applicationConfig);
+    this->targetController.setProjectConfig(this->projectConfig);
     this->targetController.setEnvironmentConfig(this->environmentConfig);
 
     this->targetControllerThread = std::thread(
@@ -309,7 +309,7 @@ void Application::startDebugServer() {
     }
 
     this->debugServer = supportedDebugServers.at(this->debugServerConfig.name)();
-    this->debugServer->setApplicationConfig(this->applicationConfig);
+    this->debugServer->setProjectConfig(this->projectConfig);
     this->debugServer->setEnvironmentConfig(this->environmentConfig);
     this->debugServer->setDebugServerConfig(this->debugServerConfig);
 

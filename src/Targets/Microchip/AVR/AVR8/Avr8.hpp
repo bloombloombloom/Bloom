@@ -8,7 +8,7 @@
 #include "src/Targets/Microchip/AVR/Target.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/DebugToolDrivers/DebugTool.hpp"
-#include "src/ApplicationConfig.hpp"
+#include "src/ProjectConfig.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 #include "TargetParameters.hpp"

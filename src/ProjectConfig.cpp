@@ -1,11 +1,11 @@
-#include "ApplicationConfig.hpp"
+#include "ProjectConfig.hpp"
 
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
 using namespace Bloom;
 
-void ApplicationConfig::init(const QJsonObject& jsonObject) {
+void ProjectConfig::init(const QJsonObject& jsonObject) {
     if (!jsonObject.contains("environments")) {
         throw Exceptions::InvalidConfig(
             "No environments found - please review the bloom.json configuration file and ensure that "

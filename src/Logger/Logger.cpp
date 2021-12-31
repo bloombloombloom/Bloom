@@ -4,8 +4,8 @@
 
 using namespace Bloom;
 
-void Logger::configure(ApplicationConfig& applicationConfig) {
-    if (applicationConfig.debugLoggingEnabled) {
+void Logger::configure(ProjectConfig& projectConfig) {
+    if (projectConfig.debugLoggingEnabled) {
         Logger::debugPrintingEnabled = true;
         Logger::debug("Debug log printing has been enabled.");
     }

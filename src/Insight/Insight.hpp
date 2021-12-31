@@ -6,7 +6,7 @@
 #include "src/Helpers/Thread.hpp"
 #include "src/TargetController/TargetControllerConsole.hpp"
 #include "src/Helpers/Paths.hpp"
-#include "src/ApplicationConfig.hpp"
+#include "src/ProjectConfig.hpp"
 
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
@@ -49,8 +49,8 @@ namespace Bloom
             )
         ) {};
 
-        void setApplicationConfig(const ApplicationConfig& applicationConfig) {
-            this->applicationConfig = applicationConfig;
+        void setProjectConfig(const ProjectConfig& projectConfig) {
+            this->projectConfig = projectConfig;
         }
 
         void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
@@ -71,7 +71,7 @@ namespace Bloom
         std::array<char*, 1> qtApplicationArgv = {this->qtApplicationName.data()};
         int qtApplicationArgc = 1;
 
-        ApplicationConfig applicationConfig;
+        ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
         InsightConfig insightConfig;
 

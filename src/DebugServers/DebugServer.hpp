@@ -8,7 +8,7 @@
 #include "src/EventManager/Events/Events.hpp"
 #include "src/EventManager/EventManager.hpp"
 #include "src/Exceptions/DebugServerInterrupted.hpp"
-#include "src/ApplicationConfig.hpp"
+#include "src/ProjectConfig.hpp"
 #include "src/Helpers/Thread.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
@@ -31,8 +31,8 @@ namespace Bloom::DebugServers
         explicit DebugServer(EventManager& eventManager): eventManager(eventManager) {};
         virtual ~DebugServer() = default;
 
-        void setApplicationConfig(const ApplicationConfig& applicationConfig) {
-            this->applicationConfig = applicationConfig;
+        void setProjectConfig(const ProjectConfig& projectConfig) {
+            this->projectConfig = projectConfig;
         }
 
         void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
@@ -67,7 +67,7 @@ namespace Bloom::DebugServers
          */
         std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
 
-        ApplicationConfig applicationConfig;
+        ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
         DebugServerConfig debugServerConfig;
 

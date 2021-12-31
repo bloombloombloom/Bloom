@@ -7,7 +7,7 @@
 #include <QTimeZone>
 #include <mutex>
 
-#include "src/ApplicationConfig.hpp"
+#include "src/ProjectConfig.hpp"
 #include "src/Helpers/DateTime.hpp"
 
 namespace Bloom
@@ -53,7 +53,7 @@ namespace Bloom
     class Logger
     {
     public:
-        static void configure(ApplicationConfig& applicationConfig);
+        static void configure(ProjectConfig& projectConfig);
 
         static void silence();
 

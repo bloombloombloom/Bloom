@@ -36,8 +36,8 @@ namespace Bloom
     public:
         explicit TargetController(EventManager& eventManager): eventManager(eventManager) {};
 
-        void setApplicationConfig(const ApplicationConfig& applicationConfig) {
-            this->applicationConfig = applicationConfig;
+        void setProjectConfig(const ProjectConfig& projectConfig) {
+            this->projectConfig = projectConfig;
         }
 
         void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
@@ -55,7 +55,7 @@ namespace Bloom
          */
         TargetControllerState state = TargetControllerState::SUSPENDED;
 
-        ApplicationConfig applicationConfig;
+        ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
 
         /**
