@@ -49,7 +49,12 @@ namespace Bloom
                 {
                     "avr-gdb-rsp",
                     [this] () -> std::unique_ptr<DebugServers::DebugServer> {
-                        return std::make_unique<DebugServers::Gdb::AvrGdbRsp>(this->eventManager);
+                        return std::make_unique<DebugServers::Gdb::AvrGdbRsp>(
+                            this->eventManager,
+                            this->projectConfig.value(),
+                            this->environmentConfig.value(),
+                            this->debugServerConfig.value()
+                        );
                     }
                 },
             };
@@ -97,8 +102,12 @@ namespace Bloom
          * dedicated thread.
          *
          * See the TargetController class for more on this.
+         *
+         * I could have used std::optional here, for the late initialisation, but given that we're using
+         * std::unique_ptr for the debug server (for polymorphism), I thought I'd keep it consistent and just use
+         * std::unique_ptr for lazy loading.
          */
-        TargetController targetController = TargetController(this->eventManager);
+        std::unique_ptr<TargetController> targetController = nullptr;
         std::thread targetControllerThread;
 
         /**
@@ -133,10 +142,10 @@ namespace Bloom
          *
          * See ProjectConfig.hpp for more on this.
          */
-        ProjectConfig projectConfig;
-        EnvironmentConfig environmentConfig;
-        DebugServerConfig debugServerConfig;
-        InsightConfig insightConfig;
+        std::optional<ProjectConfig> projectConfig;
+        std::optional<EnvironmentConfig> environmentConfig;
+        std::optional<DebugServerConfig> debugServerConfig;
+        std::optional<InsightConfig> insightConfig;
 
         /**
          * The project environment selected by the user.

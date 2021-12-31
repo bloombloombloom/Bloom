@@ -44,11 +44,13 @@ int Application::run(const std::vector<std::string>& arguments) {
 
         this->startup();
 
-        if (this->insightConfig.insightEnabled) {
-            this->insight = std::make_unique<Insight>(this->eventManager);
-            this->insight->setProjectConfig(this->projectConfig);
-            this->insight->setEnvironmentConfig(this->environmentConfig);
-            this->insight->setInsightConfig(this->insightConfig);
+        if (this->insightConfig->insightEnabled) {
+            this->insight = std::make_unique<Insight>(
+                this->eventManager,
+                this->projectConfig.value(),
+                this->environmentConfig.value(),
+                this->insightConfig.value()
+            );
 
             /*
              * Before letting Insight occupy the main thread, process any pending events that accumulated
@@ -92,8 +94,8 @@ void Application::startup() {
         std::bind(&Application::onShutdownApplicationRequest, this, std::placeholders::_1)
     );
 
-    this->projectConfig = this->extractConfig();
-    Logger::configure(this->projectConfig);
+    this->projectConfig = Application::extractConfig();
+    Logger::configure(this->projectConfig.value());
 
     // Start signal handler
     this->blockAllSignalsOnCurrentThread();
@@ -101,21 +103,30 @@ void Application::startup() {
 
     Logger::info("Selected environment: \"" + this->selectedEnvironmentName + "\"");
     Logger::debug("Number of environments extracted from config: "
-        + std::to_string(this->projectConfig.environments.size()));
+        + std::to_string(this->projectConfig->environments.size()));
 
     // Validate the selected environment
-    if (!projectConfig.environments.contains(this->selectedEnvironmentName)) {
+    if (!this->projectConfig->environments.contains(this->selectedEnvironmentName)) {
         throw InvalidConfig("Environment (\"" + this->selectedEnvironmentName + "\") not found in configuration.");
     }
 
-    this->environmentConfig = projectConfig.environments.at(this->selectedEnvironmentName);
-    this->insightConfig = this->environmentConfig.insightConfig.value_or(this->projectConfig.insightConfig);
+    this->environmentConfig = this->projectConfig->environments.at(this->selectedEnvironmentName);
 
-    if (this->environmentConfig.debugServerConfig.has_value()) {
-        this->debugServerConfig = this->environmentConfig.debugServerConfig.value();
+    if (this->environmentConfig->insightConfig.has_value()) {
+        this->insightConfig = this->environmentConfig->insightConfig.value();
 
-    } else if (this->projectConfig.debugServerConfig.has_value()) {
-        this->debugServerConfig = this->projectConfig.debugServerConfig.value();
+    } else if (this->projectConfig->insightConfig.has_value()) {
+        this->insightConfig = this->projectConfig->insightConfig.value();
+
+    } else {
+        throw InvalidConfig("Insight configuration missing.");
+    }
+
+    if (this->environmentConfig->debugServerConfig.has_value()) {
+        this->debugServerConfig = this->environmentConfig->debugServerConfig.value();
+
+    } else if (this->projectConfig->debugServerConfig.has_value()) {
+        this->debugServerConfig = this->projectConfig->debugServerConfig.value();
 
     } else {
         throw InvalidConfig("Debug server configuration missing.");
@@ -269,12 +280,15 @@ int Application::initProject() {
 }
 
 void Application::startTargetController() {
-    this->targetController.setProjectConfig(this->projectConfig);
-    this->targetController.setEnvironmentConfig(this->environmentConfig);
+    this->targetController = std::make_unique<TargetController>(
+        this->eventManager,
+        this->projectConfig.value(),
+        this->environmentConfig.value()
+    );
 
     this->targetControllerThread = std::thread(
         &TargetController::run,
-        std::ref(this->targetController)
+        this->targetController.get()
     );
 
     auto tcStateChangeEvent = this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>();
@@ -285,7 +299,7 @@ void Application::startTargetController() {
 }
 
 void Application::stopTargetController() {
-    auto targetControllerState = this->targetController.getThreadState();
+    auto targetControllerState = this->targetController->getThreadState();
     if (targetControllerState == ThreadState::STARTING || targetControllerState == ThreadState::READY) {
         this->eventManager.triggerEvent(std::make_shared<Events::ShutdownTargetController>());
         this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>(
@@ -302,15 +316,11 @@ void Application::stopTargetController() {
 
 void Application::startDebugServer() {
     auto supportedDebugServers = this->getSupportedDebugServers();
-    if (!supportedDebugServers.contains(this->debugServerConfig.name)) {
-        throw Exceptions::InvalidConfig("DebugServer \"" + this->debugServerConfig.name + "\" not found.");
+    if (!supportedDebugServers.contains(this->debugServerConfig->name)) {
+        throw Exceptions::InvalidConfig("DebugServer \"" + this->debugServerConfig->name + "\" not found.");
     }
 
-    this->debugServer = supportedDebugServers.at(this->debugServerConfig.name)();
-    this->debugServer->setProjectConfig(this->projectConfig);
-    this->debugServer->setEnvironmentConfig(this->environmentConfig);
-    this->debugServer->setDebugServerConfig(this->debugServerConfig);
-
+    this->debugServer = supportedDebugServers.at(this->debugServerConfig->name)();
     Logger::info("Selected DebugServer: " + this->debugServer->getName());
 
     this->debugServerThread = std::thread(

@@ -36,7 +36,12 @@ namespace Bloom::DebugServers::Gdb
     class GdbRspDebugServer: public DebugServer
     {
     public:
-        explicit GdbRspDebugServer(EventManager& eventManager): DebugServer(eventManager) {};
+        explicit GdbRspDebugServer(
+            EventManager& eventManager,
+            const ProjectConfig& projectConfig,
+            const EnvironmentConfig& environmentConfig,
+            const DebugServerConfig& debugServerConfig
+        ): DebugServer(eventManager, projectConfig, environmentConfig, debugServerConfig) {};
 
         std::string getName() const override {
             return "GDB Remote Serial Protocol DebugServer";

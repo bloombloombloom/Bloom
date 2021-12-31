@@ -28,20 +28,18 @@ namespace Bloom::DebugServers
     class DebugServer: public Thread
     {
     public:
-        explicit DebugServer(EventManager& eventManager): eventManager(eventManager) {};
+        explicit DebugServer(
+            EventManager& eventManager,
+            const ProjectConfig& projectConfig,
+            const EnvironmentConfig& environmentConfig,
+            const DebugServerConfig& debugServerConfig
+        ):
+            eventManager(eventManager),
+            projectConfig(projectConfig),
+            environmentConfig(environmentConfig),
+            debugServerConfig(debugServerConfig) {};
+
         virtual ~DebugServer() = default;
-
-        void setProjectConfig(const ProjectConfig& projectConfig) {
-            this->projectConfig = projectConfig;
-        }
-
-        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
-            this->environmentConfig = environmentConfig;
-        }
-
-        void setDebugServerConfig(const DebugServerConfig& debugServerConfig) {
-            this->debugServerConfig = debugServerConfig;
-        }
 
         /**
          * Entry point for the DebugServer. This must called from a dedicated thread.

@@ -34,15 +34,11 @@ namespace Bloom
     class TargetController: public Thread
     {
     public:
-        explicit TargetController(EventManager& eventManager): eventManager(eventManager) {};
-
-        void setProjectConfig(const ProjectConfig& projectConfig) {
-            this->projectConfig = projectConfig;
-        }
-
-        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
-            this->environmentConfig = environmentConfig;
-        }
+        explicit TargetController(
+            EventManager& eventManager,
+            const ProjectConfig& projectConfig,
+            const EnvironmentConfig& environmentConfig
+        ): eventManager(eventManager), projectConfig(projectConfig), environmentConfig(environmentConfig) {};
 
         /**
          * Entry point for the TargetController.

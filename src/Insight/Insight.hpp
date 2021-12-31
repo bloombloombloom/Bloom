@@ -37,8 +37,16 @@ namespace Bloom
          *
          * @param eventManager
          */
-        explicit Insight(EventManager& eventManager):
+        explicit Insight(
+            EventManager& eventManager,
+            const ProjectConfig& projectConfig,
+            const EnvironmentConfig& environmentConfig,
+            const InsightConfig& insightConfig
+        ):
         eventManager(eventManager),
+        projectConfig(projectConfig),
+        environmentConfig(environmentConfig),
+        insightConfig(insightConfig),
         application(
             (
                 QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, false),
@@ -48,18 +56,6 @@ namespace Bloom
                 QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
             )
         ) {};
-
-        void setProjectConfig(const ProjectConfig& projectConfig) {
-            this->projectConfig = projectConfig;
-        }
-
-        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
-            this->environmentConfig = environmentConfig;
-        }
-
-        void setInsightConfig(const InsightConfig& insightConfig) {
-            this->insightConfig = insightConfig;
-        }
 
         /**
          * Entry point for Insight.
@@ -80,7 +76,11 @@ namespace Bloom
 
         QApplication application;
         InsightWorker* insightWorker = new InsightWorker(this->eventManager);
-        InsightWindow* mainWindow = new InsightWindow(*(this->insightWorker));
+        InsightWindow* mainWindow = new InsightWindow(
+            *(this->insightWorker),
+            this->environmentConfig,
+            this->insightConfig
+        );
 
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(
             this->eventManager,

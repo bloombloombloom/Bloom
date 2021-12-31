@@ -30,7 +30,11 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        InsightWindow(InsightWorker& insightWorker);
+        InsightWindow(
+            InsightWorker& insightWorker,
+            const EnvironmentConfig& environmentConfig,
+            const InsightConfig& insightConfig
+        );
 
         void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
             this->environmentConfig = environmentConfig;

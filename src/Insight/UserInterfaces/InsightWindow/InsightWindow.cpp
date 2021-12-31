@@ -27,7 +27,17 @@ using Bloom::Targets::TargetPackage;
 using Bloom::Targets::TargetPinDescriptor;
 using Bloom::Targets::TargetMemoryType;
 
-InsightWindow::InsightWindow(InsightWorker& insightWorker): QMainWindow(nullptr), insightWorker(insightWorker) {
+InsightWindow::InsightWindow(
+    InsightWorker& insightWorker,
+    const EnvironmentConfig& environmentConfig,
+    const InsightConfig& insightConfig
+):
+    QMainWindow(nullptr),
+    insightWorker(insightWorker),
+    environmentConfig(environmentConfig),
+    targetConfig(environmentConfig.targetConfig),
+    insightConfig(insightConfig)
+{
     this->setObjectName("main-window");
     this->setWindowTitle("Bloom Insight");
     this->setMinimumSize(1000, 500);
