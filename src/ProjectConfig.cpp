@@ -5,7 +5,7 @@
 
 using namespace Bloom;
 
-void ProjectConfig::init(const QJsonObject& jsonObject) {
+ProjectConfig::ProjectConfig(const QJsonObject& jsonObject) {
     if (!jsonObject.contains("environments")) {
         throw Exceptions::InvalidConfig(
             "No environments found - please review the bloom.json configuration file and ensure that "
@@ -19,12 +19,13 @@ void ProjectConfig::init(const QJsonObject& jsonObject) {
         auto environmentName = environmentIt.key().toStdString();
 
         try {
-            auto environmentConfig = EnvironmentConfig();
-            environmentConfig.init(environmentName, environmentIt.value().toObject());
-
             this->environments.insert(
-                std::pair<std::string, EnvironmentConfig>(environmentName, environmentConfig)
+                std::pair(
+                    environmentName,
+                    EnvironmentConfig(environmentName, environmentIt.value().toObject())
+                )
             );
+
         } catch (Exceptions::InvalidConfig& exception) {
             Logger::error("Invalid environment config for environment '" + environmentName + "': "
                 + exception.getMessage() + " Environment will be ignored.");
@@ -32,13 +33,11 @@ void ProjectConfig::init(const QJsonObject& jsonObject) {
     }
 
     if (jsonObject.contains("debugServer")) {
-        auto debugServerConfig = DebugServerConfig();
-        debugServerConfig.init(jsonObject.find("debugServer")->toObject());
-        this->debugServerConfig = debugServerConfig;
+        this->debugServerConfig = DebugServerConfig(jsonObject.find("debugServer")->toObject());
     }
 
     if (jsonObject.contains("insight")) {
-        this->insightConfig.init(jsonObject.find("insight")->toObject());
+        this->insightConfig = InsightConfig(jsonObject.find("insight")->toObject());
     }
 
     if (jsonObject.contains("debugLoggingEnabled")) {
@@ -46,13 +45,13 @@ void ProjectConfig::init(const QJsonObject& jsonObject) {
     }
 }
 
-void InsightConfig::init(const QJsonObject& jsonObject) {
+InsightConfig::InsightConfig(const QJsonObject& jsonObject) {
     if (jsonObject.contains("enabled")) {
         this->insightEnabled = jsonObject.find("enabled").value().toBool();
     }
 }
 
-void EnvironmentConfig::init(std::string name, QJsonObject jsonObject) {
+EnvironmentConfig::EnvironmentConfig(std::string name, QJsonObject jsonObject) {
     if (!jsonObject.contains("debugTool")) {
         throw Exceptions::InvalidConfig("No debug tool configuration provided.");
     }
@@ -62,23 +61,19 @@ void EnvironmentConfig::init(std::string name, QJsonObject jsonObject) {
     }
 
     this->name = std::move(name);
-    this->debugToolConfig.init(jsonObject.find("debugTool")->toObject());
-    this->targetConfig.init(jsonObject.find("target")->toObject());
+    this->debugToolConfig = DebugToolConfig(jsonObject.find("debugTool")->toObject());
+    this->targetConfig = TargetConfig(jsonObject.find("target")->toObject());
 
     if (jsonObject.contains("debugServer")) {
-        auto debugServerConfig = DebugServerConfig();
-        debugServerConfig.init(jsonObject.find("debugServer")->toObject());
-        this->debugServerConfig = debugServerConfig;
+        this->debugServerConfig = DebugServerConfig(jsonObject.find("debugServer")->toObject());
     }
 
     if (jsonObject.contains("insight")) {
-        auto insightConfig = InsightConfig();
-        insightConfig.init(jsonObject.find("insight")->toObject());
-        this->insightConfig = insightConfig;
+        this->insightConfig = InsightConfig(jsonObject.find("insight")->toObject());
     }
 }
 
-void TargetConfig::init(const QJsonObject& jsonObject) {
+TargetConfig::TargetConfig(const QJsonObject& jsonObject) {
     if (!jsonObject.contains("name")) {
         throw Exceptions::InvalidConfig("No target name found.");
     }
@@ -92,7 +87,7 @@ void TargetConfig::init(const QJsonObject& jsonObject) {
     this->jsonObject = jsonObject;
 }
 
-void DebugToolConfig::init(const QJsonObject& jsonObject) {
+DebugToolConfig::DebugToolConfig(const QJsonObject& jsonObject) {
     if (!jsonObject.contains("name")) {
         throw Exceptions::InvalidConfig("No debug tool name found.");
     }
@@ -106,7 +101,7 @@ void DebugToolConfig::init(const QJsonObject& jsonObject) {
     this->jsonObject = jsonObject;
 }
 
-void DebugServerConfig::init(const QJsonObject& jsonObject) {
+DebugServerConfig::DebugServerConfig(const QJsonObject& jsonObject) {
     this->name = jsonObject.find("name")->toString().toLower().toStdString();
     this->jsonObject = jsonObject;
 }

@@ -43,13 +43,6 @@ namespace Bloom
     struct TargetConfig
     {
         /**
-         * Obtains config parameters from JSON object.
-         *
-         * @param jsonObject
-         */
-        void init(const QJsonObject& jsonObject);
-
-        /**
          * The name of the selected target.
          */
         std::string name;
@@ -62,6 +55,15 @@ namespace Bloom
         std::optional<std::string> variantName;
 
         QJsonObject jsonObject;
+
+        TargetConfig() = default;
+
+        /**
+         * Obtains config parameters from JSON object.
+         *
+         * @param jsonObject
+         */
+        explicit TargetConfig(const QJsonObject& jsonObject);
     };
 
     /**
@@ -73,13 +75,6 @@ namespace Bloom
      */
     struct DebugToolConfig
     {
-        /**
-         * Obtains config parameters from JSON object.
-         *
-         * @param jsonObject
-         */
-        void init(const QJsonObject& jsonObject);
-
         /**
          * The name of the selected debug tool.
          */
@@ -95,6 +90,15 @@ namespace Bloom
         bool releasePostDebugSession = true;
 
         QJsonObject jsonObject;
+
+        DebugToolConfig() = default;
+
+        /**
+         * Obtains config parameters from JSON object.
+         *
+         * @param jsonObject
+         */
+        explicit DebugToolConfig(const QJsonObject& jsonObject);
     };
 
     /**
@@ -102,27 +106,31 @@ namespace Bloom
      */
     struct DebugServerConfig
     {
+        std::string name;
+        QJsonObject jsonObject;
+
+        DebugServerConfig() = default;
+
         /**
          * Obtains config parameters from JSON object.
          *
          * @param jsonObject
          */
-        void init(const QJsonObject& jsonObject);
-
-        std::string name;
-        QJsonObject jsonObject;
+        explicit DebugServerConfig(const QJsonObject& jsonObject);
     };
 
     struct InsightConfig
     {
+        bool insightEnabled = true;
+
+        InsightConfig() = default;
+
         /**
          * Obtains config parameters from JSON object.
          *
          * @param jsonObject
          */
-        void init(const QJsonObject& jsonObject);
-
-        bool insightEnabled = true;
+        explicit InsightConfig(const QJsonObject& jsonObject);
     };
 
     /**
@@ -133,13 +141,6 @@ namespace Bloom
      */
     struct EnvironmentConfig
     {
-        /**
-         * Obtains config parameters from JSON object.
-         *
-         * @param jsonObject
-         */
-        void init(std::string name, QJsonObject jsonObject);
-
         /**
          * The environment name is stored as the key to the JSON object containing the environment parameters.
          *
@@ -171,6 +172,13 @@ namespace Bloom
          * Insight configuration can be defined at an environment level as well as at an application level.
          */
         std::optional<InsightConfig> insightConfig;
+
+        /**
+         * Obtains config parameters from JSON object.
+         *
+         * @param jsonObject
+         */
+        EnvironmentConfig(std::string name, QJsonObject jsonObject);
     };
 
     /**
@@ -178,13 +186,6 @@ namespace Bloom
      */
     struct ProjectConfig
     {
-        /**
-         * Obtains config parameters from JSON object.
-         *
-         * @param jsonObject
-         */
-        void init(const QJsonObject& jsonObject);
-
         /**
          * A mapping of environment names to EnvironmentConfig objects.
          */
@@ -196,8 +197,19 @@ namespace Bloom
          */
         std::optional<DebugServerConfig> debugServerConfig;
 
-        InsightConfig insightConfig;
+        /**
+         * Application level Insight configuration. We use this as a fallback if no Insight config is provided at
+         * the environment level.
+         */
+        std::optional<InsightConfig> insightConfig;
 
         bool debugLoggingEnabled = false;
+
+        /**
+         * Obtains config parameters from JSON object.
+         *
+         * @param jsonObject
+         */
+        explicit ProjectConfig(const QJsonObject& jsonObject);
     };
 }

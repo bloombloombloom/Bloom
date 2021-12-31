@@ -170,7 +170,6 @@ void Application::shutdown() {
 }
 
 ProjectConfig Application::extractConfig() {
-    auto appConfig = ProjectConfig();
     auto currentPath = std::filesystem::current_path().string();
     auto jsonConfigFile = QFile(QString::fromStdString(currentPath + "/bloom.json"));
 
@@ -185,10 +184,9 @@ ProjectConfig Application::extractConfig() {
     }
 
     auto jsonObject = QJsonDocument::fromJson(jsonConfigFile.readAll()).object();
-    appConfig.init(jsonObject);
-
     jsonConfigFile.close();
-    return appConfig;
+
+    return ProjectConfig(jsonObject);
 }
 
 int Application::presentHelpText() {
