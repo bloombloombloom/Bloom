@@ -94,7 +94,7 @@ void Application::startup() {
         std::bind(&Application::onShutdownApplicationRequest, this, std::placeholders::_1)
     );
 
-    this->projectConfig = Application::extractConfig();
+    this->loadProjectConfiguration();
     Logger::configure(this->projectConfig.value());
 
     // Start signal handler
@@ -104,33 +104,6 @@ void Application::startup() {
     Logger::info("Selected environment: \"" + this->selectedEnvironmentName + "\"");
     Logger::debug("Number of environments extracted from config: "
         + std::to_string(this->projectConfig->environments.size()));
-
-    // Validate the selected environment
-    if (!this->projectConfig->environments.contains(this->selectedEnvironmentName)) {
-        throw InvalidConfig("Environment (\"" + this->selectedEnvironmentName + "\") not found in configuration.");
-    }
-
-    this->environmentConfig = this->projectConfig->environments.at(this->selectedEnvironmentName);
-
-    if (this->environmentConfig->insightConfig.has_value()) {
-        this->insightConfig = this->environmentConfig->insightConfig.value();
-
-    } else if (this->projectConfig->insightConfig.has_value()) {
-        this->insightConfig = this->projectConfig->insightConfig.value();
-
-    } else {
-        throw InvalidConfig("Insight configuration missing.");
-    }
-
-    if (this->environmentConfig->debugServerConfig.has_value()) {
-        this->debugServerConfig = this->environmentConfig->debugServerConfig.value();
-
-    } else if (this->projectConfig->debugServerConfig.has_value()) {
-        this->debugServerConfig = this->projectConfig->debugServerConfig.value();
-
-    } else {
-        throw InvalidConfig("Debug server configuration missing.");
-    }
 
     applicationEventListener->registerCallbackForEventType<Events::TargetControllerThreadStateChanged>(
         std::bind(&Application::onTargetControllerThreadStateChanged, this, std::placeholders::_1)
@@ -180,7 +153,7 @@ void Application::shutdown() {
     Thread::setThreadState(ThreadState::STOPPED);
 }
 
-ProjectConfig Application::extractConfig() {
+void Application::loadProjectConfiguration() {
     auto currentPath = std::filesystem::current_path().string();
     auto jsonConfigFile = QFile(QString::fromStdString(currentPath + "/bloom.json"));
 
@@ -197,7 +170,36 @@ ProjectConfig Application::extractConfig() {
     auto jsonObject = QJsonDocument::fromJson(jsonConfigFile.readAll()).object();
     jsonConfigFile.close();
 
-    return ProjectConfig(jsonObject);
+    this->projectConfig = ProjectConfig(jsonObject);
+
+    // Validate the selected environment
+    if (!this->projectConfig->environments.contains(this->selectedEnvironmentName)) {
+        throw InvalidConfig(
+            "Environment (\"" + this->selectedEnvironmentName + "\") not found in configuration."
+        );
+    }
+
+    this->environmentConfig = this->projectConfig->environments.at(this->selectedEnvironmentName);
+
+    if (this->environmentConfig->insightConfig.has_value()) {
+        this->insightConfig = this->environmentConfig->insightConfig.value();
+
+    } else if (this->projectConfig->insightConfig.has_value()) {
+        this->insightConfig = this->projectConfig->insightConfig.value();
+
+    } else {
+        throw InvalidConfig("Insight configuration missing.");
+    }
+
+    if (this->environmentConfig->debugServerConfig.has_value()) {
+        this->debugServerConfig = this->environmentConfig->debugServerConfig.value();
+
+    } else if (this->projectConfig->debugServerConfig.has_value()) {
+        this->debugServerConfig = this->projectConfig->debugServerConfig.value();
+
+    } else {
+        throw InvalidConfig("Debug server configuration missing.");
+    }
 }
 
 int Application::presentHelpText() {

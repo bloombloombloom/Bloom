@@ -202,12 +202,15 @@ namespace Bloom
         void shutdown();
 
         /**
-         * Extracts config from the user's JSON config file and generates an ProjectConfig object.
+         * Extracts the project config from the user's JSON config file and populates the following members:
+         *  - this->projectConfig
+         *  - this->environmentConfig
+         *  - this->debugServerConfig
+         *  - this->insightConfig
          *
          * @see ProjectConfig declaration for more on this.
-         * @return
          */
-        static ProjectConfig extractConfig();
+        void loadProjectConfiguration();
 
         /**
          * Presents application help text to user.
