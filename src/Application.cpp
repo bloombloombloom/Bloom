@@ -323,6 +323,10 @@ void Application::startTargetController() {
 }
 
 void Application::stopTargetController() {
+    if (this->targetController == nullptr) {
+        return;
+    }
+
     auto targetControllerState = this->targetController->getThreadState();
     if (targetControllerState == ThreadState::STARTING || targetControllerState == ThreadState::READY) {
         this->eventManager.triggerEvent(std::make_shared<Events::ShutdownTargetController>());
