@@ -31,11 +31,10 @@ int Application::run(const std::vector<std::string>& arguments) {
 
                 this->shutdown();
                 return returnValue;
-
-            } else {
-                // If the first argument didn't map to a command, we assume it's an environment name
-                this->selectedEnvironmentName = firstArg;
             }
+
+            // If the first argument didn't map to a command, we assume it's an environment name
+            this->selectedEnvironmentName = firstArg;
         }
 
 #ifdef BLOOM_DEBUG_BUILD

@@ -137,7 +137,7 @@ namespace Bloom
      * Configuration relating to a specific user defined environment.
      *
      * An instance of this type will be instantiated for each environment defined in the user's config file.
-     * See Application::extractConfig() implementation for more on this.
+     * See Application::loadProjectConfiguration() implementation for more on this.
      */
     struct EnvironmentConfig
     {

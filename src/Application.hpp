@@ -9,18 +9,18 @@
 
 #include "src/Helpers/Thread.hpp"
 
-#include "src/SignalHandler/SignalHandler.hpp"
 #include "src/TargetController/TargetController.hpp"
 #include "src/DebugServers/GdbRsp/AvrGdbRsp/AvrGdbRsp.hpp"
 #include "src/Insight/Insight.hpp"
+#include "src/SignalHandler/SignalHandler.hpp"
 
-#include "src/Logger/Logger.hpp"
 #include "src/ProjectConfig.hpp"
 #include "src/ProjectSettings.hpp"
-#include "src/VersionNumber.hpp"
 
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
+
+#include "src/VersionNumber.hpp"
 
 namespace Bloom
 {
