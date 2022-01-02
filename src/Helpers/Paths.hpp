@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
 
 namespace Bloom
 {
@@ -19,10 +20,27 @@ namespace Bloom
          *
          * @return
          */
-        static inline std::string resourcesDirPath() {
+        static std::string resourcesDirPath() {
             return Paths::applicationDirPath() + "/../resources/";
         }
 
+        /**
+         * Returns the path to the current project's directory (the working directory, from which Bloom was run)
+         *
+         * @return
+         */
+        static std::string projectDirPath() {
+            return std::filesystem::current_path().string();
+        }
+
+        /**
+         * Returns the path to the current project's configuration file (bloom.json).
+         *
+         * @return
+         */
+        static std::string projectConfigPath() {
+            return std::filesystem::current_path().string() + "/bloom.json";
+        }
         /**
          * Returns the path to Bloom's compiled resources.
          *

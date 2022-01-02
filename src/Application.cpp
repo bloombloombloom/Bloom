@@ -154,17 +154,16 @@ void Application::shutdown() {
 }
 
 void Application::loadProjectConfiguration() {
-    auto currentPath = std::filesystem::current_path().string();
-    auto jsonConfigFile = QFile(QString::fromStdString(currentPath + "/bloom.json"));
+    auto jsonConfigFile = QFile(QString::fromStdString(Paths::projectConfigPath()));
 
     if (!jsonConfigFile.exists()) {
         throw InvalidConfig("Bloom configuration file (bloom.json) not found. Working directory: "
-            + currentPath);
+            + Paths::projectDirPath());
     }
 
     if (!jsonConfigFile.open(QIODevice::ReadOnly)) {
         throw InvalidConfig("Failed to load Bloom configuration file (bloom.json) Working directory: "
-            + currentPath);
+            + Paths::projectDirPath());
     }
 
     auto jsonObject = QJsonDocument::fromJson(jsonConfigFile.readAll()).object();
