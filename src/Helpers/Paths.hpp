@@ -41,6 +41,25 @@ namespace Bloom
         static std::string projectConfigPath() {
             return std::filesystem::current_path().string() + "/bloom.json";
         }
+
+        /**
+         * Returns the path to the current project's settings directory.
+         *
+         * @return
+         */
+        static std::string projectSettingsDirPath() {
+            return std::filesystem::current_path().string() + "/.bloom";
+        }
+
+        /**
+         * Returns the path to the current project's settings file.
+         *
+         * @return
+         */
+        static std::string projectSettingsPath() {
+            return std::filesystem::current_path().string() + "/.bloom/settings.json";
+        }
+
         /**
          * Returns the path to Bloom's compiled resources.
          *

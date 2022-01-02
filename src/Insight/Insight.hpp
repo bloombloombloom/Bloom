@@ -7,6 +7,7 @@
 #include "src/TargetController/TargetControllerConsole.hpp"
 #include "src/Helpers/Paths.hpp"
 #include "src/ProjectConfig.hpp"
+#include "src/ProjectSettings.hpp"
 
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
@@ -41,12 +42,14 @@ namespace Bloom
             EventManager& eventManager,
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig,
-            const InsightConfig& insightConfig
+            const InsightConfig& insightConfig,
+            const InsightProjectSettings& insightProjectSettings
         ):
         eventManager(eventManager),
         projectConfig(projectConfig),
         environmentConfig(environmentConfig),
         insightConfig(insightConfig),
+        insightProjectSettings(insightProjectSettings),
         application(
             (
                 QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, false),
@@ -70,6 +73,8 @@ namespace Bloom
         ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
         InsightConfig insightConfig;
+
+        InsightProjectSettings insightProjectSettings;
 
         EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightEventListener");

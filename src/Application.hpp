@@ -16,6 +16,7 @@
 
 #include "src/Logger/Logger.hpp"
 #include "src/ProjectConfig.hpp"
+#include "src/ProjectSettings.hpp"
 #include "src/VersionNumber.hpp"
 
 #include "src/EventManager/EventListener.hpp"
@@ -148,6 +149,11 @@ namespace Bloom
         std::optional<InsightConfig> insightConfig;
 
         /**
+         * Settings extracted from the settings file in the user's project root.
+         */
+        std::optional<ProjectSettings> projectSettings;
+
+        /**
          * The project environment selected by the user.
          *
          * If an environment name is not provided as an argument when running Bloom, Bloom will fallback to the
@@ -200,6 +206,12 @@ namespace Bloom
          * Will cleanly shutdown the application. This should never fail.
          */
         void shutdown();
+
+        /**
+         * Extracts or generates project settings.
+         *
+         */
+        void loadProjectSettings();
 
         /**
          * Extracts the project config from the user's JSON config file and populates the following members:

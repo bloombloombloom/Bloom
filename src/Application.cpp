@@ -49,7 +49,8 @@ int Application::run(const std::vector<std::string>& arguments) {
                 this->eventManager,
                 this->projectConfig.value(),
                 this->environmentConfig.value(),
-                this->insightConfig.value()
+                this->insightConfig.value(),
+                this->projectSettings.value().insightSettings
             );
 
             /*
@@ -94,6 +95,7 @@ void Application::startup() {
         std::bind(&Application::onShutdownApplicationRequest, this, std::placeholders::_1)
     );
 
+    this->loadProjectSettings();
     this->loadProjectConfiguration();
     Logger::configure(this->projectConfig.value());
 
@@ -151,6 +153,28 @@ void Application::shutdown() {
     }
 
     Thread::setThreadState(ThreadState::STOPPED);
+}
+
+void Application::loadProjectSettings() {
+    const auto projectSettingsPath = Paths::projectSettingsPath();
+    auto jsonSettingsFile = QFile(QString::fromStdString(projectSettingsPath));
+
+    if (jsonSettingsFile.exists()) {
+        auto jsonObject = QJsonDocument::fromJson(jsonSettingsFile.readAll()).object();
+        jsonSettingsFile.close();
+
+        try {
+            this->projectSettings = ProjectSettings(jsonObject);
+            return;
+
+        } catch (const std::exception& exception) {
+            Logger::error(
+                "Failed to load project settings from " + projectSettingsPath + " - " + exception.what()
+            );
+        }
+    }
+
+    this->projectSettings = ProjectSettings();
 }
 
 void Application::loadProjectConfiguration() {
