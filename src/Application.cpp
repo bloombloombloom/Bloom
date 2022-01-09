@@ -98,9 +98,8 @@ void Application::startup() {
     this->loadProjectConfiguration();
     Logger::configure(this->projectConfig.value());
 
-    // Start signal handler
     this->blockAllSignalsOnCurrentThread();
-    this->signalHandlerThread = std::thread(&SignalHandler::run, std::ref(this->signalHandler));
+    this->startSignalHandler();
 
     Logger::info("Selected environment: \"" + this->selectedEnvironmentName + "\"");
     Logger::debug("Number of environments extracted from config: "
@@ -131,25 +130,7 @@ void Application::shutdown() {
 
     this->stopDebugServer();
     this->stopTargetController();
-
-    if (this->signalHandler.getThreadState() != ThreadState::STOPPED
-        && this->signalHandler.getThreadState() != ThreadState::UNINITIALISED
-    ) {
-        // Signal handler is still running
-        this->signalHandler.triggerShutdown();
-
-        /*
-         * Send meaningless signal to the SignalHandler thread to have it shutdown. The signal will pull it out of a
-         * blocking state and allow it to action the shutdown. See SignalHandler::run() for more.
-         */
-        pthread_kill(this->signalHandlerThread.native_handle(), SIGUSR1);
-    }
-
-    if (this->signalHandlerThread.joinable()) {
-        Logger::debug("Joining SignalHandler thread");
-        this->signalHandlerThread.join();
-        Logger::debug("SignalHandler thread joined");
-    }
+    this->stopSignalHandler();
 
     Thread::setThreadState(ThreadState::STOPPED);
 }
@@ -301,6 +282,30 @@ int Application::initProject() {
 
     Logger::info("Bloom configuration file (bloom.json) created in working directory.");
     return EXIT_SUCCESS;
+}
+
+void Application::startSignalHandler() {
+    this->signalHandlerThread = std::thread(&SignalHandler::run, std::ref(this->signalHandler));
+}
+
+void Application::stopSignalHandler() {
+    if (this->signalHandler.getThreadState() != ThreadState::STOPPED
+        && this->signalHandler.getThreadState() != ThreadState::UNINITIALISED
+    ) {
+        this->signalHandler.triggerShutdown();
+
+        /*
+         * Send meaningless signal to the SignalHandler thread to have it shutdown. The signal will pull it out of a
+         * blocking state and allow it to action the shutdown. See SignalHandler::run() for more.
+         */
+        pthread_kill(this->signalHandlerThread.native_handle(), SIGUSR1);
+    }
+
+    if (this->signalHandlerThread.joinable()) {
+        Logger::debug("Joining SignalHandler thread");
+        this->signalHandlerThread.join();
+        Logger::debug("SignalHandler thread joined");
+    }
 }
 
 void Application::startTargetController() {

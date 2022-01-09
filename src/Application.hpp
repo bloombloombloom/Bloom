@@ -246,7 +246,17 @@ namespace Bloom
         int initProject();
 
         /**
-         * Prepares a dedicated thread for the TargetController and kicks it off.
+         * Prepares a dedicated thread for the SignalHandler and kicks it off with a call to SignalHandler::run().
+         */
+        void startSignalHandler();
+
+        /**
+         * Sends a shutdown request to the SignalHandler and waits on the dedicated thread to exit.
+         */
+        void stopSignalHandler();
+
+        /**
+         * Prepares a dedicated thread for the TargetController and kicks it off with a call to TargetController::run().
          */
         void startTargetController();
 
