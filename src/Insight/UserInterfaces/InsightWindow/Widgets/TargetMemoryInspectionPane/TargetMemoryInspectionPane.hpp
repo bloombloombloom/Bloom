@@ -31,7 +31,7 @@ namespace Bloom::Widgets
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             const TargetMemoryInspectionPaneSettings& settings,
             InsightWorker& insightWorker,
-            PanelWidget *parent
+            PanelWidget* parent
         );
 
         void refreshMemoryValues(std::optional<std::function<void(void)>> callback = std::nullopt);

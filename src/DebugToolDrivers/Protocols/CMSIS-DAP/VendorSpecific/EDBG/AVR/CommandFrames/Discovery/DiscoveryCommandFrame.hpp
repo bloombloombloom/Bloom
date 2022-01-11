@@ -18,19 +18,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         FAILED = 0xA0,
     };
 
-    inline bool operator==(unsigned char rawId, ResponseId id) {
+    inline bool operator == (unsigned char rawId, ResponseId id) {
         return static_cast<unsigned char>(id) == rawId;
     }
 
-    inline bool operator==(ResponseId id, unsigned char rawId) {
+    inline bool operator == (ResponseId id, unsigned char rawId) {
         return static_cast<unsigned char>(id) == rawId;
     }
 
-    inline bool operator!=(unsigned char rawId, ResponseId id) {
+    inline bool operator != (unsigned char rawId, ResponseId id) {
         return static_cast<unsigned char>(id) != rawId;
     }
 
-    inline bool operator!=(ResponseId id, unsigned char rawId) {
+    inline bool operator != (ResponseId id, unsigned char rawId) {
         return static_cast<unsigned char>(id) != rawId;
     }
 

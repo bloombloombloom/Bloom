@@ -19,6 +19,15 @@ namespace Bloom
     class Thread
     {
     public:
+        Thread() = default;
+        virtual ~Thread() = default;
+
+        Thread(const Thread& other) = delete;
+        Thread(Thread&& other) = delete;
+
+        Thread& operator = (const Thread& other) = delete;
+        Thread& operator = (Thread&& other) = delete;
+
         virtual ThreadState getThreadState() {
             return this->state.getValue();
         };

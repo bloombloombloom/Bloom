@@ -40,6 +40,14 @@ namespace Bloom
             const Targets::TargetMemoryAddressRange& addressRange
         ): name(std::move(name)), type(type), memoryDescriptor(memoryDescriptor), addressRange(addressRange) {};
 
+        virtual ~MemoryRegion() = default;
+
+        MemoryRegion(const MemoryRegion& other) = default;
+        MemoryRegion(MemoryRegion&& other) = default;
+
+        MemoryRegion& operator = (const MemoryRegion& other) = default;
+        MemoryRegion& operator = (MemoryRegion&& other) = default;
+
         bool operator == (const MemoryRegion& other) const {
             return this->id == other.id;
         }

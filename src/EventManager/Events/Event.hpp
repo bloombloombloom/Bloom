@@ -65,6 +65,15 @@ namespace Bloom::Events
         static constexpr EventType type = EventType::GENERIC;
         static inline const std::string name = "GenericEvent";
 
+        Event() = default;
+        virtual ~Event() = default;
+
+        Event(const Event& other) = default;
+        Event(Event&& other) = default;
+
+        Event& operator = (const Event& other) = default;
+        Event& operator = (Event&& other) = default;
+
         [[nodiscard]] virtual std::string getName() const {
             return Event::name;
         }

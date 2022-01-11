@@ -19,6 +19,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
     {
     public:
         explicit CmsisDapInterface() = default;
+        virtual ~CmsisDapInterface() = default;
+
+        CmsisDapInterface(const CmsisDapInterface& other) = default;
+        CmsisDapInterface(CmsisDapInterface&& other) = default;
+
+        CmsisDapInterface& operator = (const CmsisDapInterface& other) = default;
+        CmsisDapInterface& operator = (CmsisDapInterface&& other) = default;
 
         Usb::HidInterface& getUsbHidInterface() {
             return this->usbHidInterface;
@@ -80,6 +87,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          * being sent, where x is the value of msSendCommandDelay.
          */
         std::chrono::milliseconds msSendCommandDelay = std::chrono::milliseconds(0);
-        long lastCommandSentTimeStamp = 0;
+        std::int64_t lastCommandSentTimeStamp = 0;
     };
 }

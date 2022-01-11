@@ -26,6 +26,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 AvrCommandFrame::lastSequenceId = 0;
             }
         };
+        virtual ~AvrCommandFrame() = default;
+
+        AvrCommandFrame(const AvrCommandFrame& other) = default;
+        AvrCommandFrame(AvrCommandFrame&& other) = default;
+
+        AvrCommandFrame& operator = (const AvrCommandFrame& other) = default;
+        AvrCommandFrame& operator = (AvrCommandFrame&& other) = default;
 
         [[nodiscard]] unsigned char getProtocolVersion() const {
             return this->protocolVersion;

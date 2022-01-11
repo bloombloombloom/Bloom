@@ -12,11 +12,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         AVR8_BREAK_EVENT = 0x40,
     };
 
-    inline bool operator==(unsigned char rawId, AvrEventId id) {
+    inline bool operator == (unsigned char rawId, AvrEventId id) {
         return static_cast<unsigned char>(id) == rawId;
     }
 
-    inline bool operator==(AvrEventId id, unsigned char rawId) {
+    inline bool operator == (AvrEventId id, unsigned char rawId) {
         return rawId == id;
     }
 

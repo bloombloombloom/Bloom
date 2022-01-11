@@ -39,8 +39,6 @@ namespace Bloom::DebugServers
             environmentConfig(environmentConfig),
             debugServerConfig(debugServerConfig) {};
 
-        virtual ~DebugServer() = default;
-
         /**
          * Entry point for the DebugServer. This must called from a dedicated thread.
          */

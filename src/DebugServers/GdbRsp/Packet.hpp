@@ -17,11 +17,18 @@ namespace Bloom::DebugServers::Gdb
     class Packet
     {
     public:
-        Packet() = default;
         explicit Packet(const std::vector<unsigned char>& rawPacket) {
             this->init(rawPacket);
         }
+
+        Packet() = default;
         virtual ~Packet() = default;
+
+        Packet(const Packet& other) = default;
+        Packet(Packet&& other) = default;
+
+        Packet& operator = (const Packet& other) = default;
+        Packet& operator = (Packet&& other) = default;
 
         [[nodiscard]] virtual std::vector<unsigned char> getData() const {
             return this->data;

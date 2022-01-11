@@ -13,11 +13,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         FAILED_WITH_DATA = 0xA1
     };
 
-    inline bool operator==(unsigned char rawId, ResponseId id) {
+    inline bool operator == (unsigned char rawId, ResponseId id) {
         return static_cast<unsigned char>(id) == rawId;
     }
 
-    inline bool operator==(ResponseId id, unsigned char rawId) {
+    inline bool operator == (ResponseId id, unsigned char rawId) {
         return rawId == id;
     }
 

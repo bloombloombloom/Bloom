@@ -12,8 +12,8 @@ using namespace Bloom::Exceptions;
 void CmsisDapInterface::sendCommand(const Command& cmsisDapCommand) {
     if (this->msSendCommandDelay.count() > 0) {
         using namespace std::chrono;
-        long now = duration_cast<milliseconds>(high_resolution_clock::now().time_since_epoch()).count();
-        long difference = (now - this->lastCommandSentTimeStamp);
+        std::int64_t now = duration_cast<milliseconds>(high_resolution_clock::now().time_since_epoch()).count();
+        std::int64_t difference = (now - this->lastCommandSentTimeStamp);
 
         if (difference < this->msSendCommandDelay.count()) {
             std::this_thread::sleep_for(milliseconds(this->msSendCommandDelay.count() - difference));
@@ -28,7 +28,7 @@ void CmsisDapInterface::sendCommand(const Command& cmsisDapCommand) {
 std::unique_ptr<Response> CmsisDapInterface::getResponse() {
     auto rawResponse = this->getUsbHidInterface().read(10000);
 
-    if (rawResponse.size() == 0) {
+    if (rawResponse.empty()) {
         throw DeviceCommunicationFailure("Empty CMSIS-DAP response received");
     }
 

@@ -15,6 +15,14 @@ namespace Bloom::Usb
             this->setNumber(interfaceNumber);
         }
 
+        virtual ~Interface() = default;
+
+        Interface(const Interface& other) = default;
+        Interface(Interface&& other) = default;
+
+        Interface& operator = (const Interface& other) = default;
+        Interface& operator = (Interface&& other) = default;
+
         void setLibUsbDevice(libusb_device* libUsbDevice) {
             this->libUsbDevice = libUsbDevice;
         }

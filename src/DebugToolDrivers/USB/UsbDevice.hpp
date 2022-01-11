@@ -14,7 +14,14 @@ namespace Bloom::Usb
     {
     public:
         UsbDevice(std::uint16_t vendorId, std::uint16_t productId): vendorId(vendorId), productId(productId) {};
-        ~UsbDevice() = default;
+
+        virtual ~UsbDevice() = default;
+
+        UsbDevice(const UsbDevice& other) = default;
+        UsbDevice(UsbDevice&& other) = default;
+
+        UsbDevice& operator = (const UsbDevice& other) = default;
+        UsbDevice& operator = (UsbDevice&& other) = default;
 
         void init();
 

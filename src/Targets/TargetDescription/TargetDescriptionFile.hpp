@@ -121,6 +121,13 @@ namespace Bloom::Targets::TargetDescription
         std::map<std::string, Interface> interfacesByName;
 
         TargetDescriptionFile() = default;
+        virtual ~TargetDescriptionFile() = default;
+
+        TargetDescriptionFile(const TargetDescriptionFile& other) = default;
+        TargetDescriptionFile(TargetDescriptionFile&& other) = default;
+
+        TargetDescriptionFile& operator = (const TargetDescriptionFile& other) = default;
+        TargetDescriptionFile& operator = (TargetDescriptionFile&& other) = default;
 
         virtual void init(const QDomDocument& xml);
         void init(const QString& xmlFilePath);

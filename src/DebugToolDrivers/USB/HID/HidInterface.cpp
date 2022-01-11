@@ -14,7 +14,7 @@ void HidInterface::init() {
     }
 
     hid_init();
-    hid_device* hidDevice;
+    hid_device* hidDevice = nullptr;
 
     std::string hidInterfacePath = this->getDevicePathByInterfaceNumber(this->getNumber());
     Logger::debug("HID device path: " + hidInterfacePath);
@@ -36,7 +36,7 @@ void HidInterface::init() {
 }
 
 void HidInterface::close() {
-    auto hidDevice = this->getHidDevice();
+    auto* hidDevice = this->getHidDevice();
 
     if (hidDevice != nullptr) {
         this->libUsbDeviceHandle = nullptr;
@@ -74,8 +74,9 @@ void HidInterface::write(std::vector<unsigned char> buffer) {
         throw DeviceCommunicationFailure(
             "Cannot send data via HID interface - data exceeds maximum packet size."
         );
+    }
 
-    } else if (buffer.size() < this->getInputReportSize()) {
+    if (buffer.size() < this->getInputReportSize()) {
         /*
          * Every report we send via the USB HID interface should be of a fixed size.
          * In the event of a report being too small, we just fill the buffer vector with 0.
@@ -83,7 +84,7 @@ void HidInterface::write(std::vector<unsigned char> buffer) {
         buffer.resize(this->getInputReportSize(), 0);
     }
 
-    int transferred;
+    int transferred = 0;
     auto length = buffer.size();
 
     if ((transferred = hid_write(this->getHidDevice(), buffer.data(), length)) != length) {

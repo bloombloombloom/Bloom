@@ -20,6 +20,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->initFromAvrResponses(AVRResponses);
         }
 
+        virtual ~AvrResponseFrame() = default;
+
+        AvrResponseFrame(const AvrResponseFrame& other) = default;
+        AvrResponseFrame(AvrResponseFrame&& other) = default;
+
+        AvrResponseFrame& operator = (const AvrResponseFrame& other) = default;
+        AvrResponseFrame& operator = (AvrResponseFrame&& other) = default;
+
         /**
          * An AVRResponse contains a single fragment of an AvrResponseFrame.
          *

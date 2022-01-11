@@ -15,7 +15,14 @@ namespace Bloom
     class DebugTool
     {
     public:
+        DebugTool() = default;
         virtual ~DebugTool() = default;
+
+        DebugTool(const DebugTool& other) = default;
+        DebugTool(DebugTool&& other) = default;
+
+        DebugTool& operator = (const DebugTool& other) = default;
+        DebugTool& operator = (DebugTool&& other) = default;
 
         /**
          * Should establish a connection to the device and prepare it for a debug session.

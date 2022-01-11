@@ -26,6 +26,15 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
     class Avr8Interface
     {
     public:
+        Avr8Interface() = default;
+        virtual ~Avr8Interface() = default;
+
+        Avr8Interface(const Avr8Interface& other) = default;
+        Avr8Interface(Avr8Interface&& other) = default;
+
+        Avr8Interface& operator = (const Avr8Interface& other) = default;
+        Avr8Interface& operator = (Avr8Interface&& other) = default;
+
         /**
          * Configures the interface. Any debug tool -> target interface specific configuration should take
          * place here.

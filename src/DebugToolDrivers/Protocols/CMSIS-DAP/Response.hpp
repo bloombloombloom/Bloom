@@ -10,6 +10,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
         Response() = default;
         virtual ~Response() = default;
 
+        Response(const Response& other) = default;
+        Response(Response&& other) = default;
+
+        Response& operator = (const Response& other) = default;
+        Response& operator = (Response&& other) = default;
+
         virtual void init(const std::vector<unsigned char>& rawResponse);
 
         [[nodiscard]] unsigned char getResponseId() const {

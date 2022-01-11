@@ -8,7 +8,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
     class Command
     {
     public:
+        Command() = default;
         virtual ~Command() = default;
+
+        Command(const Command& other) = default;
+        Command(Command&& other) = default;
+
+        Command& operator = (const Command& other) = default;
+        Command& operator = (Command&& other) = default;
 
         [[nodiscard]] unsigned char getCommandId() const {
             return this->commandId;
@@ -28,11 +35,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
 
         [[nodiscard]] int getCommandSize() const {
             // +1 for the command ID
-            return (int) (1 + this->getData().size());
+            return static_cast<int>(1 + this->getData().size());
         }
 
         [[nodiscard]] std::uint16_t getDataSize() const {
-            return (std::uint16_t) this->getData().size();
+            return static_cast<std::uint16_t>(this->getData().size());
         }
 
         /**
