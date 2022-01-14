@@ -55,8 +55,10 @@ void FocusedRegionItem::initFormInputs() {
     }
 
     switch (region.dataType) {
-        case MemoryRegionDataType::INTEGER: {
-            this->dataTypeInput->setCurrentText(FocusedRegionItem::dataTypeOptionsByName.at("integer").text);
+        case MemoryRegionDataType::UNSIGNED_INTEGER: {
+            this->dataTypeInput->setCurrentText(FocusedRegionItem::dataTypeOptionsByName.at("unsigned_integer").text);
+            break;
+        }
             break;
         }
         case MemoryRegionDataType::ASCII_STRING: {

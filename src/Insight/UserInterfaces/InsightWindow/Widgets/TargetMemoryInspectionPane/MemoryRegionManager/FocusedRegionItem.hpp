@@ -38,7 +38,7 @@ namespace Bloom::Widgets
             QString, DataTypeOption
         >({
               {"other", DataTypeOption("Other", MemoryRegionDataType::UNKNOWN)},
-              {"integer", DataTypeOption("Integer", MemoryRegionDataType::INTEGER)},
+              {"unsigned_integer", DataTypeOption("Unsigned Integer", MemoryRegionDataType::UNSIGNED_INTEGER)},
               {"ascii", DataTypeOption("ASCII String", MemoryRegionDataType::ASCII_STRING)},
           });
     };

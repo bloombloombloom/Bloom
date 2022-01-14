@@ -9,7 +9,7 @@ namespace Bloom
     enum class MemoryRegionDataType: std::uint8_t
     {
         UNKNOWN,
-        INTEGER,
+        UNSIGNED_INTEGER,
         ASCII_STRING,
     };
 

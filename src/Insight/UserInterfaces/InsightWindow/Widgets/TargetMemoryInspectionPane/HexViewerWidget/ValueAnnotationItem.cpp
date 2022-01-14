@@ -34,7 +34,7 @@ void ValueAnnotationItem::refreshLabelText() {
     }
 
     switch (this->focusedMemoryRegion.dataType) {
-        case MemoryRegionDataType::INTEGER: {
+        case MemoryRegionDataType::UNSIGNED_INTEGER: {
             std::uint64_t integerValue = 0;
             for (const auto& byte : data) {
                 integerValue = (integerValue << 8) | byte;
