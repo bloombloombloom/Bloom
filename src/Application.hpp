@@ -209,7 +209,6 @@ namespace Bloom
 
         /**
          * Extracts or generates project settings.
-         *
          */
         void loadProjectSettings();
 

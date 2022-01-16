@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <cstdint>
 
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
 
@@ -20,19 +21,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         [[nodiscard]] std::vector<unsigned char> getData() const override;
 
-        [[nodiscard]] size_t getFragmentNumber() const {
+        [[nodiscard]] std::size_t getFragmentNumber() const {
             return this->fragmentNumber;
         }
 
-        void setFragmentNumber(size_t fragmentNumber) {
+        void setFragmentNumber(std::size_t fragmentNumber) {
             this->fragmentNumber = fragmentNumber;
         }
 
-        [[nodiscard]] size_t getFragmentCount() const {
+        [[nodiscard]] std::size_t getFragmentCount() const {
             return this->fragmentCount;
         }
 
-        void setFragmentCount(size_t fragmentCount) {
+        void setFragmentCount(std::size_t fragmentCount) {
             this->fragmentCount = fragmentCount;
         }
 
@@ -45,8 +46,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
     private:
-        size_t fragmentNumber = 1;
-        size_t fragmentCount = 1;
+        std::size_t fragmentNumber = 1;
+        std::size_t fragmentCount = 1;
 
         std::vector<unsigned char> commandPacket;
     };

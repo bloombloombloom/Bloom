@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <thread>
-#include <math.h>
+#include <cmath>
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
@@ -58,7 +58,7 @@ void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
     if (physicalInterface.empty()
         || availablePhysicalInterfaces.find(physicalInterface) == availablePhysicalInterfaces.end()
     ) {
-        throw InvalidConfig("Invalid physical interface config parameter for AVR8 target.");
+        throw InvalidConfig("Invalid or missing physical interface config parameter for AVR8 target.");
     }
 
     auto selectedPhysicalInterface = availablePhysicalInterfaces.find(physicalInterface)->second;
@@ -535,8 +535,9 @@ void EdbgAvr8Interface::writeRegisters(const Targets::TargetRegisters& registers
 
         if (registerValue.size() > registerDescriptor.size) {
             throw Exception("Register value exceeds size specified by register descriptor.");
+        }
 
-        } else if (registerValue.size() < registerDescriptor.size) {
+        if (registerValue.size() < registerDescriptor.size) {
             // Fill the missing most-significant bytes with 0x00
             registerValue.insert(registerValue.begin(), registerDescriptor.size - registerValue.size(), 0x00);
         }
@@ -1476,7 +1477,7 @@ void EdbgAvr8Interface::refreshTargetState() {
     auto avrEvent = this->getAvrEvent();
 
     if (avrEvent != nullptr && avrEvent->getEventId() == AvrEventId::AVR8_BREAK_EVENT) {
-        auto breakEvent = dynamic_cast<BreakEvent*>(avrEvent.get());
+        auto* breakEvent = dynamic_cast<BreakEvent*>(avrEvent.get());
 
         if (breakEvent == nullptr) {
             throw Exception("Failed to process AVR8 break event");

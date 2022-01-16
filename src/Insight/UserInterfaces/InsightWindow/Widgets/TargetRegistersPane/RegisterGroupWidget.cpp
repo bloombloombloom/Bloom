@@ -54,7 +54,7 @@ RegisterGroupWidget::RegisterGroupWidget(
     bodyLayout->setContentsMargins(0, 0,0,0);
     bodyLayout->setSpacing(0);
 
-    for (auto& descriptor : registerDescriptors) {
+    for (const auto& descriptor : registerDescriptors) {
         if (!descriptor.name.has_value()) {
             continue;
         }
@@ -117,14 +117,14 @@ void RegisterGroupWidget::expand() {
 }
 
 void RegisterGroupWidget::setAllRegistersVisible(bool visible) {
-    for (auto& registerWidget : this->registerWidgets) {
+    for (const auto& registerWidget : this->registerWidgets) {
         registerWidget->setVisible(visible);
     }
 }
 
 void RegisterGroupWidget::filterRegisters(const std::string& keyword) {
     int matchingWidgetCount = 0;
-    for (auto& registerWidget : this->registerWidgets) {
+    for (const auto& registerWidget : this->registerWidgets) {
         if (keyword.empty()
             || (registerWidget->descriptor.name.value().find(keyword) != std::string::npos)
         ) {

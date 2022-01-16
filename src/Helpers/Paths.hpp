@@ -39,7 +39,7 @@ namespace Bloom
          * @return
          */
         static std::string projectConfigPath() {
-            return std::filesystem::current_path().string() + "/bloom.json";
+            return Paths::projectDirPath() + "/bloom.json";
         }
 
         /**
@@ -48,7 +48,7 @@ namespace Bloom
          * @return
          */
         static std::string projectSettingsDirPath() {
-            return std::filesystem::current_path().string() + "/.bloom";
+            return Paths::projectDirPath() + "/.bloom";
         }
 
         /**
@@ -57,7 +57,7 @@ namespace Bloom
          * @return
          */
         static std::string projectSettingsPath() {
-            return std::filesystem::current_path().string() + "/.bloom/settings.json";
+            return Paths::projectSettingsDirPath() + "/settings.json";
         }
 
         /**
