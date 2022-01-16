@@ -40,7 +40,7 @@ void ExcludedRegionItem::applyChanges() {
         this->startAddressInput->text().toUInt(nullptr, 16),
         this->endAddressInput->text().toUInt(nullptr, 16)
     );
-    this->memoryRegion.addressRangeType = this->getSelectedAddressType();
-    this->memoryRegion.addressRange = this->memoryRegion.addressRangeType == MemoryRegionAddressType::RELATIVE ?
+    this->memoryRegion.addressRangeInputType = this->getSelectedAddressInputType();
+    this->memoryRegion.addressRange = this->memoryRegion.addressRangeInputType == MemoryRegionAddressInputType::RELATIVE ?
         this->convertRelativeToAbsoluteAddressRange(inputAddressRange) : inputAddressRange;
 }

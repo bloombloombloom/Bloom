@@ -16,7 +16,7 @@ namespace Bloom
         EXCLUDED,
     };
 
-    enum class MemoryRegionAddressType: std::uint8_t
+    enum class MemoryRegionAddressInputType: std::uint8_t
     {
         ABSOLUTE,
         RELATIVE,
@@ -41,7 +41,7 @@ namespace Bloom
          * See RegionItem::convertRelativeToAbsoluteAddressRange()
          * See RegionItem::convertAbsoluteToRelativeAddressRange()
          */
-        MemoryRegionAddressType addressRangeType = MemoryRegionAddressType::ABSOLUTE;
+        MemoryRegionAddressInputType addressRangeInputType = MemoryRegionAddressInputType::ABSOLUTE;
 
         /**
          * This address range will always be in absolute form. Regardless of the value of this->addressRangeType.
