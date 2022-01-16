@@ -89,16 +89,18 @@ void ByteItemGraphicsScene::refreshRegions() {
         byteWidget->excludedMemoryRegion = nullptr;
 
         for (const auto& focusedRegion : this->focusedMemoryRegions) {
-            const auto addressRange = focusedRegion.getAbsoluteAddressRange();
-            if (byteAddress >= addressRange.startAddress && byteAddress <= addressRange.endAddress) {
+            if (byteAddress >= focusedRegion.addressRange.startAddress
+                && byteAddress <= focusedRegion.addressRange.endAddress
+            ) {
                 byteWidget->focusedMemoryRegion = &focusedRegion;
                 break;
             }
         }
 
         for (const auto& excludedRegion : this->excludedMemoryRegions) {
-            const auto addressRange = excludedRegion.getAbsoluteAddressRange();
-            if (byteAddress >= addressRange.startAddress && byteAddress <= addressRange.endAddress) {
+            if (byteAddress >= excludedRegion.addressRange.startAddress
+                && byteAddress <= excludedRegion.addressRange.endAddress
+            ) {
                 byteWidget->excludedMemoryRegion = &excludedRegion;
                 break;
             }

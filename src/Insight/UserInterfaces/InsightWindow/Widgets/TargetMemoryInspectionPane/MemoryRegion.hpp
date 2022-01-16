@@ -29,16 +29,31 @@ namespace Bloom
         QString name;
         QDateTime createdDate = DateTime::currentDateTime();
         MemoryRegionType type;
-        Targets::TargetMemoryDescriptor memoryDescriptor;
-        Targets::TargetMemoryAddressRange addressRange;
+
+        /**
+         * The addressRangeType holds the user's preference when inputting address ranges in the memory region manager
+         * window, for this particular memory region.
+         *
+         * It has no significance anywhere else. We never store the address in relative form - this->addressRange will
+         * always be in absolute form. Conversion is done at the point of applying the changes.
+         *
+         * For more, see the following and their call sites:
+         * See RegionItem::convertRelativeToAbsoluteAddressRange()
+         * See RegionItem::convertAbsoluteToRelativeAddressRange()
+         */
         MemoryRegionAddressType addressRangeType = MemoryRegionAddressType::ABSOLUTE;
+
+        /**
+         * This address range will always be in absolute form. Regardless of the value of this->addressRangeType.
+         * See the comment above, for this->addressRangeType, for more.
+         */
+        Targets::TargetMemoryAddressRange addressRange;
 
         MemoryRegion(
             QString name,
             MemoryRegionType type,
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
             const Targets::TargetMemoryAddressRange& addressRange
-        ): name(std::move(name)), type(type), memoryDescriptor(memoryDescriptor), addressRange(addressRange) {};
+        ): name(std::move(name)), type(type), addressRange(addressRange) {};
 
         virtual ~MemoryRegion() = default;
 
@@ -57,11 +72,8 @@ namespace Bloom
         }
 
         [[nodiscard]] bool intersectsWith(const MemoryRegion& other) const {
-            return this->getAbsoluteAddressRange().intersectsWith(other.getAbsoluteAddressRange());
+            return this->addressRange.intersectsWith(other.addressRange);
         }
-
-        [[nodiscard]] Targets::TargetMemoryAddressRange getAbsoluteAddressRange() const;
-        [[nodiscard]] Targets::TargetMemoryAddressRange getRelativeAddressRange() const;
 
     private:
         static inline std::atomic<std::size_t> lastId = 0;

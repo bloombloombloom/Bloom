@@ -9,10 +9,13 @@
 using namespace Bloom;
 using namespace Bloom::Widgets;
 
+using Targets::TargetMemoryAddressRange;
+
 ExcludedRegionItem::ExcludedRegionItem(
     const ExcludedMemoryRegion& region,
+    const Targets::TargetMemoryDescriptor& memoryDescriptor,
     QWidget* parent
-): memoryRegion(region), RegionItem(region, parent) {
+): memoryRegion(region), RegionItem(region, memoryDescriptor, parent) {
     auto formUiFile = QFile(
         QString::fromStdString(Paths::compiledResourcesPath()
             + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
@@ -30,11 +33,14 @@ ExcludedRegionItem::ExcludedRegionItem(
     this->initFormInputs();
 }
 
-ExcludedMemoryRegion ExcludedRegionItem::generateExcludedMemoryRegionFromInput() {
+void ExcludedRegionItem::applyChanges() {
     this->memoryRegion.name = this->nameInput->text();
-    this->memoryRegion.addressRange.startAddress = this->startAddressInput->text().toUInt(nullptr, 16);
-    this->memoryRegion.addressRange.endAddress = this->endAddressInput->text().toUInt(nullptr, 16);
-    this->memoryRegion.addressRangeType = this->getSelectedAddressType();
 
-    return this->memoryRegion;
+    const auto inputAddressRange = TargetMemoryAddressRange(
+        this->startAddressInput->text().toUInt(nullptr, 16),
+        this->endAddressInput->text().toUInt(nullptr, 16)
+    );
+    this->memoryRegion.addressRangeType = this->getSelectedAddressType();
+    this->memoryRegion.addressRange = this->memoryRegion.addressRangeType == MemoryRegionAddressType::RELATIVE ?
+        this->convertRelativeToAbsoluteAddressRange(inputAddressRange) : inputAddressRange;
 }

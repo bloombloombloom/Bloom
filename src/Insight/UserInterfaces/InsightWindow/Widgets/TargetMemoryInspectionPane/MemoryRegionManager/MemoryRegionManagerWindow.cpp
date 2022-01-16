@@ -195,7 +195,7 @@ void MemoryRegionManagerWindow::sortRegionItems() {
 }
 
 FocusedRegionItem* MemoryRegionManagerWindow::addFocusedRegion(const FocusedMemoryRegion& region) {
-    auto* focusedRegionItem = new FocusedRegionItem(region, this->regionItemScrollAreaViewport);
+    auto* focusedRegionItem = new FocusedRegionItem(region, this->memoryDescriptor, this->regionItemScrollAreaViewport);
     this->focusedRegionItems.insert(focusedRegionItem);
 
     this->regionItemScrollAreaViewportLayout->addWidget(focusedRegionItem);
@@ -207,7 +207,7 @@ FocusedRegionItem* MemoryRegionManagerWindow::addFocusedRegion(const FocusedMemo
 }
 
 ExcludedRegionItem* MemoryRegionManagerWindow::addExcludedRegion(const ExcludedMemoryRegion& region) {
-    auto* excludedRegionItem = new ExcludedRegionItem(region, this->regionItemScrollAreaViewport);
+    auto* excludedRegionItem = new ExcludedRegionItem(region, this->memoryDescriptor, this->regionItemScrollAreaViewport);
     this->excludedRegionItems.insert(excludedRegionItem);
 
     this->regionItemScrollAreaViewportLayout->addWidget(excludedRegionItem);
@@ -232,7 +232,6 @@ void MemoryRegionManagerWindow::onNewFocusedRegionTrigger() {
 
     auto* region = this->addFocusedRegion(FocusedMemoryRegion(
         "Untitled Region",
-        this->memoryDescriptor,
         TargetMemoryAddressRange(
             this->memoryDescriptor.addressRange.startAddress,
             this->memoryDescriptor.addressRange.startAddress + 10
@@ -247,7 +246,6 @@ void MemoryRegionManagerWindow::onNewExcludedRegionTrigger() {
 
     auto* region = this->addExcludedRegion(ExcludedMemoryRegion(
         "Untitled Region",
-        this->memoryDescriptor,
         TargetMemoryAddressRange(
             this->memoryDescriptor.addressRange.startAddress,
             this->memoryDescriptor.addressRange.startAddress + 10
@@ -315,7 +313,8 @@ void MemoryRegionManagerWindow::applyChanges() {
             return;
         }
 
-        auto focusedRegion = focusedRegionItem->generateFocusedMemoryRegionFromInput();
+        focusedRegionItem->applyChanges();
+        const auto& focusedRegion = focusedRegionItem->getMemoryRegion();
         for (const auto& processedFocusedRegion : processedFocusedMemoryRegions) {
             if (processedFocusedRegion.intersectsWith(focusedRegion)) {
                 auto* errorDialogue = new ErrorDialogue(
@@ -347,7 +346,8 @@ void MemoryRegionManagerWindow::applyChanges() {
             return;
         }
 
-        auto excludedRegion = excludedRegionItem->generateExcludedMemoryRegionFromInput();
+        excludedRegionItem->applyChanges();
+        auto excludedRegion = excludedRegionItem->getMemoryRegion();
         for (const auto& processedFocusedRegion : processedFocusedMemoryRegions) {
             if (processedFocusedRegion.intersectsWith(excludedRegion)) {
                 auto* errorDialogue = new ErrorDialogue(

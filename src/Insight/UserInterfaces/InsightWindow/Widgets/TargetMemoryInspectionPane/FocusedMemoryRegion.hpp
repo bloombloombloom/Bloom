@@ -20,8 +20,7 @@ namespace Bloom
 
         explicit FocusedMemoryRegion(
             const QString& name,
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
             const Targets::TargetMemoryAddressRange& addressRange
-        ): MemoryRegion(name, MemoryRegionType::FOCUSED, memoryDescriptor, addressRange) {};
+        ): MemoryRegion(name, MemoryRegionType::FOCUSED, addressRange) {};
     };
 }

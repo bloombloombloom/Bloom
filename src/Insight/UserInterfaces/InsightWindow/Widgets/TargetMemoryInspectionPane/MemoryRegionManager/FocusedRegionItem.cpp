@@ -9,10 +9,13 @@
 using namespace Bloom;
 using namespace Bloom::Widgets;
 
+using Targets::TargetMemoryAddressRange;
+
 FocusedRegionItem::FocusedRegionItem(
     const FocusedMemoryRegion& region,
+    const Targets::TargetMemoryDescriptor& memoryDescriptor,
     QWidget* parent
-): memoryRegion(region), RegionItem(region, parent) {
+): memoryRegion(region), RegionItem(region, memoryDescriptor, parent) {
     auto formUiFile = QFile(
         QString::fromStdString(Paths::compiledResourcesPath()
             + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
@@ -30,18 +33,21 @@ FocusedRegionItem::FocusedRegionItem(
     this->initFormInputs();
 }
 
-FocusedMemoryRegion FocusedRegionItem::generateFocusedMemoryRegionFromInput() {
+void FocusedRegionItem::applyChanges() {
     this->memoryRegion.name = this->nameInput->text();
-    this->memoryRegion.addressRange.startAddress = this->startAddressInput->text().toUInt(nullptr, 16);
-    this->memoryRegion.addressRange.endAddress = this->endAddressInput->text().toUInt(nullptr, 16);
+
+    const auto inputAddressRange = TargetMemoryAddressRange(
+        this->startAddressInput->text().toUInt(nullptr, 16),
+        this->endAddressInput->text().toUInt(nullptr, 16)
+    );
     this->memoryRegion.addressRangeType = this->getSelectedAddressType();
+    this->memoryRegion.addressRange = this->memoryRegion.addressRangeType == MemoryRegionAddressType::RELATIVE ?
+        this->convertRelativeToAbsoluteAddressRange(inputAddressRange) : inputAddressRange;
 
     auto selectedDataTypeOptionName = this->dataTypeInput->currentData().toString();
     if (FocusedRegionItem::dataTypeOptionsByName.contains(selectedDataTypeOptionName)) {
         this->memoryRegion.dataType = FocusedRegionItem::dataTypeOptionsByName.at(selectedDataTypeOptionName).dataType;
     }
-
-    return this->memoryRegion;
 }
 
 void FocusedRegionItem::initFormInputs() {

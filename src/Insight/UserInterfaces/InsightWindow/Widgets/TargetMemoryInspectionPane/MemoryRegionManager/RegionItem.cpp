@@ -6,10 +6,13 @@
 using namespace Bloom;
 using namespace Bloom::Widgets;
 
+using Targets::TargetMemoryAddressRange;
+
 RegionItem::RegionItem(
     const MemoryRegion& region,
+    const Targets::TargetMemoryDescriptor& memoryDescriptor,
     QWidget* parent
-): ClickableWidget(parent) {
+): memoryDescriptor(memoryDescriptor), ClickableWidget(parent) {
     this->setObjectName("region-item");
     this->setFixedHeight(50);
     this->layout->setContentsMargins(5, 5, 5, 0);
@@ -25,10 +28,9 @@ RegionItem::RegionItem(
     this->typeLabel->setText(region.type == MemoryRegionType::FOCUSED ? "Focused" : "Excluded");
     this->typeLabel->setObjectName("type-label");
 
-    auto addressRange = region.getAbsoluteAddressRange();
     this->addressRangeLabel->setText(
-        "0x" + QString::number(addressRange.startAddress, 16).toUpper() + QString(" -> ")
-            + "0x" + QString::number(addressRange.endAddress, 16).toUpper()
+        "0x" + QString::number(region.addressRange.startAddress, 16).toUpper() + QString(" -> ")
+            + "0x" + QString::number(region.addressRange.endAddress, 16).toUpper()
     );
     this->addressRangeLabel->setObjectName("address-label");
 
@@ -74,8 +76,6 @@ void RegionItem::setSelected(bool selected) {
 QStringList RegionItem::getValidationFailures() const {
     auto validationFailures = QStringList();
 
-    const auto& memoryDescriptor = this->getMemoryRegion().memoryDescriptor;
-
     if (this->nameInput->text().isEmpty()) {
         validationFailures.emplace_back("Missing region name.");
     }
@@ -97,28 +97,28 @@ QStringList RegionItem::getValidationFailures() const {
     }
 
     auto addressType = this->getSelectedAddressType();
-    const auto memoryAddressRange = memoryDescriptor.addressRange;
+    const auto memoryAddressRange = this->memoryDescriptor.addressRange;
 
     const auto memoryAddressRangeStr = QString(
         "0x" + QString::number(memoryAddressRange.startAddress, 16).toUpper() + QString(" -> ")
             + "0x" + QString::number(memoryAddressRange.endAddress, 16).toUpper()
     );
 
-    std::uint32_t absoluteStartAddress = addressType == MemoryRegionAddressType::RELATIVE ?
-        memoryAddressRange.startAddress + startAddress : startAddress;
+    const auto absoluteAddressRange = addressType == MemoryRegionAddressType::RELATIVE ?
+        this->convertRelativeToAbsoluteAddressRange(TargetMemoryAddressRange(startAddress, endAddress))
+        : TargetMemoryAddressRange(startAddress, endAddress);
 
-    std::uint32_t absoluteEndAddress = addressType == MemoryRegionAddressType::RELATIVE ?
-        memoryAddressRange.startAddress + endAddress : endAddress;
-
-    if (absoluteStartAddress < memoryAddressRange.startAddress
-        || absoluteStartAddress > memoryAddressRange.endAddress
+    if (absoluteAddressRange.startAddress < memoryAddressRange.startAddress
+        || absoluteAddressRange.startAddress > memoryAddressRange.endAddress
     ) {
         validationFailures.emplace_back(
             "The start address is not within the absolute memory address range (" + memoryAddressRangeStr + ")."
         );
     }
 
-    if (absoluteEndAddress < memoryAddressRange.startAddress || absoluteEndAddress > memoryAddressRange.endAddress) {
+    if (absoluteAddressRange.endAddress < memoryAddressRange.startAddress
+        || absoluteAddressRange.endAddress > memoryAddressRange.endAddress
+    ) {
         validationFailures.emplace_back(
             "The end address not within the absolute memory address range (" + memoryAddressRangeStr + ")."
         );
@@ -144,18 +144,17 @@ void RegionItem::initFormInputs() {
     }
 
     if (region.addressRangeType == MemoryRegionAddressType::RELATIVE) {
+        auto relativeAddressRange = this->convertAbsoluteToRelativeAddressRange(region.addressRange);
         this->addressTypeInput->setCurrentText(RegionItem::addressRangeTypeOptionsByName.at("relative").text);
 
-        auto addressRange = region.getRelativeAddressRange();
-        this->startAddressInput->setText("0x" + QString::number(addressRange.startAddress, 16).toUpper());
-        this->endAddressInput->setText("0x" + QString::number(addressRange.endAddress, 16).toUpper());
+        this->startAddressInput->setText("0x" + QString::number(relativeAddressRange.startAddress, 16).toUpper());
+        this->endAddressInput->setText("0x" + QString::number(relativeAddressRange.endAddress, 16).toUpper());
 
     } else {
         this->addressTypeInput->setCurrentText(RegionItem::addressRangeTypeOptionsByName.at("absolute").text);
 
-        auto addressRange = region.getAbsoluteAddressRange();
-        this->startAddressInput->setText("0x" + QString::number(addressRange.startAddress, 16).toUpper());
-        this->endAddressInput->setText("0x" + QString::number(addressRange.endAddress, 16).toUpper());
+        this->startAddressInput->setText("0x" + QString::number(region.addressRange.startAddress, 16).toUpper());
+        this->endAddressInput->setText("0x" + QString::number(region.addressRange.endAddress, 16).toUpper());
     }
 
     QObject::connect(this->startAddressInput, &QLineEdit::textEdited, this, &RegionItem::onAddressRangeInputChange);
@@ -171,6 +170,24 @@ MemoryRegionAddressType RegionItem::getSelectedAddressType() const {
     }
 
     return MemoryRegionAddressType::ABSOLUTE;
+}
+
+TargetMemoryAddressRange RegionItem::convertAbsoluteToRelativeAddressRange(
+    const TargetMemoryAddressRange& absoluteAddressRange
+) const {
+    return TargetMemoryAddressRange(
+        absoluteAddressRange.startAddress - this->memoryDescriptor.addressRange.startAddress,
+        absoluteAddressRange.endAddress - this->memoryDescriptor.addressRange.startAddress
+    );
+}
+
+TargetMemoryAddressRange RegionItem::convertRelativeToAbsoluteAddressRange(
+    const TargetMemoryAddressRange& relativeAddressRange
+) const {
+    return TargetMemoryAddressRange(
+        relativeAddressRange.startAddress + this->memoryDescriptor.addressRange.startAddress,
+        relativeAddressRange.endAddress + this->memoryDescriptor.addressRange.startAddress
+    );
 }
 
 void RegionItem::onAddressRangeInputChange() {

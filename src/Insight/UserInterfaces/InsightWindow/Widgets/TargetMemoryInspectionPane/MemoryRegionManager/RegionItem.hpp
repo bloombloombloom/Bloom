@@ -11,6 +11,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TextInput.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::Widgets
 {
@@ -28,7 +29,11 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        RegionItem(const MemoryRegion& region, QWidget *parent);
+        RegionItem(
+            const MemoryRegion& region,
+            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            QWidget *parent
+        );
         void setSelected(bool selected);
 
         [[nodiscard]] QWidget* getFormWidget() const {
@@ -48,6 +53,8 @@ namespace Bloom::Widgets
     protected:
         static constexpr int NAME_LABEL_MAX_LENGTH = 34;
 
+        const Targets::TargetMemoryDescriptor& memoryDescriptor;
+
         QWidget* formWidget = nullptr;
         TextInput* nameInput = nullptr;
         QComboBox* addressTypeInput = nullptr;
@@ -57,6 +64,14 @@ namespace Bloom::Widgets
 
         virtual void initFormInputs();
         [[nodiscard]] MemoryRegionAddressType getSelectedAddressType() const;
+
+        Targets::TargetMemoryAddressRange convertAbsoluteToRelativeAddressRange(
+            const Targets::TargetMemoryAddressRange& absoluteAddressRange
+        ) const;
+
+        Targets::TargetMemoryAddressRange convertRelativeToAbsoluteAddressRange(
+            const Targets::TargetMemoryAddressRange& relativeAddressRange
+        ) const;
 
     private:
         QVBoxLayout* layout = new QVBoxLayout(this);

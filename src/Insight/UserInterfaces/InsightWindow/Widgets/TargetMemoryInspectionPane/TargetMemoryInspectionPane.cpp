@@ -20,7 +20,7 @@ using Bloom::Targets::TargetMemoryType;
 
 TargetMemoryInspectionPane::TargetMemoryInspectionPane(
     const TargetMemoryDescriptor& targetMemoryDescriptor,
-    const TargetMemoryInspectionPaneSettings& settings,
+    TargetMemoryInspectionPaneSettings& settings,
     InsightWorker& insightWorker,
     PanelWidget* parent
 ):
@@ -104,8 +104,8 @@ void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function
         this->settings.excludedMemoryRegions.begin(),
         this->settings.excludedMemoryRegions.end(),
         std::inserter(excludedAddressRanges, excludedAddressRanges.begin()),
-        [] (const ExcludedMemoryRegion& excludedRegion) {
-            return excludedRegion.getAbsoluteAddressRange();
+        [this] (const ExcludedMemoryRegion& excludedRegion) {
+            return excludedRegion.addressRange;
         }
     );
 
@@ -199,7 +199,7 @@ void TargetMemoryInspectionPane::sanitiseSettings() {
             this->settings.focusedMemoryRegions.begin(),
             this->settings.focusedMemoryRegions.end(),
             [this] (const FocusedMemoryRegion& region) {
-                return region.memoryDescriptor != this->targetMemoryDescriptor;
+                return !this->targetMemoryDescriptor.addressRange.contains(region.addressRange);
             }
         ),
         this->settings.focusedMemoryRegions.end()
@@ -210,7 +210,7 @@ void TargetMemoryInspectionPane::sanitiseSettings() {
             this->settings.excludedMemoryRegions.begin(),
             this->settings.excludedMemoryRegions.end(),
             [this] (const ExcludedMemoryRegion& region) {
-                return region.memoryDescriptor != this->targetMemoryDescriptor;
+                return !this->targetMemoryDescriptor.addressRange.contains(region.addressRange);
             }
         ),
         this->settings.excludedMemoryRegions.end()

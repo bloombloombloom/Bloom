@@ -10,13 +10,17 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        ExcludedRegionItem(const ExcludedMemoryRegion& region, QWidget *parent);
+        ExcludedRegionItem(
+            const ExcludedMemoryRegion& region,
+            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            QWidget *parent
+        );
 
-        [[nodiscard]] const MemoryRegion& getMemoryRegion() const override {
+        [[nodiscard]] const ExcludedMemoryRegion& getMemoryRegion() const override {
             return this->memoryRegion;
         };
 
-        [[nodiscard]] virtual ExcludedMemoryRegion generateExcludedMemoryRegionFromInput();
+        virtual void applyChanges();
 
     private:
         ExcludedMemoryRegion memoryRegion;

@@ -19,13 +19,17 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        FocusedRegionItem(const FocusedMemoryRegion& region, QWidget *parent);
+        FocusedRegionItem(
+            const FocusedMemoryRegion& region,
+            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            QWidget *parent
+        );
 
-        [[nodiscard]] const MemoryRegion& getMemoryRegion() const override {
+        [[nodiscard]] const FocusedMemoryRegion& getMemoryRegion() const override {
             return this->memoryRegion;
         };
 
-        [[nodiscard]] virtual FocusedMemoryRegion generateFocusedMemoryRegionFromInput();
+        virtual void applyChanges();
 
     protected:
         void initFormInputs() override;

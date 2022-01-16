@@ -38,7 +38,7 @@ AnnotationItem::AnnotationItem(
 
 AnnotationItem::AnnotationItem(const FocusedMemoryRegion& focusedMemoryRegion, AnnotationItemPosition position)
 : AnnotationItem(
-    focusedMemoryRegion.getAbsoluteAddressRange(),
+    focusedMemoryRegion.addressRange,
     focusedMemoryRegion.name,
     position
 ) {}
