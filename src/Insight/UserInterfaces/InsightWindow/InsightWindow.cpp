@@ -30,17 +30,30 @@ using Bloom::Targets::TargetMemoryType;
 InsightWindow::InsightWindow(
     InsightWorker& insightWorker,
     const EnvironmentConfig& environmentConfig,
-    const InsightConfig& insightConfig
+    const InsightConfig& insightConfig,
+    InsightProjectSettings& insightProjectSettings
 ):
     QMainWindow(nullptr),
     insightWorker(insightWorker),
     environmentConfig(environmentConfig),
     targetConfig(environmentConfig.targetConfig),
-    insightConfig(insightConfig)
+    insightConfig(insightConfig),
+    insightProjectSettings(insightProjectSettings)
 {
     this->setObjectName("main-window");
     this->setWindowTitle("Bloom Insight");
-    this->setMinimumSize(1000, 500);
+
+    const auto defaultMinimumSize = QSize(1000, 500);
+
+    if (this->insightProjectSettings.mainWindowSize.has_value()) {
+        this->setMinimumSize(
+            std::max(this->insightProjectSettings.mainWindowSize->width(), defaultMinimumSize.width()),
+            std::max(this->insightProjectSettings.mainWindowSize->height(), defaultMinimumSize.height())
+        );
+
+    } else {
+        this->setMinimumSize(defaultMinimumSize);
+    }
 
     auto mainWindowUiFile = QFile(
         QString::fromStdString(Paths::compiledResourcesPath()
@@ -218,6 +231,12 @@ void InsightWindow::resizeEvent(QResizeEvent* event) {
 void InsightWindow::showEvent(QShowEvent* event) {
     this->adjustPanels();
     this->adjustMinimumSize();
+}
+
+void InsightWindow::closeEvent(QCloseEvent* event) {
+    this->insightProjectSettings.mainWindowSize = this->size();
+
+    return QMainWindow::closeEvent(event);
 }
 
 bool InsightWindow::isVariantSupported(const TargetVariant& variant) {
@@ -466,18 +485,25 @@ void InsightWindow::createPanes() {
     this->targetRegistersButton->setChecked(false);
     this->targetRegistersButton->setDisabled(false);
 
+    auto& memoryInspectionPaneSettingsByMemoryType =
+        this->insightProjectSettings.memoryInspectionPaneSettingsByMemoryType;
+
     // Target memory inspection panes
     auto* bottomPanelLayout = this->bottomPanel->layout();
     if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::RAM)) {
         auto& ramDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::RAM);
+
+        if (!memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::RAM)) {
+            memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::RAM] = TargetMemoryInspectionPaneSettings();
+        }
+
         this->ramInspectionPane = new TargetMemoryInspectionPane(
             ramDescriptor,
-            this->memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::RAM) ?
-                this->memoryInspectionPaneSettingsByMemoryType.at(TargetMemoryType::RAM)
-                : TargetMemoryInspectionPaneSettings(),
+            memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::RAM],
             this->insightWorker,
             this->bottomPanel
         );
+
         bottomPanelLayout->addWidget(this->ramInspectionPane);
         this->ramInspectionPane->deactivate();
         this->ramInspectionButton->setChecked(false);
@@ -486,14 +512,18 @@ void InsightWindow::createPanes() {
 
     if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::EEPROM)) {
         auto& eepromDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::EEPROM);
+
+        if (!memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::EEPROM)) {
+            memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::EEPROM] = TargetMemoryInspectionPaneSettings();
+        }
+
         this->eepromInspectionPane = new TargetMemoryInspectionPane(
             eepromDescriptor,
-            this->memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::EEPROM) ?
-                this->memoryInspectionPaneSettingsByMemoryType.at(TargetMemoryType::EEPROM)
-                : TargetMemoryInspectionPaneSettings(),
+            memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::EEPROM],
             this->insightWorker,
             this->bottomPanel
         );
+
         bottomPanelLayout->addWidget(this->eepromInspectionPane);
         this->eepromInspectionPane->deactivate();
         this->eepromInspectionButton->setChecked(false);
@@ -515,8 +545,6 @@ void InsightWindow::destroyPanes() {
      * hex viewer settings, etc), in order to persist them through debug sessions.
      */
     if (this->ramInspectionPane != nullptr) {
-        this->memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::RAM] = this->ramInspectionPane->settings;
-
         this->ramInspectionPane->deactivate();
         this->ramInspectionPane->deleteLater();
         this->ramInspectionPane = nullptr;
@@ -527,8 +555,6 @@ void InsightWindow::destroyPanes() {
     }
 
     if (this->eepromInspectionPane != nullptr) {
-        this->memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::EEPROM] = this->eepromInspectionPane->settings;
-
         this->eepromInspectionPane->deactivate();
         this->eepromInspectionPane->deleteLater();
         this->eepromInspectionPane = nullptr;

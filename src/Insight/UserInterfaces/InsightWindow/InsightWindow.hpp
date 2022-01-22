@@ -3,9 +3,11 @@
 #include <QtCore>
 #include <QMainWindow>
 #include <QLabel>
+#include <QEvent>
 #include <memory>
 #include <optional>
 
+#include "src/ProjectSettings.hpp"
 #include "src/ProjectConfig.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetState.hpp"
@@ -33,7 +35,8 @@ namespace Bloom
         InsightWindow(
             InsightWorker& insightWorker,
             const EnvironmentConfig& environmentConfig,
-            const InsightConfig& insightConfig
+            const InsightConfig& insightConfig,
+            InsightProjectSettings& insightProjectSettings
         );
 
         void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
@@ -50,8 +53,11 @@ namespace Bloom
     protected:
         void resizeEvent(QResizeEvent* event) override;
         void showEvent(QShowEvent* event) override;
+        void closeEvent(QCloseEvent* event) override;
 
     private:
+        InsightProjectSettings& insightProjectSettings;
+
         InsightConfig insightConfig;
         EnvironmentConfig environmentConfig;
         TargetConfig targetConfig;

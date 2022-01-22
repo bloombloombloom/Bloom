@@ -43,7 +43,7 @@ namespace Bloom
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig,
             const InsightConfig& insightConfig,
-            const InsightProjectSettings& insightProjectSettings
+            InsightProjectSettings& insightProjectSettings
         ):
         eventManager(eventManager),
         projectConfig(projectConfig),
@@ -74,7 +74,7 @@ namespace Bloom
         EnvironmentConfig environmentConfig;
         InsightConfig insightConfig;
 
-        InsightProjectSettings insightProjectSettings;
+        InsightProjectSettings& insightProjectSettings;
 
         EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightEventListener");
@@ -84,7 +84,8 @@ namespace Bloom
         InsightWindow* mainWindow = new InsightWindow(
             *(this->insightWorker),
             this->environmentConfig,
-            this->insightConfig
+            this->insightConfig,
+            this->insightProjectSettings
         );
 
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(

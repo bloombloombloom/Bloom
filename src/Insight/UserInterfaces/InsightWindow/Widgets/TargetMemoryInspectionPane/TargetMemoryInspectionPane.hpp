@@ -24,12 +24,12 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        TargetMemoryInspectionPaneSettings settings;
+        TargetMemoryInspectionPaneSettings& settings;
         bool activated = false;
 
         TargetMemoryInspectionPane(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
-            const TargetMemoryInspectionPaneSettings& settings,
+            TargetMemoryInspectionPaneSettings& settings,
             InsightWorker& insightWorker,
             PanelWidget* parent
         );
