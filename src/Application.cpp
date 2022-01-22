@@ -161,6 +161,10 @@ void Application::loadProjectSettings() {
 }
 
 void Application::saveProjectSettings() {
+    if (!this->projectSettings.has_value()) {
+        return;
+    }
+
     const auto projectSettingsPath = Paths::projectSettingsPath();
     auto jsonSettingsFile = QFile(QString::fromStdString(projectSettingsPath));
 
