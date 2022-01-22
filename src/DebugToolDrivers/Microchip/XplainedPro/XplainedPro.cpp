@@ -39,10 +39,6 @@ void XplainedPro::init() {
      * This means we must enforce a hard limit on the number of bytes we attempt to access, per request.
      */
     this->edbgAvr8Interface->setMaximumMemoryAccessSizePerRequest(256);
-
-    // Masked read memory commands are not available on the Xplained Pro debug tool.
-    this->edbgAvr8Interface->setAvoidMaskedMemoryRead(true);
-
     this->setInitialised(true);
 }
 

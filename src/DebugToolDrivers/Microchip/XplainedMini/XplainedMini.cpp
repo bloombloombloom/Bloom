@@ -30,7 +30,6 @@ void XplainedMini::init() {
     }
 
     this->edbgAvr8Interface = std::make_unique<EdbgAvr8Interface>(this->edbgInterface);
-    this->edbgAvr8Interface->setAvoidMaskedMemoryRead(true);
     this->setInitialised(true);
 }
 

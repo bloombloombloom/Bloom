@@ -30,16 +30,6 @@ void MplabSnap::init() {
     }
 
     this->edbgAvr8Interface = std::make_unique<EdbgAvr8Interface>(this->edbgInterface);
-
-    /*
-     * The MPLAB Snap doesn't seem to operate correctly when actioning the masked memory read command. The data
-     * returned in response to the command appears to be completely incorrect. It may be a bug in the firmware.
-     *
-     * For the above reason, we avoid using the masked memory read command by implementing the masking on our end.
-     * See the EdbgAvr8Interface class for more.
-     */
-    this->edbgAvr8Interface->setAvoidMaskedMemoryRead(true);
-
     this->setInitialised(true);
 }
 

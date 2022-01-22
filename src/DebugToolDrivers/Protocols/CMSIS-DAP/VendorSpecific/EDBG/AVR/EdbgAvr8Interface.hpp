@@ -41,6 +41,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * FLASH as invalid memory types, when using the masked memory read command. So any masked reads to non-SRAM
          * will result in driver-side masking, regardless of the value of this flag.
          *
+         * NOTE: We now avoid masked memory read commands by default, unless this flag is explicitly set to false.
+         * This means the default value of this->avoidMaskedMemoryRead is true.
+         *
          * @param avoidMaskedMemoryRead
          */
         void setAvoidMaskedMemoryRead(bool avoidMaskedMemoryRead) {
@@ -297,7 +300,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         /**
          * See the comment for EdbgAvr8Interface::setAvoidMaskedMemoryRead().
          */
-        bool avoidMaskedMemoryRead = false;
+        bool avoidMaskedMemoryRead = true;
 
         /**
          * See the comment for EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest().
