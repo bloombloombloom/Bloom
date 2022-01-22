@@ -33,6 +33,8 @@ set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
 set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib")
 set(CMAKE_BUILD_RPATH ${CMAKE_INSTALL_RPATH})
 
+add_compile_definitions(BLOOM_VERSION="${CMAKE_PROJECT_VERSION}")
+
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     add_compile_definitions(BLOOM_DEBUG_BUILD)
 
