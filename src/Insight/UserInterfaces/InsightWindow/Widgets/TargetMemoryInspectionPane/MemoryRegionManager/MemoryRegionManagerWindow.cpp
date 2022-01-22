@@ -175,7 +175,7 @@ void MemoryRegionManagerWindow::sortRegionItems() {
      * layout, and then re-inserting them in the correct order.
      */
     auto regionItemCompare = [] (RegionItem* itemA, RegionItem* itemB) {
-        return itemA->getMemoryRegion().id < itemB->getMemoryRegion().id;
+        return itemA->getMemoryRegion().createdDate < itemB->getMemoryRegion().createdDate;
     };
     auto sortedRegionItems = std::set<RegionItem*, decltype(regionItemCompare)>(regionItemCompare);
 

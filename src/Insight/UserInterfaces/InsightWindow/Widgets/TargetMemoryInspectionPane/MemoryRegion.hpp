@@ -25,7 +25,6 @@ namespace Bloom
     class MemoryRegion
     {
     public:
-        std::size_t id = MemoryRegion::lastId++;
         QString name;
         QDateTime createdDate = DateTime::currentDateTime();
         MemoryRegionType type;
@@ -63,19 +62,8 @@ namespace Bloom
         MemoryRegion& operator = (const MemoryRegion& other) = default;
         MemoryRegion& operator = (MemoryRegion&& other) = default;
 
-        bool operator == (const MemoryRegion& other) const {
-            return this->id == other.id;
-        }
-
-        bool operator != (const MemoryRegion& other) const {
-            return !(*this == other);
-        }
-
         [[nodiscard]] bool intersectsWith(const MemoryRegion& other) const {
             return this->addressRange.intersectsWith(other.addressRange);
         }
-
-    private:
-        static inline std::atomic<std::size_t> lastId = 0;
     };
 }
