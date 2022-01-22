@@ -213,6 +213,11 @@ namespace Bloom
         void loadProjectSettings();
 
         /**
+         * Saves the current project settings.
+         */
+        void saveProjectSettings();
+
+        /**
          * Extracts the project config from the user's JSON config file and populates the following members:
          *  - this->projectConfig
          *  - this->environmentConfig

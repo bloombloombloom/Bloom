@@ -130,6 +130,7 @@ void Application::shutdown() {
     this->stopTargetController();
     this->stopSignalHandler();
 
+    this->saveProjectSettings();
     Thread::setThreadState(ThreadState::STOPPED);
 }
 
@@ -138,10 +139,14 @@ void Application::loadProjectSettings() {
     auto jsonSettingsFile = QFile(QString::fromStdString(projectSettingsPath));
 
     if (jsonSettingsFile.exists()) {
-        auto jsonObject = QJsonDocument::fromJson(jsonSettingsFile.readAll()).object();
-        jsonSettingsFile.close();
-
         try {
+            if (!jsonSettingsFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                throw Exception("Failed to open settings file.");
+            }
+
+            const auto jsonObject = QJsonDocument::fromJson(jsonSettingsFile.readAll()).object();
+            jsonSettingsFile.close();
+
             this->projectSettings = ProjectSettings(jsonObject);
             return;
 
@@ -155,6 +160,33 @@ void Application::loadProjectSettings() {
     this->projectSettings = ProjectSettings();
 }
 
+void Application::saveProjectSettings() {
+    const auto projectSettingsPath = Paths::projectSettingsPath();
+    auto jsonSettingsFile = QFile(QString::fromStdString(projectSettingsPath));
+
+    Logger::debug("Saving project settings to " + projectSettingsPath);
+
+    QDir().mkpath(QString::fromStdString(Paths::projectSettingsDirPath()));
+
+    try {
+        const auto jsonDocument = QJsonDocument(this->projectSettings->toJson());
+
+        if (!jsonSettingsFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
+            throw Exception(
+                "failed to open/create settings file (" + projectSettingsPath + "). Check file permissions."
+            );
+        }
+
+        jsonSettingsFile.write(jsonDocument.toJson());
+        jsonSettingsFile.close();
+
+    } catch (const Exception& exception) {
+        Logger::error(
+            "Failed to save project settings -  " + exception.getMessage()
+        );
+    }
+}
+
 void Application::loadProjectConfiguration() {
     auto jsonConfigFile = QFile(QString::fromStdString(Paths::projectConfigPath()));
 
@@ -163,7 +195,7 @@ void Application::loadProjectConfiguration() {
             + Paths::projectDirPath());
     }
 
-    if (!jsonConfigFile.open(QIODevice::ReadOnly)) {
+    if (!jsonConfigFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         throw InvalidConfig("Failed to load Bloom configuration file (bloom.json) Working directory: "
             + Paths::projectDirPath());
     }
