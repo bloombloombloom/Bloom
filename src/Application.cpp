@@ -96,6 +96,8 @@ void Application::startup() {
     this->loadProjectConfiguration();
     Logger::configure(this->projectConfig.value());
 
+    Logger::debug("Bloom version: " + Application::VERSION.toString());
+
     this->blockAllSignalsOnCurrentThread();
     this->startSignalHandler();
 
