@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <csignal>
-#include <QtCore>
 #include <thread>
 #include <QJsonDocument>
 #include <unistd.h>
@@ -10,7 +9,6 @@
 
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"
-#include "SignalHandler/SignalHandler.hpp"
 #include "Exceptions/InvalidConfig.hpp"
 
 using namespace Bloom;
