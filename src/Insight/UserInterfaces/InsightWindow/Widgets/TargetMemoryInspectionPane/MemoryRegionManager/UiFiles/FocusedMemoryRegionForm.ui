@@ -448,6 +448,31 @@
             </item>
             <item>
                 <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>10</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <widget class="QLabel" name="integer-width-notice-label">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <property name="wordWrap">
+                        <bool>true</bool>
+                    </property>
+                    <property name="text">
+                        <string>Maximum width for integer data types: 64 bits</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
                     <property name="orientation">
                         <enum>Qt::Vertical</enum>
                     </property>

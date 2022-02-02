@@ -110,7 +110,8 @@
 }
 
 #form-container #address-range-description-label,
-#form-container #value-annotations-description-label {
+#form-container #value-annotations-description-label,
+#form-container #integer-width-notice-label {
     color: #8a8a8d;
 }
 
