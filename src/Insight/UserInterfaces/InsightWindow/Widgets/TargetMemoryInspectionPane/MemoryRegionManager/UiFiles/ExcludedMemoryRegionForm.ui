@@ -105,7 +105,7 @@
                         <bool>true</bool>
                     </property>
                     <property name="text">
-                        <string>The region's address range can be specified in relative or absolute form. Absolute addresses must account for any relevant offsets. Address ranges displayed in the region selector will always be in absolute form.</string>
+                        <string>The region's address range can be specified in relative or absolute form. Absolute addresses must account for any relevant offset. Address ranges displayed in the region selector will always be in absolute form.</string>
                     </property>
                 </widget>
             </item>
