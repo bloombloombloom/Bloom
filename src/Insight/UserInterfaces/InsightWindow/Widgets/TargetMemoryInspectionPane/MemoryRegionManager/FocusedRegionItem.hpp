@@ -43,6 +43,7 @@ namespace Bloom::Widgets
         >({
               {"other", DataTypeOption("Other", MemoryRegionDataType::UNKNOWN)},
               {"unsigned_integer", DataTypeOption("Unsigned Integer", MemoryRegionDataType::UNSIGNED_INTEGER)},
+              {"signed_integer", DataTypeOption("Signed Integer", MemoryRegionDataType::SIGNED_INTEGER)},
               {"ascii", DataTypeOption("ASCII String", MemoryRegionDataType::ASCII_STRING)},
           });
     };

@@ -65,6 +65,8 @@ void FocusedRegionItem::initFormInputs() {
             this->dataTypeInput->setCurrentText(FocusedRegionItem::dataTypeOptionsByName.at("unsigned_integer").text);
             break;
         }
+        case MemoryRegionDataType::SIGNED_INTEGER: {
+            this->dataTypeInput->setCurrentText(FocusedRegionItem::dataTypeOptionsByName.at("signed_integer").text);
             break;
         }
         case MemoryRegionDataType::ASCII_STRING: {

@@ -10,6 +10,7 @@ namespace Bloom
     {
         UNKNOWN,
         UNSIGNED_INTEGER,
+        SIGNED_INTEGER,
         ASCII_STRING,
     };
 

@@ -26,9 +26,7 @@ void ValueAnnotationItem::paint(QPainter* painter, const QStyleOptionGraphicsIte
 void ValueAnnotationItem::refreshLabelText() {
     this->update();
 
-    const auto& data = this->value;
-
-    if (data.empty()) {
+    if (this->value.empty()) {
         this->labelText = QString(ValueAnnotationItem::DEFAULT_LABEL_TEXT);
         return;
     }
@@ -36,16 +34,49 @@ void ValueAnnotationItem::refreshLabelText() {
     switch (this->focusedMemoryRegion.dataType) {
         case MemoryRegionDataType::UNSIGNED_INTEGER: {
             std::uint64_t integerValue = 0;
-            for (const auto& byte : data) {
+            for (const auto& byte : this->value) {
                 integerValue = (integerValue << 8) | byte;
             }
 
             this->labelText = QString::number(integerValue);
             break;
         }
+        case MemoryRegionDataType::SIGNED_INTEGER: {
+            const auto valueSize = this->value.size();
+
+            if (valueSize == 1) {
+                this->labelText = QString::number(static_cast<int8_t>(this->value[0]));
+                break;
+            }
+
+            if (valueSize == 2) {
+                this->labelText = QString::number(static_cast<int16_t>((this->value[0] << 8) | this->value[1]));
+                break;
+            }
+
+            if (valueSize <= 4) {
+                std::int32_t integerValue = 0;
+                for (const auto& byte : this->value) {
+                    integerValue = (integerValue << 8) | byte;
+                }
+
+                this->labelText = QString::number(integerValue);
+                break;
+            }
+
+            if (valueSize <= 8) {
+                std::int64_t integerValue = 0;
+                for (const auto& byte : this->value) {
+                    integerValue = (integerValue << 8) | byte;
+                }
+
+                this->labelText = QString::number(integerValue);
+                break;
+            }
+        }
         case MemoryRegionDataType::ASCII_STRING: {
             // Replace non-ASCII chars with '?'
-            auto asciiData = data;
+            auto asciiData = this->value;
 
             std::replace_if(
                 asciiData.begin(),

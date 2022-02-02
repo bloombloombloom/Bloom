@@ -38,6 +38,7 @@ namespace Bloom
         static const inline BiMap<MemoryRegionDataType, QString> regionDataTypesByName = {
             {MemoryRegionDataType::UNKNOWN, "other"},
             {MemoryRegionDataType::UNSIGNED_INTEGER, "unsigned_int"},
+            {MemoryRegionDataType::SIGNED_INTEGER, "signed_int"},
             {MemoryRegionDataType::ASCII_STRING, "ascii_string"},
         };
 
