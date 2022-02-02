@@ -194,27 +194,50 @@ void TargetMemoryInspectionPane::postDeactivate() {
 
 void TargetMemoryInspectionPane::sanitiseSettings() {
     // Remove any invalid memory regions. It's very unlikely that there will be any, but not impossible.
-    this->settings.focusedMemoryRegions.erase(
-        std::remove_if(
-            this->settings.focusedMemoryRegions.begin(),
-            this->settings.focusedMemoryRegions.end(),
-            [this] (const FocusedMemoryRegion& region) {
-                return !this->targetMemoryDescriptor.addressRange.contains(region.addressRange);
-            }
-        ),
-        this->settings.focusedMemoryRegions.end()
-    );
+    auto processedFocusedMemoryRegions = std::vector<FocusedMemoryRegion>();
+    auto processedExcludedMemoryRegions = std::vector<ExcludedMemoryRegion>();
 
-    this->settings.excludedMemoryRegions.erase(
-        std::remove_if(
-            this->settings.excludedMemoryRegions.begin(),
-            this->settings.excludedMemoryRegions.end(),
-            [this] (const ExcludedMemoryRegion& region) {
-                return !this->targetMemoryDescriptor.addressRange.contains(region.addressRange);
+    const auto regionIntersects = [
+        &processedFocusedMemoryRegions,
+        &processedExcludedMemoryRegions
+    ] (const MemoryRegion& region) {
+        for (const auto& processedFocusedRegion : processedFocusedMemoryRegions) {
+            if (processedFocusedRegion.intersectsWith(region)) {
+                return true;
             }
-        ),
-        this->settings.excludedMemoryRegions.end()
-    );
+        }
+
+        for (const auto& processedExcludedRegion : processedExcludedMemoryRegions) {
+            if (processedExcludedRegion.intersectsWith(region)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    for (const auto& focusedRegion : this->settings.focusedMemoryRegions) {
+        if (!this->targetMemoryDescriptor.addressRange.contains(focusedRegion.addressRange)
+            || regionIntersects(focusedRegion)
+        ) {
+            continue;
+        }
+
+        processedFocusedMemoryRegions.emplace_back(focusedRegion);
+    }
+
+    for (const auto& excludedRegion : this->settings.excludedMemoryRegions) {
+        if (!this->targetMemoryDescriptor.addressRange.contains(excludedRegion.addressRange)
+            || regionIntersects(excludedRegion)
+        ) {
+            continue;
+        }
+
+        processedExcludedMemoryRegions.emplace_back(excludedRegion);
+    }
+
+    this->settings.focusedMemoryRegions = std::move(processedFocusedMemoryRegions);
+    this->settings.excludedMemoryRegions = std::move(processedExcludedMemoryRegions);
 }
 
 void TargetMemoryInspectionPane::onTargetStateChanged(Targets::TargetState newState) {
