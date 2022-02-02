@@ -72,15 +72,13 @@ void ValueAnnotationItem::refreshLabelText() {
                 break;
             }
 
-            if (valueSize <= 8) {
-                std::int64_t integerValue = 0;
-                for (const auto& byte : this->value) {
-                    integerValue = (integerValue << 8) | byte;
-                }
-
-                this->labelText = QString::number(integerValue);
-                break;
+            std::int64_t integerValue = 0;
+            for (const auto& byte : this->value) {
+                integerValue = (integerValue << 8) | byte;
             }
+
+            this->labelText = QString::number(integerValue);
+            break;
         }
         case MemoryRegionDataType::ASCII_STRING: {
             // Replace non-ASCII chars with '?'
