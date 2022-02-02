@@ -42,6 +42,11 @@ namespace Bloom
             {MemoryRegionDataType::ASCII_STRING, "ascii_string"},
         };
 
+        static const inline BiMap<Targets::TargetMemoryEndianness, QString> regionEndiannessByName = {
+            {Targets::TargetMemoryEndianness::LITTLE, "little"},
+            {Targets::TargetMemoryEndianness::BIG, "big"},
+        };
+
         static const inline BiMap<MemoryRegionAddressInputType, QString> addressRangeInputTypesByName = {
             {MemoryRegionAddressInputType::ABSOLUTE, "absolute"},
             {MemoryRegionAddressInputType::RELATIVE, "relative"},

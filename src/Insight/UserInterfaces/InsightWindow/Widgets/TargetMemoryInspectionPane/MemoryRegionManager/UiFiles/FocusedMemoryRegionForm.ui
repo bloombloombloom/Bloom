@@ -379,7 +379,7 @@
                         <bool>true</bool>
                     </property>
                     <property name="text">
-                        <string>Specifying the type of data stored in this region will allow Bloom to present the current value of the data, in the form of a value annotation.</string>
+                        <string>Specifying the type and endianness of the data stored in this region will allow Bloom to present the current value, in the form of a value annotation.</string>
                     </property>
                 </widget>
             </item>
@@ -388,6 +388,31 @@
                     <property name="sizeHint">
                         <size>
                             <height>15</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <widget class="QLabel" name="integer-width-notice-label">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <property name="wordWrap">
+                        <bool>true</bool>
+                    </property>
+                    <property name="text">
+                        <string>Maximum width for integer data types: 64 bits</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>10</height>
                         </size>
                     </property>
                     <property name="sizeType">
@@ -459,17 +484,55 @@
                 </spacer>
             </item>
             <item>
-                <widget class="QLabel" name="integer-width-notice-label">
-                    <property name="sizePolicy">
-                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
-                    </property>
-                    <property name="wordWrap">
-                        <bool>true</bool>
-                    </property>
-                    <property name="text">
-                        <string>Maximum width for integer data types: 64 bits</string>
-                    </property>
-                </widget>
+                <layout class="QHBoxLayout" name="endianness-row">
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QLabel" name="endianness-label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                            </property>
+                            <property name="text">
+                                <string>Endianness:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="QComboBox" name="endianness-input">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                            </property>
+                            <property name="minimumWidth">
+                                <number>150</number>
+                            </property>
+                            <property name="frame">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>10</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
             </item>
             <item>
                 <spacer name="vertical-spacer">

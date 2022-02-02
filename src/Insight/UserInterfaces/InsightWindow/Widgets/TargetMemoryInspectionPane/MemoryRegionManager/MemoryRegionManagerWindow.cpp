@@ -56,7 +56,7 @@ MemoryRegionManagerWindow::MemoryRegionManagerWindow(
     }
 
     this->setStyleSheet(windowStylesheet.readAll());
-    this->setFixedSize(QSize(860, 470));
+    this->setFixedSize(QSize(900, 520));
 
     auto uiLoader = UiLoader(this);
     this->container = uiLoader.load(&windowUiFile, this);

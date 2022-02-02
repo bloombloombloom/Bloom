@@ -122,6 +122,14 @@ InsightProjectSettings::InsightProjectSettings(const QJsonObject& jsonObject) {
                         region.dataType = dataType.value();
                     }
 
+                    const auto endianness = InsightProjectSettings::regionEndiannessByName.valueAt(
+                        regionObj.find("endianness")->toString()
+                    );
+
+                    if (endianness.has_value()) {
+                        region.endianness = endianness.value();
+                    }
+
                     inspectionPaneSettings.focusedMemoryRegions.emplace_back(region);
                 }
             }
@@ -202,11 +210,13 @@ QJsonObject InsightProjectSettings::toJson() const {
         }));
 
         const auto& regionDataTypesByName = InsightProjectSettings::regionDataTypesByName;
+        const auto& regionEndiannessByName = InsightProjectSettings::regionEndiannessByName;
         const auto& addressRangeInputTypesByName = InsightProjectSettings::addressRangeInputTypesByName;
 
         auto focusedRegions = QJsonArray();
         for (const auto& focusedRegion : inspectionPaneSettings.focusedMemoryRegions) {
             if (!regionDataTypesByName.contains(focusedRegion.dataType)
+                || !regionEndiannessByName.contains(focusedRegion.endianness)
                 || !addressRangeInputTypesByName.contains(focusedRegion.addressRangeInputType)
             ) {
                 continue;
@@ -223,6 +233,7 @@ QJsonObject InsightProjectSettings::toJson() const {
                 {"createdTimestamp", focusedRegion.createdDate.toSecsSinceEpoch()},
                 {"addressInputType", addressRangeInputTypesByName.at(focusedRegion.addressRangeInputType)},
                 {"dataType", regionDataTypesByName.at(focusedRegion.dataType)},
+                {"endianness", regionEndiannessByName.at(focusedRegion.endianness)},
             });
 
             focusedRegions.push_back(regionObj);

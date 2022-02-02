@@ -33,6 +33,7 @@ namespace Bloom::Widgets
 
         FocusedMemoryRegion focusedMemoryRegion;
         Targets::TargetMemoryBuffer value;
+        Targets::TargetMemoryEndianness endianness = Targets::TargetMemoryEndianness::LITTLE;
 
         void refreshLabelText();
     };

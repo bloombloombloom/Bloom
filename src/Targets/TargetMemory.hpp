@@ -5,6 +5,12 @@
 
 namespace Bloom::Targets
 {
+    enum class TargetMemoryEndianness: std::uint8_t
+    {
+        BIG,
+        LITTLE,
+    };
+
     enum class TargetMemoryType: std::uint8_t
     {
         FLASH,

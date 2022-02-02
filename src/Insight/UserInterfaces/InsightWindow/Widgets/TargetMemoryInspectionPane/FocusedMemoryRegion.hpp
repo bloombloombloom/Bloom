@@ -18,6 +18,7 @@ namespace Bloom
     {
     public:
         MemoryRegionDataType dataType = MemoryRegionDataType::UNKNOWN;
+        Targets::TargetMemoryEndianness endianness = Targets::TargetMemoryEndianness::LITTLE;
 
         explicit FocusedMemoryRegion(
             const QString& name,

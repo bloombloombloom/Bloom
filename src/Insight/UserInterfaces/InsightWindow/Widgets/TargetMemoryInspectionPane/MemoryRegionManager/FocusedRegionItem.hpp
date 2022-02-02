@@ -14,6 +14,15 @@ namespace Bloom::Widgets
         : text(text), dataType(dataType) {};
     };
 
+    struct EndiannessOption
+    {
+        QString text;
+        Targets::TargetMemoryEndianness endianness = Targets::TargetMemoryEndianness::LITTLE;
+
+        EndiannessOption(const QString& text, Targets::TargetMemoryEndianness endianness)
+            : text(text), endianness(endianness) {};
+    };
+
     class FocusedRegionItem: public RegionItem
     {
         Q_OBJECT
@@ -37,6 +46,7 @@ namespace Bloom::Widgets
     private:
         FocusedMemoryRegion memoryRegion;
         QComboBox* dataTypeInput = nullptr;
+        QComboBox* endiannessInput = nullptr;
 
         static inline const std::map<QString, DataTypeOption> dataTypeOptionsByName = std::map<
             QString, DataTypeOption
@@ -45,6 +55,13 @@ namespace Bloom::Widgets
               {"unsigned_integer", DataTypeOption("Unsigned Integer", MemoryRegionDataType::UNSIGNED_INTEGER)},
               {"signed_integer", DataTypeOption("Signed Integer", MemoryRegionDataType::SIGNED_INTEGER)},
               {"ascii", DataTypeOption("ASCII String", MemoryRegionDataType::ASCII_STRING)},
-          });
+        });
+
+        static inline const std::map<QString, EndiannessOption> endiannessOptionsByName = std::map<
+            QString, EndiannessOption
+        >({
+              {"little", EndiannessOption("Little-endian", Targets::TargetMemoryEndianness::LITTLE)},
+              {"big", EndiannessOption("Big-endian", Targets::TargetMemoryEndianness::BIG)},
+        });
     };
 }

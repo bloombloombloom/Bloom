@@ -5,12 +5,20 @@
 using namespace Bloom::Widgets;
 
 ValueAnnotationItem::ValueAnnotationItem(const FocusedMemoryRegion& focusedMemoryRegion)
-: AnnotationItem(focusedMemoryRegion, AnnotationItemPosition::TOP), focusedMemoryRegion(focusedMemoryRegion) {
+    : AnnotationItem(focusedMemoryRegion, AnnotationItemPosition::TOP)
+    , focusedMemoryRegion(focusedMemoryRegion)
+    , endianness(focusedMemoryRegion.endianness)
+{
     this->labelText = QString(ValueAnnotationItem::DEFAULT_LABEL_TEXT);
 }
 
 void ValueAnnotationItem::setValue(const Targets::TargetMemoryBuffer& value) {
     this->value = value;
+
+    if (this->endianness == Targets::TargetMemoryEndianness::LITTLE) {
+        std::reverse(this->value.begin(), this->value.end());
+    }
+
     this->refreshLabelText();
     this->setToolTip(this->labelText);
 }

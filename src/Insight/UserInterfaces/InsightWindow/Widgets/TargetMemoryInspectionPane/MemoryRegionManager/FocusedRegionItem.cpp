@@ -41,12 +41,20 @@ void FocusedRegionItem::applyChanges() {
         this->endAddressInput->text().toUInt(nullptr, 16)
     );
     this->memoryRegion.addressRangeInputType = this->getSelectedAddressInputType();
-    this->memoryRegion.addressRange = this->memoryRegion.addressRangeInputType == MemoryRegionAddressInputType::RELATIVE ?
-        this->convertRelativeToAbsoluteAddressRange(inputAddressRange) : inputAddressRange;
+    this->memoryRegion.addressRange =
+        this->memoryRegion.addressRangeInputType == MemoryRegionAddressInputType::RELATIVE ?
+            this->convertRelativeToAbsoluteAddressRange(inputAddressRange) : inputAddressRange;
 
     auto selectedDataTypeOptionName = this->dataTypeInput->currentData().toString();
     if (FocusedRegionItem::dataTypeOptionsByName.contains(selectedDataTypeOptionName)) {
         this->memoryRegion.dataType = FocusedRegionItem::dataTypeOptionsByName.at(selectedDataTypeOptionName).dataType;
+    }
+
+    auto selectedEndiannessOptionName = this->endiannessInput->currentData().toString();
+    if (FocusedRegionItem::endiannessOptionsByName.contains(selectedEndiannessOptionName)) {
+        this->memoryRegion.endianness = FocusedRegionItem::endiannessOptionsByName.at(
+            selectedEndiannessOptionName
+        ).endianness;
     }
 }
 
@@ -55,9 +63,14 @@ void FocusedRegionItem::initFormInputs() {
     const auto& region = this->memoryRegion;
 
     this->dataTypeInput = this->formWidget->findChild<QComboBox*>("data-type-input");
+    this->endiannessInput = this->formWidget->findChild<QComboBox*>("endianness-input");
 
     for (const auto& [optionName, option] : FocusedRegionItem::dataTypeOptionsByName) {
         this->dataTypeInput->addItem(option.text, optionName);
+    }
+
+    for (const auto& [optionName, option] : FocusedRegionItem::endiannessOptionsByName) {
+        this->endiannessInput->addItem(option.text, optionName);
     }
 
     switch (region.dataType) {
@@ -75,6 +88,17 @@ void FocusedRegionItem::initFormInputs() {
         }
         default: {
             this->dataTypeInput->setCurrentText(FocusedRegionItem::dataTypeOptionsByName.at("other").text);
+        }
+    }
+
+    switch (region.endianness) {
+        case Targets::TargetMemoryEndianness::LITTLE: {
+            this->endiannessInput->setCurrentText(FocusedRegionItem::endiannessOptionsByName.at("little").text);
+            break;
+        }
+        case Targets::TargetMemoryEndianness::BIG: {
+            this->endiannessInput->setCurrentText(FocusedRegionItem::endiannessOptionsByName.at("big").text);
+            break;
         }
     }
 }

@@ -109,6 +109,12 @@
     max-width: 30px;
 }
 
+#form-container #data-type-label,
+#form-container #endianness-label {
+    min-width: 75px;
+    max-width: 75px;
+}
+
 #form-container #address-range-description-label,
 #form-container #value-annotations-description-label,
 #form-container #integer-width-notice-label {
