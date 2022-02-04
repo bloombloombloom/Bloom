@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QSize>
 #include <QEvent>
+#include <QString>
 
 #include "ItemWidget.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
@@ -23,6 +24,7 @@ namespace Bloom::Widgets
 
     public:
         Targets::TargetRegisterDescriptor descriptor;
+        QString searchKeywords;
         std::optional<Targets::TargetRegister> currentRegister;
 
         RegisterWidget(

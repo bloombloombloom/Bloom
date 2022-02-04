@@ -6,7 +6,6 @@
 #include <QLabel>
 #include <QSize>
 #include <set>
-#include <string>
 
 #include "TargetRegistersPaneWidget.hpp"
 #include "ItemWidget.hpp"
@@ -40,7 +39,7 @@ namespace Bloom::Widgets
         void expand();
         void setAllRegistersVisible(bool visible);
 
-        void filterRegisters(const std::string& keyword);
+        void filterRegisters(const QString& keyword);
 
     private:
         QVBoxLayout* layout = new QVBoxLayout(this);

@@ -122,12 +122,10 @@ void RegisterGroupWidget::setAllRegistersVisible(bool visible) {
     }
 }
 
-void RegisterGroupWidget::filterRegisters(const std::string& keyword) {
+void RegisterGroupWidget::filterRegisters(const QString& keyword) {
     int matchingWidgetCount = 0;
     for (const auto& registerWidget : this->registerWidgets) {
-        if (keyword.empty()
-            || (registerWidget->descriptor.name.value().find(keyword) != std::string::npos)
-        ) {
+        if (keyword.isEmpty() || (registerWidget->searchKeywords.contains(keyword, Qt::CaseInsensitive))) {
             matchingWidgetCount++;
             registerWidget->setVisible(true);
 
@@ -142,7 +140,7 @@ void RegisterGroupWidget::filterRegisters(const std::string& keyword) {
 
     } else {
         this->setVisible(true);
-        if (!keyword.empty()) {
+        if (!keyword.isEmpty()) {
             this->expand();
 
         } else {

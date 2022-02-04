@@ -124,8 +124,6 @@ TargetRegistersPaneWidget::TargetRegistersPaneWidget(
 }
 
 void TargetRegistersPaneWidget::filterRegisters(const QString& keyword) {
-    auto stdKeyword = keyword.toLower().toStdString();
-
     for (const auto& registerGroupWidget : this->registerGroupWidgets) {
         // If the group name matches the keyword, then don't bother iterating through all the register widgets
         if (keyword.isEmpty() || registerGroupWidget->name.contains(keyword, Qt::CaseInsensitive)) {
@@ -140,7 +138,7 @@ void TargetRegistersPaneWidget::filterRegisters(const QString& keyword) {
             }
 
         } else {
-            registerGroupWidget->filterRegisters(stdKeyword);
+            registerGroupWidget->filterRegisters(keyword);
         }
     }
 }
