@@ -144,13 +144,13 @@ void TargetRegistersPaneWidget::filterRegisters(const QString& keyword) {
 }
 
 void TargetRegistersPaneWidget::collapseAllRegisterGroups() {
-    for (auto& registerGroupWidget : this->registerGroupWidgets) {
+    for (const auto& registerGroupWidget : this->registerGroupWidgets) {
         registerGroupWidget->collapse();
     }
 }
 
 void TargetRegistersPaneWidget::expandAllRegisterGroups() {
-    for (auto& registerGroupWidget : this->registerGroupWidgets) {
+    for (const auto& registerGroupWidget : this->registerGroupWidgets) {
         registerGroupWidget->expand();
     }
 }

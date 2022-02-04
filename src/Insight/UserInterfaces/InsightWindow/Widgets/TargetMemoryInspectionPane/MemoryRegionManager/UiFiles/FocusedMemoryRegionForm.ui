@@ -404,7 +404,7 @@
                         <bool>true</bool>
                     </property>
                     <property name="text">
-                        <string>Maximum width for integer data types: 64 bits</string>
+                        <string>Maximum width for integer data types: 64 bits. Integer values for regions which exceed this width will be truncated.</string>
                     </property>
                 </widget>
             </item>
