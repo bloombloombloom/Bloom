@@ -2,139 +2,147 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-using namespace Bloom::DebugServers::Gdb;
-using namespace Bloom::Exceptions;
+namespace Bloom::DebugServers::Gdb
+{
+    using namespace Bloom::Exceptions;
 
-using Bloom::Targets::TargetRegisterDescriptor;
-using Bloom::Targets::TargetRegisterType;
+    using Bloom::Targets::TargetRegisterDescriptor;
+    using Bloom::Targets::TargetRegisterType;
 
-void AvrGdbRsp::init() {
-    this->loadRegisterMappings();
+    void AvrGdbRsp::init() {
+        this->loadRegisterMappings();
 
-    GdbRspDebugServer::init();
-}
-
-void AvrGdbRsp::loadRegisterMappings() {
-    auto& registerDescriptorsByType = this->targetDescriptor.registerDescriptorsByType;
-    if (!registerDescriptorsByType.contains(TargetRegisterType::STATUS_REGISTER)) {
-        throw Exception("Missing status register descriptor");
+        GdbRspDebugServer::init();
     }
 
-    if (!registerDescriptorsByType.contains(TargetRegisterType::STACK_POINTER)) {
-        throw Exception("Missing stack pointer register descriptor");
-    }
+    void AvrGdbRsp::loadRegisterMappings() {
+        auto& registerDescriptorsByType = this->targetDescriptor.registerDescriptorsByType;
+        if (!registerDescriptorsByType.contains(TargetRegisterType::STATUS_REGISTER)) {
+            throw Exception("Missing status register descriptor");
+        }
 
-    if (!registerDescriptorsByType.contains(TargetRegisterType::PROGRAM_COUNTER)) {
-        throw Exception("Missing program counter register descriptor");
-    }
+        if (!registerDescriptorsByType.contains(TargetRegisterType::STACK_POINTER)) {
+            throw Exception("Missing stack pointer register descriptor");
+        }
 
-    if (!registerDescriptorsByType.contains(TargetRegisterType::GENERAL_PURPOSE_REGISTER)
-        || registerDescriptorsByType.at(TargetRegisterType::GENERAL_PURPOSE_REGISTER).size() != 32
-    ) {
-        throw Exception("Unexpected general purpose register count");
-    }
+        if (!registerDescriptorsByType.contains(TargetRegisterType::PROGRAM_COUNTER)) {
+            throw Exception("Missing program counter register descriptor");
+        }
 
-    /*
-     * Worth noting that gpRegisterDescriptors will always be sorted in the correct order, from register 0 to 31.
-     *
-     * Hmm, but the sorting is based on the start address (see TargetRegisterDescriptor::<() for more). So effectively,
-     * we're assuming that the registers will be laid out in the correct order, in memory. I think this assumption is
-     * fair.
-     */
-    const auto& gpRegisterDescriptors = registerDescriptorsByType.at(TargetRegisterType::GENERAL_PURPOSE_REGISTER);
+        if (!registerDescriptorsByType.contains(TargetRegisterType::GENERAL_PURPOSE_REGISTER)
+            || registerDescriptorsByType.at(TargetRegisterType::GENERAL_PURPOSE_REGISTER).size() != 32
+        ) {
+            throw Exception("Unexpected general purpose register count");
+        }
 
-    // General purpose CPU registers
-    GdbRegisterNumberType regNumber = 0;
-    for (const auto& descriptor : gpRegisterDescriptors) {
-        this->registerDescriptorsByGdbNumber.insert(std::pair(
-            regNumber,
-            RegisterDescriptor(
+        /*
+         * Worth noting that gpRegisterDescriptors will always be sorted in the correct order, from register 0 to 31.
+         *
+         * Hmm, but the sorting is based on the start address (see TargetRegisterDescriptor::<() for more). So effectively,
+         * we're assuming that the registers will be laid out in the correct order, in memory. I think this assumption is
+         * fair.
+         */
+        const auto& gpRegisterDescriptors = registerDescriptorsByType.at(
+            TargetRegisterType::GENERAL_PURPOSE_REGISTER
+        );
+
+        // General purpose CPU registers
+        GdbRegisterNumberType regNumber = 0;
+        for (const auto& descriptor : gpRegisterDescriptors) {
+            this->registerDescriptorsByGdbNumber.insert(std::pair(
                 regNumber,
-                1,
-                "General Purpose Register " + std::to_string(regNumber)
-            )
-        ));
+                RegisterDescriptor(
+                    regNumber,
+                    1,
+                    "General Purpose Register " + std::to_string(regNumber)
+                )
+            ));
 
+            this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
+                regNumber,
+                descriptor
+            ));
+
+            regNumber++;
+        }
+
+        const auto statusDescriptor = RegisterDescriptor(
+            32,
+            1,
+            "Status Register"
+        );
+
+        this->registerDescriptorsByGdbNumber.insert(std::pair(statusDescriptor.number, statusDescriptor));
         this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
-            regNumber,
-            descriptor
+            statusDescriptor.number,
+            *(registerDescriptorsByType.at(TargetRegisterType::STATUS_REGISTER).begin())
         ));
 
-        regNumber++;
+        const auto stackPointerDescriptor = RegisterDescriptor(
+            33,
+            2,
+            "Stack Pointer Register"
+        );
+
+        this->registerDescriptorsByGdbNumber.insert(
+            std::pair(stackPointerDescriptor.number, stackPointerDescriptor)
+        );
+        this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
+            stackPointerDescriptor.number,
+            *(registerDescriptorsByType.at(TargetRegisterType::STACK_POINTER).begin())
+        ));
+
+        const auto programCounterDescriptor = RegisterDescriptor(
+            34,
+            4,
+            "Program Counter"
+        );
+
+        this->registerDescriptorsByGdbNumber.insert(std::pair(
+            programCounterDescriptor.number,
+            programCounterDescriptor
+        ));
+        this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
+            programCounterDescriptor.number,
+            *(registerDescriptorsByType.at(TargetRegisterType::PROGRAM_COUNTER).begin())
+        ));
+
+        if (registerDescriptorsByType.at(TargetRegisterType::STATUS_REGISTER).size() > statusDescriptor.size) {
+            throw Exception("AVR8 status target register size exceeds the GDB register size.");
+        }
+
+        if (registerDescriptorsByType.at(TargetRegisterType::STACK_POINTER).size() > stackPointerDescriptor.size) {
+            throw Exception("AVR8 stack pointer target register size exceeds the GDB register size.");
+        }
+
+        if (
+            registerDescriptorsByType.at(TargetRegisterType::PROGRAM_COUNTER).size() > programCounterDescriptor.size
+        ) {
+            throw Exception("AVR8 program counter size exceeds the GDB register size.");
+        }
     }
 
-    const auto statusDescriptor = RegisterDescriptor(
-        32,
-        1,
-        "Status Register"
-    );
-
-    this->registerDescriptorsByGdbNumber.insert(std::pair(statusDescriptor.number, statusDescriptor));
-    this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
-        statusDescriptor.number,
-        *(registerDescriptorsByType.at(TargetRegisterType::STATUS_REGISTER).begin())
-    ));
-
-    const auto stackPointerDescriptor = RegisterDescriptor(
-        33,
-        2,
-        "Stack Pointer Register"
-    );
-
-    this->registerDescriptorsByGdbNumber.insert(std::pair(stackPointerDescriptor.number, stackPointerDescriptor));
-    this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
-        stackPointerDescriptor.number,
-        *(registerDescriptorsByType.at(TargetRegisterType::STACK_POINTER).begin())
-    ));
-
-    const auto programCounterDescriptor = RegisterDescriptor(
-        34,
-        4,
-        "Program Counter"
-    );
-
-    this->registerDescriptorsByGdbNumber.insert(std::pair(
-        programCounterDescriptor.number,
-        programCounterDescriptor
-    ));
-    this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
-        programCounterDescriptor.number,
-        *(registerDescriptorsByType.at(TargetRegisterType::PROGRAM_COUNTER).begin())
-    ));
-
-    if (registerDescriptorsByType.at(TargetRegisterType::STATUS_REGISTER).size() > statusDescriptor.size) {
-        throw Exception("AVR8 status target register size exceeds the GDB register size.");
+    std::optional<GdbRegisterNumberType> AvrGdbRsp::getRegisterNumberFromTargetRegisterDescriptor(
+        const Targets::TargetRegisterDescriptor& registerDescriptor
+    ) {
+        return this->targetRegisterDescriptorsByGdbNumber.valueAt(registerDescriptor);
     }
 
-    if (registerDescriptorsByType.at(TargetRegisterType::STACK_POINTER).size() > stackPointerDescriptor.size) {
-        throw Exception("AVR8 stack pointer target register size exceeds the GDB register size.");
+    const RegisterDescriptor& AvrGdbRsp::getRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
+        if (this->registerDescriptorsByGdbNumber.contains(number)) {
+            return this->registerDescriptorsByGdbNumber.at(number);
+        }
+
+        throw Exception("Unknown register from GDB - register number (" + std::to_string(number)
+            + ") not mapped to any GDB register descriptor.");
     }
 
-    if (registerDescriptorsByType.at(TargetRegisterType::PROGRAM_COUNTER).size() > programCounterDescriptor.size) {
-        throw Exception("AVR8 program counter size exceeds the GDB register size.");
+    const TargetRegisterDescriptor& AvrGdbRsp::getTargetRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
+        if (this->targetRegisterDescriptorsByGdbNumber.contains(number)) {
+            return this->targetRegisterDescriptorsByGdbNumber.at(number);
+        }
+
+        throw Exception("Unknown register from GDB - register number (" + std::to_string(number)
+            + ") not mapped to any target register descriptor.");
     }
-}
-
-std::optional<GdbRegisterNumberType> AvrGdbRsp::getRegisterNumberFromTargetRegisterDescriptor(
-    const Targets::TargetRegisterDescriptor& registerDescriptor
-) {
-    return this->targetRegisterDescriptorsByGdbNumber.valueAt(registerDescriptor);
-}
-
-const RegisterDescriptor& AvrGdbRsp::getRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
-    if (this->registerDescriptorsByGdbNumber.contains(number)) {
-        return this->registerDescriptorsByGdbNumber.at(number);
-    }
-
-    throw Exception("Unknown register from GDB - register number (" + std::to_string(number)
-        + ") not mapped to any GDB register descriptor.");
-}
-
-const TargetRegisterDescriptor& AvrGdbRsp::getTargetRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
-    if (this->targetRegisterDescriptorsByGdbNumber.contains(number)) {
-        return this->targetRegisterDescriptorsByGdbNumber.at(number);
-    }
-
-    throw Exception("Unknown register from GDB - register number (" + std::to_string(number)
-        + ") not mapped to any target register descriptor.");
 }

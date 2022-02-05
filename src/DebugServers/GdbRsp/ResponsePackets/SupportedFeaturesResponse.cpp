@@ -1,23 +1,25 @@
 #include "SupportedFeaturesResponse.hpp"
 
-using namespace Bloom::DebugServers::Gdb::ResponsePackets;
+namespace Bloom::DebugServers::Gdb::ResponsePackets
+{
+    std::vector<unsigned char> SupportedFeaturesResponse::getData() const {
+        std::string output = "qSupported:";
+        auto gdbFeatureMapping = getGdbFeatureToNameMapping();
 
-std::vector<unsigned char> SupportedFeaturesResponse::getData() const {
-    std::string output = "qSupported:";
-    auto gdbFeatureMapping = getGdbFeatureToNameMapping();
+        for (const auto& supportedFeature : this->supportedFeatures) {
+            auto featureString = gdbFeatureMapping.valueAt(supportedFeature.first);
 
-    for (const auto& supportedFeature : this->supportedFeatures) {
-        auto featureString = gdbFeatureMapping.valueAt(supportedFeature.first);
+            if (featureString.has_value()) {
+                if (supportedFeature.second.has_value()) {
+                    output.append(featureString.value() + "=" + supportedFeature.second.value() + ";");
 
-        if (featureString.has_value()) {
-            if (supportedFeature.second.has_value()) {
-                output.append(featureString.value() + "=" + supportedFeature.second.value() + ";");
-            } else {
-                output.append(featureString.value() + "+;");
+                } else {
+                    output.append(featureString.value() + "+;");
+                }
+
             }
-
         }
-    }
 
-    return std::vector<unsigned char>(output.begin(), output.end());
+        return std::vector<unsigned char>(output.begin(), output.end());
+    }
 }

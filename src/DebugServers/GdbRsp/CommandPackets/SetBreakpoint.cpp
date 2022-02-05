@@ -1,40 +1,41 @@
 #include "SetBreakpoint.hpp"
 
 #include <QtCore/QString>
-#include <QtCore/QStringList>
 
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
 
-using namespace Bloom::DebugServers::Gdb::CommandPackets;
-using namespace Bloom::Exceptions;
+namespace Bloom::DebugServers::Gdb::CommandPackets
+{
+    using namespace Bloom::Exceptions;
 
-void SetBreakpoint::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
-    gdbRspDebugServer.handleGdbPacket(*this);
-}
-
-void SetBreakpoint::init() {
-    if (data.size() < 6) {
-        throw Exception("Unexpected SetBreakpoint packet size");
+    void SetBreakpoint::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
+        gdbRspDebugServer.handleGdbPacket(*this);
     }
 
-    // Z0 = SW breakpoint, Z1 = HW breakpoint
-    this->type = (data[1] == 0) ? BreakpointType::SOFTWARE_BREAKPOINT : (data[1] == 1) ?
-        BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
+    void SetBreakpoint::init() {
+        if (data.size() < 6) {
+            throw Exception("Unexpected SetBreakpoint packet size");
+        }
 
-    auto packetData = QString::fromLocal8Bit(
-        reinterpret_cast<const char*>(this->data.data() + 2),
-        static_cast<int>(this->data.size() - 2)
-    );
+        // Z0 = SW breakpoint, Z1 = HW breakpoint
+        this->type = (data[1] == 0) ? BreakpointType::SOFTWARE_BREAKPOINT : (data[1] == 1) ?
+            BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
 
-    auto packetSegments = packetData.split(",");
-    if (packetSegments.size() < 3) {
-        throw Exception("Unexpected number of packet segments in SetBreakpoint packet");
-    }
+        auto packetData = QString::fromLocal8Bit(
+            reinterpret_cast<const char*>(this->data.data() + 2),
+            static_cast<int>(this->data.size() - 2)
+        );
 
-    bool conversionStatus = true;
-    this->address = packetSegments.at(1).toUInt(&conversionStatus, 16);
+        auto packetSegments = packetData.split(",");
+        if (packetSegments.size() < 3) {
+            throw Exception("Unexpected number of packet segments in SetBreakpoint packet");
+        }
 
-    if (!conversionStatus) {
-        throw Exception("Failed to convert address hex value from SetBreakpoint packet.");
+        bool conversionStatus = true;
+        this->address = packetSegments.at(1).toUInt(&conversionStatus, 16);
+
+        if (!conversionStatus) {
+            throw Exception("Failed to convert address hex value from SetBreakpoint packet.");
+        }
     }
 }

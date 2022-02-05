@@ -3,29 +3,30 @@
 #include <QMenu>
 #include <QAction>
 
-using namespace Bloom::Widgets;
+namespace Bloom::Widgets
+{
+    TextInput::TextInput(QWidget* parent): QLineEdit(parent) {}
 
-TextInput::TextInput(QWidget* parent): QLineEdit(parent) {}
+    void TextInput::contextMenuEvent(QContextMenuEvent* event) {
+        if (QMenu* menu = this->createStandardContextMenu()) {
+            menu->setAttribute(Qt::WA_DeleteOnClose);
 
-void TextInput::contextMenuEvent(QContextMenuEvent* event) {
-    if (QMenu* menu = this->createStandardContextMenu()) {
-        menu->setAttribute(Qt::WA_DeleteOnClose);
+            // Remove default icons
+            for (auto& action : menu->actions()) {
+                action->setIcon(QIcon());
+            }
 
-        // Remove default icons
-        for (auto& action : menu->actions()) {
-            action->setIcon(QIcon());
+            menu->popup(event->globalPos());
         }
-
-        menu->popup(event->globalPos());
     }
-}
 
-void TextInput::focusInEvent(QFocusEvent* event) {
-    QLineEdit::focusInEvent(event);
-    emit this->focusChanged();
-}
+    void TextInput::focusInEvent(QFocusEvent* event) {
+        QLineEdit::focusInEvent(event);
+        emit this->focusChanged();
+    }
 
-void TextInput::focusOutEvent(QFocusEvent* event) {
-    QLineEdit::focusOutEvent(event);
-    emit this->focusChanged();
+    void TextInput::focusOutEvent(QFocusEvent* event) {
+        QLineEdit::focusOutEvent(event);
+        emit this->focusChanged();
+    }
 }

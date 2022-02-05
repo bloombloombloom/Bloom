@@ -6,41 +6,42 @@
 #include "src/Exceptions/Exception.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 
-using namespace Bloom;
-using namespace Bloom::Widgets;
+namespace Bloom::Widgets
+{
+    ExcludedRegionItem::ExcludedRegionItem(
+        const ExcludedMemoryRegion& region,
+        const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        QWidget* parent
+    ): memoryRegion(region), RegionItem(region, memoryDescriptor, parent) {
+        auto formUiFile = QFile(
+            QString::fromStdString(Paths::compiledResourcesPath()
+                + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
+                    + "/MemoryRegionManager/UiFiles/ExcludedMemoryRegionForm.ui"
+            )
+        );
 
-using Targets::TargetMemoryAddressRange;
+        if (!formUiFile.open(QFile::ReadOnly)) {
+            throw Bloom::Exceptions::Exception("Failed to open excluded region item form UI file");
+        }
 
-ExcludedRegionItem::ExcludedRegionItem(
-    const ExcludedMemoryRegion& region,
-    const Targets::TargetMemoryDescriptor& memoryDescriptor,
-    QWidget* parent
-): memoryRegion(region), RegionItem(region, memoryDescriptor, parent) {
-    auto formUiFile = QFile(
-        QString::fromStdString(Paths::compiledResourcesPath()
-            + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
-                + "/MemoryRegionManager/UiFiles/ExcludedMemoryRegionForm.ui"
-        )
-    );
+        auto uiLoader = UiLoader(this);
+        this->formWidget = uiLoader.load(&formUiFile, this);
 
-    if (!formUiFile.open(QFile::ReadOnly)) {
-        throw Bloom::Exceptions::Exception("Failed to open excluded region item form UI file");
+        this->initFormInputs();
     }
 
-    auto uiLoader = UiLoader(this);
-    this->formWidget = uiLoader.load(&formUiFile, this);
+    void ExcludedRegionItem::applyChanges() {
+        using Targets::TargetMemoryAddressRange;
 
-    this->initFormInputs();
-}
+        this->memoryRegion.name = this->nameInput->text();
 
-void ExcludedRegionItem::applyChanges() {
-    this->memoryRegion.name = this->nameInput->text();
-
-    const auto inputAddressRange = TargetMemoryAddressRange(
-        this->startAddressInput->text().toUInt(nullptr, 16),
-        this->endAddressInput->text().toUInt(nullptr, 16)
-    );
-    this->memoryRegion.addressRangeInputType = this->getSelectedAddressInputType();
-    this->memoryRegion.addressRange = this->memoryRegion.addressRangeInputType == MemoryRegionAddressInputType::RELATIVE ?
-        this->convertRelativeToAbsoluteAddressRange(inputAddressRange) : inputAddressRange;
+        const auto inputAddressRange = TargetMemoryAddressRange(
+            this->startAddressInput->text().toUInt(nullptr, 16),
+            this->endAddressInput->text().toUInt(nullptr, 16)
+        );
+        this->memoryRegion.addressRangeInputType = this->getSelectedAddressInputType();
+        this->memoryRegion.addressRange =
+            this->memoryRegion.addressRangeInputType == MemoryRegionAddressInputType::RELATIVE ?
+            this->convertRelativeToAbsoluteAddressRange(inputAddressRange) : inputAddressRange;
+    }
 }

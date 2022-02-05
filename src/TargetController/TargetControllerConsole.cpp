@@ -3,139 +3,141 @@
 #include "src/EventManager/Events/Events.hpp"
 #include "src/Logger/Logger.hpp"
 
-using namespace Bloom;
-using namespace Bloom::Targets;
-using namespace Bloom::Events;
-using namespace Bloom::Exceptions;
+namespace Bloom
+{
+    using namespace Bloom::Targets;
+    using namespace Bloom::Events;
+    using namespace Bloom::Exceptions;
 
-TargetControllerConsole::TargetControllerConsole(EventManager& eventManager, EventListener& eventListener)
-    :eventManager(eventManager), eventListener(eventListener) {}
+    TargetControllerConsole::TargetControllerConsole(EventManager& eventManager, EventListener& eventListener)
+        :eventManager(eventManager), eventListener(eventListener) {}
 
-TargetControllerState TargetControllerConsole::getTargetControllerState() {
-    return this->triggerTargetControllerEventAndWaitForResponse(
-        std::make_shared<ReportTargetControllerState>()
-    )->state;
-}
-
-bool TargetControllerConsole::isTargetControllerInService() noexcept {
-    try {
-        return this->getTargetControllerState() == TargetControllerState::ACTIVE;
-
-    } catch (...) {
-        return false;
-    }
-}
-
-Targets::TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
-    return this->triggerTargetControllerEventAndWaitForResponse(
-        std::make_shared<ExtractTargetDescriptor>()
-    )->targetDescriptor;
-}
-
-void TargetControllerConsole::stopTargetExecution() {
-    this->triggerTargetControllerEventAndWaitForResponse(std::make_shared<StopTargetExecution>());
-}
-
-void TargetControllerConsole::continueTargetExecution(std::optional<std::uint32_t> fromAddress) {
-    auto resumeExecutionEvent = std::make_shared<ResumeTargetExecution>();
-
-    if (fromAddress.has_value()) {
-        resumeExecutionEvent->fromProgramCounter = fromAddress.value();
+    TargetControllerState TargetControllerConsole::getTargetControllerState() {
+        return this->triggerTargetControllerEventAndWaitForResponse(
+            std::make_shared<ReportTargetControllerState>()
+        )->state;
     }
 
-    this->triggerTargetControllerEventAndWaitForResponse(resumeExecutionEvent);
-}
+    bool TargetControllerConsole::isTargetControllerInService() noexcept {
+        try {
+            return this->getTargetControllerState() == TargetControllerState::ACTIVE;
 
-void TargetControllerConsole::stepTargetExecution(std::optional<std::uint32_t> fromAddress) {
-    auto stepExecutionEvent = std::make_shared<StepTargetExecution>();
-
-    if (fromAddress.has_value()) {
-        stepExecutionEvent->fromProgramCounter = fromAddress.value();
+        } catch (...) {
+            return false;
+        }
     }
 
-    this->triggerTargetControllerEventAndWaitForResponse(stepExecutionEvent);
-}
+    Targets::TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
+        return this->triggerTargetControllerEventAndWaitForResponse(
+            std::make_shared<ExtractTargetDescriptor>()
+        )->targetDescriptor;
+    }
 
-TargetRegisters TargetControllerConsole::readRegisters(const TargetRegisterDescriptors& descriptors) {
-    auto readRegistersEvent = std::make_shared<RetrieveRegistersFromTarget>();
-    readRegistersEvent->descriptors = descriptors;
+    void TargetControllerConsole::stopTargetExecution() {
+        this->triggerTargetControllerEventAndWaitForResponse(std::make_shared<StopTargetExecution>());
+    }
 
-    return this->triggerTargetControllerEventAndWaitForResponse(readRegistersEvent)->registers;
-}
+    void TargetControllerConsole::continueTargetExecution(std::optional<std::uint32_t> fromAddress) {
+        auto resumeExecutionEvent = std::make_shared<ResumeTargetExecution>();
 
-void TargetControllerConsole::writeRegisters(const TargetRegisters& registers) {
-    auto event = std::make_shared<WriteRegistersToTarget>();
-    event->registers = std::move(registers);
+        if (fromAddress.has_value()) {
+            resumeExecutionEvent->fromProgramCounter = fromAddress.value();
+        }
 
-    this->triggerTargetControllerEventAndWaitForResponse(event);
-}
+        this->triggerTargetControllerEventAndWaitForResponse(resumeExecutionEvent);
+    }
 
-TargetMemoryBuffer TargetControllerConsole::readMemory(
-    TargetMemoryType memoryType,
-    std::uint32_t startAddress,
-    std::uint32_t bytes,
-    const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
-) {
-    auto readMemoryEvent = std::make_shared<RetrieveMemoryFromTarget>();
-    readMemoryEvent->memoryType = memoryType;
-    readMemoryEvent->startAddress = startAddress;
-    readMemoryEvent->bytes = bytes;
-    readMemoryEvent->excludedAddressRanges = excludedAddressRanges;
+    void TargetControllerConsole::stepTargetExecution(std::optional<std::uint32_t> fromAddress) {
+        auto stepExecutionEvent = std::make_shared<StepTargetExecution>();
 
-    return this->triggerTargetControllerEventAndWaitForResponse(readMemoryEvent)->data;
-}
+        if (fromAddress.has_value()) {
+            stepExecutionEvent->fromProgramCounter = fromAddress.value();
+        }
 
-void TargetControllerConsole::writeMemory(
-    TargetMemoryType memoryType,
-    std::uint32_t startAddress,
-    const TargetMemoryBuffer& buffer
-) {
-    auto writeMemoryEvent = std::make_shared<WriteMemoryToTarget>();
-    writeMemoryEvent->memoryType = memoryType;
-    writeMemoryEvent->startAddress = startAddress;
-    writeMemoryEvent->buffer = buffer;
+        this->triggerTargetControllerEventAndWaitForResponse(stepExecutionEvent);
+    }
 
-    this->triggerTargetControllerEventAndWaitForResponse(writeMemoryEvent);
-}
+    TargetRegisters TargetControllerConsole::readRegisters(const TargetRegisterDescriptors& descriptors) {
+        auto readRegistersEvent = std::make_shared<RetrieveRegistersFromTarget>();
+        readRegistersEvent->descriptors = descriptors;
 
-void TargetControllerConsole::setBreakpoint(TargetBreakpoint breakpoint) {
-    auto event = std::make_shared<SetBreakpointOnTarget>();
-    event->breakpoint = breakpoint;
+        return this->triggerTargetControllerEventAndWaitForResponse(readRegistersEvent)->registers;
+    }
 
-    this->triggerTargetControllerEventAndWaitForResponse(event);
-}
+    void TargetControllerConsole::writeRegisters(const TargetRegisters& registers) {
+        auto event = std::make_shared<WriteRegistersToTarget>();
+        event->registers = std::move(registers);
 
-void TargetControllerConsole::removeBreakpoint(TargetBreakpoint breakpoint) {
-    auto event = std::make_shared<RemoveBreakpointOnTarget>();
-    event->breakpoint = breakpoint;
+        this->triggerTargetControllerEventAndWaitForResponse(event);
+    }
 
-    this->triggerTargetControllerEventAndWaitForResponse(event);
-}
+    TargetMemoryBuffer TargetControllerConsole::readMemory(
+        TargetMemoryType memoryType,
+        std::uint32_t startAddress,
+        std::uint32_t bytes,
+        const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
+    ) {
+        auto readMemoryEvent = std::make_shared<RetrieveMemoryFromTarget>();
+        readMemoryEvent->memoryType = memoryType;
+        readMemoryEvent->startAddress = startAddress;
+        readMemoryEvent->bytes = bytes;
+        readMemoryEvent->excludedAddressRanges = excludedAddressRanges;
 
-void TargetControllerConsole::requestPinStates(int variantId) {
-    auto requestEvent = std::make_shared<RetrieveTargetPinStates>();
-    requestEvent->variantId = variantId;
+        return this->triggerTargetControllerEventAndWaitForResponse(readMemoryEvent)->data;
+    }
 
-    this->eventManager.triggerEvent(requestEvent);
-}
+    void TargetControllerConsole::writeMemory(
+        TargetMemoryType memoryType,
+        std::uint32_t startAddress,
+        const TargetMemoryBuffer& buffer
+    ) {
+        auto writeMemoryEvent = std::make_shared<WriteMemoryToTarget>();
+        writeMemoryEvent->memoryType = memoryType;
+        writeMemoryEvent->startAddress = startAddress;
+        writeMemoryEvent->buffer = buffer;
 
-Targets::TargetPinStateMappingType TargetControllerConsole::getPinStates(int variantId) {
-    auto requestEvent = std::make_shared<RetrieveTargetPinStates>();
-    requestEvent->variantId = variantId;
+        this->triggerTargetControllerEventAndWaitForResponse(writeMemoryEvent);
+    }
 
-    return this->triggerTargetControllerEventAndWaitForResponse(requestEvent)->pinSatesByNumber;
-}
+    void TargetControllerConsole::setBreakpoint(TargetBreakpoint breakpoint) {
+        auto event = std::make_shared<SetBreakpointOnTarget>();
+        event->breakpoint = breakpoint;
 
-void TargetControllerConsole::setPinState(TargetPinDescriptor pinDescriptor, TargetPinState pinState) {
-    auto updateEvent = std::make_shared<SetTargetPinState>();
-    updateEvent->pinDescriptor = std::move(pinDescriptor);
-    updateEvent->pinState = pinState;
+        this->triggerTargetControllerEventAndWaitForResponse(event);
+    }
 
-    this->triggerTargetControllerEventAndWaitForResponse(updateEvent);
-}
+    void TargetControllerConsole::removeBreakpoint(TargetBreakpoint breakpoint) {
+        auto event = std::make_shared<RemoveBreakpointOnTarget>();
+        event->breakpoint = breakpoint;
 
-std::uint32_t TargetControllerConsole::getStackPointer() {
-    return this->triggerTargetControllerEventAndWaitForResponse(
-        std::make_shared<RetrieveStackPointerFromTarget>()
-    )->stackPointer;
+        this->triggerTargetControllerEventAndWaitForResponse(event);
+    }
+
+    void TargetControllerConsole::requestPinStates(int variantId) {
+        auto requestEvent = std::make_shared<RetrieveTargetPinStates>();
+        requestEvent->variantId = variantId;
+
+        this->eventManager.triggerEvent(requestEvent);
+    }
+
+    Targets::TargetPinStateMappingType TargetControllerConsole::getPinStates(int variantId) {
+        auto requestEvent = std::make_shared<RetrieveTargetPinStates>();
+        requestEvent->variantId = variantId;
+
+        return this->triggerTargetControllerEventAndWaitForResponse(requestEvent)->pinSatesByNumber;
+    }
+
+    void TargetControllerConsole::setPinState(TargetPinDescriptor pinDescriptor, TargetPinState pinState) {
+        auto updateEvent = std::make_shared<SetTargetPinState>();
+        updateEvent->pinDescriptor = std::move(pinDescriptor);
+        updateEvent->pinState = pinState;
+
+        this->triggerTargetControllerEventAndWaitForResponse(updateEvent);
+    }
+
+    std::uint32_t TargetControllerConsole::getStackPointer() {
+        return this->triggerTargetControllerEventAndWaitForResponse(
+            std::make_shared<RetrieveStackPointerFromTarget>()
+        )->stackPointer;
+    }
 }

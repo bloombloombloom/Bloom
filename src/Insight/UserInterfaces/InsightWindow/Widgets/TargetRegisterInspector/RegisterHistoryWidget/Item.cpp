@@ -2,26 +2,27 @@
 
 #include <QStyle>
 
-using namespace Bloom::Widgets;
+namespace Bloom::Widgets
+{
+    Item::Item(const Targets::TargetMemoryBuffer& registerValue, QWidget* parent)
+    : ClickableWidget(parent), registerValue(registerValue) {
+        auto onClick = [this] {
+            this->setSelected(true);
+        };
 
-Item::Item(const Targets::TargetMemoryBuffer& registerValue, QWidget* parent):
-ClickableWidget(parent), registerValue(registerValue) {
-    auto onClick = [this] {
-        this->setSelected(true);
-    };
+        QObject::connect(this, &ClickableWidget::clicked, this, onClick);
+        QObject::connect(this, &ClickableWidget::rightClicked, this, onClick);
 
-    QObject::connect(this, &ClickableWidget::clicked, this, onClick);
-    QObject::connect(this, &ClickableWidget::rightClicked, this, onClick);
+        this->setSelected(false);
+    }
 
-    this->setSelected(false);
-}
+    void Item::setSelected(bool selected) {
+        this->setProperty("selected", selected);
+        this->style()->unpolish(this);
+        this->style()->polish(this);
 
-void Item::setSelected(bool selected) {
-    this->setProperty("selected", selected);
-    this->style()->unpolish(this);
-    this->style()->polish(this);
-
-    if (selected) {
-        emit this->selected(this);
+        if (selected) {
+            emit this->selected(this);
+        }
     }
 }

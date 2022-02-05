@@ -29,7 +29,7 @@ namespace Bloom::Widgets
             const Targets::TargetRegisterDescriptor& registerDescriptor,
             InsightWorker& insightWorker,
             Targets::TargetState currentTargetState,
-            std::optional<Targets::TargetMemoryBuffer> registerValue = std::nullopt,
+            const std::optional<Targets::TargetMemoryBuffer>& registerValue = std::nullopt,
             QWidget* parent = nullptr
         );
 

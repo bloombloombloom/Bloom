@@ -16,7 +16,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         /**
          * The address from which to begin the step.
          */
-        std::optional<size_t> fromProgramCounter;
+        std::optional<std::size_t> fromProgramCounter;
 
         explicit StepExecution(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             init();
