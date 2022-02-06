@@ -235,7 +235,7 @@ namespace Bloom
     }
 
     void InsightWindow::closeEvent(QCloseEvent* event) {
-        this->insightProjectSettings.mainWindowSize = this->size();
+        this->recordInsightSettings();
 
         return QMainWindow::closeEvent(event);
     }
@@ -313,6 +313,37 @@ namespace Bloom
         }
 
         this->createPanes();
+
+        const auto& lastLeftPanelState = this->insightProjectSettings.previousLeftPanelState;
+        const auto& lastBottomPanelState = this->insightProjectSettings.previousBottomPanelState;
+
+        if (lastLeftPanelState.has_value() && this->leftPanel != nullptr) {
+            this->leftPanel->setSize(lastLeftPanelState->size);
+
+            if (lastLeftPanelState->open && this->targetRegistersSidePane != nullptr
+                && this->insightProjectSettings.previousRegistersPaneState.has_value()
+                && this->insightProjectSettings.previousRegistersPaneState->activated
+            ) {
+                this->toggleTargetRegistersPane();
+            }
+        }
+
+        if (lastBottomPanelState.has_value()) {
+            this->bottomPanel->setSize(lastBottomPanelState->size);
+
+            if (this->ramInspectionPane != nullptr
+                && this->insightProjectSettings.previousRamInspectionPaneState.has_value()
+                && this->insightProjectSettings.previousRamInspectionPaneState->activated
+            ) {
+                this->toggleRamInspectionPane();
+
+            } else if (this->eepromInspectionPane != nullptr
+                && this->insightProjectSettings.previousEepromInspectionPaneState.has_value()
+                && this->insightProjectSettings.previousEepromInspectionPaneState->activated
+            ) {
+                this->toggleEepromInspectionPane();
+            }
+        }
 
         this->setUiDisabled(this->targetState != TargetState::STOPPED);
         this->activated = true;
@@ -567,6 +598,8 @@ namespace Bloom
     }
 
     void InsightWindow::deactivate() {
+        this->recordInsightSettings();
+
         if (this->selectedVariant != nullptr) {
             this->previouslySelectedVariant = *(this->selectedVariant);
             this->selectedVariant = nullptr;
@@ -602,7 +635,11 @@ namespace Bloom
     void InsightWindow::adjustPanels() {
         const auto targetPackageWidgetSize = (this->targetPackageWidget != nullptr)
             ? this->targetPackageWidget->size() : QSize();
-        const auto containerSize = this->container->size();
+        const auto containerSize = this->size();
+
+        if (!this->isVisible()) {
+            return;
+        }
 
         /*
          * The purpose of the -20 is to ensure there is some padding between the panel borders and the
@@ -622,24 +659,32 @@ namespace Bloom
         this->bottomPanel->setMaximumResize(
             std::max(
                 this->bottomPanel->getMinimumResize(),
-                (containerSize.height() / 2) - this->bottomMenuBar->height()
+                (containerSize.height() / 2) - this->mainMenuBar->height() - this->bottomMenuBar->height() - 20
             )
         );
     }
 
     void InsightWindow::adjustMinimumSize() {
-        auto minSize = QSize(800, 500);
+        static const auto absoluteMinimum = QSize(900, 400);
+        auto minSize = QSize();
 
         if (this->targetPackageWidget != nullptr) {
-            minSize.setWidth(this->targetPackageWidget->width() + 700);
+            minSize.setWidth(this->targetPackageWidget->width() + 250);
             minSize.setHeight(this->targetPackageWidget->height() + 150);
+        }
+
+        if (this->leftPanel->isVisible()) {
+            minSize.setWidth(minSize.width() + this->leftPanel->getMinimumResize());
         }
 
         if (this->bottomPanel->isVisible()) {
             minSize.setHeight(minSize.height() + this->bottomPanel->getMinimumResize());
         }
 
-        this->setMinimumSize(minSize);
+        this->setMinimumSize(
+            std::max(minSize.width(), absoluteMinimum.width()),
+            std::max(minSize.height(), absoluteMinimum.height())
+        );
     }
 
     void InsightWindow::onTargetControllerSuspended() {
@@ -763,6 +808,8 @@ namespace Bloom
             this->targetRegistersButton->setChecked(true);
             this->leftPanel->setVisible(true);
         }
+
+        this->adjustMinimumSize();
     }
 
     void InsightWindow::toggleRamInspectionPane() {
@@ -801,5 +848,33 @@ namespace Bloom
         }
 
         this->adjustMinimumSize();
+    }
+
+    void InsightWindow::recordInsightSettings() {
+        auto& projectSettings = this->insightProjectSettings;
+
+        projectSettings.mainWindowSize = this->size();
+
+        if (this->activated) {
+            if (this->leftPanel != nullptr) {
+                projectSettings.previousLeftPanelState = this->leftPanel->getCurrentState();
+
+                if (this->targetRegistersSidePane != nullptr) {
+                    projectSettings.previousRegistersPaneState = this->targetRegistersSidePane->getCurrentState();
+                }
+            }
+
+            if (this->bottomPanel != nullptr) {
+                projectSettings.previousBottomPanelState = this->bottomPanel->getCurrentState();
+
+                if (this->ramInspectionPane != nullptr) {
+                    projectSettings.previousRamInspectionPaneState = this->ramInspectionPane->getCurrentState();
+                }
+
+                if (this->eepromInspectionPane != nullptr) {
+                    projectSettings.previousEepromInspectionPaneState = this->eepromInspectionPane->getCurrentState();
+                }
+            }
+        }
     }
 }
