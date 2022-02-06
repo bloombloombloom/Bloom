@@ -25,7 +25,7 @@ namespace Bloom::Widgets
         const TargetDescriptor& targetDescriptor,
         InsightWorker& insightWorker,
         PanelWidget* parent
-    ): QWidget(parent), parent(parent), targetDescriptor(targetDescriptor), insightWorker(insightWorker) {
+    ): PaneWidget(parent), targetDescriptor(targetDescriptor), insightWorker(insightWorker) {
         this->setObjectName("target-registers-side-pane");
 
         auto targetRegistersPaneUiFile = QFile(
@@ -208,7 +208,7 @@ namespace Bloom::Widgets
     }
 
     void TargetRegistersPaneWidget::resizeEvent(QResizeEvent* event) {
-        const auto parentSize = this->parent->size();
+        const auto parentSize = this->parentPanel->size();
         const auto width = parentSize.width() - 1;
         this->container->setFixedWidth(width);
         this->searchInput->setFixedWidth(width - 20);
@@ -217,7 +217,7 @@ namespace Bloom::Widgets
          * In order to avoid the panel resize handle overlapping the scroll bar handle, we reduce the size of
          * the scroll area.
          */
-        this->itemScrollArea->setFixedWidth(width - this->parent->getHandleSize());
+        this->itemScrollArea->setFixedWidth(width - this->parentPanel->getHandleSize());
     }
 
     void TargetRegistersPaneWidget::postActivate() {

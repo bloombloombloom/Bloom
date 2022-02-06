@@ -9,8 +9,10 @@
 #include <QEvent>
 #include <optional>
 
-#include "ItemWidget.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
+
+#include "ItemWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetState.hpp"
@@ -19,13 +21,11 @@
 namespace Bloom::Widgets
 {
     class RegisterGroupWidget;
-    class TargetRegistersPaneWidget: public QWidget
+    class TargetRegistersPaneWidget: public PaneWidget
     {
         Q_OBJECT
 
     public:
-        bool activated = false;
-
         TargetRegistersPaneWidget(
             const Targets::TargetDescriptor& targetDescriptor,
             InsightWorker& insightWorker,
@@ -54,7 +54,6 @@ namespace Bloom::Widgets
         const Targets::TargetDescriptor& targetDescriptor;
         InsightWorker& insightWorker;
 
-        PanelWidget* parent = nullptr;
         QWidget* container = nullptr;
 
         QWidget* toolBar = nullptr;

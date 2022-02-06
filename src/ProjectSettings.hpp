@@ -8,6 +8,8 @@
 #include <QJsonObject>
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelState.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneState.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPaneSettings.hpp"
 
 #include "src/Helpers/BiMap.hpp"
@@ -18,6 +20,11 @@ namespace Bloom
     {
     public:
         std::optional<QSize> mainWindowSize;
+        std::optional<Widgets::PanelState> previousLeftPanelState;
+        std::optional<Widgets::PanelState> previousBottomPanelState;
+        std::optional<Widgets::PaneState> previousRegistersPaneState;
+        std::optional<Widgets::PaneState> previousRamInspectionPaneState;
+        std::optional<Widgets::PaneState> previousEepromInspectionPaneState;
 
         std::map<
             Targets::TargetMemoryType,
@@ -51,6 +58,22 @@ namespace Bloom
             {MemoryRegionAddressInputType::ABSOLUTE, "absolute"},
             {MemoryRegionAddressInputType::RELATIVE, "relative"},
         };
+
+        [[nodiscard]] Widgets::TargetMemoryInspectionPaneSettings memoryInspectionPaneSettingsFromJson(
+            const QJsonObject& jsonObject
+        ) const;
+
+        [[nodiscard]] Widgets::PanelState panelStateFromJson(const QJsonObject& jsonObject) const;
+
+        [[nodiscard]] Widgets::PaneState paneStateFromJson(const QJsonObject& jsonObject) const;
+
+        [[nodiscard]] QJsonObject memoryInspectionPaneSettingsToJson(
+            const Widgets::TargetMemoryInspectionPaneSettings& inspectionPaneSettings
+        ) const;
+
+        [[nodiscard]] QJsonObject panelStateToJson(const Widgets::PanelState& panelState) const;
+
+        [[nodiscard]] QJsonObject paneStateToJson(const Widgets::PaneState& paneState) const;
     };
 
     struct ProjectSettings

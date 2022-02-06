@@ -4,11 +4,12 @@
 #include <QResizeEvent>
 #include <vector>
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
+
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
-
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Targets/TargetState.hpp"
 
+#include "src/Targets/TargetState.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 
@@ -19,13 +20,12 @@
 
 namespace Bloom::Widgets
 {
-    class TargetMemoryInspectionPane: public QWidget
+    class TargetMemoryInspectionPane: public PaneWidget
     {
         Q_OBJECT
 
     public:
         TargetMemoryInspectionPaneSettings& settings;
-        bool activated = false;
 
         TargetMemoryInspectionPane(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
@@ -48,7 +48,6 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
         InsightWorker& insightWorker;
 
-        PanelWidget* parent = nullptr;
         QWidget* container = nullptr;
 
         QWidget* titleBar = nullptr;

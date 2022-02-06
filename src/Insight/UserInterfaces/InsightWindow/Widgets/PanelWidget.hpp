@@ -6,6 +6,8 @@
 #include <QMouseEvent>
 #include <QEnterEvent>
 
+#include "PanelState.hpp"
+
 namespace Bloom::Widgets
 {
     Q_NAMESPACE
@@ -37,6 +39,8 @@ namespace Bloom::Widgets
 
         void setPanelType(PanelWidgetType panelType);
 
+        void setSize(int size);
+
         [[nodiscard]] int getHandleSize() const {
             return this->handleSize;
         }
@@ -51,6 +55,13 @@ namespace Bloom::Widgets
 
         PanelWidgetType getPanelType() {
             return this->panelType;
+        }
+
+        PanelState getCurrentState() {
+            return PanelState(
+                this->panelType == PanelWidgetType::LEFT ? this->width() : this->height(),
+                this->isVisible()
+            );
         }
 
     protected:

@@ -140,6 +140,7 @@ add_executable(Bloom
     src/Insight/UserInterfaces/InsightWindow/BloomProxyStyle.cpp
     src/Insight/UserInterfaces/InsightWindow/InsightWindow.cpp
     src/Insight/UserInterfaces/InsightWindow/AboutWindow.cpp
+    src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/RotatableLabel.cpp
     src/Insight/UserInterfaces/InsightWindow/Widgets/LabeledSeparator.cpp

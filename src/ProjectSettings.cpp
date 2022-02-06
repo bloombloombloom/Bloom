@@ -30,6 +30,36 @@ namespace Bloom
             }
         }
 
+        if (jsonObject.contains("previousLeftPanelState")) {
+            this->previousLeftPanelState = this->panelStateFromJson(
+                jsonObject.find("previousLeftPanelState")->toObject()
+            );
+        }
+
+        if (jsonObject.contains("previousBottomPanelState")) {
+            this->previousBottomPanelState = this->panelStateFromJson(
+                jsonObject.find("previousBottomPanelState")->toObject()
+            );
+        }
+
+        if (jsonObject.contains("previousRegistersPaneState")) {
+            this->previousRegistersPaneState = this->paneStateFromJson(
+                jsonObject.find("previousRegistersPaneState")->toObject()
+            );
+        }
+
+        if (jsonObject.contains("previousRamInspectionPaneState")) {
+            this->previousRamInspectionPaneState = this->paneStateFromJson(
+                jsonObject.find("previousRamInspectionPaneState")->toObject()
+            );
+        }
+
+        if (jsonObject.contains("previousEepromInspectionPaneState")) {
+            this->previousEepromInspectionPaneState = this->paneStateFromJson(
+                jsonObject.find("previousEepromInspectionPaneState")->toObject()
+            );
+        }
+
         if (jsonObject.contains("memoryInspectionPaneSettings")) {
             const auto settingsMappingObj = jsonObject.find("memoryInspectionPaneSettings")->toObject();
 
@@ -41,147 +71,10 @@ namespace Bloom
                     continue;
                 }
 
-                const auto memoryType = InsightProjectSettings::memoryTypesByName.at(memoryTypeName);
-                auto inspectionPaneSettings = Widgets::TargetMemoryInspectionPaneSettings();
-
-                if (settingsObj.contains("hexViewerSettings")) {
-                    auto& hexViewerSettings = inspectionPaneSettings.hexViewerWidgetSettings;
-                    const auto hexViewerSettingsObj = settingsObj.find("hexViewerSettings")->toObject();
-
-                    if (hexViewerSettingsObj.contains("highlightStackMemory")) {
-                        hexViewerSettings.highlightStackMemory =
-                            hexViewerSettingsObj.value("highlightStackMemory").toBool();
-                    }
-
-                    if (hexViewerSettingsObj.contains("highlightFocusedMemory")) {
-                        hexViewerSettings.highlightFocusedMemory =
-                            hexViewerSettingsObj.value("highlightFocusedMemory").toBool();
-                    }
-
-                    if (hexViewerSettingsObj.contains("highlightHoveredRowAndCol")) {
-                        hexViewerSettings.highlightHoveredRowAndCol =
-                            hexViewerSettingsObj.value("highlightHoveredRowAndCol").toBool();
-                    }
-
-                    if (hexViewerSettingsObj.contains("displayAsciiValues")) {
-                        hexViewerSettings.displayAsciiValues =
-                            hexViewerSettingsObj.value("displayAsciiValues").toBool();
-                    }
-
-                    if (hexViewerSettingsObj.contains("displayAnnotations")) {
-                        hexViewerSettings.displayAnnotations =
-                            hexViewerSettingsObj.value("displayAnnotations").toBool();
-                    }
-                }
-
-                if (settingsObj.contains("focusedRegions")) {
-                    const auto focusedRegions = settingsObj.find("focusedRegions")->toArray();
-
-                    for (const auto& regionValue : focusedRegions) {
-                        const auto regionObj = regionValue.toObject();
-
-                        if (!regionObj.contains("name")
-                            || !regionObj.contains("addressRange")
-                            || !regionObj.contains("addressInputType")
-                            || !regionObj.contains("createdTimestamp")
-                            || !regionObj.contains("dataType")
-                        ) {
-                            continue;
-                        }
-
-                        const auto addressRangeObj = regionObj.find("addressRange")->toObject();
-                        if (!addressRangeObj.contains("startAddress")
-                            || !addressRangeObj.contains("endAddress")
-                        ) {
-                            continue;
-                        }
-
-                        auto region = FocusedMemoryRegion(
-                            regionObj.find("name")->toString(),
-                            {
-                                static_cast<std::uint32_t>(addressRangeObj.find("startAddress")
-                                    ->toInteger()),
-                                static_cast<std::uint32_t>(addressRangeObj.find("endAddress")
-                                    ->toInteger()),
-                            }
-                        );
-
-                        region.createdDate.setSecsSinceEpoch(regionObj.find("createdTimestamp")->toInteger());
-
-                        const auto addressInputType = InsightProjectSettings::addressRangeInputTypesByName.valueAt(
-                            regionObj.find("addressInputType")->toString()
-                        );
-
-                        if (addressInputType.has_value()) {
-                            region.addressRangeInputType = addressInputType.value();
-                        }
-
-                        const auto dataType = InsightProjectSettings::regionDataTypesByName.valueAt(
-                            regionObj.find("dataType")->toString()
-                        );
-
-                        if (dataType.has_value()) {
-                            region.dataType = dataType.value();
-                        }
-
-                        const auto endianness = InsightProjectSettings::regionEndiannessByName.valueAt(
-                            regionObj.find("endianness")->toString()
-                        );
-
-                        if (endianness.has_value()) {
-                            region.endianness = endianness.value();
-                        }
-
-                        inspectionPaneSettings.focusedMemoryRegions.emplace_back(region);
-                    }
-                }
-
-                if (settingsObj.contains("excludedRegions")) {
-                    const auto excludedRegions = settingsObj.find("excludedRegions")->toArray();
-
-                    for (const auto& regionValue : excludedRegions) {
-                        const auto regionObj = regionValue.toObject();
-
-                        if (!regionObj.contains("name")
-                            || !regionObj.contains("addressRange")
-                            || !regionObj.contains("addressInputType")
-                            || !regionObj.contains("createdTimestamp")
-                        ) {
-                            continue;
-                        }
-
-                        const auto addressRangeObj = regionObj.find("addressRange")->toObject();
-                        if (!addressRangeObj.contains("startAddress")
-                            || !addressRangeObj.contains("endAddress")
-                        ) {
-                            continue;
-                        }
-
-                        auto region = ExcludedMemoryRegion(
-                            regionObj.find("name")->toString(),
-                            {
-                                static_cast<std::uint32_t>(addressRangeObj.find("startAddress")
-                                    ->toInteger()),
-                                static_cast<std::uint32_t>(addressRangeObj.find("endAddress")
-                                    ->toInteger()),
-                            }
-                        );
-
-                        region.createdDate.setSecsSinceEpoch(regionObj.find("createdTimestamp")->toInteger());
-
-                        const auto addressInputType = InsightProjectSettings::addressRangeInputTypesByName.valueAt(
-                            regionObj.find("addressInputType")->toString()
-                        );
-
-                        if (addressInputType.has_value()) {
-                            region.addressRangeInputType = addressInputType.value();
-                        }
-
-                        inspectionPaneSettings.excludedMemoryRegions.emplace_back(region);
-                    }
-                }
-
-                this->memoryInspectionPaneSettingsByMemoryType.insert(std::pair(memoryType, inspectionPaneSettings));
+                this->memoryInspectionPaneSettingsByMemoryType.insert(std::pair(
+                    InsightProjectSettings::memoryTypesByName.at(memoryTypeName),
+                    this->memoryInspectionPaneSettingsFromJson(settingsObj)
+                ));
             }
         }
     }
@@ -204,77 +97,287 @@ namespace Bloom
                 continue;
             }
 
-            auto settingsObj = QJsonObject();
-
-            const auto& hexViewerSettings = inspectionPaneSettings.hexViewerWidgetSettings;
-            settingsObj.insert("hexViewerSettings", QJsonObject({
-                {"highlightStackMemory", hexViewerSettings.highlightStackMemory},
-                {"highlightFocusedMemory", hexViewerSettings.highlightFocusedMemory},
-                {"highlightHoveredRowAndCol", hexViewerSettings.highlightHoveredRowAndCol},
-                {"displayAsciiValues", hexViewerSettings.displayAsciiValues},
-                {"displayAnnotations", hexViewerSettings.displayAnnotations},
-            }));
-
-            const auto& regionDataTypesByName = InsightProjectSettings::regionDataTypesByName;
-            const auto& regionEndiannessByName = InsightProjectSettings::regionEndiannessByName;
-            const auto& addressRangeInputTypesByName = InsightProjectSettings::addressRangeInputTypesByName;
-
-            auto focusedRegions = QJsonArray();
-            for (const auto& focusedRegion : inspectionPaneSettings.focusedMemoryRegions) {
-                if (!regionDataTypesByName.contains(focusedRegion.dataType)
-                    || !regionEndiannessByName.contains(focusedRegion.endianness)
-                    || !addressRangeInputTypesByName.contains(focusedRegion.addressRangeInputType)
-                ) {
-                    continue;
-                }
-
-                const auto addressRangeObj = QJsonObject({
-                    {"startAddress", static_cast<qint64>(focusedRegion.addressRange.startAddress)},
-                    {"endAddress", static_cast<qint64>(focusedRegion.addressRange.endAddress)},
-                });
-
-                auto regionObj = QJsonObject({
-                    {"name", focusedRegion.name},
-                    {"addressRange", addressRangeObj},
-                    {"createdTimestamp", focusedRegion.createdDate.toSecsSinceEpoch()},
-                    {"addressInputType", addressRangeInputTypesByName.at(focusedRegion.addressRangeInputType)},
-                    {"dataType", regionDataTypesByName.at(focusedRegion.dataType)},
-                    {"endianness", regionEndiannessByName.at(focusedRegion.endianness)},
-                });
-
-                focusedRegions.push_back(regionObj);
-            }
-
-            auto excludedRegions = QJsonArray();
-            for (const auto& excludedRegion : inspectionPaneSettings.excludedMemoryRegions) {
-                if (!addressRangeInputTypesByName.contains(excludedRegion.addressRangeInputType)) {
-                    continue;
-                }
-
-                const auto addressRangeObj = QJsonObject({
-                    {"startAddress", static_cast<qint64>(excludedRegion.addressRange.startAddress)},
-                    {"endAddress", static_cast<qint64>(excludedRegion.addressRange.endAddress)},
-                });
-
-                auto regionObj = QJsonObject({
-                    {"name", excludedRegion.name},
-                    {"addressRange", addressRangeObj},
-                    {"createdTimestamp", excludedRegion.createdDate.toSecsSinceEpoch()},
-                    {"addressInputType", addressRangeInputTypesByName.at(excludedRegion.addressRangeInputType)},
-                });
-
-                excludedRegions.push_back(regionObj);
-            }
-
-            settingsObj.insert("focusedRegions", focusedRegions);
-            settingsObj.insert("excludedRegions", excludedRegions);
             memoryInspectionPaneSettingsObj.insert(
                 InsightProjectSettings::memoryTypesByName.at(memoryType),
-                settingsObj
+                this->memoryInspectionPaneSettingsToJson(inspectionPaneSettings)
             );
         }
 
         insightObj.insert("memoryInspectionPaneSettings", memoryInspectionPaneSettingsObj);
+
+        if (this->previousLeftPanelState.has_value()) {
+            insightObj.insert(
+                "previousLeftPanelState",
+                this->panelStateToJson(this->previousLeftPanelState.value())
+            );
+        }
+
+        if (this->previousBottomPanelState.has_value()) {
+            insightObj.insert(
+                "previousBottomPanelState",
+                this->panelStateToJson(this->previousBottomPanelState.value())
+            );
+        }
+
+        if (this->previousRegistersPaneState.has_value()) {
+            insightObj.insert(
+                "previousRegistersPaneState",
+                this->paneStateToJson(this->previousRegistersPaneState.value())
+            );
+        }
+
+        if (this->previousRamInspectionPaneState.has_value()) {
+            insightObj.insert(
+                "previousRamInspectionPaneState",
+                this->paneStateToJson(this->previousRamInspectionPaneState.value())
+            );
+        }
+
+        if (this->previousEepromInspectionPaneState.has_value()) {
+            insightObj.insert(
+                "previousEepromInspectionPaneState",
+                this->paneStateToJson(this->previousEepromInspectionPaneState.value())
+            );
+        }
+
         return insightObj;
+    }
+
+    Widgets::TargetMemoryInspectionPaneSettings InsightProjectSettings::memoryInspectionPaneSettingsFromJson(
+        const QJsonObject& jsonObject
+    ) const {
+        auto inspectionPaneSettings = Widgets::TargetMemoryInspectionPaneSettings();
+
+        if (jsonObject.contains("hexViewerSettings")) {
+            auto& hexViewerSettings = inspectionPaneSettings.hexViewerWidgetSettings;
+            const auto hexViewerSettingsObj = jsonObject.find("hexViewerSettings")->toObject();
+
+            if (hexViewerSettingsObj.contains("highlightStackMemory")) {
+                hexViewerSettings.highlightStackMemory =
+                    hexViewerSettingsObj.value("highlightStackMemory").toBool();
+            }
+
+            if (hexViewerSettingsObj.contains("highlightFocusedMemory")) {
+                hexViewerSettings.highlightFocusedMemory =
+                    hexViewerSettingsObj.value("highlightFocusedMemory").toBool();
+            }
+
+            if (hexViewerSettingsObj.contains("highlightHoveredRowAndCol")) {
+                hexViewerSettings.highlightHoveredRowAndCol =
+                    hexViewerSettingsObj.value("highlightHoveredRowAndCol").toBool();
+            }
+
+            if (hexViewerSettingsObj.contains("displayAsciiValues")) {
+                hexViewerSettings.displayAsciiValues =
+                    hexViewerSettingsObj.value("displayAsciiValues").toBool();
+            }
+
+            if (hexViewerSettingsObj.contains("displayAnnotations")) {
+                hexViewerSettings.displayAnnotations =
+                    hexViewerSettingsObj.value("displayAnnotations").toBool();
+            }
+        }
+
+        if (jsonObject.contains("focusedRegions")) {
+            const auto focusedRegions = jsonObject.find("focusedRegions")->toArray();
+
+            for (const auto& regionValue : focusedRegions) {
+                const auto regionObj = regionValue.toObject();
+
+                if (!regionObj.contains("name")
+                    || !regionObj.contains("addressRange")
+                    || !regionObj.contains("addressInputType")
+                    || !regionObj.contains("createdTimestamp")
+                    || !regionObj.contains("dataType")
+                ) {
+                    continue;
+                }
+
+                const auto addressRangeObj = regionObj.find("addressRange")->toObject();
+                if (!addressRangeObj.contains("startAddress")
+                    || !addressRangeObj.contains("endAddress")
+                ) {
+                    continue;
+                }
+
+                auto region = FocusedMemoryRegion(
+                    regionObj.find("name")->toString(),
+                    {
+                        static_cast<std::uint32_t>(addressRangeObj.find("startAddress")->toInteger()),
+                        static_cast<std::uint32_t>(addressRangeObj.find("endAddress")->toInteger()),
+                    }
+                );
+
+                region.createdDate.setSecsSinceEpoch(regionObj.find("createdTimestamp")->toInteger());
+
+                const auto addressInputType = InsightProjectSettings::addressRangeInputTypesByName.valueAt(
+                    regionObj.find("addressInputType")->toString()
+                );
+
+                if (addressInputType.has_value()) {
+                    region.addressRangeInputType = addressInputType.value();
+                }
+
+                const auto dataType = InsightProjectSettings::regionDataTypesByName.valueAt(
+                    regionObj.find("dataType")->toString()
+                );
+
+                if (dataType.has_value()) {
+                    region.dataType = dataType.value();
+                }
+
+                const auto endianness = InsightProjectSettings::regionEndiannessByName.valueAt(
+                    regionObj.find("endianness")->toString()
+                );
+
+                if (endianness.has_value()) {
+                    region.endianness = endianness.value();
+                }
+
+                inspectionPaneSettings.focusedMemoryRegions.emplace_back(region);
+            }
+        }
+
+        if (jsonObject.contains("excludedRegions")) {
+            const auto excludedRegions = jsonObject.find("excludedRegions")->toArray();
+
+            for (const auto& regionValue : excludedRegions) {
+                const auto regionObj = regionValue.toObject();
+
+                if (!regionObj.contains("name")
+                    || !regionObj.contains("addressRange")
+                    || !regionObj.contains("addressInputType")
+                    || !regionObj.contains("createdTimestamp")
+                ) {
+                    continue;
+                }
+
+                const auto addressRangeObj = regionObj.find("addressRange")->toObject();
+                if (!addressRangeObj.contains("startAddress")
+                    || !addressRangeObj.contains("endAddress")
+                ) {
+                    continue;
+                }
+
+                auto region = ExcludedMemoryRegion(
+                    regionObj.find("name")->toString(),
+                    {
+                        static_cast<std::uint32_t>(addressRangeObj.find("startAddress")->toInteger()),
+                        static_cast<std::uint32_t>(addressRangeObj.find("endAddress")->toInteger()),
+                    }
+                );
+
+                region.createdDate.setSecsSinceEpoch(regionObj.find("createdTimestamp")->toInteger());
+
+                const auto addressInputType = InsightProjectSettings::addressRangeInputTypesByName.valueAt(
+                    regionObj.find("addressInputType")->toString()
+                );
+
+                if (addressInputType.has_value()) {
+                    region.addressRangeInputType = addressInputType.value();
+                }
+
+                inspectionPaneSettings.excludedMemoryRegions.emplace_back(region);
+            }
+        }
+
+        return inspectionPaneSettings;
+    }
+
+    Widgets::PanelState InsightProjectSettings::panelStateFromJson(const QJsonObject& jsonObject) const {
+        return Widgets::PanelState(
+            (jsonObject.contains("size") ? static_cast<int>(jsonObject.value("size").toInteger()) : 0),
+            (jsonObject.contains("open") ? jsonObject.value("open").toBool() : false)
+        );
+    }
+
+    Widgets::PaneState InsightProjectSettings::paneStateFromJson(const QJsonObject& jsonObject) const {
+        return Widgets::PaneState(
+            (jsonObject.contains("activated") ? jsonObject.value("activated").toBool() : false)
+        );
+    }
+
+    QJsonObject InsightProjectSettings::memoryInspectionPaneSettingsToJson(
+        const Widgets::TargetMemoryInspectionPaneSettings& inspectionPaneSettings
+    ) const {
+        auto settingsObj = QJsonObject();
+
+        const auto& hexViewerSettings = inspectionPaneSettings.hexViewerWidgetSettings;
+        settingsObj.insert("hexViewerSettings", QJsonObject({
+            {"highlightStackMemory", hexViewerSettings.highlightStackMemory},
+            {"highlightFocusedMemory", hexViewerSettings.highlightFocusedMemory},
+            {"highlightHoveredRowAndCol", hexViewerSettings.highlightHoveredRowAndCol},
+            {"displayAsciiValues", hexViewerSettings.displayAsciiValues},
+            {"displayAnnotations", hexViewerSettings.displayAnnotations},
+        }));
+
+        const auto& regionDataTypesByName = InsightProjectSettings::regionDataTypesByName;
+        const auto& regionEndiannessByName = InsightProjectSettings::regionEndiannessByName;
+        const auto& addressRangeInputTypesByName = InsightProjectSettings::addressRangeInputTypesByName;
+
+        auto focusedRegions = QJsonArray();
+        for (const auto& focusedRegion : inspectionPaneSettings.focusedMemoryRegions) {
+            if (!regionDataTypesByName.contains(focusedRegion.dataType)
+                || !regionEndiannessByName.contains(focusedRegion.endianness)
+                || !addressRangeInputTypesByName.contains(focusedRegion.addressRangeInputType)
+            ) {
+                continue;
+            }
+
+            const auto addressRangeObj = QJsonObject({
+                {"startAddress", static_cast<qint64>(focusedRegion.addressRange.startAddress)},
+                {"endAddress", static_cast<qint64>(focusedRegion.addressRange.endAddress)},
+            });
+
+            auto regionObj = QJsonObject({
+                {"name", focusedRegion.name},
+                {"addressRange", addressRangeObj},
+                {"createdTimestamp", focusedRegion.createdDate.toSecsSinceEpoch()},
+                {"addressInputType", addressRangeInputTypesByName.at(focusedRegion.addressRangeInputType)},
+                {"dataType", regionDataTypesByName.at(focusedRegion.dataType)},
+                {"endianness", regionEndiannessByName.at(focusedRegion.endianness)},
+            });
+
+            focusedRegions.push_back(regionObj);
+        }
+
+        auto excludedRegions = QJsonArray();
+        for (const auto& excludedRegion : inspectionPaneSettings.excludedMemoryRegions) {
+            if (!addressRangeInputTypesByName.contains(excludedRegion.addressRangeInputType)) {
+                continue;
+            }
+
+            const auto addressRangeObj = QJsonObject({
+                {"startAddress", static_cast<qint64>(excludedRegion.addressRange.startAddress)},
+                {"endAddress", static_cast<qint64>(excludedRegion.addressRange.endAddress)},
+            });
+
+            auto regionObj = QJsonObject({
+                {"name", excludedRegion.name},
+                {"addressRange", addressRangeObj},
+                {"createdTimestamp", excludedRegion.createdDate.toSecsSinceEpoch()},
+                {"addressInputType", addressRangeInputTypesByName.at(excludedRegion.addressRangeInputType)},
+            });
+
+            excludedRegions.push_back(regionObj);
+        }
+
+        settingsObj.insert("focusedRegions", focusedRegions);
+        settingsObj.insert("excludedRegions", excludedRegions);
+
+        return settingsObj;
+    }
+
+    QJsonObject InsightProjectSettings::panelStateToJson(const Widgets::PanelState& panelState) const {
+        return QJsonObject({
+            {"size", panelState.size},
+            {"open", panelState.open},
+        });
+    }
+
+    QJsonObject InsightProjectSettings::paneStateToJson(const Widgets::PaneState& paneState) const {
+        return QJsonObject({
+            {"activated", paneState.activated},
+        });
     }
 }

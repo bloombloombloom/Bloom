@@ -48,9 +48,18 @@ namespace Bloom::Widgets
         }
     }
 
+    void PanelWidget::setSize(int size) {
+        if (this->panelType == PanelWidgetType::LEFT) {
+            this->setFixedWidth(std::min(std::max(size, this->minimumResize), this->maximumResize));
+
+        } else if (this->panelType == PanelWidgetType::BOTTOM) {
+            this->setFixedHeight(std::min(std::max(size, this->minimumResize), this->maximumResize));
+        }
+    }
+
     bool PanelWidget::event(QEvent* event) {
         if (event->type() == QEvent::Type::HoverMove) {
-            auto hoverEvent = static_cast<QHoverEvent*>(event);
+            auto* hoverEvent = dynamic_cast<QHoverEvent*>(event);
             if (this->resizingActive || this->isPositionWithinHandleArea(hoverEvent->position().toPoint())) {
                 this->setCursor(this->resizeCursor);
 
@@ -91,24 +100,10 @@ namespace Bloom::Widgets
 
     void PanelWidget::mouseMoveEvent(QMouseEvent* event) {
         if (this->resizingActive) {
-            const auto position = event->pos();
-
-            if (this->panelType == PanelWidgetType::LEFT) {
-                this->setFixedWidth(
-                    std::max(
-                        this->minimumResize,
-                        std::min(this->maximumResize, position.x() + this->resizingOffset)
-                    )
-                );
-
-            } else if (this->panelType == PanelWidgetType::BOTTOM) {
-                this->setFixedHeight(
-                    std::max(
-                        this->minimumResize,
-                        std::min(this->maximumResize, this->height() + (-position.y()) + this->resizingOffset)
-                    )
-                );
-            }
+            this->setSize(this->panelType == PanelWidgetType::LEFT
+                ? event->pos().x() + this->resizingOffset
+                : this->height() + (-event->pos().y()) + this->resizingOffset
+            );
         }
     }
 
@@ -120,13 +115,12 @@ namespace Bloom::Widgets
                 QPoint(currentSize.width() - this->handleSize, 0),
                 QPoint(currentSize.width(), currentSize.height())
             );
-
-        } else {
-            return std::pair(
-                QPoint(0, 0),
-                QPoint(currentSize.width(), this->handleSize)
-            );
         }
+
+        return std::pair(
+            QPoint(0, 0),
+            QPoint(currentSize.width(), this->handleSize)
+        );
     }
 
     bool PanelWidget::isPositionWithinHandleArea(const QPoint& position) const {

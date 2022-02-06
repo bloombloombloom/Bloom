@@ -136,5 +136,7 @@ namespace Bloom
         void toggleTargetRegistersPane();
         void toggleRamInspectionPane();
         void toggleEepromInspectionPane();
+
+        void recordInsightSettings();
     };
 }

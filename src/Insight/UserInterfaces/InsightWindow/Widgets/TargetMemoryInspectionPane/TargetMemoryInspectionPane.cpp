@@ -23,12 +23,11 @@ TargetMemoryInspectionPane::TargetMemoryInspectionPane(
     TargetMemoryInspectionPaneSettings& settings,
     InsightWorker& insightWorker,
     PanelWidget* parent
-):
-    QWidget(parent),
-    targetMemoryDescriptor(targetMemoryDescriptor),
-    settings(settings),
-    insightWorker(insightWorker),
-    parent(parent)
+)
+    : PaneWidget(parent)
+    , targetMemoryDescriptor(targetMemoryDescriptor)
+    , settings(settings)
+    , insightWorker(insightWorker)
 {
     this->setObjectName("target-memory-inspection-pane");
 
@@ -175,7 +174,7 @@ void TargetMemoryInspectionPane::deactivate() {
 }
 
 void TargetMemoryInspectionPane::resizeEvent(QResizeEvent* event) {
-    const auto parentSize = this->parent->size();
+    const auto parentSize = this->parentPanel->size();
     const auto width = parentSize.width() - 1;
     this->container->setFixedSize(width, parentSize.height());
 }

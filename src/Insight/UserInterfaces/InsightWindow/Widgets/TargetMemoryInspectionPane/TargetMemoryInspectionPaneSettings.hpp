@@ -11,9 +11,10 @@ namespace Bloom::Widgets
 {
     struct TargetMemoryInspectionPaneSettings
     {
+        bool activated = false;
+        HexViewerWidgetSettings hexViewerWidgetSettings;
+
         std::vector<FocusedMemoryRegion> focusedMemoryRegions;
         std::vector<ExcludedMemoryRegion> excludedMemoryRegions;
-
-        HexViewerWidgetSettings hexViewerWidgetSettings;
     };
 }
