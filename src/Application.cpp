@@ -9,7 +9,7 @@
 
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"
-#include "Exceptions/InvalidConfig.hpp"
+#include "src/Exceptions/InvalidConfig.hpp"
 
 namespace Bloom
 {
@@ -70,12 +70,10 @@ namespace Bloom
                 this->applicationEventListener->waitAndDispatch();
             }
 
-        }
-        catch (const InvalidConfig& exception) {
+        } catch (const InvalidConfig& exception) {
             Logger::error(exception.getMessage());
 
-        }
-        catch (const Exception& exception) {
+        } catch (const Exception& exception) {
             Logger::error(exception.getMessage());
         }
 
@@ -105,7 +103,7 @@ namespace Bloom
 
         Logger::info("Selected environment: \"" + this->selectedEnvironmentName + "\"");
         Logger::debug("Number of environments extracted from config: "
-                          + std::to_string(this->projectConfig->environments.size()));
+            + std::to_string(this->projectConfig->environments.size()));
 
         applicationEventListener->registerCallbackForEventType<Events::TargetControllerThreadStateChanged>(
             std::bind(&Application::onTargetControllerThreadStateChanged, this, std::placeholders::_1)
@@ -154,8 +152,7 @@ namespace Bloom
                 this->projectSettings = ProjectSettings(jsonObject);
                 return;
 
-            }
-            catch (const std::exception& exception) {
+            } catch (const std::exception& exception) {
                 Logger::error(
                     "Failed to load project settings from " + projectSettingsPath + " - " + exception.what()
                 );
@@ -189,8 +186,7 @@ namespace Bloom
             jsonSettingsFile.write(jsonDocument.toJson());
             jsonSettingsFile.close();
 
-        }
-        catch (const Exception& exception) {
+        } catch (const Exception& exception) {
             Logger::error(
                 "Failed to save project settings -  " + exception.getMessage()
             );
@@ -202,12 +198,12 @@ namespace Bloom
 
         if (!jsonConfigFile.exists()) {
             throw InvalidConfig("Bloom configuration file (bloom.json) not found. Working directory: "
-                                    + Paths::projectDirPath());
+                + Paths::projectDirPath());
         }
 
         if (!jsonConfigFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             throw InvalidConfig("Failed to load Bloom configuration file (bloom.json) Working directory: "
-                                    + Paths::projectDirPath());
+                + Paths::projectDirPath());
         }
 
         auto jsonObject = QJsonDocument::fromJson(jsonConfigFile.readAll()).object();
@@ -227,24 +223,20 @@ namespace Bloom
         if (this->environmentConfig->insightConfig.has_value()) {
             this->insightConfig = this->environmentConfig->insightConfig.value();
 
-        }
-        else if (this->projectConfig->insightConfig.has_value()) {
+        } else if (this->projectConfig->insightConfig.has_value()) {
             this->insightConfig = this->projectConfig->insightConfig.value();
 
-        }
-        else {
+        } else {
             throw InvalidConfig("Insight configuration missing.");
         }
 
         if (this->environmentConfig->debugServerConfig.has_value()) {
             this->debugServerConfig = this->environmentConfig->debugServerConfig.value();
 
-        }
-        else if (this->projectConfig->debugServerConfig.has_value()) {
+        } else if (this->projectConfig->debugServerConfig.has_value()) {
             this->debugServerConfig = this->projectConfig->debugServerConfig.value();
 
-        }
-        else {
+        } else {
             throw InvalidConfig("Debug server configuration missing.");
         }
     }
@@ -257,11 +249,7 @@ namespace Bloom
         Logger::silence();
 
         // The file help.txt is included in the binary image as a resource. See src/resource.qrc
-        auto helpFile = QFile(QString::fromStdString(
-            Paths::compiledResourcesPath()
-                + "/resources/help.txt"
-                              )
-        );
+        auto helpFile = QFile(QString::fromStdString(Paths::compiledResourcesPath() + "/resources/help.txt"));
 
         if (!helpFile.open(QIODevice::ReadOnly)) {
             // This should never happen - if it does, something has gone very wrong
@@ -336,7 +324,7 @@ namespace Bloom
     void Application::stopSignalHandler() {
         if (this->signalHandler.getThreadState() != ThreadState::STOPPED
             && this->signalHandler.getThreadState() != ThreadState::UNINITIALISED
-            ) {
+        ) {
             this->signalHandler.triggerShutdown();
 
             /*
