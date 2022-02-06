@@ -41,7 +41,6 @@ namespace Bloom::Widgets
         void activate();
         void deactivate();
 
-    public slots:
         void onItemSelectionChange(Bloom::Widgets::ItemWidget* newlySelectedWidget);
 
     protected:
@@ -71,7 +70,6 @@ namespace Bloom::Widgets
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
-    private slots:
         void onTargetStateChanged(Targets::TargetState newState);
         void onRegistersRead(const Targets::TargetRegisters& registers);
     };

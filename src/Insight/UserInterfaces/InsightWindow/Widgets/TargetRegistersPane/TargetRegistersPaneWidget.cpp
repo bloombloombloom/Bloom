@@ -241,7 +241,7 @@ namespace Bloom::Widgets
 
     void TargetRegistersPaneWidget::onRegistersRead(const Targets::TargetRegisters& registers) {
         for (const auto& targetRegister : registers) {
-            auto& descriptor = targetRegister.descriptor;
+            const auto& descriptor = targetRegister.descriptor;
 
             for (const auto& registerGroupWidget : this->registerGroupWidgets) {
                 if (registerGroupWidget->registerWidgetsMappedByDescriptor.contains(descriptor)) {
