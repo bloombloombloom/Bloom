@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(Bloom LANGUAGES CXX VERSION 0.5.0)
+project(Bloom LANGUAGES CXX VERSION 0.6.0)
 
 set(CMAKE_VERBOSE_MAKEFILE off)
 
