@@ -10,8 +10,7 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors):
-        InsightWorkerTask(), descriptors(descriptors) {}
+        explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors): descriptors(descriptors) {}
 
     signals:
         void targetRegistersRead(Targets::TargetRegisters registers);

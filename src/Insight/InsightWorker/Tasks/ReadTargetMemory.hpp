@@ -18,11 +18,11 @@ namespace Bloom
             std::uint32_t startAddress,
             std::uint32_t size,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
-        ):
-            memoryType(memoryType),
-            startAddress(startAddress),
-            size(size),
-            excludedAddressRanges(excludedAddressRanges) {}
+        )
+            : memoryType(memoryType)
+            , startAddress(startAddress)
+            , size(size)
+            , excludedAddressRanges(excludedAddressRanges) {}
 
     signals:
         void targetMemoryRead(Targets::TargetMemoryBuffer buffer);

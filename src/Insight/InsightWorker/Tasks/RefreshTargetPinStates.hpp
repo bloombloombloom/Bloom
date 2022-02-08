@@ -11,7 +11,7 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        RefreshTargetPinStates(int variantId): InsightWorkerTask(), variantId(variantId) {}
+        explicit RefreshTargetPinStates(int variantId): variantId(variantId) {}
 
     signals:
         void targetPinStatesRetrieved(Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);

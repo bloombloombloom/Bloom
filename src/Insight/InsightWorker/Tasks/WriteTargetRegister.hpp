@@ -10,8 +10,7 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        WriteTargetRegister(const Targets::TargetRegister& targetRegister):
-        InsightWorkerTask(), targetRegister(targetRegister) {}
+        explicit WriteTargetRegister(const Targets::TargetRegister& targetRegister): targetRegister(targetRegister) {}
 
     protected:
         void run(TargetControllerConsole& targetControllerConsole) override;

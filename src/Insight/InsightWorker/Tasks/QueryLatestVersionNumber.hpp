@@ -11,8 +11,8 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        QueryLatestVersionNumber(const VersionNumber& currentVersionNumber):
-        InsightWorkerTask(), currentVersionNumber(currentVersionNumber) {}
+        explicit QueryLatestVersionNumber(const VersionNumber& currentVersionNumber):
+        currentVersionNumber(currentVersionNumber) {}
 
     signals:
         void latestVersionNumberRetrieved(const VersionNumber& latestVersionNumber);

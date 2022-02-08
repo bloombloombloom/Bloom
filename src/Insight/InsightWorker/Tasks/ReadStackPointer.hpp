@@ -9,7 +9,7 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        ReadStackPointer(): InsightWorkerTask() {}
+        ReadStackPointer() = default;
 
     signals:
         void stackPointerRead(std::uint32_t stackPointer);

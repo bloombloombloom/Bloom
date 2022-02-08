@@ -11,7 +11,7 @@ namespace Bloom
 
     public:
         SetTargetPinState(const Targets::TargetPinDescriptor& pinDescriptor, const Targets::TargetPinState& pinState):
-        InsightWorkerTask(), pinDescriptor(pinDescriptor), pinState(pinState) {}
+        pinDescriptor(pinDescriptor), pinState(pinState) {}
 
     protected:
         void run(TargetControllerConsole& targetControllerConsole) override;

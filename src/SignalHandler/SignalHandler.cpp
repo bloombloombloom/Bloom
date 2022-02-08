@@ -74,7 +74,7 @@ namespace Bloom
         if (this->shutdownSignalsReceived > 1) {
             // User has likely run out of patience
             Logger::warning("Aborting immediately");
-            exit(EXIT_FAILURE);
+            std::exit(EXIT_FAILURE);
         }
 
         Logger::info("Attempting clean shutdown");
