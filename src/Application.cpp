@@ -87,7 +87,7 @@ namespace Bloom
     }
 
     void Application::startup() {
-        auto applicationEventListener = this->applicationEventListener;
+        auto& applicationEventListener = this->applicationEventListener;
         this->eventManager.registerListener(applicationEventListener);
         applicationEventListener->registerCallbackForEventType<Events::ShutdownApplication>(
             std::bind(&Application::onShutdownApplicationRequest, this, std::placeholders::_1)
@@ -151,10 +151,11 @@ namespace Bloom
                     throw Exception("Failed to open settings file.");
                 }
 
-                const auto jsonObject = QJsonDocument::fromJson(jsonSettingsFile.readAll()).object();
+                this->projectSettings = ProjectSettings(
+                    QJsonDocument::fromJson(jsonSettingsFile.readAll()).object()
+                );
                 jsonSettingsFile.close();
 
-                this->projectSettings = ProjectSettings(jsonObject);
                 return;
 
             } catch (const std::exception& exception) {
@@ -430,16 +431,16 @@ namespace Bloom
         }
     }
 
+    void Application::onShutdownApplicationRequest(const Events::ShutdownApplication&) {
+        Logger::debug("ShutdownApplication event received.");
+        this->shutdown();
+    }
+
     void Application::onTargetControllerThreadStateChanged(const Events::TargetControllerThreadStateChanged& event) {
         if (event.getState() == ThreadState::STOPPED || event.getState() == ThreadState::SHUTDOWN_INITIATED) {
             // TargetController has unexpectedly shutdown - it must have encountered a fatal error.
             this->shutdown();
         }
-    }
-
-    void Application::onShutdownApplicationRequest(const Events::ShutdownApplication&) {
-        Logger::debug("ShutdownApplication event received.");
-        this->shutdown();
     }
 
     void Application::onDebugServerThreadStateChanged(const Events::DebugServerThreadStateChanged& event) {

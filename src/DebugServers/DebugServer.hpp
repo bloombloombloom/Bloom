@@ -33,11 +33,11 @@ namespace Bloom::DebugServers
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig,
             const DebugServerConfig& debugServerConfig
-        ):
-            eventManager(eventManager),
-            projectConfig(projectConfig),
-            environmentConfig(environmentConfig),
-            debugServerConfig(debugServerConfig) {};
+        )
+            : eventManager(eventManager)
+            , projectConfig(projectConfig)
+            , environmentConfig(environmentConfig)
+            , debugServerConfig(debugServerConfig) {};
 
         /**
          * Entry point for the DebugServer. This must called from a dedicated thread.

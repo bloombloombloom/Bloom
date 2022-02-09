@@ -283,6 +283,11 @@ namespace Bloom
         void stopDebugServer();
 
         /**
+         * Triggers a shutdown of Bloom and all of its components.
+         */
+        void onShutdownApplicationRequest(const Events::ShutdownApplication&);
+
+        /**
          * If the TargetController unexpectedly shuts down, the rest of the application will follow.
          *
          * @param event
@@ -296,10 +301,5 @@ namespace Bloom
          * @param event
          */
         void onDebugServerThreadStateChanged(const Events::DebugServerThreadStateChanged& event);
-
-        /**
-         * Triggers a shutdown of Bloom and all of its components.
-         */
-        void onShutdownApplicationRequest(const Events::ShutdownApplication&);
     };
 }
