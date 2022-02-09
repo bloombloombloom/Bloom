@@ -61,6 +61,9 @@ namespace Bloom
         }
 
         this->name = std::move(name);
+        this->shutdownPostDebugSession = jsonObject.value(
+            "shutdownPostDebugSession"
+        ).toBool(this->shutdownPostDebugSession);
         this->debugToolConfig = DebugToolConfig(jsonObject.find("debugTool")->toObject());
         this->targetConfig = TargetConfig(jsonObject.find("target")->toObject());
 

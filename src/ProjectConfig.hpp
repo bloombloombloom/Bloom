@@ -149,6 +149,11 @@ namespace Bloom
         std::string name;
 
         /**
+         * Flag to determine whether Bloom should shutdown at the end of a debug session.
+         */
+        bool shutdownPostDebugSession = false;
+
+        /**
          * Configuration for the environment's selected debug tool.
          *
          * Each environment can select only one debug tool.
