@@ -114,6 +114,10 @@ namespace Bloom
             std::bind(&Application::onDebugServerThreadStateChanged, this, std::placeholders::_1)
         );
 
+        applicationEventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
+            std::bind(&Application::onDebugSessionFinished, this, std::placeholders::_1)
+        );
+
         this->startTargetController();
         this->startDebugServer();
 
@@ -446,6 +450,12 @@ namespace Bloom
     void Application::onDebugServerThreadStateChanged(const Events::DebugServerThreadStateChanged& event) {
         if (event.getState() == ThreadState::STOPPED || event.getState() == ThreadState::SHUTDOWN_INITIATED) {
             // DebugServer has unexpectedly shutdown - it must have encountered a fatal error.
+            this->shutdown();
+        }
+    }
+
+    void Application::onDebugSessionFinished(const Events::DebugSessionFinished& event) {
+        if (this->environmentConfig->shutdownPostDebugSession) {
             this->shutdown();
         }
     }

@@ -301,5 +301,12 @@ namespace Bloom
          * @param event
          */
         void onDebugServerThreadStateChanged(const Events::DebugServerThreadStateChanged& event);
+
+        /**
+         * If configured to do so, Bloom will shutdown upon the end of the current debug session.
+         *
+         * @param event
+         */
+        void onDebugSessionFinished(const Events::DebugSessionFinished& event);
     };
 }
