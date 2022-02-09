@@ -39,31 +39,23 @@ namespace Bloom
          * @param eventManager
          */
         explicit Insight(
+            EventListener& eventListener,
             EventManager& eventManager,
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig,
             const InsightConfig& insightConfig,
             InsightProjectSettings& insightProjectSettings
-        ):
-        eventManager(eventManager),
-        projectConfig(projectConfig),
-        environmentConfig(environmentConfig),
-        insightConfig(insightConfig),
-        insightProjectSettings(insightProjectSettings),
-        application(
-            (
-                QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, false),
-#ifndef BLOOM_DEBUG_BUILD
-                QCoreApplication::addLibraryPath(QString::fromStdString(Paths::applicationDirPath() + "/plugins")),
-#endif
-                QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
-            )
-        ) {};
+        );
 
         /**
          * Entry point for Insight.
          */
         void run();
+
+        /**
+         * Shuts down Insight. Called when the user closes the Insight window or a ShutdownApplication event is fired.
+         */
+        void shutdown();
 
     private:
         std::string qtApplicationName = "Bloom";
@@ -77,7 +69,7 @@ namespace Bloom
         InsightProjectSettings& insightProjectSettings;
 
         EventManager& eventManager;
-        EventListenerPointer eventListener = std::make_shared<EventListener>("InsightEventListener");
+        EventListener& eventListener;
 
         QApplication application;
         InsightWorker* insightWorker = new InsightWorker(this->eventManager);
@@ -90,7 +82,7 @@ namespace Bloom
 
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(
             this->eventManager,
-            *(this->eventListener)
+            this->eventListener
         );
 
         /**
@@ -102,38 +94,11 @@ namespace Bloom
         void startup();
 
         /**
-         * Shuts down Insight. Called when the user closes the Insight window.
-         */
-        void shutdown();
-
-        /**
          * Queries the Bloom server for the latest version number. If the current version number doesn't match the
          * latest version number returned by the server, we'll display a warning in the logs to instruct the user to
          * upgrade.
          */
         void checkBloomVersion();
-
-        /**
-         * Because Insight occupies the main thread, it must handle any application shutdown requests.
-         *
-         * @param event
-         */
-        void onShutdownApplicationEvent(const Events::ShutdownApplication& event);
-
-        /**
-         * If the something horrible was to happen and the TC dies unexpectedly, Insight will shutdown in response.
-         *
-         * @param event
-         */
-        void onTargetControllerThreadStateChangedEvent(const Events::TargetControllerThreadStateChanged& event);
-
-        /**
-         * If something horrible was to happen and the DebugServer dies unexpectedly, Insight will shutdown in
-         * response.
-         *
-         * @param event
-         */
-        void onDebugServerThreadStateChangedEvent(const Events::DebugServerThreadStateChanged& event);
 
         /**
          * Dispatches any events currently in the queue.
@@ -143,7 +108,7 @@ namespace Bloom
          * See Insight::startup() for more.
          */
         void dispatchEvents() {
-            this->eventListener->dispatchCurrentEvents();
+            this->eventListener.dispatchCurrentEvents();
         };
     };
 }

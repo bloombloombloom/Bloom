@@ -14,6 +14,31 @@ namespace Bloom
 {
     using namespace Bloom::Exceptions;
 
+    Insight::Insight(
+        EventListener& eventListener,
+        EventManager& eventManager,
+        const ProjectConfig& projectConfig,
+        const EnvironmentConfig& environmentConfig,
+        const InsightConfig& insightConfig,
+        InsightProjectSettings& insightProjectSettings
+    )
+        : eventListener(eventListener)
+        , eventManager(eventManager)
+        , projectConfig(projectConfig)
+        , environmentConfig(environmentConfig)
+        , insightConfig(insightConfig)
+        , insightProjectSettings(insightProjectSettings)
+        , application(
+            (
+                QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, false),
+#ifndef BLOOM_DEBUG_BUILD
+                QCoreApplication::addLibraryPath(QString::fromStdString(Paths::applicationDirPath() + "/plugins")),
+#endif
+                QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
+            )
+        )
+    {}
+
     void Insight::run() {
         try {
             this->startup();
@@ -38,19 +63,6 @@ namespace Bloom
     void Insight::startup() {
         Logger::info("Starting Insight");
         this->setThreadState(ThreadState::STARTING);
-        this->eventManager.registerListener(this->eventListener);
-
-        this->eventListener->registerCallbackForEventType<Events::ShutdownApplication>(
-            std::bind(&Insight::onShutdownApplicationEvent, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::TargetControllerThreadStateChanged>(
-            std::bind(&Insight::onTargetControllerThreadStateChangedEvent, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::DebugServerThreadStateChanged>(
-            std::bind(&Insight::onDebugServerThreadStateChangedEvent, this, std::placeholders::_1)
-        );
 
         auto targetDescriptor = this->targetControllerConsole.getTargetDescriptor();
 
@@ -164,7 +176,6 @@ namespace Bloom
         }
 
         this->application.exit(0);
-
         this->setThreadState(ThreadState::STOPPED);
     }
 
@@ -190,27 +201,5 @@ namespace Bloom
         );
 
         this->insightWorker->queueTask(versionQueryTask);
-    }
-
-    void Insight::onShutdownApplicationEvent(const Events::ShutdownApplication&) {
-        /*
-         * Once Insight shuts down, control of the main thread will be returned to Application::run(), which
-         * will pickup the ShutdownApplication event and proceed with the shutdown.
-         */
-        this->shutdown();
-    }
-
-    void Insight::onTargetControllerThreadStateChangedEvent(const Events::TargetControllerThreadStateChanged& event) {
-        if (event.getState() == ThreadState::STOPPED) {
-            // Something horrible has happened with the TargetController - Insight is useless without the TargetController
-            this->shutdown();
-        }
-    }
-
-    void Insight::onDebugServerThreadStateChangedEvent(const Events::DebugServerThreadStateChanged& event) {
-        if (event.getState() == ThreadState::STOPPED) {
-            // Something horrible has happened with the DebugServer
-            this->shutdown();
-        }
     }
 }

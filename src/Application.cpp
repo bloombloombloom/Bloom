@@ -43,6 +43,7 @@ namespace Bloom
 
             if (this->insightConfig->insightEnabled) {
                 this->insight = std::make_unique<Insight>(
+                    *(this->applicationEventListener),
                     this->eventManager,
                     this->projectConfig.value(),
                     this->environmentConfig.value(),
@@ -127,6 +128,10 @@ namespace Bloom
 
         Thread::setThreadState(ThreadState::SHUTDOWN_INITIATED);
         Logger::info("Shutting down Bloom");
+
+        if (this->insight != nullptr) {
+            this->insight->shutdown();
+        }
 
         this->stopDebugServer();
         this->stopTargetController();
