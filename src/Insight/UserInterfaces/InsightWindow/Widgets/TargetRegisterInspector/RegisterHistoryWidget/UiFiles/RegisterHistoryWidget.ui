@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
     <widget class="QWidget" name="container">
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+        </property>
         <layout class="QVBoxLayout">
             <property name="spacing">
                 <number>0</number>
@@ -8,7 +11,7 @@
             <property name="margin">
                 <number>0</number>
             </property>
-            <item alignment="Qt::AlignCenter">
+            <item>
                 <widget class="QWidget" name="title-bar">
                     <property name="minimumHeight">
                         <number>30</number>
@@ -18,7 +21,7 @@
                     </widget>
                 </widget>
             </item>
-            <item alignment="Qt::AlignTop">
+            <item>
                 <widget class="ExpandingHeightScrollAreaWidget" name="item-scroll-area">
                     <property name="widgetResizable"><bool>true</bool></property>
                     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAsNeeded</enum></property>

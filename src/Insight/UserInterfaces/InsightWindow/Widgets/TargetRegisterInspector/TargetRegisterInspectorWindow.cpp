@@ -72,12 +72,12 @@ namespace Bloom::Widgets
         auto containerMargins = QMargins(15, 30, 15, 10);
 
         this->setStyleSheet(windowStylesheet.readAll());
-        this->setFixedSize(windowSize);
+        this->setMinimumSize(windowSize);
 
         auto uiLoader = UiLoader(this);
         this->container = uiLoader.load(&windowUiFile, this);
 
-        this->container->setFixedSize(this->size());
+        this->container->setMinimumSize(this->size());
         this->container->setContentsMargins(containerMargins);
 
         this->registerNameLabel = this->container->findChild<QLabel*>("register-name");
@@ -132,8 +132,6 @@ namespace Bloom::Widgets
             "0x" + QString::number(this->registerDescriptor.startAddress.value(), 16).toUpper()
         );
 
-        this->registerValueTextInput->setFixedWidth(BitsetWidget::WIDTH * 2);
-
         if (!this->registerDescriptor.writable) {
             this->registerValueTextInput->setDisabled(true);
             this->applyButton->setVisible(false);
@@ -176,6 +174,7 @@ namespace Bloom::Widgets
             this->bitsetWidgets.push_back(bitsetWidget);
 
             if (((registerByteIndex + 1) % 2) == 0) {
+                bitsetSingleHorizontalLayout->addStretch(1);
                 registerBitsetWidgetLayout->addLayout(bitsetSingleHorizontalLayout);
                 bitsetSingleHorizontalLayout = new QHBoxLayout();
                 bitsetSingleHorizontalLayout->setSpacing(BitWidget::SPACING);
@@ -185,10 +184,9 @@ namespace Bloom::Widgets
             byteNumber--;
         }
 
+        bitsetSingleHorizontalLayout->addStretch(1);
         registerBitsetWidgetLayout->addLayout(bitsetSingleHorizontalLayout);
         registerBitsetWidgetLayout->addStretch(1);
-
-        this->registerHistoryWidget->setFixedHeight(this->contentContainer->sizeHint().height());
 
         QObject::connect(this->helpButton, &QPushButton::clicked, this, &TargetRegisterInspectorWindow::openHelpPage);
         QObject::connect(this->closeButton, &QPushButton::clicked, this, &QWidget::close);
@@ -230,6 +228,12 @@ namespace Bloom::Widgets
         this->show();
     }
 
+    void TargetRegisterInspectorWindow::resizeEvent(QResizeEvent* event) {
+        this->container->setFixedSize(
+            this->width(),
+            this->height()
+        );
+    }
     bool TargetRegisterInspectorWindow::registerSupported(const Targets::TargetRegisterDescriptor& descriptor) {
         return (descriptor.size > 0 && descriptor.size <= 8);
     }

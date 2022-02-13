@@ -29,6 +29,8 @@ namespace Bloom::Widgets
         this->setObjectName("target-register-history-widget");
         this->setFixedWidth(300);
 
+        this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
         auto widgetUiFile = QFile(
             QString::fromStdString(Paths::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget"
@@ -42,7 +44,7 @@ namespace Bloom::Widgets
 
         auto uiLoader = UiLoader(this);
         this->container = uiLoader.load(&widgetUiFile, this);
-        this->container->setFixedSize(this->size());
+        this->container->setMinimumSize(this->size());
         this->container->setContentsMargins(1, 1, 1, 1);
 
         this->itemContainer = this->container->findChild<QWidget*>("item-container");
@@ -104,7 +106,7 @@ namespace Bloom::Widgets
     }
 
     void RegisterHistoryWidget::resizeEvent(QResizeEvent* event) {
-        this->container->setFixedSize(
+        this->container->setMinimumSize(
             this->width(),
             this->height()
         );

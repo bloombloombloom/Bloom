@@ -37,6 +37,9 @@ namespace Bloom::Widgets
 
         void setValue(const Targets::TargetMemoryBuffer& registerValue);
 
+    protected:
+        void resizeEvent(QResizeEvent* event) override;
+
     private:
         Targets::TargetRegisterDescriptor registerDescriptor;
         Targets::TargetMemoryBuffer registerValue;
