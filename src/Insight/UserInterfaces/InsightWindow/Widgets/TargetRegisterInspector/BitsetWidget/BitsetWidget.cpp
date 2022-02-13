@@ -64,7 +64,7 @@ namespace Bloom::Widgets
         int containerWidth = this->width();
         constexpr int charWidth = 6;
         auto labelWidth = static_cast<int>(charWidth * byteHex.size()) + 13;
-        auto width = (containerWidth - (BitWidget::WIDTH) - labelWidth) / 2;
+        auto width = containerWidth - BitWidget::WIDTH;
 
         painter.drawLine(QLine(
             BitWidget::WIDTH / 2,
@@ -88,17 +88,17 @@ namespace Bloom::Widgets
         ));
 
         painter.drawLine(QLine(
-            static_cast<int>((BitWidget::WIDTH / 2) + width + labelWidth),
+            static_cast<int>((BitWidget::WIDTH / 2) + (width / 2)),
             BitWidget::HEIGHT + BitsetWidget::VALUE_GRAPHIC_HEIGHT,
-            containerWidth - (BitWidget::WIDTH / 2) - 1,
-            BitWidget::HEIGHT + BitsetWidget::VALUE_GRAPHIC_HEIGHT
+            static_cast<int>((BitWidget::WIDTH / 2) + (width / 2)),
+            BitWidget::HEIGHT + BitsetWidget::VALUE_GRAPHIC_HEIGHT + 4
         ));
 
         painter.setPen(QColor("#8a8a8d"));
         painter.drawText(
             QRect(
-                static_cast<int>((BitWidget::WIDTH / 2) + width),
-                BitWidget::HEIGHT + BitsetWidget::VALUE_GRAPHIC_HEIGHT - (labelHeight / 2),
+                static_cast<int>((BitWidget::WIDTH / 2) + (width / 2) - (labelWidth / 2)),
+                BitWidget::HEIGHT + BitsetWidget::VALUE_GRAPHIC_HEIGHT + 7,
                 labelWidth,
                 labelHeight
             ),
