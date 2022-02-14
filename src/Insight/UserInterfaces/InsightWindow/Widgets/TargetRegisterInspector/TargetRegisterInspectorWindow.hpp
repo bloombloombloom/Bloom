@@ -8,6 +8,7 @@
 #include <QSize>
 #include <QString>
 #include <QEvent>
+#include <QScrollArea>
 #include <optional>
 
 #include "src/Targets/TargetRegister.hpp"
@@ -49,7 +50,7 @@ namespace Bloom::Widgets
         QLabel* registerNameLabel = nullptr;
         QLabel* registerDescriptionLabel = nullptr;
 
-        QWidget* contentContainer = nullptr;
+        QScrollArea* contentContainer = nullptr;
         RegisterHistoryWidget* registerHistoryWidget = nullptr;
 
         QWidget* registerValueContainer = nullptr;

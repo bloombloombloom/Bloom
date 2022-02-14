@@ -2,17 +2,30 @@
     background-color: #373835;
 }
 
-#register-name {
-    font-size: 15px;
+#register-details-container QPlainTextEdit {
+    min-height: 100px;
+    max-height: 100px;
 }
 
-#register-value-container,
-#register-details-container {
-    border: 1px solid #2F2F2D;
+#read-only-indicator-label,
+#register-details-label {
+    color: #8a8a8d;
 }
 
-#register-value-text-input-container {
-    border-top: 1px solid #41423f;
+#register-details-name-label {
+    min-width: 60px;
+    max-width: 60px;
+}
+
+#register-details-start-address-label,
+#register-details-size-label,
+#register-details-description-label {
+    min-width: 130px;
+    max-width: 130px;
+}
+
+#register-details-name-input {
+    max-width: 500px;
 }
 
 #apply-btn {
@@ -35,9 +48,15 @@
     font-size: 12px;
 }
 
+/* Actions */
+#actions {
+    border-top: 1px solid #2F2F2D;
+    min-height: 50px;
+}
+
 /* RegisterHistoryWidget */
 #target-register-history-widget #container {
-    border: 1px solid #2F2F2D;
+    border-right: 1px solid #2F2F2D;
 }
 
 #target-register-history-widget #title-bar {

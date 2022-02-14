@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QMargins>
 #include <QDesktopServices>
+#include <QPlainTextEdit>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
@@ -68,29 +69,23 @@ namespace Bloom::Widgets
         this->container = uiLoader.load(&windowUiFile, this);
 
         this->container->setMinimumSize(this->size());
-        this->container->setContentsMargins(containerMargins);
+        this->container->setContentsMargins(QMargins(0, 0, 0, 0));
 
-        this->registerNameLabel = this->container->findChild<QLabel*>("register-name");
-        this->registerDescriptionLabel = this->container->findChild<QLabel*>("register-description");
-        this->contentContainer = this->container->findChild<QWidget*>("content-container");
-        this->registerValueContainer = this->container->findChild<QWidget*>("register-value-container");
-        this->registerValueTextInput = this->container->findChild<QLineEdit*>("register-value-text-input");
-        this->registerValueBitsetWidgetContainer = this->container->findChild<QWidget*>(
+        this->contentContainer = this->container->findChild<QScrollArea*>("content-container");
+        auto* contentContainerViewport = this->contentContainer->widget();
+        this->contentContainer->setContentsMargins(0, 0, 0, 0);
+        contentContainerViewport->setContentsMargins(0, 0, 0, 0);
+        contentContainerViewport->layout()->setContentsMargins(0, 0, 10, 0);
+
+        this->registerValueContainer = this->contentContainer->findChild<QWidget*>("register-value-container");
+        this->registerValueTextInput = this->contentContainer->findChild<QLineEdit*>("register-value-text-input");
+        this->registerValueBitsetWidgetContainer = this->registerValueContainer->findChild<QWidget*>(
             "register-value-bitset-widget-container"
         );
         this->refreshValueButton = this->container->findChild<QPushButton*>("refresh-value-btn");
         this->applyButton = this->container->findChild<QPushButton*>("apply-btn");
         this->helpButton = this->container->findChild<QPushButton*>("help-btn");
         this->closeButton = this->container->findChild<QPushButton*>("close-btn");
-
-        this->registerNameLabel->setText(registerName);
-
-        if (this->registerDescriptor.description.has_value()) {
-            this->registerDescriptionLabel->setText(
-                QString::fromStdString(this->registerDescriptor.description.value())
-            );
-            this->registerDescriptionLabel->setVisible(true);
-        }
 
         this->registerHistoryWidget = new RegisterHistoryWidget(
             this->registerDescriptor,
@@ -100,26 +95,29 @@ namespace Bloom::Widgets
         );
 
         auto* contentLayout = this->container->findChild<QHBoxLayout*>("content-layout");
-        contentLayout->insertWidget(0, this->registerHistoryWidget, 0, Qt::AlignmentFlag::AlignTop);
+        contentLayout->insertWidget(0, this->registerHistoryWidget, 0);
 
-        auto* registerDetailsContainer = this->container->findChild<QWidget*>("register-details-container");
-        auto* registerValueContainer = this->container->findChild<QWidget*>("register-value-container");
-        registerValueContainer->setContentsMargins(15, 15, 15, 15);
-        registerDetailsContainer->setContentsMargins(15, 15, 15, 15);
+        auto* registerDetailsContainer = this->contentContainer->findChild<QWidget*>("register-details-container");
 
         auto* registerDetailsNameInput = registerDetailsContainer->findChild<QLineEdit*>(
             "register-details-name-input"
         );
-        auto* registerDetailsSizeInput = registerDetailsContainer->findChild<QLineEdit*>(
-            "register-details-size-input"
-        );
         auto* registerDetailsStartAddressInput = registerDetailsContainer->findChild<QLineEdit*>(
             "register-details-start-address-input"
         );
+        auto* registerDetailsSizeInput = registerDetailsContainer->findChild<QLineEdit*>(
+            "register-details-size-input"
+        );
+        auto* registerDetailsDescriptionInput = registerDetailsContainer->findChild<QPlainTextEdit*>(
+            "register-details-description-input"
+        );
         registerDetailsNameInput->setText(registerName);
-        registerDetailsSizeInput->setText(QString::number(this->registerDescriptor.size));
         registerDetailsStartAddressInput->setText(
             "0x" + QString::number(this->registerDescriptor.startAddress.value(), 16).toUpper()
+        );
+        registerDetailsSizeInput->setText(QString::number(this->registerDescriptor.size));
+        registerDetailsDescriptionInput->setPlainText(
+            QString::fromStdString(this->registerDescriptor.description.value_or(""))
         );
 
         if (!this->registerDescriptor.writable) {
@@ -224,6 +222,7 @@ namespace Bloom::Widgets
             this->height()
         );
     }
+
     bool TargetRegisterInspectorWindow::registerSupported(const Targets::TargetRegisterDescriptor& descriptor) {
         return (descriptor.size > 0 && descriptor.size <= 8);
     }
