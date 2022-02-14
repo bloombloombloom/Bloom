@@ -61,18 +61,8 @@ namespace Bloom::Widgets
             throw Exception("Failed to open TargetRegisterInspectorWindow stylesheet file");
         }
 
-        auto windowSize = QSize(
-            840,
-            static_cast<int>(
-                440
-                + ((BitsetWidget::HEIGHT + 20) * std::ceil(static_cast<float>(this->registerValue.size()) / 2))
-                + (!this->registerDescriptor.writable ? 50 : 0)
-            )
-        );
-        auto containerMargins = QMargins(15, 30, 15, 10);
-
         this->setStyleSheet(windowStylesheet.readAll());
-        this->setMinimumSize(windowSize);
+        this->setFixedSize(1070, 600);
 
         auto uiLoader = UiLoader(this);
         this->container = uiLoader.load(&windowUiFile, this);
