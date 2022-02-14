@@ -109,7 +109,8 @@ QScrollArea .QWidget {
 }
 
 QComboBox,
-QLineEdit {
+QLineEdit,
+QPlainTextEdit {
     background-color: #2F2F2D;
     border: 1px solid #41423f;
 }
@@ -156,8 +157,9 @@ QComboBox QAbstractItemView::item:selected  {
     color: #afb1b3;
 }
 
-QLineEdit:disabled {
-    font-style: italic;
+QLineEdit:disabled,
+QPlainTextEdit:disabled,
+QPlainTextEdit:read-only {
     color: #7d7d7d;
 }
 
