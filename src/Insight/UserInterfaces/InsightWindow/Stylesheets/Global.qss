@@ -103,6 +103,11 @@ QScrollBar::sub-line:vertical {
     background: none;
 }
 
+QScrollArea,
+QScrollArea .QWidget {
+    background-color: transparent;
+}
+
 QComboBox,
 QLineEdit {
     background-color: #2F2F2D;

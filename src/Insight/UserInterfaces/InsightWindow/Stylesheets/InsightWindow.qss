@@ -255,10 +255,6 @@ QScrollBar::sub-line:vertical {
     border: none;
 }
 
-#target-registers-side-pane QScrollArea {
-    background-color: transparent;
-}
-
 #target-registers-side-pane #item-container {
     background-color: transparent;
 }
