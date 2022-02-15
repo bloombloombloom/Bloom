@@ -4,7 +4,7 @@
 #include <queue>
 #include <utility>
 
-#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8Interface.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
 #include "src/Targets/Microchip/AVR/Target.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/DebugToolDrivers/DebugTool.hpp"
@@ -50,11 +50,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * @return
          */
         bool isDebugToolSupported(DebugTool* debugTool) override {
-            return debugTool->getAvr8Interface() != nullptr;
+            return debugTool->getAvr8DebugInterface() != nullptr;
         }
 
         void setDebugTool(DebugTool* debugTool) override {
-            this->avr8Interface = debugTool->getAvr8Interface();
+            this->avr8DebugInterface = debugTool->getAvr8DebugInterface();
         };
 
         /**
@@ -119,7 +119,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         ) override;
 
     protected:
-        DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* avr8Interface = nullptr;
+        DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* avr8DebugInterface = nullptr;
         std::string name;
         std::optional<Family> family;
         std::optional<TargetDescription::TargetDescriptionFile> targetDescriptionFile;

@@ -41,7 +41,7 @@ namespace Bloom::DebugToolDrivers
             return this->edbgInterface;
         }
 
-        TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* getAvr8Interface() override {
+        TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() override {
             return this->edbgAvr8Interface.get();
         }
 

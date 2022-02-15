@@ -5,7 +5,7 @@
 #include <thread>
 #include <cassert>
 
-#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8Interface.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Avr8Generic.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
 #include "src/Targets/Microchip/AVR/Target.hpp"
@@ -15,15 +15,15 @@
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     /**
-     * The EdbgAvr8Interface implements the AVR8 Generic EDBG/CMSIS-DAP protocol, as an Avr8Interface.
+     * The EdbgAvr8Interface implements the AVR8 Generic EDBG/CMSIS-DAP protocol, as an Avr8DebugInterface.
      *
      * See the "AVR8 Generic Protocol" section in the DS50002630A document by Microchip, for more information on the
      * protocol.
      *
-     * This implementation should work with any Microchip EDBG based CMSIS-DAP debug tool (such as the Atmel-ICE,
-     * Power Debugger and the MPLAB SNAP debugger (in "AVR mode")).
+     * This implementation should work with any Microchip EDBG-based CMSIS-DAP debug tool (such as the Atmel-ICE,
+     * Power Debugger, the MPLAB SNAP debugger (in "AVR mode"), etc).
      */
-    class EdbgAvr8Interface: public TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface
+    class EdbgAvr8Interface: public TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface
     {
     public:
         explicit EdbgAvr8Interface(EdbgInterface& edbgInterface)

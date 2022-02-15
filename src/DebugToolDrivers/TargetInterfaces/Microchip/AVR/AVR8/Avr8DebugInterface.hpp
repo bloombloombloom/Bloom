@@ -14,26 +14,27 @@
 namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
 {
     /**
-     * Interfacing with an AVR8 target can vary significantly, depending on the debug tool being used.
+     * Interfacing with an AVR8 target for debugging operations can vary significantly, depending on the debug tool
+     * being used. Some debug tools employ different protocols.
      *
-     * This class describes the interface required for interfacing with AVR8 targets.
+     * This class describes the interface required for interfacing with AVR8 targets, for debugging operations.
      *
      * Each debug tool that supports interfacing with AVR8 targets must provide an implementation
      * of this interface class. For example, the Atmel-ICE provides the EdbgAvr8Interface implementation for
-     * interfacing with AVR8 targets. See Bloom::DebugToolDrivers::AtmelIce::getAvr8Interface() and
-     * Bloom::DebugTool::getAvr8Interface() for more on this.
+     * interfacing with AVR8 targets. See Bloom::DebugToolDrivers::AtmelIce::getAvr8DebugInterface() and
+     * Bloom::DebugTool::getAvr8DebugInterface() for more on this.
      */
-    class Avr8Interface
+    class Avr8DebugInterface
     {
     public:
-        Avr8Interface() = default;
-        virtual ~Avr8Interface() = default;
+        Avr8DebugInterface() = default;
+        virtual ~Avr8DebugInterface() = default;
 
-        Avr8Interface(const Avr8Interface& other) = default;
-        Avr8Interface(Avr8Interface&& other) = default;
+        Avr8DebugInterface(const Avr8DebugInterface& other) = default;
+        Avr8DebugInterface(Avr8DebugInterface&& other) = default;
 
-        Avr8Interface& operator = (const Avr8Interface& other) = default;
-        Avr8Interface& operator = (Avr8Interface&& other) = default;
+        Avr8DebugInterface& operator = (const Avr8DebugInterface& other) = default;
+        Avr8DebugInterface& operator = (Avr8DebugInterface&& other) = default;
 
         /**
          * Configures the interface. Any debug tool -> target interface specific configuration should take

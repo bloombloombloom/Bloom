@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TargetInterfaces/Microchip/AVR/AVR8/Avr8Interface.hpp"
+#include "TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
 
 namespace Bloom
 {
@@ -10,7 +10,8 @@ namespace Bloom
      *
      * Each debug tool must implement this interface. Note that target specific driver code should not be placed here.
      * Each target family will expect the debug tool to provide an interface for that particular group of targets.
-     * For an example, see the Avr8Interface class and the DebugTool::getAvr8Interface().
+     * For an example, see the Avr8DebugInterface class and DebugTool::getAvr8DebugInterface(), for the family of AVR
+     * 8-bit targets.
      */
     class DebugTool
     {
@@ -39,16 +40,16 @@ namespace Bloom
         virtual std::string getSerialNumber() = 0;
 
         /**
-         * All debug tools that support AVR8 targets must provide an implementation of the Avr8Interface
-         * class, via this method.
+         * All debug tools that support debugging operations on AVR8 targets must provide an implementation of
+         * the Avr8DebugInterface class, via this function.
          *
-         * For debug tools that do not support AVR8 targets, this method should return a nullptr.
+         * For debug tools that do not support debugging on AVR8 targets, this function should return a nullptr.
          *
-         * Note: the caller of this method will not manage the lifetime of the returned Avr8Interface instance.
+         * Note: the caller of this function will not manage the lifetime of the returned Avr8DebugInterface instance.
          *
          * @return
          */
-        virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8Interface* getAvr8Interface() {
+        virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() {
             return nullptr;
         };
 

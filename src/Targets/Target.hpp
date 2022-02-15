@@ -96,9 +96,9 @@ namespace Bloom::Targets
          * prevent Bloom from attempting to use the selected debug tool with the selected target. An InvalidConfig
          * exception will be raised and Bloom will shutdown.
          *
-         * For AVR8 targets, we simply check if the debug tool returns a valid Avr8Interface
-         * (via DebugTool::getAvr8Interface()). If it fails to do so, it would mean that the debug tool, or more so our
-         * debug tool driver, does not support AVR8 targets.
+         * For AVR8 targets, we simply check if the debug tool returns a valid Avr8DebugInterface
+         * (via DebugTool::getAvr8DebugInterface()). If it fails to do so, it would mean that the debug tool, or more
+         * so our debug tool driver, does not support AVR8 targets.
          *
          * @param debugTool
          *

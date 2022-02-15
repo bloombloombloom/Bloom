@@ -26,10 +26,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         Target::preActivationConfigure(targetConfig);
 
         if (this->family.has_value()) {
-            this->avr8Interface->setFamily(this->family.value());
+            this->avr8DebugInterface->setFamily(this->family.value());
         }
 
-        this->avr8Interface->configure(targetConfig);
+        this->avr8DebugInterface->configure(targetConfig);
     }
 
     void Avr8::postActivationConfigure() {
@@ -45,7 +45,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * file (which it would, if the user specified the exact target name in their project config - see
          * Avr8::getId() and TargetController::getSupportedTargets() for more).
          */
-        auto targetSignature = this->avr8Interface->getDeviceId();
+        auto targetSignature = this->avr8DebugInterface->getDeviceId();
         auto tdSignature = this->targetDescriptionFile->getTargetSignature();
 
         if (targetSignature != tdSignature) {
@@ -63,8 +63,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             throw Exception("Failed to resolve AVR8 family");
         }
 
-        this->avr8Interface->setFamily(this->family.value());
-        this->avr8Interface->setTargetParameters(this->targetParameters.value());
+        this->avr8DebugInterface->setFamily(this->family.value());
+        this->avr8DebugInterface->setTargetParameters(this->targetParameters.value());
     }
 
     void Avr8::activate() {
@@ -72,19 +72,19 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             return;
         }
 
-        this->avr8Interface->init();
+        this->avr8DebugInterface->init();
 
         if (this->targetDescriptionFile.has_value()) {
-            this->avr8Interface->setTargetParameters(this->targetParameters.value());
+            this->avr8DebugInterface->setTargetParameters(this->targetParameters.value());
         }
 
-        this->avr8Interface->activate();
+        this->avr8DebugInterface->activate();
         this->activated = true;
     }
 
     void Avr8::deactivate() {
         try {
-            this->avr8Interface->deactivate();
+            this->avr8DebugInterface->deactivate();
             this->activated = false;
 
         } catch (const Exception& exception) {
@@ -142,31 +142,31 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     }
 
     void Avr8::run() {
-        this->avr8Interface->run();
+        this->avr8DebugInterface->run();
     }
 
     void Avr8::stop() {
-        this->avr8Interface->stop();
+        this->avr8DebugInterface->stop();
     }
 
     void Avr8::step() {
-        this->avr8Interface->step();
+        this->avr8DebugInterface->step();
     }
 
     void Avr8::reset() {
-        this->avr8Interface->reset();
+        this->avr8DebugInterface->reset();
     }
 
     void Avr8::setBreakpoint(std::uint32_t address) {
-        this->avr8Interface->setBreakpoint(address);
+        this->avr8DebugInterface->setBreakpoint(address);
     }
 
     void Avr8::removeBreakpoint(std::uint32_t address) {
-        this->avr8Interface->clearBreakpoint(address);
+        this->avr8DebugInterface->clearBreakpoint(address);
     }
 
     void Avr8::clearAllBreakpoints() {
-        this->avr8Interface->clearAllBreakpoints();
+        this->avr8DebugInterface->clearAllBreakpoints();
     }
 
     void Avr8::writeRegisters(TargetRegisters registers) {
@@ -194,7 +194,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         if (!registers.empty()) {
-            this->avr8Interface->writeRegisters(registers);
+            this->avr8DebugInterface->writeRegisters(registers);
         }
     }
 
@@ -215,7 +215,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         if (!descriptors.empty()) {
-            auto otherRegisters = this->avr8Interface->readRegisters(descriptors);
+            auto otherRegisters = this->avr8DebugInterface->readRegisters(descriptors);
             registers.insert(registers.end(), otherRegisters.begin(), otherRegisters.end());
         }
 
@@ -228,19 +228,19 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::uint32_t bytes,
         const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
     ) {
-        return this->avr8Interface->readMemory(memoryType, startAddress, bytes, excludedAddressRanges);
+        return this->avr8DebugInterface->readMemory(memoryType, startAddress, bytes, excludedAddressRanges);
     }
 
     void Avr8::writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
-        this->avr8Interface->writeMemory(memoryType, startAddress, buffer);
+        this->avr8DebugInterface->writeMemory(memoryType, startAddress, buffer);
     }
 
     TargetState Avr8::getState() {
-        return this->avr8Interface->getTargetState();
+        return this->avr8DebugInterface->getTargetState();
     }
 
     std::uint32_t Avr8::getProgramCounter() {
-        return this->avr8Interface->getProgramCounter();
+        return this->avr8DebugInterface->getProgramCounter();
     }
 
     TargetRegister Avr8::getProgramCounterRegister() {
@@ -255,7 +255,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     }
 
     void Avr8::setProgramCounter(std::uint32_t programCounter) {
-        this->avr8Interface->setProgramCounter(programCounter);
+        this->avr8DebugInterface->setProgramCounter(programCounter);
     }
 
     std::uint32_t Avr8::getStackPointer() {
@@ -614,7 +614,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
     TargetSignature Avr8::getId() {
         if (!this->id.has_value()) {
-            this->id = this->avr8Interface->getDeviceId();
+            this->id = this->avr8DebugInterface->getDeviceId();
         }
 
         return this->id.value();
