@@ -12,13 +12,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         const std::set<std::uint32_t>& excludedAddresses
     ) {
         /*
-         * The read memory command consists of 11/11 + (this->bytes / 8) bytes:
+         * The read memory command consists of 11 + (bytes / 8) bytes:
          * 1. Command ID (0x21 for the general read memory command, 0x22 for reading with a mask)
          * 2. Version (0x00)
          * 3. Memory type (Avr8MemoryType)
          * 4. Start address (4 bytes)
          * 5. Number of bytes to read (4 bytes)
-         * 6. Mask to apply (this->bytes / 8) - only required if we're using the masked read command (command ID 0x22).
+         * 6. Mask to apply (bytes / 8) - only required if we're using the masked read command (command ID 0x22).
          */
         this->payload = std::vector<unsigned char>(11, 0x00);
         this->payload[0] = excludedAddresses.empty() ? 0x21 : 0x22;

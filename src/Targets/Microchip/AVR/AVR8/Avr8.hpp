@@ -55,7 +55,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         void setDebugTool(DebugTool* debugTool) override {
             this->avr8DebugInterface = debugTool->getAvr8DebugInterface();
-        };
+        }
 
         /**
          * Instances to this target class can be promoted. See Avr8::promote() method for more.

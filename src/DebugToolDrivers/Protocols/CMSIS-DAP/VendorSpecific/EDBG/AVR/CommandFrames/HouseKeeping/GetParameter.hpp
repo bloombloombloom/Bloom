@@ -17,7 +17,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
              * 2. Version (0x00)
              * 3. Param context (Parameter::context)
              * 4. Param ID (Parameter::id)
-             * 5. Param value length (this->size)
+             * 5. Param value length (size)
              */
             this->payload = {
                 0x02,

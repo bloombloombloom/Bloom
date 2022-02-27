@@ -9,12 +9,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         SetParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
             /*
-             * The set param command consists of this->value.size() + 5 bytes. The first five bytes consist of:
+             * The set param command consists of value.size() + 5 bytes. The first five bytes consist of:
              * 1. Command ID (0x01)
              * 2. Version (0x00)
              * 3. Param context (Avr8Parameter::context)
              * 4. Param ID (Avr8Parameter::id)
-             * 5. Param value length (this->value.size()) - this is only one byte in size, so its value should
+             * 5. Param value length (value.size()) - this is only one byte in size, so its value should
              *    never exceed 255.
              */
             this->payload = std::vector<unsigned char>(5, 0x00);
