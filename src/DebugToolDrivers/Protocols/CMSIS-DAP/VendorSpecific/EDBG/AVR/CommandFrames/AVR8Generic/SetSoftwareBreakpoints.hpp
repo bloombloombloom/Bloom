@@ -7,18 +7,10 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
-    class SetSoftwareBreakpoints: public Avr8GenericCommandFrame
+    class SetSoftwareBreakpoints: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {
     public:
-        SetSoftwareBreakpoints() = default;
-
-        explicit SetSoftwareBreakpoints(std::vector<std::uint32_t> addresses): addresses(std::move(addresses)) {}
-
-        void setAddresses(const std::vector<std::uint32_t>& addresses) {
-            this->addresses = addresses;
-        }
-
-        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
+        explicit SetSoftwareBreakpoints(const std::vector<std::uint32_t>& addresses) {
             /*
              * The set software breakpoint command consists of 2 bytes + 4*n bytes, where n is the number
              * of breakpoints to set:
@@ -27,21 +19,17 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
              * 2. Version (0x00)
              * ... addresses
              */
-            auto output = std::vector<unsigned char>(2, 0x00);
-            output[0] = 0x43;
-            output[1] = 0x00;
+            this->payload = {
+                0x43,
+                0x00,
+            };
 
-            for (const auto& address : this->addresses) {
-                output.push_back(static_cast<unsigned char>(address));
-                output.push_back(static_cast<unsigned char>(address >> 8));
-                output.push_back(static_cast<unsigned char>(address >> 16));
-                output.push_back(static_cast<unsigned char>(address >> 24));
+            for (const auto& address : addresses) {
+                this->payload.emplace_back(static_cast<unsigned char>(address));
+                this->payload.emplace_back(static_cast<unsigned char>(address >> 8));
+                this->payload.emplace_back(static_cast<unsigned char>(address >> 16));
+                this->payload.emplace_back(static_cast<unsigned char>(address >> 24));
             }
-
-            return output;
         }
-
-    private:
-        std::vector<std::uint32_t> addresses;
     };
 }

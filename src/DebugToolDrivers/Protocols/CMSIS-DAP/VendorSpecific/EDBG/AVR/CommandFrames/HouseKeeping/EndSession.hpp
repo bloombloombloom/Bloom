@@ -7,24 +7,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     /**
      * The End Session command ends the active session with the tool.
      */
-    class EndSession: public HouseKeepingCommandFrame
+    class EndSession: public HouseKeepingCommandFrame<std::array<unsigned char, 3>>
     {
     public:
-        EndSession(): HouseKeepingCommandFrame() {
-            this->init();
-        }
-
-    private:
-        void init() {
+        EndSession() {
             /*
              * The payload for the End Session command consists of three bytes. A command ID byte (0x11), a
              * version byte (0x00) and a reset flag (0x00 for no reset, 0x01 for tool reset).
              */
-            auto payload = std::vector<unsigned char>(3);
-            payload[0] = 0x11;
-            payload[1] = 0x00;
-            payload[2] = 0x00;
-            this->setPayload(payload);
+            this->payload = {
+                0x11,
+                0x00,
+                0x00
+            };
         }
     };
 }

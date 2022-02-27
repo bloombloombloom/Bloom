@@ -4,32 +4,21 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
-    class Stop: public Avr8GenericCommandFrame
+    class Stop: public Avr8GenericCommandFrame<std::array<unsigned char, 3>>
     {
     public:
-        Stop() = default;
-        explicit Stop(bool stopImmediately): stopImmediately(stopImmediately) {};
-
-        void setStopImmediately(bool stopImmediately) {
-            this->stopImmediately = stopImmediately;
-        }
-
-        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
+        explicit Stop(bool stopImmediately = true) {
             /*
              * The stop command consists of 3 bytes:
              * 1. Command ID (0x31)
              * 2. Version (0x00)
              * 3. Stop immediately (0x01 to stop immediately or 0x02 to stop at the next symbol)
              */
-            auto output = std::vector<unsigned char>(3, 0x00);
-            output[0] = 0x31;
-            output[1] = 0x00;
-            output[2] = this->stopImmediately ? 0x01 : 0x02;
-
-            return output;
+            this->payload = {
+                0x31,
+                0x00,
+                static_cast<unsigned char>(stopImmediately ? 0x01 : 0x02),
+            };
         }
-
-    private:
-        bool stopImmediately = true;
     };
 }

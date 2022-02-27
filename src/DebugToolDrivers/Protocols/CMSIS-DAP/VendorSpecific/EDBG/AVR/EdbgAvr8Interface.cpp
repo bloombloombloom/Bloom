@@ -1459,11 +1459,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        auto commandFrame = CommandFrames::Avr8Generic::ReadMemory();
-        commandFrame.setType(type);
-        commandFrame.setAddress(startAddress);
-        commandFrame.setBytes(bytes);
-        commandFrame.setExcludedAddresses(excludedAddresses);
+        auto commandFrame = CommandFrames::Avr8Generic::ReadMemory(
+            type,
+            startAddress,
+            bytes,
+            excludedAddresses
+        );
 
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
@@ -1479,10 +1480,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw Exception("Writing to flash memory is not supported.");
         }
 
-        auto commandFrame = CommandFrames::Avr8Generic::WriteMemory();
-        commandFrame.setType(type);
-        commandFrame.setAddress(address);
-        commandFrame.setBuffer(buffer);
+        auto commandFrame = CommandFrames::Avr8Generic::WriteMemory(
+            type,
+            address,
+            buffer
+        );
 
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {

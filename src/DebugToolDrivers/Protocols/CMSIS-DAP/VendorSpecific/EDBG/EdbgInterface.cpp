@@ -8,18 +8,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 {
     using namespace Bloom::Exceptions;
 
-    Protocols::CmsisDap::Response EdbgInterface::sendAvrCommandFrameAndWaitForResponse(
-        const Protocols::CmsisDap::Edbg::Avr::AvrCommandFrame& avrCommandFrame
+    Protocols::CmsisDap::Response EdbgInterface::sendAvrCommandsAndWaitForResponse(
+        const std::vector<Avr::AvrCommand>& avrCommands
     ) {
-        // An AVR command frame can be split into multiple CMSIS-DAP commands. Each command
-        // containing a fragment of the AvrCommandFrame.
-
-        // Minus 3 to accommodate AVR command meta data
-        std::size_t maximumCommandPacketSize = (this->getUsbHidInputReportSize() - 3);
-
-        auto avrCommands = avrCommandFrame.generateAvrCommands(maximumCommandPacketSize);
-
-        for (auto& avrCommand : avrCommands) {
+        for (const auto& avrCommand : avrCommands) {
             // Send command to device
             auto response = this->sendCommandAndWaitForResponse(avrCommand);
 

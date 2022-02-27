@@ -21,7 +21,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         return rawId == id;
     }
 
-    class HouseKeepingCommandFrame: public AvrCommandFrame
+    template<class PayloadContainerType>
+    class HouseKeepingCommandFrame: public AvrCommandFrame<PayloadContainerType>
     {
     public:
         HouseKeepingCommandFrame() {

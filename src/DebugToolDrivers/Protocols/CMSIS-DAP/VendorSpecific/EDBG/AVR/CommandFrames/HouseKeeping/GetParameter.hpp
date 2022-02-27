@@ -7,24 +7,10 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping
 {
-    class GetParameter: public HouseKeepingCommandFrame
+    class GetParameter: public HouseKeepingCommandFrame<std::array<unsigned char, 5>>
     {
     public:
-        explicit GetParameter(const Parameter& parameter): parameter(parameter) {}
-
-        GetParameter(const Parameter& parameter, std::uint8_t size): GetParameter(parameter) {
-            this->setSize(size);
-        }
-
-        void setParameter(const Parameter& parameter) {
-            this->parameter = parameter;
-        }
-
-        void setSize(std::uint8_t size) {
-            this->size = size;
-        }
-
-        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
+        explicit GetParameter(const Parameter& parameter, std::uint8_t size) {
             /*
              * The get param command consists of 5 bytes:
              * 1. Command ID (0x02)
@@ -33,18 +19,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
              * 4. Param ID (Parameter::id)
              * 5. Param value length (this->size)
              */
-            auto output = std::vector<unsigned char>(5, 0x00);
-            output[0] = 0x02;
-            output[1] = 0x00;
-            output[2] = static_cast<unsigned char>(this->parameter.context);
-            output[3] = static_cast<unsigned char>(this->parameter.id);
-            output[4] = static_cast<unsigned char>(this->size);
-
-            return output;
+            this->payload = {
+                0x02,
+                0x00,
+                static_cast<unsigned char>(parameter.context),
+                static_cast<unsigned char>(parameter.id),
+                static_cast<unsigned char>(size)
+            };
         }
-
-    private:
-        Parameter parameter;
-        std::uint8_t size = 0;
     };
 }

@@ -10,7 +10,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class AvrCommand: public Command
     {
     public:
-        AvrCommand() {
+        AvrCommand(
+            std::size_t fragmentCount,
+            std::size_t fragmentNumber,
+            std::vector<unsigned char> commandPacket
+        )
+            : fragmentCount(fragmentCount)
+            , fragmentNumber(fragmentNumber)
+            , commandPacket(std::move(commandPacket))
+        {
             this->setCommandId(0x80);
         }
 
@@ -25,24 +33,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return this->fragmentNumber;
         }
 
-        void setFragmentNumber(std::size_t fragmentNumber) {
-            this->fragmentNumber = fragmentNumber;
-        }
-
         [[nodiscard]] std::size_t getFragmentCount() const {
             return this->fragmentCount;
         }
 
-        void setFragmentCount(std::size_t fragmentCount) {
-            this->fragmentCount = fragmentCount;
-        }
-
         [[nodiscard]] const std::vector<unsigned char>& getCommandPacket() const {
             return this->commandPacket;
-        }
-
-        void setCommandPacket(const std::vector<unsigned char>& commandPacket) {
-            this->commandPacket = commandPacket;
         }
 
     private:

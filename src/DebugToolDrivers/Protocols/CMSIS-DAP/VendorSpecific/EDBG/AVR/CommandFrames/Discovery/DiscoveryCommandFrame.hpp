@@ -34,7 +34,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         return static_cast<unsigned char>(id) != rawId;
     }
 
-    class DiscoveryCommandFrame: public AvrCommandFrame
+    template<class PayloadContainerType>
+    class DiscoveryCommandFrame: public AvrCommandFrame<PayloadContainerType>
     {
     public:
         using ResponseFrameType = ResponseFrames::DiscoveryResponseFrame;

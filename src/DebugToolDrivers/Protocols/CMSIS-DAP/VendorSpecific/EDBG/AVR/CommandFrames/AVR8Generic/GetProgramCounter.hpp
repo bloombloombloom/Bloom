@@ -5,26 +5,21 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
-    class GetProgramCounter: public Avr8GenericCommandFrame
+    class GetProgramCounter: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {
     public:
         using ResponseFrameType = ResponseFrames::Avr8Generic::GetProgramCounter;
 
         GetProgramCounter() {
-            init();
-        };
-
-    private:
-        void init() {
             /*
              * The PC Read command consists of 2 bytes:
              * 1. Command ID (0x35)
              * 2. Version (0x00)
              */
-            auto payload = std::vector<unsigned char>(2);
-            payload[0] = 0x35;
-            payload[1] = 0x00;
-            this->setPayload(payload);
+            this->payload = {
+                0x35,
+                0x00,
+            };
         }
     };
 }

@@ -4,36 +4,10 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
-    class SetParameter: public Avr8GenericCommandFrame
+    class SetParameter: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {
     public:
-        SetParameter() = default;
-
-        explicit SetParameter(const Avr8EdbgParameter& parameter) {
-            this->setParameter(parameter);
-        }
-
-        SetParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value): SetParameter(parameter) {
-            this->setValue(value);
-        }
-
-        SetParameter(const Avr8EdbgParameter& parameter, unsigned char value): SetParameter(parameter) {
-            this->setValue(value);
-        }
-
-        void setParameter(const Avr8EdbgParameter& parameter) {
-            this->parameter = parameter;
-        }
-
-        void setValue(const std::vector<unsigned char>& value) {
-            this->value = value;
-        }
-
-        void setValue(unsigned char value) {
-            this->value.resize(1, value);
-        }
-
-        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
+        SetParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
             /*
              * The set param command consists of this->value.size() + 5 bytes. The first five bytes consist of:
              * 1. Command ID (0x01)
@@ -43,19 +17,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
              * 5. Param value length (this->value.size()) - this is only one byte in size, so its value should
              *    never exceed 255.
              */
-            auto output = std::vector<unsigned char>(this->value.size() + 5, 0x00);
-            output[0] = 0x01;
-            output[1] = 0x00;
-            output[2] = static_cast<unsigned char>(this->parameter.context);
-            output[3] = static_cast<unsigned char>(this->parameter.id);
-            output[4] = static_cast<unsigned char>(this->value.size());
-            output.insert(output.begin() + 5, this->value.begin(), this->value.end());
-
-            return output;
+            this->payload = std::vector<unsigned char>(value.size() + 5, 0x00);
+            this->payload[0] = 0x01;
+            this->payload[1] = 0x00;
+            this->payload[2] = static_cast<unsigned char>(parameter.context);
+            this->payload[3] = static_cast<unsigned char>(parameter.id);
+            this->payload[4] = static_cast<unsigned char>(value.size());
+            this->payload.insert(this->payload.begin() + 5, value.begin(), value.end());
         }
-
-    private:
-        Avr8EdbgParameter parameter;
-        std::vector<unsigned char> value;
     };
 }

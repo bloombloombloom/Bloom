@@ -19,31 +19,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
      * The Discovery protocol handler only supports one command; the Query command. This command is used to
      * query information from the device, such as device capabilities, manufacture date, serial number, etc.
      */
-    class Query: public DiscoveryCommandFrame
+    class Query: public DiscoveryCommandFrame<std::array<unsigned char, 3>>
     {
     public:
-        Query(): DiscoveryCommandFrame() {}
-
-        explicit Query(QueryContext context): DiscoveryCommandFrame() {
-            this->setContext(context);
-        }
-
-        void setContext(QueryContext context) {
-            this->context = context;
-        }
-
-        [[nodiscard]] std::vector<unsigned char> getPayload() const override {
+        explicit Query(QueryContext context) {
             /*
              * The payload for the Query command consists of three bytes. A command ID (0x00), version (0x00) and a
              * query context.
              */
-            auto output = std::vector<unsigned char>(3, 0x00);
-            output[2] = static_cast<unsigned char>(this->context);
-
-            return output;
+            this->payload = {
+                0x00,
+                0x00,
+                static_cast<unsigned char>(context)
+            };
         }
-
-    private:
-        QueryContext context = QueryContext::COMMAND_HANDLERS;
     };
 }

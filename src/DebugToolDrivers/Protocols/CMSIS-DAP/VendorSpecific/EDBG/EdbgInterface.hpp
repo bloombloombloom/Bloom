@@ -33,8 +33,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
          * @param avrCommandFrame
          * @return
          */
-        virtual Protocols::CmsisDap::Response sendAvrCommandFrameAndWaitForResponse(
-            const Protocols::CmsisDap::Edbg::Avr::AvrCommandFrame& avrCommandFrame
+        template <class PayloadContainerType>
+        Protocols::CmsisDap::Response sendAvrCommandFrameAndWaitForResponse(
+            const Protocols::CmsisDap::Edbg::Avr::AvrCommandFrame<PayloadContainerType>& avrCommandFrame
+        ) {
+            // An AVR command frame can be split into multiple CMSIS-DAP commands. Each command
+            // containing a fragment of the AvrCommandFrame.
+            return this->sendAvrCommandsAndWaitForResponse(avrCommandFrame.generateAvrCommands(
+                this->getUsbHidInputReportSize() - 3 // Minus 3 to accommodate AVR command bytes
+            ));
+        }
+
+        virtual Protocols::CmsisDap::Response sendAvrCommandsAndWaitForResponse(
+            const std::vector<Avr::AvrCommand>& avrCommands
         );
 
         Protocols::CmsisDap::Edbg::Avr::AvrResponse getAvrResponse();
@@ -44,12 +55,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
             const CommandFrameType& avrCommandFrame
         ) {
             static_assert(
-                std::is_base_of<Protocols::CmsisDap::Edbg::Avr::AvrCommandFrame, CommandFrameType>::value,
-                "AVR Command must be base of AvrCommandFrame."
-            );
-
-            static_assert(
-                std::is_base_of<Protocols::CmsisDap::Edbg::Avr::AvrResponseFrame, typename CommandFrameType::ResponseFrameType>::value,
+                std::is_base_of<
+                    Protocols::CmsisDap::Edbg::Avr::AvrResponseFrame,
+                    typename CommandFrameType::ResponseFrameType
+                >::value,
                 "AVR Command must specify a valid response frame type, derived from AvrResponseFrame."
             );
 
