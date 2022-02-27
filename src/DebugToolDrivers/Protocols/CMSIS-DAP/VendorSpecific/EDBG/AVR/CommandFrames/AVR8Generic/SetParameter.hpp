@@ -17,13 +17,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
              * 5. Param value length (this->value.size()) - this is only one byte in size, so its value should
              *    never exceed 255.
              */
-            this->payload = std::vector<unsigned char>(value.size() + 5, 0x00);
+            this->payload = std::vector<unsigned char>(5, 0x00);
             this->payload[0] = 0x01;
             this->payload[1] = 0x00;
             this->payload[2] = static_cast<unsigned char>(parameter.context);
             this->payload[3] = static_cast<unsigned char>(parameter.id);
             this->payload[4] = static_cast<unsigned char>(value.size());
-            this->payload.insert(this->payload.begin() + 5, value.begin(), value.end());
+            this->payload.insert(this->payload.end(), value.begin(), value.end());
         }
     };
 }
