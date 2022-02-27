@@ -25,8 +25,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class HouseKeepingCommandFrame: public AvrCommandFrame<PayloadContainerType>
     {
     public:
-        HouseKeepingCommandFrame() {
-            this->setProtocolHandlerId(ProtocolHandlerId::HOUSE_KEEPING);
-        }
+        HouseKeepingCommandFrame(): AvrCommandFrame<PayloadContainerType>(ProtocolHandlerId::HOUSE_KEEPING) {}
     };
 }

@@ -47,11 +47,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             "Invalid payload container type - must be an std::array<unsigned char, X> or an std::vector<unsigned char>"
         );
 
-
     public:
         using ResponseFrameType = AvrResponseFrame;
 
-        AvrCommandFrame() {
+        explicit AvrCommandFrame(ProtocolHandlerId protocolHandlerId): protocolHandlerId(protocolHandlerId) {
             if (LAST_SEQUENCE_ID < std::numeric_limits<decltype(LAST_SEQUENCE_ID)>::max()) {
                 this->sequenceId = ++(LAST_SEQUENCE_ID);
 
@@ -69,49 +68,28 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         AvrCommandFrame& operator = (const AvrCommandFrame& other) = default;
         AvrCommandFrame& operator = (AvrCommandFrame&& other) noexcept = default;
 
-        [[nodiscard]] unsigned char getProtocolVersion() const {
-            return this->protocolVersion;
-        }
-
-        void setProtocolVersion(unsigned char protocolVersion) {
-            this->protocolVersion = protocolVersion;
-        }
-
-        [[nodiscard]] std::uint16_t getSequenceId() const {
-            return this->sequenceId;
-        }
-
-        [[nodiscard]] ProtocolHandlerId getProtocolHandlerId() const {
-            return this->protocolHandlerID;
-        }
-
-        void setProtocolHandlerId(ProtocolHandlerId protocolHandlerId) {
-            this->protocolHandlerID = protocolHandlerId;
-        }
-
-        void setProtocolHandlerId(unsigned char protocolHandlerId) {
-            this->protocolHandlerID = static_cast<ProtocolHandlerId>(protocolHandlerId);
-        }
-
         [[nodiscard]] virtual const PayloadContainerType& getPayload() const {
             return this->payload;
         };
 
         /**
-         * Converts the command frame into a container of unsigned char - a raw buffer to send to the EDBG device.
+         * Converts the command frame into a container of unsigned char - a raw buffer to include in an AVR
+         * command packet, for sending to the EDBG device.
+         *
+         * See AvrCommandFrame::generateAvrCommands() and the AvrCommand class for more.
          *
          * @return
          */
         [[nodiscard]] auto getRawCommandFrame() const {
             auto rawCommand = std::vector<unsigned char>(5);
 
-            rawCommand[0] = this->SOF;
-            rawCommand[1] = this->getProtocolVersion();
+            rawCommand[0] = 0x0E; // Start of frame
+            rawCommand[1] = 0x00; // Protocol version
 
-            rawCommand[2] = static_cast<unsigned char>(this->getSequenceId());
-            rawCommand[3] = static_cast<unsigned char>(this->getSequenceId() >> 8);
+            rawCommand[2] = static_cast<unsigned char>(this->sequenceId);
+            rawCommand[3] = static_cast<unsigned char>(this->sequenceId >> 8);
 
-            rawCommand[4] = static_cast<unsigned char>(this->getProtocolHandlerId());
+            rawCommand[4] = static_cast<unsigned char>(this->protocolHandlerId);
 
             if (!this->payload.empty()) {
                 rawCommand.insert(
@@ -171,22 +149,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
     protected:
-        PayloadContainerType payload;
-
-    private:
-        unsigned char SOF = 0x0E;
-
-        unsigned char protocolVersion = 0x00;
-
         /**
-         * Incrementing from 0x00
+         * Incrementing from 0
          */
         std::uint16_t sequenceId = 0;
 
         /**
          * Destination sub-protocol handler ID
          */
-        ProtocolHandlerId protocolHandlerID = ProtocolHandlerId::DISCOVERY;
-    };
+        ProtocolHandlerId protocolHandlerId = ProtocolHandlerId::DISCOVERY;
 
+        PayloadContainerType payload;
+    };
 }
