@@ -103,9 +103,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @return
          */
         [[nodiscard]] auto getRawCommandFrame() const {
-            auto data = this->getPayload();
-            const auto dataSize = data.size();
-
             auto rawCommand = std::vector<unsigned char>(5);
 
             rawCommand[0] = this->SOF;
@@ -116,11 +113,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
             rawCommand[4] = static_cast<unsigned char>(this->getProtocolHandlerId());
 
-            if (dataSize > 0) {
+            if (!this->payload.empty()) {
                 rawCommand.insert(
                     rawCommand.end(),
-                    data.begin(),
-                    data.end()
+                    this->payload.begin(),
+                    this->payload.end()
                 );
             }
 
