@@ -21,7 +21,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
              * 6. Asynchronous flag (0x00 for "write first, then reply" and 0x01 for "reply first, then write")
              * 7. Buffer
              */
-            this->payload = std::vector<unsigned char>(12 + buffer.size(), 0x00);
+            this->payload = std::vector<unsigned char>(12, 0x00);
             this->payload[0] = 0x23;
             this->payload[1] = 0x00;
             this->payload[2] = static_cast<unsigned char>(type);
@@ -39,7 +39,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             // We always set the async flag to 0x00 ("write first, then reply")
             this->payload[11] = 0x00;
 
-            this->payload.insert(this->payload.begin() + 12, buffer.begin(), buffer.end());
+            this->payload.insert(this->payload.end(), buffer.begin(), buffer.end());
         }
     };
 }
