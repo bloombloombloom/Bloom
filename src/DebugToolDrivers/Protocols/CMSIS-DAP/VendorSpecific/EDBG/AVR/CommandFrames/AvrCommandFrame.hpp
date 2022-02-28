@@ -81,7 +81,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @return
          */
         [[nodiscard]] auto getRawCommandFrame() const {
-            auto rawCommand = std::vector<unsigned char>(5);
+            auto rawCommand = std::vector<unsigned char>(5 + this->payload.size());
 
             rawCommand[0] = 0x0E; // Start of frame
             rawCommand[1] = 0x00; // Protocol version
@@ -92,11 +92,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             rawCommand[4] = static_cast<unsigned char>(this->protocolHandlerId);
 
             if (!this->payload.empty()) {
-                rawCommand.insert(
-                    rawCommand.end(),
-                    this->payload.begin(),
-                    this->payload.end()
-                );
+                std::copy(this->payload.begin(), this->payload.end(), rawCommand.begin() + 5);
             }
 
             return rawCommand;
