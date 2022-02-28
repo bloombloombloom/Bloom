@@ -50,13 +50,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
         );
 
         template<class CommandFrameType>
-        typename CommandFrameType::ResponseFrameType sendAvrCommandFrameAndWaitForResponseFrame(
+        typename CommandFrameType::ExpectedResponseFrameType sendAvrCommandFrameAndWaitForResponseFrame(
             const CommandFrameType& avrCommandFrame
         ) {
             static_assert(
                 std::is_base_of<
                     Protocols::CmsisDap::Edbg::Avr::AvrResponseFrame,
-                    typename CommandFrameType::ResponseFrameType
+                    typename CommandFrameType::ExpectedResponseFrameType
                 >::value,
                 "AVR Command must specify a valid response frame type, derived from AvrResponseFrame."
             );
@@ -71,7 +71,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
             }
 
             auto responses = this->requestAvrResponses();
-            auto responseFrame = typename CommandFrameType::ResponseFrameType();
+            auto responseFrame = typename CommandFrameType::ExpectedResponseFrameType();
             responseFrame.initFromAvrResponses(responses);
             return responseFrame;
         }

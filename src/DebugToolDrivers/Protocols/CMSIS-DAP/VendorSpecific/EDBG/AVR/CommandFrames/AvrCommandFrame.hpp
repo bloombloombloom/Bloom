@@ -48,7 +48,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         );
 
     public:
-        using ResponseFrameType = AvrResponseFrame;
+        using ExpectedResponseFrameType = AvrResponseFrame;
 
         explicit AvrCommandFrame(ProtocolHandlerId protocolHandlerId): protocolHandlerId(protocolHandlerId) {
             if (LAST_SEQUENCE_ID < std::numeric_limits<decltype(LAST_SEQUENCE_ID)>::max()) {

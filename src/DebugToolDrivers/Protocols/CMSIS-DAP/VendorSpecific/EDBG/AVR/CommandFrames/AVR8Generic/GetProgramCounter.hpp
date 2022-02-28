@@ -8,7 +8,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class GetProgramCounter: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {
     public:
-        using ResponseFrameType = ResponseFrames::Avr8Generic::GetProgramCounter;
+        using ExpectedResponseFrameType = ResponseFrames::Avr8Generic::GetProgramCounter;
 
         GetProgramCounter() {
             /*

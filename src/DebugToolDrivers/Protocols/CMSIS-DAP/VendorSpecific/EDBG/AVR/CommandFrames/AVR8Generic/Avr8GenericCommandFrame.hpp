@@ -11,7 +11,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class Avr8GenericCommandFrame: public AvrCommandFrame<PayloadContainerType>
     {
     public:
-        using ResponseFrameType = ResponseFrames::Avr8Generic::Avr8GenericResponseFrame;
+        using ExpectedResponseFrameType = ResponseFrames::Avr8Generic::Avr8GenericResponseFrame;
 
         Avr8GenericCommandFrame(): AvrCommandFrame<PayloadContainerType>(ProtocolHandlerId::AVR8_GENERIC) {}
     };

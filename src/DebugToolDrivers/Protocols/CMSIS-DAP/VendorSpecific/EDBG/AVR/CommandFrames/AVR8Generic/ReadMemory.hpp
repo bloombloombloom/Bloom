@@ -11,7 +11,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class ReadMemory: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {
     public:
-        using ResponseFrameType = ResponseFrames::Avr8Generic::ReadMemory;
+        using ExpectedResponseFrameType = ResponseFrames::Avr8Generic::ReadMemory;
 
         ReadMemory(
             const Avr8MemoryType& type,

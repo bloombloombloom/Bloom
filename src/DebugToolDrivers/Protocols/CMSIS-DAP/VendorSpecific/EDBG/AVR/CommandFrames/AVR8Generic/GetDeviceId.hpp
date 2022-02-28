@@ -8,7 +8,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class GetDeviceId: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {
     public:
-        using ResponseFrameType = ResponseFrames::Avr8Generic::GetDeviceId;
+        using ExpectedResponseFrameType = ResponseFrames::Avr8Generic::GetDeviceId;
 
         GetDeviceId() {
             /*
