@@ -13,7 +13,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         if (data.size() < 8) {
             /*
-             * All BreakEvent packets must consist of at least 9 bytes:
+             * All BreakEvent packets must consist of at least 8 bytes:
              * 1 byte for event ID
              * 4 bytes for program counter
              * 1 byte for break cause

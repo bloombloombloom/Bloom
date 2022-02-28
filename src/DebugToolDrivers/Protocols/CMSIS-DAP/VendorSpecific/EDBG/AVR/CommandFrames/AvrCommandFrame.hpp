@@ -125,21 +125,21 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         /**
-         * AvrCommandFrames are sent to the device via AVRCommands (CMSIS-DAP vendor commands).
+         * AvrCommandFrames are sent to the device via AvrCommands (CMSIS-DAP vendor commands).
          *
          * If the size of an AvrCommandFrame exceeds the maximum packet size of an AVRCommand, it will need to
-         * be split into multiple AVRCommands before being sent to the device.
+         * be split into multiple AvrCommands before being sent to the device.
          *
-         * This methods generates AVR commands from an AvrCommandFrame. The number of AVRCommands generated depends
+         * This methods generates AVR commands from an AvrCommandFrame. The number of AvrCommands generated depends
          * on the size of the AvrCommandFrame and the passed maximumCommandPacketSize.
          *
          * @param maximumCommandPacketSize
          *  The maximum size of an AVRCommand command packet. This is usually the REPORT_SIZE of the HID
          *  endpoint, minus a few bytes to account for other AVRCommand fields. The maximumCommandPacketSize is used to
-         *  determine the number of AVRCommands to be generated.
+         *  determine the number of AvrCommands to be generated.
          *
          * @return
-         *  A vector of sequenced AVRCommands, each containing a segment of the AvrCommandFrame.
+         *  A vector of sequenced AvrCommands, each containing a segment of the AvrCommandFrame.
          */
         [[nodiscard]] std::vector<AvrCommand> generateAvrCommands(std::size_t maximumCommandPacketSize) const {
             auto rawCommandFrame = this->getRawCommandFrame();

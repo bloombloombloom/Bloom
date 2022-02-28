@@ -31,8 +31,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         auto eventData = std::vector<unsigned char>();
 
         /*
-         * Ignore the SOF, protocol version  &handler id and sequence ID (with all make up 5 bytes in total, 7 when
-         * you include the two size bytes)
+         * Ignore the SOF, protocol version, handler id and sequence ID (which all make up 5 bytes in total, 7 if we
+         * include the two size bytes)
          */
         eventData.insert(
             eventData.end(),
