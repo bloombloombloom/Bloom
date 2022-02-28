@@ -48,6 +48,32 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         );
 
     public:
+        /*
+         * All AVR command frames result in one or more response frames from the EDBG device. The structure and
+         * contents of the response frame depends on the command frame that was sent.
+         *
+         * The ExpectedResponseFrameType alias is used to map command frame types to response frame types.
+         * This is used in some template functions, such as EdbgInterface::sendAvrCommandFrameAndWaitForResponseFrame().
+         * That function will use the alias when constructing and returning a response frame object.
+         *
+         * For example, consider the GetDeviceId command - this command instructs the EDBG device to extract the
+         * signature from the connected AVR target, and return it in a response frame. The GetDeviceId command frame
+         * maps to the GetDeviceId response frame type (via the ExpectedResponseFrameType alias). When we send the
+         * command, the correct response frame object is returned:
+         *
+         *   EdbgInterface edbgInterface;
+         *   CommandFrames::Avr8Generic::GetDeviceId getDeviceIdCommandFrame;
+         *
+         *   auto responseFrame = edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(getDeviceIdCommandFrame);
+         *   Targets::Microchip::Avr::TargetSignature avrSignature = responseFrame->extractSignature();
+         *
+         * In the code above, the responseFrame object will be an instance of the ResponseFrames::Avr8Generic::GetDeviceId
+         * class, which provides the extractSignature() function (to extract the AVR signature from the response frame).
+         * This works because the EdbgInterface::sendAvrCommandFrameAndWaitForResponseFrame() function uses the
+         * CommandFrames::Avr8Generic::GetDeviceId::ExpectedResponseFrameType alias to construct the response frame.
+         *
+         * For more, see the implementation of EdbgInterface::sendAvrCommandFrameAndWaitForResponseFrame().
+         */
         using ExpectedResponseFrameType = AvrResponseFrame;
 
         explicit AvrCommandFrame(ProtocolHandlerId protocolHandlerId): protocolHandlerId(protocolHandlerId) {

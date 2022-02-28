@@ -33,6 +33,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          *
          *   CmsisDapInterface cmsisInterface;
          *   AvrResponseCommand avrResponseCommand;
+         *
          *   auto response = cmsisInterface.sendCommandAndWaitForResponse(avrResponseCommand);
          *
          * In the code above, the response object will be an instance of the AvrResponse class, because the

@@ -37,7 +37,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         eventData.insert(
             eventData.end(),
             responseData.begin() + 7,
-            responseData.begin() + 7 + static_cast<long>(responsePacketSize)
+            responseData.begin() + 7 + static_cast<std::int64_t>(responsePacketSize)
         );
 
         this->setEventData(eventData);
