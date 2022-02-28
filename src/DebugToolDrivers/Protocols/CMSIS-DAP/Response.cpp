@@ -4,7 +4,7 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
 {
-    void Response::init(const std::vector<unsigned char>& rawResponse) {
+    Response::Response(const std::vector<unsigned char>& rawResponse) {
         if (rawResponse.empty()) {
             throw Exceptions::Exception("Failed to process CMSIS-DAP response - invalid response");
         }

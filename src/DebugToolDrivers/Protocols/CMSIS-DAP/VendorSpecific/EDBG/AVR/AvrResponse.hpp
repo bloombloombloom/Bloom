@@ -10,20 +10,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class AvrResponse: public Response
     {
     public:
-        AvrResponse() = default;
-
-        /**
-         * Construct an AVRResponse object from a Response object.
-         *
-         * @param response
-         */
-        void init(const Response& response) {
-            auto rawData = response.getData();
-            rawData.insert(rawData.begin(), response.getResponseId());
-            this->init(rawData);
-        }
-
-        void init(const std::vector<unsigned char>& rawResponse) override;
+        explicit AvrResponse(const std::vector<unsigned char>& rawResponse);
 
         [[nodiscard]] std::uint8_t getFragmentNumber() const {
             return this->fragmentNumber;

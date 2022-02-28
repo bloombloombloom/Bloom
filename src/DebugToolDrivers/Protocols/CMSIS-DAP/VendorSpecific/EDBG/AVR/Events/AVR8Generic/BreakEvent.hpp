@@ -10,9 +10,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class BreakEvent: public AvrEvent
     {
     public:
-        explicit BreakEvent(const AvrEvent& event) {
-            this->init(event);
-        }
+        explicit BreakEvent(const AvrEvent& event);
 
         [[nodiscard]] std::uint32_t getProgramCounter() const {
             return this->programCounter;

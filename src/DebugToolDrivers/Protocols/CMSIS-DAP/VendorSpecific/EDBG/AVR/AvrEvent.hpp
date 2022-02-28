@@ -23,20 +23,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class AvrEvent: public Response
     {
     public:
-        AvrEvent() = default;
-
-        /**
-         * Construct an AVRResponse object from a Response object.
-         *
-         * @param response
-         */
-        void init(const Response& response) {
-            auto rawData = response.getData();
-            rawData.insert(rawData.begin(), response.getResponseId());
-            this->init(rawData);
-        }
-
-        void init(const std::vector<unsigned char>& rawResponse) override;
+        explicit AvrEvent(const std::vector<unsigned char>& rawResponse);
 
         [[nodiscard]] const std::vector<unsigned char>& getEventData() const {
             return this->eventData;

@@ -1,14 +1,15 @@
 #pragma once
 
-#include <vector>
-
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
+#include "AvrEvent.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
+namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     class AvrEventCommand: public Command
     {
     public:
+        using ExpectedResponseType = AvrEvent;
+
         AvrEventCommand() {
             this->setCommandId(0x82);
         }

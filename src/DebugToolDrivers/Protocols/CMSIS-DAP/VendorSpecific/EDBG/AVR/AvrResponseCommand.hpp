@@ -4,6 +4,8 @@
 
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
 
+#include "AvrResponse.hpp"
+
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     /**
@@ -12,8 +14,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
      *
      * Responses to AVR commands are not automatically sent from the device, they must be requested from the device.
      *
-     * An AvrResponseCommand is a CMSIS-DAP command, used to request a response for an AVR command. In response to an
-     * AvrResponseCommand, the device will send over an AVRResponse, which will contain the response to the AVR command.
+     * An AvrResponseCommand is a CMSIS-DAP vendor command, used to request a response for an AVR command. In response
+     * to an AvrResponseCommand, the device will send over an AvrResponse, which will contain the response to the
+     * AVR command.
      *
      * For more information on this, see the 'Embedded Debugger-Based Tools Protocols User's Guide'
      * document, by Microchip. Link provided in the AtmelICE device class declaration.
@@ -23,6 +26,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class AvrResponseCommand: public Command
     {
     public:
+        using ExpectedResponseType = AvrResponse;
+
         AvrResponseCommand() {
             this->setCommandId(0x81);
         }

@@ -2,11 +2,14 @@
 
 #include <memory>
 #include <chrono>
+#include <cstdint>
 
 #include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Response.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.hpp"
+
+#include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
 {
@@ -31,7 +34,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
             return this->usbHidInterface;
         }
 
-        size_t getUsbHidInputReportSize() {
+        std::size_t getUsbHidInputReportSize() {
             return this->usbHidInterface.getInputReportSize();
         }
 
@@ -44,7 +47,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          *
          * @param cmsisDapCommand
          */
-        virtual void sendCommand(const Protocols::CmsisDap::Command& cmsisDapCommand);
+        virtual void sendCommand(const Command& cmsisDapCommand);
 
         /**
          * Listens for a CMSIS-DAP response from the device.
@@ -52,9 +55,24 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          * @TODO: There is a hard-coded timeout in this method. Review.
          *
          * @return
-         *  The parsed response.
+         *  An instance to ResponseType, which must be derived from the Response class. The instance is constructed via
+         *  its raw buffer constructor: ResponseType(const std::vector<unsigned char>&).
          */
-        virtual std::unique_ptr<Protocols::CmsisDap::Response> getResponse();
+        template<class ResponseType>
+        auto getResponse() {
+            static_assert(
+                std::is_base_of<Response, ResponseType>::value,
+                "CMSIS Response type must be derived from the Response class."
+            );
+
+            const auto rawResponse = this->getUsbHidInterface().read(10000);
+
+            if (rawResponse.empty()) {
+                throw Exceptions::DeviceCommunicationFailure("Empty CMSIS-DAP response received");
+            }
+
+            return ResponseType(rawResponse);
+        }
 
         /**
          * Sends a CMSIS-DAP command and waits for a response.
@@ -62,11 +80,30 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          * @param cmsisDapCommand
          *
          * @return
-         *  The parsed response.
+         *  An instance of the ExpectedResponseType alias defined in CommandType.
+         *  See the CmsisDapInterface::getResponse() template function for more.
          */
-        virtual std::unique_ptr<Protocols::CmsisDap::Response> sendCommandAndWaitForResponse(
-            const Protocols::CmsisDap::Command& cmsisDapCommand
-        );
+        template<class CommandType>
+        auto sendCommandAndWaitForResponse(const CommandType& cmsisDapCommand) {
+            static_assert(
+                std::is_base_of<Command, CommandType>::value,
+                "CMSIS Command type must be derived from the Command class."
+            );
+
+            static_assert(
+                std::is_base_of<Response, typename CommandType::ExpectedResponseType>::value,
+                "CMSIS Command type must specify a valid expected response type, derived from the Response class."
+            );
+
+            this->sendCommand(cmsisDapCommand);
+            auto response = this->getResponse<typename CommandType::ExpectedResponseType>();
+
+            if (response.getResponseId() != cmsisDapCommand.getCommandId()) {
+                throw Exceptions::DeviceCommunicationFailure("Unexpected response to CMSIS-DAP command.");
+            }
+
+            return response;
+        }
 
     private:
         /**

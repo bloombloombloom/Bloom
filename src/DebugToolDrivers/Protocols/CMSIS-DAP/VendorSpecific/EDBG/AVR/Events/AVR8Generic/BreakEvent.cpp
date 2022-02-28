@@ -8,8 +8,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     using Bloom::Targets::TargetBreakCause;
 
-    void BreakEvent::init(const AvrEvent& event) {
-        AvrEvent::init(event);
+    BreakEvent::BreakEvent(const AvrEvent& event): AvrEvent(event) {
         const auto& data = this->getEventData();
 
         if (data.size() < 8) {

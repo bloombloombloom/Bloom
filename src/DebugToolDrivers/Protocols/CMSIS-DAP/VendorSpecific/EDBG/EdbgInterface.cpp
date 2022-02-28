@@ -16,7 +16,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
             auto response = this->sendCommandAndWaitForResponse(avrCommand);
 
             if (&avrCommand == &avrCommands.back()) {
-                return *response;
+                return response;
             }
         }
 
@@ -26,31 +26,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
         );
     }
 
-    Protocols::CmsisDap::Edbg::Avr::AvrResponse EdbgInterface::getAvrResponse() {
-        auto cmsisResponse = this->getResponse();
-
-        if (cmsisResponse->getResponseId() == 0x81) {
-            // This is an AVR_RSP response
-            auto avrResponse = Protocols::CmsisDap::Edbg::Avr::AvrResponse();
-            avrResponse.init(*cmsisResponse);
-            return avrResponse;
-        }
-
-        throw DeviceCommunicationFailure("Unexpected response to AvrResponseCommand from device");
-    }
-
     std::optional<Protocols::CmsisDap::Edbg::Avr::AvrEvent> EdbgInterface::requestAvrEvent() {
-        this->sendCommand(AvrEventCommand());
-        auto cmsisResponse = this->getResponse();
+        auto avrEventResponse = this->sendCommandAndWaitForResponse(Avr::AvrEventCommand());
 
-        if (cmsisResponse->getResponseId() == 0x82) {
-            // This is an AVR_EVT response
-            auto avrEvent = Protocols::CmsisDap::Edbg::Avr::AvrEvent();
-            avrEvent.init(*cmsisResponse);
-            return avrEvent.getEventDataSize() > 0 ? std::optional(avrEvent) : std::nullopt;
+        if (avrEventResponse.getResponseId() != 0x82) {
+            throw DeviceCommunicationFailure("Unexpected response to AvrEventCommand from device");
         }
 
-        throw DeviceCommunicationFailure("Unexpected response to AvrEventCommand from device");
+        return avrEventResponse.getEventDataSize() > 0 ? std::optional(avrEventResponse) : std::nullopt;
     }
 
     std::vector<Protocols::CmsisDap::Edbg::Avr::AvrResponse> EdbgInterface::requestAvrResponses() {
@@ -59,34 +42,32 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
         std::vector<Protocols::CmsisDap::Edbg::Avr::AvrResponse> responses;
         AvrResponseCommand responseCommand;
 
-        this->sendCommand(responseCommand);
-        auto response = this->getAvrResponse();
-        responses.push_back(response);
-        int fragmentCount = response.getFragmentCount();
+        auto avrResponse = this->sendCommandAndWaitForResponse(responseCommand);
+        responses.push_back(avrResponse);
+        const auto fragmentCount = avrResponse.getFragmentCount();
 
         while (responses.size() < fragmentCount) {
             // There are more response packets
-            this->sendCommand(responseCommand);
-            response = this->getAvrResponse();
+            auto avrResponse = this->sendCommandAndWaitForResponse(responseCommand);
 
-            if (response.getFragmentCount() != fragmentCount) {
+            if (avrResponse.getFragmentCount() != fragmentCount) {
                 throw DeviceCommunicationFailure(
                     "Failed to fetch AVRResponse objects - invalid fragment count returned."
                 );
             }
 
-            if (response.getFragmentCount() == 0 && response.getFragmentNumber() == 0) {
+            if (avrResponse.getFragmentCount() == 0 && avrResponse.getFragmentNumber() == 0) {
                 throw DeviceCommunicationFailure(
                     "Failed to fetch AVRResponse objects - unexpected empty response"
                 );
             }
 
-            if (response.getFragmentNumber() == 0) {
+            if (avrResponse.getFragmentNumber() == 0) {
                 // End of response data ( &this packet can be ignored)
                 break;
             }
 
-            responses.push_back(response);
+            responses.push_back(avrResponse);
         }
 
         return responses;

@@ -4,6 +4,7 @@
 
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrResponse.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrEventCommand.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrEvent.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrame.hpp"
@@ -47,8 +48,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
         virtual Protocols::CmsisDap::Response sendAvrCommandsAndWaitForResponse(
             const std::vector<Avr::AvrCommand>& avrCommands
         );
-
-        Protocols::CmsisDap::Edbg::Avr::AvrResponse getAvrResponse();
 
         template<class CommandFrameType>
         typename CommandFrameType::ResponseFrameType sendAvrCommandFrameAndWaitForResponseFrame(

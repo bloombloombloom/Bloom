@@ -6,9 +6,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     using namespace Bloom::Exceptions;
 
-    void AvrResponse::init(const std::vector<unsigned char>& rawResponse) {
-        Response::init(rawResponse);
-
+    AvrResponse::AvrResponse(const std::vector<unsigned char>& rawResponse): Response(rawResponse) {
         if (this->getResponseId() != 0x81) {
             throw Exception("Failed to construct AvrResponse object - invalid response ID.");
         }
