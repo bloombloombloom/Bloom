@@ -53,6 +53,7 @@ namespace Bloom::DebugToolDrivers
 
     std::string AtmelIce::getSerialNumber() {
         using namespace CommandFrames::Discovery;
+        using ResponseFrames::Discovery::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             Query(QueryContext::SERIAL_NUMBER)

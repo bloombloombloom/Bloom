@@ -2,18 +2,18 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames
+namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Discovery
 {
     using namespace Bloom::Exceptions;
 
-    unsigned char DiscoveryResponseFrame::getResponseId() {
+    ResponseId DiscoveryResponseFrame::getResponseId() {
         const auto& payload = this->getPayload();
 
         if (payload.empty()) {
             throw Exception("Response ID missing from DISCOVERY response frame payload.");
         }
 
-        return payload[0];
+        return static_cast<ResponseId>(payload[0]);
     }
 
     std::vector<unsigned char> DiscoveryResponseFrame::getPayloadData() {

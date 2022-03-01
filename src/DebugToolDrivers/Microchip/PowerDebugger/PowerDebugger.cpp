@@ -51,6 +51,7 @@ namespace Bloom::DebugToolDrivers
 
     std::string PowerDebugger::getSerialNumber() {
         using namespace CommandFrames::Discovery;
+        using ResponseFrames::Discovery::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             Query(QueryContext::SERIAL_NUMBER)
