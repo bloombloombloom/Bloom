@@ -13,7 +13,7 @@
 
 namespace Bloom::Widgets::InsightTargetWidgets::Dip
 {
-    enum Position: std::uint8_t
+    enum class Position: std::uint8_t
     {
         TOP,
         BOTTOM

@@ -11,7 +11,7 @@
 
 namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 {
-    enum Position: std::uint8_t
+    enum class Position: std::uint8_t
     {
         TOP,
         BOTTOM,

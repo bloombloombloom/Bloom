@@ -12,7 +12,7 @@ namespace Bloom::Events
 {
     static_assert(std::atomic<int>::is_always_lock_free);
 
-    enum EventType: std::uint8_t
+    enum class EventType: std::uint8_t
     {
         GENERIC,
         STOP_TARGET_EXECUTION,

@@ -7,7 +7,7 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    enum class AvrEventId : unsigned char
+    enum class AvrEventId: unsigned char
     {
         AVR8_BREAK_EVENT = 0x40,
     };

@@ -7,7 +7,7 @@
 
 namespace Bloom::Targets::TargetDescription
 {
-    enum MemorySegmentType
+    enum class MemorySegmentType
     {
         REGISTERS,
         IO,

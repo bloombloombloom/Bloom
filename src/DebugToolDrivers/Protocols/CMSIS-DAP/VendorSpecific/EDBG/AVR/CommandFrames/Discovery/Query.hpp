@@ -7,7 +7,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     /**
      * The query context is the type of query to execute.
      */
-    enum class QueryContext : unsigned char
+    enum class QueryContext: unsigned char
     {
         COMMAND_HANDLERS = 0x00,
         TOOL_NAME = 0x80,

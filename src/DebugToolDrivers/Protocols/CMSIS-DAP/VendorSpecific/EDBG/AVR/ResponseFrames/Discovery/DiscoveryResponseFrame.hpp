@@ -7,7 +7,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     /**
      * Discovery commands can only return two responses; A LIST response and a failure.
      */
-    enum class ResponseId : unsigned char
+    enum class ResponseId: unsigned char
     {
         /*
          * According to the protocol docs, response ID 0x81 is for a LIST response, but this doesn't seem to be
