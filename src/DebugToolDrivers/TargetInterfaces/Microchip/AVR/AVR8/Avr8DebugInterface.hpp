@@ -4,8 +4,10 @@
 #include <set>
 
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
+
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
@@ -53,6 +55,13 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          * @param family
          */
         virtual void setFamily(Targets::Microchip::Avr::Avr8Bit::Family family) = 0;
+
+        /**
+         * Sets the selected physical interface.
+         *
+         * @param physicalInterface
+         */
+        virtual void setPhysicalInterface(Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface) = 0;
 
         /**
          * Should accept Avr8 target parameters for configuration of the interface.

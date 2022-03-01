@@ -7,11 +7,11 @@
 #include <bitset>
 #include <limits>
 
-#include "PadDescriptor.hpp"
 #include "src/Logger/Logger.hpp"
+#include "src/Helpers/Paths.hpp"
+
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Targets/TargetRegister.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/TargetDescription/TargetDescriptionFile.hpp"
 
 // Derived AVR8 targets
 #include "XMega/XMega.hpp"
@@ -25,8 +25,42 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
         Target::preActivationConfigure(targetConfig);
 
+        auto physicalInterface = targetConfig.jsonObject.find("physicalInterface")->toString().toLower().toStdString();
+        auto availablePhysicalInterfaces = Avr8::getPhysicalInterfacesByName();
+
+        if (physicalInterface.empty() || !availablePhysicalInterfaces.contains(physicalInterface)) {
+            throw InvalidConfig("Invalid or missing physical interface config parameter for AVR8 target.");
+        }
+
+        const auto selectedPhysicalInterface = availablePhysicalInterfaces.at(physicalInterface);
+
+        if (selectedPhysicalInterface == PhysicalInterface::DEBUG_WIRE) {
+            Logger::warning("AVR8 debugWire interface selected - the DWEN fuse will need to be enabled");
+        }
+
+        this->physicalInterface = selectedPhysicalInterface;
+        this->avr8DebugInterface->setPhysicalInterface(this->physicalInterface.value());
+
         if (this->family.has_value()) {
             this->avr8DebugInterface->setFamily(this->family.value());
+
+        } else {
+            if (this->physicalInterface == PhysicalInterface::JTAG) {
+                throw InvalidConfig(
+                    "The JTAG physical interface cannot be used with an ambiguous target name"
+                    " - please specify the exact name of the target in your configuration file. "
+                    "See " + Paths::homeDomainName() + "/docs/supported-targets"
+                );
+
+            }
+
+            if (this->physicalInterface == PhysicalInterface::UPDI) {
+                throw InvalidConfig(
+                    "The UPDI physical interface cannot be used with an ambiguous target name"
+                    " - please specify the exact name of the target in your configuration file. "
+                    "See " + Paths::homeDomainName() + "/docs/supported-targets"
+                );
+            }
         }
 
         this->avr8DebugInterface->configure(targetConfig);

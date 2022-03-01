@@ -83,6 +83,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         void configure(const TargetConfig& targetConfig) override;
 
+        void setPhysicalInterface(Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface) override {
+            this->physicalInterface = physicalInterface;
+        }
+
         /**
          * Configures the target family. For some physical interfaces, the target family is required in order
          * properly configure the EDBG tool. See EdbgAvr8Interface::resolveConfigVariant() for more.
@@ -345,22 +349,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * See disableDebugWire() method below.
          */
         bool disableDebugWireOnDeactivate = false;
-
-        /**
-         * Users are required to set their desired physical interface in their Bloom configuration. This would take
-         * the form of a string, so we map the available options to the appropriate enums.
-         */
-        static inline auto getPhysicalInterfacesByName() {
-            using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
-
-            return std::map<std::string, PhysicalInterface>({
-                {"debugwire", PhysicalInterface::DEBUG_WIRE},
-                {"debug-wire", PhysicalInterface::DEBUG_WIRE},
-                {"pdi", PhysicalInterface::PDI},
-                {"jtag", PhysicalInterface::JTAG},
-                {"updi", PhysicalInterface::UPDI},
-            });
-        };
 
         /**
          * This mapping allows us to determine which config variant to select, based on the target family and the

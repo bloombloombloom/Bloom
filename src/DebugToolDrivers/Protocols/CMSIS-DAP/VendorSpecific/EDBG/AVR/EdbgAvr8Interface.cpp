@@ -52,39 +52,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using Bloom::Targets::TargetRegisters;
 
     void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
-        auto physicalInterface = targetConfig.jsonObject.find("physicalInterface")->toString().toLower().toStdString();
-
-        auto availablePhysicalInterfaces = this->getPhysicalInterfacesByName();
-
-        if (physicalInterface.empty()
-            || availablePhysicalInterfaces.find(physicalInterface) == availablePhysicalInterfaces.end()
-        ) {
-            throw InvalidConfig("Invalid or missing physical interface config parameter for AVR8 target.");
-        }
-
-        auto selectedPhysicalInterface = availablePhysicalInterfaces.find(physicalInterface)->second;
-
-        if (selectedPhysicalInterface == PhysicalInterface::DEBUG_WIRE) {
-            Logger::warning("AVR8 debugWire interface selected - the DWEN fuse will need to be enabled");
-        }
-
-        this->physicalInterface = selectedPhysicalInterface;
-
-        if (!this->family.has_value()) {
-            if (this->physicalInterface == PhysicalInterface::JTAG) {
-                throw InvalidConfig("The JTAG physical interface cannot be used with an ambiguous target name"
-                    " - please specify the exact name of the target in your configuration file. "
-                    "See " + Paths::homeDomainName() + "/docs/supported-targets"
-                );
-
-            } else if (this->physicalInterface == PhysicalInterface::UPDI) {
-                throw InvalidConfig("The UPDI physical interface cannot be used with an ambiguous target name"
-                    " - please specify the exact name of the target in your configuration file. "
-                    "See " + Paths::homeDomainName() + "/docs/supported-targets"
-                );
-            }
-        }
-
         this->configVariant = this->resolveConfigVariant().value_or(Avr8ConfigVariant::NONE);
 
         if (targetConfig.jsonObject.contains("disableDebugWirePreDisconnect")) {
