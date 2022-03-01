@@ -52,13 +52,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 
             if (avrResponse.getFragmentCount() != fragmentCount) {
                 throw DeviceCommunicationFailure(
-                    "Failed to fetch AVRResponse objects - invalid fragment count returned."
+                    "Failed to fetch AvrResponse objects - invalid fragment count returned."
                 );
             }
 
             if (avrResponse.getFragmentCount() == 0 && avrResponse.getFragmentNumber() == 0) {
                 throw DeviceCommunicationFailure(
-                    "Failed to fetch AVRResponse objects - unexpected empty response"
+                    "Failed to fetch AvrResponse objects - unexpected empty response"
                 );
             }
 

@@ -8,7 +8,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     {
     public:
         DiscoveryResponseFrame() = default;
-        explicit DiscoveryResponseFrame(const std::vector<AvrResponse>& AVRResponses): AvrResponseFrame(AVRResponses) {}
+        explicit DiscoveryResponseFrame(const std::vector<AvrResponse>& avrResponses): AvrResponseFrame(avrResponses) {}
 
         unsigned char getResponseId();
 

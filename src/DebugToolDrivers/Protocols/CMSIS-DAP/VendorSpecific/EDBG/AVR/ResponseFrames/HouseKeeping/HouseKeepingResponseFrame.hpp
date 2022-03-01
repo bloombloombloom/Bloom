@@ -8,7 +8,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     {
     public:
         HouseKeepingResponseFrame() = default;
-        explicit HouseKeepingResponseFrame(const std::vector<AvrResponse>& AVRResponses): AvrResponseFrame(AVRResponses) {}
+        explicit HouseKeepingResponseFrame(const std::vector<AvrResponse>& avrResponses): AvrResponseFrame(avrResponses) {}
 
         unsigned char getResponseId();
     };

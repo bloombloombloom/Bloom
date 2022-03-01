@@ -7,7 +7,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using namespace Bloom::Exceptions;
 
     void AvrResponseFrame::initFromAvrResponses(const std::vector<AvrResponse>& avrResponses) {
-        // Build a raw frame buffer from the AVRResponse objects and just call initFromRawFrame()
+        // Build a raw frame buffer from the AvrResponse objects and just call initFromRawFrame()
         std::vector<unsigned char> rawFrame;
 
         for (const auto& avrResponse : avrResponses) {

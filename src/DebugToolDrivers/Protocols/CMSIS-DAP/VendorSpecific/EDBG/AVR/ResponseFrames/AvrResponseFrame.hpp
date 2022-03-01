@@ -16,8 +16,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     public:
         explicit AvrResponseFrame() = default;
 
-        explicit AvrResponseFrame(const std::vector<AvrResponse>& AVRResponses) {
-            this->initFromAvrResponses(AVRResponses);
+        explicit AvrResponseFrame(const std::vector<AvrResponse>& avrResponses) {
+            this->initFromAvrResponses(avrResponses);
         }
 
         virtual ~AvrResponseFrame() = default;
@@ -31,7 +31,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         /**
          * An AvrResponse contains a single fragment of an AvrResponseFrame.
          *
-         * This method will construct an AvrResponseFrame from a vector of AVRResponses.
+         * This method will construct an AvrResponseFrame from a vector of AvrResponse.
          *
          * @param avrResponses
          */

@@ -8,8 +8,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     {
     public:
         Avr8GenericResponseFrame() = default;
-        explicit Avr8GenericResponseFrame(const std::vector<AvrResponse>& AVRResponses)
-        : AvrResponseFrame(AVRResponses) {}
+        explicit Avr8GenericResponseFrame(const std::vector<AvrResponse>& avrResponses)
+        : AvrResponseFrame(avrResponses) {}
 
         [[nodiscard]] unsigned char getResponseId();
 
