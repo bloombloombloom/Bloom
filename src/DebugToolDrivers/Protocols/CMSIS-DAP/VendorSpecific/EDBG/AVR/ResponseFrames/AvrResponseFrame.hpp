@@ -29,7 +29,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         AvrResponseFrame& operator = (AvrResponseFrame&& other) = default;
 
         /**
-         * An AVRResponse contains a single fragment of an AvrResponseFrame.
+         * An AvrResponse contains a single fragment of an AvrResponseFrame.
          *
          * This method will construct an AvrResponseFrame from a vector of AVRResponses.
          *
@@ -47,10 +47,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         std::vector<unsigned char>& getPayload() {
             return this->payload;
-        }
-
-        unsigned char getResponseId() {
-            return this->payload[0];
         }
 
         [[nodiscard]] virtual std::vector<unsigned char> getPayloadData() {

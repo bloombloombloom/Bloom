@@ -11,21 +11,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
         explicit Avr8GenericResponseFrame(const std::vector<AvrResponse>& AVRResponses)
         : AvrResponseFrame(AVRResponses) {}
 
+        [[nodiscard]] unsigned char getResponseId();
+
         /**
          * See parent method.
          */
-        [[nodiscard]] std::vector<unsigned char> getPayloadData() override {
-            /*
-             * AVR8 data payloads are in little endian form and include two bytes before the data (response ID and
-             * version byte) as well as an additional byte after the data, known as the 'status code'.
-             */
-            auto data = std::vector<unsigned char>(
-                this->getPayload().begin() + 2,
-                this->getPayload().end() - 1
-            );
-
-            std::reverse(data.begin(), data.end());
-            return data;
-        }
+        [[nodiscard]] std::vector<unsigned char> getPayloadData() override;
     };
 }

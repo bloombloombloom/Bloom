@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../AvrCommandFrame.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrame.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/HouseKeeping/HouseKeepingResponseFrame.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping
 {
@@ -25,6 +26,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class HouseKeepingCommandFrame: public AvrCommandFrame<PayloadContainerType>
     {
     public:
+        using ExpectedResponseFrameType = ResponseFrames::HouseKeepingResponseFrame;
+
         HouseKeepingCommandFrame(): AvrCommandFrame<PayloadContainerType>(ProtocolHandlerId::HOUSE_KEEPING) {}
     };
 }
