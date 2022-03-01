@@ -28,22 +28,17 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 "contained invalid event data size.");
         }
 
-        auto eventData = std::vector<unsigned char>();
-
         /*
          * Ignore the SOF, protocol version, handler id and sequence ID (which all make up 5 bytes in total, 7 if we
          * include the two size bytes)
          */
-        eventData.insert(
-            eventData.end(),
+        this->eventData = std::vector<unsigned char>(
             responseData.begin() + 7,
             responseData.begin() + 7 + static_cast<std::int64_t>(responsePacketSize)
         );
 
-        this->setEventData(eventData);
-
-        if (!eventData.empty()) {
-            this->eventId = eventData[0];
+        if (!this->eventData.empty()) {
+            this->eventId = this->eventData[0];
         }
     }
 }
