@@ -71,6 +71,7 @@ namespace Bloom::DebugToolDrivers
 
     void AtmelIce::startSession() {
         using namespace CommandFrames::HouseKeeping;
+        using ResponseFrames::HouseKeeping::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             StartSession()
@@ -86,6 +87,7 @@ namespace Bloom::DebugToolDrivers
 
     void AtmelIce::endSession() {
         using namespace CommandFrames::HouseKeeping;
+        using ResponseFrames::HouseKeeping::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             EndSession()

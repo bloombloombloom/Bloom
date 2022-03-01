@@ -2,17 +2,17 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames
+namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::HouseKeeping
 {
     using namespace Bloom::Exceptions;
 
-    unsigned char HouseKeepingResponseFrame::getResponseId() {
+    ResponseId HouseKeepingResponseFrame::getResponseId() {
         const auto& payload = this->getPayload();
 
         if (payload.empty()) {
             throw Exception("Response ID missing from HOUSEKEEPING response frame payload.");
         }
 
-        return payload[0];
+        return static_cast<ResponseId>(payload[0]);
     }
 }

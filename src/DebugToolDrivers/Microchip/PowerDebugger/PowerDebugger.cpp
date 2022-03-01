@@ -69,6 +69,7 @@ namespace Bloom::DebugToolDrivers
 
     void PowerDebugger::startSession() {
         using namespace CommandFrames::HouseKeeping;
+        using ResponseFrames::HouseKeeping::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             StartSession()
@@ -86,6 +87,7 @@ namespace Bloom::DebugToolDrivers
 
     void PowerDebugger::endSession() {
         using namespace CommandFrames::HouseKeeping;
+        using ResponseFrames::HouseKeeping::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             EndSession()

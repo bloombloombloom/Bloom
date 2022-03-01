@@ -64,6 +64,7 @@ namespace Bloom::DebugToolDrivers
 
     void MplabPickit4::startSession() {
         using namespace CommandFrames::HouseKeeping;
+        using ResponseFrames::HouseKeeping::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             StartSession()
@@ -79,6 +80,7 @@ namespace Bloom::DebugToolDrivers
 
     void MplabPickit4::endSession() {
         using namespace CommandFrames::HouseKeeping;
+        using ResponseFrames::HouseKeeping::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             EndSession()

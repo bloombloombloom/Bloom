@@ -72,6 +72,7 @@ namespace Bloom::DebugToolDrivers
 
     void XplainedPro::startSession() {
         using namespace CommandFrames::HouseKeeping;
+        using ResponseFrames::HouseKeeping::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             StartSession()
@@ -87,6 +88,7 @@ namespace Bloom::DebugToolDrivers
 
     void XplainedPro::endSession() {
         using namespace CommandFrames::HouseKeeping;
+        using ResponseFrames::HouseKeeping::ResponseId;
 
         auto response = this->getEdbgInterface().sendAvrCommandFrameAndWaitForResponseFrame(
             EndSession()
