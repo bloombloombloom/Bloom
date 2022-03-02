@@ -4,11 +4,13 @@
 #include <thread>
 #include <cmath>
 
+#include "src/Logger/Logger.hpp"
+#include "src/Helpers/Paths.hpp"
+
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Exceptions/Avr8CommandFailure.hpp"
-#include "src/Logger/Logger.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/Exceptions/DebugWirePhysicalInterfaceError.hpp"
 
 // Command frames
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/SetParameter.hpp"
@@ -219,7 +221,21 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::activate() {
         if (!this->physicalInterfaceActivated) {
-            this->activatePhysical();
+            try {
+                this->activatePhysical();
+
+            } catch (const Avr8CommandFailure& activationException) {
+                if (this->physicalInterface == PhysicalInterface::DEBUG_WIRE
+                    && activationException.code == Avr8CommandFailureCode::DEBUGWIRE_PHYSICAL_ERROR
+                ) {
+                    throw DebugWirePhysicalInterfaceError(
+                        "Failed to activate the debugWire physical interface - check target connection. "
+                        "The target's DWEN fuse bit may need to be updated. See [TODO_ADD_LINK] for more information."
+                    );
+                }
+
+                throw activationException;
+            }
         }
 
         if (!this->targetAttached) {

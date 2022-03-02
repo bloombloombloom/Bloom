@@ -8,6 +8,13 @@ namespace Bloom::Exceptions
     {
     public:
         explicit Exception(): std::runtime_error("") {}
+        virtual ~Exception() = default;
+
+        Exception(const Exception& other) noexcept = default;
+        Exception(Exception&& other) = default;
+
+        Exception& operator = (const Exception& other) = default;
+        Exception& operator = (Exception&& other) = default;
 
         explicit Exception(const std::string& message): std::runtime_error(message.c_str()), message(message) {}
 

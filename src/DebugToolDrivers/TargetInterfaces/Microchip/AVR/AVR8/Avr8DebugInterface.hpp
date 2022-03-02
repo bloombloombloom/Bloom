@@ -102,6 +102,10 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
 
         /**
          * Should activate the physical interface between the debug tool and the AVR8 target.
+         *
+         * If the debugWire interface has been selected - this function should throw a DebugWirePhysicalInterfaceError
+         * exception, in the event of a failure when activating the interface. The reason for this is to allow us the
+         * chance to check the DWEN fuse bit, via an ISP interface. See Avr8::activate() for more.
          */
         virtual void activate() = 0;
 
