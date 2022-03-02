@@ -114,7 +114,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     TargetSignature TargetDescriptionFile::getTargetSignature() const {
-        auto& propertyGroups = this->propertyGroupsMappedByName;
+        const auto& propertyGroups = this->propertyGroupsMappedByName;
         auto signaturePropertyGroupIt = propertyGroups.find("signatures");
 
         if (signaturePropertyGroupIt == propertyGroups.end()) {
@@ -122,7 +122,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         }
 
         auto signaturePropertyGroup = signaturePropertyGroupIt->second;
-        auto& signatureProperties = signaturePropertyGroup.propertiesMappedByName;
+        const auto& signatureProperties = signaturePropertyGroup.propertiesMappedByName;
         std::optional<unsigned char> signatureByteZero;
         std::optional<unsigned char> signatureByteOne;
         std::optional<unsigned char> signatureByteTwo;
@@ -174,8 +174,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     TargetParameters TargetDescriptionFile::getTargetParameters() const {
         TargetParameters targetParameters;
 
-        auto& peripheralModules = this->getPeripheralModulesMappedByName();
-        auto& propertyGroups = this->getPropertyGroupsMappedByName();
+        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
+        const auto& propertyGroups = this->getPropertyGroupsMappedByName();
 
         auto flashMemorySegment = this->getFlashMemorySegment();
         if (flashMemorySegment.has_value()) {
@@ -265,7 +265,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             }
         }
 
-        auto supportedPhysicalInterfaces = this->getSupportedDebugPhysicalInterfaces();
+        const auto& supportedPhysicalInterfaces = this->getSupportedDebugPhysicalInterfaces();
 
         if (supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)
             || supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)
@@ -649,17 +649,17 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getRamMemorySegment() const {
-        auto& addressMapping = this->addressSpacesMappedById;
+        const auto& addressMapping = this->addressSpacesMappedById;
 
         // Internal RAM  &register attributes are usually found in the data address space
         auto dataAddressSpaceIt = addressMapping.find("data");
 
         if (dataAddressSpaceIt != addressMapping.end()) {
-            auto& dataAddressSpace = dataAddressSpaceIt->second;
-            auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
+            const auto& dataAddressSpace = dataAddressSpaceIt->second;
+            const auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
 
             if (dataMemorySegments.find(MemorySegmentType::RAM) != dataMemorySegments.end()) {
-                auto& ramMemorySegments = dataMemorySegments.find(MemorySegmentType::RAM)->second;
+                const auto& ramMemorySegments = dataMemorySegments.find(MemorySegmentType::RAM)->second;
                 auto ramMemorySegmentIt = ramMemorySegments.begin();
 
                 if (ramMemorySegmentIt != ramMemorySegments.end()) {
@@ -672,14 +672,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getIoMemorySegment() const {
-        auto& addressMapping = this->addressSpacesMappedById;
+        const auto& addressMapping = this->addressSpacesMappedById;
 
         if (addressMapping.contains("data")) {
-            auto& dataAddressSpace = addressMapping.at("data");
-            auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
+            const auto& dataAddressSpace = addressMapping.at("data");
+            const auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
 
             if (dataMemorySegments.contains(MemorySegmentType::IO)) {
-                auto& ramMemorySegments = dataMemorySegments.at(MemorySegmentType::IO);
+                const auto& ramMemorySegments = dataMemorySegments.at(MemorySegmentType::IO);
                 auto ramMemorySegmentIt = ramMemorySegments.begin();
 
                 if (ramMemorySegmentIt != ramMemorySegments.end()) {
@@ -692,17 +692,17 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getRegisterMemorySegment() const {
-        auto& addressMapping = this->addressSpacesMappedById;
+        const auto& addressMapping = this->addressSpacesMappedById;
 
         // Internal RAM  &register attributes are usually found in the data address space
         auto dataAddressSpaceIt = addressMapping.find("data");
 
         if (dataAddressSpaceIt != addressMapping.end()) {
-            auto& dataAddressSpace = dataAddressSpaceIt->second;
-            auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
+            const auto& dataAddressSpace = dataAddressSpaceIt->second;
+            const auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
 
             if (dataMemorySegments.find(MemorySegmentType::REGISTERS) != dataMemorySegments.end()) {
-                auto& registerMemorySegments = dataMemorySegments.find(MemorySegmentType::REGISTERS)->second;
+                const auto& registerMemorySegments = dataMemorySegments.find(MemorySegmentType::REGISTERS)->second;
                 auto registerMemorySegmentIt = registerMemorySegments.begin();
 
                 if (registerMemorySegmentIt != registerMemorySegments.end()) {
@@ -715,11 +715,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getEepromMemorySegment() const {
-        auto& addressMapping = this->addressSpacesMappedById;
+        const auto& addressMapping = this->addressSpacesMappedById;
 
         if (addressMapping.contains("eeprom")) {
-            auto& eepromAddressSpace = addressMapping.at("eeprom");
-            auto& eepromAddressSpaceSegments = eepromAddressSpace.memorySegmentsByTypeAndName;
+            const auto& eepromAddressSpace = addressMapping.at("eeprom");
+            const auto& eepromAddressSpaceSegments = eepromAddressSpace.memorySegmentsByTypeAndName;
 
             if (eepromAddressSpaceSegments.contains(MemorySegmentType::EEPROM)) {
                 return eepromAddressSpaceSegments.at(MemorySegmentType::EEPROM).begin()->second;
@@ -740,15 +740,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getFirstBootSectionMemorySegment() const {
-        auto& addressMapping = this->addressSpacesMappedById;
+        const auto& addressMapping = this->addressSpacesMappedById;
         auto programAddressSpaceIt = addressMapping.find("prog");
 
         if (programAddressSpaceIt != addressMapping.end()) {
-            auto& programAddressSpace = programAddressSpaceIt->second;
-            auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
+            const auto& programAddressSpace = programAddressSpaceIt->second;
+            const auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
 
             if (programMemorySegments.find(MemorySegmentType::FLASH) != programMemorySegments.end()) {
-                auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
+                const auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
 
                 if (flashMemorySegments.contains("boot_section_1")) {
                     return flashMemorySegments.at("boot_section_1");
@@ -764,8 +764,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
     std::optional<MemorySegment> TargetDescriptionFile::getSignatureMemorySegment() const {
         if (this->addressSpacesMappedById.contains("signatures")) {
-            auto& signaturesAddressSpace = this->addressSpacesMappedById.at("signatures");
-            auto& signaturesAddressSpaceSegments = signaturesAddressSpace.memorySegmentsByTypeAndName;
+            const auto& signaturesAddressSpace = this->addressSpacesMappedById.at("signatures");
+            const auto& signaturesAddressSpaceSegments = signaturesAddressSpace.memorySegmentsByTypeAndName;
 
             if (signaturesAddressSpaceSegments.contains(MemorySegmentType::SIGNATURES)) {
                 return signaturesAddressSpaceSegments.at(MemorySegmentType::SIGNATURES).begin()->second;
@@ -777,7 +777,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 auto dataAddressSpace = this->addressSpacesMappedById.at("data");
 
                 if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::SIGNATURES)) {
-                    auto& signatureSegmentsByName = dataAddressSpace.memorySegmentsByTypeAndName.at(
+                    const auto& signatureSegmentsByName = dataAddressSpace.memorySegmentsByTypeAndName.at(
                         MemorySegmentType::SIGNATURES
                     );
 
@@ -820,7 +820,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<RegisterGroup> TargetDescriptionFile::getCpuRegisterGroup() const {
-        auto& modulesByName = this->modulesMappedByName;
+        const auto& modulesByName = this->modulesMappedByName;
 
         if (modulesByName.find("cpu") != modulesByName.end()) {
             auto cpuModule = modulesByName.find("cpu")->second;
@@ -835,10 +835,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<RegisterGroup> TargetDescriptionFile::getBootLoadRegisterGroup() const {
-        auto& modulesByName = this->modulesMappedByName;
+        const auto& modulesByName = this->modulesMappedByName;
 
         if (modulesByName.contains("boot_load")) {
-            auto& bootLoadModule = modulesByName.at("boot_load");
+            const auto& bootLoadModule = modulesByName.at("boot_load");
             auto bootLoadRegisterGroupIt = bootLoadModule.registerGroupsMappedByName.find("boot_load");
 
             if (bootLoadRegisterGroupIt != bootLoadModule.registerGroupsMappedByName.end()) {
@@ -850,7 +850,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<RegisterGroup> TargetDescriptionFile::getEepromRegisterGroup() const {
-        auto& modulesByName = this->modulesMappedByName;
+        const auto& modulesByName = this->modulesMappedByName;
 
         if (modulesByName.find("eeprom") != modulesByName.end()) {
             auto eepromModule = modulesByName.find("eeprom")->second;
@@ -924,7 +924,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         auto cpuRegisterGroup = this->getCpuRegisterGroup();
 
         if (cpuRegisterGroup.has_value()) {
-            auto& cpuRegisters = cpuRegisterGroup->registersMappedByName;
+            const auto& cpuRegisters = cpuRegisterGroup->registersMappedByName;
 
             if (cpuRegisters.contains("osccal")) {
                 return cpuRegisters.at("osccal");
@@ -1053,12 +1053,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadDebugWireAndJtagTargetParameters(TargetParameters& targetParameters) const {
-        auto& peripheralModules = this->getPeripheralModulesMappedByName();
-        auto& propertyGroups = this->getPropertyGroupsMappedByName();
+        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
+        const auto& propertyGroups = this->getPropertyGroupsMappedByName();
 
         // OCD attributes can be found in property groups
         if (propertyGroups.contains("ocd")) {
-            auto& ocdProperties = propertyGroups.at("ocd").propertiesMappedByName;
+            const auto& ocdProperties = propertyGroups.at("ocd").propertiesMappedByName;
 
             if (ocdProperties.find("ocd_revision") != ocdProperties.end()) {
                 targetParameters.ocdRevision = ocdProperties.find("ocd_revision")
@@ -1120,11 +1120,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadPdiTargetParameters(TargetParameters& targetParameters) const {
-        auto& peripheralModules = this->getPeripheralModulesMappedByName();
-        auto& propertyGroups = this->getPropertyGroupsMappedByName();
+        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
+        const auto& propertyGroups = this->getPropertyGroupsMappedByName();
 
         if (propertyGroups.contains("pdi_interface")) {
-            auto& pdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
+            const auto& pdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
 
             if (pdiInterfaceProperties.contains("app_section_offset")) {
                 targetParameters.appSectionPdiOffset = pdiInterfaceProperties
@@ -1167,10 +1167,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             }
 
             if (peripheralModules.contains("nvm")) {
-                auto& nvmModule = peripheralModules.at("nvm");
+                const auto& nvmModule = peripheralModules.at("nvm");
 
                 if (nvmModule.instancesMappedByName.contains("nvm")) {
-                    auto& nvmInstance = nvmModule.instancesMappedByName.at("nvm");
+                    const auto& nvmInstance = nvmModule.instancesMappedByName.at("nvm");
 
                     if (nvmInstance.registerGroupsMappedByName.contains("nvm")) {
                         targetParameters.nvmBaseAddress = nvmInstance.registerGroupsMappedByName.at("nvm").offset;
@@ -1181,15 +1181,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadUpdiTargetParameters(TargetParameters& targetParameters) const {
-        auto& propertyGroups = this->getPropertyGroupsMappedByName();
-        auto& peripheralModules = this->getPeripheralModulesMappedByName();
+        const auto& propertyGroups = this->getPropertyGroupsMappedByName();
+        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
         auto modulesByName = this->getModulesMappedByName();
 
         if (peripheralModules.contains("nvmctrl")) {
-            auto& nvmCtrlModule = peripheralModules.at("nvmctrl");
+            const auto& nvmCtrlModule = peripheralModules.at("nvmctrl");
 
             if (nvmCtrlModule.instancesMappedByName.contains("nvmctrl")) {
-                auto& nvmCtrlInstance = nvmCtrlModule.instancesMappedByName.at("nvmctrl");
+                const auto& nvmCtrlInstance = nvmCtrlModule.instancesMappedByName.at("nvmctrl");
 
                 if (nvmCtrlInstance.registerGroupsMappedByName.contains("nvmctrl")) {
                     targetParameters.nvmBaseAddress = nvmCtrlInstance.registerGroupsMappedByName.at(
@@ -1200,7 +1200,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         }
 
         if (propertyGroups.contains("updi_interface")) {
-            auto& updiInterfaceProperties = propertyGroups.at("updi_interface").propertiesMappedByName;
+            const auto& updiInterfaceProperties = propertyGroups.at("updi_interface").propertiesMappedByName;
 
             if (updiInterfaceProperties.contains("ocd_base_addr")) {
                 targetParameters.ocdModuleAddress = updiInterfaceProperties

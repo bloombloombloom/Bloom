@@ -4,14 +4,16 @@
 
 #include "src/Targets/TargetDescription/TargetDescriptionFile.hpp"
 
+#include "src/Targets/TargetVariant.hpp"
+#include "src/Targets/TargetRegister.hpp"
+
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
 #include "src/Targets/Microchip/AVR/IspParameters.hpp"
+
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PadDescriptor.hpp"
-#include "src/Targets/TargetVariant.hpp"
-#include "src/Targets/TargetRegister.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 {
