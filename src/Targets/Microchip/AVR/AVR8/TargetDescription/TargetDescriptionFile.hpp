@@ -5,6 +5,7 @@
 #include "src/Targets/TargetDescription/TargetDescriptionFile.hpp"
 
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
+#include "src/Targets/Microchip/AVR/IspParameters.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
@@ -71,6 +72,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @return
          */
         [[nodiscard]] TargetParameters getTargetParameters() const;
+
+        /**
+         * Extracts the target's ISP parameters from the TDF.
+         *
+         * @return
+         */
+        [[nodiscard]] IspParameters getIspParameters() const;
 
         /**
          * Returns a set of all supported physical interfaces for debugging.

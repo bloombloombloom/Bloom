@@ -284,6 +284,98 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         return targetParameters;
     }
 
+    IspParameters TargetDescriptionFile::getIspParameters() const {
+        if (!this->propertyGroupsMappedByName.contains("isp_interface")) {
+            throw Exception("TDF missing ISP parameters");
+        }
+
+        const auto& ispParameterPropertiesByName = this->propertyGroupsMappedByName.at(
+            "isp_interface"
+        ).propertiesMappedByName;
+
+        if (!ispParameterPropertiesByName.contains("ispenterprogmode_timeout")) {
+            throw Exception("TDF missing ISP programming mode timeout property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispenterprogmode_stabdelay")) {
+            throw Exception("TDF missing ISP programming mode stabilization delay property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispenterprogmode_cmdexedelay")) {
+            throw Exception("TDF missing ISP programming mode command execution delay property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispenterprogmode_synchloops")) {
+            throw Exception("TDF missing ISP programming mode sync loops property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispenterprogmode_bytedelay")) {
+            throw Exception("TDF missing ISP programming mode byte delay property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispenterprogmode_pollindex")) {
+            throw Exception("TDF missing ISP programming mode poll index property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispenterprogmode_pollvalue")) {
+            throw Exception("TDF missing ISP programming mode poll value property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispleaveprogmode_predelay")) {
+            throw Exception("TDF missing ISP programming mode pre-delay property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispleaveprogmode_postdelay")) {
+            throw Exception("TDF missing ISP programming mode post-delay property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispreadsign_pollindex")) {
+            throw Exception("TDF missing ISP read signature poll index property");
+        }
+
+        if (!ispParameterPropertiesByName.contains("ispreadfuse_pollindex")) {
+            throw Exception("TDF missing ISP read fuse poll index property");
+        }
+
+        auto output = IspParameters();
+
+        output.programModeTimeout = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispenterprogmode_timeout").value.toUShort()
+        );
+        output.programModeStabilizationDelay = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispenterprogmode_stabdelay").value.toUShort()
+        );
+        output.programModeCommandExecutionDelay = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispenterprogmode_cmdexedelay").value.toUShort()
+        );
+        output.programModeSyncLoops = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispenterprogmode_synchloops").value.toUShort()
+        );
+        output.programModeByteDelay = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispenterprogmode_bytedelay").value.toUShort()
+        );
+        output.programModePollValue = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispenterprogmode_pollvalue").value.toUShort(nullptr, 16)
+        );
+        output.programModePollIndex = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispenterprogmode_pollindex").value.toUShort()
+        );
+        output.programModePreDelay = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispleaveprogmode_predelay").value.toUShort()
+        );
+        output.programModePostDelay = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispleaveprogmode_postdelay").value.toUShort()
+        );
+        output.readSignaturePollIndex = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispreadsign_pollindex").value.toUShort()
+        );
+        output.readFusePollIndex = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispreadfuse_pollindex").value.toUShort()
+        );
+
+        return output;
+    }
+
     void TargetDescriptionFile::loadDebugPhysicalInterfaces() {
         auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
            {"updi", PhysicalInterface::UPDI},
