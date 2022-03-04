@@ -558,7 +558,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 }
 
                 if (this->padDescriptorsByName.contains(targetPin.padName)) {
-                    auto& pad = this->padDescriptorsByName.at(targetPin.padName);
+                    const auto& pad = this->padDescriptorsByName.at(targetPin.padName);
                     if (pad.gpioPortSetAddress.has_value() && pad.ddrSetAddress.has_value()) {
                         targetPin.type = TargetPinType::GPIO;
                     }
@@ -572,13 +572,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadTargetRegisterDescriptors() {
-        auto& modulesByName = this->modulesMappedByName;
-        auto& peripheralModulesByName = this->peripheralModulesMappedByName;
+        const auto& modulesByName = this->modulesMappedByName;
+        const auto& peripheralModulesByName = this->peripheralModulesMappedByName;
 
         for (const auto& [moduleName, module] : modulesByName) {
             for (const auto& [registerGroupName, registerGroup] : module.registerGroupsMappedByName) {
                 if (this->peripheralRegisterGroupsMappedByModuleRegisterGroupName.contains(registerGroupName)) {
-                    auto& peripheralRegisterGroups = this->peripheralRegisterGroupsMappedByModuleRegisterGroupName
+                    const auto& peripheralRegisterGroups = this->peripheralRegisterGroupsMappedByModuleRegisterGroupName
                         .at(registerGroupName);
                     for (const auto& peripheralRegisterGroup : peripheralRegisterGroups) {
                         if (peripheralRegisterGroup.addressSpaceId.value_or("") != "data") {
@@ -606,7 +606,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                             }
 
                             if (moduleRegister.readWriteAccess.has_value()) {
-                                auto& readWriteAccess = moduleRegister.readWriteAccess.value();
+                                const auto& readWriteAccess = moduleRegister.readWriteAccess.value();
                                 registerDescriptor.readable = readWriteAccess.find('r') != std::string::npos;
                                 registerDescriptor.writable = readWriteAccess.find('w') != std::string::npos;
 
@@ -642,13 +642,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
         const auto& fuseRegisterGroup = fuseModule.registerGroupsMappedByName.at("fuse");
 
-        static const auto fuseTypesByName = std::map<std::string, FuseType>(
-            {
-                {"low", FuseType::LOW},
-                {"high", FuseType::HIGH},
-                {"extended", FuseType::EXTENDED},
-            }
-        );
+        static const auto fuseTypesByName = std::map<std::string, FuseType>({
+            {"low", FuseType::LOW},
+            {"high", FuseType::HIGH},
+            {"extended", FuseType::EXTENDED},
+        });
 
         for (const auto&[fuseTypeName, fuse] : fuseRegisterGroup.registersMappedByName) {
             if (!fuseTypesByName.contains(fuseTypeName)) {
@@ -666,17 +664,18 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
         return std::nullopt;
     }
+
     std::optional<MemorySegment> TargetDescriptionFile::getFlashMemorySegment() const {
-        auto& addressMapping = this->addressSpacesMappedById;
+        const auto& addressMapping = this->addressSpacesMappedById;
         auto programAddressSpaceIt = addressMapping.find("prog");
 
         // Flash memory attributes are typically found in memory segments within the program address space.
         if (programAddressSpaceIt != addressMapping.end()) {
-            auto& programAddressSpace = programAddressSpaceIt->second;
-            auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
+            const auto& programAddressSpace = programAddressSpaceIt->second;
+            const auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
 
             if (programMemorySegments.find(MemorySegmentType::FLASH) != programMemorySegments.end()) {
-                auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
+                const auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
 
                 /*
                  * In AVR8 TDFs, flash memory segments are typically named "APP_SECTION", "PROGMEM" or "FLASH".
