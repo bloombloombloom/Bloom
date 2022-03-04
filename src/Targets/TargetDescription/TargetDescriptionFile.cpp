@@ -238,7 +238,46 @@ namespace Bloom::Targets::TargetDescription
             throw Exception("Invalid register offset");
         }
 
+        auto& bitFields = reg.bitFieldsMappedByName;
+        auto bitFieldNodes = xmlElement.elementsByTagName("bitfield");
+        for (int bitFieldIndex = 0; bitFieldIndex < bitFieldNodes.count(); bitFieldIndex++) {
+            try {
+                auto bitField = TargetDescriptionFile::generateBitFieldFromXml(
+                    bitFieldNodes.item(bitFieldIndex).toElement()
+                );
+                bitFields.insert(std::pair(bitField.name, bitField));
+
+            } catch (const Exception& exception) {
+                Logger::debug("Failed to extract bit field from register target description element - "
+                    + exception.getMessage());
+            }
+        }
+
         return reg;
+    }
+
+    BitField TargetDescriptionFile::generateBitFieldFromXml(const QDomElement& xmlElement) {
+        if (!xmlElement.hasAttribute("name") || !xmlElement.hasAttribute("mask")) {
+            throw Exception("Missing bit field name/mask attribute");
+        }
+
+        auto bitField = BitField();
+        bitField.name = xmlElement.attribute("name").toLower().toStdString();
+
+        auto maskConversion = false;
+        bitField.mask = static_cast<std::uint8_t>(
+            xmlElement.attribute("mask").toUShort(&maskConversion, 16)
+        );
+
+        if (!maskConversion) {
+            throw Exception("Failed to convert bit field mask to integer (from hex string)");
+        }
+
+        if (bitField.name.empty()) {
+            throw Exception("Empty bit field name");
+        }
+
+        return bitField;
     }
 
     void TargetDescriptionFile::loadAddressSpaces() {

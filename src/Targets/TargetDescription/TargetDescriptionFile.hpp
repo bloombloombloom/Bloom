@@ -165,6 +165,14 @@ namespace Bloom::Targets::TargetDescription
         static Register generateRegisterFromXml(const QDomElement& xmlElement);
 
         /**
+         * Consturcts a BitField object from an XML element.
+         *
+         * @param xmlElement
+         * @return
+         */
+        static BitField generateBitFieldFromXml(const QDomElement& xmlElement);
+
+        /**
          * Extracts all address spaces and loads them into this->addressSpacesMappedById.
          */
         void loadAddressSpaces();

@@ -5,6 +5,8 @@
 #include <map>
 #include <optional>
 
+#include "BitField.hpp"
+
 namespace Bloom::Targets::TargetDescription
 {
     struct Register
@@ -14,6 +16,7 @@ namespace Bloom::Targets::TargetDescription
         std::uint16_t offset;
         std::uint16_t size;
         std::optional<std::string> readWriteAccess;
+        std::map<std::string, BitField> bitFieldsMappedByName;
     };
 
     struct RegisterGroup

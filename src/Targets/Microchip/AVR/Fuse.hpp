@@ -30,5 +30,7 @@ namespace Bloom::Targets::Microchip::Avr
          * Fuse bit mask
          */
         std::uint8_t bitMask;
+
+        FuseBitDescriptor(FuseType fuseType, std::uint8_t bitMask): fuseType(fuseType), bitMask(bitMask) {}
     };
 }
