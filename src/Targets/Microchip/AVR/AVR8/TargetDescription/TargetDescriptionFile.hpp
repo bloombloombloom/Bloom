@@ -9,6 +9,7 @@
 
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
 #include "src/Targets/Microchip/AVR/IspParameters.hpp"
+#include "src/Targets/Microchip/AVR/Fuse.hpp"
 
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
@@ -81,6 +82,24 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @return
          */
         [[nodiscard]] IspParameters getIspParameters() const;
+
+        /**
+         * Constructs a FuseBitDescriptor for the debugWire enable (DWEN) fuse bit, with information extracted from
+         * the TDF.
+         *
+         * @return
+         *  std::nullopt if the DWEN bit field could not be found in the TDF.
+         */
+        [[nodiscard]] std::optional<FuseBitDescriptor> getDwenFuseBitDescriptor() const;
+
+        /**
+         * Constructs a FuseBitDescriptor for the SPI enable (SPIEN) fuse bit, with information extracted from
+         * the TDF.
+         *
+         * @return
+         *  std::nullopt if the SPIEN bit field could not be found in the TDF.
+         */
+        [[nodiscard]] std::optional<FuseBitDescriptor> getSpienFuseBitDescriptor() const;
 
         /**
          * Returns a set of all supported physical interfaces for debugging.
@@ -168,6 +187,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * Loads all register descriptors from the TDF, and populates this->targetRegisterDescriptorsByType.
          */
         void loadTargetRegisterDescriptors();
+
+        [[nodiscard]] std::optional<FuseBitDescriptor> getFuseBitDescriptorByName(const std::string& fuseBitName) const;
 
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFlashMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRamMemorySegment() const;

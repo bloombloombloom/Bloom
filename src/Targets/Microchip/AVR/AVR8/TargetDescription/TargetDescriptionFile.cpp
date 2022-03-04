@@ -376,6 +376,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         return output;
     }
 
+    std::optional<FuseBitDescriptor> TargetDescriptionFile::getDwenFuseBitDescriptor() const {
+        return this->getFuseBitDescriptorByName("dwen");
+    }
+
+    std::optional<FuseBitDescriptor> TargetDescriptionFile::getSpienFuseBitDescriptor() const {
+        return this->getFuseBitDescriptorByName("spien");
+    }
+
     void TargetDescriptionFile::loadDebugPhysicalInterfaces() {
         auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
            {"updi", PhysicalInterface::UPDI},
@@ -619,6 +627,45 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         }
     }
 
+    std::optional<FuseBitDescriptor> TargetDescriptionFile::getFuseBitDescriptorByName(
+        const std::string& fuseBitName
+    ) const {
+        if (!this->modulesMappedByName.contains("fuse")) {
+            return std::nullopt;
+        }
+
+        const auto& fuseModule = this->modulesMappedByName.at("fuse");
+
+        if (!fuseModule.registerGroupsMappedByName.contains("fuse")) {
+            return std::nullopt;
+        }
+
+        const auto& fuseRegisterGroup = fuseModule.registerGroupsMappedByName.at("fuse");
+
+        static const auto fuseTypesByName = std::map<std::string, FuseType>(
+            {
+                {"low", FuseType::LOW},
+                {"high", FuseType::HIGH},
+                {"extended", FuseType::EXTENDED},
+            }
+        );
+
+        for (const auto&[fuseTypeName, fuse] : fuseRegisterGroup.registersMappedByName) {
+            if (!fuseTypesByName.contains(fuseTypeName)) {
+                // Unknown fuse type name
+                continue;
+            }
+
+            if (fuse.bitFieldsMappedByName.contains(fuseBitName)) {
+                return FuseBitDescriptor(
+                    fuseTypesByName.at(fuseTypeName),
+                    fuse.bitFieldsMappedByName.at(fuseBitName).mask
+                );
+            }
+        }
+
+        return std::nullopt;
+    }
     std::optional<MemorySegment> TargetDescriptionFile::getFlashMemorySegment() const {
         auto& addressMapping = this->addressSpacesMappedById;
         auto programAddressSpaceIt = addressMapping.find("prog");
