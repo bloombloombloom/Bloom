@@ -376,12 +376,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         return output;
     }
 
-    std::optional<FuseBitDescriptor> TargetDescriptionFile::getDwenFuseBitDescriptor() const {
-        return this->getFuseBitDescriptorByName("dwen");
+    std::optional<FuseBitsDescriptor> TargetDescriptionFile::getDwenFuseBitsDescriptor() const {
+        return this->getFuseBitsDescriptorByName("dwen");
     }
 
-    std::optional<FuseBitDescriptor> TargetDescriptionFile::getSpienFuseBitDescriptor() const {
-        return this->getFuseBitDescriptorByName("spien");
+    std::optional<FuseBitsDescriptor> TargetDescriptionFile::getSpienFuseBitsDescriptor() const {
+        return this->getFuseBitsDescriptorByName("spien");
     }
 
     void TargetDescriptionFile::loadDebugPhysicalInterfaces() {
@@ -627,7 +627,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         }
     }
 
-    std::optional<FuseBitDescriptor> TargetDescriptionFile::getFuseBitDescriptorByName(
+    std::optional<FuseBitsDescriptor> TargetDescriptionFile::getFuseBitsDescriptorByName(
         const std::string& fuseBitName
     ) const {
         if (!this->modulesMappedByName.contains("fuse")) {
@@ -655,7 +655,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             }
 
             if (fuse.bitFieldsMappedByName.contains(fuseBitName)) {
-                return FuseBitDescriptor(
+                return FuseBitsDescriptor(
                     fuseTypesByName.at(fuseTypeName),
                     fuse.bitFieldsMappedByName.at(fuseBitName).mask
                 );

@@ -90,7 +90,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @return
          *  std::nullopt if the DWEN bit field could not be found in the TDF.
          */
-        [[nodiscard]] std::optional<FuseBitDescriptor> getDwenFuseBitDescriptor() const;
+        [[nodiscard]] std::optional<FuseBitsDescriptor> getDwenFuseBitsDescriptor() const;
 
         /**
          * Constructs a FuseBitDescriptor for the SPI enable (SPIEN) fuse bit, with information extracted from
@@ -99,7 +99,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @return
          *  std::nullopt if the SPIEN bit field could not be found in the TDF.
          */
-        [[nodiscard]] std::optional<FuseBitDescriptor> getSpienFuseBitDescriptor() const;
+        [[nodiscard]] std::optional<FuseBitsDescriptor> getSpienFuseBitsDescriptor() const;
 
         /**
          * Returns a set of all supported physical interfaces for debugging.
@@ -188,7 +188,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          */
         void loadTargetRegisterDescriptors();
 
-        [[nodiscard]] std::optional<FuseBitDescriptor> getFuseBitDescriptorByName(const std::string& fuseBitName) const;
+        [[nodiscard]] std::optional<FuseBitsDescriptor> getFuseBitsDescriptorByName(
+            const std::string& fuseBitName
+        ) const;
 
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFlashMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRamMemorySegment() const;
