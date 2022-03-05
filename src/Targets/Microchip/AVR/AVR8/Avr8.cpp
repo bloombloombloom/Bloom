@@ -63,6 +63,22 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             }
         }
 
+        if (targetConfig.jsonObject.contains("updateDwenFuseBitOnDebugWireFailure")) {
+            this->updateDwenFuseBitOnDebugWireFailure = targetConfig.jsonObject.value(
+                "updateDwenFuseBitOnDebugWireFailure"
+            ).toBool();
+
+            if (this->updateDwenFuseBitOnDebugWireFailure
+                && this->avrIspInterface == nullptr
+                && this->physicalInterface == PhysicalInterface::DEBUG_WIRE
+            ) {
+                Logger::warning(
+                    "The connected debug tool (or associated driver) does not provide any ISP interface. "
+                    "Bloom will be unable to update the DWEN fuse bit in the event of a debugWire activation failure."
+                );
+            }
+        }
+
         this->avr8DebugInterface->configure(targetConfig);
 
         if (this->avrIspInterface != nullptr) {

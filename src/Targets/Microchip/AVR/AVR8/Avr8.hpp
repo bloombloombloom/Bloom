@@ -136,6 +136,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
 
+        bool updateDwenFuseBitOnDebugWireFailure = false;
+
         /**
          * Users are required to set their desired physical interface in their Bloom configuration. This would take
          * the form of a string, so we map the available options to the appropriate enums.
@@ -151,6 +153,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 {"updi", PhysicalInterface::UPDI},
             });
         };
+
         /**
          * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.
          */
