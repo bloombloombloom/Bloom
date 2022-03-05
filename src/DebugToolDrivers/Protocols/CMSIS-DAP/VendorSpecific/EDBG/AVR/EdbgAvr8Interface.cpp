@@ -230,7 +230,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 ) {
                     throw DebugWirePhysicalInterfaceError(
                         "Failed to activate the debugWire physical interface - check target connection. "
-                        "The target's DWEN fuse bit may need to be updated. See [TODO_ADD_LINK] for more information."
+                        "If the target was recently programmed via ISP, try cycling the target power. See "
+                        + Paths::homeDomainName() + "/docs/debugging-avr-debugwire for more information."
                     );
                 }
 
