@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
+#include "TargetInterfaces/Microchip/AVR/AvrIspInterface.hpp"
 
 namespace Bloom
 {
@@ -51,7 +52,21 @@ namespace Bloom
          */
         virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() {
             return nullptr;
-        };
+        }
+
+        /**
+         * All debug tools that support interfacing with AVR targets via the ISP interface must provide an
+         * implementation of the AvrIspInterface class, via this function.
+         *
+         * For debug tools that do not support the interface, a nullptr should be returned.
+         *
+         * Note: the caller of this function will not manage the lifetime of the returned AvrIspInterface instance.
+         *
+         * @return
+         */
+        virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface() {
+            return nullptr;
+        }
 
         [[nodiscard]] bool isInitialised() const {
             return this->initialised;
