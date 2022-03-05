@@ -10,6 +10,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
 
 namespace Bloom::DebugToolDrivers
@@ -52,6 +53,10 @@ namespace Bloom::DebugToolDrivers
             return this->edbgAvr8Interface.get();
         }
 
+        TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface() override {
+            return this->edbgAvrIspInterface.get();
+        }
+
         std::string getName() override {
             return "MPLAB Snap";
         };
@@ -81,6 +86,12 @@ namespace Bloom::DebugToolDrivers
          * implemented in EdbgAvr8Interface. See the EdbgAvr8Interface class for more information.
          */
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
+
+        /**
+         * The MPLAB Snap employs the EDBG AVRISP protocol, for interfacing with AVR targets via the ISP interface.
+         * See the EdbgAvrIspInterface class for the protocol implementation.
+         */
+        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
 
         bool sessionStarted = false;
     };
