@@ -20,7 +20,7 @@ namespace Bloom::Targets::Microchip::Avr
         std::uint8_t programModePostDelay;
 
         std::uint8_t readSignaturePollIndex;
-
         std::uint8_t readFusePollIndex;
+        std::uint8_t readLockPollIndex;
     };
 }

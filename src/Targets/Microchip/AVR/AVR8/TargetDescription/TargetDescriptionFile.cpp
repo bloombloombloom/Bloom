@@ -337,6 +337,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             throw Exception("TDF missing ISP read fuse poll index property");
         }
 
+        if (!ispParameterPropertiesByName.contains("ispreadlock_pollindex")) {
+            throw Exception("TDF missing ISP read lock poll index property");
+        }
+
         auto output = IspParameters();
 
         output.programModeTimeout = static_cast<std::uint8_t>(
@@ -371,6 +375,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         );
         output.readFusePollIndex = static_cast<std::uint8_t>(
             ispParameterPropertiesByName.at("ispreadfuse_pollindex").value.toUShort()
+        );
+        output.readLockPollIndex = static_cast<std::uint8_t>(
+            ispParameterPropertiesByName.at("ispreadlock_pollindex").value.toUShort()
         );
 
         return output;
