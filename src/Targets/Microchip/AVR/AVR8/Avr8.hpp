@@ -4,18 +4,20 @@
 #include <queue>
 #include <utility>
 
-#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
 #include "src/Targets/Microchip/AVR/Target.hpp"
-#include "src/Targets/TargetRegister.hpp"
 #include "src/DebugToolDrivers/DebugTool.hpp"
-#include "src/ProjectConfig.hpp"
-#include "src/Exceptions/Exception.hpp"
 
-#include "TargetParameters.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AvrIspInterface.hpp"
+
 #include "Family.hpp"
+#include "TargetParameters.hpp"
 #include "PadDescriptor.hpp"
+#include "src/Targets/TargetRegister.hpp"
 
 #include "TargetDescription/TargetDescriptionFile.hpp"
+
+#include "src/ProjectConfig.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
@@ -55,6 +57,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         void setDebugTool(DebugTool* debugTool) override {
             this->avr8DebugInterface = debugTool->getAvr8DebugInterface();
+            this->avrIspInterface = debugTool->getAvrIspInterface();
         }
 
         /**
@@ -120,6 +123,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
     protected:
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* avr8DebugInterface = nullptr;
+        DebugToolDrivers::TargetInterfaces::Microchip::Avr::AvrIspInterface* avrIspInterface = nullptr;
+
         std::string name;
         std::optional<Family> family;
         std::optional<PhysicalInterface> physicalInterface;

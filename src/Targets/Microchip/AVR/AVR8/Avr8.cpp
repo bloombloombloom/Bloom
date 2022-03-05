@@ -64,6 +64,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         this->avr8DebugInterface->configure(targetConfig);
+
+        if (this->avrIspInterface != nullptr) {
+            this->avrIspInterface->configure(targetConfig);
+        }
     }
 
     void Avr8::postActivationConfigure() {
