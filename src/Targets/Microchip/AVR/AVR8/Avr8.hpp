@@ -180,5 +180,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * @return
          */
         TargetSignature getId() override;
+
+        /**
+         * Updates the debugWire enable (DWEN) fuse bit on the AVR target.
+         *
+         * @param setFuse
+         *  True to set the fuse, false to clear it.
+         */
+        void updateDwenFuseBit(bool setFuse);
     };
 }

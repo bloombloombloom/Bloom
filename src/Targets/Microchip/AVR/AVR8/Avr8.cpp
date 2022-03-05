@@ -13,6 +13,8 @@
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
+#include "src/Targets/Microchip/AVR/Fuse.hpp"
+
 // Derived AVR8 targets
 #include "XMega/XMega.hpp"
 #include "Mega/Mega.hpp"
@@ -672,5 +674,177 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         return this->id.value();
+    }
+
+    void Avr8::updateDwenFuseBit(bool setFuse) {
+        if (this->avrIspInterface == nullptr) {
+            throw Exception(
+                "Debug tool or driver does not provide access to an ISP interface - please confirm that the "
+                    "debug tool supports ISP and then report this issue via " + Paths::homeDomainName()
+                    + "/report-issue"
+            );
+        }
+
+        if (!this->targetDescriptionFile.has_value() || !this->id.has_value()) {
+            throw Exception(
+                "Insufficient target information for ISP interface - do not use the generic \"avr8\" "
+                    "target name in conjunction with the ISP interface. Please update your target configuration."
+            );
+        }
+
+        const auto& supportedPhysicalInterfaces = this->targetDescriptionFile->getSupportedDebugPhysicalInterfaces();
+        if (!supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)) {
+            throw Exception(
+                "Target does not support debugWire physical interface - check target configuration or "
+                    "report this issue via " + Paths::homeDomainName() + "/report-issue"
+            );
+        }
+
+        const auto dwenFuseBitsDescriptor = this->targetDescriptionFile->getDwenFuseBitsDescriptor();
+        const auto spienFuseBitsDescriptor = this->targetDescriptionFile->getSpienFuseBitsDescriptor();
+
+        if (!dwenFuseBitsDescriptor.has_value()) {
+            throw Exception("Could not find DWEN bit field in TDF.");
+        }
+
+        if (!spienFuseBitsDescriptor.has_value()) {
+            throw Exception("Could not find SPIEN bit field in TDF.");
+        }
+
+        Logger::debug("Extracting ISP parameters from TDF");
+        this->avrIspInterface->setIspParameters(this->targetDescriptionFile->getIspParameters());
+
+        Logger::info("Initiating ISP interface");
+        this->avrIspInterface->activate();
+
+        /*
+         * It is crucial that we understand the potential consequences of this operation.
+         *
+         * AVR fuses are used to control certain functions within the AVR (including the debugWire interface). Care
+         * must be taken when updating these fuse bytes, as an incorrect value could render the AVR inaccessible to
+         * standard programmers.
+         *
+         * For example, consider the SPI enable (SPIEN) fuse bit. This fuse bit is used to enable/disable the SPI for
+         * serial programming. If the SPIEN fuse bit is cleared, most programming tools will not be able to gain access
+         * to the target via the SPI. This isn't too bad, if there is some other way for the programming tool to gain
+         * access (such as the debugWire interface). But now consider the DWEN fuse bit (which is used to enable/disable
+         * the debugWire interface). What if both the SPIEN *and* the DWEN fuse bits are cleared? Both interfaces will
+         * be disabled. Effectively, the AVR will be bricked, and the only course for recovery would be to use
+         * high-voltage programming.
+         *
+         * When updating the DWEN fuse, Bloom relies on data from the target description file (TDF). But there is no
+         * guarantee that this data is correct. For this reason, we perform additional checks in an attempt to reduce
+         * the likelihood of bricking the target:
+         *
+         *  - Confirm target signature match - We read the AVR signature from the connected target and compare it to
+         *    what we have in the TDF. The operation will be aborted if the signatures do not match.
+         *
+         *  - SPIEN fuse bit check - we can be certain that the SPIEN fuse bit is set, because we couldn't have gotten
+         *    this far (post ISP activation) if it wasn't. We use this axiom to verify the validity of the data in the
+         *    TDF. If the SPIEN fuse bit appears to be cleared, we can be fairly certain that the data we have on the
+         *    SPIEN fuse bit is incorrect. From this, we assume that the data for the DWEN fuse bit is also incorrect,
+         *    and abort the operation.
+         *
+         *  - Lock bits check - we read the lock bit byte from the target and confirm that all lock bits are cleared.
+         *    If any lock bits are set, we abort the operation.
+         *
+         *  - DWEN fuse bit check - if the DWEN fuse bit is already set to the desired value, then there is no need
+         *    to update it. But we may be checking the wrong bit (if the TDF data is incorrect) - either way, we will
+         *    abort the operation.
+         *
+         * The precautions described above may reduce the likelihood of Bloom bricking the connected target, but there
+         * is still a chance that all of the checks pass, and we still brick the device. Now would be a good time to
+         * remind the user of liabilities in regards to Bloom and its contributors.
+         */
+        Logger::warning(
+            "Updating the DWEN fuse bit is a potentially dangerous operation. Bloom is provided \"AS IS\", "
+                "without warranty of any kind. You are using Bloom at your own risk. In no event shall the copyright "
+                "owner or contributors be liable for any damage caused as a result of using Bloom. For more details, "
+                "see the Bloom license at " + Paths::homeDomainName() + "/license"
+        );
+
+        Logger::info("Reading target signature via ISP");
+        const auto ispDeviceId = this->avrIspInterface->getDeviceId();
+
+        if (ispDeviceId != this->id) {
+            throw Exception(
+                "AVR target signature mismatch - expected signature \"" + this->id->toHex()
+                    + "\" but got \"" + ispDeviceId.toHex() + "\". Please check target configuration."
+            );
+        }
+
+        Logger::info("Target signature confirmed: " + ispDeviceId.toHex());
+
+        const auto dwenFuseByte = this->avrIspInterface->readFuse(dwenFuseBitsDescriptor->fuseType).value;
+        const auto spienFuseByte = (spienFuseBitsDescriptor->fuseType == dwenFuseBitsDescriptor->fuseType)
+            ? dwenFuseByte
+            : this->avrIspInterface->readFuse(spienFuseBitsDescriptor->fuseType).value;
+
+        /*
+         * Keep in mind that, for AVR fuses and lock bits, a set bit (1) means the fuse/lock is cleared, and a cleared
+         * bit (0), means the fuse/lock is set.
+         */
+
+        if ((spienFuseByte & spienFuseBitsDescriptor->bitMask) != 0) {
+            /*
+             * If we get here, something is very wrong. The SPIEN (SPI enable) fuse bit appears to be cleared, but this
+             * is not possible because we're connected to the target via the SPI (the ISP interface uses a physical SPI
+             * between the debug tool and the target).
+             *
+             * This could be (and likely is) caused by incorrect data for the SPIEN fuse bit, in the TDF (which was
+             * used to construct the spienFuseBitsDescriptor). And if the data for the SPIEN fuse bit is incorrect,
+             * then what's to say the data for the DWEN fuse bit (dwenFuseBitsDescriptor) is any better?
+             *
+             * We must assume the worst and abort the operation. Otherwise, we risk bricking the user's hardware.
+             */
+            throw Exception(
+                "Invalid SPIEN fuse bit value - suspected inaccuracies in TDF data. Please report this to "
+                    "Bloom developers as a matter of urgency, via " + Paths::homeDomainName() + "/report-issue"
+            );
+        }
+
+        Logger::info("Current SPIEN fuse bit value confirmed");
+
+        if (static_cast<bool>(dwenFuseByte & dwenFuseBitsDescriptor->bitMask) == !setFuse) {
+            /*
+             * The DWEN fuse appears to already be set to the desired value. This may be a result of incorrect data in
+             * the TDF, but we're not taking any chances.
+             *
+             * We don't throw an exception here, because we don't know if this is due to an error, or if the fuse bit
+             * is simply already set to the desired value.
+             */
+            return;
+        }
+
+        const auto lockBitByte = this->avrIspInterface->readLockBitByte();
+        if (lockBitByte != 0xFF) {
+            /*
+             * There is at least one lock bit that is set. Setting the DWEN fuse bit with the lock bits set will
+             * brick the device. We must abort.
+             */
+            throw Exception(
+                "At least one lock bit has been set - updating the DWEN fuse bit could potentially brick the "
+                    "target."
+            );
+        }
+
+        Logger::info("Cleared lock bits confirmed");
+
+        const auto newFuse = Fuse(
+            dwenFuseBitsDescriptor->fuseType,
+            (setFuse) ? static_cast<unsigned char>(dwenFuseByte & ~(dwenFuseBitsDescriptor->bitMask))
+                : static_cast<unsigned char>(dwenFuseByte | dwenFuseBitsDescriptor->bitMask)
+        );
+
+        Logger::warning("Programming DWEN fuse bit");
+        this->avrIspInterface->programFuse(newFuse);
+
+        if (this->avrIspInterface->readFuse(dwenFuseBitsDescriptor->fuseType).value != newFuse.value) {
+            Logger::error("Failed to program fuse bit - post-program value check failed");
+        }
+
+        Logger::info("DWEN fuse bit successfully updated");
+
+        this->avrIspInterface->deactivate();
     }
 }
