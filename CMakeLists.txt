@@ -109,6 +109,7 @@ add_executable(Bloom
     src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.cpp
+    src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.cpp
 
     # Targets
     src/Targets/TargetDescription/TargetDescriptionFile.cpp
