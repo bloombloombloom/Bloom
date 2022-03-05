@@ -136,7 +136,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         try {
             this->avr8DebugInterface->activate();
-            this->activated = true;
 
         } catch (const Exceptions::DebugWirePhysicalInterfaceError& debugWireException) {
             if (!this->updateDwenFuseBitOnDebugWireFailure) {
@@ -159,10 +158,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             }
 
             Logger::info("Retrying debugWire physical interface activation");
-
             this->avr8DebugInterface->activate();
-            this->activated = true;
         }
+
+        this->activated = true;
     }
 
     void Avr8::deactivate() {
