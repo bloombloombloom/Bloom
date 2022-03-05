@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <src/Targets/Microchip/AVR/Fuse.hpp>
 
 #include "AvrIspCommandFrame.hpp"
 
