@@ -11,6 +11,7 @@
 #include "src/Helpers/Paths.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
+#include "Exceptions/DebugWirePhysicalInterfaceError.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
 #include "src/Targets/Microchip/AVR/Fuse.hpp"
@@ -53,7 +54,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                     " - please specify the exact name of the target in your configuration file. "
                     "See " + Paths::homeDomainName() + "/docs/supported-targets"
                 );
-
             }
 
             if (this->physicalInterface == PhysicalInterface::UPDI) {
@@ -134,8 +134,35 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             this->avr8DebugInterface->setTargetParameters(this->targetParameters.value());
         }
 
-        this->avr8DebugInterface->activate();
-        this->activated = true;
+        try {
+            this->avr8DebugInterface->activate();
+            this->activated = true;
+
+        } catch (const Exceptions::DebugWirePhysicalInterfaceError& debugWireException) {
+            if (!this->updateDwenFuseBitOnDebugWireFailure) {
+                throw debugWireException;
+            }
+
+            try {
+                Logger::warning(
+                    "Failed to activate the debugWire physical interface - attempting to access target via "
+                        "the ISP interface, for DWEN fuse bit inspection."
+                );
+                this->updateDwenFuseBit(true);
+
+            } catch (const Exception& exception) {
+                Logger::error(
+                    "Failed to access/update DWEN fuse bit via ISP interface - " + exception.getMessage()
+                );
+
+                throw debugWireException;
+            }
+
+            Logger::info("Retrying debugWire physical interface activation");
+
+            this->avr8DebugInterface->activate();
+            this->activated = true;
+        }
     }
 
     void Avr8::deactivate() {
