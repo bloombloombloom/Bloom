@@ -1,6 +1,7 @@
 <?php
 namespace Bloom\BuildScripts\TargetDescriptionFiles\Avr8;
 
+use Bloom\BuildScripts\TargetDescriptionFiles\PhysicalInterface;
 use Bloom\BuildScripts\TargetDescriptionFiles\TargetDescriptionFile;
 
 require_once __DIR__ . "/../TargetDescriptionFile.php";
@@ -536,6 +537,49 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
         if (is_null($this->family) || $this->family == self::AVR8_FAMILY_OTHER) {
             $failures[] = 'Unknown AVR8 family';
+        }
+
+        if (in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $this->debugPhysicalInterface)) {
+            if (!isset($this->physicalInterfacesByName['isp'])) {
+                $failures[] = 'Missing ISP interface for debugWire target.';
+            }
+
+            if (is_null($this->ispProgramModeTimeout)) {
+                $failures[] = 'Missing ispenterprogmode_timeout ISP parameter.';
+            }
+            if (is_null($this->ispProgramModeStabilizationDelay)) {
+                $failures[] = 'Missing ispenterprogmode_stabdelay ISP parameter.';
+            }
+            if (is_null($this->ispProgramModeCommandExecutionDelay)) {
+                $failures[] = 'Missing ispenterprogmode_cmdexedelay ISP parameter.';
+            }
+            if (is_null($this->ispProgramModeSyncLoops)) {
+                $failures[] = 'Missing ispenterprogmode_synchloops ISP parameter.';
+            }
+            if (is_null($this->ispProgramModeByteDelay)) {
+                $failures[] = 'Missing ispenterprogmode_bytedelay ISP parameter.';
+            }
+            if (is_null($this->ispProgramModePollValue)) {
+                $failures[] = 'Missing ispenterprogmode_pollvalue ISP parameter.';
+            }
+            if (is_null($this->ispProgramModePollIndex)) {
+                $failures[] = 'Missing ispenterprogmode_pollindex ISP parameter.';
+            }
+            if (is_null($this->ispProgramModePreDelay)) {
+                $failures[] = 'Missing ispleaveprogmode_predelay ISP parameter.';
+            }
+            if (is_null($this->ispProgramModePostDelay)) {
+                $failures[] = 'Missing ispleaveprogmode_postdelay ISP parameter.';
+            }
+            if (is_null($this->ispReadSignaturePollIndex)) {
+                $failures[] = 'Missing ispreadsign_pollindex ISP parameter.';
+            }
+            if (is_null($this->ispReadFusePollIndex)) {
+                $failures[] = 'Missing ispreadfuse_pollindex ISP parameter.';
+            }
+            if (is_null($this->ispReadLockPollIndex)) {
+                $failures[] = 'Missing ispreadlock_pollindex ISP parameter.';
+            }
         }
 
         if (is_null($this->stackPointerRegisterLowAddress)) {
