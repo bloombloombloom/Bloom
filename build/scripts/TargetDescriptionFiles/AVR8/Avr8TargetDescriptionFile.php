@@ -70,6 +70,20 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $fuseSegmentSize = null;
     public ?int $lockbitsSegmentStartAddress = null;
 
+    // ISP parameters
+    public ?int $ispProgramModeTimeout = null;
+    public ?int $ispProgramModeStabilizationDelay = null;
+    public ?int $ispProgramModeCommandExecutionDelay = null;
+    public ?int $ispProgramModeSyncLoops = null;
+    public ?int $ispProgramModeByteDelay = null;
+    public ?int $ispProgramModePollValue = null;
+    public ?int $ispProgramModePollIndex = null;
+    public ?int $ispProgramModePreDelay = null;
+    public ?int $ispProgramModePostDelay = null;
+    public ?int $ispReadSignaturePollIndex = null;
+    public ?int $ispReadFusePollIndex = null;
+    public ?int $ispReadLockPollIndex = null;
+
     protected function init()
     {
         parent::init();
@@ -139,6 +153,79 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             if (isset($signaturePropertyGroup->propertiesMappedByName['signature2'])) {
                 $this->signature->byteTwo = $this->rawValueToInt(
                     $signaturePropertyGroup->propertiesMappedByName['signature2']->value
+                );
+            }
+        }
+
+        $ispParamPropertyGroup = $this->propertyGroupsByName['isp_interface'] ?? null;
+        if (!empty($ispParamPropertyGroup)) {
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_timeout'])) {
+                $this->ispProgramModeTimeout = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_timeout']->value
+                );
+            }
+
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_stabdelay'])) {
+                $this->ispProgramModeStabilizationDelay = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_stabdelay']->value
+                );
+            }
+
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_cmdexedelay'])) {
+                $this->ispProgramModeCommandExecutionDelay = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_cmdexedelay']->value
+                );
+            }
+
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_synchloops'])) {
+                $this->ispProgramModeSyncLoops = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_synchloops']->value
+                );
+            }
+
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_bytedelay'])) {
+                $this->ispProgramModeByteDelay = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_bytedelay']->value
+                );
+            }
+
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_pollvalue'])) {
+                $this->ispProgramModePollValue = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_pollvalue']->value
+                );
+            }
+
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_pollindex'])) {
+                $this->ispProgramModePollIndex = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_pollindex']->value
+                );
+            }
+
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispleaveprogmode_predelay'])) {
+                $this->ispProgramModePreDelay = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispleaveprogmode_predelay']->value
+                );
+            }
+
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispleaveprogmode_postdelay'])) {
+                $this->ispProgramModePostDelay = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispleaveprogmode_postdelay']->value
+                );
+            }
+
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispreadsign_pollindex'])) {
+                $this->ispReadSignaturePollIndex = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispreadsign_pollindex']->value
+                );
+            }
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispreadfuse_pollindex'])) {
+                $this->ispReadFusePollIndex = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispreadfuse_pollindex']->value
+                );
+            }
+            if (isset($ispParamPropertyGroup->propertiesMappedByName['ispreadlock_pollindex'])) {
+                $this->ispReadLockPollIndex = $this->rawValueToInt(
+                    $ispParamPropertyGroup->propertiesMappedByName['ispreadlock_pollindex']->value
                 );
             }
         }
