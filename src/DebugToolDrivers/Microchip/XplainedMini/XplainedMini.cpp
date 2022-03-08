@@ -31,6 +31,8 @@ namespace Bloom::DebugToolDrivers
         }
 
         this->edbgAvr8Interface = std::make_unique<EdbgAvr8Interface>(this->edbgInterface);
+        this->edbgAvrIspInterface = std::make_unique<EdbgAvrIspInterface>(this->edbgInterface);
+
         this->setInitialised(true);
     }
 
