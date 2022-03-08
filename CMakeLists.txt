@@ -94,6 +94,7 @@ add_executable(Bloom
     src/DebugToolDrivers/Microchip/XplainedMini/XplainedMini.cpp
     src/DebugToolDrivers/Microchip/XplainedNano/XplainedNano.cpp
     src/DebugToolDrivers/Microchip/CuriosityNano/CuriosityNano.cpp
+    src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/Response.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.cpp
@@ -106,7 +107,6 @@ add_executable(Bloom
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVRISP/AvrIspResponseFrame.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrEvent.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Events/AVR8Generic/BreakEvent.cpp
-    src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.cpp
     src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.cpp
@@ -344,12 +344,32 @@ endif()
 
 # Installation configuration
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/release/")
+
 install(TARGETS Bloom DESTINATION bin PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 
-install(DIRECTORY build/bin/plugins DESTINATION "bin" DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
-install(DIRECTORY build/bin/platforms DESTINATION "bin" DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
-install(DIRECTORY build/resources DESTINATION "." DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
-install(DIRECTORY build/lib DESTINATION "." DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+install(
+    DIRECTORY build/bin/plugins
+    DESTINATION "bin"
+    DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+)
+
+install(
+    DIRECTORY build/bin/platforms
+    DESTINATION "bin"
+    DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+)
+
+install(
+    DIRECTORY build/resources
+    DESTINATION "."
+    DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+)
+
+install(
+    DIRECTORY build/lib
+    DESTINATION "."
+    DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+)
 
 # Debian package configuration
 set(CPACK_GENERATOR "DEB")
