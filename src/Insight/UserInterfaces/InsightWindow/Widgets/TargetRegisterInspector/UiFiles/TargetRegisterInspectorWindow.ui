@@ -352,6 +352,18 @@
                                                         </item>
                                                     </layout>
                                                 </item>
+                                                <item alignment="Qt::AlignTop">
+                                                    <spacer name="vertical-spacer">
+                                                        <property name="sizeHint">
+                                                            <size>
+                                                                <height>15</height>
+                                                            </size>
+                                                        </property>
+                                                        <property name="sizeType">
+                                                            <enum>QSizePolicy::Fixed</enum>
+                                                        </property>
+                                                    </spacer>
+                                                </item>
                                             </layout>
                                         </widget>
                                     </item>

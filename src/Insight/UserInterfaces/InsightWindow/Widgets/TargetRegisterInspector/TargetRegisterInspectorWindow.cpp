@@ -63,7 +63,7 @@ namespace Bloom::Widgets
         }
 
         this->setStyleSheet(windowStylesheet.readAll());
-        this->setFixedSize(1070, 600);
+        this->setFixedSize(1075, 610);
 
         auto uiLoader = UiLoader(this);
         this->container = uiLoader.load(&windowUiFile, this);
