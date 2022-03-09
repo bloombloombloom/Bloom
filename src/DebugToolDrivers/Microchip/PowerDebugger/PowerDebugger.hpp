@@ -10,6 +10,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
 
 namespace Bloom::DebugToolDrivers
@@ -43,6 +44,10 @@ namespace Bloom::DebugToolDrivers
 
         TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() override {
             return this->edbgAvr8Interface.get();
+        }
+
+        TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface() override {
+            return this->edbgAvrIspInterface.get();
         }
 
         std::string getName() override {
@@ -81,6 +86,8 @@ namespace Bloom::DebugToolDrivers
          * The Power Debugger employs the EDBG AVR8Generic protocol for interfacing with AVR8 targets.
          */
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface;
+
+        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
 
         bool sessionStarted = false;
     };
