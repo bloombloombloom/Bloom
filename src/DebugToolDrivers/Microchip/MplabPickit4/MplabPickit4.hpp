@@ -10,6 +10,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
 
 namespace Bloom::DebugToolDrivers
@@ -46,6 +47,10 @@ namespace Bloom::DebugToolDrivers
             return this->edbgAvr8Interface.get();
         }
 
+        TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface() override {
+            return this->edbgAvrIspInterface.get();
+        }
+
         std::string getName() override {
             return "MPLAB PICkit 4";
         };
@@ -70,6 +75,7 @@ namespace Bloom::DebugToolDrivers
     private:
         Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
+        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
 
         bool sessionStarted = false;
     };
