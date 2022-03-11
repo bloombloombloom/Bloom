@@ -161,7 +161,7 @@ namespace Bloom::Widgets
             );
             this->bitsetWidgets.push_back(bitsetWidget);
 
-            if (((registerByteIndex + 1) % 2) == 0) {
+            if (((registerByteIndex + 1) % 3) == 0) {
                 bitsetSingleHorizontalLayout->addStretch(1);
                 registerBitsetWidgetLayout->addLayout(bitsetSingleHorizontalLayout);
                 bitsetSingleHorizontalLayout = new QHBoxLayout();
