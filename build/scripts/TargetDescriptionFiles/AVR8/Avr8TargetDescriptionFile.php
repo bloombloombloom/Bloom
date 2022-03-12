@@ -6,6 +6,7 @@ use Bloom\BuildScripts\TargetDescriptionFiles\TargetDescriptionFile;
 
 require_once __DIR__ . "/../TargetDescriptionFile.php";
 require_once __DIR__ . "/Signature.php";
+require_once __DIR__ . "/FuseBitDescriptor.php";
 
 class Avr8TargetDescriptionFile extends TargetDescriptionFile
 {
@@ -84,6 +85,9 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $ispReadSignaturePollIndex = null;
     public ?int $ispReadFusePollIndex = null;
     public ?int $ispReadLockPollIndex = null;
+
+    public ?FuseBitDescriptor $dwenFuseBitDescriptor = null;
+
 
     protected function init()
     {
@@ -228,6 +232,19 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 $this->ispReadLockPollIndex = $this->rawValueToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispreadlock_pollindex']->value
                 );
+            }
+        }
+
+        $fuseModule = $this->modulesByName['fuse'] ?? null;
+        if (!empty($fuseModule)) {
+            $fuseRegisterGroup = $fuseModule->registerGroupsMappedByName['fuse'] ?? null;
+            if (!empty($fuseRegisterGroup)) {
+                foreach ($fuseRegisterGroup->registersMappedByName as $fuseType => $fuseRegister) {
+                    if (isset($fuseRegister->bitFieldsByName['dwen'])) {
+                        $this->dwenFuseBitDescriptor = new FuseBitDescriptor();
+                        $this->dwenFuseBitDescriptor->fuseType = $fuseType;
+                    }
+                }
             }
         }
 
@@ -579,6 +596,21 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
             if (is_null($this->ispReadLockPollIndex)) {
                 $failures[] = 'Missing ispreadlock_pollindex ISP parameter.';
+            }
+
+            if (empty($this->dwenFuseBitDescriptor)) {
+                $failures[] = 'Could not find DWEN fuse bit field for debugWire target.';
+
+            } else {
+                static $validFuseTypes = [
+                    FuseBitDescriptor::FUSE_TYPE_LOW,
+                    FuseBitDescriptor::FUSE_TYPE_HIGH,
+                    FuseBitDescriptor::FUSE_TYPE_EXTENDED,
+                ];
+
+                if (!in_array($this->dwenFuseBitDescriptor->fuseType, $validFuseTypes)) {
+                    $failures[] = 'Invalid/unknown fuse byte type for DWEN fuse bit.';
+                }
             }
         }
 
