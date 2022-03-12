@@ -218,6 +218,19 @@ class TargetDescriptionFile
             $register->size = isset($registerAttrs['size'])
                 ? $this->rawValueToInt($registerAttrs['size']) : null;
 
+            $bitFieldElements = $registerElement->xpath('bitfield');
+            foreach ($bitFieldElements as $bitFieldElement) {
+                $bitFieldAttrs = $bitFieldElement->attributes();
+                $bitField = new BitField();
+
+                $bitField->name = isset($bitFieldAttrs['name']) ? $bitFieldAttrs['name'] : null;
+                if (empty($bitField->name)) {
+                    continue;
+                }
+
+                $register->bitFieldsByName[strtolower($bitField->name)] = $bitField;
+            }
+
             $registerGroup->registersMappedByName[strtolower($register->name)] = $register;
         }
 
