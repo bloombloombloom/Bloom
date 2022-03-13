@@ -65,12 +65,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             }
         }
 
-        if (targetConfig.jsonObject.contains("updateDwenFuseBitOnDebugWireFailure")) {
-            this->updateDwenFuseBitOnDebugWireFailure = targetConfig.jsonObject.value(
-                "updateDwenFuseBitOnDebugWireFailure"
+        if (targetConfig.jsonObject.contains("updateDwenFuseBit")) {
+            this->updateDwenFuseBit = targetConfig.jsonObject.value(
+                "updateDwenFuseBit"
             ).toBool();
 
-            if (this->updateDwenFuseBitOnDebugWireFailure
+            if (this->updateDwenFuseBit
                 && this->avrIspInterface == nullptr
                 && this->physicalInterface == PhysicalInterface::DEBUG_WIRE
             ) {
@@ -138,7 +138,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             this->avr8DebugInterface->activate();
 
         } catch (const Exceptions::DebugWirePhysicalInterfaceError& debugWireException) {
-            if (!this->updateDwenFuseBitOnDebugWireFailure) {
+            if (!this->updateDwenFuseBit) {
                 throw TargetOperationFailure(
                     "Failed to activate debugWire physical interface - check target connection and DWEN fuse "
                         "bit. Bloom can set the DWEN fuse bit automatically. For instructions on enabling this function,"
@@ -151,7 +151,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                     "Failed to activate the debugWire physical interface - attempting to access target via "
                         "the ISP interface, for DWEN fuse bit inspection."
                 );
-                this->updateDwenFuseBit(true);
+                this->writeDwenFuseBit(true);
 
             } catch (const Exception& exception) {
                 throw Exception(
@@ -704,7 +704,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         return this->id.value();
     }
 
-    void Avr8::updateDwenFuseBit(bool setFuse) {
+    void Avr8::writeDwenFuseBit(bool setFuse) {
         if (this->avrIspInterface == nullptr) {
             throw Exception(
                 "Debug tool or driver does not provide access to an ISP interface - please confirm that the "

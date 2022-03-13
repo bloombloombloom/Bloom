@@ -136,7 +136,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
 
-        bool updateDwenFuseBitOnDebugWireFailure = false;
+        bool updateDwenFuseBit = false;
 
         /**
          * Users are required to set their desired physical interface in their Bloom configuration. This would take
@@ -187,6 +187,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * @param setFuse
          *  True to set the fuse, false to clear it.
          */
-        void updateDwenFuseBit(bool setFuse);
+        void writeDwenFuseBit(bool setFuse);
     };
 }
