@@ -154,11 +154,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 this->updateDwenFuseBit(true);
 
             } catch (const Exception& exception) {
-                Logger::error(
+                throw Exception(
                     "Failed to access/update DWEN fuse bit via ISP interface - " + exception.getMessage()
                 );
-
-                throw debugWireException;
             }
 
             Logger::info("Retrying debugWire physical interface activation");
