@@ -141,8 +141,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             if (!this->updateDwenFuseBit) {
                 throw TargetOperationFailure(
                     "Failed to activate debugWire physical interface - check target connection and DWEN fuse "
-                        "bit. Bloom can set the DWEN fuse bit automatically. For instructions on enabling this function,"
-                        " see " + Paths::homeDomainName() + "/docs/debugging-avr-debugwire"
+                        "bit. Bloom can manage the DWEN fuse bit automatically. For instructions on enabling this "
+                        "function, see " + Paths::homeDomainName() + "/docs/debugging-avr-debugwire"
                 );
             }
 

@@ -222,11 +222,9 @@ namespace Bloom::DebugServers::Gdb
             const auto memoryType = this->getMemoryTypeFromGdbAddress(packet.startAddress);
 
             if (memoryType == Targets::TargetMemoryType::FLASH) {
-                Logger::error(
+                throw Exception(
                     "GDB client requested a flash memory write - This is not currently supported by Bloom."
                 );
-                this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-                return;
             }
 
             const auto startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(packet.startAddress);
@@ -235,7 +233,7 @@ namespace Bloom::DebugServers::Gdb
             this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
 
         } catch (const Exception& exception) {
-            Logger::error("Failed to write memory two target - " + exception.getMessage());
+            Logger::error("Failed to write memory to target - " + exception.getMessage());
             this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
         }
     }
