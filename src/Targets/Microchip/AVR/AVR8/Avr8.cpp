@@ -791,88 +791,97 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 "see the Bloom license at " + Paths::homeDomainName() + "/license"
         );
 
-        Logger::info("Reading target signature via ISP");
-        const auto ispDeviceId = this->avrIspInterface->getDeviceId();
+        try {
+            Logger::info("Reading target signature via ISP");
+            const auto ispDeviceId = this->avrIspInterface->getDeviceId();
 
-        if (ispDeviceId != this->id) {
-            throw Exception(
-                "AVR target signature mismatch - expected signature \"" + this->id->toHex()
-                    + "\" but got \"" + ispDeviceId.toHex() + "\". Please check target configuration."
-            );
-        }
+            if (ispDeviceId != this->id) {
+                throw Exception(
+                    "AVR target signature mismatch - expected signature \"" + this->id->toHex()
+                        + "\" but got \"" + ispDeviceId.toHex() + "\". Please check target configuration."
+                );
+            }
 
-        Logger::info("Target signature confirmed: " + ispDeviceId.toHex());
+            Logger::info("Target signature confirmed: " + ispDeviceId.toHex());
 
-        const auto dwenFuseByte = this->avrIspInterface->readFuse(dwenFuseBitsDescriptor->fuseType).value;
-        const auto spienFuseByte = (spienFuseBitsDescriptor->fuseType == dwenFuseBitsDescriptor->fuseType)
-            ? dwenFuseByte
-            : this->avrIspInterface->readFuse(spienFuseBitsDescriptor->fuseType).value;
+            const auto dwenFuseByte = this->avrIspInterface->readFuse(dwenFuseBitsDescriptor->fuseType).value;
+            const auto spienFuseByte = (spienFuseBitsDescriptor->fuseType == dwenFuseBitsDescriptor->fuseType)
+                ? dwenFuseByte
+                : this->avrIspInterface->readFuse(spienFuseBitsDescriptor->fuseType).value;
 
-        /*
-         * Keep in mind that, for AVR fuses and lock bits, a set bit (1) means the fuse/lock is cleared, and a cleared
-         * bit (0), means the fuse/lock is set.
-         */
-
-        if ((spienFuseByte & spienFuseBitsDescriptor->bitMask) != 0) {
             /*
-             * If we get here, something is very wrong. The SPIEN (SPI enable) fuse bit appears to be cleared, but this
-             * is not possible because we're connected to the target via the SPI (the ISP interface uses a physical SPI
-             * between the debug tool and the target).
-             *
-             * This could be (and likely is) caused by incorrect data for the SPIEN fuse bit, in the TDF (which was
-             * used to construct the spienFuseBitsDescriptor). And if the data for the SPIEN fuse bit is incorrect,
-             * then what's to say the data for the DWEN fuse bit (dwenFuseBitsDescriptor) is any better?
-             *
-             * We must assume the worst and abort the operation. Otherwise, we risk bricking the user's hardware.
+             * Keep in mind that, for AVR fuses and lock bits, a set bit (0b1) means the fuse/lock is cleared, and a
+             * cleared bit (0b0), means the fuse/lock is set.
              */
-            throw Exception(
-                "Invalid SPIEN fuse bit value - suspected inaccuracies in TDF data. Please report this to "
-                    "Bloom developers as a matter of urgency, via " + Paths::homeDomainName() + "/report-issue"
+
+            if ((spienFuseByte & spienFuseBitsDescriptor->bitMask) != 0) {
+                /*
+                 * If we get here, something is very wrong. The SPIEN (SPI enable) fuse bit appears to be cleared, but
+                 * this is not possible because we're connected to the target via the SPI (the ISP interface uses a
+                 * physical SPI between the debug tool and the target).
+                 *
+                 * This could be (and likely is) caused by incorrect data for the SPIEN fuse bit, in the TDF (which was
+                 * used to construct the spienFuseBitsDescriptor). And if the data for the SPIEN fuse bit is incorrect,
+                 * then what's to say the data for the DWEN fuse bit (dwenFuseBitsDescriptor) is any better?
+                 *
+                 * We must assume the worst and abort the operation. Otherwise, we risk bricking the user's hardware.
+                 */
+                throw Exception(
+                    "Invalid SPIEN fuse bit value - suspected inaccuracies in TDF data. Please report this to "
+                        "Bloom developers as a matter of urgency, via " + Paths::homeDomainName() + "/report-issue"
+                );
+            }
+
+            Logger::info("Current SPIEN fuse bit value confirmed");
+
+            if (static_cast<bool>(dwenFuseByte & dwenFuseBitsDescriptor->bitMask) == !setFuse) {
+                /*
+                 * The DWEN fuse appears to already be set to the desired value. This may be a result of incorrect data
+                 * in the TDF, but we're not taking any chances.
+                 *
+                 * We don't throw an exception here, because we don't know if this is due to an error, or if the fuse
+                 * bit is simply already set to the desired value.
+                 */
+                Logger::debug("DWEN fuse bit already set to desired value - aborting update operation");
+
+                this->avrIspInterface->deactivate();
+                return;
+            }
+
+            const auto lockBitByte = this->avrIspInterface->readLockBitByte();
+            if (lockBitByte != 0xFF) {
+                /*
+                 * There is at least one lock bit that is set. Setting the DWEN fuse bit with the lock bits set may
+                 * brick the device. We must abort.
+                 */
+                throw Exception(
+                    "At least one lock bit has been set - updating the DWEN fuse bit could potentially brick "
+                        "the target."
+                );
+            }
+
+            Logger::info("Cleared lock bits confirmed");
+
+            const auto newFuse = Fuse(
+                dwenFuseBitsDescriptor->fuseType,
+                (setFuse) ? static_cast<unsigned char>(dwenFuseByte & ~(dwenFuseBitsDescriptor->bitMask))
+                    : static_cast<unsigned char>(dwenFuseByte | dwenFuseBitsDescriptor->bitMask)
             );
+
+            Logger::warning("Programming DWEN fuse bit");
+            this->avrIspInterface->programFuse(newFuse);
+
+            if (this->avrIspInterface->readFuse(dwenFuseBitsDescriptor->fuseType).value != newFuse.value) {
+                throw Exception("Failed to program fuse bit - post-program value check failed");
+            }
+
+            Logger::info("DWEN fuse bit successfully updated");
+
+            this->avrIspInterface->deactivate();
+
+        } catch (const Exception& exception) {
+            this->avrIspInterface->deactivate();
+            throw exception;
         }
-
-        Logger::info("Current SPIEN fuse bit value confirmed");
-
-        if (static_cast<bool>(dwenFuseByte & dwenFuseBitsDescriptor->bitMask) == !setFuse) {
-            /*
-             * The DWEN fuse appears to already be set to the desired value. This may be a result of incorrect data in
-             * the TDF, but we're not taking any chances.
-             *
-             * We don't throw an exception here, because we don't know if this is due to an error, or if the fuse bit
-             * is simply already set to the desired value.
-             */
-            return;
-        }
-
-        const auto lockBitByte = this->avrIspInterface->readLockBitByte();
-        if (lockBitByte != 0xFF) {
-            /*
-             * There is at least one lock bit that is set. Setting the DWEN fuse bit with the lock bits set will
-             * brick the device. We must abort.
-             */
-            throw Exception(
-                "At least one lock bit has been set - updating the DWEN fuse bit could potentially brick the "
-                    "target."
-            );
-        }
-
-        Logger::info("Cleared lock bits confirmed");
-
-        const auto newFuse = Fuse(
-            dwenFuseBitsDescriptor->fuseType,
-            (setFuse) ? static_cast<unsigned char>(dwenFuseByte & ~(dwenFuseBitsDescriptor->bitMask))
-                : static_cast<unsigned char>(dwenFuseByte | dwenFuseBitsDescriptor->bitMask)
-        );
-
-        Logger::warning("Programming DWEN fuse bit");
-        this->avrIspInterface->programFuse(newFuse);
-
-        if (this->avrIspInterface->readFuse(dwenFuseBitsDescriptor->fuseType).value != newFuse.value) {
-            Logger::error("Failed to program fuse bit - post-program value check failed");
-        }
-
-        Logger::info("DWEN fuse bit successfully updated");
-
-        this->avrIspInterface->deactivate();
     }
 }
