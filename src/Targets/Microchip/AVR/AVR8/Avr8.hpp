@@ -56,6 +56,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         void setDebugTool(DebugTool* debugTool) override {
+            this->targetPowerManagementInterface = debugTool->getTargetPowerManagementInterface();
             this->avr8DebugInterface = debugTool->getAvr8DebugInterface();
             this->avrIspInterface = debugTool->getAvrIspInterface();
         }
@@ -122,6 +123,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         ) override;
 
     protected:
+        DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* targetPowerManagementInterface = nullptr;
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* avr8DebugInterface = nullptr;
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::AvrIspInterface* avrIspInterface = nullptr;
 

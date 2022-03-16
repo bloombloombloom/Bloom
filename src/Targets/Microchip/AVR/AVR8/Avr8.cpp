@@ -153,6 +153,17 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 );
                 this->writeDwenFuseBit(true);
 
+                // If the debug tool provides a TargetPowerManagementInterface, attempt to cycle the target power
+                if (this->targetPowerManagementInterface != nullptr) {
+                    Logger::info("Cycling target power");
+                    Logger::debug("Disabling target power");
+                    this->targetPowerManagementInterface->disableTargetPower();
+                    Logger::debug("Holding power off for ~250 ms");
+                    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+                    Logger::debug("Enabling target power");
+                    this->targetPowerManagementInterface->enableTargetPower();
+                }
+
             } catch (const Exception& exception) {
                 throw Exception(
                     "Failed to access/update DWEN fuse bit via ISP interface - " + exception.getMessage()
