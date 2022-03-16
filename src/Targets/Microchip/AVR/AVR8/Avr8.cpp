@@ -81,6 +81,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             }
         }
 
+        if (targetConfig.jsonObject.contains("cycleTargetPowerPostDwenUpdate")) {
+            this->cycleTargetPowerPostDwenUpdate = targetConfig.jsonObject.value(
+                "cycleTargetPowerPostDwenUpdate"
+            ).toBool();
+        }
+
         this->avr8DebugInterface->configure(targetConfig);
 
         if (this->avrIspInterface != nullptr) {
@@ -154,12 +160,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 this->writeDwenFuseBit(true);
 
                 // If the debug tool provides a TargetPowerManagementInterface, attempt to cycle the target power
-                if (this->targetPowerManagementInterface != nullptr) {
+                if (this->targetPowerManagementInterface != nullptr && this->cycleTargetPowerPostDwenUpdate) {
                     Logger::info("Cycling target power");
+
                     Logger::debug("Disabling target power");
                     this->targetPowerManagementInterface->disableTargetPower();
+
                     Logger::debug("Holding power off for ~250 ms");
                     std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
                     Logger::debug("Enabling target power");
                     this->targetPowerManagementInterface->enableTargetPower();
                 }

@@ -139,6 +139,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
 
         bool updateDwenFuseBit = false;
+        bool cycleTargetPowerPostDwenUpdate = true;
 
         /**
          * Users are required to set their desired physical interface in their Bloom configuration. This would take
