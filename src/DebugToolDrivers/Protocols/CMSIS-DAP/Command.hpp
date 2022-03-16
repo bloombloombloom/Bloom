@@ -50,6 +50,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          */
         using ExpectedResponseType = Response;
 
+        explicit Command(unsigned char commandId): commandId(commandId) {};
+
         Command() = default;
         virtual ~Command() = default;
 
