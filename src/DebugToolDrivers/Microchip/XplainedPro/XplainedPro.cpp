@@ -8,6 +8,8 @@ namespace Bloom::DebugToolDrivers
     using namespace Protocols::CmsisDap::Edbg::Avr;
     using namespace Bloom::Exceptions;
 
+    using Protocols::CmsisDap::Edbg::EdbgTargetPowerManagementInterface;
+
     void XplainedPro::init() {
         UsbDevice::init();
 
@@ -29,6 +31,10 @@ namespace Bloom::DebugToolDrivers
         if (!this->sessionStarted) {
             this->startSession();
         }
+
+        this->targetPowerManagementInterface = std::make_unique<EdbgTargetPowerManagementInterface>(
+            this->edbgInterface
+        );
 
         this->edbgAvr8Interface = std::make_unique<EdbgAvr8Interface>(this->edbgInterface);
 
