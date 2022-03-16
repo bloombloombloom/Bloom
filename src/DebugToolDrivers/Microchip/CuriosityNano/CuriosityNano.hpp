@@ -7,8 +7,12 @@
 #include "src/DebugToolDrivers/DebugTool.hpp"
 #include "src/DebugToolDrivers/USB/UsbDevice.hpp"
 #include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
+
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
+
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgTargetPowerManagementInterface.hpp"
+
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
@@ -39,6 +43,10 @@ namespace Bloom::DebugToolDrivers
 
         Protocols::CmsisDap::Edbg::EdbgInterface& getEdbgInterface()  {
             return this->edbgInterface;
+        }
+
+        DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* getTargetPowerManagementInterface() override {
+            return this->targetPowerManagementInterface.get();
         }
 
         TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() override {
@@ -74,6 +82,9 @@ namespace Bloom::DebugToolDrivers
         Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
+        std::unique_ptr<
+            Protocols::CmsisDap::Edbg::EdbgTargetPowerManagementInterface
+        > targetPowerManagementInterface = nullptr;
 
         bool sessionStarted = false;
     };
