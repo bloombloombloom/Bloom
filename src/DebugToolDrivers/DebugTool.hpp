@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TargetInterfaces/TargetPowerManagementInterface.hpp"
+
 #include "TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
 #include "TargetInterfaces/Microchip/AVR/AvrIspInterface.hpp"
 
@@ -39,6 +41,21 @@ namespace Bloom
         virtual std::string getName() = 0;
 
         virtual std::string getSerialNumber() = 0;
+
+        /**
+         * All debug tools that support target power management functions must provide an implementation of the
+         * TargetPowerManagementInterface class, via this function.
+         *
+         * For debug tools that cannot manage target power, a nullptr should be returned.
+         *
+         * Note: the caller of this function will not manage the lifetime of the returned TargetPowerManagementInterface
+         * instance.
+         *
+         * @return
+         */
+        virtual DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* getTargetPowerManagementInterface() {
+            return nullptr;
+        }
 
         /**
          * All debug tools that support debugging operations on AVR8 targets must provide an implementation of
