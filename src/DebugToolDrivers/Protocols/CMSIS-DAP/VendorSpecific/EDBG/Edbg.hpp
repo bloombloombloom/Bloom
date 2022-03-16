@@ -9,5 +9,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
         AVRISP = 0x11,
         AVR8_GENERIC = 0x12,
         AVR32_GENERIC = 0x13,
+        EDBG_CONTROL = 0x20,
+    };
     };
 }
