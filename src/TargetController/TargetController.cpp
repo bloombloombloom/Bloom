@@ -333,8 +333,12 @@ namespace Bloom
     }
 
     void TargetController::releaseHardware() {
-        auto target = this->getTarget();
-        auto debugTool = this->getDebugTool();
+        /*
+         * Transferring ownership of this->debugTool and this->target to this function block means if an exception is
+         * thrown, the objects will still be destroyed.
+         */
+        auto debugTool = std::move(this->debugTool);
+        auto target = std::move(this->target);
 
         if (debugTool != nullptr && debugTool->isInitialised()) {
             if (target != nullptr) {
@@ -349,9 +353,6 @@ namespace Bloom
             Logger::info("Closing debug tool");
             debugTool->close();
         }
-
-        this->debugTool.reset();
-        this->target.reset();
     }
 
     void TargetController::loadRegisterDescriptors() {

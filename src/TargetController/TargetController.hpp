@@ -199,14 +199,6 @@ namespace Bloom
             return mapping;
         }
 
-        Targets::Target* getTarget() {
-            return this->target.get();
-        }
-
-        DebugTool* getDebugTool() {
-            return this->debugTool.get();
-        }
-
         /**
          * Updates the state of the TargetController and emits a state changed event.
          *
