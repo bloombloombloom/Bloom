@@ -53,6 +53,10 @@ namespace Bloom::DebugServers
         EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("DebugServerEventListener");
 
+        ProjectConfig projectConfig;
+        EnvironmentConfig environmentConfig;
+        DebugServerConfig debugServerConfig;
+
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(
             this->eventManager,
             *(this->eventListener)
@@ -62,10 +66,6 @@ namespace Bloom::DebugServers
          * Enables the interruption of any blocking file IO.
          */
         std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
-
-        ProjectConfig projectConfig;
-        EnvironmentConfig environmentConfig;
-        DebugServerConfig debugServerConfig;
 
         Targets::TargetDescriptor targetDescriptor;
 

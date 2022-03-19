@@ -303,7 +303,7 @@ namespace Bloom::DebugServers::Gdb
             );
         }
 
-        int socketFileDescriptor;
+        int socketFileDescriptor = 0;
 
         if ((socketFileDescriptor = ::socket(AF_INET, SOCK_STREAM, 0)) == 0) {
             throw Exception("Failed to create socket file descriptor.");

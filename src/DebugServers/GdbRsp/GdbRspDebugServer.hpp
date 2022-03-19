@@ -6,7 +6,7 @@
 #include <queue>
 #include <cstdint>
 
-#include "../DebugServer.hpp"
+#include "src/DebugServers/DebugServer.hpp"
 
 #include "GdbDebugServerConfig.hpp"
 
@@ -14,9 +14,11 @@
 #include "Signal.hpp"
 #include "RegisterDescriptor.hpp"
 #include "Feature.hpp"
+#include "CommandPackets/CommandPacketFactory.hpp"
+
 #include "src/Helpers/EventNotifier.hpp"
 #include "src/Helpers/BiMap.hpp"
-#include "CommandPackets/CommandPacketFactory.hpp"
+
 #include "src/Targets/TargetRegister.hpp"
 
 // Response packets
