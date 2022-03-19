@@ -126,6 +126,7 @@ add_executable(Bloom
     # Debug servers
     src/DebugServers/DebugServer.cpp
     src/DebugServers/GdbRsp/GdbRspDebugServer.cpp
+    src/DebugServers/GdbRsp/GdbDebugServerConfig.cpp
     src/DebugServers/GdbRsp/AvrGdbRsp/AvrGdbRsp.cpp
     src/DebugServers/GdbRsp/Connection.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacket.cpp
