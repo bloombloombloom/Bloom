@@ -117,6 +117,7 @@ add_executable(Bloom
     src/Targets/TargetDescription/TargetDescriptionFile.cpp
     src/Targets/TargetRegister.cpp
     src/Targets/Microchip/AVR/AVR8/Avr8.cpp
+    src/Targets/Microchip/AVR/AVR8/Avr8TargetConfig.cpp
     src/Targets/Microchip/AVR/AVR8/TargetDescription/TargetDescriptionFile.cpp
     build/resources/TargetDescriptionFiles/AVR/Mapping.json
 
