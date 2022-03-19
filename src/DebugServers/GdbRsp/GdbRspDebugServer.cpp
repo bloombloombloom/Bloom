@@ -285,27 +285,21 @@ namespace Bloom::DebugServers::Gdb
     }
 
     void GdbRspDebugServer::init() {
-        auto ipAddress = this->debugServerConfig.jsonObject.find("ipAddress")->toString().toStdString();
-        auto configPortJsonValue = this->debugServerConfig.jsonObject.find("port");
-        auto configPortValue = configPortJsonValue->isString()
-            ? static_cast<std::uint16_t>(configPortJsonValue->toString().toInt(nullptr, 10))
-            : static_cast<std::uint16_t>(configPortJsonValue->toInt());
-
-        if (!ipAddress.empty()) {
-            this->listeningAddress = ipAddress;
-        }
-
-        if (configPortValue > 0) {
-            this->listeningPortNumber = configPortValue;
-        }
+        this->debugServerConfig = GdbDebugServerConfig(DebugServer::debugServerConfig);
 
         this->socketAddress.sin_family = AF_INET;
-        this->socketAddress.sin_port = htons(this->listeningPortNumber);
+        this->socketAddress.sin_port = htons(this->debugServerConfig->listeningPortNumber);
 
-        if (::inet_pton(AF_INET, this->listeningAddress.c_str(), &(this->socketAddress.sin_addr)) == 0) {
+        if (::inet_pton(
+                AF_INET,
+                this->debugServerConfig->listeningAddress.c_str(),
+                &(this->socketAddress.sin_addr)
+            ) == 0
+        ) {
             // Invalid IP address
             throw InvalidConfig(
-                "Invalid IP address provided in config file: (\"" + this->listeningAddress + "\")"
+                "Invalid IP address provided in config file: (\"" + this->debugServerConfig->listeningAddress
+                    + "\")"
             );
         }
 
@@ -333,7 +327,7 @@ namespace Bloom::DebugServers::Gdb
             ) < 0
         ) {
             throw Exception("Failed to bind address. The selected port number ("
-                + std::to_string(this->listeningPortNumber) + ") may be in use.");
+                + std::to_string(this->debugServerConfig->listeningPortNumber) + ") may be in use.");
         }
 
         this->serverSocketFileDescriptor = socketFileDescriptor;
@@ -357,8 +351,8 @@ namespace Bloom::DebugServers::Gdb
             }
         }
 
-        Logger::info("GDB RSP address: " + this->listeningAddress);
-        Logger::info("GDB RSP port: " + std::to_string(this->listeningPortNumber));
+        Logger::info("GDB RSP address: " + this->debugServerConfig->listeningAddress);
+        Logger::info("GDB RSP port: " + std::to_string(this->debugServerConfig->listeningPortNumber));
 
         this->eventListener->registerCallbackForEventType<Events::TargetControllerStateReported>(
             std::bind(&GdbRspDebugServer::onTargetControllerStateReported, this, std::placeholders::_1)

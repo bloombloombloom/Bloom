@@ -7,6 +7,9 @@
 #include <cstdint>
 
 #include "../DebugServer.hpp"
+
+#include "GdbDebugServerConfig.hpp"
+
 #include "Connection.hpp"
 #include "Signal.hpp"
 #include "RegisterDescriptor.hpp"
@@ -127,20 +130,7 @@ namespace Bloom::DebugServers::Gdb
         virtual void handleGdbPacket(CommandPackets::InterruptExecution& packet);
 
     protected:
-        /**
-         * The port number for the GDB server to listen on.
-         *
-         * This will be pulled from the user's project configuration, if set. Otherwise it will default to whatever is
-         * set here.
-         */
-        std::uint16_t listeningPortNumber = 1442;
-
-        /**
-         * The address for the GDB server to listen on.
-         *
-         * Like the port number, this can also be pulled from the user's project configuration.
-         */
-        std::string listeningAddress = "127.0.0.1";
+        std::optional<GdbDebugServerConfig> debugServerConfig;
 
         /**
          * Listening socket address
