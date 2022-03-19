@@ -28,27 +28,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
         Target::preActivationConfigure(targetConfig);
 
-        auto physicalInterface = targetConfig.jsonObject.find("physicalInterface")->toString().toLower().toStdString();
-        auto availablePhysicalInterfaces = Avr8::getPhysicalInterfacesByName();
-
-        if (physicalInterface.empty() || !availablePhysicalInterfaces.contains(physicalInterface)) {
-            throw InvalidConfig("Invalid or missing physical interface config parameter for AVR8 target.");
-        }
-
-        const auto selectedPhysicalInterface = availablePhysicalInterfaces.at(physicalInterface);
-
-        if (selectedPhysicalInterface == PhysicalInterface::DEBUG_WIRE) {
-            Logger::warning("AVR8 debugWire interface selected - the DWEN fuse will need to be enabled");
-        }
-
-        this->physicalInterface = selectedPhysicalInterface;
-        this->avr8DebugInterface->setPhysicalInterface(this->physicalInterface.value());
+        this->targetConfig = Avr8TargetConfig(targetConfig);
 
         if (this->family.has_value()) {
             this->avr8DebugInterface->setFamily(this->family.value());
 
         } else {
-            if (this->physicalInterface == PhysicalInterface::JTAG) {
+            if (this->targetConfig->physicalInterface == PhysicalInterface::JTAG) {
                 throw InvalidConfig(
                     "The JTAG physical interface cannot be used with an ambiguous target name"
                     " - please specify the exact name of the target in your configuration file. "
@@ -56,7 +42,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 );
             }
 
-            if (this->physicalInterface == PhysicalInterface::UPDI) {
+            if (this->targetConfig->physicalInterface == PhysicalInterface::UPDI) {
                 throw InvalidConfig(
                     "The UPDI physical interface cannot be used with an ambiguous target name"
                     " - please specify the exact name of the target in your configuration file. "
@@ -65,29 +51,17 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             }
         }
 
-        if (targetConfig.jsonObject.contains("updateDwenFuseBit")) {
-            this->updateDwenFuseBit = targetConfig.jsonObject.value(
-                "updateDwenFuseBit"
-            ).toBool();
-
-            if (this->updateDwenFuseBit
-                && this->avrIspInterface == nullptr
-                && this->physicalInterface == PhysicalInterface::DEBUG_WIRE
-            ) {
-                Logger::warning(
-                    "The connected debug tool (or associated driver) does not provide any ISP interface. "
-                    "Bloom will be unable to update the DWEN fuse bit in the event of a debugWire activation failure."
-                );
-            }
+        if (
+            this->targetConfig->updateDwenFuseBit && this->avrIspInterface == nullptr
+            && this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
+        ) {
+            Logger::warning(
+                "The connected debug tool (or associated driver) does not provide any ISP interface. "
+                "Bloom will be unable to update the DWEN fuse bit in the event of a debugWire activation failure."
+            );
         }
 
-        if (targetConfig.jsonObject.contains("cycleTargetPowerPostDwenUpdate")) {
-            this->cycleTargetPowerPostDwenUpdate = targetConfig.jsonObject.value(
-                "cycleTargetPowerPostDwenUpdate"
-            ).toBool();
-        }
-
-        this->avr8DebugInterface->configure(targetConfig);
+        this->avr8DebugInterface->configure(this->targetConfig.value());
 
         if (this->avrIspInterface != nullptr) {
             this->avrIspInterface->configure(targetConfig);
@@ -144,7 +118,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             this->avr8DebugInterface->activate();
 
         } catch (const Exceptions::DebugWirePhysicalInterfaceError& debugWireException) {
-            if (!this->updateDwenFuseBit) {
+            if (!this->targetConfig->updateDwenFuseBit) {
                 throw TargetOperationFailure(
                     "Failed to activate debugWire physical interface - check target connection and DWEN fuse "
                         "bit. Bloom can manage the DWEN fuse bit automatically. For instructions on enabling this "
@@ -160,7 +134,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 this->writeDwenFuseBit(true);
 
                 // If the debug tool provides a TargetPowerManagementInterface, attempt to cycle the target power
-                if (this->targetPowerManagementInterface != nullptr && this->cycleTargetPowerPostDwenUpdate) {
+                if (
+                    this->targetPowerManagementInterface != nullptr
+                    && this->targetConfig->cycleTargetPowerPostDwenUpdate
+                ) {
                     Logger::info("Cycling target power");
 
                     Logger::debug("Disabling target power");

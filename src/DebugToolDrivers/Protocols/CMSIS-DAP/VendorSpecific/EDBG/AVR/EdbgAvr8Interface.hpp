@@ -81,11 +81,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * @param targetConfig
          */
-        void configure(const TargetConfig& targetConfig) override;
-
-        void setPhysicalInterface(Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface) override {
-            this->physicalInterface = physicalInterface;
-        }
+        void configure(const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig) override;
 
         /**
          * Configures the target family. For some physical interfaces, the target family is required in order
@@ -264,6 +260,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         EdbgInterface& edbgInterface;
 
         /**
+         * Project's AVR8 target configuration.
+         */
+        std::optional<Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig> targetConfig;
+
+        /**
          * The target family is taken into account when configuring the AVR8 Generic protocol on the EDBG device.
          *
          * We use this to determine which config variant to select.
@@ -283,13 +284,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * debug tool.
          */
         Avr8ConfigVariant configVariant = Avr8ConfigVariant::NONE;
-
-        /**
-         * Currently, the AVR8 Generic protocol supports 4 physical interfaces: debugWire, JTAG, PDI and UPDI.
-         * The desired physical interface must be selected by setting the "AVR8_PHY_PHYSICAL" parameter.
-         */
-        Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface =
-            Targets::Microchip::Avr::Avr8Bit::PhysicalInterface::DEBUG_WIRE;
 
         /**
          * EDBG-based debug tools require target specific parameters such as memory locations, page sizes and
@@ -331,24 +325,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * tool, in order to start a debug session in the target.
          */
         bool targetAttached = false;
-
-        /**
-         * Because the debugWire module requires control of the reset pin on the target, enabling this module will
-         * effectively mean losing control of the reset pin. This means users won't be able to use other
-         * interfaces that require access to the reset pin, such as ISP, until the debugWire module is disabled.
-         *
-         * The AVR8 Generic protocol provides a function for temporarily disabling the debugWire module on the target.
-         * This doesn't change the DWEN fuse and its affect is only temporary - the debugWire module will be
-         * reactivated upon the user cycling the power to the target.
-         *
-         * Bloom is able to temporarily disable the debugWire module, automatically, upon deactivating of the
-         * target (which usually occurs after a debug session has ended). This allows users to program the target via
-         * ISP, after they've finished a debug session. After programming the target, the user will need to cycle the
-         * target power before Bloom can gain access for another debug session.
-         *
-         * See disableDebugWire() method below.
-         */
-        bool disableDebugWireOnDeactivate = false;
 
         /**
          * This mapping allows us to determine which config variant to select, based on the target family and the
@@ -415,8 +391,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     auto configVariantsByPhysicalInterface = configVariantsByFamily
                         .at(this->family.value());
 
-                    if (configVariantsByPhysicalInterface.contains(this->physicalInterface)) {
-                        return configVariantsByPhysicalInterface.at(this->physicalInterface);
+                    if (configVariantsByPhysicalInterface.contains(this->targetConfig->physicalInterface)) {
+                        return configVariantsByPhysicalInterface.at(this->targetConfig->physicalInterface);
                     }
                 }
 
@@ -441,8 +417,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                 };
 
-                if (physicalInterfacesToConfigVariants.contains(this->physicalInterface)) {
-                    return physicalInterfacesToConfigVariants.at(this->physicalInterface);
+                if (physicalInterfacesToConfigVariants.contains(this->targetConfig->physicalInterface)) {
+                    return physicalInterfacesToConfigVariants.at(this->targetConfig->physicalInterface);
                 }
             }
 

@@ -17,7 +17,7 @@
 
 #include "TargetDescription/TargetDescriptionFile.hpp"
 
-#include "src/ProjectConfig.hpp"
+#include "Avr8TargetConfig.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
@@ -127,9 +127,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* avr8DebugInterface = nullptr;
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::AvrIspInterface* avrIspInterface = nullptr;
 
+        std::optional<Avr8TargetConfig> targetConfig;
+
         std::string name;
         std::optional<Family> family;
-        std::optional<PhysicalInterface> physicalInterface;
         std::optional<TargetDescription::TargetDescriptionFile> targetDescriptionFile;
 
         std::optional<TargetParameters> targetParameters;
@@ -137,25 +138,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<int, TargetVariant> targetVariantsById;
         std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
-
-        bool updateDwenFuseBit = false;
-        bool cycleTargetPowerPostDwenUpdate = true;
-
-        /**
-         * Users are required to set their desired physical interface in their Bloom configuration. This would take
-         * the form of a string, so we map the available options to the appropriate enums.
-         */
-        static inline auto getPhysicalInterfacesByName() {
-            using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
-
-            return std::map<std::string, PhysicalInterface>({
-                {"debugwire", PhysicalInterface::DEBUG_WIRE},
-                {"debug-wire", PhysicalInterface::DEBUG_WIRE},
-                {"pdi", PhysicalInterface::PDI},
-                {"jtag", PhysicalInterface::JTAG},
-                {"updi", PhysicalInterface::UPDI},
-            });
-        };
 
         /**
          * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.

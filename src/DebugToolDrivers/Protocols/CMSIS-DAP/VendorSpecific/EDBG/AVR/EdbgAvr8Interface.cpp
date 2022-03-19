@@ -53,14 +53,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using Bloom::Targets::TargetRegisterType;
     using Bloom::Targets::TargetRegisters;
 
-    void EdbgAvr8Interface::configure(const TargetConfig& targetConfig) {
-        this->configVariant = this->resolveConfigVariant().value_or(Avr8ConfigVariant::NONE);
+    void EdbgAvr8Interface::configure(const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig) {
+        this->targetConfig = targetConfig;
 
-        if (targetConfig.jsonObject.contains("disableDebugWirePreDisconnect")) {
-            this->disableDebugWireOnDeactivate = targetConfig.jsonObject.find(
-                "disableDebugWirePreDisconnect"
-            )->toBool();
-        }
+        this->configVariant = this->resolveConfigVariant().value_or(Avr8ConfigVariant::NONE);
     }
 
     void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& config) {
@@ -158,7 +154,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         this->setParameter(
             Avr8EdbgParameters::PHYSICAL_INTERFACE,
-            getAvr8PhysicalInterfaceToIdMapping().at(this->physicalInterface)
+            getAvr8PhysicalInterfaceToIdMapping().at(this->targetConfig->physicalInterface)
         );
     }
 
@@ -225,7 +221,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 this->activatePhysical();
 
             } catch (const Avr8CommandFailure& activationException) {
-                if (this->physicalInterface == PhysicalInterface::DEBUG_WIRE
+                if (this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
                     && activationException.code == Avr8CommandFailureCode::DEBUGWIRE_PHYSICAL_ERROR
                 ) {
                     throw DebugWirePhysicalInterfaceError(
@@ -246,7 +242,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::deactivate() {
         if (this->targetAttached) {
-            if (this->physicalInterface == PhysicalInterface::DEBUG_WIRE && this->disableDebugWireOnDeactivate) {
+            if (
+                this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
+                && this->targetConfig->disableDebugWireOnDeactivate
+            ) {
                 try {
                     this->disableDebugWire();
                     Logger::warning(
@@ -336,7 +335,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw Avr8CommandFailure("AVR8 Get device ID command failed", response);
         }
 
-        return response.extractSignature(this->physicalInterface);
+        return response.extractSignature(this->targetConfig->physicalInterface);
     }
 
     void EdbgAvr8Interface::setBreakpoint(std::uint32_t address) {

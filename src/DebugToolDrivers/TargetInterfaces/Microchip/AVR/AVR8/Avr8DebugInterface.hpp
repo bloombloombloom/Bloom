@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <set>
 
+#include "src/Targets/Microchip/AVR/AVR8/Avr8TargetConfig.hpp"
+
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
@@ -11,7 +13,6 @@
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
-#include "src/ProjectConfig.hpp"
 
 namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
 {
@@ -42,12 +43,9 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          * Configures the interface. Any debug tool -> target interface specific configuration should take
          * place here.
          *
-         * For example, the EdbgAvr8Interface implementation configures the physical interface and config
-         * variant here.
-         *
          * @param targetConfig
          */
-        virtual void configure(const TargetConfig& targetConfig) = 0;
+        virtual void configure(const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig) = 0;
 
         /**
          * Sets the target family, independent of other configuration.
@@ -55,13 +53,6 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          * @param family
          */
         virtual void setFamily(Targets::Microchip::Avr::Avr8Bit::Family family) = 0;
-
-        /**
-         * Sets the selected physical interface.
-         *
-         * @param physicalInterface
-         */
-        virtual void setPhysicalInterface(Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface) = 0;
 
         /**
          * Should accept Avr8 target parameters for configuration of the interface.
