@@ -29,15 +29,14 @@ namespace Bloom::DebugServers
     {
     public:
         explicit DebugServer(
-            EventManager& eventManager,
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig,
             const DebugServerConfig& debugServerConfig
         )
-            : eventManager(eventManager)
-            , projectConfig(projectConfig)
+            : projectConfig(projectConfig)
             , environmentConfig(environmentConfig)
-            , debugServerConfig(debugServerConfig) {};
+            , debugServerConfig(debugServerConfig)
+        {};
 
         /**
          * Entry point for the DebugServer. This must called from a dedicated thread.
@@ -47,10 +46,6 @@ namespace Bloom::DebugServers
         virtual std::string getName() const = 0;
 
     protected:
-        /**
-         * Application-wide instance to EventManager
-         */
-        EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("DebugServerEventListener");
 
         ProjectConfig projectConfig;

@@ -51,7 +51,6 @@ namespace Bloom
                     "avr-gdb-rsp",
                     [this] () -> std::unique_ptr<DebugServers::DebugServer> {
                         return std::make_unique<DebugServers::Gdb::AvrGdbRsp>(
-                            this->eventManager,
                             this->projectConfig.value(),
                             this->environmentConfig.value(),
                             this->debugServerConfig.value()
