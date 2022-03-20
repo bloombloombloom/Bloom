@@ -107,7 +107,7 @@ namespace Bloom::DebugServers
          */
         void setThreadStateAndEmitEvent(ThreadState state) {
             Thread::setThreadState(state);
-            this->eventManager.triggerEvent(
+            EventManager::triggerEvent(
                 std::make_shared<Events::DebugServerThreadStateChanged>(state)
             );
         }

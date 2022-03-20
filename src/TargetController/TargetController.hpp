@@ -207,7 +207,7 @@ namespace Bloom
          */
         void setThreadStateAndEmitEvent(ThreadState state) {
             this->setThreadState(state);
-            this->eventManager.triggerEvent(
+            EventManager::triggerEvent(
                 std::make_shared<Events::TargetControllerThreadStateChanged>(state)
             );
         }

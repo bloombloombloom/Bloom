@@ -383,7 +383,7 @@ namespace Bloom::DebugServers::Gdb
 
                 this->clientConnection->accept(this->serverSocketFileDescriptor);
                 Logger::info("Accepted GDP RSP connection from " + this->clientConnection->getIpAddress());
-                this->eventManager.triggerEvent(std::make_shared<Events::DebugSessionStarted>());
+                EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
 
                 /*
                  * Before proceeding with a new debug session, we must ensure that the TargetController is able to

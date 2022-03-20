@@ -24,7 +24,7 @@ namespace Bloom
 
     void InsightWorker::startup() {
         Logger::debug("Starting InsightWorker thread");
-        this->eventManager.registerListener(this->eventListener);
+        EventManager::registerListener(this->eventListener);
 
         this->eventListener->registerCallbackForEventType<Events::TargetControllerStateReported>(
             std::bind(&InsightWorker::onTargetControllerStateReportedEvent, this, std::placeholders::_1)
@@ -48,7 +48,7 @@ namespace Bloom
 
         QObject::connect(this, &InsightWorker::taskQueued, this, &InsightWorker::executeTasks);
 
-        this->eventManager.triggerEvent(
+        EventManager::triggerEvent(
             std::make_shared<Events::InsightThreadStateChanged>(ThreadState::READY)
         );
 

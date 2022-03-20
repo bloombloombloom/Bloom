@@ -73,7 +73,7 @@ namespace Bloom
         Logger::info("Starting TargetController");
         this->setThreadState(ThreadState::STARTING);
         this->blockAllSignalsOnCurrentThread();
-        this->eventManager.registerListener(this->eventListener);
+        EventManager::registerListener(this->eventListener);
 
         // Install Bloom's udev rules if not already installed
         TargetController::checkUdevRules();
@@ -132,7 +132,7 @@ namespace Bloom
 
         try {
             Logger::info("Shutting down TargetController");
-            this->eventManager.deregisterListener(this->eventListener->getId());
+            EventManager::deregisterListener(this->eventListener->getId());
             this->releaseHardware();
 
         } catch (const std::exception& exception) {
@@ -184,9 +184,7 @@ namespace Bloom
         this->registerAddressRangeByMemoryType.clear();
 
         this->state = TargetControllerState::SUSPENDED;
-        this->eventManager.triggerEvent(
-            std::make_shared<TargetControllerStateReported>(this->state)
-        );
+        EventManager::triggerEvent(std::make_shared<TargetControllerStateReported>(this->state));
 
         Logger::debug("TargetController suspended");
     }
@@ -260,7 +258,7 @@ namespace Bloom
         );
 
         this->state = TargetControllerState::ACTIVE;
-        this->eventManager.triggerEvent(
+        EventManager::triggerEvent(
             std::make_shared<TargetControllerStateReported>(this->state)
         );
 
@@ -435,7 +433,7 @@ namespace Bloom
 
             if (newTargetState == TargetState::STOPPED) {
                 Logger::debug("Target state changed - STOPPED");
-                this->eventManager.triggerEvent(std::make_shared<TargetExecutionStopped>(
+                EventManager::triggerEvent(std::make_shared<TargetExecutionStopped>(
                     this->target->getProgramCounter(),
                     TargetBreakCause::UNKNOWN
                 ));
@@ -443,7 +441,7 @@ namespace Bloom
 
             if (newTargetState == TargetState::RUNNING) {
                 Logger::debug("Target state changed - RUNNING");
-                this->eventManager.triggerEvent(std::make_shared<TargetExecutionResumed>());
+                EventManager::triggerEvent(std::make_shared<TargetExecutionResumed>());
             }
         }
     }
@@ -452,7 +450,7 @@ namespace Bloom
         auto errorEvent = std::make_shared<Events::TargetControllerErrorOccurred>();
         errorEvent->correlationId = correlationId;
         errorEvent->errorMessage = errorMessage;
-        this->eventManager.triggerEvent(errorEvent);
+        EventManager::triggerEvent(errorEvent);
     }
 
     Targets::TargetDescriptor& TargetController::getTargetDescriptor() {
@@ -470,7 +468,7 @@ namespace Bloom
     void TargetController::onStateReportRequest(const Events::ReportTargetControllerState& event) {
         auto stateEvent = std::make_shared<Events::TargetControllerStateReported>(this->state);
         stateEvent->correlationId = event.id;
-        this->eventManager.triggerEvent(stateEvent);
+        EventManager::triggerEvent(stateEvent);
     }
 
     void TargetController::onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event) {
@@ -478,7 +476,7 @@ namespace Bloom
         targetDescriptorExtracted->targetDescriptor = this->getTargetDescriptor();
 
         targetDescriptorExtracted->correlationId = event.id;
-        this->eventManager.triggerEvent(targetDescriptorExtracted);
+        EventManager::triggerEvent(targetDescriptorExtracted);
     }
 
     void TargetController::onDebugSessionStartedEvent(const Events::DebugSessionStarted&) {
@@ -519,7 +517,7 @@ namespace Bloom
         );
 
         executionStoppedEvent->correlationId = event.id;
-        this->eventManager.triggerEvent(executionStoppedEvent);
+        EventManager::triggerEvent(executionStoppedEvent);
     }
 
     void TargetController::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {
@@ -538,7 +536,7 @@ namespace Bloom
 
             auto executionResumedEvent = std::make_shared<Events::TargetExecutionResumed>();
             executionResumedEvent->correlationId = event.id;
-            this->eventManager.triggerEvent(executionResumedEvent);
+            EventManager::triggerEvent(executionResumedEvent);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to step execution on target - " + exception.getMessage());
@@ -559,7 +557,7 @@ namespace Bloom
 
             auto executionResumedEvent = std::make_shared<Events::TargetExecutionResumed>();
             executionResumedEvent->correlationId = event.id;
-            this->eventManager.triggerEvent(executionResumedEvent);
+            EventManager::triggerEvent(executionResumedEvent);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to resume execution on target - " + exception.getMessage());
@@ -575,7 +573,7 @@ namespace Bloom
                 auto registersRetrievedEvent = std::make_shared<Events::RegistersRetrievedFromTarget>();
                 registersRetrievedEvent->correlationId = event.id;
                 registersRetrievedEvent->registers = registers;
-                this->eventManager.triggerEvent(registersRetrievedEvent);
+                EventManager::triggerEvent(registersRetrievedEvent);
             }
 
         } catch (const TargetOperationFailure& exception) {
@@ -592,7 +590,7 @@ namespace Bloom
             registersWrittenEvent->correlationId = event.id;
             registersWrittenEvent->registers = event.registers;
 
-            this->eventManager.triggerEvent(registersWrittenEvent);
+            EventManager::triggerEvent(registersWrittenEvent);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to write registers to target - " + exception.getMessage());
@@ -611,7 +609,7 @@ namespace Bloom
                 event.excludedAddressRanges
             );
 
-            this->eventManager.triggerEvent(memoryReadEvent);
+            EventManager::triggerEvent(memoryReadEvent);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to read memory from target - " + exception.getMessage());
@@ -629,9 +627,9 @@ namespace Bloom
 
             auto memoryWrittenEvent = std::make_shared<Events::MemoryWrittenToTarget>();
             memoryWrittenEvent->correlationId = event.id;
-            this->eventManager.triggerEvent(memoryWrittenEvent);
+            EventManager::triggerEvent(memoryWrittenEvent);
 
-            if (this->eventManager.isEventTypeListenedFor(Events::RegistersWrittenToTarget::type)
+            if (EventManager::isEventTypeListenedFor(Events::RegistersWrittenToTarget::type)
                 && this->registerDescriptorsByMemoryType.contains(event.memoryType)
             ) {
                 /*
@@ -665,7 +663,7 @@ namespace Bloom
                         ));
                     }
 
-                    this->eventManager.triggerEvent(registersWrittenEvent);
+                    EventManager::triggerEvent(registersWrittenEvent);
                 }
             }
 
@@ -681,7 +679,7 @@ namespace Bloom
             auto breakpointSetEvent = std::make_shared<Events::BreakpointSetOnTarget>();
             breakpointSetEvent->correlationId = event.id;
 
-            this->eventManager.triggerEvent(breakpointSetEvent);
+            EventManager::triggerEvent(breakpointSetEvent);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to set breakpoint on target - " + exception.getMessage());
@@ -695,7 +693,7 @@ namespace Bloom
             auto breakpointRemovedEvent = std::make_shared<Events::BreakpointRemovedOnTarget>();
             breakpointRemovedEvent->correlationId = event.id;
 
-            this->eventManager.triggerEvent(breakpointRemovedEvent);
+            EventManager::triggerEvent(breakpointRemovedEvent);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to remove breakpoint on target - " + exception.getMessage());
@@ -715,7 +713,7 @@ namespace Bloom
             auto programCounterSetEvent = std::make_shared<Events::ProgramCounterSetOnTarget>();
             programCounterSetEvent->correlationId = event.id;
 
-            this->eventManager.triggerEvent(programCounterSetEvent);
+            EventManager::triggerEvent(programCounterSetEvent);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to set program counter on target - " + exception.getMessage());
@@ -749,7 +747,7 @@ namespace Bloom
             pinStatesRetrieved->variantId = event.variantId;
             pinStatesRetrieved->pinSatesByNumber = this->target->getPinStates(event.variantId);
 
-            this->eventManager.triggerEvent(pinStatesRetrieved);
+            EventManager::triggerEvent(pinStatesRetrieved);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to retrieve target pin states - " + exception.getMessage());
@@ -774,7 +772,7 @@ namespace Bloom
                 {event.pinDescriptor.number, event.pinState}
             };
 
-            this->eventManager.triggerEvent(pinStatesUpdateEvent);
+            EventManager::triggerEvent(pinStatesUpdateEvent);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to set target pin state for pin " + event.pinDescriptor.name + " - "
@@ -795,7 +793,7 @@ namespace Bloom
             stackPointerRetrieved->correlationId = event.id;
             stackPointerRetrieved->stackPointer = this->target->getStackPointer();
 
-            this->eventManager.triggerEvent(stackPointerRetrieved);
+            EventManager::triggerEvent(stackPointerRetrieved);
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to retrieve stack pointer value from target - " + exception.getMessage());

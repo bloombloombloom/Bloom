@@ -30,7 +30,7 @@ namespace Bloom::DebugServers
         this->setName("DS");
         Logger::info("Starting DebugServer");
 
-        this->eventManager.registerListener(this->eventListener);
+        EventManager::registerListener(this->eventListener);
 
         this->interruptEventNotifier = std::make_shared<EventNotifier>();
         this->eventListener->setInterruptEventNotifier(this->interruptEventNotifier);
@@ -57,7 +57,7 @@ namespace Bloom::DebugServers
         Logger::info("Shutting down DebugServer");
         this->close();
         this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
-        this->eventManager.deregisterListener(this->eventListener->getId());
+        EventManager::deregisterListener(this->eventListener->getId());
     }
 
     void DebugServer::onShutdownDebugServerEvent(const Events::ShutdownDebugServer& event) {

@@ -78,6 +78,6 @@ namespace Bloom
         }
 
         Logger::info("Attempting clean shutdown");
-        this->eventManager.triggerEvent(std::make_shared<Events::ShutdownApplication>());
+        EventManager::triggerEvent(std::make_shared<Events::ShutdownApplication>());
     }
 }

@@ -207,7 +207,7 @@ namespace Bloom
                 deRegisterEventType = true;
             }
 
-            this->eventManager.triggerEvent(event);
+            EventManager::triggerEvent(event);
 
             auto responseEvent = this->eventListener.waitForEvent<
                 ResponseEventType,

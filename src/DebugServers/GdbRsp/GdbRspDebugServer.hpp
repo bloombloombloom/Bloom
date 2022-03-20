@@ -190,7 +190,7 @@ namespace Bloom::DebugServers::Gdb
             if (this->clientConnection.has_value()) {
                 this->clientConnection->close();
                 this->clientConnection = std::nullopt;
-                this->eventManager.triggerEvent(std::make_shared<Events::DebugSessionFinished>());
+                EventManager::triggerEvent(std::make_shared<Events::DebugSessionFinished>());
             }
         }
 

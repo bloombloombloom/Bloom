@@ -88,7 +88,7 @@ namespace Bloom
 
     void Application::startup() {
         auto& applicationEventListener = this->applicationEventListener;
-        this->eventManager.registerListener(applicationEventListener);
+        EventManager::registerListener(applicationEventListener);
         applicationEventListener->registerCallbackForEventType<Events::ShutdownApplication>(
             std::bind(&Application::onShutdownApplicationRequest, this, std::placeholders::_1)
         );
@@ -378,7 +378,7 @@ namespace Bloom
 
         auto targetControllerState = this->targetController->getThreadState();
         if (targetControllerState == ThreadState::STARTING || targetControllerState == ThreadState::READY) {
-            this->eventManager.triggerEvent(std::make_shared<Events::ShutdownTargetController>());
+            EventManager::triggerEvent(std::make_shared<Events::ShutdownTargetController>());
             this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>(
                 std::chrono::milliseconds(10000)
             );
@@ -422,7 +422,7 @@ namespace Bloom
 
         auto debugServerState = this->debugServer->getThreadState();
         if (debugServerState == ThreadState::STARTING || debugServerState == ThreadState::READY) {
-            this->eventManager.triggerEvent(std::make_shared<Events::ShutdownDebugServer>());
+            EventManager::triggerEvent(std::make_shared<Events::ShutdownDebugServer>());
             this->applicationEventListener->waitForEvent<Events::DebugServerThreadStateChanged>(
                 std::chrono::milliseconds(5000)
             );
