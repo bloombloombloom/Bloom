@@ -16,14 +16,12 @@ namespace Bloom
 
     Insight::Insight(
         EventListener& eventListener,
-        EventManager& eventManager,
         const ProjectConfig& projectConfig,
         const EnvironmentConfig& environmentConfig,
         const InsightConfig& insightConfig,
         InsightProjectSettings& insightProjectSettings
     )
         : eventListener(eventListener)
-        , eventManager(eventManager)
         , projectConfig(projectConfig)
         , environmentConfig(environmentConfig)
         , insightConfig(insightConfig)

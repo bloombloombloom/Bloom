@@ -40,7 +40,6 @@ namespace Bloom
          */
         explicit Insight(
             EventListener& eventListener,
-            EventManager& eventManager,
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig,
             const InsightConfig& insightConfig,
@@ -68,11 +67,10 @@ namespace Bloom
 
         InsightProjectSettings& insightProjectSettings;
 
-        EventManager& eventManager;
         EventListener& eventListener;
 
         QApplication application;
-        InsightWorker* insightWorker = new InsightWorker(this->eventManager);
+        InsightWorker* insightWorker = new InsightWorker();
         InsightWindow* mainWindow = new InsightWindow(
             *(this->insightWorker),
             this->environmentConfig,

@@ -12,8 +12,6 @@ namespace Bloom
 
     using Bloom::Targets::TargetState;
 
-    InsightWorker::InsightWorker(EventManager& eventManager): eventManager(eventManager) {}
-
     void InsightWorker::queueTask(InsightWorkerTask* task) {
         auto taskQueueLock = this->queuedTasks.acquireLock();
         task->moveToThread(this->thread());

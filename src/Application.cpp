@@ -44,7 +44,6 @@ namespace Bloom
             if (this->insightConfig->insightEnabled) {
                 this->insight = std::make_unique<Insight>(
                     *(this->applicationEventListener),
-                    this->eventManager,
                     this->projectConfig.value(),
                     this->environmentConfig.value(),
                     this->insightConfig.value(),

@@ -23,7 +23,7 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        explicit InsightWorker(EventManager& eventManager);
+        InsightWorker() = default;
 
         void queueTask(InsightWorkerTask* task);
 
@@ -45,7 +45,6 @@ namespace Bloom
         void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
 
     private:
-        EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightWorkerEventListener");
 
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(*(this->eventListener));
