@@ -60,7 +60,7 @@ namespace Bloom
         /**
          * A mapping of listener IDs to registered listeners. Each registered listener is given an interger ID.
          */
-        std::map<size_t, std::shared_ptr<EventListener>> registeredListeners;
-        std::mutex registerListenerMutex;
+        static inline std::map<size_t, std::shared_ptr<EventListener>> registeredListeners;
+        static inline std::mutex registerListenerMutex;
     };
 }
