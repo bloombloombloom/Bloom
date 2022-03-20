@@ -35,10 +35,9 @@ namespace Bloom
     {
     public:
         explicit TargetController(
-            EventManager& eventManager,
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig
-        ): eventManager(eventManager), projectConfig(projectConfig), environmentConfig(environmentConfig) {};
+        ): projectConfig(projectConfig), environmentConfig(environmentConfig) {};
 
         /**
          * Entry point for the TargetController.
@@ -62,7 +61,6 @@ namespace Bloom
         std::unique_ptr<Targets::Target> target = nullptr;
         std::unique_ptr<DebugTool> debugTool = nullptr;
 
-        EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("TargetControllerEventListener");
 
         /**

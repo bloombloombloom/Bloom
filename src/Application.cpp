@@ -353,7 +353,6 @@ namespace Bloom
 
     void Application::startTargetController() {
         this->targetController = std::make_unique<TargetController>(
-            this->eventManager,
             this->projectConfig.value(),
             this->environmentConfig.value()
         );
