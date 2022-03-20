@@ -78,14 +78,6 @@ namespace Bloom
         static bool isRunningAsRoot();
 
     private:
-        /**
-         * This is the application wide event manager. It should be the only instance of the EventManager class at
-         * any given time.
-         *
-         * It should be injected (by reference) into any other instances of classes that require use
-         * of the EventManager.
-         */
-        EventManager eventManager = EventManager();
         EventListenerPointer applicationEventListener = std::make_shared<EventListener>("ApplicationEventListener");
 
         /**
