@@ -23,7 +23,7 @@ namespace Bloom
     class TargetControllerConsole
     {
     public:
-        TargetControllerConsole(EventManager& eventManager, EventListener& eventListener);
+        TargetControllerConsole(EventListener& eventListener);
 
         void setDefaultTimeout(std::chrono::milliseconds timeout) {
             this->defaultTimeout = timeout;
@@ -164,7 +164,6 @@ namespace Bloom
         std::uint32_t getStackPointer();
 
     private:
-        EventManager& eventManager;
         EventListener& eventListener;
 
         std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(20000);

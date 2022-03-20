@@ -57,10 +57,7 @@ namespace Bloom::DebugServers
         EnvironmentConfig environmentConfig;
         DebugServerConfig debugServerConfig;
 
-        TargetControllerConsole targetControllerConsole = TargetControllerConsole(
-            this->eventManager,
-            *(this->eventListener)
-        );
+        TargetControllerConsole targetControllerConsole = TargetControllerConsole(*(this->eventListener));
 
         /**
          * Enables the interruption of any blocking file IO.

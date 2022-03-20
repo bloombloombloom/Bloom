@@ -48,10 +48,7 @@ namespace Bloom
         EventManager& eventManager;
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightWorkerEventListener");
 
-        TargetControllerConsole targetControllerConsole = TargetControllerConsole(
-            this->eventManager,
-            *(this->eventListener)
-        );
+        TargetControllerConsole targetControllerConsole = TargetControllerConsole(*(this->eventListener));
         TargetControllerState lastTargetControllerState = TargetControllerState::ACTIVE;
 
         QTimer* eventDispatchTimer = nullptr;
