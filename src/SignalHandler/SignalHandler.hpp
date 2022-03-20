@@ -11,7 +11,7 @@ namespace Bloom
     class SignalHandler: public Thread
     {
     public:
-        explicit SignalHandler(EventManager& eventManager): eventManager(eventManager) {};
+        SignalHandler() = default;
 
         /**
          * Entry point for SignalHandler thread.
@@ -26,8 +26,6 @@ namespace Bloom
         };
 
     private:
-        EventManager& eventManager;
-
         /**
          * Mapping of signal numbers to functions.
          */

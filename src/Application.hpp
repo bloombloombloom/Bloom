@@ -95,7 +95,7 @@ namespace Bloom
          *
          * See the SignalHandler class for more on this.
          */
-        SignalHandler signalHandler = SignalHandler(this->eventManager);
+        SignalHandler signalHandler = SignalHandler();
         std::thread signalHandlerThread;
 
         /**
