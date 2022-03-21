@@ -2,16 +2,12 @@
 
 #include "ResponsePacket.hpp"
 
-namespace Bloom::DebugServers::Gdb {
-    enum class Feature;
-}
-
 namespace Bloom::DebugServers::Gdb::ResponsePackets
 {
     /**
      * OK response packet expected by the GDB client, in response to certain commands.
      */
-    class Ok: public ResponsePacket
+    class OkResponsePacket: public ResponsePacket
     {
     public:
         Ok() = default;
