@@ -250,7 +250,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     this->disableDebugWire();
                     Logger::warning(
                         "Successfully disabled debugWire on the AVR8 target - this is only temporary - "
-                            "the debugWire module has lost control of the RESET pin. Bloom will no longer be able to "
+                            "the debugWire module has lost control of the RESET pin. Bloom may no longer be able to "
                             "interface with the target until the next power cycle."
                     );
 

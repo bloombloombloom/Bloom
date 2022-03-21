@@ -59,6 +59,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          */
         bool cycleTargetPowerPostDwenUpdate = true;
 
+        /**
+         * When cycling target power after updating the DWEN fuse bit, we wait for a number of milliseconds, for the
+         * target to power-down and back up.
+         *
+         * This parameter determines how long we wait.
+         */
         std::chrono::milliseconds targetPowerCycleDelay = std::chrono::milliseconds(250);
 
         explicit Avr8TargetConfig(const TargetConfig& targetConfig);
