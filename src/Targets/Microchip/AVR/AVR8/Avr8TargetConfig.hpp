@@ -1,5 +1,9 @@
 #pragma once
 
+#include <chrono>
+#include <string>
+#include <map>
+
 #include "src/ProjectConfig.hpp"
 
 #include "PhysicalInterface.hpp"
@@ -54,6 +58,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * This parameter is optional. The function is enabled by default.
          */
         bool cycleTargetPowerPostDwenUpdate = true;
+
+        std::chrono::milliseconds targetPowerCycleDelay = std::chrono::milliseconds(250);
 
         explicit Avr8TargetConfig(const TargetConfig& targetConfig);
 

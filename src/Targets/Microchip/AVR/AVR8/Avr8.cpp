@@ -143,8 +143,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                     Logger::debug("Disabling target power");
                     this->targetPowerManagementInterface->disableTargetPower();
 
-                    Logger::debug("Holding power off for ~250 ms");
-                    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+                    Logger::debug(
+                        "Holding power off for ~"
+                            + std::to_string(this->targetConfig->targetPowerCycleDelay.count())
+                            + " ms"
+                    );
+                    std::this_thread::sleep_for(this->targetConfig->targetPowerCycleDelay);
 
                     Logger::debug("Enabling target power");
                     this->targetPowerManagementInterface->enableTargetPower();

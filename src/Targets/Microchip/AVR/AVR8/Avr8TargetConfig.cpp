@@ -38,5 +38,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 "disableDebugWirePreDisconnect"
             ).toBool();
         }
+
+        if (targetConfig.jsonObject.contains("targetPowerCycleDelay")) {
+            this->targetPowerCycleDelay = std::chrono::milliseconds(targetConfig.jsonObject.value(
+                "targetPowerCycleDelay"
+            ).toInt(static_cast<int>(this->targetPowerCycleDelay.count())));
+        }
     }
 }
