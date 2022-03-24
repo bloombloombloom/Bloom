@@ -11,6 +11,8 @@
 #include "GdbDebugServerConfig.hpp"
 
 #include "Connection.hpp"
+#include "TargetDescriptor.hpp"
+#include "DebugSession.hpp"
 #include "Signal.hpp"
 #include "RegisterDescriptor.hpp"
 #include "Feature.hpp"
@@ -51,85 +53,6 @@ namespace Bloom::DebugServers::Gdb
             return "GDB Remote Serial Protocol DebugServer";
         };
 
-        /**
-         * Handles any other GDB command packet that has not been promoted to a more specific type.
-         * This would be packets like "?" and "qAttached".
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::CommandPacket& packet);
-
-        /**
-         * Handles the supported features query ("qSupported") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::SupportedFeaturesQuery& packet);
-
-        /**
-         * Handles the read registers ("g" and "p") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::ReadRegisters& packet);
-
-        /**
-         * Handles the write general register ("P") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::WriteRegister& packet);
-
-        /**
-         * Handles the continue execution ("c") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::ContinueExecution& packet);
-
-        /**
-         * Handles the step execution ("s") packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::StepExecution& packet);
-
-        /**
-         * Handles the read memory ("m") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::ReadMemory& packet);
-
-        /**
-         * Handles the write memory ("M") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::WriteMemory& packet);
-
-        /**
-         * Handles the set breakpoint ("Z") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::SetBreakpoint& packet);
-
-        /**
-         * Handles the remove breakpoint ("z") command packet.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::RemoveBreakpoint& packet);
-
-        /**
-         * Handles the interrupt command packet.
-         * Will attempt to halt execution on the target. Should respond with a "stop reply" packet, or an error code.
-         *
-         * @param packet
-         */
-        virtual void handleGdbPacket(CommandPackets::InterruptExecution& packet);
-
     protected:
         std::optional<GdbDebugServerConfig> debugServerConfig;
 
@@ -159,10 +82,7 @@ namespace Bloom::DebugServers::Gdb
          */
         int enableReuseAddressSocketOption = 1;
 
-        /**
-         * The current active GDB client connection, if any.
-         */
-        std::optional<Connection> clientConnection;
+        std::optional<DebugSession> activeDebugSession;
 
         /**
          * Prepares the GDB server for listing on the selected address and port.
@@ -180,72 +100,16 @@ namespace Bloom::DebugServers::Gdb
         void serve() override;
 
         /**
-         * Waits for a GDB client to connect on the listening socket. Accepts the connection and
-         * sets this->clientConnection.
-         */
-        void waitForConnection();
-
-        void closeClientConnection() {
-            if (this->clientConnection.has_value()) {
-                this->clientConnection->close();
-                this->clientConnection = std::nullopt;
-                EventManager::triggerEvent(std::make_shared<Events::DebugSessionFinished>());
-            }
-        }
-
-        /**
-         * GDB clients encode memory type information (flash, ram, eeprom, etc) in memory addresses. This is typically
-         * hardcoded in the GDB client source. This method extracts memory type information from a given memory address.
-         * The specifics of the encoding may vary with targets, which is why this method is virtual. For an example,
-         * see the implementation of this method in AvrGdbRsp.
+         * Waits for a GDB client to connect on the listening socket.
          *
-         * @param address
-         * @return
+         * This function may return an std::nullopt, if the waiting was interrupted by some other event.
          */
-        virtual Targets::TargetMemoryType getMemoryTypeFromGdbAddress(std::uint32_t address) = 0;
+        std::optional<Connection> waitForConnection();
 
-        /**
-         * Removes memory type information from memory address.
-         * See comment for GdbRspDebugServer::getMemoryTypeFromGdbAddress()
-         *
-         * @param address
-         * @return
-         */
-        virtual std::uint32_t removeMemoryTypeIndicatorFromGdbAddress(std::uint32_t address) = 0;
+        void terminateActiveDebugSession();
 
-        /**
-         * Should return the mapping of GDB register numbers to GDB register descriptors.
-         */
-        virtual const BiMap<GdbRegisterNumberType, RegisterDescriptor>& getRegisterNumberToDescriptorMapping() = 0;
+        virtual const TargetDescriptor& getGdbTargetDescriptor() = 0;
 
-        /**
-         * Should retrieve the GDB register number, given a target register descriptor. Or std::nullopt if the target
-         * register descriptor isn't mapped to any GDB register.
-         *
-         * @param registerDescriptor
-         * @return
-         */
-        virtual std::optional<GdbRegisterNumberType> getRegisterNumberFromTargetRegisterDescriptor(
-            const Targets::TargetRegisterDescriptor& registerDescriptor
-        ) = 0;
-
-        /**
-         * Should retrieve the GDB register descriptor for a given GDB register number.
-         *
-         * @param number
-         * @return
-         */
-        virtual const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumberType number) = 0;
-
-        /**
-         * Should retrieve the mapped target register descriptor for a given GDB register number.
-         *
-         * @param number
-         * @return
-         */
-        virtual const Targets::TargetRegisterDescriptor& getTargetRegisterDescriptorFromNumber(
-            GdbRegisterNumberType number
-        ) = 0;
 
         void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
 

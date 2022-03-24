@@ -4,13 +4,8 @@
 #include <string>
 #include <set>
 
-#include "../BreakpointType.hpp"
 #include "CommandPacket.hpp"
-
-namespace Bloom::DebugServers::Gdb
-{
-    enum class Feature: int;
-}
+#include "src/DebugServers/GdbRsp/BreakpointType.hpp"
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
@@ -35,7 +30,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
             this->init();
         };
 
-        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
 
     private:
         void init();

@@ -4,10 +4,9 @@
 #include <memory>
 
 #include "src/DebugServers/GdbRsp/Packet.hpp"
+#include "src/DebugServers/GdbRsp/DebugSession.hpp"
 
-namespace Bloom::DebugServers::Gdb {
-    class GdbRspDebugServer;
-}
+#include "src/TargetController/TargetControllerConsole.hpp"
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
@@ -40,12 +39,13 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
         explicit CommandPacket(const std::vector<unsigned char>& rawPacket): Packet(rawPacket) {}
 
         /**
-         * Double dispatches the packet to the appropriate overload of handleGdbPacket(), within the passed instance of
-         * GdbRspDebugServer. If there is no overload defined for a specific CommandPacket-inherited type, the
-         * generic GdbRspDebugServer::handleGdbPacket(CommandPacket&) is used.
+         * Should handle the command for the current active debug session.
          *
-         * @param gdbRspDebugServer
+         * @param debugSession
+         *  The current active debug session.
+         *
+         * @param targetControllerConsole
          */
-        virtual void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer);
+        virtual void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole);
     };
 }

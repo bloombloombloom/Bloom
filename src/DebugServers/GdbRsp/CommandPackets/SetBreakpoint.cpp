@@ -2,15 +2,22 @@
 
 #include <QtCore/QString>
 
-#include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
+#include "src/DebugServers/GdbRsp/ResponsePackets/OkResponsePacket.hpp"
+#include "src/DebugServers/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
+
+#include "src/Targets/TargetBreakpoint.hpp"
+
+#include "src/Logger/Logger.hpp"
+#include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    using namespace Bloom::Exceptions;
+    using Targets::TargetBreakpoint;
 
-    void SetBreakpoint::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
-        gdbRspDebugServer.handleGdbPacket(*this);
-    }
+    using ResponsePackets::OkResponsePacket;
+    using ResponsePackets::ErrorResponsePacket;
+
+    using Exceptions::Exception;
 
     void SetBreakpoint::init() {
         if (data.size() < 6) {
@@ -36,6 +43,22 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
 
         if (!conversionStatus) {
             throw Exception("Failed to convert address hex value from SetBreakpoint packet.");
+        }
+    }
+
+    void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+        Logger::debug("Handling SetBreakpoint packet");
+
+        try {
+            auto breakpoint = TargetBreakpoint();
+            breakpoint.address = this->address;
+            targetControllerConsole.setBreakpoint(breakpoint);
+
+            debugSession.connection.writePacket(OkResponsePacket());
+
+        } catch (const Exception& exception) {
+            Logger::error("Failed to set breakpoint on target - " + exception.getMessage());
+            debugSession.connection.writePacket(ErrorResponsePacket());
         }
     }
 }

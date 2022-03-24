@@ -2,13 +2,22 @@
 
 #include <QtCore/QString>
 
-#include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
+#include "src/DebugServers/GdbRsp/Feature.hpp"
+
+#include "src/DebugServers/GdbRsp/ResponsePackets/SupportedFeaturesResponse.hpp"
+#include "src/DebugServers/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
+
+#include "src/Logger/Logger.hpp"
+#include "src/Exceptions/Exception.hpp"
+#include "src/DebugServers/GdbRsp/Exceptions/ClientNotSupported.hpp"
 
 namespace Bloom::DebugServers::Gdb::CommandPackets
 {
-    void SupportedFeaturesQuery::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
-        gdbRspDebugServer.handleGdbPacket(*this);
-    }
+    using ResponsePackets::SupportedFeaturesResponse;
+    using ResponsePackets::ErrorResponsePacket;
+
+    using Bloom::Exceptions::Exception;
+    using Gdb::Exceptions::ClientNotSupported;
 
     void SupportedFeaturesQuery::init() {
         /*
@@ -40,5 +49,24 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
                 }
             }
         }
+    }
+
+    void SupportedFeaturesQuery::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+        Logger::debug("Handling QuerySupport packet");
+
+        if (!this->isFeatureSupported(Feature::HARDWARE_BREAKPOINTS)
+            && !this->isFeatureSupported(Feature::SOFTWARE_BREAKPOINTS)
+        ) {
+            // All GDB clients are expected to support breakpoints!
+            throw ClientNotSupported("GDB client does not support HW or SW breakpoints");
+        }
+
+        // Respond with a SupportedFeaturesResponse packet, listing all supported GDB features by Bloom
+        auto response = SupportedFeaturesResponse({
+            {Feature::SOFTWARE_BREAKPOINTS, std::nullopt},
+            {Feature::PACKET_SIZE, std::to_string(debugSession.connection.getMaxPacketSize())},
+        });
+
+        debugSession.connection.writePacket(response);
     }
 }

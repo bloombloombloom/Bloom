@@ -3,15 +3,15 @@
 #include <cstdint>
 #include <optional>
 
-#include "CommandPacket.hpp"
+#include "AbstractMemoryAccessPacket.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+namespace Bloom::DebugServers::Gdb::AvrGdb::CommandPackets
 {
     /**
      * The ReadMemory class implements a structure for "m" packets. Upon receiving these packets, the server is
      * expected to read memory from the target and send it the client.
      */
-    class ReadMemory: public CommandPacket
+    class ReadMemory: public AbstractMemoryAccessPacket
     {
     public:
         /**
@@ -28,13 +28,13 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
          */
         std::uint32_t bytes = 0;
 
-        explicit ReadMemory(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
+        explicit ReadMemory(const std::vector<unsigned char>& rawPacket): AbstractMemoryAccessPacket(rawPacket) {
             init();
         };
 
-        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
 
-    private:
+    protected:
         void init();
     };
 }

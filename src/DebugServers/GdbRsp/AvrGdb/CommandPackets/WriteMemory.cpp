@@ -1,14 +1,17 @@
 #include "WriteMemory.hpp"
 
-#include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
+#include "src/DebugServers/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
+#include "src/DebugServers/GdbRsp/ResponsePackets/OkResponsePacket.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+#include "src/Logger/Logger.hpp"
+#include "src/Exceptions/Exception.hpp"
+
+namespace Bloom::DebugServers::Gdb::AvrGdb::CommandPackets
 {
-    using namespace Bloom::Exceptions;
+    using ResponsePackets::ErrorResponsePacket;
+    using ResponsePackets::OkResponsePacket;
 
-    void WriteMemory::dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) {
-        gdbRspDebugServer.handleGdbPacket(*this);
-    }
+    using namespace Bloom::Exceptions;
 
     void WriteMemory::init() {
         if (this->data.size() < 4) {
@@ -55,6 +58,29 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
 
         if (this->buffer.size() != bufferSize) {
             throw Exception("Buffer size does not match length value given in write memory packet");
+        }
+    }
+
+    void WriteMemory::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+        Logger::debug("Handling WriteMemory packet");
+
+        try {
+            const auto memoryType = this->getMemoryTypeFromGdbAddress(this->startAddress);
+
+            if (memoryType == Targets::TargetMemoryType::FLASH) {
+                throw Exception(
+                    "GDB client requested a flash memory write - This is not currently supported by Bloom."
+                );
+            }
+
+            const auto startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(this->startAddress);
+            targetControllerConsole.writeMemory(memoryType, startAddress, this->buffer);
+
+            debugSession.connection.writePacket(OkResponsePacket());
+
+        } catch (const Exception& exception) {
+            Logger::error("Failed to write memory to target - " + exception.getMessage());
+            debugSession.connection.writePacket(ErrorResponsePacket());
         }
     }
 }

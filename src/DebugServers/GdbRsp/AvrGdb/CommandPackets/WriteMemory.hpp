@@ -3,16 +3,15 @@
 #include <cstdint>
 #include <optional>
 
-#include "CommandPacket.hpp"
-#include "src/Targets/TargetMemory.hpp"
+#include "AbstractMemoryAccessPacket.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+namespace Bloom::DebugServers::Gdb::AvrGdb::CommandPackets
 {
     /**
      * The WriteMemory class implements the structure for "M" packets. Upon receiving this packet, the server is
      * expected to write data to the target's memory, at the specified start address.
      */
-    class WriteMemory: public CommandPacket
+    class WriteMemory: public AbstractMemoryAccessPacket
     {
     public:
         /**
@@ -23,11 +22,11 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
 
         Targets::TargetMemoryBuffer buffer;
 
-        explicit WriteMemory(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
+        explicit WriteMemory(const std::vector<unsigned char>& rawPacket): AbstractMemoryAccessPacket(rawPacket) {
             init();
         };
 
-        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
 
     private:
         void init();

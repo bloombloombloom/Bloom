@@ -9,8 +9,6 @@
 #include "SupportedFeaturesQuery.hpp"
 #include "ReadRegisters.hpp"
 #include "WriteRegister.hpp"
-#include "ReadMemory.hpp"
-#include "WriteMemory.hpp"
 #include "StepExecution.hpp"
 #include "ContinueExecution.hpp"
 #include "SetBreakpoint.hpp"

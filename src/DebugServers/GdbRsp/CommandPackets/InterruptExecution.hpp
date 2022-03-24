@@ -17,6 +17,6 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
     public:
         explicit InterruptExecution(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {}
 
-        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
     };
 }

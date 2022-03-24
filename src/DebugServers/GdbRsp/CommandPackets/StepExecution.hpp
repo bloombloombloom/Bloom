@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <optional>
 
 #include "CommandPacket.hpp"
@@ -22,7 +23,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
             init();
         };
 
-        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
 
     private:
         void init();

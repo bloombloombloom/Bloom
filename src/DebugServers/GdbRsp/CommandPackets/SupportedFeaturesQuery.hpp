@@ -34,7 +34,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
             return this->supportedFeatures;
         }
 
-        void dispatchToHandler(Gdb::GdbRspDebugServer& gdbRspDebugServer) override;
+        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
 
     private:
         std::set<Feature> supportedFeatures;

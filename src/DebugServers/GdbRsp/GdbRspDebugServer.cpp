@@ -26,264 +26,6 @@ namespace Bloom::DebugServers::Gdb
     using Bloom::Targets::TargetRegisterDescriptors;
     using Bloom::Targets::TargetBreakpoint;
 
-    void GdbRspDebugServer::handleGdbPacket(CommandPacket& packet) {
-        auto packetData = packet.getData();
-        auto packetString = std::string(packetData.begin(), packetData.end());
-
-        if (packetString[0] == '?') {
-            // Status report
-            this->clientConnection->writePacket(TargetStopped(Signal::TRAP));
-
-        } else if (packetString[0] == 'D') {
-            // Detach packet - there's not really anything we need to do here, so just respond with an OK
-            this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
-
-        } else if (packetString.find("qAttached") == 0) {
-            Logger::debug("Handling qAttached");
-            this->clientConnection->writePacket(ResponsePacket({1}));
-
-        } else {
-            Logger::debug("Unknown GDB RSP packet: " + packetString + " - returning empty response");
-
-            // Respond with an empty packet
-            this->clientConnection->writePacket(ResponsePacket({0}));
-        }
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::SupportedFeaturesQuery& packet) {
-        Logger::debug("Handling QuerySupport packet");
-
-        if (!packet.isFeatureSupported(Feature::HARDWARE_BREAKPOINTS)
-            && !packet.isFeatureSupported(Feature::SOFTWARE_BREAKPOINTS)
-        ) {
-            // All GDB clients are expected to support breakpoints!
-            throw ClientNotSupported("GDB client does not support HW or SW breakpoints");
-        }
-
-        // Respond with a SupportedFeaturesResponse packet, listing all supported GDB features by Bloom
-        auto response = ResponsePackets::SupportedFeaturesResponse({
-            {Feature::SOFTWARE_BREAKPOINTS, std::nullopt},
-            {Feature::PACKET_SIZE, std::to_string(this->clientConnection->getMaxPacketSize())},
-        });
-
-        this->clientConnection->writePacket(response);
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadRegisters& packet) {
-        Logger::debug("Handling ReadRegisters packet");
-
-        try {
-            auto descriptors = TargetRegisterDescriptors();
-
-            if (packet.registerNumber.has_value()) {
-                Logger::debug("Reading register number: " + std::to_string(packet.registerNumber.value()));
-                descriptors.insert(this->getTargetRegisterDescriptorFromNumber(packet.registerNumber.value()));
-
-            } else {
-                // Read all target registers mapped to a GDB register
-                for (const auto& descriptor : this->getRegisterNumberToDescriptorMapping().getMap()) {
-                    descriptors.insert(this->getTargetRegisterDescriptorFromNumber(descriptor.second.number));
-                }
-            }
-
-            auto registerSet = this->targetControllerConsole.readRegisters(descriptors);
-
-            /*
-             * Sort each register by their respective GDB register number - this will leave us with a collection of
-             * registers in the order expected by the GDB client.
-             */
-            std::sort(
-                registerSet.begin(),
-                registerSet.end(),
-                [this](const TargetRegister& registerA, const TargetRegister& registerB) {
-                    return this->getRegisterNumberFromTargetRegisterDescriptor(registerA.descriptor) <
-                        this->getRegisterNumberFromTargetRegisterDescriptor(registerB.descriptor);
-                }
-            );
-
-            /*
-             * Finally, reverse the register values (as they're all currently in MSB, but GDB expects them in LSB), ensure
-             * that each register value size matches the size in the associated GDB register descriptor, implode the
-             * values, convert to hexadecimal form and send to the GDB client.
-             */
-            auto registers = std::vector<unsigned char>();
-            for (auto& reg : registerSet) {
-                std::reverse(reg.value.begin(), reg.value.end());
-
-                const auto gdbRegisterNumber = this->getRegisterNumberFromTargetRegisterDescriptor(
-                    reg.descriptor
-                ).value();
-                const auto& gdbRegisterDescriptor = this->getRegisterDescriptorFromNumber(gdbRegisterNumber);
-
-                if (reg.value.size() < gdbRegisterDescriptor.size) {
-                    reg.value.insert(reg.value.end(), (gdbRegisterDescriptor.size - reg.value.size()), 0x00);
-                }
-
-                registers.insert(registers.end(), reg.value.begin(), reg.value.end());
-            }
-
-            auto responseRegisters = Packet::dataToHex(registers);
-            this->clientConnection->writePacket(
-                ResponsePacket(std::vector<unsigned char>(responseRegisters.begin(), responseRegisters.end()))
-            );
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to read general registers - " + exception.getMessage());
-            this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-        }
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteRegister& packet) {
-        Logger::debug("Handling WriteRegister packet");
-
-        try {
-            auto targetRegisterDescriptor = this->getTargetRegisterDescriptorFromNumber(packet.registerNumber);
-
-            const auto valueSize = packet.registerValue.size();
-            if (valueSize > 0 && valueSize > targetRegisterDescriptor.size) {
-                // Attempt to trim the higher zero-value bytes from the register value, until we reach the correct size.
-                for (auto i = packet.registerValue.size() - 1; i >= targetRegisterDescriptor.size; i--) {
-                    if (packet.registerValue.at(i) != 0x00) {
-                        // If we reach a non-zero byte, we cannot trim anymore without changing the data
-                        break;
-                    }
-
-                    packet.registerValue.erase(packet.registerValue.begin() + i);
-                }
-
-                if (packet.registerValue.size() > targetRegisterDescriptor.size) {
-                    const auto& gdbRegisterDescriptor = this->getRegisterDescriptorFromNumber(packet.registerNumber);
-                    throw Exception("Cannot set value for " + gdbRegisterDescriptor.name
-                        + " - value size exceeds register size."
-                    );
-                }
-            }
-
-            this->targetControllerConsole.writeRegisters({
-                TargetRegister(targetRegisterDescriptor, packet.registerValue)
-            });
-            this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to write registers - " + exception.getMessage());
-            this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-        }
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::ContinueExecution& packet) {
-        Logger::debug("Handling ContinueExecution packet");
-
-        try {
-            this->targetControllerConsole.continueTargetExecution(packet.fromProgramCounter);
-            this->clientConnection->waitingForBreak = true;
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to continue execution on target - " + exception.getMessage());
-            this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-        }
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::StepExecution& packet) {
-        Logger::debug("Handling StepExecution packet");
-
-        try {
-            this->targetControllerConsole.stepTargetExecution(packet.fromProgramCounter);
-            this->clientConnection->waitingForBreak = true;
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to step execution on target - " + exception.getMessage());
-            this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-        }
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::ReadMemory& packet) {
-        Logger::debug("Handling ReadMemory packet");
-
-        try {
-            auto memoryType = this->getMemoryTypeFromGdbAddress(packet.startAddress);
-            auto startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(packet.startAddress);
-            auto memoryBuffer = this->targetControllerConsole.readMemory(memoryType, startAddress, packet.bytes);
-
-            auto hexMemoryBuffer = Packet::dataToHex(memoryBuffer);
-            this->clientConnection->writePacket(
-                ResponsePacket(std::vector<unsigned char>(hexMemoryBuffer.begin(), hexMemoryBuffer.end()))
-            );
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to read memory from target - " + exception.getMessage());
-            this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-        }
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::WriteMemory& packet) {
-        Logger::debug("Handling WriteMemory packet");
-
-        try {
-            const auto memoryType = this->getMemoryTypeFromGdbAddress(packet.startAddress);
-
-            if (memoryType == Targets::TargetMemoryType::FLASH) {
-                throw Exception(
-                    "GDB client requested a flash memory write - This is not currently supported by Bloom."
-                );
-            }
-
-            const auto startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(packet.startAddress);
-            this->targetControllerConsole.writeMemory(memoryType, startAddress, packet.buffer);
-
-            this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to write memory to target - " + exception.getMessage());
-            this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-        }
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::SetBreakpoint& packet) {
-        Logger::debug("Handling SetBreakpoint packet");
-
-        try {
-            auto breakpoint = TargetBreakpoint();
-            breakpoint.address = packet.address;
-            this->targetControllerConsole.setBreakpoint(breakpoint);
-
-            this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to set breakpoint on target - " + exception.getMessage());
-            this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-        }
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::RemoveBreakpoint& packet) {
-        Logger::debug("Removing breakpoint at address " + std::to_string(packet.address));
-
-        try {
-            auto breakpoint = TargetBreakpoint();
-            breakpoint.address = packet.address;
-            this->targetControllerConsole.removeBreakpoint(breakpoint);
-
-            this->clientConnection->writePacket(ResponsePacket({'O', 'K'}));
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to remove breakpoint on target - " + exception.getMessage());
-            this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-        }
-    }
-
-    void GdbRspDebugServer::handleGdbPacket(CommandPackets::InterruptExecution& packet) {
-        Logger::debug("Handling InterruptExecution packet");
-
-        try {
-            this->targetControllerConsole.stopTargetExecution();
-            this->clientConnection->writePacket(TargetStopped(Signal::INTERRUPTED));
-            this->clientConnection->waitingForBreak = false;
-
-        } catch (const Exception& exception) {
-            Logger::error("Failed to interrupt execution - " + exception.getMessage());
-            this->clientConnection->writePacket(ResponsePacket({'E', '0', '1'}));
-        }
-    }
-
     void GdbRspDebugServer::init() {
         this->debugServerConfig = GdbDebugServerConfig(DebugServer::debugServerConfig);
 
@@ -364,7 +106,7 @@ namespace Bloom::DebugServers::Gdb
     }
 
     void GdbRspDebugServer::close() {
-        this->closeClientConnection();
+        this->terminateActiveDebugSession();
 
         if (this->serverSocketFileDescriptor > 0) {
             ::close(this->serverSocketFileDescriptor);
@@ -373,16 +115,20 @@ namespace Bloom::DebugServers::Gdb
 
     void GdbRspDebugServer::serve() {
         try {
-            if (!this->clientConnection.has_value()) {
+            if (!this->activeDebugSession.has_value()) {
                 Logger::info("Waiting for GDB RSP connection");
 
-                do {
-                    this->waitForConnection();
+                auto connection = this->waitForConnection();
 
-                } while (!this->clientConnection.has_value());
+                if (!connection.has_value()) {
+                    // Likely an interrupt
+                    return;
+                }
 
-                this->clientConnection->accept(this->serverSocketFileDescriptor);
-                Logger::info("Accepted GDP RSP connection from " + this->clientConnection->getIpAddress());
+                connection->accept(this->serverSocketFileDescriptor);
+                Logger::info("Accepted GDP RSP connection from " + connection->getIpAddress());
+
+                this->activeDebugSession = DebugSession(connection.value(), this->getGdbTargetDescriptor());
                 EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
 
                 /*
@@ -390,39 +136,39 @@ namespace Bloom::DebugServers::Gdb
                  * service it.
                  */
                 if (!this->targetControllerConsole.isTargetControllerInService()) {
-                    this->closeClientConnection();
+                    this->terminateActiveDebugSession();
                     throw DebugSessionAborted("TargetController not in service");
                 }
             }
 
-            auto packets = this->clientConnection->readPackets();
-
-            // Only process the last packet - any others will likely be duplicates from an impatient client
-            if (!packets.empty()) {
-                // Double-dispatch to appropriate handler
-                packets.back()->dispatchToHandler(*this);
-            }
+//            auto packets = this->activeDebugSession->connection.readPackets();
+//
+//            // Only process the last packet - any others will likely be duplicates from an impatient client
+//            if (!packets.empty()) {
+//                // Double-dispatch to appropriate handler
+//                packets.back()->dispatchToHandler(*this);
+//            }
 
         } catch (const ClientDisconnected&) {
             Logger::info("GDB RSP client disconnected");
-            this->closeClientConnection();
+            this->terminateActiveDebugSession();
             return;
 
         } catch (const ClientCommunicationError& exception) {
             Logger::error(
                 "GDB RSP client communication error - " + exception.getMessage() + " - closing connection"
             );
-            this->closeClientConnection();
+            this->terminateActiveDebugSession();
             return;
 
         } catch (const ClientNotSupported& exception) {
             Logger::error("Invalid GDB RSP client - " + exception.getMessage() + " - closing connection");
-            this->closeClientConnection();
+            this->terminateActiveDebugSession();
             return;
 
         } catch (const DebugSessionAborted& exception) {
             Logger::warning("GDB debug session aborted - " + exception.getMessage());
-            this->closeClientConnection();
+            this->terminateActiveDebugSession();
             return;
 
         } catch (const DebugServerInterrupted&) {
@@ -432,7 +178,7 @@ namespace Bloom::DebugServers::Gdb
         }
     }
 
-    void GdbRspDebugServer::waitForConnection() {
+    std::optional<Connection> GdbRspDebugServer::waitForConnection() {
         if (::listen(this->serverSocketFileDescriptor, 3) != 0) {
             throw Exception("Failed to listen on server socket");
         }
@@ -453,25 +199,36 @@ namespace Bloom::DebugServers::Gdb
                 if (fileDescriptor == this->interruptEventNotifier->getFileDescriptor()) {
                     // Interrupted
                     this->interruptEventNotifier->clear();
-                    throw DebugServerInterrupted();
+                    return std::nullopt;
                 }
             }
 
-            this->clientConnection = Connection(this->interruptEventNotifier);
+            return Connection(this->interruptEventNotifier);
+        }
+
+        return std::nullopt;
+    }
+
+    void GdbRspDebugServer::terminateActiveDebugSession() {
+        if (this->activeDebugSession.has_value()) {
+            this->activeDebugSession->terminate();
+            this->activeDebugSession = std::nullopt;
+
+            EventManager::triggerEvent(std::make_shared<Events::DebugSessionFinished>());
         }
     }
 
     void GdbRspDebugServer::onTargetControllerStateReported(const Events::TargetControllerStateReported& event) {
-        if (event.state == TargetControllerState::SUSPENDED && this->clientConnection.has_value()) {
+        if (event.state == TargetControllerState::SUSPENDED && this->activeDebugSession.has_value()) {
             Logger::warning("Terminating debug session - TargetController suspended unexpectedly");
-            this->closeClientConnection();
+            this->terminateActiveDebugSession();
         }
     }
 
     void GdbRspDebugServer::onTargetExecutionStopped(const Events::TargetExecutionStopped&) {
-        if (this->clientConnection.has_value() && this->clientConnection->waitingForBreak) {
-            this->clientConnection->writePacket(TargetStopped(Signal::TRAP));
-            this->clientConnection->waitingForBreak = false;
+        if (this->activeDebugSession.has_value() && this->activeDebugSession->waitingForBreak) {
+            this->activeDebugSession->connection.writePacket(TargetStopped(Signal::TRAP));
+            this->activeDebugSession->waitingForBreak = false;
         }
     }
 }

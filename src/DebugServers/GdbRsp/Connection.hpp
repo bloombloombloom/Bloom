@@ -23,16 +23,9 @@ namespace Bloom::DebugServers::Gdb
     class Connection
     {
     public:
-        /**
-         * When the GDB client is waiting for the target to reach a breakpoint, this is set to true so we know when to
-         * notify the client.
-         *
-         * @TODO: This is pretty gross. Consider rethinking it.
-         */
-        bool waitingForBreak = false;
-
         explicit Connection(std::shared_ptr<EventNotifier> interruptEventNotifier)
-        : interruptEventNotifier(std::move(interruptEventNotifier)) {};
+            : interruptEventNotifier(std::move(interruptEventNotifier))
+        {};
 
         /**
          * Accepts a connection on serverSocketFileDescriptor.

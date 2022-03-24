@@ -119,13 +119,13 @@ namespace Bloom::DebugServers::Gdb
                 return std::make_unique<CommandPackets::StepExecution>(rawPacket);
             }
 
-            if (rawPacketString[1] == 'm') {
-                return std::make_unique<CommandPackets::ReadMemory>(rawPacket);
-            }
-
-            if (rawPacketString[1] == 'M') {
-                return std::make_unique<CommandPackets::WriteMemory>(rawPacket);
-            }
+//            if (rawPacketString[1] == 'm') {
+//                return std::make_unique<CommandPackets::ReadMemory>(rawPacket);
+//            }
+//
+//            if (rawPacketString[1] == 'M') {
+//                return std::make_unique<CommandPackets::WriteMemory>(rawPacket);
+//            }
 
             if (rawPacketString[1] == 'Z') {
                 return std::make_unique<CommandPackets::SetBreakpoint>(rawPacket);

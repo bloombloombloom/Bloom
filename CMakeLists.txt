@@ -129,16 +129,14 @@ add_executable(Bloom
     src/DebugServers/GdbRsp/GdbDebugServerConfig.cpp
     src/DebugServers/GdbRsp/Connection.cpp
     src/DebugServers/GdbRsp/DebugSession.cpp
-    src/DebugServers/GdbRsp/CommandPackets/CommandPacket.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacketFactory.cpp
+    src/DebugServers/GdbRsp/CommandPackets/CommandPacket.cpp
     src/DebugServers/GdbRsp/CommandPackets/SupportedFeaturesQuery.cpp
     src/DebugServers/GdbRsp/CommandPackets/ReadRegisters.cpp
     src/DebugServers/GdbRsp/CommandPackets/WriteRegister.cpp
     src/DebugServers/GdbRsp/CommandPackets/ContinueExecution.cpp
     src/DebugServers/GdbRsp/CommandPackets/StepExecution.cpp
     src/DebugServers/GdbRsp/CommandPackets/InterruptExecution.cpp
-    src/DebugServers/GdbRsp/CommandPackets/ReadMemory.cpp
-    src/DebugServers/GdbRsp/CommandPackets/WriteMemory.cpp
     src/DebugServers/GdbRsp/CommandPackets/SetBreakpoint.cpp
     src/DebugServers/GdbRsp/CommandPackets/RemoveBreakpoint.cpp
     src/DebugServers/GdbRsp/ResponsePackets/SupportedFeaturesResponse.cpp
@@ -146,6 +144,10 @@ add_executable(Bloom
     # AVR GDB Server
     src/DebugServers/GdbRsp/AvrGdb/AvrGdbRsp.cpp
     src/DebugServers/GdbRsp/AvrGdb/TargetDescriptor.cpp
+    src/DebugServers/GdbRsp/AvrGdb/CommandPackets/AbstractMemoryAccessPacket.cpp
+    src/DebugServers/GdbRsp/AvrGdb/CommandPackets/ReadMemory.cpp
+    src/DebugServers/GdbRsp/AvrGdb/CommandPackets/WriteMemory.cpp
+
     # Insight
     src/Insight/Insight.cpp
     src/Insight/InsightWorker/InsightWorker.cpp
