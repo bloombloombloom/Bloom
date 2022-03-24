@@ -127,7 +127,6 @@ add_executable(Bloom
     src/DebugServers/DebugServer.cpp
     src/DebugServers/GdbRsp/GdbRspDebugServer.cpp
     src/DebugServers/GdbRsp/GdbDebugServerConfig.cpp
-    src/DebugServers/GdbRsp/AvrGdbRsp/AvrGdbRsp.cpp
     src/DebugServers/GdbRsp/Connection.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacket.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacketFactory.cpp
@@ -143,6 +142,9 @@ add_executable(Bloom
     src/DebugServers/GdbRsp/CommandPackets/RemoveBreakpoint.cpp
     src/DebugServers/GdbRsp/ResponsePackets/SupportedFeaturesResponse.cpp
 
+    # AVR GDB Server
+    src/DebugServers/GdbRsp/AvrGdb/AvrGdbRsp.cpp
+    src/DebugServers/GdbRsp/AvrGdb/TargetDescriptor.cpp
     # Insight
     src/Insight/Insight.cpp
     src/Insight/InsightWorker/InsightWorker.cpp

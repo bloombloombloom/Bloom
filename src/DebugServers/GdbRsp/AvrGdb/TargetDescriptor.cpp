@@ -1,21 +1,46 @@
-#include "AvrGdbRsp.hpp"
+#include "TargetDescriptor.hpp"
 
 #include "src/Exceptions/Exception.hpp"
+#include "src/Logger/Logger.hpp"
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServers::Gdb::AvrGdb
 {
-    using namespace Bloom::Exceptions;
-
     using Bloom::Targets::TargetRegisterDescriptor;
     using Bloom::Targets::TargetRegisterType;
 
-    void AvrGdbRsp::init() {
-        this->loadRegisterMappings();
+    using Bloom::Exceptions::Exception;
 
-        GdbRspDebugServer::init();
+    TargetDescriptor::TargetDescriptor(const Bloom::Targets::TargetDescriptor& targetDescriptor)
+        : DebugServers::Gdb::TargetDescriptor(targetDescriptor)
+    {
+        this->loadRegisterMappings();
     }
 
-    void AvrGdbRsp::loadRegisterMappings() {
+    std::optional<GdbRegisterNumberType> TargetDescriptor::getRegisterNumberFromTargetRegisterDescriptor(
+        const Targets::TargetRegisterDescriptor& registerDescriptor
+    ) {
+        return this->targetRegisterDescriptorsByGdbNumber.valueAt(registerDescriptor);
+    }
+
+    const RegisterDescriptor& TargetDescriptor::getRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
+        if (this->registerDescriptorsByGdbNumber.contains(number)) {
+            return this->registerDescriptorsByGdbNumber.at(number);
+        }
+
+        throw Exception("Unknown register from GDB - register number (" + std::to_string(number)
+            + ") not mapped to any GDB register descriptor.");
+    }
+
+    const TargetRegisterDescriptor& TargetDescriptor::getTargetRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
+        if (this->targetRegisterDescriptorsByGdbNumber.contains(number)) {
+            return this->targetRegisterDescriptorsByGdbNumber.at(number);
+        }
+
+        throw Exception("Unknown register from GDB - register number (" + std::to_string(number)
+            + ") not mapped to any target register descriptor.");
+    }
+
+    void TargetDescriptor::loadRegisterMappings() {
         auto& registerDescriptorsByType = this->targetDescriptor.registerDescriptorsByType;
         if (!registerDescriptorsByType.contains(TargetRegisterType::STATUS_REGISTER)) {
             throw Exception("Missing status register descriptor");
@@ -120,29 +145,5 @@ namespace Bloom::DebugServers::Gdb
         ) {
             throw Exception("AVR8 program counter size exceeds the GDB register size.");
         }
-    }
-
-    std::optional<GdbRegisterNumberType> AvrGdbRsp::getRegisterNumberFromTargetRegisterDescriptor(
-        const Targets::TargetRegisterDescriptor& registerDescriptor
-    ) {
-        return this->targetRegisterDescriptorsByGdbNumber.valueAt(registerDescriptor);
-    }
-
-    const RegisterDescriptor& AvrGdbRsp::getRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
-        if (this->registerDescriptorsByGdbNumber.contains(number)) {
-            return this->registerDescriptorsByGdbNumber.at(number);
-        }
-
-        throw Exception("Unknown register from GDB - register number (" + std::to_string(number)
-            + ") not mapped to any GDB register descriptor.");
-    }
-
-    const TargetRegisterDescriptor& AvrGdbRsp::getTargetRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
-        if (this->targetRegisterDescriptorsByGdbNumber.contains(number)) {
-            return this->targetRegisterDescriptorsByGdbNumber.at(number);
-        }
-
-        throw Exception("Unknown register from GDB - register number (" + std::to_string(number)
-            + ") not mapped to any target register descriptor.");
     }
 }
