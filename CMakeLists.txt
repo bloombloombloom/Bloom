@@ -128,6 +128,7 @@ add_executable(Bloom
     src/DebugServers/GdbRsp/GdbRspDebugServer.cpp
     src/DebugServers/GdbRsp/GdbDebugServerConfig.cpp
     src/DebugServers/GdbRsp/Connection.cpp
+    src/DebugServers/GdbRsp/DebugSession.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacket.cpp
     src/DebugServers/GdbRsp/CommandPackets/CommandPacketFactory.cpp
     src/DebugServers/GdbRsp/CommandPackets/SupportedFeaturesQuery.cpp
