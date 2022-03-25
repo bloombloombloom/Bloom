@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <vector>
 
 #include "RegisterDescriptor.hpp"
 
@@ -46,5 +47,12 @@ namespace Bloom::DebugServers::Gdb
         virtual const Targets::TargetRegisterDescriptor& getTargetRegisterDescriptorFromNumber(
             GdbRegisterNumberType number
         ) const = 0;
+
+        /**
+         * Should return all allocated GDB register numbers for the target.
+         *
+         * @return
+         */
+        virtual const std::vector<GdbRegisterNumberType>& getRegisterNumbers() const = 0;
     };
 }

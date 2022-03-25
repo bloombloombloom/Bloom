@@ -42,6 +42,10 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
             + ") not mapped to any target register descriptor.");
     }
 
+    const std::vector<GdbRegisterNumberType>& TargetDescriptor::getRegisterNumbers() const {
+        return this->registerNumbers;
+    }
+
     void TargetDescriptor::loadRegisterMappings() {
         auto& registerDescriptorsByType = this->targetDescriptor.registerDescriptorsByType;
         if (!registerDescriptorsByType.contains(TargetRegisterType::STATUS_REGISTER)) {
@@ -61,6 +65,18 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
         ) {
             throw Exception("Unexpected general purpose register count");
         }
+
+        /*
+         * For AVR targets, avr-gdb defines 35 registers in total:
+         *
+         * Register number 0 through 31 are general purpose registers
+         * Register number 32 is the status register (SREG)
+         * Register number 33 is the stack pointer register
+         * Register number 34 is the program counter register
+         */
+
+        // Generate 35 register numbers (0 -> 34)
+        std::iota(this->registerNumbers.begin(), this->registerNumbers.end(), 0);
 
         /*
          * Worth noting that gpRegisterDescriptors will always be sorted in the correct order, from register 0 to 31.

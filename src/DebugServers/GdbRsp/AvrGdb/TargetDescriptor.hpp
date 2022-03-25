@@ -43,6 +43,8 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
             GdbRegisterNumberType number
         ) const override;
 
+        const std::vector<GdbRegisterNumberType>& getRegisterNumbers() const override;
+
     private:
         void loadRegisterMappings();
     };

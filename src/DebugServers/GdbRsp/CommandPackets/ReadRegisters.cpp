@@ -40,8 +40,8 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
 
             } else {
                 // Read all target registers mapped to a GDB register
-                for (const auto& descriptor : targetDescriptor.getRegisterNumberToDescriptorMapping().getMap()) {
-                    descriptors.insert(targetDescriptor.getTargetRegisterDescriptorFromNumber(descriptor.second.number));
+                for (const auto& registerNumber : targetDescriptor.getRegisterNumbers()) {
+                    descriptors.insert(targetDescriptor.getTargetRegisterDescriptorFromNumber(registerNumber));
                 }
             }
 
