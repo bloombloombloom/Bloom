@@ -10,7 +10,7 @@ namespace Bloom::DebugServers::Gdb::ResponsePackets
     class OkResponsePacket: public ResponsePacket
     {
     public:
-        Ok() = default;
+        OkResponsePacket() = default;
 
         [[nodiscard]] std::vector<unsigned char> getData() const override {
             return {'O', 'K'};
