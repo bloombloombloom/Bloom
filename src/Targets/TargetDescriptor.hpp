@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <map>
+#include <QMetaType>
 
 #include "TargetMemory.hpp"
 #include "TargetRegister.hpp"

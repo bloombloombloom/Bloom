@@ -5,6 +5,7 @@
 #include <vector>
 #include <optional>
 #include <map>
+#include <QMetaType>
 
 namespace Bloom::Targets
 {
