@@ -128,7 +128,9 @@ namespace Bloom::DebugServers::Gdb
                 connection->accept(this->serverSocketFileDescriptor);
                 Logger::info("Accepted GDP RSP connection from " + connection->getIpAddress());
 
-                this->activeDebugSession = DebugSession(connection.value(), this->getGdbTargetDescriptor());
+                this->activeDebugSession.emplace(
+                    DebugSession(connection.value(), this->getGdbTargetDescriptor())
+                );
                 EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
 
                 /*
