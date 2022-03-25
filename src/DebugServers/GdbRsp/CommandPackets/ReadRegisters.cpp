@@ -54,7 +54,7 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
             std::sort(
                 registerSet.begin(),
                 registerSet.end(),
-                [this](const TargetRegister& registerA, const TargetRegister& registerB) {
+                [this, &targetDescriptor] (const TargetRegister& registerA, const TargetRegister& registerB) {
                     return targetDescriptor.getRegisterNumberFromTargetRegisterDescriptor(registerA.descriptor) <
                         targetDescriptor.getRegisterNumberFromTargetRegisterDescriptor(registerB.descriptor);
                 }
