@@ -27,7 +27,7 @@ namespace Bloom::DebugServers::Gdb
          */
         virtual std::optional<GdbRegisterNumberType> getRegisterNumberFromTargetRegisterDescriptor(
             const Targets::TargetRegisterDescriptor& registerDescriptor
-        ) = 0;
+        ) const = 0;
 
         /**
          * Should retrieve the GDB register descriptor for a given GDB register number.
@@ -35,7 +35,7 @@ namespace Bloom::DebugServers::Gdb
          * @param number
          * @return
          */
-        virtual const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumberType number) = 0;
+        virtual const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumberType number) const = 0;
 
         /**
          * Should retrieve the mapped target register descriptor for a given GDB register number.
@@ -45,6 +45,6 @@ namespace Bloom::DebugServers::Gdb
          */
         virtual const Targets::TargetRegisterDescriptor& getTargetRegisterDescriptorFromNumber(
             GdbRegisterNumberType number
-        ) = 0;
+        ) const = 0;
     };
 }

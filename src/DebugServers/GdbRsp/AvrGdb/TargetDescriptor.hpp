@@ -12,7 +12,7 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
         BiMap<GdbRegisterNumberType, RegisterDescriptor> registerDescriptorsByGdbNumber = {};
         BiMap<GdbRegisterNumberType, Targets::TargetRegisterDescriptor> targetRegisterDescriptorsByGdbNumber = {};
 
-        explicit TargetDescriptor(const Bloom::Targets::TargetDescriptor& targetDescriptor);
+        explicit TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor);
 
         /**
          * Should retrieve the GDB register number, given a target register descriptor. Or std::nullopt if the target
@@ -23,7 +23,7 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
          */
         std::optional<GdbRegisterNumberType> getRegisterNumberFromTargetRegisterDescriptor(
             const Targets::TargetRegisterDescriptor& registerDescriptor
-        ) override;
+        ) const override;
 
         /**
          * Should retrieve the GDB register descriptor for a given GDB register number.
@@ -31,7 +31,7 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
          * @param number
          * @return
          */
-        const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumberType number) override;
+        const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumberType number) const override;
 
         /**
          * Should retrieve the mapped target register descriptor for a given GDB register number.
@@ -41,7 +41,7 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
          */
         const Targets::TargetRegisterDescriptor& getTargetRegisterDescriptorFromNumber(
             GdbRegisterNumberType number
-        ) override;
+        ) const override;
 
     private:
         void loadRegisterMappings();

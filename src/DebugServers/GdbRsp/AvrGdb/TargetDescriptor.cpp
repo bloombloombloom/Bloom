@@ -18,11 +18,11 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
 
     std::optional<GdbRegisterNumberType> TargetDescriptor::getRegisterNumberFromTargetRegisterDescriptor(
         const Targets::TargetRegisterDescriptor& registerDescriptor
-    ) {
+    ) const {
         return this->targetRegisterDescriptorsByGdbNumber.valueAt(registerDescriptor);
     }
 
-    const RegisterDescriptor& TargetDescriptor::getRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
+    const RegisterDescriptor& TargetDescriptor::getRegisterDescriptorFromNumber(GdbRegisterNumberType number) const {
         if (this->registerDescriptorsByGdbNumber.contains(number)) {
             return this->registerDescriptorsByGdbNumber.at(number);
         }
@@ -31,7 +31,9 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
             + ") not mapped to any GDB register descriptor.");
     }
 
-    const TargetRegisterDescriptor& TargetDescriptor::getTargetRegisterDescriptorFromNumber(GdbRegisterNumberType number) {
+    const TargetRegisterDescriptor& TargetDescriptor::getTargetRegisterDescriptorFromNumber(
+        GdbRegisterNumberType number
+    ) const {
         if (this->targetRegisterDescriptorsByGdbNumber.contains(number)) {
             return this->targetRegisterDescriptorsByGdbNumber.at(number);
         }
