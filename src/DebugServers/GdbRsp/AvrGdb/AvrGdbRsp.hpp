@@ -42,10 +42,10 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
         void init() override;
 
         const Gdb::TargetDescriptor& getGdbTargetDescriptor() override {
-            return this->gdbTargetDescriptor;
+            return this->gdbTargetDescriptor.value();
         }
 
     private:
-        TargetDescriptor gdbTargetDescriptor;
+        std::optional<TargetDescriptor> gdbTargetDescriptor;
     };
 }
