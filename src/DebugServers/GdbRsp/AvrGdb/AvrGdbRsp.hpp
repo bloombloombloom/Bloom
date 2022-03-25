@@ -5,8 +5,6 @@
 #include "TargetDescriptor.hpp"
 
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
-#include "src/DebugServers/GdbRsp/RegisterDescriptor.hpp"
-#include "src/Helpers/BiMap.hpp"
 
 namespace Bloom::DebugServers::Gdb::AvrGdb
 {

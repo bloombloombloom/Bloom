@@ -4,10 +4,10 @@
 #include <optional>
 #include <vector>
 
-#include "RegisterDescriptor.hpp"
-
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
+
+#include "RegisterDescriptor.hpp"
 
 namespace Bloom::DebugServers::Gdb
 {

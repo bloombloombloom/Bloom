@@ -46,6 +46,18 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
         const std::vector<GdbRegisterNumberType>& getRegisterNumbers() const override;
 
     private:
+        std::vector<GdbRegisterNumberType> registerNumbers = std::vector<GdbRegisterNumberType>(35);
+
+        /**
+         * For AVR targets, avr-gdb defines 35 registers in total:
+         *
+         * Register number 0 through 31 are general purpose registers
+         * Register number 32 is the status register (SREG)
+         * Register number 33 is the stack pointer register
+         * Register number 34 is the program counter register
+         *
+         * This function will prepare the appropriate GDB register numbers and mappings.
+         */
         void loadRegisterMappings();
     };
 }

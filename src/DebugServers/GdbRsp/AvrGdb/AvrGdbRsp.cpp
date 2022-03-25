@@ -1,7 +1,5 @@
 #include "AvrGdbRsp.hpp"
 
-#include "src/Exceptions/Exception.hpp"
-
 namespace Bloom::DebugServers::Gdb::AvrGdb
 {
     using namespace Bloom::Exceptions;

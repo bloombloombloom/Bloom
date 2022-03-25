@@ -1,5 +1,7 @@
 #include "TargetDescriptor.hpp"
 
+#include <numeric>
+
 #include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -81,15 +83,15 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
         /*
          * Worth noting that gpRegisterDescriptors will always be sorted in the correct order, from register 0 to 31.
          *
-         * Hmm, but the sorting is based on the start address (see TargetRegisterDescriptor::<() for more). So effectively,
-         * we're assuming that the registers will be laid out in the correct order, in memory. I think this assumption is
-         * fair.
+         * Hmm, but the sorting is based on the start address (see TargetRegisterDescriptor::<() for more). So
+         * effectively, we're assuming that the registers will be laid out in the correct order, in memory. I think
+         * this assumption is fair.
          */
         const auto& gpRegisterDescriptors = registerDescriptorsByType.at(
             TargetRegisterType::GENERAL_PURPOSE_REGISTER
         );
 
-        // General purpose CPU registers
+        // General purpose registers
         GdbRegisterNumberType regNumber = 0;
         for (const auto& descriptor : gpRegisterDescriptors) {
             this->registerDescriptorsByGdbNumber.insert(std::pair(
@@ -109,6 +111,7 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
             regNumber++;
         }
 
+        // Status, stack pointer and program counter registers
         const auto statusDescriptor = RegisterDescriptor(
             32,
             1,

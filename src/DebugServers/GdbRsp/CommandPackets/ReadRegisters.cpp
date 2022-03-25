@@ -36,7 +36,9 @@ namespace Bloom::DebugServers::Gdb::CommandPackets
 
             if (this->registerNumber.has_value()) {
                 Logger::debug("Reading register number: " + std::to_string(this->registerNumber.value()));
-                descriptors.insert(targetDescriptor.getTargetRegisterDescriptorFromNumber(this->registerNumber.value()));
+                descriptors.insert(
+                    targetDescriptor.getTargetRegisterDescriptorFromNumber(this->registerNumber.value())
+                );
 
             } else {
                 // Read all target registers mapped to a GDB register
