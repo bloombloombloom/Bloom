@@ -4,8 +4,6 @@
 
 namespace Bloom::DebugServers::Gdb
 {
-    using Bloom::Targets::TargetDescriptor;
-
     DebugSession::DebugSession(const Connection& connection, const TargetDescriptor& targetDescriptor)
         : connection(connection)
         , targetDescriptor(targetDescriptor)
