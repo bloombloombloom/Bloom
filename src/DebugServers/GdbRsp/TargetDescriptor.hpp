@@ -12,9 +12,9 @@ namespace Bloom::DebugServers::Gdb
 {
     struct TargetDescriptor
     {
-        const Bloom::Targets::TargetDescriptor& targetDescriptor;
+        Targets::TargetDescriptor targetDescriptor;
 
-        explicit TargetDescriptor(const Bloom::Targets::TargetDescriptor& targetDescriptor)
+        explicit TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
             : targetDescriptor(targetDescriptor)
         {}
 
