@@ -12,8 +12,6 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
         BiMap<GdbRegisterNumberType, RegisterDescriptor> registerDescriptorsByGdbNumber = {};
         BiMap<GdbRegisterNumberType, Targets::TargetRegisterDescriptor> targetRegisterDescriptorsByGdbNumber = {};
 
-        const Bloom::Targets::TargetDescriptor& targetDescriptor;
-
         explicit TargetDescriptor(const Bloom::Targets::TargetDescriptor& targetDescriptor);
 
         /**
