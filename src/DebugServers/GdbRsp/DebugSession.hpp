@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "Connection.hpp"
 #include "TargetDescriptor.hpp"
+#include "Connection.hpp"
 
 namespace Bloom::DebugServers::Gdb
 {

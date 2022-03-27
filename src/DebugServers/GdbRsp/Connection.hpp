@@ -23,6 +23,7 @@ namespace Bloom::DebugServers::Gdb
     class Connection
     {
     public:
+        Connection() = delete;
 
         explicit Connection(EventNotifier& interruptEventNotifier)
             : interruptEventNotifier(interruptEventNotifier)
@@ -103,7 +104,11 @@ namespace Bloom::DebugServers::Gdb
          *
          * @return
          */
-        std::vector<unsigned char> read(std::size_t bytes = 0, bool interruptible = true, std::optional<int> msTimeout = std::nullopt);
+        std::vector<unsigned char> read(
+            std::size_t bytes = 0,
+            bool interruptible = true,
+            std::optional<int> msTimeout = std::nullopt
+        );
 
         /**
          * Does the same as Connection::read(), but only reads a single byte.

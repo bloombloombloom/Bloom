@@ -11,12 +11,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         explicit GetParameter(const EdbgParameter& parameter) {
             /*
-             * The EDBG Get Parameter command consists of 6 bytes:
+             * The EDBG Get Parameter command consists of 5 bytes:
              *
              * 1. Command ID (0x02)
              * 2. Version (0x00)
              * 3. Parameter context
-             * 4. Parameter
+             * 4. Parameter ID
              * 5. Parameter size
              */
             this->payload = {

@@ -108,7 +108,7 @@ namespace Bloom::DebugServers::Gdb
         auto output = std::vector<unsigned char>();
         constexpr size_t bufferSize = 1024;
         std::array<unsigned char, bufferSize> buffer = {};
-        ssize_t bytesRead;
+        ssize_t bytesRead = 0;
 
         if (interruptible) {
             if (this->readInterruptEnabled != interruptible) {
@@ -145,8 +145,10 @@ namespace Bloom::DebugServers::Gdb
             }
 
             size_t bytesToRead = (bytes > bufferSize || bytes == 0) ? bufferSize : bytes;
-            while (bytesToRead > 0
-                && (bytesRead = ::read(this->socketFileDescriptor, buffer.data(), bytesToRead)) > 0) {
+            while (
+                bytesToRead > 0
+                && (bytesRead = ::read(this->socketFileDescriptor, buffer.data(), bytesToRead)) > 0
+            ) {
                 output.insert(output.end(), buffer.begin(), buffer.begin() + bytesRead);
 
                 if (bytesRead < bytesToRead) {
