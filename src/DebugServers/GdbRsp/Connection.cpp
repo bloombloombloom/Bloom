@@ -116,7 +116,7 @@ namespace Bloom::DebugServers::Gdb
 
             } else {
                 // Clear any previous interrupts that are still hanging around
-                this->interruptEventNotifier->clear();
+                this->interruptEventNotifier.clear();
             }
         }
 
@@ -135,11 +135,11 @@ namespace Bloom::DebugServers::Gdb
 
         if (eventCount > 0) {
             for (size_t i = 0; i < eventCount; i++) {
-                auto fileDescriptor = events[i].data.fd;
+                auto fileDescriptor = events.at(i).data.fd;
 
-                if (fileDescriptor == this->interruptEventNotifier->getFileDescriptor()) {
+                if (fileDescriptor == this->interruptEventNotifier.getFileDescriptor()) {
                     // Interrupted
-                    this->interruptEventNotifier->clear();
+                    this->interruptEventNotifier.clear();
                     throw DebugServerInterrupted();
                 }
             }
@@ -195,7 +195,7 @@ namespace Bloom::DebugServers::Gdb
         if (::epoll_ctl(
             this->eventFileDescriptor,
             EPOLL_CTL_DEL,
-            this->interruptEventNotifier->getFileDescriptor(),
+            this->interruptEventNotifier.getFileDescriptor(),
             NULL) != 0
         ) {
             throw Exception("Failed to disable GDB client connection read interrupts - epoll_ctl failed");
@@ -205,7 +205,7 @@ namespace Bloom::DebugServers::Gdb
     }
 
     void Connection::enableReadInterrupts() {
-        auto interruptFileDescriptor = this->interruptEventNotifier->getFileDescriptor();
+        auto interruptFileDescriptor = this->interruptEventNotifier.getFileDescriptor();
         struct epoll_event event = {};
         event.events = EPOLLIN;
         event.data.fd = interruptFileDescriptor;

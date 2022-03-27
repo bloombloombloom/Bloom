@@ -23,8 +23,9 @@ namespace Bloom::DebugServers::Gdb
     class Connection
     {
     public:
-        explicit Connection(std::shared_ptr<EventNotifier> interruptEventNotifier)
-            : interruptEventNotifier(std::move(interruptEventNotifier))
+
+        explicit Connection(EventNotifier& interruptEventNotifier)
+            : interruptEventNotifier(interruptEventNotifier)
         {};
 
         /**
@@ -83,7 +84,7 @@ namespace Bloom::DebugServers::Gdb
          * The interruptEventNotifier allows us to interrupt blocking IO calls on the GDB debug server.
          * Under the hood, this is just a wrapper for a Linux event notifier. See the EventNotifier class for more.
          */
-        std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
+        EventNotifier& interruptEventNotifier;
         bool readInterruptEnabled = false;
 
         /**
