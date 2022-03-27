@@ -42,6 +42,10 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
             return this->gdbTargetDescriptor.value();
         }
 
+        std::unique_ptr<Gdb::CommandPackets::CommandPacket> resolveCommandPacket(
+            const RawPacketType& rawPacket
+        ) override;
+
     private:
         std::optional<TargetDescriptor> gdbTargetDescriptor;
     };

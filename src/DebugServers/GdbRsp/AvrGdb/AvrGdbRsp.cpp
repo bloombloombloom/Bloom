@@ -1,5 +1,9 @@
 #include "AvrGdbRsp.hpp"
 
+// Command packets
+#include "CommandPackets/ReadMemory.hpp"
+#include "CommandPackets/WriteMemory.hpp"
+
 namespace Bloom::DebugServers::Gdb::AvrGdb
 {
     using namespace Bloom::Exceptions;
@@ -20,5 +24,24 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
         this->gdbTargetDescriptor = TargetDescriptor(
             this->targetControllerConsole.getTargetDescriptor()
         );
+    }
+
+    std::unique_ptr<Gdb::CommandPackets::CommandPacket> AvrGdbRsp::resolveCommandPacket(
+        const RawPacketType& rawPacket
+    ) {
+        using AvrGdb::CommandPackets::ReadMemory;
+        using AvrGdb::CommandPackets::WriteMemory;
+
+        if (rawPacket.size() >= 2) {
+            if (rawPacket[1] == 'm') {
+                return std::make_unique<ReadMemory>(rawPacket);
+            }
+
+            if (rawPacket[1] == 'M') {
+                return std::make_unique<WriteMemory>(rawPacket);
+            }
+        }
+
+        return GdbRspDebugServer::resolveCommandPacket(rawPacket);
     }
 }
