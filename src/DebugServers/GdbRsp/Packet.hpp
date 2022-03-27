@@ -9,6 +9,8 @@
 
 namespace Bloom::DebugServers::Gdb
 {
+    using RawPacketType = std::vector<unsigned char>;
+
     /**
      * The Packet class implements the data structure for GDB RSP packets.
      *
@@ -17,7 +19,7 @@ namespace Bloom::DebugServers::Gdb
     class Packet
     {
     public:
-        explicit Packet(const std::vector<unsigned char>& rawPacket) {
+        explicit Packet(const RawPacketType& rawPacket) {
             this->init(rawPacket);
         }
 
@@ -119,7 +121,7 @@ namespace Bloom::DebugServers::Gdb
     protected:
         std::vector<unsigned char> data;
 
-        void init(const std::vector<unsigned char>& rawPacket) {
+        void init(const RawPacketType& rawPacket) {
             this->data.insert(
                 this->data.begin(),
                 rawPacket.begin() + 1,

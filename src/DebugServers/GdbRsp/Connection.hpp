@@ -10,15 +10,14 @@
 #include <arpa/inet.h>
 
 #include "src/Helpers/EventNotifier.hpp"
-#include "src/DebugServers/GdbRsp/CommandPackets/CommandPacket.hpp"
+
+#include "src/DebugServers/GdbRsp/Packet.hpp"
 #include "src/DebugServers/GdbRsp/ResponsePackets/ResponsePacket.hpp"
 
 namespace Bloom::DebugServers::Gdb
 {
     /**
      * The Connection class represents an active connection between the GDB RSP server and client.
-     *
-     * All interfacing with the GDB client should take place here.
      */
     class Connection
     {
@@ -57,11 +56,11 @@ namespace Bloom::DebugServers::Gdb
         };
 
         /**
-         * Waits for incoming data from the client and returns any received command packets.
+         * Waits for incoming data from the client and returns the raw GDB packets.
          *
          * @return
          */
-        std::vector<std::unique_ptr<CommandPackets::CommandPacket>> readPackets();
+        std::vector<RawPacketType> readRawPackets();
 
         /**
          * Sends a response packet to the client.

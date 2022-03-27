@@ -19,7 +19,7 @@
 #include "Signal.hpp"
 #include "RegisterDescriptor.hpp"
 #include "Feature.hpp"
-#include "CommandPackets/CommandPacketFactory.hpp"
+#include "CommandPackets/CommandPacket.hpp"
 
 #include "src/EventManager/Events/TargetControllerStateReported.hpp"
 #include "src/EventManager/Events/TargetExecutionStopped.hpp"
@@ -103,6 +103,10 @@ namespace Bloom::DebugServers::Gdb
          */
         int enableReuseAddressSocketOption = 1;
 
+        /**
+         * When a connection with a GDB client is established, a new instance of the DebugSession class is created and
+         * held here. A value of std::nullopt means there is no active debug session present.
+         */
         std::optional<DebugSession> activeDebugSession;
 
         /**
@@ -112,10 +116,51 @@ namespace Bloom::DebugServers::Gdb
          */
         std::optional<Connection> waitForConnection();
 
+        /**
+         * Waits for a command packet from the connected GDB client.
+         *
+         * @return
+         */
+        std::unique_ptr<CommandPackets::CommandPacket> waitForCommandPacket();
+
+        /**
+         * Should construct a derived instance of the CommandPackets::CommandPacket class, from a raw packet.
+         *
+         * Derived implementations of this GDB server class can override this function to include support for more
+         * specific GDB commands. For example, the AVR GDB implementation overrides this function to support AVR
+         * specific implementations of the read and write memory GDB commands.
+         *
+         * This function should never return a nullptr. If the command is unknown, it should simply return an
+         * instance of the CommandPackets::CommandPacket base class. The handler (CommandPacket::handle()) for the base
+         * class will handle unknown packets by responding with an empty response packet (as is expected by the GDB
+         * client).
+         *
+         * @param rawPacket
+         * @return
+         */
+        virtual std::unique_ptr<CommandPackets::CommandPacket> resolveCommandPacket(const RawPacketType& rawPacket);
+
+        /**
+         * Terminates any active debug session (if any) by closing the connection to the GDB client.
+         */
         void terminateActiveDebugSession();
 
+        /**
+         * Should return the GDB target descriptor for the connected target.
+         *
+         * NOTE: This function returns a target descriptor specific to GDB and the target. It's not the same data
+         * struct as Targets::TargetDescriptor. But the GDB target descriptor does hold an instance to
+         * Targets::TargetDescriptor. See the Gdb::TargetDescriptor::targetDescriptor class member.
+         *
+         * @return
+         */
         virtual const TargetDescriptor& getGdbTargetDescriptor() = 0;
 
+        /**
+         * Responds to any unexpected TargetController state changes.
+         *
+         * @param event
+         */
         void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
 
         /**

@@ -14,12 +14,26 @@
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Exceptions/DebugServerInterrupted.hpp"
 
+// Command packets
+#include "CommandPackets/CommandPacket.hpp"
+#include "CommandPackets/SupportedFeaturesQuery.hpp"
+#include "CommandPackets/InterruptExecution.hpp"
+#include "CommandPackets/ContinueExecution.hpp"
+#include "CommandPackets/StepExecution.hpp"
+#include "CommandPackets/ReadRegisters.hpp"
+#include "CommandPackets/WriteRegister.hpp"
+#include "CommandPackets/SetBreakpoint.hpp"
+#include "CommandPackets/RemoveBreakpoint.hpp"
+
+// Response packets
 #include "ResponsePackets/TargetStopped.hpp"
 
 namespace Bloom::DebugServers::Gdb
 {
     using namespace Exceptions;
     using namespace Bloom::Exceptions;
+
+    using CommandPackets::CommandPacket;
 
     GdbRspDebugServer::GdbRspDebugServer(
         const DebugServerConfig& debugServerConfig,
@@ -146,13 +160,14 @@ namespace Bloom::DebugServers::Gdb
                 }
             }
 
-//            auto packets = this->activeDebugSession->connection.readPackets();
-//
-//            // Only process the last packet - any others will likely be duplicates from an impatient client
-//            if (!packets.empty()) {
-//                // Double-dispatch to appropriate handler
-//                packets.back()->dispatchToHandler(*this);
-//            }
+            auto commandPacket = this->waitForCommandPacket();
+
+            if (commandPacket == nullptr) {
+                // Likely an interrupt
+                return;
+            }
+
+            commandPacket->handle(this->activeDebugSession.value(), this->targetControllerConsole);
 
         } catch (const ClientDisconnected&) {
             Logger::info("GDB RSP client disconnected");
@@ -212,6 +227,63 @@ namespace Bloom::DebugServers::Gdb
         }
 
         return std::nullopt;
+    }
+
+    std::unique_ptr<CommandPacket> GdbRspDebugServer::waitForCommandPacket() {
+        const auto rawPackets = this->activeDebugSession->connection.readRawPackets();
+
+        if (rawPackets.empty()) {
+            // The wait was interrupted
+            return nullptr;
+        }
+
+        // We only process the last packet - any others will probably be duplicates from an impatient client.
+        return this->resolveCommandPacket(rawPackets.back());
+    }
+
+    std::unique_ptr<CommandPacket> GdbRspDebugServer::resolveCommandPacket(const RawPacketType& rawPacket) {
+        if (rawPacket.size() == 5 && rawPacket[1] == 0x03) {
+            // This is an interrupt request - create a fake packet for it
+            return std::make_unique<CommandPackets::InterruptExecution>(rawPacket);
+        }
+
+        const auto rawPacketString = std::string(rawPacket.begin(), rawPacket.end());
+
+        if (rawPacketString.size() >= 2) {
+            /*
+             * First byte of the raw packet will be 0x24 ('$'), so find() should return 1, not 0, when
+             * looking for a command identifier string.
+             */
+            if (rawPacketString.find("qSupported") == 1) {
+                return std::make_unique<CommandPackets::SupportedFeaturesQuery>(rawPacket);
+            }
+
+            if (rawPacketString[1] == 'g' || rawPacketString[1] == 'p') {
+                return std::make_unique<CommandPackets::ReadRegisters>(rawPacket);
+            }
+
+            if (rawPacketString[1] == 'P') {
+                return std::make_unique<CommandPackets::WriteRegister>(rawPacket);
+            }
+
+            if (rawPacketString[1] == 'c') {
+                return std::make_unique<CommandPackets::ContinueExecution>(rawPacket);
+            }
+
+            if (rawPacketString[1] == 's') {
+                return std::make_unique<CommandPackets::StepExecution>(rawPacket);
+            }
+
+            if (rawPacketString[1] == 'Z') {
+                return std::make_unique<CommandPackets::SetBreakpoint>(rawPacket);
+            }
+
+            if (rawPacketString[1] == 'z') {
+                return std::make_unique<CommandPackets::RemoveBreakpoint>(rawPacket);
+            }
+        }
+
+        return std::make_unique<CommandPacket>(rawPacket);
     }
 
     void GdbRspDebugServer::terminateActiveDebugSession() {

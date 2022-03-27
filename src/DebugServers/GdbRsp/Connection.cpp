@@ -5,8 +5,6 @@
 #include <cerrno>
 #include <fcntl.h>
 
-#include "CommandPackets/CommandPacketFactory.hpp"
-
 #include "Exceptions/ClientDisconnected.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"
 #include "src/Exceptions/Exception.hpp"
@@ -16,10 +14,10 @@
 
 namespace Bloom::DebugServers::Gdb
 {
-    using namespace CommandPackets;
-    using namespace ResponsePackets;
     using namespace Exceptions;
     using namespace Bloom::Exceptions;
+
+    using ResponsePackets::ResponsePacket;
 
     void Connection::accept(int serverSocketFileDescriptor) {
         int socketAddressLength = sizeof(this->socketAddress);
@@ -63,25 +61,80 @@ namespace Bloom::DebugServers::Gdb
         }
     }
 
-    std::vector<std::unique_ptr<CommandPacket>> Connection::readPackets() {
-        auto buffer = this->read();
-        Logger::debug("GDB client data received (" + std::to_string(buffer.size()) + " bytes): "
-            + std::string(buffer.begin(), buffer.end()));
+    std::vector<RawPacketType> Connection::readRawPackets() {
+        std::vector<RawPacketType> output;
 
-        auto rawPackets = CommandPacketFactory::extractRawPackets(buffer);
-        std::vector<std::unique_ptr<CommandPacket>> output;
+        const auto bytes = this->read();
 
-        for (const auto& rawPacket : rawPackets) {
-            try {
-                output.push_back(CommandPacketFactory::create(rawPacket));
-                this->write({'+'});
+        std::size_t bufferSize = bytes.size();
+        for (std::size_t byteIndex = 0; byteIndex < bufferSize; byteIndex++) {
+            auto byte = bytes[byteIndex];
 
-            } catch (const ClientDisconnected& exception) {
-                throw exception;
+            if (byte == 0x03) {
+                /*
+                 * This is an interrupt packet - it doesn't carry any of the usual packet frame bytes, so we'll just
+                 * add them here, in order to keep things consistent.
+                 *
+                 * Because we're effectively faking the packet frame, we can use any value for the checksum.
+                 */
+                output.push_back({'$', byte, '#', 'F', 'F'});
 
-            } catch (const Exception& exception) {
-                Logger::error("Failed to parse GDB packet - " + exception.getMessage());
-                this->write({'-'});
+            } else if (byte == '$') {
+                // Beginning of packet
+                RawPacketType rawPacket;
+                rawPacket.push_back('$');
+
+                auto packetIndex = byteIndex;
+                bool validPacket = false;
+                bool isByteEscaped = false;
+
+                for (packetIndex++; packetIndex < bufferSize; packetIndex++) {
+                    byte = bytes[packetIndex];
+
+                    if (byte == '}' && !isByteEscaped) {
+                        isByteEscaped = true;
+                        continue;
+                    }
+
+                    if (!isByteEscaped) {
+                        if (byte == '$') {
+                            // Unexpected end of packet
+                            validPacket = false;
+                            break;
+                        }
+
+                        if (byte == '#') {
+                            // End of packet data
+                            if ((bufferSize - 1) < (packetIndex + 2)) {
+                                // There should be at least two more bytes in the buffer, for the checksum.
+                                break;
+                            }
+
+                            rawPacket.push_back(byte);
+
+                            // Add the checksum bytes and break the loop
+                            rawPacket.push_back(bytes[++packetIndex]);
+                            rawPacket.push_back(bytes[++packetIndex]);
+                            validPacket = true;
+                            break;
+                        }
+
+                    } else {
+                        // Escaped bytes are XOR'd with a 0x20 mask.
+                        byte ^= 0x20;
+                        isByteEscaped = false;
+                    }
+
+                    rawPacket.push_back(byte);
+                }
+
+                if (validPacket) {
+                    // Acknowledge receipt
+                    this->write({'+'});
+
+                    output.push_back(rawPacket);
+                    byteIndex = packetIndex;
+                }
             }
         }
 
