@@ -1,14 +1,17 @@
 #pragma once
 
+#include <cstdint>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <vector>
 #include <queue>
-#include <cstdint>
+#include <optional>
 
-#include "src/DebugServers/DebugServer.hpp"
+#include "src/DebugServers/ServerInterface.hpp"
 
 #include "GdbDebugServerConfig.hpp"
+#include "src/EventManager/EventListener.hpp"
+#include "src/TargetController/TargetControllerConsole.hpp"
 
 #include "Connection.hpp"
 #include "TargetDescriptor.hpp"
@@ -18,14 +21,10 @@
 #include "Feature.hpp"
 #include "CommandPackets/CommandPacketFactory.hpp"
 
-#include "src/Helpers/EventNotifier.hpp"
+#include "src/EventManager/Events/TargetControllerStateReported.hpp"
+#include "src/EventManager/Events/TargetExecutionStopped.hpp"
+
 #include "src/Helpers/BiMap.hpp"
-
-#include "src/Targets/TargetRegister.hpp"
-
-// Response packets
-#include "ResponsePackets/SupportedFeaturesResponse.hpp"
-#include "ResponsePackets/TargetStopped.hpp"
 
 namespace Bloom::DebugServers::Gdb
 {
@@ -40,21 +39,43 @@ namespace Bloom::DebugServers::Gdb
      *
      * @TODO: This could do with some cleaning.
      */
-    class GdbRspDebugServer: public DebugServer
+    class GdbRspDebugServer: public ServerInterface
     {
     public:
         explicit GdbRspDebugServer(
-            const ProjectConfig& projectConfig,
-            const EnvironmentConfig& environmentConfig,
-            const DebugServerConfig& debugServerConfig
-        ): DebugServer(projectConfig, environmentConfig, debugServerConfig) {};
+            const DebugServerConfig& debugServerConfig,
+            EventListener& eventListener
+        );
 
-        std::string getName() const override {
+        [[nodiscard]] std::string getName() const override {
             return "GDB Remote Serial Protocol DebugServer";
         };
 
+        /**
+         * Prepares the GDB server for listing on the selected address and port.
+         */
+        void init() override;
+
+        /**
+         * Terminates any active debug session and closes the listening socket.
+         */
+        void close() override;
+
+        /**
+         * Waits for a connection from a GDB client or services an active one.
+         *
+         * This function will return when any blocking operation is interrupted via this->interruptEventNotifier.
+         */
+        void run() override;
+
     protected:
         std::optional<GdbDebugServerConfig> debugServerConfig;
+
+        EventListener& eventListener;
+
+        EventNotifier* interruptEventNotifier = nullptr;
+
+        TargetControllerConsole targetControllerConsole = TargetControllerConsole(this->eventListener);
 
         /**
          * Listening socket address
@@ -85,21 +106,6 @@ namespace Bloom::DebugServers::Gdb
         std::optional<DebugSession> activeDebugSession;
 
         /**
-         * Prepares the GDB server for listing on the selected address and port.
-         */
-        void init() override;
-
-        /**
-         * Closes any client connection as well as the listening socket file descriptor.
-         */
-        void close() override;
-
-        /**
-         * See DebugServer::serve()
-         */
-        void serve() override;
-
-        /**
          * Waits for a GDB client to connect on the listening socket.
          *
          * This function may return an std::nullopt, if the waiting was interrupted by some other event.
@@ -109,7 +115,6 @@ namespace Bloom::DebugServers::Gdb
         void terminateActiveDebugSession();
 
         virtual const TargetDescriptor& getGdbTargetDescriptor() = 0;
-
 
         void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
 

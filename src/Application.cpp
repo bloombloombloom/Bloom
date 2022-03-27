@@ -390,15 +390,9 @@ namespace Bloom
     }
 
     void Application::startDebugServer() {
-        auto supportedDebugServers = this->getSupportedDebugServers();
-        if (!supportedDebugServers.contains(this->debugServerConfig->name)) {
-            throw Exceptions::InvalidConfig(
-                "DebugServer \"" + this->debugServerConfig->name + "\" not found."
-            );
-        }
-
-        this->debugServer = supportedDebugServers.at(this->debugServerConfig->name)();
-        Logger::info("Selected DebugServer: " + this->debugServer->getName());
+        this->debugServer = std::make_unique<DebugServers::DebugServer>(
+            this->debugServerConfig.value()
+        );
 
         this->debugServerThread = std::thread(
             &DebugServers::DebugServer::run,
@@ -414,7 +408,6 @@ namespace Bloom
 
     void Application::stopDebugServer() {
         if (this->debugServer == nullptr) {
-            // DebugServer hasn't been resolved yet.
             return;
         }
 

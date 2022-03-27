@@ -10,7 +10,7 @@
 #include "src/Helpers/Thread.hpp"
 
 #include "src/TargetController/TargetController.hpp"
-#include "src/DebugServers/GdbRsp/AvrGdb/AvrGdbRsp.hpp"
+#include "src/DebugServers/DebugServer.hpp"
 #include "src/Insight/Insight.hpp"
 #include "src/SignalHandler/SignalHandler.hpp"
 
@@ -36,29 +36,6 @@ namespace Bloom
         static const inline VersionNumber VERSION = VersionNumber(BLOOM_VERSION);
 
         explicit Application() = default;
-
-        /**
-         * This mapping is used to map debug server names from project configuration files to polymorphic instances of
-         * the DebugServer class.
-         *
-         * See Application::startDebugServer() for more on this.
-         *
-         * @return
-         */
-        auto getSupportedDebugServers() {
-            return std::map<std::string, std::function<std::unique_ptr<DebugServers::DebugServer>()>> {
-                {
-                    "avr-gdb-rsp",
-                    [this] () -> std::unique_ptr<DebugServers::DebugServer> {
-                        return std::make_unique<DebugServers::Gdb::AvrGdb::AvrGdbRsp>(
-                            this->projectConfig.value(),
-                            this->environmentConfig.value(),
-                            this->debugServerConfig.value()
-                        );
-                    }
-                },
-            };
-        };
 
         /**
          * Main entry-point for the Bloom program.

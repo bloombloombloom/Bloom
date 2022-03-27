@@ -1,8 +1,9 @@
 #pragma once
 
+#include <cstdint>
 #include <map>
 #include <functional>
-#include <cstdint>
+#include <memory>
 
 #include "src/TargetController/TargetControllerConsole.hpp"
 #include "src/EventManager/Events/Events.hpp"
@@ -13,6 +14,8 @@
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
+
+#include "ServerInterface.hpp"
 
 namespace Bloom::DebugServers
 {
@@ -28,28 +31,16 @@ namespace Bloom::DebugServers
     class DebugServer: public Thread
     {
     public:
-        explicit DebugServer(
-            const ProjectConfig& projectConfig,
-            const EnvironmentConfig& environmentConfig,
-            const DebugServerConfig& debugServerConfig
-        )
-            : projectConfig(projectConfig)
-            , environmentConfig(environmentConfig)
-            , debugServerConfig(debugServerConfig)
-        {};
+        explicit DebugServer(const DebugServerConfig& debugServerConfig);
 
         /**
          * Entry point for the DebugServer. This must called from a dedicated thread.
          */
         void run();
 
-        virtual std::string getName() const = 0;
-
     protected:
         EventListenerPointer eventListener = std::make_shared<EventListener>("DebugServerEventListener");
 
-        ProjectConfig projectConfig;
-        EnvironmentConfig environmentConfig;
         DebugServerConfig debugServerConfig;
 
         TargetControllerConsole targetControllerConsole = TargetControllerConsole(*(this->eventListener));
@@ -57,26 +48,13 @@ namespace Bloom::DebugServers
         /**
          * Enables the interruption of any blocking file IO.
          */
-        std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
-
-        Targets::TargetDescriptor targetDescriptor;
-
-        /**
-         * Called on startup of the DebugServer thread. Derived classes should implement any initialisation work here.
-         */
-        virtual void init() = 0;
-
-        /**
-         * Called repeatedly in an infinite loop when the DebugServer is running.
-         */
-        virtual void serve() = 0;
-
-        /**
-         * Called on shutdown of the debug server.
-         */
-        virtual void close() = 0;
+        EventNotifier interruptEventNotifier = EventNotifier();
 
     private:
+        std::unique_ptr<ServerInterface> server = nullptr;
+
+        std::map<std::string, std::function<std::unique_ptr<ServerInterface>()>> getAvailableServersByName();
+
         /**
          * Prepares the debug server thread and then calls init().
          *

@@ -7,9 +7,18 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
     using Bloom::Targets::TargetRegisterDescriptor;
     using Bloom::Targets::TargetRegisterType;
 
+    AvrGdbRsp::AvrGdbRsp(
+        const DebugServerConfig& debugServerConfig,
+        EventListener& eventListener
+    )
+        : GdbRspDebugServer(debugServerConfig, eventListener)
+    {}
+
     void AvrGdbRsp::init() {
         DebugServers::Gdb::GdbRspDebugServer::init();
 
-        this->gdbTargetDescriptor = TargetDescriptor(this->targetDescriptor);
+        this->gdbTargetDescriptor = TargetDescriptor(
+            this->targetControllerConsole.getTargetDescriptor()
+        );
     }
 }

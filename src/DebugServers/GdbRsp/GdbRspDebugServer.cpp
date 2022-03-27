@@ -9,26 +9,30 @@
 #include "Exceptions/ClientNotSupported.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"
 #include "Exceptions/DebugSessionAborted.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
+#include "src/Exceptions/DebugServerInterrupted.hpp"
+
+#include "ResponsePackets/TargetStopped.hpp"
 
 namespace Bloom::DebugServers::Gdb
 {
-    using namespace CommandPackets;
-    using namespace ResponsePackets;
     using namespace Exceptions;
-    using namespace Bloom::Events;
     using namespace Bloom::Exceptions;
 
-    using Bloom::Targets::TargetRegister;
-    using Bloom::Targets::TargetRegisterType;
-    using Bloom::Targets::TargetRegisterDescriptor;
-    using Bloom::Targets::TargetRegisterDescriptors;
-    using Bloom::Targets::TargetBreakpoint;
+    GdbRspDebugServer::GdbRspDebugServer(
+        const DebugServerConfig& debugServerConfig,
+        EventListener& eventListener
+    )
+        : debugServerConfig(GdbDebugServerConfig(debugServerConfig))
+        , eventListener(eventListener)
+        , interruptEventNotifier(eventListener.getInterruptEventNotifier())
+    {
+        assert(this->interruptEventNotifier != nullptr && this->interruptEventNotifier->isInitialised());
+    }
 
     void GdbRspDebugServer::init() {
-        this->debugServerConfig = GdbDebugServerConfig(DebugServer::debugServerConfig);
-
         this->socketAddress.sin_family = AF_INET;
         this->socketAddress.sin_port = htons(this->debugServerConfig->listeningPortNumber);
 
@@ -83,24 +87,22 @@ namespace Bloom::DebugServers::Gdb
             throw Exception("Failed epoll_ctl server socket");
         }
 
-        if (this->interruptEventNotifier != nullptr) {
-            auto interruptFileDescriptor = this->interruptEventNotifier->getFileDescriptor();
-            event.events = EPOLLIN;
-            event.data.fd = interruptFileDescriptor;
+        const auto interruptFileDescriptor = this->interruptEventNotifier->getFileDescriptor();
+        event.events = EPOLLIN;
+        event.data.fd = interruptFileDescriptor;
 
-            if (::epoll_ctl(this->eventFileDescriptor, EPOLL_CTL_ADD, interruptFileDescriptor, &event) != 0) {
-                throw Exception("Failed epoll_ctl interrupt event fd");
-            }
+        if (::epoll_ctl(this->eventFileDescriptor, EPOLL_CTL_ADD, interruptFileDescriptor, &event) != 0) {
+            throw Exception("Failed epoll_ctl interrupt event fd");
         }
 
         Logger::info("GDB RSP address: " + this->debugServerConfig->listeningAddress);
         Logger::info("GDB RSP port: " + std::to_string(this->debugServerConfig->listeningPortNumber));
 
-        this->eventListener->registerCallbackForEventType<Events::TargetControllerStateReported>(
+        this->eventListener.registerCallbackForEventType<Events::TargetControllerStateReported>(
             std::bind(&GdbRspDebugServer::onTargetControllerStateReported, this, std::placeholders::_1)
         );
 
-        this->eventListener->registerCallbackForEventType<Events::TargetExecutionStopped>(
+        this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
             std::bind(&GdbRspDebugServer::onTargetExecutionStopped, this, std::placeholders::_1)
         );
     }
@@ -113,7 +115,7 @@ namespace Bloom::DebugServers::Gdb
         }
     }
 
-    void GdbRspDebugServer::serve() {
+    void GdbRspDebugServer::run() {
         try {
             if (!this->activeDebugSession.has_value()) {
                 Logger::info("Waiting for GDB RSP connection");
@@ -131,6 +133,7 @@ namespace Bloom::DebugServers::Gdb
                 this->activeDebugSession.emplace(
                     DebugSession(connection.value(), this->getGdbTargetDescriptor())
                 );
+
                 EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
 
                 /*
@@ -205,7 +208,7 @@ namespace Bloom::DebugServers::Gdb
                 }
             }
 
-            return Connection(this->interruptEventNotifier);
+            return Connection(*(this->interruptEventNotifier));
         }
 
         return std::nullopt;
@@ -229,7 +232,9 @@ namespace Bloom::DebugServers::Gdb
 
     void GdbRspDebugServer::onTargetExecutionStopped(const Events::TargetExecutionStopped&) {
         if (this->activeDebugSession.has_value() && this->activeDebugSession->waitingForBreak) {
-            this->activeDebugSession->connection.writePacket(TargetStopped(Signal::TRAP));
+            this->activeDebugSession->connection.writePacket(
+                ResponsePackets::TargetStopped(Signal::TRAP)
+            );
             this->activeDebugSession->waitingForBreak = false;
         }
     }
