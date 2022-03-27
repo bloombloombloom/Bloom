@@ -92,8 +92,12 @@ namespace Bloom
          */
         void registerEvent(Events::SharedGenericEventPointer event);
 
-        void setInterruptEventNotifier(std::shared_ptr<EventNotifier> interruptEventNotifier) {
-            this->interruptEventNotifier = std::move(interruptEventNotifier);
+        void setInterruptEventNotifier(EventNotifier* interruptEventNotifier) {
+            this->interruptEventNotifier = interruptEventNotifier;
+        }
+
+        [[nodiscard]] EventNotifier* getInterruptEventNotifier() {
+            return this->interruptEventNotifier;
         }
 
         /**
@@ -366,7 +370,7 @@ namespace Bloom
         SyncSafe<std::map<Events::EventType, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
         SyncSafe<std::set<Events::EventType>> registeredEventTypes;
 
-        std::shared_ptr<EventNotifier> interruptEventNotifier = nullptr;
+        EventNotifier* interruptEventNotifier = nullptr;
 
         std::vector<Events::SharedGenericEventPointer> getEvents();
     };
