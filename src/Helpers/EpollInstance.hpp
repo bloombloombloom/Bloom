@@ -48,7 +48,9 @@ namespace Bloom
          * @return
          *  The file descriptor of the file for which the event occurred, or std::nullopt if a timeout was reached.
          */
-        std::optional<int> waitForEvent(std::optional<std::chrono::milliseconds> timeout = std::nullopt);
+        [[nodiscard]] std::optional<int> waitForEvent(
+            std::optional<std::chrono::milliseconds> timeout = std::nullopt
+        ) const;
 
         /*
          * EpollInstance objects should not be copied.

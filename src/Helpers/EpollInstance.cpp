@@ -46,7 +46,7 @@ namespace Bloom
         }
     }
 
-    std::optional<int> EpollInstance::waitForEvent(std::optional<std::chrono::milliseconds> timeout) {
+    std::optional<int> EpollInstance::waitForEvent(std::optional<std::chrono::milliseconds> timeout) const {
         std::array<struct epoll_event, 1> events = {};
 
         const auto eventCount = ::epoll_wait(
