@@ -24,8 +24,8 @@ namespace Bloom::DebugServers::Gdb
 
         this->socketFileDescriptor = ::accept(
             serverSocketFileDescriptor,
-            (sockaddr*) &(this->socketAddress),
-            (socklen_t*) &socketAddressLength
+            reinterpret_cast<sockaddr*>(&(this->socketAddress)),
+            reinterpret_cast<socklen_t*>(&socketAddressLength)
         );
 
         if (this->socketFileDescriptor == -1) {
@@ -35,7 +35,7 @@ namespace Bloom::DebugServers::Gdb
         ::fcntl(
             this->socketFileDescriptor,
             F_SETFL,
-            fcntl(this->socketFileDescriptor, F_GETFL, 0) | O_NONBLOCK
+            ::fcntl(this->socketFileDescriptor, F_GETFL, 0) | O_NONBLOCK
         );
 
         this->epollInstance.addEntry(this->socketFileDescriptor, static_cast<std::uint16_t>(EpollEvent::READ_READY));
