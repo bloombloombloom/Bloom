@@ -66,6 +66,7 @@ add_executable(Bloom
     # Helpers & other
     src/Logger/Logger.cpp
     src/Helpers/Paths.cpp
+    src/Helpers/EpollInstance.cpp
     src/VersionNumber.cpp
     src/Generated/resources.cpp
 
