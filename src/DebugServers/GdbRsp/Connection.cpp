@@ -38,19 +38,7 @@ namespace Bloom::DebugServers::Gdb
             fcntl(this->socketFileDescriptor, F_GETFL, 0) | O_NONBLOCK
         );
 
-        // Create event FD
-        this->eventFileDescriptor = ::epoll_create(2);
-        struct epoll_event event = {};
-        event.events = EPOLLIN;
-        event.data.fd = this->socketFileDescriptor;
-
-        if (::epoll_ctl(this->eventFileDescriptor, EPOLL_CTL_ADD, this->socketFileDescriptor, &event) != 0) {
-            throw Exception(
-                "Failed to create event FD for GDB client connection - could not add client connection "
-                    "socket FD to epoll FD"
-            );
-        }
-
+        this->epollInstance.addEntry(this->socketFileDescriptor, static_cast<std::uint16_t>(EpollEvent::READ_READY));
         this->enableReadInterrupts();
     }
 
@@ -157,7 +145,11 @@ namespace Bloom::DebugServers::Gdb
         } while (this->readSingleByte(false).value_or(0) != '+');
     }
 
-    std::vector<unsigned char> Connection::read(size_t bytes, bool interruptible, std::optional<int> msTimeout) {
+    std::vector<unsigned char> Connection::read(
+        size_t bytes,
+        bool interruptible,
+        std::optional<std::chrono::milliseconds> timeout
+    ) {
         auto output = std::vector<unsigned char>();
         constexpr size_t bufferSize = 1024;
         std::array<unsigned char, bufferSize> buffer = {};
@@ -177,53 +169,42 @@ namespace Bloom::DebugServers::Gdb
             this->disableReadInterrupts();
         }
 
-        std::array<struct epoll_event, 1> events = {};
+        const auto eventFileDescriptor = this->epollInstance.waitForEvent(timeout);
 
-        int eventCount = ::epoll_wait(
-            this->eventFileDescriptor,
-            events.data(),
-            1,
-            msTimeout.value_or(-1)
-        );
+        if (
+            !eventFileDescriptor.has_value()
+            || eventFileDescriptor.value() == this->interruptEventNotifier.getFileDescriptor()
+        ) {
+            // Interrupted
+            this->interruptEventNotifier.clear();
+            throw DebugServerInterrupted();
+        }
 
-        if (eventCount > 0) {
-            for (size_t i = 0; i < eventCount; i++) {
-                auto fileDescriptor = events.at(i).data.fd;
+        size_t bytesToRead = (bytes > bufferSize || bytes == 0) ? bufferSize : bytes;
+        while (
+            bytesToRead > 0
+            && (bytesRead = ::read(this->socketFileDescriptor, buffer.data(), bytesToRead)) > 0
+        ) {
+            output.insert(output.end(), buffer.begin(), buffer.begin() + bytesRead);
 
-                if (fileDescriptor == this->interruptEventNotifier.getFileDescriptor()) {
-                    // Interrupted
-                    this->interruptEventNotifier.clear();
-                    throw DebugServerInterrupted();
-                }
+            if (bytesRead < bytesToRead) {
+                // No more data available
+                break;
             }
 
-            size_t bytesToRead = (bytes > bufferSize || bytes == 0) ? bufferSize : bytes;
-            while (
-                bytesToRead > 0
-                && (bytesRead = ::read(this->socketFileDescriptor, buffer.data(), bytesToRead)) > 0
-            ) {
-                output.insert(output.end(), buffer.begin(), buffer.begin() + bytesRead);
+            bytesToRead = ((bytes - output.size()) > bufferSize || bytes == 0) ? bufferSize : (bytes - output.size());
+        }
 
-                if (bytesRead < bytesToRead) {
-                    // No more data available
-                    break;
-                }
-
-                bytesToRead =
-                    ((bytes - output.size()) > bufferSize || bytes == 0) ? bufferSize : (bytes - output.size());
-            }
-
-            if (output.empty()) {
-                // EOF means the client has disconnected
-                throw ClientDisconnected();
-            }
+        if (output.empty()) {
+            // EOF means the client has disconnected
+            throw ClientDisconnected();
         }
 
         return output;
     }
 
     std::optional<unsigned char> Connection::readSingleByte(bool interruptible) {
-        auto bytes = this->read(1, interruptible, 300);
+        auto bytes = this->read(1, interruptible, std::chrono::milliseconds(300));
 
         if (!bytes.empty()) {
             return bytes.front();
@@ -247,27 +228,16 @@ namespace Bloom::DebugServers::Gdb
     }
 
     void Connection::disableReadInterrupts() {
-        if (::epoll_ctl(
-            this->eventFileDescriptor,
-            EPOLL_CTL_DEL,
-            this->interruptEventNotifier.getFileDescriptor(),
-            NULL) != 0
-        ) {
-            throw Exception("Failed to disable GDB client connection read interrupts - epoll_ctl failed");
-        }
+        this->epollInstance.removeEntry(this->interruptEventNotifier.getFileDescriptor());
 
         this->readInterruptEnabled = false;
     }
 
     void Connection::enableReadInterrupts() {
-        auto interruptFileDescriptor = this->interruptEventNotifier.getFileDescriptor();
-        struct epoll_event event = {};
-        event.events = EPOLLIN;
-        event.data.fd = interruptFileDescriptor;
-
-        if (::epoll_ctl(this->eventFileDescriptor, EPOLL_CTL_ADD, interruptFileDescriptor, &event) != 0) {
-            throw Exception("Failed to enable GDB client connection read interrupts - epoll_ctl failed");
-        }
+        this->epollInstance.addEntry(
+            this->interruptEventNotifier.getFileDescriptor(),
+            static_cast<std::uint16_t>(EpollEvent::READ_READY)
+        );
 
         this->readInterruptEnabled = true;
     }

@@ -20,7 +20,7 @@ namespace Bloom::DebugServers::Gdb
          */
         bool waitingForBreak = false;
 
-        DebugSession(const Connection& connection, const TargetDescriptor& targetDescriptor);
+        DebugSession(Connection&& connection, const TargetDescriptor& targetDescriptor);
 
         void terminate();
     };

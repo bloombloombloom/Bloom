@@ -92,22 +92,15 @@ namespace Bloom::DebugServers::Gdb
 
         this->serverSocketFileDescriptor = socketFileDescriptor;
 
-        this->eventFileDescriptor = ::epoll_create(2);
-        struct epoll_event event = {};
-        event.events = EPOLLIN;
-        event.data.fd = this->serverSocketFileDescriptor;
+        this->epollInstance.addEntry(
+            this->serverSocketFileDescriptor,
+            static_cast<std::uint16_t>(EpollEvent::READ_READY)
+        );
 
-        if (::epoll_ctl(this->eventFileDescriptor, EPOLL_CTL_ADD, this->serverSocketFileDescriptor, &event) != 0) {
-            throw Exception("Failed epoll_ctl server socket");
-        }
-
-        const auto interruptFileDescriptor = this->interruptEventNotifier->getFileDescriptor();
-        event.events = EPOLLIN;
-        event.data.fd = interruptFileDescriptor;
-
-        if (::epoll_ctl(this->eventFileDescriptor, EPOLL_CTL_ADD, interruptFileDescriptor, &event) != 0) {
-            throw Exception("Failed epoll_ctl interrupt event fd");
-        }
+        this->epollInstance.addEntry(
+            this->interruptEventNotifier->getFileDescriptor(),
+            static_cast<std::uint16_t>(EpollEvent::READ_READY)
+        );
 
         Logger::info("GDB RSP address: " + this->debugServerConfig->listeningAddress);
         Logger::info("GDB RSP port: " + std::to_string(this->debugServerConfig->listeningPortNumber));
@@ -145,7 +138,7 @@ namespace Bloom::DebugServers::Gdb
                 Logger::info("Accepted GDP RSP connection from " + connection->getIpAddress());
 
                 this->activeDebugSession.emplace(
-                    DebugSession(connection.value(), this->getGdbTargetDescriptor())
+                    DebugSession(std::move(connection.value()), this->getGdbTargetDescriptor())
                 );
 
                 EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
@@ -203,30 +196,17 @@ namespace Bloom::DebugServers::Gdb
             throw Exception("Failed to listen on server socket");
         }
 
-        constexpr int maxEvents = 5;
-        std::array<struct epoll_event, maxEvents> events = {};
-        int eventCount = ::epoll_wait(
-            this->eventFileDescriptor,
-            events.data(),
-            maxEvents,
-            -1
-        );
+        const auto eventFileDescriptor = this->epollInstance.waitForEvent();
 
-        if (eventCount > 0) {
-            for (size_t i = 0; i < eventCount; i++) {
-                auto fileDescriptor = events.at(i).data.fd;
-
-                if (fileDescriptor == this->interruptEventNotifier->getFileDescriptor()) {
-                    // Interrupted
-                    this->interruptEventNotifier->clear();
-                    return std::nullopt;
-                }
-            }
-
-            return Connection(*(this->interruptEventNotifier));
+        if (
+            !eventFileDescriptor.has_value()
+            || eventFileDescriptor.value() == this->interruptEventNotifier->getFileDescriptor()
+        ) {
+            this->interruptEventNotifier->clear();
+            return std::nullopt;
         }
 
-        return std::nullopt;
+        return std::make_optional<Connection>(*(this->interruptEventNotifier));
     }
 
     std::unique_ptr<CommandPacket> GdbRspDebugServer::waitForCommandPacket() {

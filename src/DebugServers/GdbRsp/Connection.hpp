@@ -8,8 +8,10 @@
 #include <array>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <chrono>
 
 #include "src/Helpers/EventNotifier.hpp"
+#include "src/Helpers/EpollInstance.hpp"
 
 #include "src/DebugServers/GdbRsp/Packet.hpp"
 #include "src/DebugServers/GdbRsp/ResponsePackets/ResponsePacket.hpp"
@@ -22,11 +24,20 @@ namespace Bloom::DebugServers::Gdb
     class Connection
     {
     public:
-        Connection() = delete;
-
         explicit Connection(EventNotifier& interruptEventNotifier)
             : interruptEventNotifier(interruptEventNotifier)
         {};
+
+        Connection() = delete;
+        Connection(const Connection&) = delete;
+        Connection(Connection&& other) noexcept
+            : interruptEventNotifier(other.interruptEventNotifier)
+            , socketFileDescriptor(other.socketFileDescriptor)
+            , epollInstance(std::move(other.epollInstance))
+            , readInterruptEnabled(other.readInterruptEnabled)
+        {
+            other.socketFileDescriptor = -1;
+        };
 
         /**
          * Accepts a connection on serverSocketFileDescriptor.
@@ -75,7 +86,8 @@ namespace Bloom::DebugServers::Gdb
 
     private:
         int socketFileDescriptor = -1;
-        int eventFileDescriptor = -1;
+
+        EpollInstance epollInstance = EpollInstance();
 
         struct sockaddr_in socketAddress = {};
         int maxPacketSize = 1024;
@@ -98,7 +110,7 @@ namespace Bloom::DebugServers::Gdb
          *  the read (via means of this->interruptEventNotifier). This flag has no effect if this->readInterruptEnabled
          *  is false.
          *
-         * @param msTimeout
+         * @param timeout
          *  The timeout in milliseconds. If not supplied, no timeout will be applied.
          *
          * @return
@@ -106,7 +118,7 @@ namespace Bloom::DebugServers::Gdb
         std::vector<unsigned char> read(
             std::size_t bytes = 0,
             bool interruptible = true,
-            std::optional<int> msTimeout = std::nullopt
+            std::optional<std::chrono::milliseconds> timeout = std::nullopt
         );
 
         /**
