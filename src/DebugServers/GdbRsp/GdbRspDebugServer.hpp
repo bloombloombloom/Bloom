@@ -89,12 +89,14 @@ namespace Bloom::DebugServers::Gdb
         int serverSocketFileDescriptor = -1;
 
         /**
-         * We don't listen on the this->serverSocketFileDescriptor directly. Instead, we use an EpollInstance to
-         * monitor both this->serverSocketFileDescriptor and this->interruptEventNotifier. This allows us to interrupt
-         * any blocking socket IO calls when EventNotifier::notify() is called on this->interruptEventNotifier.
+         * When waiting for a connection, we don't listen on the this->serverSocketFileDescriptor directly. Instead,
+         * we use an EpollInstance to monitor both this->serverSocketFileDescriptor and this->interruptEventNotifier.
+         * This allows us to interrupt any blocking socket IO calls when EventNotifier::notify() is called on
+         * this->interruptEventNotifier.
          *
          * See GdbRspDebugServer::init()
          * See DebugServer::interruptEventNotifier
+         * See EpollInstance
          * See EventNotifier
          */
         EpollInstance epollInstance = EpollInstance();

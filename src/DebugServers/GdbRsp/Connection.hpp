@@ -28,6 +28,10 @@ namespace Bloom::DebugServers::Gdb
         Connection() = delete;
         Connection(const Connection&) = delete;
         Connection& operator = (Connection&) = delete;
+
+        /*
+         * TODO: Implement this. For now, use the move constructor.
+         */
         Connection& operator = (Connection&&) = delete;
 
         Connection(Connection&& other) noexcept
@@ -69,16 +73,24 @@ namespace Bloom::DebugServers::Gdb
     private:
         std::optional<int> socketFileDescriptor;
 
-        EpollInstance epollInstance = EpollInstance();
-
         struct sockaddr_in socketAddress = {};
         int maxPacketSize = 1024;
 
         /**
-         * The interruptEventNotifier allows us to interrupt blocking IO calls on the GDB debug server.
-         * Under the hood, this is just a wrapper for a Linux event notifier. See the EventNotifier class for more.
+         * The interruptEventNotifier (instance of EventNotifier) allows us to interrupt blocking I/O calls on this
+         * connection's socket. Under the hood, the EventNotifier class is just an RAII wrapper for a Linux eventfd
+         * object.
+         *
+         * The file descriptors of the eventfd object and the socket are both added to an EpollInstance (which is just
+         * an RAII wrapper for a Linux epoll instance). The EpollInstance object is then used to wait for events on
+         * either of the two file descriptors. See any of the Connection I/O functions (e.g Connection::read()) for
+         * more on this.
+         *
+         * See the EventNotifier and EpollInstance classes for more.
          */
         EventNotifier& interruptEventNotifier;
+        EpollInstance epollInstance = EpollInstance();
+
         bool readInterruptEnabled = false;
 
         /**
@@ -132,8 +144,16 @@ namespace Bloom::DebugServers::Gdb
          */
         void write(const std::vector<unsigned char>& buffer);
 
+        /**
+         * Removes this->interruptEventNotifier's file descriptor from the EpollInstance (this->epollInstance),
+         * preventing subsequent I/O operations on this->socketFileDescriptor from being interrupted.
+         */
         void disableReadInterrupts();
 
+        /**
+         * Inserts this->interruptEventNotifier's file descriptor into the EpollInstance (this->epollInstance),
+         * allowing for subsequent I/O operations on this->socketFileDescriptor to be interrupted.
+         */
         void enableReadInterrupts();
     };
 }
