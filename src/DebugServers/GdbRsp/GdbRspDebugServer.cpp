@@ -134,7 +134,6 @@ namespace Bloom::DebugServers::Gdb
                     return;
                 }
 
-                connection->accept(this->serverSocketFileDescriptor);
                 Logger::info("Accepted GDP RSP connection from " + connection->getIpAddress());
 
                 this->activeDebugSession.emplace(
@@ -206,7 +205,7 @@ namespace Bloom::DebugServers::Gdb
             return std::nullopt;
         }
 
-        return std::make_optional<Connection>(*(this->interruptEventNotifier));
+        return std::make_optional<Connection>(this->serverSocketFileDescriptor, *(this->interruptEventNotifier));
     }
 
     std::unique_ptr<CommandPacket> GdbRspDebugServer::waitForCommandPacket() {

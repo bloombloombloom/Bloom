@@ -1,13 +1,12 @@
 #pragma once
 
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <cstdint>
 #include <utility>
 #include <vector>
-#include <netinet/in.h>
 #include <queue>
 #include <array>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <chrono>
 
 #include "src/Helpers/EventNotifier.hpp"
@@ -24,47 +23,30 @@ namespace Bloom::DebugServers::Gdb
     class Connection
     {
     public:
-        explicit Connection(EventNotifier& interruptEventNotifier)
-            : interruptEventNotifier(interruptEventNotifier)
-        {};
+        explicit Connection(int serverSocketFileDescriptor, EventNotifier& interruptEventNotifier);
 
         Connection() = delete;
         Connection(const Connection&) = delete;
+        Connection& operator = (Connection&) = delete;
+        Connection& operator = (Connection&&) = delete;
+
         Connection(Connection&& other) noexcept
             : interruptEventNotifier(other.interruptEventNotifier)
             , socketFileDescriptor(other.socketFileDescriptor)
             , epollInstance(std::move(other.epollInstance))
             , readInterruptEnabled(other.readInterruptEnabled)
         {
-            other.socketFileDescriptor = -1;
-        };
+            other.socketFileDescriptor = std::nullopt;
+        }
 
-        /**
-         * Accepts a connection on serverSocketFileDescriptor.
-         *
-         * @param serverSocketFileDescriptor
-         */
-        void accept(int serverSocketFileDescriptor);
-
-        /**
-         * Closes the connection with the client.
-         */
-        void close() noexcept;
+        ~Connection();
 
         /**
          * Obtains the human readable IP address of the connected client.
          *
          * @return
          */
-        std::string getIpAddress() {
-            std::array<char, INET_ADDRSTRLEN> ipAddress = {};
-
-            if (::inet_ntop(AF_INET, &(socketAddress.sin_addr), ipAddress.data(), INET_ADDRSTRLEN) == nullptr) {
-                throw Exceptions::Exception("Failed to convert client IP address to text form.");
-            }
-
-            return std::string(ipAddress.data());
-        };
+        [[nodiscard]] std::string getIpAddress() const;
 
         /**
          * Waits for incoming data from the client and returns the raw GDB packets.
@@ -85,7 +67,7 @@ namespace Bloom::DebugServers::Gdb
         }
 
     private:
-        int socketFileDescriptor = -1;
+        std::optional<int> socketFileDescriptor;
 
         EpollInstance epollInstance = EpollInstance();
 
@@ -98,6 +80,18 @@ namespace Bloom::DebugServers::Gdb
          */
         EventNotifier& interruptEventNotifier;
         bool readInterruptEnabled = false;
+
+        /**
+         * Accepts a connection on serverSocketFileDescriptor.
+         *
+         * @param serverSocketFileDescriptor
+         */
+        void accept(int serverSocketFileDescriptor);
+
+        /**
+         * Closes the connection with the client.
+         */
+        void close() noexcept;
 
         /**
          * Reads data from the client into a raw buffer.

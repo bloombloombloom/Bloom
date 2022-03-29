@@ -1,6 +1,6 @@
 #include "Connection.hpp"
 
-#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <cerrno>
 #include <fcntl.h>
@@ -19,34 +19,36 @@ namespace Bloom::DebugServers::Gdb
 
     using ResponsePackets::ResponsePacket;
 
-    void Connection::accept(int serverSocketFileDescriptor) {
-        int socketAddressLength = sizeof(this->socketAddress);
-
-        this->socketFileDescriptor = ::accept(
-            serverSocketFileDescriptor,
-            reinterpret_cast<sockaddr*>(&(this->socketAddress)),
-            reinterpret_cast<socklen_t*>(&socketAddressLength)
-        );
-
-        if (this->socketFileDescriptor == -1) {
-            throw Exception("Failed to accept GDB Remote Serial Protocol connection");
-        }
+    Connection::Connection(int serverSocketFileDescriptor, EventNotifier& interruptEventNotifier)
+        : interruptEventNotifier(interruptEventNotifier)
+    {
+        this->accept(serverSocketFileDescriptor);
 
         ::fcntl(
-            this->socketFileDescriptor,
+            this->socketFileDescriptor.value(),
             F_SETFL,
-            ::fcntl(this->socketFileDescriptor, F_GETFL, 0) | O_NONBLOCK
+            ::fcntl(this->socketFileDescriptor.value(), F_GETFL, 0) | O_NONBLOCK
         );
 
-        this->epollInstance.addEntry(this->socketFileDescriptor, static_cast<std::uint16_t>(EpollEvent::READ_READY));
+        this->epollInstance.addEntry(
+            this->socketFileDescriptor.value(),
+            static_cast<std::uint16_t>(EpollEvent::READ_READY)
+        );
         this->enableReadInterrupts();
     }
 
-    void Connection::close() noexcept {
-        if (this->socketFileDescriptor > 0) {
-            ::close(this->socketFileDescriptor);
-            this->socketFileDescriptor = 0;
+    Connection::~Connection() {
+        this->close();
+    }
+
+    std::string Connection::getIpAddress() const {
+        std::array<char, INET_ADDRSTRLEN> ipAddress = {};
+
+        if (::inet_ntop(AF_INET, &(socketAddress.sin_addr), ipAddress.data(), INET_ADDRSTRLEN) == nullptr) {
+            throw Exception("Failed to convert client IP address to text form.");
         }
+
+        return std::string(ipAddress.data());
     }
 
     std::vector<RawPacketType> Connection::readRawPackets() {
@@ -145,6 +147,29 @@ namespace Bloom::DebugServers::Gdb
         } while (this->readSingleByte(false).value_or(0) != '+');
     }
 
+    void Connection::accept(int serverSocketFileDescriptor) {
+        int socketAddressLength = sizeof(this->socketAddress);
+
+        const auto socketFileDescriptor = ::accept(
+            serverSocketFileDescriptor,
+            reinterpret_cast<sockaddr*>(&(this->socketAddress)),
+            reinterpret_cast<socklen_t*>(&socketAddressLength)
+        );
+
+        if (socketFileDescriptor < 0) {
+            throw Exception("Failed to accept GDB Remote Serial Protocol connection");
+        }
+
+        this->socketFileDescriptor = socketFileDescriptor;
+    }
+
+    void Connection::close() noexcept {
+        if (this->socketFileDescriptor.value_or(-1) >= 0) {
+            ::close(this->socketFileDescriptor.value());
+            this->socketFileDescriptor = std::nullopt;
+        }
+    }
+
     std::vector<unsigned char> Connection::read(
         size_t bytes,
         bool interruptible,
@@ -183,7 +208,7 @@ namespace Bloom::DebugServers::Gdb
         size_t bytesToRead = (bytes > bufferSize || bytes == 0) ? bufferSize : bytes;
         while (
             bytesToRead > 0
-            && (bytesRead = ::read(this->socketFileDescriptor, buffer.data(), bytesToRead)) > 0
+            && (bytesRead = ::read(this->socketFileDescriptor.value(), buffer.data(), bytesToRead)) > 0
         ) {
             output.insert(output.end(), buffer.begin(), buffer.begin() + bytesRead);
 
@@ -215,7 +240,7 @@ namespace Bloom::DebugServers::Gdb
 
     void Connection::write(const std::vector<unsigned char>& buffer) {
         Logger::debug("Writing packet: " + std::string(buffer.begin(), buffer.end()));
-        if (::write(this->socketFileDescriptor, buffer.data(), buffer.size()) == -1) {
+        if (::write(this->socketFileDescriptor.value(), buffer.data(), buffer.size()) == -1) {
             if (errno == EPIPE || errno == ECONNRESET) {
                 // Connection was closed
                 throw ClientDisconnected();

@@ -10,6 +10,6 @@ namespace Bloom::DebugServers::Gdb
     {}
 
     void DebugSession::terminate() {
-        this->connection.close();
+
     }
 }
