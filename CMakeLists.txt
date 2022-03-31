@@ -125,7 +125,7 @@ add_executable(Bloom
     build/resources/TargetDescriptionFiles/AVR/Mapping.json
 
     # Debug servers
-    src/DebugServers/DebugServer.cpp
+    src/DebugServers/DebugServerComponent.cpp
     src/DebugServers/GdbRsp/GdbRspDebugServer.cpp
     src/DebugServers/GdbRsp/GdbDebugServerConfig.cpp
     src/DebugServers/GdbRsp/Connection.cpp

@@ -1,4 +1,4 @@
-#include "DebugServer.hpp"
+#include "DebugServerComponent.hpp"
 
 #include <variant>
 
@@ -12,11 +12,11 @@ namespace Bloom::DebugServers
 {
     using namespace Bloom::Events;
 
-    DebugServer::DebugServer(const DebugServerConfig& debugServerConfig)
+    DebugServerComponent::DebugServerComponent(const DebugServerConfig& debugServerConfig)
         : debugServerConfig(debugServerConfig)
     {}
 
-    void DebugServer::run() {
+    void DebugServerComponent::run() {
         try {
             this->startup();
 
@@ -33,7 +33,7 @@ namespace Bloom::DebugServers
         this->shutdown();
     }
 
-    std::map<std::string, std::function<std::unique_ptr<ServerInterface>()>> DebugServer::getAvailableServersByName() {
+    std::map<std::string, std::function<std::unique_ptr<ServerInterface>()>> DebugServerComponent::getAvailableServersByName() {
         return std::map<std::string, std::function<std::unique_ptr<ServerInterface>()>> {
             {
                 "avr-gdb-rsp",
@@ -46,7 +46,7 @@ namespace Bloom::DebugServers
             },
         };
     }
-    void DebugServer::startup() {
+    void DebugServerComponent::startup() {
         this->setName("DS");
         Logger::info("Starting DebugServer");
 
@@ -55,7 +55,7 @@ namespace Bloom::DebugServers
 
         // Register event handlers
         this->eventListener->registerCallbackForEventType<Events::ShutdownDebugServer>(
-            std::bind(&DebugServer::onShutdownDebugServerEvent, this, std::placeholders::_1)
+            std::bind(&DebugServerComponent::onShutdownDebugServerEvent, this, std::placeholders::_1)
         );
 
         static const auto availableServersByName = this->getAvailableServersByName();
@@ -72,7 +72,7 @@ namespace Bloom::DebugServers
         this->setThreadStateAndEmitEvent(ThreadState::READY);
     }
 
-    void DebugServer::shutdown() {
+    void DebugServerComponent::shutdown() {
         if (this->getThreadState() == ThreadState::STOPPED
             || this->getThreadState() == ThreadState::SHUTDOWN_INITIATED
         ) {
@@ -86,7 +86,7 @@ namespace Bloom::DebugServers
         EventManager::deregisterListener(this->eventListener->getId());
     }
 
-    void DebugServer::onShutdownDebugServerEvent(const Events::ShutdownDebugServer& event) {
+    void DebugServerComponent::onShutdownDebugServerEvent(const Events::ShutdownDebugServer& event) {
         this->shutdown();
     }
 }

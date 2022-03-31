@@ -28,10 +28,10 @@ namespace Bloom::DebugServers
      *
      * Bloom currently only supports one DebugServer - the GdbRspDebugServer.
      */
-    class DebugServer: public Thread
+    class DebugServerComponent: public Thread
     {
     public:
-        explicit DebugServer(const DebugServerConfig& debugServerConfig);
+        explicit DebugServerComponent(const DebugServerConfig& debugServerConfig);
 
         /**
          * Entry point for the DebugServer. This must called from a dedicated thread.

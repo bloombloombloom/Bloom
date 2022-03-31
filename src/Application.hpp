@@ -10,7 +10,7 @@
 #include "src/Helpers/Thread.hpp"
 
 #include "src/TargetController/TargetController.hpp"
-#include "src/DebugServers/DebugServer.hpp"
+#include "src/DebugServers/DebugServerComponent.hpp"
 #include "src/Insight/Insight.hpp"
 #include "src/SignalHandler/SignalHandler.hpp"
 
@@ -85,7 +85,7 @@ namespace Bloom
          *
          * See the DebugServer and GdbRspDebugServer class for more on this.
          */
-        std::unique_ptr<DebugServers::DebugServer> debugServer = nullptr;
+        std::unique_ptr<DebugServers::DebugServerComponent> debugServer = nullptr;
         std::thread debugServerThread;
 
         /**
