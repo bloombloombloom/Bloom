@@ -3,8 +3,8 @@
 #include <vector>
 #include <memory>
 
-#include "src/DebugServers/GdbRsp/Packet.hpp"
-#include "src/DebugServers/GdbRsp/DebugSession.hpp"
+#include "src/DebugServer/GdbRsp/Packet.hpp"
+#include "src/DebugServer/GdbRsp/DebugSession.hpp"
 
 #include "src/TargetController/TargetControllerConsole.hpp"
 

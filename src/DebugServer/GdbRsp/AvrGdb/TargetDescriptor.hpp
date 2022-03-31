@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/DebugServers/GdbRsp/TargetDescriptor.hpp"
+#include "src/DebugServer/GdbRsp/TargetDescriptor.hpp"
 
 #include "src/Helpers/BiMap.hpp"
 

@@ -2,8 +2,8 @@
 
 #include <QtCore/QString>
 
-#include "src/DebugServers/GdbRsp/ResponsePackets/OkResponsePacket.hpp"
-#include "src/DebugServers/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
+#include "src/DebugServer/GdbRsp/ResponsePackets/OkResponsePacket.hpp"
+#include "src/DebugServer/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/Targets/TargetBreakpoint.hpp"
 

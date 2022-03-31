@@ -4,7 +4,7 @@
 
 #include "TargetDescriptor.hpp"
 
-#include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
+#include "src/DebugServer/GdbRsp/GdbRspDebugServer.hpp"
 
 namespace Bloom::DebugServer::Gdb::AvrGdb
 {

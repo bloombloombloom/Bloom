@@ -7,7 +7,7 @@
 #include <queue>
 #include <optional>
 
-#include "src/DebugServers/ServerInterface.hpp"
+#include "src/DebugServer/ServerInterface.hpp"
 
 #include "GdbDebugServerConfig.hpp"
 #include "src/EventManager/EventListener.hpp"

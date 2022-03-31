@@ -1,6 +1,6 @@
 #include "StepExecution.hpp"
 
-#include "src/DebugServers/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
+#include "src/DebugServer/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"

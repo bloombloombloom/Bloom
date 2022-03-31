@@ -10,7 +10,7 @@
 #include "src/Helpers/Thread.hpp"
 
 #include "src/TargetController/TargetController.hpp"
-#include "src/DebugServers/DebugServerComponent.hpp"
+#include "src/DebugServer/DebugServerComponent.hpp"
 #include "src/Insight/Insight.hpp"
 #include "src/SignalHandler/SignalHandler.hpp"
 

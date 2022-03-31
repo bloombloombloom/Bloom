@@ -2,14 +2,14 @@
 
 #include <QtCore/QString>
 
-#include "src/DebugServers/GdbRsp/Feature.hpp"
+#include "src/DebugServer/GdbRsp/Feature.hpp"
 
-#include "src/DebugServers/GdbRsp/ResponsePackets/SupportedFeaturesResponse.hpp"
-#include "src/DebugServers/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
+#include "src/DebugServer/GdbRsp/ResponsePackets/SupportedFeaturesResponse.hpp"
+#include "src/DebugServer/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
-#include "src/DebugServers/GdbRsp/Exceptions/ClientNotSupported.hpp"
+#include "src/DebugServer/GdbRsp/Exceptions/ClientNotSupported.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {

@@ -1,7 +1,7 @@
 #include "ReadRegisters.hpp"
 
-#include "src/DebugServers/GdbRsp/ResponsePackets/TargetStopped.hpp"
-#include "src/DebugServers/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
+#include "src/DebugServer/GdbRsp/ResponsePackets/TargetStopped.hpp"
+#include "src/DebugServer/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/Targets/TargetRegister.hpp"
 
