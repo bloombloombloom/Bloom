@@ -1,14 +1,14 @@
 ## DebugServer
 
 The DebugServer component exposes an interface to the connected target, for third-party programs such as IDEs. The 
-DebugServer run a dedicated thread. The entry point is `DebugServerComponent::run()`. Bloom's main thread will start 
+DebugServer runs on a dedicated thread. The entry point is `DebugServerComponent::run()`. Bloom's main thread will start 
 the DebugServer thread once the TargetController has been started. See `Applciation::startDebugServer()` for more.
 
 The DebugServer is designed to accommodate numerous server implementations. The interface exposed by the server is 
 implementation-defined. For example, the [AVR GDB server](./GdbRsp/AvrGdb/AvrGdbRsp.hpp) exposes an interface to the 
 connected AVR target, by implementing the 
 [GDB Remote Serial Protocol](https://sourceware.org/gdb/onlinedocs/gdb/Remote-Protocol.html), over a TCP/IP connection.
-Each server must implement the interface defined in the [ServerInterface class](./ServerInterface.hpp).
+Each server must implement the interface defined in the [`ServerInterface` class](./ServerInterface.hpp).
 
 At startup, the DebugServer will select the appropriate server implementation, based on the user's project 
 configuration (bloom.json - see [`DebugServerConfig`](../ProjectConfig.hpp)). Each server implementation is mapped to a 
@@ -34,11 +34,13 @@ method to ensure that events are processed ASAP. See the relevant documentation 
 
 ### Server implementations
 
-Currently, there is only one server implementation. Other may be added upon request.
-
-Note: If you're considering adding a new implementation yourself, please discuss this with me (Nav) before you begin.
-Creating a new server implementation is not an easy or quick job.
+Currently, there is only one server implementation. Others may be added upon request.
 
 | Server Name    | Brief Description | Documentation |
 |----------------|-------------------|---------------|
-| AVR GDB Server | An implementation of the GDB Remote Serial Protocol over TCP/IP.      | To follow       |
+| AVR GDB Server | An AVR-specific implementation of the GDB Remote Serial Protocol over TCP/IP.      | To follow       |
+
+#### Adding new server implementations
+
+If you're considering adding a new server implementation, please discuss this with me (Nav) before you begin. Creating 
+a new server implementation is not a trivial task.
