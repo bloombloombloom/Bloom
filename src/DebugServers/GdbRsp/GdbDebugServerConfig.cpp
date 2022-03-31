@@ -1,6 +1,6 @@
 #include "GdbDebugServerConfig.hpp"
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServer::Gdb
 {
     GdbDebugServerConfig::GdbDebugServerConfig(const DebugServerConfig& debugServerConfig)
         : DebugServerConfig(debugServerConfig)

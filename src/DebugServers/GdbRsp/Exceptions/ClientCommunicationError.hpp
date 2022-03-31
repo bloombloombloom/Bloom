@@ -2,7 +2,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServers::Gdb::Exceptions
+namespace Bloom::DebugServer::Gdb::Exceptions
 {
     /**
      * In the event that communication between the GDB RSP client and Bloom fails, a ClientCommunicationFailure

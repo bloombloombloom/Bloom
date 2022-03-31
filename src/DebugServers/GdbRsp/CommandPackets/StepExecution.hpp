@@ -5,7 +5,7 @@
 
 #include "CommandPacket.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     /**
      * The StepExecution class implements the structure for "s" command packets. Upon receiving this command, the

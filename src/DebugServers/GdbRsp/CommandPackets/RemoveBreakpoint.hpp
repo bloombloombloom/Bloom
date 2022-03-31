@@ -7,7 +7,7 @@
 #include "CommandPacket.hpp"
 #include "src/DebugServers/GdbRsp/BreakpointType.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     /**
      * The RemoveBreakpoint class implements the structure for "z" command packets. Upon receiving this command, the

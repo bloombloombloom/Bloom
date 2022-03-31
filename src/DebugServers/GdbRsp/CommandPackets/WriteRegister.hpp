@@ -5,7 +5,7 @@
 #include "CommandPacket.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     /**
      * The WriteRegisters class implements the structure for "P" packets. Upon receiving this packet,

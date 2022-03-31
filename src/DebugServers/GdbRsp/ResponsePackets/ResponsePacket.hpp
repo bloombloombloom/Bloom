@@ -5,7 +5,7 @@
 
 #include "src/DebugServers/GdbRsp/Packet.hpp"
 
-namespace Bloom::DebugServers::Gdb::ResponsePackets
+namespace Bloom::DebugServer::Gdb::ResponsePackets
 {
     /**
      * Upon receiving a CommandPacket from the connected GDB RSP client, the server is expected to respond with a

@@ -5,7 +5,7 @@
 #include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::DebugServers::Gdb::AvrGdb
+namespace Bloom::DebugServer::Gdb::AvrGdb
 {
     using Bloom::Targets::TargetRegisterDescriptor;
     using Bloom::Targets::TargetRegisterType;
@@ -13,7 +13,7 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
     using Bloom::Exceptions::Exception;
 
     TargetDescriptor::TargetDescriptor(const Bloom::Targets::TargetDescriptor& targetDescriptor)
-        : DebugServers::Gdb::TargetDescriptor(targetDescriptor)
+        : DebugServer::Gdb::TargetDescriptor(targetDescriptor)
     {
         this->loadRegisterMappings();
     }

@@ -11,7 +11,7 @@
 #include "src/Exceptions/Exception.hpp"
 #include "src/DebugServers/GdbRsp/Exceptions/ClientNotSupported.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     using ResponsePackets::SupportedFeaturesResponse;
     using ResponsePackets::ErrorResponsePacket;

@@ -2,7 +2,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServers::Gdb::Exceptions
+namespace Bloom::DebugServer::Gdb::Exceptions
 {
     /**
      * The GDB server may abort a debug session with the client, if an internal error occurs. One circumstance where

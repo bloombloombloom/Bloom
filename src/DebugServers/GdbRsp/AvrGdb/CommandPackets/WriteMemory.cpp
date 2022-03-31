@@ -6,7 +6,7 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServers::Gdb::AvrGdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::OkResponsePacket;

@@ -15,7 +15,7 @@
 #include "src/DebugServers/GdbRsp/Packet.hpp"
 #include "src/DebugServers/GdbRsp/ResponsePackets/ResponsePacket.hpp"
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServer::Gdb
 {
     /**
      * The Connection class represents an active connection between the GDB RSP server and client.

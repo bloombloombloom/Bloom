@@ -5,7 +5,7 @@
 #include "TargetDescriptor.hpp"
 #include "Connection.hpp"
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServer::Gdb
 {
     class DebugSession
     {

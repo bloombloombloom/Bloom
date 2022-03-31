@@ -2,7 +2,7 @@
 
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServer::Gdb
 {
     DebugSession::DebugSession(Connection&& connection, const TargetDescriptor& targetDescriptor)
         : connection(std::move(connection))

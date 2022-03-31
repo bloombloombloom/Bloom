@@ -6,7 +6,7 @@
 #include "CommandPacket.hpp"
 #include "../Feature.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     /**
      * The SupportedFeaturesQuery command packet is a query from the GDB client, requesting a list of GDB features

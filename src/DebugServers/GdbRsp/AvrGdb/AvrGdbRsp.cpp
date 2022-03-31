@@ -4,7 +4,7 @@
 #include "CommandPackets/ReadMemory.hpp"
 #include "CommandPackets/WriteMemory.hpp"
 
-namespace Bloom::DebugServers::Gdb::AvrGdb
+namespace Bloom::DebugServer::Gdb::AvrGdb
 {
     using namespace Bloom::Exceptions;
 
@@ -19,7 +19,7 @@ namespace Bloom::DebugServers::Gdb::AvrGdb
     {}
 
     void AvrGdbRsp::init() {
-        DebugServers::Gdb::GdbRspDebugServer::init();
+        DebugServer::Gdb::GdbRspDebugServer::init();
 
         this->gdbTargetDescriptor = TargetDescriptor(
             this->targetControllerConsole.getTargetDescriptor()

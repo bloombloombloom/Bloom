@@ -7,13 +7,13 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServers::Gdb::AvrGdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
      * The ReadMemory class implements a structure for "m" packets. Upon receiving these packets, the server is
      * expected to read memory from the target and send it the client.
      */
-    class AbstractMemoryAccessPacket: public Bloom::DebugServers::Gdb::CommandPackets::CommandPacket
+    class AbstractMemoryAccessPacket: public Bloom::DebugServer::Gdb::CommandPackets::CommandPacket
     {
     public:
         explicit AbstractMemoryAccessPacket(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {};

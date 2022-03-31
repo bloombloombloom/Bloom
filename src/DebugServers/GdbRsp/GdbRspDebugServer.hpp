@@ -27,7 +27,7 @@
 
 #include "src/Helpers/BiMap.hpp"
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServer::Gdb
 {
     /**
      * The GdbRspDebugServer is an implementation of a GDB server using the GDB Remote Serial Protocol.

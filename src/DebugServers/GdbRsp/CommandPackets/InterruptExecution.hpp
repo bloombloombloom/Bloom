@@ -2,7 +2,7 @@
 
 #include "CommandPacket.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     /**
      * The InterruptException class represents interrupt command packets. Upon receiving an interrupt packet, the

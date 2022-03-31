@@ -5,7 +5,7 @@
 
 #include "CommandPacket.hpp"
 
-namespace Bloom::DebugServers::Gdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     /**
      * The ContinueExecution class implements a structure for "c" packets. These packets instruct the server

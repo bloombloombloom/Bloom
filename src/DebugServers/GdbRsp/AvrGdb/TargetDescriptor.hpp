@@ -4,9 +4,9 @@
 
 #include "src/Helpers/BiMap.hpp"
 
-namespace Bloom::DebugServers::Gdb::AvrGdb
+namespace Bloom::DebugServer::Gdb::AvrGdb
 {
-    class TargetDescriptor: public DebugServers::Gdb::TargetDescriptor
+    class TargetDescriptor: public DebugServer::Gdb::TargetDescriptor
     {
     public:
         BiMap<GdbRegisterNumberType, RegisterDescriptor> registerDescriptorsByGdbNumber = {};

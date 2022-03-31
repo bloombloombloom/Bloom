@@ -2,7 +2,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServers::Gdb::Exceptions
+namespace Bloom::DebugServer::Gdb::Exceptions
 {
     /**
      * In the event that the GDB debug server determines that the connected client cannot be served,

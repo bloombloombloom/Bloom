@@ -2,7 +2,7 @@
 
 #include "ResponsePacket.hpp"
 
-namespace Bloom::DebugServers::Gdb::ResponsePackets
+namespace Bloom::DebugServer::Gdb::ResponsePackets
 {
     /**
      * OK response packet expected by the GDB client, in response to certain commands.

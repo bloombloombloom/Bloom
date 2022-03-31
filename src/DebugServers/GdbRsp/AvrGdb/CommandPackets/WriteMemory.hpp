@@ -5,7 +5,7 @@
 
 #include "AbstractMemoryAccessPacket.hpp"
 
-namespace Bloom::DebugServers::Gdb::AvrGdb::CommandPackets
+namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
      * The WriteMemory class implements the structure for "M" packets. Upon receiving this packet, the server is

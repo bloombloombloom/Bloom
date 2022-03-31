@@ -5,7 +5,7 @@
 #include "../StopReason.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
-namespace Bloom::DebugServers::Gdb::ResponsePackets
+namespace Bloom::DebugServer::Gdb::ResponsePackets
 {
     /**
      * The TargetStopped class implements the response packet structure for any commands that expect a "StopReply"

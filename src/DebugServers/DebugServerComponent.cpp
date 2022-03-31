@@ -8,7 +8,7 @@
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::DebugServers
+namespace Bloom::DebugServer
 {
     using namespace Bloom::Events;
 
@@ -38,7 +38,7 @@ namespace Bloom::DebugServers
             {
                 "avr-gdb-rsp",
                 [this] () -> std::unique_ptr<ServerInterface> {
-                    return std::make_unique<DebugServers::Gdb::AvrGdb::AvrGdbRsp>(
+                    return std::make_unique<DebugServer::Gdb::AvrGdb::AvrGdbRsp>(
                         this->debugServerConfig,
                         *(this->eventListener.get())
                     );

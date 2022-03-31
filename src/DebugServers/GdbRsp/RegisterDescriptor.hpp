@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServer::Gdb
 {
     using GdbRegisterNumberType = int;
 
@@ -56,10 +56,10 @@ namespace std
      * class).
      */
     template<>
-    class hash<Bloom::DebugServers::Gdb::RegisterDescriptor>
+    class hash<Bloom::DebugServer::Gdb::RegisterDescriptor>
     {
     public:
-        std::size_t operator () (const Bloom::DebugServers::Gdb::RegisterDescriptor& descriptor) const {
+        std::size_t operator () (const Bloom::DebugServer::Gdb::RegisterDescriptor& descriptor) const {
             // We use the GDB register number as the hash, as it is unique to the register.
             return static_cast<size_t>(descriptor.number);
         }

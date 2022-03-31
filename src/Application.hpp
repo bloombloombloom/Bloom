@@ -85,7 +85,7 @@ namespace Bloom
          *
          * See the DebugServer and GdbRspDebugServer class for more on this.
          */
-        std::unique_ptr<DebugServers::DebugServerComponent> debugServer = nullptr;
+        std::unique_ptr<DebugServer::DebugServerComponent> debugServer = nullptr;
         std::thread debugServerThread;
 
         /**

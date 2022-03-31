@@ -9,7 +9,7 @@
 
 #include "RegisterDescriptor.hpp"
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServer::Gdb
 {
     struct TargetDescriptor
     {

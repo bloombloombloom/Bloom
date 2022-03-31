@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Bloom::DebugServers
+namespace Bloom::DebugServer
 {
     class ServerInterface
     {

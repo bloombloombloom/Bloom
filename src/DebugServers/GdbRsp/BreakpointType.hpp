@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServer::Gdb
 {
     enum class BreakpointType: int
     {

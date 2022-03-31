@@ -6,7 +6,7 @@
 
 #include "src/DebugServers/GdbRsp/GdbRspDebugServer.hpp"
 
-namespace Bloom::DebugServers::Gdb::AvrGdb
+namespace Bloom::DebugServer::Gdb::AvrGdb
 {
     /**
      * The AVR GDB client (avr-gdb) defines a set of parameters relating to AVR targets. These parameters are

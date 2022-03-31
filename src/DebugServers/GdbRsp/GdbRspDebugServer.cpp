@@ -28,7 +28,7 @@
 // Response packets
 #include "ResponsePackets/TargetStopped.hpp"
 
-namespace Bloom::DebugServers::Gdb
+namespace Bloom::DebugServer::Gdb
 {
     using namespace Exceptions;
     using namespace Bloom::Exceptions;

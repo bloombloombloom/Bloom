@@ -390,12 +390,12 @@ namespace Bloom
     }
 
     void Application::startDebugServer() {
-        this->debugServer = std::make_unique<DebugServers::DebugServerComponent>(
+        this->debugServer = std::make_unique<DebugServer::DebugServerComponent>(
             this->debugServerConfig.value()
         );
 
         this->debugServerThread = std::thread(
-            &DebugServers::DebugServerComponent::run,
+            &DebugServer::DebugServerComponent::run,
             this->debugServer.get()
         );
 

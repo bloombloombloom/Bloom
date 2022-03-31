@@ -1,6 +1,6 @@
 #include "SupportedFeaturesResponse.hpp"
 
-namespace Bloom::DebugServers::Gdb::ResponsePackets
+namespace Bloom::DebugServer::Gdb::ResponsePackets
 {
     std::vector<unsigned char> SupportedFeaturesResponse::getData() const {
         std::string output = "qSupported:";

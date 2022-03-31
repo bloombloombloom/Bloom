@@ -6,7 +6,7 @@
 #include "ResponsePacket.hpp"
 #include "../Feature.hpp"
 
-namespace Bloom::DebugServers::Gdb::ResponsePackets
+namespace Bloom::DebugServer::Gdb::ResponsePackets
 {
     /**
      * The SupportedFeaturesResponse class implements the response packet structure for the "qSupported" command.
