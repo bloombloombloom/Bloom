@@ -5,15 +5,15 @@
 #include <set>
 
 #include "CommandPacket.hpp"
-#include "src/DebugServer/GdbRsp/BreakpointType.hpp"
+#include "src/DebugServer/Gdb/BreakpointType.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     /**
-     * The RemoveBreakpoint class implements the structure for "z" command packets. Upon receiving this command, the
-     * server is expected to remove a breakpoint at the specified address.
+     * The SetBreakpoint class implements the structure for "Z" command packets. Upon receiving this command, the
+     * server is expected to set a breakpoint at the specified address.
      */
-    class RemoveBreakpoint: public CommandPacket
+    class SetBreakpoint: public CommandPacket
     {
     public:
         /**
@@ -26,7 +26,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
         std::uint32_t address = 0;
 
-        explicit RemoveBreakpoint(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
+        explicit SetBreakpoint(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
             this->init();
         };
 

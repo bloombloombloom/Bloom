@@ -12,8 +12,8 @@
 #include "src/Helpers/EventNotifier.hpp"
 #include "src/Helpers/EpollInstance.hpp"
 
-#include "src/DebugServer/GdbRsp/Packet.hpp"
-#include "src/DebugServer/GdbRsp/ResponsePackets/ResponsePacket.hpp"
+#include "src/DebugServer/Gdb/Packet.hpp"
+#include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
 namespace Bloom::DebugServer::Gdb
 {

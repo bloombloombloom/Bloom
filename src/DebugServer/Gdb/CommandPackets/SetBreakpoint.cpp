@@ -1,9 +1,9 @@
-#include "RemoveBreakpoint.hpp"
+#include "SetBreakpoint.hpp"
 
 #include <QtCore/QString>
 
-#include "src/DebugServer/GdbRsp/ResponsePackets/OkResponsePacket.hpp"
-#include "src/DebugServer/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
+#include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
+#include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/Targets/TargetBreakpoint.hpp"
 
@@ -19,12 +19,12 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    void RemoveBreakpoint::init() {
+    void SetBreakpoint::init() {
         if (data.size() < 6) {
-            throw Exception("Unexpected RemoveBreakpoint packet size");
+            throw Exception("Unexpected SetBreakpoint packet size");
         }
 
-        // z0 = SW breakpoint, z1 = HW breakpoint
+        // Z0 = SW breakpoint, Z1 = HW breakpoint
         this->type = (data[1] == 0) ? BreakpointType::SOFTWARE_BREAKPOINT : (data[1] == 1) ?
             BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
 
@@ -35,29 +35,29 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
         auto packetSegments = packetData.split(",");
         if (packetSegments.size() < 3) {
-            throw Exception("Unexpected number of packet segments in RemoveBreakpoint packet");
+            throw Exception("Unexpected number of packet segments in SetBreakpoint packet");
         }
 
         bool conversionStatus = true;
         this->address = packetSegments.at(1).toUInt(&conversionStatus, 16);
 
         if (!conversionStatus) {
-            throw Exception("Failed to convert address hex value from RemoveBreakpoint packet.");
+            throw Exception("Failed to convert address hex value from SetBreakpoint packet.");
         }
     }
 
-    void RemoveBreakpoint::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
-        Logger::debug("Removing breakpoint at address " + std::to_string(this->address));
+    void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+        Logger::debug("Handling SetBreakpoint packet");
 
         try {
             auto breakpoint = TargetBreakpoint();
             breakpoint.address = this->address;
-            targetControllerConsole.removeBreakpoint(breakpoint);
+            targetControllerConsole.setBreakpoint(breakpoint);
 
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {
-            Logger::error("Failed to remove breakpoint on target - " + exception.getMessage());
+            Logger::error("Failed to set breakpoint on target - " + exception.getMessage());
             debugSession.connection.writePacket(ErrorResponsePacket());
         }
     }

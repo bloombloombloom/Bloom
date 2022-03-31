@@ -3,7 +3,7 @@
 #include <variant>
 
 // Debug server implementations
-#include "GdbRsp/AvrGdb/AvrGdbRsp.hpp"
+#include "Gdb/AvrGdb/AvrGdbRsp.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Logger/Logger.hpp"

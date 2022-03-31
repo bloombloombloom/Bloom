@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-#include "src/DebugServer/GdbRsp/Packet.hpp"
+#include "src/DebugServer/Gdb/Packet.hpp"
 
 namespace Bloom::DebugServer::Gdb::ResponsePackets
 {

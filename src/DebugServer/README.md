@@ -5,7 +5,7 @@ DebugServer runs on a dedicated thread. The entry point is `DebugServerComponent
 the DebugServer thread once the TargetController has been started. See `Applciation::startDebugServer()` for more.
 
 The DebugServer is designed to accommodate numerous server implementations. The interface exposed by the server is 
-implementation-defined. For example, the [AVR GDB server](./GdbRsp/AvrGdb/AvrGdbRsp.hpp) exposes an interface to the 
+implementation-defined. For example, the [AVR GDB server](./Gdb/AvrGdb/AvrGdbRsp.hpp) exposes an interface to the 
 connected AVR target, by implementing the 
 [GDB Remote Serial Protocol](https://sourceware.org/gdb/onlinedocs/gdb/Remote-Protocol.html), over a TCP/IP connection.
 Each server must implement the interface defined in the [`ServerInterface` class](./ServerInterface.hpp).
@@ -51,8 +51,8 @@ Key points:
 With an `EventNotifer` and `EpollInstance`, one can perform a blocking I/O operation which can be interrupted by an 
 event. For an example of this, see the AVR GDB server implementation - it employs the method described above to allow 
 the interruption of blocking I/O operations when an event is triggered. Specifically, 
-[`GdbRspDebugServer::waitForConnection()`](./GdbRsp/GdbRspDebugServer.hpp) or 
-[`Gdb::Connection::read()`](./GdbRsp/Connection.hpp).
+[`GdbRspDebugServer::waitForConnection()`](./Gdb/GdbRspDebugServer.hpp) or
+[`Gdb::Connection::read()`](./Gdb/Connection.hpp).
 
 ### Server implementations
 

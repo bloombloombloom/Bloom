@@ -1,7 +1,7 @@
 #include "ReadMemory.hpp"
 
-#include "src/DebugServer/GdbRsp/ResponsePackets/ErrorResponsePacket.hpp"
-#include "src/DebugServer/GdbRsp/ResponsePackets/ResponsePacket.hpp"
+#include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
+#include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"

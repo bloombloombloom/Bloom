@@ -126,27 +126,27 @@ add_executable(Bloom
 
     # Debug servers
     src/DebugServer/DebugServerComponent.cpp
-    src/DebugServer/GdbRsp/GdbRspDebugServer.cpp
-    src/DebugServer/GdbRsp/GdbDebugServerConfig.cpp
-    src/DebugServer/GdbRsp/Connection.cpp
-    src/DebugServer/GdbRsp/DebugSession.cpp
-    src/DebugServer/GdbRsp/CommandPackets/CommandPacket.cpp
-    src/DebugServer/GdbRsp/CommandPackets/SupportedFeaturesQuery.cpp
-    src/DebugServer/GdbRsp/CommandPackets/ReadRegisters.cpp
-    src/DebugServer/GdbRsp/CommandPackets/WriteRegister.cpp
-    src/DebugServer/GdbRsp/CommandPackets/ContinueExecution.cpp
-    src/DebugServer/GdbRsp/CommandPackets/StepExecution.cpp
-    src/DebugServer/GdbRsp/CommandPackets/InterruptExecution.cpp
-    src/DebugServer/GdbRsp/CommandPackets/SetBreakpoint.cpp
-    src/DebugServer/GdbRsp/CommandPackets/RemoveBreakpoint.cpp
-    src/DebugServer/GdbRsp/ResponsePackets/SupportedFeaturesResponse.cpp
+    src/DebugServer/Gdb/GdbRspDebugServer.cpp
+    src/DebugServer/Gdb/GdbDebugServerConfig.cpp
+    src/DebugServer/Gdb/Connection.cpp
+    src/DebugServer/Gdb/DebugSession.cpp
+    src/DebugServer/Gdb/CommandPackets/CommandPacket.cpp
+    src/DebugServer/Gdb/CommandPackets/SupportedFeaturesQuery.cpp
+    src/DebugServer/Gdb/CommandPackets/ReadRegisters.cpp
+    src/DebugServer/Gdb/CommandPackets/WriteRegister.cpp
+    src/DebugServer/Gdb/CommandPackets/ContinueExecution.cpp
+    src/DebugServer/Gdb/CommandPackets/StepExecution.cpp
+    src/DebugServer/Gdb/CommandPackets/InterruptExecution.cpp
+    src/DebugServer/Gdb/CommandPackets/SetBreakpoint.cpp
+    src/DebugServer/Gdb/CommandPackets/RemoveBreakpoint.cpp
+    src/DebugServer/Gdb/ResponsePackets/SupportedFeaturesResponse.cpp
 
     # AVR GDB Server
-    src/DebugServer/GdbRsp/AvrGdb/AvrGdbRsp.cpp
-    src/DebugServer/GdbRsp/AvrGdb/TargetDescriptor.cpp
-    src/DebugServer/GdbRsp/AvrGdb/CommandPackets/AbstractMemoryAccessPacket.cpp
-    src/DebugServer/GdbRsp/AvrGdb/CommandPackets/ReadMemory.cpp
-    src/DebugServer/GdbRsp/AvrGdb/CommandPackets/WriteMemory.cpp
+    src/DebugServer/Gdb/AvrGdb/AvrGdbRsp.cpp
+    src/DebugServer/Gdb/AvrGdb/TargetDescriptor.cpp
+    src/DebugServer/Gdb/AvrGdb/CommandPackets/AbstractMemoryAccessPacket.cpp
+    src/DebugServer/Gdb/AvrGdb/CommandPackets/ReadMemory.cpp
+    src/DebugServer/Gdb/AvrGdb/CommandPackets/WriteMemory.cpp
 
     # Insight
     src/Insight/Insight.cpp

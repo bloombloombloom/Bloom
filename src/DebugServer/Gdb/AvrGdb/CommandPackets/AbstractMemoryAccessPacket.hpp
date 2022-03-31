@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <optional>
 
-#include "src/DebugServer/GdbRsp/CommandPackets/CommandPacket.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
 

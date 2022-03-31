@@ -4,7 +4,7 @@
 
 #include "CommandPacket.hpp"
 
-#include "src/DebugServer/GdbRsp/RegisterDescriptor.hpp"
+#include "src/DebugServer/Gdb/RegisterDescriptor.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
