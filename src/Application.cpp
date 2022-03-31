@@ -20,8 +20,8 @@ namespace Bloom
             this->setName("Bloom");
 
             if (!arguments.empty()) {
-                auto firstArg = arguments.front();
-                auto commandsToCallbackMapping = this->getCommandToHandlerMapping();
+                const auto& firstArg = arguments.front();
+                const auto commandsToCallbackMapping = this->getCommandToHandlerMapping();
 
                 if (commandsToCallbackMapping.contains(firstArg)) {
                     // User has passed an argument that maps to a command callback - invoke the callback and shutdown
