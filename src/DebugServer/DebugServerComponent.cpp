@@ -26,6 +26,7 @@ namespace Bloom::DebugServer
                 this->server->run();
                 this->eventListener->dispatchCurrentEvents();
             }
+
         } catch (const std::exception& exception) {
             Logger::error("DebugServer fatal error: " + std::string(exception.what()));
         }

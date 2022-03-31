@@ -21,12 +21,8 @@ namespace Bloom::DebugServer
 {
     /**
      * The DebugServer exposes the connected target to third-party debugging software such as IDEs.
-     * The DebugServer runs on a dedicated thread which is kicked off shortly after the TargetController has been
-     * started.
      *
-     * All supported DebugServers should be derived from this class.
-     *
-     * Bloom currently only supports one DebugServer - the GdbRspDebugServer.
+     * See documentation in src/DebugServer/README.md for more.
      */
     class DebugServerComponent: public Thread
     {
