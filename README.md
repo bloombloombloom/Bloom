@@ -34,9 +34,9 @@ See source code in src/TargetController/ for more.
 
 ##### DebugServer
 The DebugServer exposes an interface to the connected target, for third-party programs such as IDEs. Currently, Bloom
-only supports one DebugServer - the GDB RSP server. With this server, any IDE with GDB RSP support can interface with
-Bloom and thus the connected target. The DebugServer runs on a dedicated thread.
-See source code in src/DebugServer/ for more.
+only supports one server - the AVR GDB RSP server. With this server, any IDE with GDB RSP support can interface with 
+Bloom and thus the connected AVR target. The DebugServer runs on a dedicated thread. See the 
+[DebugServer documentation](./src/DebugServer/README.md) and source code in src/DebugServer/ for more.
 
 ##### Insight
 Insight is a graphical user interface that provides insight into the connected target. It presents the target's 
@@ -54,7 +54,7 @@ The components described above interact with each other using an event-based mec
 
 ---
 
-### Compiling Bloom
+### Building Bloom
 To compile Bloom, the following dependencies must be resolved. The accompanying installation commands require support 
 for apt-get.
 
