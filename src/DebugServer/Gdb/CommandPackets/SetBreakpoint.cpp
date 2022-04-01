@@ -20,12 +20,12 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using Exceptions::Exception;
 
     void SetBreakpoint::init() {
-        if (data.size() < 6) {
+        if (this->data.size() < 6) {
             throw Exception("Unexpected SetBreakpoint packet size");
         }
 
         // Z0 = SW breakpoint, Z1 = HW breakpoint
-        this->type = (data[1] == 0) ? BreakpointType::SOFTWARE_BREAKPOINT : (data[1] == 1) ?
+        this->type = (this->data[1] == 0) ? BreakpointType::SOFTWARE_BREAKPOINT : (this->data[1] == 1) ?
             BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
 
         auto packetData = QString::fromLocal8Bit(
@@ -50,10 +50,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling SetBreakpoint packet");
 
         try {
-            auto breakpoint = TargetBreakpoint();
-            breakpoint.address = this->address;
-            targetControllerConsole.setBreakpoint(breakpoint);
-
+            targetControllerConsole.setBreakpoint(TargetBreakpoint(this->address));
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {
