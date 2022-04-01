@@ -5,15 +5,11 @@
 #include <functional>
 #include <memory>
 
-#include "src/TargetController/TargetControllerConsole.hpp"
-#include "src/EventManager/Events/Events.hpp"
-#include "src/EventManager/EventManager.hpp"
-#include "src/Exceptions/DebugServerInterrupted.hpp"
-#include "src/ProjectConfig.hpp"
 #include "src/Helpers/Thread.hpp"
-#include "src/Targets/TargetDescriptor.hpp"
-#include "src/Targets/TargetRegister.hpp"
-#include "src/Targets/TargetBreakpoint.hpp"
+#include "src/ProjectConfig.hpp"
+#include "src/Helpers/EventNotifier.hpp"
+#include "src/EventManager/EventListener.hpp"
+#include "src/EventManager/Events/Events.hpp"
 
 #include "ServerInterface.hpp"
 
@@ -31,37 +27,57 @@ namespace Bloom::DebugServer
 
         /**
          * Entry point for the DebugServer. This must called from a dedicated thread.
+         *
+         * See Application::startDebugServer() for more.
          */
         void run();
 
-    protected:
+    private:
+        /**
+         * The DebugServer's event listener.
+         *
+         * If a server implementation needs access to events, they should use this event listener as opposed to
+         * creating their own. See the AVR GDB server implementation for an example - there, we inject this event
+         * listener via AvrGdbRsp's constructor (see DebugServerComponent::getAvailableServersByName()).
+         */
         EventListenerPointer eventListener = std::make_shared<EventListener>("DebugServerEventListener");
 
+        /**
+         * Project configuration for the debug server (extracted from the user project's bloom.json).
+         */
         DebugServerConfig debugServerConfig;
 
-        TargetControllerConsole targetControllerConsole = TargetControllerConsole(*(this->eventListener));
-
         /**
-         * Enables the interruption of any blocking file IO.
+         * This EventNotifier is injected into this->eventListener. It can be used by server implementations to
+         * interrupt blocking I/O calls upon an event being triggered. For more, see the "Servicing events" section in
+         * the DebugServer documentation (src/DebugServer/README.md).
          */
         EventNotifier interruptEventNotifier = EventNotifier();
 
-    private:
+        /**
+         * An instance to the selected server implementation. See DebugServerComponent::startup() for more.
+         */
         std::unique_ptr<ServerInterface> server = nullptr;
 
+        /**
+         * Returns a mapping of server configuration names to lambdas/std::functions.
+         *
+         * The server configuration name is what the user will use in their project configuration (bloom.json), when
+         * selecting a debug server. It *must* be lower-case.
+         *
+         * The lambda should return an instance of the server implementation.
+         *
+         * @return
+         */
         std::map<std::string, std::function<std::unique_ptr<ServerInterface>()>> getAvailableServersByName();
 
         /**
-         * Prepares the debug server thread and then calls init().
-         *
-         * Derived classes should not override this method - they should instead use init().
+         * Prepares the debug server thread and then calls this->server->init().
          */
         void startup();
 
         /**
-         * Calls close() and updates the thread state.
-         *
-         * As with startup(), derived classes should not override this method. They should use close() instead.
+         * Calls this->server->close() and updates the thread state.
          */
         void shutdown();
 
@@ -71,12 +87,7 @@ namespace Bloom::DebugServer
          * @param state
          * @param emitEvent
          */
-        void setThreadStateAndEmitEvent(ThreadState state) {
-            Thread::setThreadState(state);
-            EventManager::triggerEvent(
-                std::make_shared<Events::DebugServerThreadStateChanged>(state)
-            );
-        }
+        void setThreadStateAndEmitEvent(ThreadState state);
 
         /**
          * Handles a shutdown request.

@@ -1,6 +1,6 @@
 #include "DebugServerComponent.hpp"
 
-#include <variant>
+#include "src/EventManager/EventManager.hpp"
 
 // Debug server implementations
 #include "Gdb/AvrGdb/AvrGdbRsp.hpp"
@@ -34,7 +34,10 @@ namespace Bloom::DebugServer
         this->shutdown();
     }
 
-    std::map<std::string, std::function<std::unique_ptr<ServerInterface>()>> DebugServerComponent::getAvailableServersByName() {
+    std::map<
+        std::string,
+        std::function<std::unique_ptr<ServerInterface>()>
+    > DebugServerComponent::getAvailableServersByName() {
         return std::map<std::string, std::function<std::unique_ptr<ServerInterface>()>> {
             {
                 "avr-gdb-rsp",
@@ -47,6 +50,7 @@ namespace Bloom::DebugServer
             },
         };
     }
+
     void DebugServerComponent::startup() {
         this->setName("DS");
         Logger::info("Starting DebugServer");
@@ -85,6 +89,13 @@ namespace Bloom::DebugServer
         this->server->close();
         this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
         EventManager::deregisterListener(this->eventListener->getId());
+    }
+
+    void DebugServerComponent::setThreadStateAndEmitEvent(ThreadState state) {
+        Thread::setThreadState(state);
+        EventManager::triggerEvent(
+            std::make_shared<Events::DebugServerThreadStateChanged>(state)
+        );
     }
 
     void DebugServerComponent::onShutdownDebugServerEvent(const Events::ShutdownDebugServer& event) {
