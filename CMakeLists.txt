@@ -37,7 +37,7 @@ set(CMAKE_BUILD_RPATH ${CMAKE_INSTALL_RPATH})
 
 add_compile_definitions(BLOOM_VERSION="${CMAKE_PROJECT_VERSION}")
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     add_compile_definitions(BLOOM_DEBUG_BUILD)
 
     # BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE can be used to override the file path used for compiled resources.
@@ -223,7 +223,7 @@ add_executable(Bloom
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
 target_include_directories(Bloom PUBLIC ./)
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     # When Qt isn't playing nice, it's very useful to have access to the Qt source code, to step through.
     # The QT source directory is specified as an include path just so that CLion can navigate to the Qt implementation
     # files, during debugging. No QT headers are actually included via this method. Feel free to comment this out if
