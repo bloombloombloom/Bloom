@@ -58,7 +58,7 @@ The components described above interact with each other using an event-based mec
 To compile Bloom, the following dependencies must be resolved. The accompanying installation commands require support 
 for apt-get.
 
-#### CMake version 3.12 or later:
+#### CMake version 3.22 or later:
 This can be installed via `sudo apt-get install cmake`, provided the appropriate version is available in your OS package
 repositories. Otherwise, you'll need to download CMake from the official website.
 
