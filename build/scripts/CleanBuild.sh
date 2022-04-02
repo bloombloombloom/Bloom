@@ -6,6 +6,7 @@ rm -fr build/cmake-build-debug/*; rm -fr build/cmake-build-release/*;
 
 rm -fr release;
 rm -fr Bloom-*.deb;
+rm -fr Bloom-*.rpm;
 rm -fr "_CPack_Packages";
 
 export CMAKE_PREFIX_PATH=/opt/Qt/6.1.2/gcc_64/

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 project(Bloom LANGUAGES CXX VERSION 0.8.2)
 
+set(CMAKE_PROJECT_HOMEPAGE_URL "https://bloom.oscillate.io")
+
 set(CMAKE_VERBOSE_MAKEFILE off)
 
 # Create directory for generated sources
@@ -374,21 +376,12 @@ install(
     DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
 )
 
-# Debian package configuration
-set(CPACK_GENERATOR "DEB")
-set(CPACK_DEBIAN_PACKAGE_NAME "Bloom")
-set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "")
-file(READ ${CMAKE_CURRENT_SOURCE_DIR}/resources/packaging/description.txt CPACK_DEBIAN_PACKAGE_DESCRIPTION)
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A debug interface for embedded systems development on Linux")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Bloom Support <support@bloom.oscillate.io>")
-set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://bloom.oscillate.io")
-set(CPACK_PACKAGE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/bloom")
-set(
-    CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources/packaging/postinst;
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources/packaging/postrm
+configure_file(
+    "${PROJECT_SOURCE_DIR}/CPack.cmake"
+    "${PROJECT_BINARY_DIR}/CPack.cmake"
 )
+
+set(CPACK_GENERATOR "DEB;RPM")
+set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CPack.cmake")
 
 include(CPack)
