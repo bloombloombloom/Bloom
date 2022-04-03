@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.12)
-project(Bloom LANGUAGES CXX VERSION 0.8.3)
+cmake_minimum_required(VERSION 3.22)
 
+project(Bloom LANGUAGES CXX VERSION 0.8.3)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://bloom.oscillate.io")
 
 set(CMAKE_VERBOSE_MAKEFILE off)
@@ -73,6 +73,80 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     target_include_directories(Bloom PUBLIC /opt/Qt/6.1.2/Src)
 endif()
 
+target_link_libraries(Bloom -static-libgcc -static-libstdc++)
+target_link_libraries(Bloom -lstdc++fs)
+target_link_libraries(Bloom -lpthread)
+target_link_libraries(Bloom -lusb-1.0)
+target_link_libraries(Bloom -lhidapi-libusb)
+target_link_libraries(Bloom Qt6::Core)
+target_link_libraries(Bloom Qt6::Gui)
+target_link_libraries(Bloom Qt6::UiTools)
+target_link_libraries(Bloom Qt6::Widgets)
+target_link_libraries(Bloom Qt6::Xml)
+target_link_libraries(Bloom Qt6::Svg)
+target_link_libraries(Bloom Qt6::SvgWidgets)
+target_link_libraries(Bloom Qt6::Network)
+
+target_compile_options(
+    Bloom
+    PUBLIC -std=c++2a
+    PUBLIC -pedantic
+    PUBLIC -Wconversion
+    PUBLIC -Wpessimizing-move
+    PUBLIC -Wredundant-move
+    PUBLIC -fno-sized-deallocation
+    PUBLIC $<$<CONFIG:DEBUG>:-g>
+    PUBLIC $<$<CONFIG:DEBUG>:-O0>
+    #    PUBLIC $<$<CONFIG:DEBUG>:-O3>
+    PUBLIC $<$<CONFIG:RELEASE>:-Ofast>
+    PUBLIC $<$<CONFIG:DEBUG>:-fno-inline>
+    PUBLIC $<$<CONFIG:DEBUG>:-fkeep-static-functions>
+)
+
+target_link_options(
+    Bloom
+    PUBLIC [=[-Wl,--disable-new-dtags]=] #,--verbose
+)
+
+if (${ENABLE_SANITIZERS})
+    message(WARNING "Sanitizers have been enabled")
+
+    # For TSAN, see ThreadSanitizerSuppression.txt
+
+    # Some sanitizers are not compatible with each other.
+    target_compile_options(
+        Bloom
+        PUBLIC "-fsanitize=address"
+        #PUBLIC "-fsanitize=undefined"
+        #        PUBLIC "-fsanitize=thread"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=address>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=undefined>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=integer-divide-by-zero>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=unreachable>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=vla-bound>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=null>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=return>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=signed-integer-overflow>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=bounds>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=alignment>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=object-size>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=float-divide-by-zero>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=float-cast-overflow>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=nonnull-attribute>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=returns-nonnull-attribute>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=bool>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=enum>"
+        #        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=vptr>"
+    )
+
+    target_link_libraries(
+        Bloom
+        "-fsanitize=address"
+        #        "-fsanitize=undefined"
+        #        "-fsanitize=thread"
+    )
+endif()
+
 # Copy AVR8 TDFs to build directory and construct JSON mapping of AVR8 target signatures to TDF paths.
 add_custom_command(
     OUTPUT
@@ -114,80 +188,6 @@ add_custom_command(
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/udevrules/99-bloom.rules
     ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/UDevRules/99-bloom.rules
 )
-
-target_link_libraries(Bloom -static-libgcc -static-libstdc++)
-target_link_libraries(Bloom -lstdc++fs)
-target_link_libraries(Bloom -lpthread)
-target_link_libraries(Bloom -lusb-1.0)
-target_link_libraries(Bloom -lhidapi-libusb)
-target_link_libraries(Bloom Qt6::Core)
-target_link_libraries(Bloom Qt6::Gui)
-target_link_libraries(Bloom Qt6::UiTools)
-target_link_libraries(Bloom Qt6::Widgets)
-target_link_libraries(Bloom Qt6::Xml)
-target_link_libraries(Bloom Qt6::Svg)
-target_link_libraries(Bloom Qt6::SvgWidgets)
-target_link_libraries(Bloom Qt6::Network)
-
-target_compile_options(
-    Bloom
-    PUBLIC -std=c++2a
-    PUBLIC -pedantic
-    PUBLIC -Wconversion
-    PUBLIC -Wpessimizing-move
-    PUBLIC -Wredundant-move
-    PUBLIC -fno-sized-deallocation
-    PUBLIC $<$<CONFIG:DEBUG>:-g>
-    PUBLIC $<$<CONFIG:DEBUG>:-O0>
-#    PUBLIC $<$<CONFIG:DEBUG>:-O3>
-    PUBLIC $<$<CONFIG:RELEASE>:-Ofast>
-    PUBLIC $<$<CONFIG:DEBUG>:-fno-inline>
-    PUBLIC $<$<CONFIG:DEBUG>:-fkeep-static-functions>
-)
-
-target_link_options(
-    Bloom
-    PUBLIC [=[-Wl,--disable-new-dtags]=] #,--verbose
-)
-
-if (${ENABLE_SANITIZERS})
-    message(WARNING "Sanitizers have been enabled")
-
-    # For TSAN, see ThreadSanitizerSuppression.txt
-
-    # Some sanitizers are not compatible with each other.
-    target_compile_options(
-        Bloom
-        PUBLIC "-fsanitize=address"
-        #PUBLIC "-fsanitize=undefined"
-#        PUBLIC "-fsanitize=thread"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=address>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=undefined>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=integer-divide-by-zero>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=unreachable>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=vla-bound>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=null>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=return>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=signed-integer-overflow>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=bounds>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=alignment>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=object-size>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=float-divide-by-zero>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=float-cast-overflow>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=nonnull-attribute>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=returns-nonnull-attribute>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=bool>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=enum>"
-#        PUBLIC "$<$<BOOL:${ENABLE_SANITIZERS}>:-fsanitize=vptr>"
-    )
-
-    target_link_libraries(
-        Bloom
-        "-fsanitize=address"
-#        "-fsanitize=undefined"
-#        "-fsanitize=thread"
-    )
-endif()
 
 # Installation configuration
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/release/")
