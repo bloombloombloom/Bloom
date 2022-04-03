@@ -32,6 +32,8 @@ running (it hasn't received an event which triggers a shutdown), the `ServerInte
 again, and control will be handed back to the server implementation. The AVR GDB server implementation employs this 
 method to ensure that events are processed ASAP. See the relevant documentation for more.
 
+---
+
 Any blocking I/O employed by a server implementation can support event interrupts using an 
 [`EventNotifier`](../Helpers/EventNotifier.hpp) and [`EpollInstance`](../Helpers/EpollInstance.hpp). 
 
@@ -54,13 +56,15 @@ the interruption of blocking I/O operations when an event is triggered. Specific
 [`GdbRspDebugServer::waitForConnection()`](./Gdb/GdbRspDebugServer.hpp) or
 [`Gdb::Connection::read()`](./Gdb/Connection.hpp).
 
+---
+
 ### Server implementations
 
 Currently, there is only one server implementation. Others may be added upon request.
 
-| Server Name    | Brief Description | Documentation |
-|----------------|-------------------|---------------|
-| AVR GDB Server | An AVR-specific implementation of the GDB Remote Serial Protocol over TCP/IP.      | To follow       |
+| Server Name    | Brief Description                                                             | Documentation                                     |
+|----------------|-------------------------------------------------------------------------------|---------------------------------------------------|
+| AVR GDB Server | An AVR-specific implementation of the GDB Remote Serial Protocol over TCP/IP. | [/src/DebugServer/Gdb/README.md](./Gdb/README.md) |
 
 #### Adding new server implementations
 
