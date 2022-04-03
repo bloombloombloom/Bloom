@@ -6,8 +6,6 @@ namespace Bloom::Widgets
         const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex
     ) {
         static constexpr int leftMargin = 10;
-        static const auto margins = QMargins(0, 10, 0, 0);
-
         const auto newRowCount = byteItemsByRowIndex.size();
         const auto layoutItemMaxIndex = static_cast<int>(this->addressItemsByRowIndex.size() - 1);
 

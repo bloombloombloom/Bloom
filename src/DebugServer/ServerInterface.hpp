@@ -4,6 +4,11 @@
 
 namespace Bloom::DebugServer
 {
+    /**
+     * Every debug server must implement this interface.
+     *
+     * See documentation in src/DebugServer/README.md for more.
+     */
     class ServerInterface
     {
     public:

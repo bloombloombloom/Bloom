@@ -71,9 +71,9 @@ namespace Bloom
          */
         static inline std::string compiledResourcesPath() {
 #ifdef BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE
-            return std::string(BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE);
+            return {BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE};
 #else
-            return std::string(":/compiled");
+            return {":/compiled"};
 #endif
         }
 
@@ -87,9 +87,9 @@ namespace Bloom
          */
         static inline std::string homeDomainName() {
 #ifdef BLOOM_HOME_DOMAIN_NAME_OVERRIDE
-            return std::string(BLOOM_HOME_DOMAIN_NAME_OVERRIDE);
+            return {BLOOM_HOME_DOMAIN_NAME_OVERRIDE};
 #else
-            return std::string("https://bloom.oscillate.io");
+            return {"https://bloom.oscillate.io"};
 #endif
         }
     };

@@ -11,6 +11,9 @@
 
 namespace Bloom::DebugServer::Gdb
 {
+    /**
+     * GDB target descriptor.
+     */
     struct TargetDescriptor
     {
         Targets::TargetDescriptor targetDescriptor;
