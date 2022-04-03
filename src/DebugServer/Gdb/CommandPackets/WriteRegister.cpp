@@ -20,7 +20,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    void WriteRegister::init() {
+    WriteRegister::WriteRegister(const std::vector<unsigned char>& rawPacket)
+        : CommandPacket(rawPacket)
+    {
         // The P packet updates a single register
         auto packet = std::string(this->data.begin(), this->data.end());
 
@@ -42,7 +44,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling WriteRegister packet");
 
         try {
-            auto targetRegisterDescriptor = debugSession.targetDescriptor.getTargetRegisterDescriptorFromNumber(this->registerNumber);
+            auto targetRegisterDescriptor = debugSession.targetDescriptor.getTargetRegisterDescriptorFromNumber(
+                this->registerNumber
+            );
 
             const auto valueSize = this->registerValue.size();
             if (valueSize > 0 && valueSize > targetRegisterDescriptor.size) {
@@ -57,7 +61,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                 }
 
                 if (this->registerValue.size() > targetRegisterDescriptor.size) {
-                    const auto& gdbRegisterDescriptor = debugSession.targetDescriptor.getRegisterDescriptorFromNumber(this->registerNumber);
+                    const auto& gdbRegisterDescriptor = debugSession.targetDescriptor.getRegisterDescriptorFromNumber(
+                        this->registerNumber
+                    );
                     throw Exception("Cannot set value for " + gdbRegisterDescriptor.name
                         + " - value size exceeds register size."
                     );
@@ -67,6 +73,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             targetControllerConsole.writeRegisters({
                 TargetRegister(targetRegisterDescriptor, this->registerValue)
             });
+
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {

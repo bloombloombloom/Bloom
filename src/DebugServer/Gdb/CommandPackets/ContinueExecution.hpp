@@ -24,13 +24,8 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
         std::optional<std::uint32_t> fromProgramCounter;
 
-        explicit ContinueExecution(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
-            init();
-        }
+        explicit ContinueExecution(const std::vector<unsigned char>& rawPacket);
 
         void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
-
-    private:
-        void init();
     };
 }

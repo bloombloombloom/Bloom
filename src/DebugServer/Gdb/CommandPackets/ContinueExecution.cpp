@@ -10,7 +10,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using ResponsePackets::ErrorResponsePacket;
     using Exceptions::Exception;
 
-    void ContinueExecution::init() {
+    ContinueExecution::ContinueExecution(const std::vector<unsigned char>& rawPacket)
+        : CommandPacket(rawPacket)
+    {
         if (this->data.size() > 1) {
             this->fromProgramCounter = static_cast<std::uint32_t>(
                 std::stoi(std::string(this->data.begin(), this->data.end()), nullptr, 16)

@@ -17,7 +17,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    void ReadRegisters::init() {
+    ReadRegisters::ReadRegisters(const std::vector<unsigned char>& rawPacket)
+        : CommandPacket(rawPacket)
+    {
         if (this->data.size() >= 2 && this->data.front() == 'p') {
             // This command packet is requesting a specific register
             this->registerNumber = static_cast<size_t>(

@@ -19,10 +19,12 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using Bloom::Exceptions::Exception;
     using Gdb::Exceptions::ClientNotSupported;
 
-    void SupportedFeaturesQuery::init() {
+    SupportedFeaturesQuery::SupportedFeaturesQuery(const std::vector<unsigned char>& rawPacket)
+        : CommandPacket(rawPacket)
+    {
         /*
-         * For qSupported packets, supported and unsupported GDB features are reported in the packet
-         * data, where each GDB feature is separated by a semicolon.
+         * For qSupported packets, supported and unsupported GDB features are reported in the packet data, where each
+         * GDB feature is separated by a semicolon.
          */
 
         // The "qSupported:" prefix occupies 11 bytes

@@ -17,13 +17,8 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         int registerNumber = 0;
         std::vector<unsigned char> registerValue;
 
-        explicit WriteRegister(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
-            init();
-        };
+        explicit WriteRegister(const std::vector<unsigned char>& rawPacket);
 
         void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
-
-    private:
-        void init();
     };
 }
