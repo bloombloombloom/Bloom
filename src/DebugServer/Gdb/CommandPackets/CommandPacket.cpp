@@ -20,26 +20,35 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using Exceptions::Exception;
 
     void CommandPacket::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
-        auto packetData = this->getData();
-        auto packetString = std::string(packetData.begin(), packetData.end());
+        const auto packetString = std::string(this->data.begin(), this->data.end());
+
+        if (packetString.empty()) {
+            Logger::error("Empty GDB RSP packet received.");
+            debugSession.connection.writePacket(ErrorResponsePacket());
+            return;
+        }
 
         if (packetString[0] == '?') {
             // Status report
             debugSession.connection.writePacket(TargetStopped(Signal::TRAP));
+            return;
+        }
 
-        } else if (packetString[0] == 'D') {
+        if (packetString[0] == 'D') {
             // Detach packet - there's not really anything we need to do here, so just respond with an OK
             debugSession.connection.writePacket(OkResponsePacket());
+            return;
+        }
 
-        } else if (packetString.find("qAttached") == 0) {
+        if (packetString.find("qAttached") == 0) {
             Logger::debug("Handling qAttached");
             debugSession.connection.writePacket(ResponsePacket({1}));
-
-        } else {
-            Logger::debug("Unknown GDB RSP packet: " + packetString + " - returning empty response");
-
-            // Respond with an empty packet
-            debugSession.connection.writePacket(ResponsePacket({0}));
+            return;
         }
+
+        Logger::debug("Unknown GDB RSP packet: " + packetString + " - returning empty response");
+
+        // Respond with an empty packet
+        debugSession.connection.writePacket(ResponsePacket({0}));
     }
 }
