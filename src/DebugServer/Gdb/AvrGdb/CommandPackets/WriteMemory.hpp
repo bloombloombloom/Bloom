@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <optional>
 
-#include "AbstractMemoryAccessPacket.hpp"
+#include "MemoryAccessCommandPacket.hpp"
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -11,15 +11,22 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
      * The WriteMemory class implements the structure for "M" packets. Upon receiving this packet, the server is
      * expected to write data to the target's memory, at the specified start address.
      */
-    class WriteMemory: public AbstractMemoryAccessPacket
+    class WriteMemory: public MemoryAccessCommandPacket
     {
     public:
         /**
-         * Like with the ReadMemory command packet, the start address carries additional bits that indicate
-         * the memory type.
+         * Start address of the memory operation.
          */
         std::uint32_t startAddress = 0;
 
+        /**
+         * The type of memory to read from.
+         */
+        Targets::TargetMemoryType memoryType = Targets::TargetMemoryType::FLASH;
+
+        /**
+         * Data to write.
+         */
         Targets::TargetMemoryBuffer buffer;
 
         explicit WriteMemory(const std::vector<unsigned char>& rawPacket);

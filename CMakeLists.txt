@@ -144,7 +144,6 @@ add_executable(Bloom
     # AVR GDB Server
     src/DebugServer/Gdb/AvrGdb/AvrGdbRsp.cpp
     src/DebugServer/Gdb/AvrGdb/TargetDescriptor.cpp
-    src/DebugServer/Gdb/AvrGdb/CommandPackets/AbstractMemoryAccessPacket.cpp
     src/DebugServer/Gdb/AvrGdb/CommandPackets/ReadMemory.cpp
     src/DebugServer/Gdb/AvrGdb/CommandPackets/WriteMemory.cpp
 

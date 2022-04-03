@@ -14,7 +14,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     using namespace Bloom::Exceptions;
 
     WriteMemory::WriteMemory(const std::vector<unsigned char>& rawPacket)
-        : AbstractMemoryAccessPacket(rawPacket)
+        : MemoryAccessCommandPacket(rawPacket)
     {
         if (this->data.size() < 4) {
             throw Exception("Invalid packet length");
@@ -37,11 +37,14 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         }
 
         bool conversionStatus = false;
-        this->startAddress = packetSegments.at(0).toUInt(&conversionStatus, 16);
+        const auto gdbStartAddress = packetSegments.at(0).toUInt(&conversionStatus, 16);
 
         if (!conversionStatus) {
             throw Exception("Failed to parse start address from write memory packet data");
         }
+
+        this->memoryType = this->getMemoryTypeFromGdbAddress(gdbStartAddress);
+        this->startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(gdbStartAddress);
 
         auto lengthAndBufferSegments = packetSegments.at(1).split(":");
         if (lengthAndBufferSegments.size() != 2) {
@@ -67,16 +70,17 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::debug("Handling WriteMemory packet");
 
         try {
-            const auto memoryType = this->getMemoryTypeFromGdbAddress(this->startAddress);
-
-            if (memoryType == Targets::TargetMemoryType::FLASH) {
+            if (this->memoryType == Targets::TargetMemoryType::FLASH) {
                 throw Exception(
                     "GDB client requested a flash memory write - This is not currently supported by Bloom."
                 );
             }
 
-            const auto startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(this->startAddress);
-            targetControllerConsole.writeMemory(memoryType, startAddress, this->buffer);
+            targetControllerConsole.writeMemory(
+                this->memoryType,
+                this->startAddress,
+                this->buffer
+            );
 
             debugSession.connection.writePacket(OkResponsePacket());
 

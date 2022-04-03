@@ -10,13 +10,21 @@
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
-     * The ReadMemory class implements a structure for "m" packets. Upon receiving these packets, the server is
-     * expected to read memory from the target and send it the client.
+     * The MemoryAccessCommandPacket class is a base class for memory access GDB commands that are specific to the AVR
+     * architecture.
+     *
+     * With the GDB implementation for the AVR architecture, read/write memory commands include a special memory
+     * address. The memory type (FLASH, RAM, EEPROM, etc) is embedded within the 7 most significant bits of the memory
+     * address.
+     *
+     * This class provides functions to extract and remove the memory type from a given memory address.
      */
-    class AbstractMemoryAccessPacket: public Bloom::DebugServer::Gdb::CommandPackets::CommandPacket
+    class MemoryAccessCommandPacket: public Bloom::DebugServer::Gdb::CommandPackets::CommandPacket
     {
     public:
-        explicit AbstractMemoryAccessPacket(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {};
+        explicit MemoryAccessCommandPacket(const std::vector<unsigned char>& rawPacket)
+            : CommandPacket(rawPacket)
+        {};
 
     protected:
         /**
@@ -32,7 +40,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          * @return
          */
         Targets::TargetMemoryType getMemoryTypeFromGdbAddress(std::uint32_t address) {
-            if ((address & AbstractMemoryAccessPacket::AVR_GDB_MEMORY_ADDRESS_MASK) != 0U) {
+            if ((address & MemoryAccessCommandPacket::AVR_GDB_MEMORY_ADDRESS_MASK) != 0U) {
                 return Targets::TargetMemoryType::RAM;
             }
 
@@ -46,8 +54,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          * @return
          */
         std::uint32_t removeMemoryTypeIndicatorFromGdbAddress(std::uint32_t address) {
-            return (address & AbstractMemoryAccessPacket::AVR_GDB_MEMORY_ADDRESS_MASK) != 0U
-                ? (address & ~(AbstractMemoryAccessPacket::AVR_GDB_MEMORY_ADDRESS_MASK))
+            return (address & MemoryAccessCommandPacket::AVR_GDB_MEMORY_ADDRESS_MASK) != 0U
+                ? (address & ~(MemoryAccessCommandPacket::AVR_GDB_MEMORY_ADDRESS_MASK))
                 : address;
         }
     };

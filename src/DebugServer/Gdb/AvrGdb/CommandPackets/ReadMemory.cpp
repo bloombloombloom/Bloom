@@ -14,7 +14,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     using Exceptions::Exception;
 
     ReadMemory::ReadMemory(const std::vector<unsigned char>& rawPacket)
-        : AbstractMemoryAccessPacket(rawPacket)
+        : MemoryAccessCommandPacket(rawPacket)
     {
         if (this->data.size() < 4) {
             throw Exception("Invalid packet length");
@@ -38,11 +38,14 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         }
 
         bool conversionStatus = false;
-        this->startAddress = packetSegments.at(0).toUInt(&conversionStatus, 16);
+        const auto gdbStartAddress = packetSegments.at(0).toUInt(&conversionStatus, 16);
 
         if (!conversionStatus) {
             throw Exception("Failed to parse start address from read memory packet data");
         }
+
+        this->memoryType = this->getMemoryTypeFromGdbAddress(gdbStartAddress);
+        this->startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(gdbStartAddress);
 
         this->bytes = packetSegments.at(1).toUInt(&conversionStatus, 16);
 
@@ -55,9 +58,11 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::debug("Handling ReadMemory packet");
 
         try {
-            auto memoryType = this->getMemoryTypeFromGdbAddress(this->startAddress);
-            auto startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(this->startAddress);
-            auto memoryBuffer = targetControllerConsole.readMemory(memoryType, startAddress, this->bytes);
+            auto memoryBuffer = targetControllerConsole.readMemory(
+                this->memoryType,
+                this->startAddress,
+                this->bytes
+            );
 
             auto hexMemoryBuffer = Packet::dataToHex(memoryBuffer);
             debugSession.connection.writePacket(

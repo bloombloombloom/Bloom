@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <optional>
 
-#include "AbstractMemoryAccessPacket.hpp"
+#include "MemoryAccessCommandPacket.hpp"
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -11,14 +11,18 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
      * The ReadMemory class implements a structure for "m" packets. Upon receiving these packets, the server is
      * expected to read memory from the target and send it the client.
      */
-    class ReadMemory: public AbstractMemoryAccessPacket
+    class ReadMemory: public MemoryAccessCommandPacket
     {
     public:
         /**
-         * The startAddress sent from the GDB client will include additional bits used to indicate the memory type.
-         * These bits have to be removed from the address before it can be used as a start address.
+         * Start address of the memory operation.
          */
         std::uint32_t startAddress = 0;
+
+        /**
+         * The type of memory to read from.
+         */
+        Targets::TargetMemoryType memoryType = Targets::TargetMemoryType::FLASH;
 
         /**
          * Number of bytes to read.
