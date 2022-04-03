@@ -15,7 +15,7 @@ namespace Bloom::Widgets
     class ByteAddressContainer: public QGraphicsItem
     {
     public:
-        static constexpr int WIDTH = 85;
+        static constexpr int WIDTH = 88;
 
         ByteAddressContainer() = default;
 

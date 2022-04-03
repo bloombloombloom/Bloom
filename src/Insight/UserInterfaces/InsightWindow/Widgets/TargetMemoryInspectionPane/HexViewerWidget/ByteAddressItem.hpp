@@ -12,7 +12,7 @@ namespace Bloom::Widgets
     class ByteAddressItem: public QGraphicsItem
     {
     public:
-        static constexpr int WIDTH = 84;
+        static constexpr int WIDTH = 75;
         static constexpr int HEIGHT = ByteItem::HEIGHT;
 
         ByteAddressItem(QGraphicsItem* parent): QGraphicsItem(parent) {};

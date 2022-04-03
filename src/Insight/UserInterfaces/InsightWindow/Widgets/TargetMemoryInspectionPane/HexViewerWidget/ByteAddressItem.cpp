@@ -26,6 +26,6 @@ namespace Bloom::Widgets
 
         painter->setFont(font);
         painter->setPen(fontColor);
-        painter->drawText(widgetRect, Qt::AlignCenter, this->addressHex);
+        painter->drawText(widgetRect, Qt::AlignLeft, this->addressHex);
     }
 }

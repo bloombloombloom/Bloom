@@ -5,6 +5,7 @@ namespace Bloom::Widgets
     void ByteAddressContainer::adjustAddressLabels(
         const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex
     ) {
+        static constexpr int leftMargin = 10;
         static const auto margins = QMargins(0, 10, 0, 0);
 
         const auto newRowCount = byteItemsByRowIndex.size();
@@ -30,7 +31,7 @@ namespace Bloom::Widgets
             const auto& firstByteItem = byteItems.front();
             addressLabel->setAddressHex(firstByteItem->relativeAddressHex);
             addressLabel->setPos(
-                0,
+                leftMargin,
                 firstByteItem->pos().y()
             );
         }
