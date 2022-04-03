@@ -22,13 +22,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
         Targets::TargetMemoryBuffer buffer;
 
-        explicit WriteMemory(const std::vector<unsigned char>& rawPacket): AbstractMemoryAccessPacket(rawPacket) {
-            init();
-        };
+        explicit WriteMemory(const std::vector<unsigned char>& rawPacket);
 
         void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
-
-    private:
-        void init();
     };
 }

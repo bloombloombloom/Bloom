@@ -13,7 +13,9 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Bloom::Exceptions;
 
-    void WriteMemory::init() {
+    WriteMemory::WriteMemory(const std::vector<unsigned char>& rawPacket)
+        : AbstractMemoryAccessPacket(rawPacket)
+    {
         if (this->data.size() < 4) {
             throw Exception("Invalid packet length");
         }

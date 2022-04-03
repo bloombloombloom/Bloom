@@ -15,11 +15,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     {
     public:
         /**
-         * The startAddress sent from the GDB client may include additional bits used to indicate the memory type.
-         * These bits have to be removed from the address before it can be used as a start address. This is not done
-         * here, as it's target specific.
-         *
-         * For an example of where GDB does this, see the AvrGdbRsp class.
+         * The startAddress sent from the GDB client will include additional bits used to indicate the memory type.
+         * These bits have to be removed from the address before it can be used as a start address.
          */
         std::uint32_t startAddress = 0;
 
@@ -28,13 +25,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          */
         std::uint32_t bytes = 0;
 
-        explicit ReadMemory(const std::vector<unsigned char>& rawPacket): AbstractMemoryAccessPacket(rawPacket) {
-            init();
-        };
+        explicit ReadMemory(const std::vector<unsigned char>& rawPacket);
 
         void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
-
-    protected:
-        void init();
     };
 }

@@ -13,7 +13,9 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
     using Exceptions::Exception;
 
-    void ReadMemory::init() {
+    ReadMemory::ReadMemory(const std::vector<unsigned char>& rawPacket)
+        : AbstractMemoryAccessPacket(rawPacket)
+    {
         if (this->data.size() < 4) {
             throw Exception("Invalid packet length");
         }
