@@ -219,8 +219,8 @@ install(
 )
 
 configure_file(
-    "${PROJECT_SOURCE_DIR}/CPack.cmake"
-    "${PROJECT_BINARY_DIR}/CPack.cmake"
+    "${PROJECT_SOURCE_DIR}/Packaging.cmake"
+    "${PROJECT_BINARY_DIR}/Packaging.cmake"
 )
 
 set(CPACK_GENERATOR "DEB;RPM")
