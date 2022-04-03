@@ -20,15 +20,15 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using Exceptions::Exception;
 
     void RemoveBreakpoint::init() {
-        if (data.size() < 6) {
+        if (this->data.size() < 6) {
             throw Exception("Unexpected RemoveBreakpoint packet size");
         }
 
         // z0 = SW breakpoint, z1 = HW breakpoint
-        this->type = (data[1] == 0) ? BreakpointType::SOFTWARE_BREAKPOINT : (data[1] == 1) ?
+        this->type = (this->data[1] == 0) ? BreakpointType::SOFTWARE_BREAKPOINT : (this->data[1] == 1) ?
             BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
 
-        auto packetData = QString::fromLocal8Bit(
+        const auto packetData = QString::fromLocal8Bit(
             reinterpret_cast<const char*>(this->data.data() + 2),
             static_cast<int>(this->data.size() - 2)
         );
@@ -50,10 +50,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Removing breakpoint at address " + std::to_string(this->address));
 
         try {
-            auto breakpoint = TargetBreakpoint();
-            breakpoint.address = this->address;
-            targetControllerConsole.removeBreakpoint(breakpoint);
-
+            targetControllerConsole.removeBreakpoint(TargetBreakpoint(this->address));
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {

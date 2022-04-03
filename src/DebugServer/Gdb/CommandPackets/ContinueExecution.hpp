@@ -17,10 +17,10 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     {
     public:
         /**
-         * The "c" packet can contain an address which defines the point from which the execution should be resumed on
+         * The "c" packet can contain an address which specifies the point from which the execution should be resumed on
          * the target.
          *
-         * Although the packet *can* contain this address, it is not required, hence the optional.
+         * Although the packet *can* contain this address, it is not required, hence the std::optional type.
          */
         std::optional<std::uint32_t> fromProgramCounter;
 

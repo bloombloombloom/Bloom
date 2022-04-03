@@ -26,25 +26,23 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
 
         // The "qSupported:" prefix occupies 11 bytes
-        if (data.size() > 11) {
-            auto packetData = QString::fromLocal8Bit(
+        if (this->data.size() > 11) {
+            const auto packetData = QString::fromLocal8Bit(
                 reinterpret_cast<const char*>(this->data.data() + 11),
                 static_cast<int>(this->data.size() - 11)
             );
 
-            auto featureList = packetData.split(";");
-            auto gdbFeatureMapping = getGdbFeatureToNameMapping();
+            const auto featureList = packetData.split(";");
+            static const auto gdbFeatureMapping = getGdbFeatureToNameMapping();
 
-            for (int i = 0; i < featureList.size(); i++) {
-                auto featureString = featureList.at(i);
-
+            for (auto featureName : featureList) {
                 // We only care about supported features. Supported features will precede a '+' character.
-                if (featureString[featureString.size() - 1] == '+') {
-                    featureString.remove('+');
+                if (featureName[featureName.size() - 1] == '+') {
+                    featureName.remove('+');
 
-                    auto feature = gdbFeatureMapping.valueAt(featureString.toStdString());
+                    const auto feature = gdbFeatureMapping.valueAt(featureName.toStdString());
                     if (feature.has_value()) {
-                        this->supportedFeatures.insert(static_cast<decltype(feature)::value_type>(feature.value()));
+                        this->supportedFeatures.insert(feature.value());
                     }
                 }
             }
@@ -62,11 +60,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
 
         // Respond with a SupportedFeaturesResponse packet, listing all supported GDB features by Bloom
-        auto response = SupportedFeaturesResponse({
+        debugSession.connection.writePacket(SupportedFeaturesResponse({
             {Feature::SOFTWARE_BREAKPOINTS, std::nullopt},
             {Feature::PACKET_SIZE, std::to_string(debugSession.connection.getMaxPacketSize())},
-        });
-
-        debugSession.connection.writePacket(response);
+        }));
     }
 }
