@@ -51,25 +51,25 @@ public:
      */
     std::uint32_t address = 0;
 
-    explicit SetBreakpoint(const std::vector<unsigned char>& rawPacket): CommandPacket(rawPacket) {
-        this->init();
-    };
+    explicit SetBreakpoint(const std::vector<unsigned char>& rawPacket);
 
     void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
-
-private:
-    void init();
 };
 ```
 
 The `SetBreakpoint` class consists of two public fields; The `address` (at which the breakpoint is to be set). And the
-`type` (of breakpoint to set). These two fields are initialised from the raw command packet, during object construction.
+`type` (of breakpoint to set). During object construction, these two fields are initialised from the raw command packet
+(received by the GDB client).
 
 #### Command handling
 
 Upon receiving a command packet from the GDB client, the command must be handled and the appropriate response delivered.
 Each command packet class implements a `handle()` member function. This function is called upon receipt of the command
-and is expected to handle the command and deliver any necessary response to the client.
+and is expected to handle the command and deliver any necessary response to the client. Two parameters are passed to the
+`handle()` member function - a reference to the active `DebugSession` object, and a reference to a
+`TargetControllerConsole` object. The `DebugSession` object provides access to the current connection with the GDB
+client, as well as other debug session specific information. The `TargetControllerConsole` object provides an interface
+to the `TargetController`, for any GDB commands that need to interface with the connected target.
 
 Handling the `SetBreakpoint` command packet:
 
@@ -79,6 +79,7 @@ void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerConsole& 
      * I know the breakpoint type (this->type) isn't used in here - this is because the current implementation only
      * supports software breakpoints, so we don't do anything with this->type, for now.
      */
+
     Logger::debug("Handling SetBreakpoint packet");
 
     try {
