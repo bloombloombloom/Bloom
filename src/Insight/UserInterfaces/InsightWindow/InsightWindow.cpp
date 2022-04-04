@@ -666,6 +666,18 @@ namespace Bloom
 
     void InsightWindow::adjustMinimumSize() {
         static const auto absoluteMinimum = QSize(900, 400);
+
+        /*
+         * On X11, the QScreen::availableGeometry() function may return the full geometry of the screen, without
+         * accounting for reserved areas for window managers and other decorations.
+         *
+         * Because of this, we always use QScreen::geometry() and account for reserved areas ourselves. It's near
+         * impossible to do this accurately, so we just subtract 200 from the width and height, and hope that it's
+         * enough.
+         */
+        const auto screenSize = this->screen()->availableGeometry().size();
+        const auto absoluteMaximum = QSize(screenSize.width() - 200, screenSize.height() - 200);
+
         auto minSize = QSize();
 
         if (this->targetPackageWidget != nullptr) {
@@ -682,8 +694,8 @@ namespace Bloom
         }
 
         this->setMinimumSize(
-            std::max(minSize.width(), absoluteMinimum.width()),
-            std::max(minSize.height(), absoluteMinimum.height())
+            std::min(std::max(minSize.width(), absoluteMinimum.width()), absoluteMaximum.width()),
+            std::min(std::max(minSize.height(), absoluteMinimum.height()), absoluteMaximum.height())
         );
     }
 
