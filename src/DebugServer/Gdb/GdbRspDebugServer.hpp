@@ -25,20 +25,16 @@
 #include "src/EventManager/Events/TargetControllerStateReported.hpp"
 #include "src/EventManager/Events/TargetExecutionStopped.hpp"
 
-#include "src/Helpers/BiMap.hpp"
-
 namespace Bloom::DebugServer::Gdb
 {
     /**
-     * The GdbRspDebugServer is an implementation of a GDB server using the GDB Remote Serial Protocol.
+     * The GdbRspDebugServer is an implementation of the GDB Remote Serial Protocol.
      *
-     * This DebugServer employs TCP/IP sockets to interface with GDB clients. The listening address can be configured
-     * in the user's project config file.
+     * This server employs TCP/IP sockets to interface with GDB clients. The listening address and port can be
+     * configured in the user's project config file.
      *
-     * See https://sourceware.org/gdb/onlinedocs/gdb/Remote-Protocol.html for more info on the GDB Remote
-     * Serial Protocol.
-     *
-     * @TODO: This could do with some cleaning.
+     * See https://sourceware.org/gdb/onlinedocs/gdb/Remote-Protocol.html for more info on the GDB Remote Serial
+     * Protocol.
      */
     class GdbRspDebugServer: public ServerInterface
     {
@@ -47,6 +43,15 @@ namespace Bloom::DebugServer::Gdb
             const DebugServerConfig& debugServerConfig,
             EventListener& eventListener
         );
+
+        GdbRspDebugServer() = delete;
+        virtual ~GdbRspDebugServer() = default;
+
+        GdbRspDebugServer(const GdbRspDebugServer& other) = delete;
+        GdbRspDebugServer(GdbRspDebugServer&& other) = delete;
+
+        GdbRspDebugServer& operator = (const GdbRspDebugServer& other) = delete;
+        GdbRspDebugServer& operator = (GdbRspDebugServer&& other) = delete;
 
         [[nodiscard]] std::string getName() const override {
             return "GDB Remote Serial Protocol DebugServer";
@@ -70,23 +75,24 @@ namespace Bloom::DebugServer::Gdb
         void run() override;
 
     protected:
-        std::optional<GdbDebugServerConfig> debugServerConfig;
+        /**
+         * User project configuration specific to the GDB RSP debug server.
+         */
+        GdbDebugServerConfig debugServerConfig;
 
+        /**
+         * The DebugServerComponent's event listener.
+         */
         EventListener& eventListener;
 
+        /**
+         * EventNotifier object for interrupting blocking I/O operations.
+         *
+         * Extracted from this->eventListener.
+         *
+         * See documentation in src/DebugServer/README.md for more.
+         */
         EventNotifier* interruptEventNotifier = nullptr;
-
-        TargetControllerConsole targetControllerConsole = TargetControllerConsole(this->eventListener);
-
-        /**
-         * Listening socket address
-         */
-        struct sockaddr_in socketAddress = {};
-
-        /**
-         * Listening socket file descriptor
-         */
-        int serverSocketFileDescriptor = -1;
 
         /**
          * When waiting for a connection, we don't listen on the this->serverSocketFileDescriptor directly. Instead,
@@ -102,9 +108,21 @@ namespace Bloom::DebugServer::Gdb
         EpollInstance epollInstance = EpollInstance();
 
         /**
-         * SO_REUSEADDR option value for listening socket.
+         * Passed to command handlers (see CommandPacket::handle()).
+         *
+         * See documentation in src/DebugServer/Gdb/README.md for more on how GDB commands are processed.
          */
-        int enableReuseAddressSocketOption = 1;
+        TargetControllerConsole targetControllerConsole = TargetControllerConsole(this->eventListener);
+
+        /**
+         * Listening socket address
+         */
+        struct sockaddr_in socketAddress = {};
+
+        /**
+         * Listening socket file descriptor
+         */
+        std::optional<int> serverSocketFileDescriptor;
 
         /**
          * When a connection with a GDB client is established, a new instance of the DebugSession class is created and

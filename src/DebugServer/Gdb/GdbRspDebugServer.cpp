@@ -1,7 +1,6 @@
 #include "GdbRspDebugServer.hpp"
 
 #include <sys/socket.h>
-#include <sys/epoll.h>
 
 #include "src/Logger/Logger.hpp"
 
@@ -48,17 +47,17 @@ namespace Bloom::DebugServer::Gdb
 
     void GdbRspDebugServer::init() {
         this->socketAddress.sin_family = AF_INET;
-        this->socketAddress.sin_port = htons(this->debugServerConfig->listeningPortNumber);
+        this->socketAddress.sin_port = htons(this->debugServerConfig.listeningPortNumber);
 
         if (::inet_pton(
                 AF_INET,
-                this->debugServerConfig->listeningAddress.c_str(),
+                this->debugServerConfig.listeningAddress.c_str(),
                 &(this->socketAddress.sin_addr)
             ) == 0
         ) {
             // Invalid IP address
             throw InvalidConfig(
-                "Invalid IP address provided in config file: (\"" + this->debugServerConfig->listeningAddress
+                "Invalid IP address provided in config file: (\"" + this->debugServerConfig.listeningAddress
                     + "\")"
             );
         }
@@ -69,12 +68,14 @@ namespace Bloom::DebugServer::Gdb
             throw Exception("Failed to create socket file descriptor.");
         }
 
+        const auto enableReuseAddressSocketOption = 1;
+
         if (::setsockopt(
                 socketFileDescriptor,
                 SOL_SOCKET,
                 SO_REUSEADDR,
-                &(this->enableReuseAddressSocketOption),
-                sizeof(this->enableReuseAddressSocketOption)
+                &(enableReuseAddressSocketOption),
+                sizeof(enableReuseAddressSocketOption)
             ) < 0
         ) {
             Logger::error("Failed to set socket SO_REUSEADDR option.");
@@ -87,13 +88,13 @@ namespace Bloom::DebugServer::Gdb
             ) < 0
         ) {
             throw Exception("Failed to bind address. The selected port number ("
-                + std::to_string(this->debugServerConfig->listeningPortNumber) + ") may be in use.");
+                + std::to_string(this->debugServerConfig.listeningPortNumber) + ") may be in use.");
         }
 
         this->serverSocketFileDescriptor = socketFileDescriptor;
 
         this->epollInstance.addEntry(
-            this->serverSocketFileDescriptor,
+            this->serverSocketFileDescriptor.value(),
             static_cast<std::uint16_t>(EpollEvent::READ_READY)
         );
 
@@ -102,8 +103,8 @@ namespace Bloom::DebugServer::Gdb
             static_cast<std::uint16_t>(EpollEvent::READ_READY)
         );
 
-        Logger::info("GDB RSP address: " + this->debugServerConfig->listeningAddress);
-        Logger::info("GDB RSP port: " + std::to_string(this->debugServerConfig->listeningPortNumber));
+        Logger::info("GDB RSP address: " + this->debugServerConfig.listeningAddress);
+        Logger::info("GDB RSP port: " + std::to_string(this->debugServerConfig.listeningPortNumber));
 
         this->eventListener.registerCallbackForEventType<Events::TargetControllerStateReported>(
             std::bind(&GdbRspDebugServer::onTargetControllerStateReported, this, std::placeholders::_1)
@@ -117,8 +118,8 @@ namespace Bloom::DebugServer::Gdb
     void GdbRspDebugServer::close() {
         this->terminateActiveDebugSession();
 
-        if (this->serverSocketFileDescriptor > 0) {
-            ::close(this->serverSocketFileDescriptor);
+        if (this->serverSocketFileDescriptor.has_value()) {
+            ::close(this->serverSocketFileDescriptor.value());
         }
     }
 
@@ -191,7 +192,7 @@ namespace Bloom::DebugServer::Gdb
     }
 
     std::optional<Connection> GdbRspDebugServer::waitForConnection() {
-        if (::listen(this->serverSocketFileDescriptor, 3) != 0) {
+        if (::listen(this->serverSocketFileDescriptor.value(), 3) != 0) {
             throw Exception("Failed to listen on server socket");
         }
 
@@ -205,7 +206,10 @@ namespace Bloom::DebugServer::Gdb
             return std::nullopt;
         }
 
-        return std::make_optional<Connection>(this->serverSocketFileDescriptor, *(this->interruptEventNotifier));
+        return std::make_optional<Connection>(
+            this->serverSocketFileDescriptor.value(),
+            *(this->interruptEventNotifier)
+        );
     }
 
     std::unique_ptr<CommandPacket> GdbRspDebugServer::waitForCommandPacket() {
@@ -266,12 +270,14 @@ namespace Bloom::DebugServer::Gdb
     }
 
     void GdbRspDebugServer::terminateActiveDebugSession() {
-        if (this->activeDebugSession.has_value()) {
-            this->activeDebugSession->terminate();
-            this->activeDebugSession = std::nullopt;
-
-            EventManager::triggerEvent(std::make_shared<Events::DebugSessionFinished>());
+        if (!this->activeDebugSession.has_value()) {
+            return;
         }
+
+        this->activeDebugSession->terminate();
+        this->activeDebugSession = std::nullopt;
+
+        EventManager::triggerEvent(std::make_shared<Events::DebugSessionFinished>());
     }
 
     void GdbRspDebugServer::onTargetControllerStateReported(const Events::TargetControllerStateReported& event) {
