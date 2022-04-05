@@ -8,6 +8,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Logger/Logger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/Paths.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/EpollInstance.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/EventNotifier.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/VersionNumber.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Generated/resources.cpp
 
