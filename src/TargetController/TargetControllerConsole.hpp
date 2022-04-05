@@ -15,6 +15,8 @@
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"
 
+#include "src/Exceptions/Exception.hpp"
+
 namespace Bloom
 {
     /**

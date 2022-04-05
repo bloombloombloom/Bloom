@@ -19,7 +19,7 @@ namespace Bloom
         eventQueueByType[event->getType()].push(std::move(event));
         this->eventQueueByEventTypeCV.notify_all();
 
-        if (this->interruptEventNotifier != nullptr && this->interruptEventNotifier->isInitialised()) {
+        if (this->interruptEventNotifier != nullptr) {
             this->interruptEventNotifier->notify();
         }
     }

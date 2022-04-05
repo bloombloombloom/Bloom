@@ -88,6 +88,8 @@ namespace Bloom::DebugServer
         Logger::info("Shutting down DebugServer");
         this->server->close();
         this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
+
+        this->eventListener->setInterruptEventNotifier(nullptr);
         EventManager::deregisterListener(this->eventListener->getId());
     }
 

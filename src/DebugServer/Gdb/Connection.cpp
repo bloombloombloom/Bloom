@@ -1,7 +1,7 @@
 #include "Connection.hpp"
 
 #include <arpa/inet.h>
-#include <sys/epoll.h>
+#include <unistd.h>
 #include <cerrno>
 #include <fcntl.h>
 

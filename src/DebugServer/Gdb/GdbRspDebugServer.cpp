@@ -1,6 +1,7 @@
 #include "GdbRspDebugServer.hpp"
 
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include "src/Logger/Logger.hpp"
 
@@ -42,7 +43,7 @@ namespace Bloom::DebugServer::Gdb
         , eventListener(eventListener)
         , interruptEventNotifier(eventListener.getInterruptEventNotifier())
     {
-        assert(this->interruptEventNotifier != nullptr && this->interruptEventNotifier->isInitialised());
+        assert(this->interruptEventNotifier != nullptr);
     }
 
     void GdbRspDebugServer::init() {
