@@ -84,7 +84,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                 registers.insert(registers.end(), reg.value.begin(), reg.value.end());
             }
 
-            auto responseRegisters = Packet::dataToHex(registers);
+            auto responseRegisters = Packet::toHex(registers);
             debugSession.connection.writePacket(
                 ResponsePacket(std::vector<unsigned char>(responseRegisters.begin(), responseRegisters.end()))
             );

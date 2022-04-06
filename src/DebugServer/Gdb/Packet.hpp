@@ -90,7 +90,7 @@ namespace Bloom::DebugServer::Gdb
          * @param data
          * @return
          */
-        static std::string dataToHex(const std::vector<unsigned char>& data) {
+        static std::string toHex(const std::vector<unsigned char>& data) {
             std::stringstream stream;
             stream << std::hex << std::setfill('0');
 

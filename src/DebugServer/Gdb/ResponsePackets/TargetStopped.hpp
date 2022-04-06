@@ -20,7 +20,7 @@ namespace Bloom::DebugServer::Gdb::ResponsePackets
         explicit TargetStopped(Signal signal): signal(signal) {}
 
         [[nodiscard]] std::vector<unsigned char> getData() const override {
-            std::string output = "T" + Packet::dataToHex({static_cast<unsigned char>(this->signal)});
+            std::string output = "T" + Packet::toHex(std::vector({static_cast<unsigned char>(this->signal)}));
 
             if (this->stopReason.has_value()) {
                 auto stopReasonMapping = getStopReasonToNameMapping();
