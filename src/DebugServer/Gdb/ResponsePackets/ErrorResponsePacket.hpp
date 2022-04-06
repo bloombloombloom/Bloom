@@ -10,10 +10,8 @@ namespace Bloom::DebugServer::Gdb::ResponsePackets
     class ErrorResponsePacket: public ResponsePacket
     {
     public:
-        ErrorResponsePacket() = default;
-
-        [[nodiscard]] std::vector<unsigned char> getData() const override {
-            return {'E', '0', '1'};
-        }
+        ErrorResponsePacket()
+            : ResponsePacket(std::vector<unsigned char>{'E', '0', '1'})
+        {};
     };
 }

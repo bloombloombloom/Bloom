@@ -2,12 +2,16 @@
 
 namespace Bloom::DebugServer::Gdb::ResponsePackets
 {
-    std::vector<unsigned char> SupportedFeaturesResponse::getData() const {
-        std::string output = "qSupported:";
-        auto gdbFeatureMapping = getGdbFeatureToNameMapping();
+    SupportedFeaturesResponse::SupportedFeaturesResponse(
+        const std::set<std::pair<Feature, std::optional<std::string>>>& supportedFeatures
+    )
+        : supportedFeatures(supportedFeatures)
+    {
+        auto output = std::string("qSupported:");
+        static const auto gdbFeatureMapping = getGdbFeatureToNameMapping();
 
         for (const auto& supportedFeature : this->supportedFeatures) {
-            auto featureString = gdbFeatureMapping.valueAt(supportedFeature.first);
+            const auto featureString = gdbFeatureMapping.valueAt(supportedFeature.first);
 
             if (featureString.has_value()) {
                 if (supportedFeature.second.has_value()) {
@@ -20,6 +24,6 @@ namespace Bloom::DebugServer::Gdb::ResponsePackets
             }
         }
 
-        return std::vector<unsigned char>(output.begin(), output.end());
+        this->data = {output.begin(), output.end()};
     }
 }

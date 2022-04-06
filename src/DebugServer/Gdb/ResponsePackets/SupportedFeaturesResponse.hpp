@@ -4,7 +4,8 @@
 #include <utility>
 
 #include "ResponsePacket.hpp"
-#include "../Feature.hpp"
+
+#include "src/DebugServer/Gdb/Feature.hpp"
 
 namespace Bloom::DebugServer::Gdb::ResponsePackets
 {
@@ -14,13 +15,11 @@ namespace Bloom::DebugServer::Gdb::ResponsePackets
     class SupportedFeaturesResponse: public ResponsePacket
     {
     public:
-        SupportedFeaturesResponse() = default;
-        explicit SupportedFeaturesResponse(std::set<std::pair<Feature, std::optional<std::string>>> supportedFeatures)
-        : supportedFeatures(std::move(supportedFeatures)) {};
+        explicit SupportedFeaturesResponse(
+            const std::set<std::pair<Feature, std::optional<std::string>>>& supportedFeatures
+        );
 
-        [[nodiscard]] std::vector<unsigned char> getData() const override;
-
-    protected:
+    private:
         std::set<std::pair<Feature, std::optional<std::string>>> supportedFeatures;
     };
 }

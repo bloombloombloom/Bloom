@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ResponsePacket.hpp"
-#include "../Signal.hpp"
-#include "../StopReason.hpp"
-#include "src/Targets/TargetRegister.hpp"
+
+#include "src/DebugServer/Gdb/Signal.hpp"
+#include "src/DebugServer/Gdb/StopReason.hpp"
 
 namespace Bloom::DebugServer::Gdb::ResponsePackets
 {
@@ -17,21 +17,22 @@ namespace Bloom::DebugServer::Gdb::ResponsePackets
         Signal signal;
         std::optional<StopReason> stopReason;
 
-        explicit TargetStopped(Signal signal): signal(signal) {}
-
-        [[nodiscard]] std::vector<unsigned char> getData() const override {
-            std::string output = "T" + Packet::toHex(std::vector({static_cast<unsigned char>(this->signal)}));
+        explicit TargetStopped(Signal signal, const std::optional<StopReason>& stopReason = std::nullopt)
+            : signal(signal)
+            , stopReason(stopReason)
+        {
+            std::string packetData = "T" + Packet::toHex(std::vector({static_cast<unsigned char>(this->signal)}));
 
             if (this->stopReason.has_value()) {
-                auto stopReasonMapping = getStopReasonToNameMapping();
-                auto stopReasonName = stopReasonMapping.valueAt(this->stopReason.value());
+                static const auto stopReasonMapping = getStopReasonToNameMapping();
+                const auto stopReasonName = stopReasonMapping.valueAt(this->stopReason.value());
 
                 if (stopReasonName.has_value()) {
-                    output += stopReasonName.value() + ":;";
+                    packetData += stopReasonName.value() + ":;";
                 }
             }
 
-            return std::vector<unsigned char>(output.begin(), output.end());
+            this->data = {packetData.begin(), packetData.end()};
         }
     };
 }
