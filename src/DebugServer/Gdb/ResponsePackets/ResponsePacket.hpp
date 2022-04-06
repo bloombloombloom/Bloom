@@ -18,5 +18,9 @@ namespace Bloom::DebugServer::Gdb::ResponsePackets
         explicit ResponsePacket(const std::vector<unsigned char>& data) {
             this->data = data;
         }
+
+        explicit ResponsePacket(const std::string& data) {
+            this->data = std::vector<unsigned char>(data.begin(), data.end());
+        }
     };
 }

@@ -42,13 +42,13 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
         if (packetString.find("qAttached") == 0) {
             Logger::debug("Handling qAttached");
-            debugSession.connection.writePacket(ResponsePacket({1}));
+            debugSession.connection.writePacket(ResponsePacket(std::vector<unsigned char>({1})));
             return;
         }
 
         Logger::debug("Unknown GDB RSP packet: " + packetString + " - returning empty response");
 
         // Respond with an empty packet
-        debugSession.connection.writePacket(ResponsePacket({0}));
+        debugSession.connection.writePacket(ResponsePacket(std::vector<unsigned char>({0})));
     }
 }

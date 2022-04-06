@@ -64,9 +64,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 this->bytes
             );
 
-            auto hexMemoryBuffer = Packet::toHex(memoryBuffer);
             debugSession.connection.writePacket(
-                ResponsePacket(std::vector<unsigned char>(hexMemoryBuffer.begin(), hexMemoryBuffer.end()))
+                ResponsePacket(Packet::toHex(memoryBuffer))
             );
 
         } catch (const Exception& exception) {
