@@ -35,9 +35,7 @@ namespace Bloom
             this->eventListener->dispatchCurrentEvents();
         }
 
-    public slots:
         void startup();
-        void requestPinStates(int variantId);
 
     signals:
         void ready();
@@ -66,7 +64,6 @@ namespace Bloom
         void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
         void onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event);
 
-    private slots:
         void executeTasks();
     };
 }
