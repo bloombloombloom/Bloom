@@ -30,9 +30,9 @@ Commands and responses are delivered in packets. The
 [`Bloom::DebugServer::Gdb::CommandPackets::CommandPacket`](./CommandPackets/CommandPacket.hpp) and
 [`Bloom::DebugServer::Gdb::ResponsePackets::ResponsePacket`](./ResponsePackets/ResponsePacket.hpp) classes are base
 classes for these packets. For most GDB commands supported by this server implementation, there is a specific command
-packet that can be found in [/src/DebugServer/Gdb/CommandPackets](./CommandPackets). When the server receives a command
-packet from the GDB client, the appropriate (`CommandPacket` derived) object is constructed, which encapsulates all of
-the relevant information for the particular command.
+packet class that can be found in [/src/DebugServer/Gdb/CommandPackets](./CommandPackets). When the server receives a
+command packet from the GDB client, the appropriate (`CommandPacket` derived) object is constructed, which encapsulates
+all of the relevant information for the particular command.
 
 Consider the [`Bloom::DebugServer::Gdb::CommandPackets::SetBreakpoint`](./CommandPackets/SetBreakpoint.hpp) command
 packet class:

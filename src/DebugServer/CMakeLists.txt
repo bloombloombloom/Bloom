@@ -2,6 +2,8 @@ target_sources(
     Bloom
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/DebugServerComponent.cpp
+
+        # GDB RSP Server
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/GdbRspDebugServer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/GdbDebugServerConfig.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/Connection.cpp
@@ -19,7 +21,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ResetTarget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/ResponsePackets/SupportedFeaturesResponse.cpp
 
-        # AVR GDB Server
+        # AVR GDB RSP Server
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/AvrGdbRsp.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/TargetDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/ReadMemory.cpp
