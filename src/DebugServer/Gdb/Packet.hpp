@@ -45,7 +45,7 @@ namespace Bloom::DebugServer::Gdb
          *
          * @return
          */
-        [[nodiscard]] std::vector<unsigned char> toRawPacket() const {
+        [[nodiscard]] RawPacketType toRawPacket() const {
             std::vector<unsigned char> packet = {'$'};
             auto data = this->getData();
 

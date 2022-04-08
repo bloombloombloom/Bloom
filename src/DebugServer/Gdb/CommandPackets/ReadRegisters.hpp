@@ -25,7 +25,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
         std::optional<GdbRegisterNumberType> registerNumber;
 
-        explicit ReadRegisters(const std::vector<unsigned char>& rawPacket);
+        explicit ReadRegisters(const RawPacketType& rawPacket);
 
         void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
     };

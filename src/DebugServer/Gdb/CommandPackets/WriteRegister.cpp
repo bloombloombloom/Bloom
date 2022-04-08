@@ -20,7 +20,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    WriteRegister::WriteRegister(const std::vector<unsigned char>& rawPacket)
+    WriteRegister::WriteRegister(const RawPacketType& rawPacket)
         : CommandPacket(rawPacket)
     {
         // The P packet updates a single register

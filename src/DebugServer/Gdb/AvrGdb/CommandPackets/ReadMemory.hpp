@@ -29,7 +29,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          */
         std::uint32_t bytes = 0;
 
-        explicit ReadMemory(const std::vector<unsigned char>& rawPacket);
+        explicit ReadMemory(const RawPacketType& rawPacket);
 
         void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
     };

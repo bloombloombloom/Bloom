@@ -26,7 +26,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
         std::uint32_t address = 0;
 
-        explicit RemoveBreakpoint(const std::vector<unsigned char>& rawPacket);
+        explicit RemoveBreakpoint(const RawPacketType& rawPacket);
 
         void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
     };

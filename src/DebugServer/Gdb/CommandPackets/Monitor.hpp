@@ -17,7 +17,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
         std::string command;
 
-        explicit Monitor(const std::vector<unsigned char>& rawPacket);
+        explicit Monitor(const RawPacketType& rawPacket);
 
         void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
     };

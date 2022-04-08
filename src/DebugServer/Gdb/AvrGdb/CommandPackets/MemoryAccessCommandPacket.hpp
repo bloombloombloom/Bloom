@@ -22,7 +22,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     class MemoryAccessCommandPacket: public Bloom::DebugServer::Gdb::CommandPackets::CommandPacket
     {
     public:
-        explicit MemoryAccessCommandPacket(const std::vector<unsigned char>& rawPacket)
+        explicit MemoryAccessCommandPacket(const RawPacketType& rawPacket)
             : CommandPacket(rawPacket)
         {};
 

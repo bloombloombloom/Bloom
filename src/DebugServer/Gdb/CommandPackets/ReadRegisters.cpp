@@ -17,7 +17,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    ReadRegisters::ReadRegisters(const std::vector<unsigned char>& rawPacket)
+    ReadRegisters::ReadRegisters(const RawPacketType& rawPacket)
         : CommandPacket(rawPacket)
     {
         if (this->data.size() >= 2 && this->data.front() == 'p') {

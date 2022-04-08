@@ -19,7 +19,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
         std::optional<std::size_t> fromProgramCounter;
 
-        explicit StepExecution(const std::vector<unsigned char>& rawPacket);
+        explicit StepExecution(const RawPacketType& rawPacket);
 
         void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
     };
