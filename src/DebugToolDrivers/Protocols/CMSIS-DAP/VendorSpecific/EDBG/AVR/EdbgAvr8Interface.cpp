@@ -216,6 +216,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Reset target command failed", response);
         }
+
+        try {
+            // Wait for stopped event
+            this->waitForStoppedEvent();
+
+        } catch (const Exception& exception) {
+            throw Exception("Failed to reset AVR8 target - missing stopped event.");
+        }
     }
 
     void EdbgAvr8Interface::activate() {
