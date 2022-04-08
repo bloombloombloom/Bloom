@@ -24,6 +24,7 @@
 #include "CommandPackets/WriteRegister.hpp"
 #include "CommandPackets/SetBreakpoint.hpp"
 #include "CommandPackets/RemoveBreakpoint.hpp"
+#include "CommandPackets/Monitor.hpp"
 
 // Response packets
 #include "ResponsePackets/TargetStopped.hpp"
@@ -264,6 +265,12 @@ namespace Bloom::DebugServer::Gdb
 
             if (rawPacketString[1] == 'z') {
                 return std::make_unique<CommandPackets::RemoveBreakpoint>(rawPacket);
+            }
+
+            if (rawPacketString.find("qRcmd") == 1) {
+                // This is a monitor packet
+                auto monitorCommand = std::make_unique<CommandPackets::Monitor>(rawPacket);
+                return monitorCommand;
             }
         }
 
