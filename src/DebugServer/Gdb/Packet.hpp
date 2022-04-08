@@ -102,6 +102,24 @@ namespace Bloom::DebugServer::Gdb
         }
 
         /**
+         * Converts a string   to hexadecimal form, the form in which responses are expected to be delivered from the
+         * server.
+         *
+         * @param data
+         * @return
+         */
+        static std::string toHex(const std::string& data) {
+            std::stringstream stream;
+            stream << std::hex << std::setfill('0');
+
+            for (const auto& byte : data) {
+                stream << std::setw(2) << static_cast<unsigned int>(byte);
+            }
+
+            return stream.str();
+        }
+
+        /**
          * Converts data in hexadecimal form to raw data.
          *
          * @param hexData
