@@ -140,4 +140,8 @@ namespace Bloom
             std::make_shared<RetrieveStackPointerFromTarget>()
         )->stackPointer;
     }
+
+    void TargetControllerConsole::resetTarget() {
+        this->triggerTargetControllerEventAndWaitForResponse(std::make_shared<ResetTarget>());
+    }
 }

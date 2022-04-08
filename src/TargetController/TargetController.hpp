@@ -277,6 +277,13 @@ namespace Bloom
         void fireTargetEvents();
 
         /**
+         * Triggers a target reset and emits a TargetReset event.
+         *
+         * @param resetEventCorrelationId
+         */
+        void resetTarget(const std::optional<int>& resetEventCorrelationId = std::nullopt);
+
+        /**
          * When the TargetController fails to handle an event, a TargetControllerErrorOccurred event is emitted, with
          * a correlation ID matching the ID of the event that triggered the handler.
          *
@@ -425,5 +432,7 @@ namespace Bloom
          * @param event
          */
         void onRetrieveStackPointerEvent(const Events::RetrieveStackPointerFromTarget& event);
+
+        void onResetTarget(const Events::ResetTarget& event);
     };
 }

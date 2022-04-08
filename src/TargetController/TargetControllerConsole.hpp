@@ -165,6 +165,11 @@ namespace Bloom
          */
         std::uint32_t getStackPointer();
 
+        /**
+         * Triggers a reset on the target. The target will be held in a stopped state.
+         */
+        void resetTarget();
+
     private:
         EventListener& eventListener;
 

@@ -41,6 +41,7 @@
 #include "SetTargetPinState.hpp"
 #include "RetrieveStackPointerFromTarget.hpp"
 #include "StackPointerRetrievedFromTarget.hpp"
+#include "TargetReset.hpp"
 
 namespace Bloom::Events
 {

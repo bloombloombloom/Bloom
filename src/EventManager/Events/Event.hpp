@@ -53,6 +53,7 @@ namespace Bloom::Events
         SET_TARGET_PIN_STATE,
         RETRIEVE_STACK_POINTER_FROM_TARGET,
         STACK_POINTER_RETRIEVED_FROM_TARGET,
+        TARGET_RESET,
     };
 
     class Event

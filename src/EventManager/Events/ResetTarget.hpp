@@ -3,12 +3,15 @@
 #include <string>
 
 #include "Event.hpp"
+#include "TargetReset.hpp"
 
 namespace Bloom::Events
 {
     class ResetTarget: public Event
     {
     public:
+        using TargetControllerResponseType = TargetReset;
+
         static constexpr EventType type = EventType::RESET_TARGET;
         static inline const std::string name = "ResetTargetEvent";
 
