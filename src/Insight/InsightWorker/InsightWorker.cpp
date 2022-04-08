@@ -36,6 +36,10 @@ namespace Bloom
             std::bind(&InsightWorker::onTargetResumedEvent, this, std::placeholders::_1)
         );
 
+        this->eventListener->registerCallbackForEventType<Events::TargetReset>(
+            std::bind(&InsightWorker::onTargetResetEvent, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::RegistersWrittenToTarget>(
             std::bind(&InsightWorker::onTargetRegistersWrittenEvent, this, std::placeholders::_1)
         );
@@ -51,10 +55,6 @@ namespace Bloom
         );
 
         emit this->ready();
-    }
-
-    void InsightWorker::requestPinStates(int variantId) {
-        this->targetControllerConsole.requestPinStates(variantId);
     }
 
     std::optional<InsightWorkerTask*> InsightWorker::getQueuedTask() {
@@ -106,6 +106,12 @@ namespace Bloom
 
     void InsightWorker::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
         emit this->targetStateUpdated(TargetState::RUNNING);
+    }
+
+    void InsightWorker::onTargetResetEvent(const Events::TargetReset& event) {
+        // TODO: Pull PC from target. This will be done as part of the TC refactor (https://github.com/navnavnav/Bloom/issues/25)
+        emit this->targetStateUpdated(TargetState::STOPPED);
+        emit this->targetProgramCounterUpdated(0);
     }
 
     void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {

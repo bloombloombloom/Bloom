@@ -6,10 +6,14 @@
 #include "src/Helpers/Thread.hpp"
 #include "src/Helpers/SyncSafe.hpp"
 #include "src/ProjectConfig.hpp"
+
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
+#include "src/EventManager/Events/Events.hpp"
+
 #include "src/TargetController/TargetControllerConsole.hpp"
 #include "src/TargetController/TargetControllerState.hpp"
+
 #include "Tasks/InsightWorkerTask.hpp"
 
 namespace Bloom
@@ -58,6 +62,7 @@ namespace Bloom
 
         void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
+        void onTargetResetEvent(const Events::TargetReset& event);
         void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
         void onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event);
 
