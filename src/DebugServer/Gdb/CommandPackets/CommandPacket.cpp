@@ -42,6 +42,12 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             return;
         }
 
+        if (packetString.find("vMustReplyEmpty") == 0) {
+            Logger::debug("Handling vMustReplyEmpty");
+            debugSession.connection.writePacket(EmptyResponsePacket());
+            return;
+        }
+
         if (packetString.find("qAttached") == 0) {
             Logger::debug("Handling qAttached");
             debugSession.connection.writePacket(ResponsePacket(std::vector<unsigned char>({1})));
