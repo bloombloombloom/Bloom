@@ -3,6 +3,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/TargetStopped.hpp"
+#include "src/DebugServer/Gdb/ResponsePackets/EmptyResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/DebugServer/Gdb/Signal.hpp"
@@ -15,6 +16,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using ResponsePackets::ResponsePacket;
     using ResponsePackets::OkResponsePacket;
     using ResponsePackets::TargetStopped;
+    using ResponsePackets::EmptyResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
 
     using Exceptions::Exception;
@@ -49,6 +51,6 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Unknown GDB RSP packet: " + packetString + " - returning empty response");
 
         // Respond with an empty packet
-        debugSession.connection.writePacket(ResponsePacket(std::vector<unsigned char>({0})));
+        debugSession.connection.writePacket(EmptyResponsePacket());
     }
 }
