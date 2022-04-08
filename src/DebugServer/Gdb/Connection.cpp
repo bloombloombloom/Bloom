@@ -122,7 +122,9 @@ namespace Bloom::DebugServer::Gdb
                     // Acknowledge receipt
                     this->write({'+'});
 
-                    output.push_back(rawPacket);
+                    Logger::debug("Read GDB packet: " + std::string(rawPacket.begin(), rawPacket.end()));
+
+                    output.emplace_back(std::move(rawPacket));
                     byteIndex = packetIndex;
                 }
             }
@@ -134,7 +136,9 @@ namespace Bloom::DebugServer::Gdb
     void Connection::writePacket(const ResponsePacket& packet) {
         // Write the packet repeatedly until the GDB client acknowledges it.
         int attempts = 0;
-        auto rawPacket = packet.toRawPacket();
+        const auto rawPacket = packet.toRawPacket();
+
+        Logger::debug("Writing GDB packet: " + std::string(rawPacket.begin(), rawPacket.end()));
 
         do {
             if (attempts > 10) {
@@ -239,7 +243,6 @@ namespace Bloom::DebugServer::Gdb
     }
 
     void Connection::write(const std::vector<unsigned char>& buffer) {
-        Logger::debug("Writing packet: " + std::string(buffer.begin(), buffer.end()));
         if (::write(this->socketFileDescriptor.value(), buffer.data(), buffer.size()) == -1) {
             if (errno == EPIPE || errno == ECONNRESET) {
                 // Connection was closed
