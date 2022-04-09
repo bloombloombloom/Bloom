@@ -351,13 +351,13 @@ namespace Bloom
     }
 
     void Application::startTargetController() {
-        this->targetController = std::make_unique<TargetController>(
+        this->targetController = std::make_unique<TargetControllerComponent>(
             this->projectConfig.value(),
             this->environmentConfig.value()
         );
 
         this->targetControllerThread = std::thread(
-            &TargetController::run,
+            &TargetControllerComponent::run,
             this->targetController.get()
         );
 

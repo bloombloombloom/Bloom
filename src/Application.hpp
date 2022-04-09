@@ -9,7 +9,7 @@
 
 #include "src/Helpers/Thread.hpp"
 
-#include "src/TargetController/TargetController.hpp"
+#include "src/TargetController/TargetControllerComponent.hpp"
 #include "src/DebugServer/DebugServerComponent.hpp"
 #include "src/Insight/Insight.hpp"
 #include "src/SignalHandler/SignalHandler.hpp"
@@ -76,7 +76,7 @@ namespace Bloom
          * std::unique_ptr for the debug server (for polymorphism), I thought I'd keep it consistent and just use
          * std::unique_ptr for lazy loading.
          */
-        std::unique_ptr<TargetController> targetController = nullptr;
+        std::unique_ptr<TargetControllerComponent> targetController = nullptr;
         std::thread targetControllerThread;
 
         /**

@@ -31,10 +31,10 @@ namespace Bloom
      * The TargetController should be oblivious to any manufacture/device specific functionality. It should
      * only ever interface with the base Target and DebugTool classes.
      */
-    class TargetController: public Thread
+    class TargetControllerComponent: public Thread
     {
     public:
-        explicit TargetController(
+        explicit TargetControllerComponent(
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig
         ): projectConfig(projectConfig), environmentConfig(environmentConfig) {};

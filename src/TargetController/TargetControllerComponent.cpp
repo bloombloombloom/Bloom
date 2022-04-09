@@ -1,4 +1,4 @@
-#include "TargetController.hpp"
+#include "TargetControllerComponent.hpp"
 
 #include <thread>
 #include <filesystem>
@@ -20,7 +20,7 @@ namespace Bloom
     using namespace Bloom::Events;
     using namespace Bloom::Exceptions;
 
-    void TargetController::run() {
+    void TargetControllerComponent::run() {
         try {
             this->startup();
 
@@ -68,7 +68,7 @@ namespace Bloom
         this->shutdown();
     }
 
-    void TargetController::startup() {
+    void TargetControllerComponent::startup() {
         this->setName("TC");
         Logger::info("Starting TargetController");
         this->setThreadState(ThreadState::STARTING);
@@ -76,25 +76,25 @@ namespace Bloom
         EventManager::registerListener(this->eventListener);
 
         // Install Bloom's udev rules if not already installed
-        TargetController::checkUdevRules();
+        TargetControllerComponent::checkUdevRules();
 
         // Register event handlers
         this->eventListener->registerCallbackForEventType<Events::ReportTargetControllerState>(
-            std::bind(&TargetController::onStateReportRequest, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onStateReportRequest, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ShutdownTargetController>(
-            std::bind(&TargetController::onShutdownTargetControllerEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onShutdownTargetControllerEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::DebugSessionStarted>(
-            std::bind(&TargetController::onDebugSessionStartedEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onDebugSessionStartedEvent, this, std::placeholders::_1)
         );
 
         this->resume();
     }
 
-    void TargetController::checkUdevRules() {
+    void TargetControllerComponent::checkUdevRules() {
         auto bloomRulesPath = std::string("/etc/udev/rules.d/99-bloom.rules");
         auto latestBloomRulesPath = Paths::resourcesDirPath() + "/UDevRules/99-bloom.rules";
 
@@ -125,7 +125,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::shutdown() {
+    void TargetControllerComponent::shutdown() {
         if (this->getThreadState() == ThreadState::STOPPED) {
             return;
         }
@@ -146,7 +146,7 @@ namespace Bloom
         this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
     }
 
-    void TargetController::suspend() {
+    void TargetControllerComponent::suspend() {
         if (this->getThreadState() != ThreadState::READY) {
             return;
         }
@@ -189,76 +189,76 @@ namespace Bloom
         Logger::debug("TargetController suspended");
     }
 
-    void TargetController::resume() {
+    void TargetControllerComponent::resume() {
         this->acquireHardware();
         this->loadRegisterDescriptors();
 
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
-            std::bind(&TargetController::onDebugSessionFinishedEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ExtractTargetDescriptor>(
-            std::bind(&TargetController::onExtractTargetDescriptor, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onExtractTargetDescriptor, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::StopTargetExecution>(
-            std::bind(&TargetController::onStopTargetExecutionEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onStopTargetExecutionEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::StepTargetExecution>(
-            std::bind(&TargetController::onStepTargetExecutionEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onStepTargetExecutionEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ResumeTargetExecution>(
-            std::bind(&TargetController::onResumeTargetExecutionEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onResumeTargetExecutionEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RetrieveRegistersFromTarget>(
-            std::bind(&TargetController::onReadRegistersEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onReadRegistersEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::WriteRegistersToTarget>(
-            std::bind(&TargetController::onWriteRegistersEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onWriteRegistersEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RetrieveMemoryFromTarget>(
-            std::bind(&TargetController::onReadMemoryEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onReadMemoryEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::WriteMemoryToTarget>(
-            std::bind(&TargetController::onWriteMemoryEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onWriteMemoryEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::SetBreakpointOnTarget>(
-            std::bind(&TargetController::onSetBreakpointEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onSetBreakpointEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RemoveBreakpointOnTarget>(
-            std::bind(&TargetController::onRemoveBreakpointEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onRemoveBreakpointEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::SetProgramCounterOnTarget>(
-            std::bind(&TargetController::onSetProgramCounterEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onSetProgramCounterEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::InsightThreadStateChanged>(
-            std::bind(&TargetController::onInsightStateChangedEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onInsightStateChangedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RetrieveTargetPinStates>(
-            std::bind(&TargetController::onRetrieveTargetPinStatesEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onRetrieveTargetPinStatesEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::SetTargetPinState>(
-            std::bind(&TargetController::onSetPinStateEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onSetPinStateEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RetrieveStackPointerFromTarget>(
-            std::bind(&TargetController::onRetrieveStackPointerEvent, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onRetrieveStackPointerEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ResetTarget>(
-            std::bind(&TargetController::onResetTarget, this, std::placeholders::_1)
+            std::bind(&TargetControllerComponent::onResetTarget, this, std::placeholders::_1)
         );
 
         this->state = TargetControllerState::ACTIVE;
@@ -271,12 +271,12 @@ namespace Bloom
         }
     }
 
-    void TargetController::acquireHardware() {
+    void TargetControllerComponent::acquireHardware() {
         auto debugToolName = this->environmentConfig.debugToolConfig.name;
         auto targetName = this->environmentConfig.targetConfig.name;
 
-        auto supportedDebugTools = TargetController::getSupportedDebugTools();
-        auto supportedTargets = TargetController::getSupportedTargets();
+        auto supportedDebugTools = TargetControllerComponent::getSupportedDebugTools();
+        auto supportedTargets = TargetControllerComponent::getSupportedTargets();
 
         if (!supportedDebugTools.contains(debugToolName)) {
             throw Exceptions::InvalidConfig(
@@ -334,7 +334,7 @@ namespace Bloom
         Logger::info("Target name: " + this->target->getName());
     }
 
-    void TargetController::releaseHardware() {
+    void TargetControllerComponent::releaseHardware() {
         /*
          * Transferring ownership of this->debugTool and this->target to this function block means if an exception is
          * thrown, the objects will still be destroyed.
@@ -357,7 +357,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::loadRegisterDescriptors() {
+    void TargetControllerComponent::loadRegisterDescriptors() {
         auto& targetDescriptor = this->getTargetDescriptor();
 
         for (const auto& [registerType, registerDescriptors] : targetDescriptor.registerDescriptorsByType) {
@@ -390,7 +390,7 @@ namespace Bloom
         }
     }
 
-    TargetRegisterDescriptors TargetController::getRegisterDescriptorsWithinAddressRange(
+    TargetRegisterDescriptors TargetControllerComponent::getRegisterDescriptorsWithinAddressRange(
         std::uint32_t startAddress,
         std::uint32_t endAddress,
         Targets::TargetMemoryType memoryType
@@ -429,7 +429,7 @@ namespace Bloom
         return output;
     }
 
-    void TargetController::fireTargetEvents() {
+    void TargetControllerComponent::fireTargetEvents() {
         auto newTargetState = this->target->getState();
 
         if (newTargetState != this->lastTargetState) {
@@ -450,7 +450,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::resetTarget(const std::optional<int>& resetEventCorrelationId) {
+    void TargetControllerComponent::resetTarget(const std::optional<int>& resetEventCorrelationId) {
         this->target->reset();
 
         auto targetResetEvent = std::make_shared<Events::TargetReset>();
@@ -459,14 +459,14 @@ namespace Bloom
         EventManager::triggerEvent(targetResetEvent);
     }
 
-    void TargetController::emitErrorEvent(int correlationId, const std::string& errorMessage) {
+    void TargetControllerComponent::emitErrorEvent(int correlationId, const std::string& errorMessage) {
         auto errorEvent = std::make_shared<Events::TargetControllerErrorOccurred>();
         errorEvent->correlationId = correlationId;
         errorEvent->errorMessage = errorMessage;
         EventManager::triggerEvent(errorEvent);
     }
 
-    Targets::TargetDescriptor& TargetController::getTargetDescriptor() {
+    Targets::TargetDescriptor& TargetControllerComponent::getTargetDescriptor() {
         if (!this->cachedTargetDescriptor.has_value()) {
             this->cachedTargetDescriptor = this->target->getDescriptor();
         }
@@ -474,17 +474,17 @@ namespace Bloom
         return this->cachedTargetDescriptor.value();
     }
 
-    void TargetController::onShutdownTargetControllerEvent(const Events::ShutdownTargetController&) {
+    void TargetControllerComponent::onShutdownTargetControllerEvent(const Events::ShutdownTargetController&) {
         this->shutdown();
     }
 
-    void TargetController::onStateReportRequest(const Events::ReportTargetControllerState& event) {
+    void TargetControllerComponent::onStateReportRequest(const Events::ReportTargetControllerState& event) {
         auto stateEvent = std::make_shared<Events::TargetControllerStateReported>(this->state);
         stateEvent->correlationId = event.id;
         EventManager::triggerEvent(stateEvent);
     }
 
-    void TargetController::onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event) {
+    void TargetControllerComponent::onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event) {
         auto targetDescriptorExtracted = std::make_shared<TargetDescriptorExtracted>();
         targetDescriptorExtracted->targetDescriptor = this->getTargetDescriptor();
 
@@ -492,7 +492,7 @@ namespace Bloom
         EventManager::triggerEvent(targetDescriptorExtracted);
     }
 
-    void TargetController::onDebugSessionStartedEvent(const Events::DebugSessionStarted&) {
+    void TargetControllerComponent::onDebugSessionStartedEvent(const Events::DebugSessionStarted&) {
         if (this->state == TargetControllerState::SUSPENDED) {
             Logger::debug("Waking TargetController");
 
@@ -507,7 +507,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onDebugSessionFinishedEvent(const DebugSessionFinished&) {
+    void TargetControllerComponent::onDebugSessionFinishedEvent(const DebugSessionFinished&) {
         if (this->target->getState() != TargetState::RUNNING) {
             this->target->run();
             this->fireTargetEvents();
@@ -518,7 +518,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onStopTargetExecutionEvent(const Events::StopTargetExecution& event) {
+    void TargetControllerComponent::onStopTargetExecutionEvent(const Events::StopTargetExecution& event) {
         if (this->target->getState() != TargetState::STOPPED) {
             this->target->stop();
             this->lastTargetState = TargetState::STOPPED;
@@ -533,7 +533,7 @@ namespace Bloom
         EventManager::triggerEvent(executionStoppedEvent);
     }
 
-    void TargetController::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {
+    void TargetControllerComponent::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {
         try {
             if (this->target->getState() != TargetState::STOPPED) {
                 // We can't step the target if it's already running.
@@ -557,7 +557,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onResumeTargetExecutionEvent(const Events::ResumeTargetExecution& event) {
+    void TargetControllerComponent::onResumeTargetExecutionEvent(const Events::ResumeTargetExecution& event) {
         try {
             if (this->target->getState() != TargetState::RUNNING) {
                 if (event.fromProgramCounter.has_value()) {
@@ -578,7 +578,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onReadRegistersEvent(const Events::RetrieveRegistersFromTarget& event) {
+    void TargetControllerComponent::onReadRegistersEvent(const Events::RetrieveRegistersFromTarget& event) {
         try {
             auto registers = this->target->readRegisters(event.descriptors);
 
@@ -595,7 +595,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onWriteRegistersEvent(const Events::WriteRegistersToTarget& event) {
+    void TargetControllerComponent::onWriteRegistersEvent(const Events::WriteRegistersToTarget& event) {
         try {
             this->target->writeRegisters(event.registers);
 
@@ -611,7 +611,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onReadMemoryEvent(const Events::RetrieveMemoryFromTarget& event) {
+    void TargetControllerComponent::onReadMemoryEvent(const Events::RetrieveMemoryFromTarget& event) {
         try {
             auto memoryReadEvent = std::make_shared<Events::MemoryRetrievedFromTarget>();
             memoryReadEvent->correlationId = event.id;
@@ -630,7 +630,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onWriteMemoryEvent(const Events::WriteMemoryToTarget& event) {
+    void TargetControllerComponent::onWriteMemoryEvent(const Events::WriteMemoryToTarget& event) {
         try {
             const auto& buffer = event.buffer;
             const auto bufferSize = event.buffer.size();
@@ -686,7 +686,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onSetBreakpointEvent(const Events::SetBreakpointOnTarget& event) {
+    void TargetControllerComponent::onSetBreakpointEvent(const Events::SetBreakpointOnTarget& event) {
         try {
             this->target->setBreakpoint(event.breakpoint.address);
             auto breakpointSetEvent = std::make_shared<Events::BreakpointSetOnTarget>();
@@ -700,7 +700,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onRemoveBreakpointEvent(const Events::RemoveBreakpointOnTarget& event) {
+    void TargetControllerComponent::onRemoveBreakpointEvent(const Events::RemoveBreakpointOnTarget& event) {
         try {
             this->target->removeBreakpoint(event.breakpoint.address);
             auto breakpointRemovedEvent = std::make_shared<Events::BreakpointRemovedOnTarget>();
@@ -714,7 +714,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onSetProgramCounterEvent(const Events::SetProgramCounterOnTarget& event) {
+    void TargetControllerComponent::onSetProgramCounterEvent(const Events::SetProgramCounterOnTarget& event) {
         try {
             if (this->target->getState() != TargetState::STOPPED) {
                 throw TargetOperationFailure(
@@ -735,7 +735,7 @@ namespace Bloom
     }
 
     // TODO: remove this
-    void TargetController::onInsightStateChangedEvent(const Events::InsightThreadStateChanged& event) {
+    void TargetControllerComponent::onInsightStateChangedEvent(const Events::InsightThreadStateChanged& event) {
         if (event.getState() == ThreadState::READY) {
             /*
              * Insight has just started up.
@@ -747,7 +747,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onRetrieveTargetPinStatesEvent(const Events::RetrieveTargetPinStates& event) {
+    void TargetControllerComponent::onRetrieveTargetPinStatesEvent(const Events::RetrieveTargetPinStates& event) {
         try {
             if (this->target->getState() != TargetState::STOPPED) {
                 throw TargetOperationFailure(
@@ -768,7 +768,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onSetPinStateEvent(const Events::SetTargetPinState& event) {
+    void TargetControllerComponent::onSetPinStateEvent(const Events::SetTargetPinState& event) {
         try {
             if (this->target->getState() != TargetState::STOPPED) {
                 throw TargetOperationFailure(
@@ -794,7 +794,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onRetrieveStackPointerEvent(const Events::RetrieveStackPointerFromTarget& event) {
+    void TargetControllerComponent::onRetrieveStackPointerEvent(const Events::RetrieveStackPointerFromTarget& event) {
         try {
             if (this->target->getState() != TargetState::STOPPED) {
                 throw TargetOperationFailure(
@@ -814,7 +814,7 @@ namespace Bloom
         }
     }
 
-    void TargetController::onResetTarget(const Events::ResetTarget& event) {
+    void TargetControllerComponent::onResetTarget(const Events::ResetTarget& event) {
         try {
             this->resetTarget(event.id);
 
