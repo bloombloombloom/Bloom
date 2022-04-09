@@ -14,7 +14,7 @@
 #include "src/Exceptions/TargetControllerStartupFailure.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
-namespace Bloom
+namespace Bloom::TargetController
 {
     using namespace Bloom::Targets;
     using namespace Bloom::Events;

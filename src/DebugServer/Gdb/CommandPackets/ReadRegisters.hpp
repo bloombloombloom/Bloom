@@ -27,6 +27,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
         explicit ReadRegisters(const RawPacketType& rawPacket);
 
-        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
+        void handle(
+            DebugSession& debugSession,
+            TargetController::TargetControllerConsole& targetControllerConsole
+        ) override;
     };
 }

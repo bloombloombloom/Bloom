@@ -6,6 +6,8 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
+    using TargetController::TargetControllerConsole;
+
     using ResponsePackets::EmptyResponsePacket;
 
     Monitor::Monitor(const RawPacketType& rawPacket)

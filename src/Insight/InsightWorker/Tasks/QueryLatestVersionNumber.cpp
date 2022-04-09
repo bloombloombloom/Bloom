@@ -11,6 +11,8 @@
 
 namespace Bloom
 {
+    using TargetController::TargetControllerConsole;
+
     void QueryLatestVersionNumber::run(TargetControllerConsole& targetControllerConsole) {
         auto* networkAccessManager = new QNetworkAccessManager(this);
         auto queryVersionEndpointUrl = QUrl(QString::fromStdString(Paths::homeDomainName() + "/latest-version"));

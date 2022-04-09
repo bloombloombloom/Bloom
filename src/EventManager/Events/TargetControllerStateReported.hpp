@@ -13,8 +13,8 @@ namespace Bloom::Events
         static constexpr EventType type = EventType::TARGET_CONTROLLER_STATE_REPORTED;
         static inline const std::string name = "TargetControllerStateReported";
 
-        TargetControllerState state;
-        explicit TargetControllerStateReported(TargetControllerState state): state(state) {};
+        TargetController::TargetControllerState state;
+        explicit TargetControllerStateReported(TargetController::TargetControllerState state): state(state) {};
 
         [[nodiscard]] EventType getType() const override {
             return TargetControllerStateReported::type;

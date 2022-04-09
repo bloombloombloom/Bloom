@@ -76,7 +76,7 @@ namespace Bloom
          * std::unique_ptr for the debug server (for polymorphism), I thought I'd keep it consistent and just use
          * std::unique_ptr for lazy loading.
          */
-        std::unique_ptr<TargetControllerComponent> targetController = nullptr;
+        std::unique_ptr<TargetController::TargetControllerComponent> targetController = nullptr;
         std::thread targetControllerThread;
 
         /**

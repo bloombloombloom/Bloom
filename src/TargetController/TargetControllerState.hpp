@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace Bloom
+namespace Bloom::TargetController
 {
     enum class TargetControllerState: std::uint8_t
     {

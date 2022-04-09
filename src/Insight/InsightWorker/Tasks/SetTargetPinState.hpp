@@ -14,7 +14,7 @@ namespace Bloom
         pinDescriptor(pinDescriptor), pinState(pinState) {}
 
     protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
 
     private:
         Targets::TargetPinDescriptor pinDescriptor;

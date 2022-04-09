@@ -46,6 +46,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          *
          * @param targetControllerConsole
          */
-        virtual void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole);
+        virtual void handle(
+            DebugSession& debugSession,
+            TargetController::TargetControllerConsole& targetControllerConsole
+        );
     };
 }

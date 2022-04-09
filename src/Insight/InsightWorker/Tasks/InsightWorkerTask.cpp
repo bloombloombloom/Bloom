@@ -4,6 +4,8 @@
 
 namespace Bloom
 {
+    using TargetController::TargetControllerConsole;
+
     void InsightWorkerTask::execute(TargetControllerConsole& targetControllerConsole) {
         try {
             this->state = InsightWorkerTaskState::STARTED;

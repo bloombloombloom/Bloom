@@ -15,6 +15,6 @@ namespace Bloom
         void stackPointerRead(std::uint32_t stackPointer);
 
     protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
     };
 }

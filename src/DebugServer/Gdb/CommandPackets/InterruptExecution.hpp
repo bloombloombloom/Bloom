@@ -17,6 +17,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     public:
         explicit InterruptExecution(const RawPacketType& rawPacket): CommandPacket(rawPacket) {}
 
-        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
+        void handle(
+            DebugSession& debugSession,
+            TargetController::TargetControllerConsole& targetControllerConsole
+        ) override;
     };
 }

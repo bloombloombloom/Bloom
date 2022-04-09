@@ -17,6 +17,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     public:
         explicit ResetTarget(Monitor&& monitorPacket);
 
-        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
+        void handle(
+            DebugSession& debugSession,
+            TargetController::TargetControllerConsole& targetControllerConsole
+        ) override;
     };
 }

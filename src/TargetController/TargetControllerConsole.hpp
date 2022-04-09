@@ -17,7 +17,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom
+namespace Bloom::TargetController
 {
     /**
      * The TargetControllerConsole provides an interface to the TargetController.

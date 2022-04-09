@@ -32,7 +32,10 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             return this->supportedFeatures;
         }
 
-        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
+        void handle(
+            DebugSession& debugSession,
+            TargetController::TargetControllerConsole& targetControllerConsole
+        ) override;
 
     private:
         std::set<Feature> supportedFeatures;

@@ -119,12 +119,16 @@ namespace Bloom
     }
 
     void InsightWorker::onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event) {
-        if (this->lastTargetControllerState == TargetControllerState::ACTIVE
+        using TargetController::TargetControllerState;
+
+        if (
+            this->lastTargetControllerState == TargetControllerState::ACTIVE
             && event.state == TargetControllerState::SUSPENDED
         ) {
             emit this->targetControllerSuspended();
 
-        } else if (this->lastTargetControllerState == TargetControllerState::SUSPENDED
+        } else if (
+            this->lastTargetControllerState == TargetControllerState::SUSPENDED
             && event.state == TargetControllerState::ACTIVE
         ) {
             try {

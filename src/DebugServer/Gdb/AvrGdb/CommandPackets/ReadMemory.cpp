@@ -8,6 +8,8 @@
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
+    using TargetController::TargetControllerConsole;
+
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::ResponsePacket;
 

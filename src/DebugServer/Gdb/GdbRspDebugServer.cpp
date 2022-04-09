@@ -295,7 +295,10 @@ namespace Bloom::DebugServer::Gdb
     }
 
     void GdbRspDebugServer::onTargetControllerStateReported(const Events::TargetControllerStateReported& event) {
-        if (event.state == TargetControllerState::SUSPENDED && this->activeDebugSession.has_value()) {
+        if (
+            event.state == TargetController::TargetControllerState::SUSPENDED
+            && this->activeDebugSession.has_value()
+        ) {
             Logger::warning("Terminating debug session - TargetController suspended unexpectedly");
             this->terminateActiveDebugSession();
         }

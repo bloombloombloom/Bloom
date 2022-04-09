@@ -24,7 +24,7 @@ namespace Bloom
 
         InsightWorkerTask(): QObject(nullptr) {};
 
-        void execute(TargetControllerConsole& targetControllerConsole);
+        void execute(TargetController::TargetControllerConsole& targetControllerConsole);
 
     signals:
         void started();
@@ -32,6 +32,6 @@ namespace Bloom
         void completed();
 
     protected:
-        virtual void run(TargetControllerConsole& targetControllerConsole) = 0;
+        virtual void run(TargetController::TargetControllerConsole& targetControllerConsole) = 0;
     };
 }

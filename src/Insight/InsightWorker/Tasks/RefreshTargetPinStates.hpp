@@ -17,7 +17,7 @@ namespace Bloom
         void targetPinStatesRetrieved(Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);
 
     protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
 
     private:
         int variantId;

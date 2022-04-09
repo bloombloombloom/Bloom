@@ -20,7 +20,7 @@
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
 
-namespace Bloom
+namespace Bloom::TargetController
 {
     /**
      * The TargetController possesses full control of the debugging target and the debug tool.

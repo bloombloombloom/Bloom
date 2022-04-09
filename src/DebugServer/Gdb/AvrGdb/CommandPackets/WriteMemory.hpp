@@ -31,6 +31,9 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
         explicit WriteMemory(const RawPacketType& rawPacket);
 
-        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
+        void handle(
+            DebugSession& debugSession,
+            TargetController::TargetControllerConsole& targetControllerConsole
+        ) override;
     };
 }

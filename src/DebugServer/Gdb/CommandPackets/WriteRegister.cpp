@@ -11,6 +11,8 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
+    using TargetController::TargetControllerConsole;
+
     using Targets::TargetRegister;
     using Targets::TargetRegisterDescriptors;
 

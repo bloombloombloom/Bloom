@@ -3,7 +3,7 @@
 #include "src/EventManager/Events/Events.hpp"
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom
+namespace Bloom::TargetController
 {
     using namespace Bloom::Targets;
     using namespace Bloom::Events;

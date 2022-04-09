@@ -18,7 +18,7 @@ namespace Bloom
         void latestVersionNumberRetrieved(const VersionNumber& latestVersionNumber);
 
     protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
 
     private:
         VersionNumber currentVersionNumber;

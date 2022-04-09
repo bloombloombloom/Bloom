@@ -12,6 +12,8 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
+    using TargetController::TargetControllerConsole;
+
     using Targets::TargetBreakpoint;
 
     using ResponsePackets::OkResponsePacket;

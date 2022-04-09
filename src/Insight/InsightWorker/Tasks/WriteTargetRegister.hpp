@@ -13,7 +13,7 @@ namespace Bloom
         explicit WriteTargetRegister(const Targets::TargetRegister& targetRegister): targetRegister(targetRegister) {}
 
     protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
 
     private:
         Targets::TargetRegister targetRegister;

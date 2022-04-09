@@ -21,6 +21,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
         explicit StepExecution(const RawPacketType& rawPacket);
 
-        void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
+        void handle(
+            DebugSession& debugSession,
+            TargetController::TargetControllerConsole& targetControllerConsole
+        ) override;
     };
 }

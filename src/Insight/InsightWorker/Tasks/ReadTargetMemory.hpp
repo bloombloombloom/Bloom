@@ -28,7 +28,7 @@ namespace Bloom
         void targetMemoryRead(Targets::TargetMemoryBuffer buffer);
 
     protected:
-        void run(TargetControllerConsole& targetControllerConsole) override;
+        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
 
     private:
         Targets::TargetMemoryType memoryType;

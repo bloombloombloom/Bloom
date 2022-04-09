@@ -13,6 +13,8 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
+    using TargetController::TargetControllerConsole;
+
     using ResponsePackets::SupportedFeaturesResponse;
     using ResponsePackets::ErrorResponsePacket;
 
