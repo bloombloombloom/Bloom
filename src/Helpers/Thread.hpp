@@ -29,8 +29,9 @@ namespace Bloom
         Thread& operator = (Thread&& other) = delete;
 
         virtual ThreadState getThreadState() {
+            auto lock = this->state.acquireLock();
             return this->state.getValue();
-        };
+        }
 
     protected:
         virtual void setThreadState(ThreadState state) {

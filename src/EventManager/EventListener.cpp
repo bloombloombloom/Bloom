@@ -7,7 +7,8 @@ namespace Bloom
     using namespace Bloom::Events;
 
     std::set<Events::EventType> EventListener::getRegisteredEventTypes() {
-        return this->registeredEventTypes.getValue();
+        auto lock = this->registeredEventTypes.acquireLock();
+        return this->registeredEventTypes.getReference();
     }
 
     void EventListener::registerEvent(SharedGenericEventPointer event) {

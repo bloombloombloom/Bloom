@@ -57,11 +57,11 @@ namespace Bloom
 
         template <class EventType>
         bool isEventTypeRegistered() {
-            return this->registeredEventTypes.getReference().contains(EventType::type);
+            return this->registeredEventTypes.getValue().contains(EventType::type);
         }
 
         bool isEventTypeRegistered(Events::EventType eventType) {
-            return this->registeredEventTypes.getReference().contains(eventType);
+            return this->registeredEventTypes.getValue().contains(eventType);
         };
 
         /**
@@ -76,13 +76,13 @@ namespace Bloom
         template<class EventType>
         void registerEventType() {
             auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-            this->registeredEventTypes.getReference().insert(EventType::type);
+            this->registeredEventTypes.getValue().insert(EventType::type);
         }
 
         template<class EventType>
         void deRegisterEventType() {
             auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-            this->registeredEventTypes.getReference().erase(EventType::type);
+            this->registeredEventTypes.getValue().erase(EventType::type);
         }
 
         /**
@@ -118,7 +118,7 @@ namespace Bloom
             ;
 
             auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
-            auto& mapping = this->eventTypeToCallbacksMapping.getReference();
+            auto& mapping = this->eventTypeToCallbacksMapping.getValue();
 
             mapping[EventType::type].push_back(parentCallback);
             this->template registerEventType<EventType>();
@@ -138,7 +138,7 @@ namespace Bloom
 
             {
                 auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
-                auto& mapping = this->eventTypeToCallbacksMapping.getReference();
+                auto& mapping = this->eventTypeToCallbacksMapping.getValue();
 
                 if (mapping.contains(EventType::type)) {
                     mapping.at(EventType::type).clear();
@@ -147,11 +147,11 @@ namespace Bloom
 
             {
                 auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-                this->registeredEventTypes.getReference().erase(EventType::type);
+                this->registeredEventTypes.getValue().erase(EventType::type);
             }
 
             auto queueLock = this->eventQueueByEventType.acquireLock();
-            auto& eventQueueByType = this->eventQueueByEventType.getReference();
+            auto& eventQueueByType = this->eventQueueByEventType.getValue();
 
             if (eventQueueByType.contains(EventType::type)) {
                 eventQueueByType.erase(EventType::type);
@@ -212,7 +212,7 @@ namespace Bloom
             ReturnType output = std::nullopt;
 
             auto queueLock = this->eventQueueByEventType.acquireLock();
-            auto& eventQueueByType = this->eventQueueByEventType.getReference();
+            auto& eventQueueByType = this->eventQueueByEventType.getValue();
 
             auto eventTypes = std::set<Events::EventType>({EventTypeA::type});
             auto eventTypesToDeRegister = std::set<Events::EventType>();
@@ -235,7 +235,7 @@ namespace Bloom
 
             {
                 auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-                auto& registeredEventTypes = this->registeredEventTypes.getReference();
+                auto& registeredEventTypes = this->registeredEventTypes.getValue();
 
                 for (const auto& eventType : eventTypes) {
                     if (!registeredEventTypes.contains(eventType)) {
@@ -281,7 +281,7 @@ namespace Bloom
 
             if (!eventTypesToDeRegister.empty()) {
                 auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-                auto& registeredEventTypes = this->registeredEventTypes.getReference();
+                auto& registeredEventTypes = this->registeredEventTypes.getValue();
 
                 for (const auto& eventType : eventTypesToDeRegister) {
                     registeredEventTypes.erase(eventType);
