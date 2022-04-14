@@ -36,7 +36,7 @@ namespace Bloom
     protected:
         virtual void setThreadState(ThreadState state) {
             this->state.setValue(state);
-        };
+        }
 
         /**
          * Disables signal interrupts on current thread.
@@ -45,9 +45,9 @@ namespace Bloom
             sigset_t set = {};
             sigfillset(&set);
             sigprocmask(SIG_SETMASK, &set, NULL);
-        };
+        }
 
-        void setName(std::string name) {
+        void setName(const std::string& name) {
             // POSIX thread names cannot exceed 16 characters, including the terminating null byte.
             assert(name.size() <= 15);
 
