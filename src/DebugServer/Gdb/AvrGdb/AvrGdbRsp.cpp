@@ -13,9 +13,10 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
 
     AvrGdbRsp::AvrGdbRsp(
         const DebugServerConfig& debugServerConfig,
-        EventListener& eventListener
+        EventListener& eventListener,
+        EventFdNotifier& eventNotifier
     )
-        : GdbRspDebugServer(debugServerConfig, eventListener)
+        : GdbRspDebugServer(debugServerConfig, eventListener, eventNotifier)
     {}
 
     void AvrGdbRsp::init() {

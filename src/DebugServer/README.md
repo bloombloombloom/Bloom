@@ -35,22 +35,23 @@ method to ensure that events are processed ASAP. See the relevant documentation 
 ---
 
 Any blocking I/O employed by a server implementation can support event interrupts using an 
-[`EventNotifier`](../Helpers/EventNotifier.hpp) and [`EpollInstance`](../Helpers/EpollInstance.hpp). 
+[`EventFdNotifier`](../Helpers/EventFdNotifier.hpp) and [`EpollInstance`](../Helpers/EpollInstance.hpp). 
 
 Key points: 
-- The `EventNotifier` class is an RAII wrapper for a Linux 
-  [eventfd object](https://man7.org/linux/man-pages/man2/eventfd.2.html). An event can be recorded against the eventfd 
-  object via a call to `EventNotifier::notify()`.
-- The [`EventListener`](../EventManager/EventListener.hpp) class can accept an `EventNotifier` object via
-  `EventListener::setInterruptEventNotifier()`. If an `EventNotifier` has been set on an `EventListener`, the
-  `EventListener` will call `EventNotifer::notify()` everytime an event is registered for that listener. 
+- The `EventFdNotifier` class is an RAII wrapper for a Linux 
+  [eventfd object](https://man7.org/linux/man-pages/man2/eventfd.2.html). It implements the
+  [`NotifierInterface`](../Helpers/NotifierInterface.hpp). An event can be recorded against the eventfd 
+  object via a call to `EventFdNotifier::notify()`.
+- The [`EventListener`](../EventManager/EventListener.hpp) class can accept an `NotifierInterface` object via
+  `EventListener::setInterruptEventNotifier()`. If a `NotifierInterface` has been set on an `EventListener`, the
+  `EventListener` will call `NotifierInterface::notify()` everytime an event is registered for that listener. 
 - The `EpollInstance` class is an RAII wrapper for a Linux 
   [epoll instance](https://man7.org/linux/man-pages/man7/epoll.7.html). It allows us to wait for any activity on a set 
   of file descriptors. File descriptors can be added and removed from the epoll instance via `EpollInstance::addEntry()` 
   and `EpollInstance::removeEntry()`. Calling `EpollInstance::waitForEvent()` will block until there is activity on at 
   least one of the file descriptors, or a timeout has been reached.
   
-With an `EventNotifer` and `EpollInstance`, one can perform a blocking I/O operation which can be interrupted by an 
+With an `EventFdNotifier` and `EpollInstance`, one can perform a blocking I/O operation which can be interrupted by an 
 event. For an example of this, see the AVR GDB server implementation - it employs the method described above to allow 
 the interruption of blocking I/O operations when an event is triggered. Specifically, 
 [`GdbRspDebugServer::waitForConnection()`](./Gdb/GdbRspDebugServer.hpp) or

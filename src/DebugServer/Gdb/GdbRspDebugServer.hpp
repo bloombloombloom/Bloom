@@ -12,6 +12,7 @@
 #include "GdbDebugServerConfig.hpp"
 #include "src/EventManager/EventListener.hpp"
 #include "src/Helpers/EpollInstance.hpp"
+#include "src/Helpers/EventFdNotifier.hpp"
 #include "src/TargetController/TargetControllerConsole.hpp"
 
 #include "Connection.hpp"
@@ -41,7 +42,8 @@ namespace Bloom::DebugServer::Gdb
     public:
         explicit GdbRspDebugServer(
             const DebugServerConfig& debugServerConfig,
-            EventListener& eventListener
+            EventListener& eventListener,
+            EventFdNotifier& eventNotifier
         );
 
         GdbRspDebugServer() = delete;
@@ -86,24 +88,24 @@ namespace Bloom::DebugServer::Gdb
         EventListener& eventListener;
 
         /**
-         * EventNotifier object for interrupting blocking I/O operations.
+         * EventFdNotifier object for interrupting blocking I/O operations.
          *
          * Extracted from this->eventListener.
          *
          * See documentation in src/DebugServer/README.md for more.
          */
-        EventNotifier* interruptEventNotifier = nullptr;
+        EventFdNotifier& interruptEventNotifier;
 
         /**
          * When waiting for a connection, we don't listen on the this->serverSocketFileDescriptor directly. Instead,
          * we use an EpollInstance to monitor both this->serverSocketFileDescriptor and this->interruptEventNotifier.
-         * This allows us to interrupt any blocking socket IO calls when EventNotifier::notify() is called on
+         * This allows us to interrupt any blocking socket IO calls when EventFdNotifier::notify() is called on
          * this->interruptEventNotifier.
          *
          * See GdbRspDebugServer::init()
          * See DebugServer::interruptEventNotifier
          * See EpollInstance
-         * See EventNotifier
+         * See EventFdNotifier
          */
         EpollInstance epollInstance = EpollInstance();
 

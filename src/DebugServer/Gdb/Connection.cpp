@@ -19,7 +19,7 @@ namespace Bloom::DebugServer::Gdb
 
     using ResponsePackets::ResponsePacket;
 
-    Connection::Connection(int serverSocketFileDescriptor, EventNotifier& interruptEventNotifier)
+    Connection::Connection(int serverSocketFileDescriptor, EventFdNotifier& interruptEventNotifier)
         : interruptEventNotifier(interruptEventNotifier)
     {
         this->accept(serverSocketFileDescriptor);

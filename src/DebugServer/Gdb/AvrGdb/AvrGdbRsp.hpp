@@ -28,7 +28,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
     public:
         AvrGdbRsp(
             const DebugServerConfig& debugServerConfig,
-            EventListener& eventListener
+            EventListener& eventListener,
+            EventFdNotifier& eventNotifier
         );
 
         std::string getName() const override {

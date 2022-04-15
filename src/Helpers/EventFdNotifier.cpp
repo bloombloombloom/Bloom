@@ -1,4 +1,4 @@
-#include "EventNotifier.hpp"
+#include "EventFdNotifier.hpp"
 
 #include <sys/eventfd.h>
 #include <unistd.h>
@@ -11,7 +11,7 @@ namespace Bloom
 {
     using Exceptions::Exception;
 
-    EventNotifier::EventNotifier() {
+    EventFdNotifier::EventFdNotifier() {
         this->fileDescriptor = ::eventfd(0, EFD_NONBLOCK);
 
         if (this->fileDescriptor < 0) {
@@ -22,32 +22,32 @@ namespace Bloom
         }
     }
 
-    EventNotifier::EventNotifier(EventNotifier&& other) noexcept
+    EventFdNotifier::EventFdNotifier(EventFdNotifier&& other) noexcept
         : fileDescriptor(other.fileDescriptor)
     {
         other.fileDescriptor = std::nullopt;
     }
 
-    EventNotifier::~EventNotifier() noexcept {
+    EventFdNotifier::~EventFdNotifier() noexcept {
         this->close();
     }
 
-    void EventNotifier::notify() {
+    void EventFdNotifier::notify() {
         if (::eventfd_write(this->fileDescriptor.value(), 1) < 0) {
             throw Exceptions::Exception("Failed to increment eventfd counter - error number: "
                 + std::to_string(errno));
         }
     }
 
-    void EventNotifier::clear() {
+    void EventFdNotifier::clear() {
         eventfd_t counter = {};
         if (::eventfd_read(this->fileDescriptor.value(), &counter) < 0 && errno != EAGAIN) {
-            throw Exceptions::Exception("Failed to clear EventNotifier object - eventfd_read failed - "
+            throw Exceptions::Exception("Failed to clear EventFdNotifier object - eventfd_read failed - "
                 "error number: " + std::to_string(errno));
         }
     }
 
-    void EventNotifier::close() {
+    void EventFdNotifier::close() {
         if (this->fileDescriptor.value_or(-1) >= 0) {
             ::close(this->fileDescriptor.value());
         }

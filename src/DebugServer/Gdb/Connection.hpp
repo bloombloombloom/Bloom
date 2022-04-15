@@ -9,7 +9,7 @@
 #include <array>
 #include <chrono>
 
-#include "src/Helpers/EventNotifier.hpp"
+#include "src/Helpers/EventFdNotifier.hpp"
 #include "src/Helpers/EpollInstance.hpp"
 
 #include "src/DebugServer/Gdb/Packet.hpp"
@@ -23,7 +23,7 @@ namespace Bloom::DebugServer::Gdb
     class Connection
     {
     public:
-        explicit Connection(int serverSocketFileDescriptor, EventNotifier& interruptEventNotifier);
+        explicit Connection(int serverSocketFileDescriptor, EventFdNotifier& interruptEventNotifier);
 
         Connection() = delete;
         Connection(const Connection&) = delete;
@@ -77,8 +77,8 @@ namespace Bloom::DebugServer::Gdb
         int maxPacketSize = 1024;
 
         /**
-         * The interruptEventNotifier (instance of EventNotifier) allows us to interrupt blocking I/O calls on this
-         * connection's socket. Under the hood, the EventNotifier class is just an RAII wrapper for a Linux eventfd
+         * The interruptEventNotifier (instance of EventFdNotifier) allows us to interrupt blocking I/O calls on this
+         * connection's socket. Under the hood, the EventFdNotifier class is just an RAII wrapper for a Linux eventfd
          * object.
          *
          * The file descriptors of the eventfd object and the socket are both added to an EpollInstance (which is just
@@ -86,9 +86,9 @@ namespace Bloom::DebugServer::Gdb
          * either of the two file descriptors. See any of the Connection I/O functions (e.g Connection::read()) for
          * more on this.
          *
-         * See the EventNotifier and EpollInstance classes for more.
+         * See the EventFdNotifier and EpollInstance classes for more.
          */
-        EventNotifier& interruptEventNotifier;
+        EventFdNotifier& interruptEventNotifier;
         EpollInstance epollInstance = EpollInstance();
 
         bool readInterruptEnabled = false;

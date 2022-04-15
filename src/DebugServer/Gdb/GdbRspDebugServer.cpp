@@ -39,14 +39,13 @@ namespace Bloom::DebugServer::Gdb
 
     GdbRspDebugServer::GdbRspDebugServer(
         const DebugServerConfig& debugServerConfig,
-        EventListener& eventListener
+        EventListener& eventListener,
+        EventFdNotifier& eventNotifier
     )
         : debugServerConfig(GdbDebugServerConfig(debugServerConfig))
         , eventListener(eventListener)
-        , interruptEventNotifier(eventListener.getInterruptEventNotifier())
-    {
-        assert(this->interruptEventNotifier != nullptr);
-    }
+        , interruptEventNotifier(eventNotifier)
+    {}
 
     void GdbRspDebugServer::init() {
         this->socketAddress.sin_family = AF_INET;
@@ -102,7 +101,7 @@ namespace Bloom::DebugServer::Gdb
         );
 
         this->epollInstance.addEntry(
-            this->interruptEventNotifier->getFileDescriptor(),
+            this->interruptEventNotifier.getFileDescriptor(),
             static_cast<std::uint16_t>(EpollEvent::READ_READY)
         );
 
@@ -203,15 +202,15 @@ namespace Bloom::DebugServer::Gdb
 
         if (
             !eventFileDescriptor.has_value()
-            || eventFileDescriptor.value() == this->interruptEventNotifier->getFileDescriptor()
+            || eventFileDescriptor.value() == this->interruptEventNotifier.getFileDescriptor()
         ) {
-            this->interruptEventNotifier->clear();
+            this->interruptEventNotifier.clear();
             return std::nullopt;
         }
 
         return std::make_optional<Connection>(
             this->serverSocketFileDescriptor.value(),
-            *(this->interruptEventNotifier)
+            this->interruptEventNotifier
         );
     }
 

@@ -7,7 +7,7 @@
 
 #include "src/Helpers/Thread.hpp"
 #include "src/ProjectConfig.hpp"
-#include "src/Helpers/EventNotifier.hpp"
+#include "src/Helpers/EventFdNotifier.hpp"
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
 
@@ -48,11 +48,11 @@ namespace Bloom::DebugServer
         DebugServerConfig debugServerConfig;
 
         /**
-         * This EventNotifier is injected into this->eventListener. It can be used by server implementations to
+         * This EventFdNotifier is injected into this->eventListener. It can be used by server implementations to
          * interrupt blocking I/O calls upon an event being triggered. For more, see the "Servicing events" section in
          * the DebugServer documentation (src/DebugServer/README.md).
          */
-        EventNotifier interruptEventNotifier = EventNotifier();
+        EventFdNotifier interruptEventNotifier = EventFdNotifier();
 
         /**
          * An instance to the selected server implementation. See DebugServerComponent::startup() for more.

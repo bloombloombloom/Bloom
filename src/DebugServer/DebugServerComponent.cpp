@@ -44,7 +44,8 @@ namespace Bloom::DebugServer
                 [this] () -> std::unique_ptr<ServerInterface> {
                     return std::make_unique<DebugServer::Gdb::AvrGdb::AvrGdbRsp>(
                         this->debugServerConfig,
-                        *(this->eventListener.get())
+                        *(this->eventListener.get()),
+                        this->interruptEventNotifier
                     );
                 }
             },

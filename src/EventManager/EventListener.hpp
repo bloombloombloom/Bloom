@@ -15,7 +15,7 @@
 
 #include "src/EventManager/Events/Events.hpp"
 #include "src/Helpers/SyncSafe.hpp"
-#include "src/Helpers/EventNotifier.hpp"
+#include "src/Helpers/NotifierInterface.hpp"
 
 namespace Bloom
 {
@@ -92,11 +92,11 @@ namespace Bloom
          */
         void registerEvent(Events::SharedGenericEventPointer event);
 
-        void setInterruptEventNotifier(EventNotifier* interruptEventNotifier) {
+        void setInterruptEventNotifier(NotifierInterface* interruptEventNotifier) {
             this->interruptEventNotifier = interruptEventNotifier;
         }
 
-        [[nodiscard]] EventNotifier* getInterruptEventNotifier() {
+        [[nodiscard]] NotifierInterface* getInterruptEventNotifier() {
             return this->interruptEventNotifier;
         }
 
@@ -370,7 +370,7 @@ namespace Bloom
         SyncSafe<std::map<Events::EventType, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
         SyncSafe<std::set<Events::EventType>> registeredEventTypes;
 
-        EventNotifier* interruptEventNotifier = nullptr;
+        NotifierInterface* interruptEventNotifier = nullptr;
 
         std::vector<Events::SharedGenericEventPointer> getEvents();
     };
