@@ -2,6 +2,8 @@
 
 #include <mutex>
 #include <condition_variable>
+#include <chrono>
+#include <optional>
 
 #include "NotifierInterface.hpp"
 
@@ -34,7 +36,7 @@ namespace Bloom
         /**
          * Blocks until the contained std::conditional_variable is notified.
          */
-        void waitForNotification();
+        void waitForNotification(std::optional<std::chrono::milliseconds> timeout = std::nullopt);
 
     private:
         std::mutex mutex;
