@@ -24,6 +24,7 @@ Checks: >
   -cppcoreguidelines-owning-memory,
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -misc-non-private-member-variables-in-classes,
+  -bugprone-easily-swappable-parameters,
 CheckOptions:
   - key: readability-function-cognitive-complexity.DescribeBasicIncrements
     value: 1

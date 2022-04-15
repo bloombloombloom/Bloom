@@ -20,6 +20,14 @@ namespace Bloom::TargetController
     using namespace Bloom::Events;
     using namespace Bloom::Exceptions;
 
+    TargetControllerComponent::TargetControllerComponent(
+        const ProjectConfig& projectConfig,
+        const EnvironmentConfig& environmentConfig
+    )
+        : projectConfig(projectConfig)
+        , environmentConfig(environmentConfig)
+    {}
+
     void TargetControllerComponent::run() {
         try {
             this->startup();

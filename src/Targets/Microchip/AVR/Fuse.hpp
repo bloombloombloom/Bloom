@@ -16,7 +16,10 @@ namespace Bloom::Targets::Microchip::Avr
         FuseType type;
         std::uint8_t value;
 
-        Fuse(FuseType type, std::uint8_t value): type(type), value(value) {}
+        Fuse(FuseType type, std::uint8_t value)
+            : type(type)
+            , value(value)
+        {}
     };
 
     struct FuseBitsDescriptor
@@ -31,6 +34,9 @@ namespace Bloom::Targets::Microchip::Avr
          */
         std::uint8_t bitMask;
 
-        FuseBitsDescriptor(FuseType fuseType, std::uint8_t bitMask): fuseType(fuseType), bitMask(bitMask) {}
+        FuseBitsDescriptor(FuseType fuseType, std::uint8_t bitMask)
+            : fuseType(fuseType)
+            , bitMask(bitMask)
+        {}
     };
 }

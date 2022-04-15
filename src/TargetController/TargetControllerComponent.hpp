@@ -37,7 +37,7 @@ namespace Bloom::TargetController
         explicit TargetControllerComponent(
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig
-        ): projectConfig(projectConfig), environmentConfig(environmentConfig) {};
+        );
 
         /**
          * Entry point for the TargetController.
