@@ -16,7 +16,7 @@ namespace Bloom
         auto taskQueueLock = this->queuedTasks.acquireLock();
         task->moveToThread(this->thread());
         task->setParent(this);
-        this->queuedTasks.getReference().push(task);
+        this->queuedTasks.getValue().push(task);
         emit this->taskQueued();
     }
 
@@ -60,7 +60,7 @@ namespace Bloom
     std::optional<InsightWorkerTask*> InsightWorker::getQueuedTask() {
         auto task = std::optional<InsightWorkerTask*>();
 
-        auto& queuedTasks = this->queuedTasks.getReference();
+        auto& queuedTasks = this->queuedTasks.getValue();
         auto taskQueueLock = this->queuedTasks.acquireLock();
 
         if (!queuedTasks.empty()) {
