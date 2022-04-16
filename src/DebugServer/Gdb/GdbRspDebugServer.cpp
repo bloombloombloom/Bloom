@@ -304,11 +304,30 @@ namespace Bloom::DebugServer::Gdb
     }
 
     void GdbRspDebugServer::onTargetExecutionStopped(const Events::TargetExecutionStopped&) {
-        if (this->activeDebugSession.has_value() && this->activeDebugSession->waitingForBreak) {
-            this->activeDebugSession->connection.writePacket(
-                ResponsePackets::TargetStopped(Signal::TRAP)
+        try {
+            if (this->activeDebugSession.has_value() && this->activeDebugSession->waitingForBreak) {
+                this->activeDebugSession->connection.writePacket(
+                    ResponsePackets::TargetStopped(Signal::TRAP)
+                );
+                this->activeDebugSession->waitingForBreak = false;
+            }
+
+        } catch (const ClientDisconnected&) {
+            Logger::info("GDB RSP client disconnected");
+            this->terminateActiveDebugSession();
+            return;
+
+        } catch (const ClientCommunicationError& exception) {
+            Logger::error(
+                "GDB RSP client communication error - " + exception.getMessage() + " - closing connection"
             );
-            this->activeDebugSession->waitingForBreak = false;
+            this->terminateActiveDebugSession();
+            return;
+
+        } catch (const DebugServerInterrupted&) {
+            // Server was interrupted
+            Logger::debug("GDB RSP interrupted");
+            return;
         }
     }
 }
