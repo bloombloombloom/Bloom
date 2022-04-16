@@ -200,10 +200,12 @@ namespace Bloom::DebugServer::Gdb
 
         const auto eventFileDescriptor = this->epollInstance.waitForEvent(timeout);
 
-        if (
-            !eventFileDescriptor.has_value()
-            || eventFileDescriptor.value() == this->interruptEventNotifier.getFileDescriptor()
-        ) {
+        if (!eventFileDescriptor.has_value()) {
+            // Timed out
+            return output;
+        }
+
+        if (eventFileDescriptor.value() == this->interruptEventNotifier.getFileDescriptor()) {
             // Interrupted
             this->interruptEventNotifier.clear();
             throw DebugServerInterrupted();
