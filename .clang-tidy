@@ -25,6 +25,10 @@ Checks: >
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -misc-non-private-member-variables-in-classes,
   -bugprone-easily-swappable-parameters,
+
+#  Disabling this until https://github.com/llvm/llvm-project/issues/47384 is fixed.
+  -cppcoreguidelines-avoid-non-const-global-variables,
+
 CheckOptions:
   - key: readability-function-cognitive-complexity.DescribeBasicIncrements
     value: 1

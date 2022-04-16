@@ -184,19 +184,17 @@ namespace Bloom::DebugServer::Gdb
         std::array<unsigned char, bufferSize> buffer = {};
         ssize_t bytesRead = 0;
 
-        if (interruptible) {
-            if (this->readInterruptEnabled != interruptible) {
+        if (this->readInterruptEnabled != interruptible) {
+            if (interruptible) {
                 this->enableReadInterrupts();
 
             } else {
-                // Clear any previous interrupts that are still hanging around
-                this->interruptEventNotifier.clear();
+                this->disableReadInterrupts();
             }
         }
 
-        if (this->readInterruptEnabled != interruptible && !interruptible) {
-            this->disableReadInterrupts();
-        }
+        // Clear any previous interrupts that are still hanging around
+        this->interruptEventNotifier.clear();
 
         const auto eventFileDescriptor = this->epollInstance.waitForEvent(timeout);
 

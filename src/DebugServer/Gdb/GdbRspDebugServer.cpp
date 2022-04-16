@@ -133,7 +133,7 @@ namespace Bloom::DebugServer::Gdb
                 auto connection = this->waitForConnection();
 
                 if (!connection.has_value()) {
-                    // Likely an interrupt
+                    // Likely an interrupt - return control to DebugServerComponent::run() so it can process any events
                     return;
                 }
 
@@ -228,7 +228,7 @@ namespace Bloom::DebugServer::Gdb
 
     std::unique_ptr<CommandPacket> GdbRspDebugServer::resolveCommandPacket(const RawPacketType& rawPacket) {
         if (rawPacket.size() == 5 && rawPacket[1] == 0x03) {
-            // This is an interrupt request - create a fake packet for it
+            // Interrupt request
             return std::make_unique<CommandPackets::InterruptExecution>(rawPacket);
         }
 

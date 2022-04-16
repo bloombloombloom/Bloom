@@ -42,7 +42,7 @@ Key points:
   [eventfd object](https://man7.org/linux/man-pages/man2/eventfd.2.html). It implements the
   [`NotifierInterface`](../Helpers/NotifierInterface.hpp). An event can be recorded against the eventfd 
   object via a call to `EventFdNotifier::notify()`.
-- The [`EventListener`](../EventManager/EventListener.hpp) class can accept an `NotifierInterface` object via
+- The [`EventListener`](../EventManager/EventListener.hpp) class can accept a `NotifierInterface` object via
   `EventListener::setInterruptEventNotifier()`. If a `NotifierInterface` has been set on an `EventListener`, the
   `EventListener` will call `NotifierInterface::notify()` everytime an event is registered for that listener. 
 - The `EpollInstance` class is an RAII wrapper for a Linux 
