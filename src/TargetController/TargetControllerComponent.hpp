@@ -1,6 +1,10 @@
 #pragma once
 
 #include <memory>
+#include <queue>
+#include <condition_variable>
+#include <optional>
+#include <chrono>
 #include <map>
 #include <string>
 #include <functional>
@@ -8,6 +12,15 @@
 #include <QJsonArray>
 
 #include "src/Helpers/Thread.hpp"
+#include "src/Helpers/SyncSafe.hpp"
+#include "src/Helpers/ConditionVariableNotifier.hpp"
+
+// Commands
+#include "Commands/Command.hpp"
+
+// Responses
+#include "Responses/Response.hpp"
+
 #include "TargetControllerState.hpp"
 
 #include "src/DebugToolDrivers/DebugTools.hpp"
@@ -44,7 +57,24 @@ namespace Bloom::TargetController
          */
         void run();
 
+        static void registerCommand(std::unique_ptr<Commands::Command> command);
+
+        static std::optional<std::unique_ptr<Responses::Response>> waitForResponse(
+            Commands::CommandIdType commandId,
+            std::optional<std::chrono::milliseconds> timeout = std::nullopt
+        );
+
     private:
+        static inline SyncSafe<
+            std::queue<std::unique_ptr<Commands::Command>>
+        > commandQueue;
+
+        static inline SyncSafe<
+            std::map<Commands::CommandIdType, std::unique_ptr<Responses::Response>>
+        > responsesByCommandId;
+
+        static inline ConditionVariableNotifier notifier = ConditionVariableNotifier();
+        static inline std::condition_variable responsesByCommandIdCv = std::condition_variable();
         /**
          * The TC starts off in a suspended state. TargetController::resume() is invoked from the startup routine.
          */
@@ -60,6 +90,11 @@ namespace Bloom::TargetController
          */
         std::unique_ptr<Targets::Target> target = nullptr;
         std::unique_ptr<DebugTool> debugTool = nullptr;
+
+        std::map<
+            Commands::CommandType,
+            std::function<std::unique_ptr<Responses::Response>(Commands::Command&)>
+        > commandHandlersByCommandType;
 
         EventListenerPointer eventListener = std::make_shared<EventListener>("TargetControllerEventListener");
 
@@ -85,116 +120,14 @@ namespace Bloom::TargetController
          */
         std::map<Targets::TargetMemoryType, Targets::TargetMemoryAddressRange> registerAddressRangeByMemoryType;
 
-        /**
-         * Constructs a mapping of supported debug tool names to lambdas. The lambdas should *only* instantiate
-         * and return an instance to the derived DebugTool class. They should not attempt to establish
-         * a connection to the device.
-         *
-         * @return
-         */
-        static auto getSupportedDebugTools() {
-            static auto mapping = std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
-                {
-                    "atmel-ice",
-                    [] {
-                        return std::make_unique<DebugToolDrivers::AtmelIce>();
-                    }
-                },
-                {
-                    "power-debugger",
-                    [] {
-                        return std::make_unique<DebugToolDrivers::PowerDebugger>();
-                    }
-                },
-                {
-                    "snap",
-                    [] {
-                        return std::make_unique<DebugToolDrivers::MplabSnap>();
-                    }
-                },
-                {
-                    "pickit-4",
-                    [] {
-                        return std::make_unique<DebugToolDrivers::MplabPickit4>();
-                    }
-                },
-                {
-                    "xplained-pro",
-                    [] {
-                        return std::make_unique<DebugToolDrivers::XplainedPro>();
-                    }
-                },
-                {
-                    "xplained-mini",
-                    [] {
-                        return std::make_unique<DebugToolDrivers::XplainedMini>();
-                    }
-                },
-                {
-                    "xplained-nano",
-                    [] {
-                        return std::make_unique<DebugToolDrivers::XplainedNano>();
-                    }
-                },
-                {
-                    "curiosity-nano",
-                    [] {
-                        return std::make_unique<DebugToolDrivers::CuriosityNano>();
-                    }
-                },
+        template<class CommandType>
+        void registerCommandHandler(std::function<std::unique_ptr<Responses::Response>(CommandType&)> callback) {
+            auto parentCallback = [callback] (Commands::Command& command) {
+                    // Downcast the command to the expected type
+                    return callback(dynamic_cast<CommandType&>(command));
             };
 
-            return mapping;
-        }
-
-        /**
-         * Constructs a mapping of supported target names to lambdas. The lambdas should instantiate and return an
-         * instance to the appropriate Target class.
-         *
-         * @return
-         */
-        static auto getSupportedTargets() {
-            static auto mapping = std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>>();
-
-            if (mapping.empty()) {
-                mapping = {
-                    {
-                        "avr8",
-                        [] {
-                            return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>();
-                        }
-                    },
-                };
-
-                // Include all targets from AVR8 target description files
-                auto avr8PdMapping =
-                    Targets::Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile::getTargetDescriptionMapping();
-
-                for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); mapIt++) {
-                    // Each target signature maps to an array of targets, as numerous targets can possess the same signature.
-                    auto targets = mapIt.value().toArray();
-
-                    for (auto targetIt = targets.begin(); targetIt != targets.end(); targetIt++) {
-                        auto targetName = targetIt->toObject().find("targetName").value().toString()
-                            .toLower().toStdString();
-                        auto targetSignatureHex = mapIt.key().toLower().toStdString();
-
-                        if (!mapping.contains(targetName)) {
-                            mapping.insert({
-                                targetName,
-                                [targetName, targetSignatureHex] {
-                                    return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>(
-                                        targetName,
-                                        Targets::Microchip::Avr::TargetSignature(targetSignatureHex)
-                                    );
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-
-            return mapping;
+            this->commandHandlersByCommandType.insert(std::pair(CommandType::type, parentCallback));
         }
 
         /**
@@ -214,6 +147,27 @@ namespace Bloom::TargetController
          * Because the TargetController hogs the thread, this method must be called in a dedicated thread.
          */
         void startup();
+
+        /**
+         * Constructs a mapping of supported debug tool names to lambdas. The lambdas should *only* instantiate
+         * and return an instance to the derived DebugTool class. They should not attempt to establish
+         * a connection to the device.
+         *
+         * @return
+         */
+        std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> getSupportedDebugTools();
+
+        /**
+         * Constructs a mapping of supported target names to lambdas. The lambdas should instantiate and return an
+         * instance to the appropriate Target class.
+         *
+         * @return
+         */
+        std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>> getSupportedTargets();
+
+        void processQueuedCommands();
+
+        void registerCommandResponse(Commands::CommandIdType commandId, std::unique_ptr<Responses::Response> response);
 
         /**
          * Installs Bloom's udev rules on user's machine. Rules are copied from build/Distribution/Resources/UdevRules

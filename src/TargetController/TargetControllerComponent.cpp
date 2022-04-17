@@ -20,6 +20,9 @@ namespace Bloom::TargetController
     using namespace Bloom::Events;
     using namespace Bloom::Exceptions;
 
+    using Commands::Command;
+    using Commands::CommandIdType;
+    using Responses::Response;
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
         const EnvironmentConfig& environmentConfig
@@ -41,7 +44,10 @@ namespace Bloom::TargetController
                         this->fireTargetEvents();
                     }
 
-                    this->eventListener->waitAndDispatch(60);
+                    TargetControllerComponent::notifier.waitForNotification(std::chrono::milliseconds(60));
+
+                    this->processQueuedCommands();
+                    this->eventListener->dispatchCurrentEvents();
 
                 } catch (const DeviceFailure& exception) {
                     /*
@@ -76,6 +82,48 @@ namespace Bloom::TargetController
         this->shutdown();
     }
 
+    void TargetControllerComponent::registerCommand(std::unique_ptr<Command> command) {
+        auto commandQueueLock = TargetControllerComponent::commandQueue.acquireLock();
+        TargetControllerComponent::commandQueue.getValue().push(std::move(command));
+        TargetControllerComponent::notifier.notify();
+    }
+
+    std::optional<std::unique_ptr<Responses::Response>> TargetControllerComponent::waitForResponse(
+        CommandIdType commandId,
+        std::optional<std::chrono::milliseconds> timeout
+    ) {
+        auto response = std::unique_ptr<Response>(nullptr);
+
+        const auto predicate = [commandId, &response] {
+            auto& responsesByCommandId = TargetControllerComponent::responsesByCommandId.getValue();
+            auto responseIt = responsesByCommandId.find(commandId);
+
+            if (responseIt != responsesByCommandId.end()) {
+                response.swap(responseIt->second);
+                responsesByCommandId.erase(responseIt);
+
+                return true;
+            }
+
+            return false;
+        };
+
+        auto responsesByCommandIdLock = TargetControllerComponent::responsesByCommandId.acquireLock();
+
+        if (timeout.has_value()) {
+            TargetControllerComponent::responsesByCommandIdCv.wait_for(
+                responsesByCommandIdLock,
+                timeout.value(),
+                predicate
+            );
+
+        } else {
+            TargetControllerComponent::responsesByCommandIdCv.wait(responsesByCommandIdLock, predicate);
+        }
+
+        return (response != nullptr) ? std::optional(std::move(response)) : std::nullopt;
+    }
+
     void TargetControllerComponent::startup() {
         this->setName("TC");
         Logger::info("Starting TargetController");
@@ -100,6 +148,151 @@ namespace Bloom::TargetController
         );
 
         this->resume();
+    }
+
+    std::map<
+        std::string,
+        std::function<std::unique_ptr<DebugTool>()>
+    > TargetControllerComponent::getSupportedDebugTools() {
+        return std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
+            {
+                "atmel-ice",
+                [] {
+                    return std::make_unique<DebugToolDrivers::AtmelIce>();
+                }
+            },
+            {
+                "power-debugger",
+                [] {
+                    return std::make_unique<DebugToolDrivers::PowerDebugger>();
+                }
+            },
+            {
+                "snap",
+                [] {
+                    return std::make_unique<DebugToolDrivers::MplabSnap>();
+                }
+            },
+            {
+                "pickit-4",
+                [] {
+                    return std::make_unique<DebugToolDrivers::MplabPickit4>();
+                }
+            },
+            {
+                "xplained-pro",
+                [] {
+                    return std::make_unique<DebugToolDrivers::XplainedPro>();
+                }
+            },
+            {
+                "xplained-mini",
+                [] {
+                    return std::make_unique<DebugToolDrivers::XplainedMini>();
+                }
+            },
+            {
+                "xplained-nano",
+                [] {
+                    return std::make_unique<DebugToolDrivers::XplainedNano>();
+                }
+            },
+            {
+                "curiosity-nano",
+                [] {
+                    return std::make_unique<DebugToolDrivers::CuriosityNano>();
+                }
+            },
+        };
+    }
+
+    std::map<
+        std::string,
+        std::function<std::unique_ptr<Targets::Target>()>
+    > TargetControllerComponent::getSupportedTargets() {
+        using Avr8TargetDescriptionFile = Targets::Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile;
+
+        auto mapping = std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>>({
+            {
+                "avr8",
+                [] {
+                    return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>();
+                }
+            },
+        });
+
+        // Include all targets from AVR8 target description files
+        auto avr8PdMapping = Avr8TargetDescriptionFile::getTargetDescriptionMapping();
+
+        for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); mapIt++) {
+            // Each target signature maps to an array of targets, as numerous targets can possess the same signature.
+            auto targets = mapIt.value().toArray();
+
+            for (auto targetIt = targets.begin(); targetIt != targets.end(); targetIt++) {
+                auto targetName = targetIt->toObject().find("targetName").value().toString()
+                    .toLower().toStdString();
+                auto targetSignatureHex = mapIt.key().toLower().toStdString();
+
+                if (!mapping.contains(targetName)) {
+                    mapping.insert({
+                        targetName,
+                        [targetName, targetSignatureHex] {
+                            return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>(
+                                targetName,
+                                Targets::Microchip::Avr::TargetSignature(targetSignatureHex)
+                            );
+                        }
+                    });
+                }
+            }
+        }
+
+        return mapping;
+    }
+
+    void TargetControllerComponent::processQueuedCommands() {
+        auto commands = std::queue<std::unique_ptr<Command>>();
+
+        {
+            auto queueLock = TargetControllerComponent::commandQueue.acquireLock();
+            commands.swap(TargetControllerComponent::commandQueue.getValue());
+        }
+
+        while (!commands.empty()) {
+            const auto command = std::move(commands.front());
+            commands.pop();
+
+            const auto commandId = command->id;
+            const auto commandType = command->getType();
+
+            try {
+                if (!this->commandHandlersByCommandType.contains(commandType)) {
+                    throw Exception("No handler registered for this command.");
+                }
+
+                this->registerCommandResponse(
+                    commandId,
+                    this->commandHandlersByCommandType.at(commandType)(*(command.get()))
+                );
+
+            } catch (const Exception& exception) {
+                this->registerCommandResponse(
+                    commandId,
+                    std::make_unique<Responses::Error>(exception.getMessage())
+                );
+            }
+        }
+    }
+
+    void TargetControllerComponent::registerCommandResponse(
+        CommandIdType commandId,
+        std::unique_ptr<Response> response
+    ) {
+        auto responseMappingLock = TargetControllerComponent::responsesByCommandId.acquireLock();
+        TargetControllerComponent::responsesByCommandId.getValue().insert(
+            std::pair(commandId, std::move(response))
+        );
+        TargetControllerComponent::responsesByCommandIdCv.notify_all();
     }
 
     void TargetControllerComponent::checkUdevRules() {
@@ -283,8 +476,8 @@ namespace Bloom::TargetController
         auto debugToolName = this->environmentConfig.debugToolConfig.name;
         auto targetName = this->environmentConfig.targetConfig.name;
 
-        auto supportedDebugTools = TargetControllerComponent::getSupportedDebugTools();
-        auto supportedTargets = TargetControllerComponent::getSupportedTargets();
+        static auto supportedDebugTools = this->getSupportedDebugTools();
+        static auto supportedTargets = this->getSupportedTargets();
 
         if (!supportedDebugTools.contains(debugToolName)) {
             throw Exceptions::InvalidConfig(

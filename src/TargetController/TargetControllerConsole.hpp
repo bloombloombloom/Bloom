@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "CommandManager.hpp"
 #include "TargetControllerState.hpp"
 
 #include "src/EventManager/EventListener.hpp"
@@ -171,6 +172,7 @@ namespace Bloom::TargetController
         void resetTarget();
 
     private:
+        CommandManager commandManager = CommandManager();
         EventListener& eventListener;
 
         std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(20000);
