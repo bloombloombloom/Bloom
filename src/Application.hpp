@@ -228,7 +228,8 @@ namespace Bloom
         void stopSignalHandler();
 
         /**
-         * Prepares a dedicated thread for the TargetController and kicks it off with a call to TargetController::run().
+         * Prepares a dedicated thread for the TargetController and kicks it off with a call to
+         * TargetControllerComponent::run().
          */
         void startTargetController();
 

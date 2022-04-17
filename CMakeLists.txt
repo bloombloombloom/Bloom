@@ -13,11 +13,9 @@ set(ENABLE_SANITIZERS off)
 
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 
-# The HIDAPI library lives here
 link_directories(/usr/local/lib)
 
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(AUTOGEN_BUILD_DIR ../build/)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/bin")
 
@@ -30,6 +28,12 @@ find_package(Qt6UiTools REQUIRED)
 find_package(Qt6SvgWidgets REQUIRED)
 find_package(Qt6Network REQUIRED)
 
+# Bloom is distributed with some third-party dependencies (in the form of shared objects). These dependencies are
+# distributed with Bloom for various reasons (licensing, availability in some package managers, etc).
+#
+# The shared objects are located in bin/lib (relative to Bloom's installation directory). For this reason, we instruct
+# the dynamic linker to look for any of Bloom's shared object dependencies in that location first. We do this by
+# including '$ORIGIN/lib' in the RPATH of Bloom's binary executable.
 set(CMAKE_SKIP_BUILD_RPATH false)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
 set(CMAKE_INSTALL_RPATH "\$ORIGIN/lib:/usr/local/lib")

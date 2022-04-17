@@ -79,7 +79,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          *
          * We don't use this->getId() here as that could return the ID that was extracted from the target description
          * file (which it would, if the user specified the exact target name in their project config - see
-         * Avr8::getId() and TargetController::getSupportedTargets() for more).
+         * Avr8::getId() and TargetControllerComponent::getSupportedTargets() for more).
          */
         auto targetSignature = this->avr8DebugInterface->getDeviceId();
         auto tdSignature = this->targetDescriptionFile->getTargetSignature();

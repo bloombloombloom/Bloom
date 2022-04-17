@@ -10,7 +10,8 @@ namespace Bloom::TargetController
     using namespace Bloom::Exceptions;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
-        :eventListener(eventListener) {}
+        : eventListener(eventListener)
+    {}
 
     TargetControllerState TargetControllerConsole::getTargetControllerState() {
         return this->triggerTargetControllerEventAndWaitForResponse(
