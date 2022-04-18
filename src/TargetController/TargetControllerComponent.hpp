@@ -17,6 +17,7 @@
 
 // Commands
 #include "Commands/Command.hpp"
+#include "Commands/StopTargetExecution.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
@@ -287,12 +288,7 @@ namespace Bloom::TargetController
          */
         void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
-        /**
-         * Will attempt to stop execution on the target and emit a TargetExecutionStopped event.
-         *
-         * @param event
-         */
-        void onStopTargetExecutionEvent(const Events::StopTargetExecution& event);
+        std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);
 
         /**
          * Will attempt to step execution on the target and emit a TargetExecutionResumed event.

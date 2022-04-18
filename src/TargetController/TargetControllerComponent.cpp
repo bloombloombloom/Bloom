@@ -22,7 +22,10 @@ namespace Bloom::TargetController
 
     using Commands::Command;
     using Commands::CommandIdType;
+    using Commands::StopTargetExecution;
+
     using Responses::Response;
+
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
         const EnvironmentConfig& environmentConfig
@@ -366,9 +369,10 @@ namespace Bloom::TargetController
                 + std::string(exception.what()));
         }
 
+        this->deregisterCommandHandler(StopTargetExecution::type);
+
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
-        this->eventListener->deregisterCallbacksForEventType<Events::StopTargetExecution>();
         this->eventListener->deregisterCallbacksForEventType<Events::StepTargetExecution>();
         this->eventListener->deregisterCallbacksForEventType<Events::ResumeTargetExecution>();
         this->eventListener->deregisterCallbacksForEventType<Events::RetrieveRegistersFromTarget>();
@@ -398,16 +402,16 @@ namespace Bloom::TargetController
         this->acquireHardware();
         this->loadRegisterDescriptors();
 
+        this->registerCommandHandler<StopTargetExecution>(
+            std::bind(&TargetControllerComponent::handleStopTargetExecution, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ExtractTargetDescriptor>(
             std::bind(&TargetControllerComponent::onExtractTargetDescriptor, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::StopTargetExecution>(
-            std::bind(&TargetControllerComponent::onStopTargetExecutionEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::StepTargetExecution>(
@@ -723,19 +727,18 @@ namespace Bloom::TargetController
         }
     }
 
-    void TargetControllerComponent::onStopTargetExecutionEvent(const Events::StopTargetExecution& event) {
+    std::unique_ptr<Response> TargetControllerComponent::handleStopTargetExecution(StopTargetExecution& command) {
         if (this->target->getState() != TargetState::STOPPED) {
             this->target->stop();
             this->lastTargetState = TargetState::STOPPED;
         }
 
-        auto executionStoppedEvent = std::make_shared<Events::TargetExecutionStopped>(
+        EventManager::triggerEvent(std::make_shared<Events::TargetExecutionStopped>(
             this->target->getProgramCounter(),
             TargetBreakCause::UNKNOWN
-        );
+        ));
 
-        executionStoppedEvent->correlationId = event.id;
-        EventManager::triggerEvent(executionStoppedEvent);
+        return std::make_unique<Response>();
     }
 
     void TargetControllerComponent::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {

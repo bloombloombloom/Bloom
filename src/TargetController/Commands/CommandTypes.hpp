@@ -7,5 +7,6 @@ namespace Bloom::TargetController::Commands
     enum class CommandType: std::uint8_t
     {
         GENERIC,
+        STOP_TARGET_EXECUTION,
     };
 }

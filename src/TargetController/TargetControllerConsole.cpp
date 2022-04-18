@@ -1,6 +1,10 @@
 #include "TargetControllerConsole.hpp"
 
 #include "src/EventManager/Events/Events.hpp"
+
+// Commands
+#include "Commands/StopTargetExecution.hpp"
+
 #include "src/Logger/Logger.hpp"
 
 namespace Bloom::TargetController
@@ -8,6 +12,8 @@ namespace Bloom::TargetController
     using namespace Bloom::Targets;
     using namespace Bloom::Events;
     using namespace Bloom::Exceptions;
+
+    using Commands::StopTargetExecution;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -35,7 +41,10 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerConsole::stopTargetExecution() {
-        this->triggerTargetControllerEventAndWaitForResponse(std::make_shared<StopTargetExecution>());
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<StopTargetExecution>(),
+            this->defaultTimeout
+        );
     }
 
     void TargetControllerConsole::continueTargetExecution(std::optional<std::uint32_t> fromAddress) {
