@@ -124,6 +124,10 @@ namespace Bloom::TargetController
         return (response != nullptr) ? std::optional(std::move(response)) : std::nullopt;
     }
 
+    void TargetControllerComponent::deregisterCommandHandler(Commands::CommandType commandType) {
+        this->commandHandlersByCommandType.erase(commandType);
+    }
+
     void TargetControllerComponent::startup() {
         this->setName("TC");
         Logger::info("Starting TargetController");

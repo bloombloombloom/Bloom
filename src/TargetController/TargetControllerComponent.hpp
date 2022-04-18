@@ -132,6 +132,8 @@ namespace Bloom::TargetController
             this->commandHandlersByCommandType.insert(std::pair(CommandType::type, parentCallback));
         }
 
+        void deregisterCommandHandler(Commands::CommandType commandType);
+
         /**
          * Updates the state of the TargetController and emits a state changed event.
          *
