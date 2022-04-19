@@ -23,6 +23,7 @@ namespace Bloom::TargetController
     using Commands::Command;
     using Commands::CommandIdType;
     using Commands::StopTargetExecution;
+    using Commands::ResumeTargetExecution;
 
     using Responses::Response;
 
@@ -370,11 +371,11 @@ namespace Bloom::TargetController
         }
 
         this->deregisterCommandHandler(StopTargetExecution::type);
+        this->deregisterCommandHandler(ResumeTargetExecution::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
         this->eventListener->deregisterCallbacksForEventType<Events::StepTargetExecution>();
-        this->eventListener->deregisterCallbacksForEventType<Events::ResumeTargetExecution>();
         this->eventListener->deregisterCallbacksForEventType<Events::RetrieveRegistersFromTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::WriteRegistersToTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::RetrieveMemoryFromTarget>();
@@ -406,6 +407,10 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleStopTargetExecution, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<ResumeTargetExecution>(
+            std::bind(&TargetControllerComponent::handleResumeTargetExecution, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
@@ -416,10 +421,6 @@ namespace Bloom::TargetController
 
         this->eventListener->registerCallbackForEventType<Events::StepTargetExecution>(
             std::bind(&TargetControllerComponent::onStepTargetExecutionEvent, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::ResumeTargetExecution>(
-            std::bind(&TargetControllerComponent::onResumeTargetExecutionEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RetrieveRegistersFromTarget>(
@@ -741,6 +742,23 @@ namespace Bloom::TargetController
         return std::make_unique<Response>();
     }
 
+    std::unique_ptr<Responses::Response> TargetControllerComponent::handleResumeTargetExecution(
+        ResumeTargetExecution& command
+    ) {
+        if (this->target->getState() != TargetState::RUNNING) {
+            if (command.fromProgramCounter.has_value()) {
+                this->target->setProgramCounter(command.fromProgramCounter.value());
+            }
+
+            this->target->run();
+            this->lastTargetState = TargetState::RUNNING;
+        }
+
+        EventManager::triggerEvent(std::make_shared<Events::TargetExecutionResumed>());
+
+        return std::make_unique<Response>();
+    }
+
     void TargetControllerComponent::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {
         try {
             if (this->target->getState() != TargetState::STOPPED) {
@@ -761,27 +779,6 @@ namespace Bloom::TargetController
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to step execution on target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
-    }
-
-    void TargetControllerComponent::onResumeTargetExecutionEvent(const Events::ResumeTargetExecution& event) {
-        try {
-            if (this->target->getState() != TargetState::RUNNING) {
-                if (event.fromProgramCounter.has_value()) {
-                    this->target->setProgramCounter(event.fromProgramCounter.value());
-                }
-
-                this->target->run();
-                this->lastTargetState = TargetState::RUNNING;
-            }
-
-            auto executionResumedEvent = std::make_shared<Events::TargetExecutionResumed>();
-            executionResumedEvent->correlationId = event.id;
-            EventManager::triggerEvent(executionResumedEvent);
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to resume execution on target - " + exception.getMessage());
             this->emitErrorEvent(event.id, exception.getMessage());
         }
     }

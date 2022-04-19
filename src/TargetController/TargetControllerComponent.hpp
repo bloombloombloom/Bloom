@@ -18,6 +18,7 @@
 // Commands
 #include "Commands/Command.hpp"
 #include "Commands/StopTargetExecution.hpp"
+#include "Commands/ResumeTargetExecution.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
@@ -289,6 +290,7 @@ namespace Bloom::TargetController
         void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);
+        std::unique_ptr<Responses::Response> handleResumeTargetExecution(Commands::ResumeTargetExecution& command);
 
         /**
          * Will attempt to step execution on the target and emit a TargetExecutionResumed event.
@@ -296,13 +298,6 @@ namespace Bloom::TargetController
          * @param event
          */
         void onStepTargetExecutionEvent(const Events::StepTargetExecution& event);
-
-        /**
-         * Will attempt to resume execution on the target and emit a TargetExecutionResumed event.
-         *
-         * @param event
-         */
-        void onResumeTargetExecutionEvent(const Events::ResumeTargetExecution& event);
 
         /**
          * Will attempt to read the requested registers and emit a RegistersRetrievedFromTarget event.

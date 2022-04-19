@@ -8,5 +8,6 @@ namespace Bloom::TargetController::Commands
     {
         GENERIC,
         STOP_TARGET_EXECUTION,
+        RESUME_TARGET_EXECUTION,
     };
 }

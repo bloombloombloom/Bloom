@@ -4,6 +4,7 @@
 
 // Commands
 #include "Commands/StopTargetExecution.hpp"
+#include "Commands/ResumeTargetExecution.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -14,6 +15,7 @@ namespace Bloom::TargetController
     using namespace Bloom::Exceptions;
 
     using Commands::StopTargetExecution;
+    using Commands::ResumeTargetExecution;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -48,13 +50,16 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerConsole::continueTargetExecution(std::optional<std::uint32_t> fromAddress) {
-        auto resumeExecutionEvent = std::make_shared<ResumeTargetExecution>();
+        auto resumeExecutionCommand = std::make_unique<ResumeTargetExecution>();
 
         if (fromAddress.has_value()) {
-            resumeExecutionEvent->fromProgramCounter = fromAddress.value();
+            resumeExecutionCommand->fromProgramCounter = fromAddress.value();
         }
 
-        this->triggerTargetControllerEventAndWaitForResponse(resumeExecutionEvent);
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::move(resumeExecutionCommand),
+            this->defaultTimeout
+        );
     }
 
     void TargetControllerConsole::stepTargetExecution(std::optional<std::uint32_t> fromAddress) {

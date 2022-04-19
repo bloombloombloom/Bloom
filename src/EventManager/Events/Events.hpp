@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "Event.hpp"
-#include "ResumeTargetExecution.hpp"
 #include "ResetTarget.hpp"
 #include "DebugSessionStarted.hpp"
 #include "DebugSessionFinished.hpp"
