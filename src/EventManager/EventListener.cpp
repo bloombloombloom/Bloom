@@ -83,7 +83,7 @@ namespace Bloom
         std::vector<SharedGenericEventPointer> output;
 
         for (auto& eventQueue: eventQueueByType) {
-            if (!eventQueue.second.empty()) {
+            while (!eventQueue.second.empty()) {
                 output.push_back(std::move(eventQueue.second.front()));
                 eventQueue.second.pop();
             }
