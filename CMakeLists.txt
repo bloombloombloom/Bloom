@@ -77,7 +77,6 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     target_include_directories(Bloom PUBLIC /opt/Qt/6.1.2/Src)
 endif()
 
-target_link_libraries(Bloom -static-libgcc -static-libstdc++)
 target_link_libraries(Bloom -lstdc++fs)
 target_link_libraries(Bloom -lpthread)
 target_link_libraries(Bloom -lusb-1.0)
