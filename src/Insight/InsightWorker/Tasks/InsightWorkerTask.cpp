@@ -16,7 +16,7 @@ namespace Bloom
 
         } catch (std::exception& exception) {
             this->state = InsightWorkerTaskState::FAILED;
-            Logger::error("InsightWorker task failed - " + std::string(exception.what()));
+            Logger::debug("InsightWorker task failed - " + std::string(exception.what()));
             emit this->failed(QString::fromStdString(exception.what()));
         }
     }

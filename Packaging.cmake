@@ -1,3 +1,17 @@
+# This file contains the CPack configuration for packaging Bloom. Bloom is currently packaged in Debian and RPM
+# packages. To package Bloom, simply run CPack from the CMake build directory:
+#
+# $ cd build/cmake-build-release/
+# $ cpack
+#
+# CPack's -G option can be used to specify a particular generator:
+# $ cpack -G DEB
+#
+# If no generator has been specified, CPack will generate packages for all configured generators (see CPACK_GENERATOR
+# in Bloom's root CMakeLists.txt).
+#
+# NOTE: The above commands assume Bloom has been built in 'release' mode, and the install target has been run.
+
 set(CPACK_PACKAGE_NAME "Bloom")
 
 set(

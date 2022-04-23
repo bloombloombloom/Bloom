@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "Command.hpp"
 
 namespace Bloom::TargetController::Commands
