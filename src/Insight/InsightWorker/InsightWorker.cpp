@@ -72,6 +72,10 @@ namespace Bloom
     }
 
     void InsightWorker::onTargetStoppedEvent(const Events::TargetExecutionStopped& event) {
+        if (this->lastTargetState == TargetState::STOPPED) {
+            return;
+        }
+
         /*
          * When we report a target halt to Insight, Insight will immediately seek more data from the target (such as
          * GPIO pin states). This can be problematic for cases where the target had halted due to a conditional
@@ -99,17 +103,20 @@ namespace Bloom
         );
 
         if (!resumedEvent.has_value()) {
+            this->lastTargetState = TargetState::STOPPED;
             emit this->targetStateUpdated(TargetState::STOPPED);
             emit this->targetProgramCounterUpdated(event.programCounter);
         }
     }
 
     void InsightWorker::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
+        this->lastTargetState = TargetState::RUNNING;
         emit this->targetStateUpdated(TargetState::RUNNING);
     }
 
     void InsightWorker::onTargetResetEvent(const Events::TargetReset& event) {
         // TODO: Pull PC from target. This will be done as part of the TC refactor (https://github.com/navnavnav/Bloom/issues/25)
+        this->lastTargetState = TargetState::STOPPED;
         emit this->targetStateUpdated(TargetState::STOPPED);
         emit this->targetProgramCounterUpdated(0);
     }

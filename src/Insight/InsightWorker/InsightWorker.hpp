@@ -55,6 +55,8 @@ namespace Bloom
         TargetController::TargetControllerState lastTargetControllerState =
             TargetController::TargetControllerState::ACTIVE;
 
+        Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
+
         QTimer* eventDispatchTimer = nullptr;
 
         SyncSafe<std::queue<InsightWorkerTask*>> queuedTasks;
