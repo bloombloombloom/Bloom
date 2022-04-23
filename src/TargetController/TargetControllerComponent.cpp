@@ -24,6 +24,7 @@ namespace Bloom::TargetController
     using Commands::CommandIdType;
     using Commands::StopTargetExecution;
     using Commands::ResumeTargetExecution;
+    using Commands::ResetTarget;
 
     using Responses::Response;
 
@@ -372,6 +373,7 @@ namespace Bloom::TargetController
 
         this->deregisterCommandHandler(StopTargetExecution::type);
         this->deregisterCommandHandler(ResumeTargetExecution::type);
+        this->deregisterCommandHandler(ResetTarget::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
@@ -409,6 +411,10 @@ namespace Bloom::TargetController
 
         this->registerCommandHandler<ResumeTargetExecution>(
             std::bind(&TargetControllerComponent::handleResumeTargetExecution, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<ResetTarget>(
+            std::bind(&TargetControllerComponent::handleResetTarget, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
@@ -465,10 +471,6 @@ namespace Bloom::TargetController
 
         this->eventListener->registerCallbackForEventType<Events::RetrieveStackPointerFromTarget>(
             std::bind(&TargetControllerComponent::onRetrieveStackPointerEvent, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::ResetTarget>(
-            std::bind(&TargetControllerComponent::onResetTarget, this, std::placeholders::_1)
         );
 
         this->state = TargetControllerState::ACTIVE;
@@ -660,13 +662,10 @@ namespace Bloom::TargetController
         }
     }
 
-    void TargetControllerComponent::resetTarget(const std::optional<int>& resetEventCorrelationId) {
+    void TargetControllerComponent::resetTarget() {
         this->target->reset();
 
-        auto targetResetEvent = std::make_shared<Events::TargetReset>();
-        targetResetEvent->correlationId = resetEventCorrelationId;
-
-        EventManager::triggerEvent(targetResetEvent);
+        EventManager::triggerEvent(std::make_shared<Events::TargetReset>());
     }
 
     void TargetControllerComponent::emitErrorEvent(int correlationId, const std::string& errorMessage) {
@@ -756,6 +755,11 @@ namespace Bloom::TargetController
 
         EventManager::triggerEvent(std::make_shared<Events::TargetExecutionResumed>());
 
+        return std::make_unique<Response>();
+    }
+
+    std::unique_ptr<Responses::Response> TargetControllerComponent::handleResetTarget(ResetTarget& command) {
+        this->resetTarget();
         return std::make_unique<Response>();
     }
 
@@ -1015,16 +1019,6 @@ namespace Bloom::TargetController
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to retrieve stack pointer value from target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
-    }
-
-    void TargetControllerComponent::onResetTarget(const Events::ResetTarget& event) {
-        try {
-            this->resetTarget(event.id);
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to reset target - " + exception.getMessage());
             this->emitErrorEvent(event.id, exception.getMessage());
         }
     }

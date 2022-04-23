@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "Event.hpp"
-#include "ResetTarget.hpp"
 #include "DebugSessionStarted.hpp"
 #include "DebugSessionFinished.hpp"
 #include "TargetControllerThreadStateChanged.hpp"

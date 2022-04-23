@@ -5,6 +5,7 @@
 // Commands
 #include "Commands/StopTargetExecution.hpp"
 #include "Commands/ResumeTargetExecution.hpp"
+#include "Commands/ResetTarget.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -16,6 +17,7 @@ namespace Bloom::TargetController
 
     using Commands::StopTargetExecution;
     using Commands::ResumeTargetExecution;
+    using Commands::ResetTarget;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -157,6 +159,9 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerConsole::resetTarget() {
-        this->triggerTargetControllerEventAndWaitForResponse(std::make_shared<ResetTarget>());
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<ResetTarget>(),
+            this->defaultTimeout
+        );
     }
 }

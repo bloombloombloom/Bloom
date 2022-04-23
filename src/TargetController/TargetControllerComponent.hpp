@@ -19,6 +19,7 @@
 #include "Commands/Command.hpp"
 #include "Commands/StopTargetExecution.hpp"
 #include "Commands/ResumeTargetExecution.hpp"
+#include "Commands/ResetTarget.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
@@ -238,10 +239,8 @@ namespace Bloom::TargetController
 
         /**
          * Triggers a target reset and emits a TargetReset event.
-         *
-         * @param resetEventCorrelationId
          */
-        void resetTarget(const std::optional<int>& resetEventCorrelationId = std::nullopt);
+        void resetTarget();
 
         /**
          * When the TargetController fails to handle an event, a TargetControllerErrorOccurred event is emitted, with
@@ -291,6 +290,7 @@ namespace Bloom::TargetController
 
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);
         std::unique_ptr<Responses::Response> handleResumeTargetExecution(Commands::ResumeTargetExecution& command);
+        std::unique_ptr<Responses::Response> handleResetTarget(Commands::ResetTarget& command);
 
         /**
          * Will attempt to step execution on the target and emit a TargetExecutionResumed event.
@@ -381,7 +381,5 @@ namespace Bloom::TargetController
          * @param event
          */
         void onRetrieveStackPointerEvent(const Events::RetrieveStackPointerFromTarget& event);
-
-        void onResetTarget(const Events::ResetTarget& event);
     };
 }
