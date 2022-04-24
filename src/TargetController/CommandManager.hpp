@@ -28,9 +28,11 @@ namespace Bloom::TargetController
         ) {
             using SuccessResponseType = typename CommandType::SuccessResponseType;
 
-            Logger::debug("Issuing " + CommandType::name + " command to TargetController");
-
             const auto commandId = command->id;
+            Logger::debug(
+                "Issuing " + CommandType::name + " command (ID: " + std::to_string(commandId) + ") to TargetController"
+            );
+
             TargetControllerComponent::registerCommand(std::move(command));
 
             auto optionalResponse = TargetControllerComponent::waitForResponse(commandId, timeout);
@@ -48,11 +50,15 @@ namespace Bloom::TargetController
                 const auto errorResponse = dynamic_cast<Responses::Error*>(response.get());
 
                 Logger::debug(
-                    "TargetController returned error in response to " + CommandType::name + " command. Error: "
-                        + errorResponse->errorMessage
+                    "TargetController returned error in response to " + CommandType::name + " command (ID: "
+                        + std::to_string(commandId) + "). Error: " + errorResponse->errorMessage
                 );
                 throw Exceptions::Exception(errorResponse->errorMessage);
             }
+
+            Logger::debug(
+                "Delivering response for " + CommandType::name + " command (ID: " + std::to_string(commandId) + ")"
+            );
 
             // Only downcast if the command's SuccessResponseType is not the generic Response type.
             if constexpr (!std::is_same_v<SuccessResponseType, Responses::Response>) {
@@ -64,7 +70,6 @@ namespace Bloom::TargetController
             } else {
                 return std::move(response);
             }
-
         }
     };
 }
