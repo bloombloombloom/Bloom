@@ -141,11 +141,14 @@ void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function
 
     QObject::connect(
         readMemoryTask,
-        &InsightWorkerTask::completed,
+        &InsightWorkerTask::finished,
         this,
         [this] {
             this->hexViewerWidget->refreshButton->stopSpin();
-            this->hexViewerWidget->refreshButton->setDisabled(false);
+
+            if (this->targetState == Targets::TargetState::STOPPED) {
+                this->hexViewerWidget->refreshButton->setDisabled(false);
+            }
         }
     );
 
