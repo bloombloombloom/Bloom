@@ -138,13 +138,6 @@ namespace Bloom::TargetController
         void removeBreakpoint(Targets::TargetBreakpoint breakpoint);
 
         /**
-         * Requests a pin state refresh from the TargetController, for a specific target variant.
-         *
-         * @param variantId
-         */
-        void requestPinStates(int variantId);
-
-        /**
          * Retrieves the pin states for a particular target variant.
          *
          * @param variantId

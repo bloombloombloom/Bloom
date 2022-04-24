@@ -138,13 +138,6 @@ namespace Bloom::TargetController
         this->triggerTargetControllerEventAndWaitForResponse(event);
     }
 
-    void TargetControllerConsole::requestPinStates(int variantId) {
-        auto requestEvent = std::make_shared<RetrieveTargetPinStates>();
-        requestEvent->variantId = variantId;
-
-        EventManager::triggerEvent(requestEvent);
-    }
-
     Targets::TargetPinStateMappingType TargetControllerConsole::getPinStates(int variantId) {
         auto requestEvent = std::make_shared<RetrieveTargetPinStates>();
         requestEvent->variantId = variantId;
