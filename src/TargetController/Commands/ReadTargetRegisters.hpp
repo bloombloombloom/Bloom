@@ -1,7 +1,5 @@
 #pragma once
 
-#include <optional>
-
 #include "Command.hpp"
 #include "src/TargetController/Responses/TargetRegistersRead.hpp"
 
