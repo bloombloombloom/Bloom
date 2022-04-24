@@ -26,6 +26,7 @@ namespace Bloom::TargetController
     using Commands::ResumeTargetExecution;
     using Commands::ResetTarget;
     using Commands::ReadTargetRegisters;
+    using Commands::WriteTargetRegisters;
 
     using Responses::Response;
     using Responses::TargetRegistersRead;
@@ -377,11 +378,11 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(ResumeTargetExecution::type);
         this->deregisterCommandHandler(ResetTarget::type);
         this->deregisterCommandHandler(ReadTargetRegisters::type);
+        this->deregisterCommandHandler(WriteTargetRegisters::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
         this->eventListener->deregisterCallbacksForEventType<Events::StepTargetExecution>();
-        this->eventListener->deregisterCallbacksForEventType<Events::WriteRegistersToTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::RetrieveMemoryFromTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::WriteMemoryToTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::SetBreakpointOnTarget>();
@@ -423,6 +424,10 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleReadTargetRegisters, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<WriteTargetRegisters>(
+            std::bind(&TargetControllerComponent::handleWriteTargetRegisters, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
@@ -433,10 +438,6 @@ namespace Bloom::TargetController
 
         this->eventListener->registerCallbackForEventType<Events::StepTargetExecution>(
             std::bind(&TargetControllerComponent::onStepTargetExecutionEvent, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::WriteRegistersToTarget>(
-            std::bind(&TargetControllerComponent::onWriteRegistersEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RetrieveMemoryFromTarget>(
@@ -771,6 +772,17 @@ namespace Bloom::TargetController
         return std::make_unique<TargetRegistersRead>(this->target->readRegisters(command.descriptors));
     }
 
+    std::unique_ptr<Response> TargetControllerComponent::handleWriteTargetRegisters(WriteTargetRegisters& command) {
+        this->target->writeRegisters(command.registers);
+
+        auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
+        registersWrittenEvent->registers = command.registers;
+
+        EventManager::triggerEvent(registersWrittenEvent);
+
+        return std::make_unique<Response>();
+    }
+
     void TargetControllerComponent::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {
         try {
             if (this->target->getState() != TargetState::STOPPED) {
@@ -791,22 +803,6 @@ namespace Bloom::TargetController
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to step execution on target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
-    }
-
-    void TargetControllerComponent::onWriteRegistersEvent(const Events::WriteRegistersToTarget& event) {
-        try {
-            this->target->writeRegisters(event.registers);
-
-            auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
-            registersWrittenEvent->correlationId = event.id;
-            registersWrittenEvent->registers = event.registers;
-
-            EventManager::triggerEvent(registersWrittenEvent);
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to write registers to target - " + exception.getMessage());
             this->emitErrorEvent(event.id, exception.getMessage());
         }
     }

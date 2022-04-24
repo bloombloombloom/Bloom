@@ -13,7 +13,6 @@
 #include "ShutdownApplication.hpp"
 #include "DebugServerThreadStateChanged.hpp"
 #include "ShutdownDebugServer.hpp"
-#include "WriteRegistersToTarget.hpp"
 #include "RegistersWrittenToTarget.hpp"
 #include "TargetExecutionResumed.hpp"
 #include "TargetExecutionStopped.hpp"

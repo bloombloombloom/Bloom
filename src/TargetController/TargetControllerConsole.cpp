@@ -7,6 +7,7 @@
 #include "Commands/ResumeTargetExecution.hpp"
 #include "Commands/ResetTarget.hpp"
 #include "Commands/ReadTargetRegisters.hpp"
+#include "Commands/WriteTargetRegisters.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -20,6 +21,7 @@ namespace Bloom::TargetController
     using Commands::ResumeTargetExecution;
     using Commands::ResetTarget;
     using Commands::ReadTargetRegisters;
+    using Commands::WriteTargetRegisters;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -84,10 +86,10 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerConsole::writeRegisters(const TargetRegisters& registers) {
-        auto event = std::make_shared<WriteRegistersToTarget>();
-        event->registers = std::move(registers);
-
-        this->triggerTargetControllerEventAndWaitForResponse(event);
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<WriteTargetRegisters>(registers),
+            this->defaultTimeout
+        );
     }
 
     TargetMemoryBuffer TargetControllerConsole::readMemory(
