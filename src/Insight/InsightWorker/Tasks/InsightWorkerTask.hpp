@@ -27,9 +27,28 @@ namespace Bloom
         void execute(TargetController::TargetControllerConsole& targetControllerConsole);
 
     signals:
+        /**
+         * The InsightWorkerTask::started() signal will be emitted once the task has started (InsightWorker::run() is
+         * called)
+         */
         void started();
-        void failed(QString errorMessage);
+
+        /**
+         * The InsightWorkerTask::completed() signal will be emitted once the task has successfully completed.
+         */
         void completed();
+
+        /**
+         * The InsightWorkerTask::failed() signal will be emitted when the task fails (InsightWorkerTask::run() throws
+         * an exception).
+         */
+        void failed(QString errorMessage);
+
+        /**
+         * The InsightWorkerTask::finished() signal will be emitted at the end of the task, regardless to whether it
+         * completed successfully or failed.
+         */
+        void finished();
 
     protected:
         virtual void run(TargetController::TargetControllerConsole& targetControllerConsole) = 0;

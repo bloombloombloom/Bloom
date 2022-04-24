@@ -19,5 +19,7 @@ namespace Bloom
             Logger::debug("InsightWorker task failed - " + std::string(exception.what()));
             emit this->failed(QString::fromStdString(exception.what()));
         }
+
+        emit this->finished();
     }
 }
