@@ -60,9 +60,11 @@ namespace Bloom::TargetController
                 return std::unique_ptr<SuccessResponseType>(
                     dynamic_cast<SuccessResponseType*>(response.release())
                 );
+
+            } else {
+                return std::move(response);
             }
 
-            return std::move(response);
         }
     };
 }
