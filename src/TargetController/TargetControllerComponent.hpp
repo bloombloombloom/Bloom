@@ -20,9 +20,11 @@
 #include "Commands/StopTargetExecution.hpp"
 #include "Commands/ResumeTargetExecution.hpp"
 #include "Commands/ResetTarget.hpp"
+#include "Commands/ReadTargetRegisters.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
+#include "Responses/TargetRegistersRead.hpp"
 
 #include "TargetControllerState.hpp"
 
@@ -291,6 +293,9 @@ namespace Bloom::TargetController
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);
         std::unique_ptr<Responses::Response> handleResumeTargetExecution(Commands::ResumeTargetExecution& command);
         std::unique_ptr<Responses::Response> handleResetTarget(Commands::ResetTarget& command);
+        std::unique_ptr<Responses::TargetRegistersRead> handleReadTargetRegisters(
+            Commands::ReadTargetRegisters& command
+        );
 
         /**
          * Will attempt to step execution on the target and emit a TargetExecutionResumed event.
@@ -298,13 +303,6 @@ namespace Bloom::TargetController
          * @param event
          */
         void onStepTargetExecutionEvent(const Events::StepTargetExecution& event);
-
-        /**
-         * Will attempt to read the requested registers and emit a RegistersRetrievedFromTarget event.
-         *
-         * @param event
-         */
-        void onReadRegistersEvent(const Events::RetrieveRegistersFromTarget& event);
 
         /**
          * Will attempt to write the specified register values and emit a RegistersWrittenToTarget event.

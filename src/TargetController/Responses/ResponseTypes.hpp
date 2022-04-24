@@ -8,5 +8,6 @@ namespace Bloom::TargetController::Responses
     {
         GENERIC,
         ERROR,
+        TARGET_REGISTERS_READ,
     };
 }

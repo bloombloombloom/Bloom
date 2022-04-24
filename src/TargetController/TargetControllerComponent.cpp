@@ -25,8 +25,10 @@ namespace Bloom::TargetController
     using Commands::StopTargetExecution;
     using Commands::ResumeTargetExecution;
     using Commands::ResetTarget;
+    using Commands::ReadTargetRegisters;
 
     using Responses::Response;
+    using Responses::TargetRegistersRead;
 
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
@@ -374,11 +376,11 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(StopTargetExecution::type);
         this->deregisterCommandHandler(ResumeTargetExecution::type);
         this->deregisterCommandHandler(ResetTarget::type);
+        this->deregisterCommandHandler(ReadTargetRegisters::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
         this->eventListener->deregisterCallbacksForEventType<Events::StepTargetExecution>();
-        this->eventListener->deregisterCallbacksForEventType<Events::RetrieveRegistersFromTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::WriteRegistersToTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::RetrieveMemoryFromTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::WriteMemoryToTarget>();
@@ -417,6 +419,10 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleResetTarget, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<ReadTargetRegisters>(
+            std::bind(&TargetControllerComponent::handleReadTargetRegisters, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
@@ -427,10 +433,6 @@ namespace Bloom::TargetController
 
         this->eventListener->registerCallbackForEventType<Events::StepTargetExecution>(
             std::bind(&TargetControllerComponent::onStepTargetExecutionEvent, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::RetrieveRegistersFromTarget>(
-            std::bind(&TargetControllerComponent::onReadRegistersEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::WriteRegistersToTarget>(
@@ -741,7 +743,7 @@ namespace Bloom::TargetController
         return std::make_unique<Response>();
     }
 
-    std::unique_ptr<Responses::Response> TargetControllerComponent::handleResumeTargetExecution(
+    std::unique_ptr<Response> TargetControllerComponent::handleResumeTargetExecution(
         ResumeTargetExecution& command
     ) {
         if (this->target->getState() != TargetState::RUNNING) {
@@ -758,9 +760,15 @@ namespace Bloom::TargetController
         return std::make_unique<Response>();
     }
 
-    std::unique_ptr<Responses::Response> TargetControllerComponent::handleResetTarget(ResetTarget& command) {
+    std::unique_ptr<Response> TargetControllerComponent::handleResetTarget(ResetTarget& command) {
         this->resetTarget();
         return std::make_unique<Response>();
+    }
+
+    std::unique_ptr<TargetRegistersRead> TargetControllerComponent::handleReadTargetRegisters(
+        ReadTargetRegisters& command
+    ) {
+        return std::make_unique<TargetRegistersRead>(this->target->readRegisters(command.descriptors));
     }
 
     void TargetControllerComponent::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {
@@ -783,23 +791,6 @@ namespace Bloom::TargetController
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to step execution on target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
-    }
-
-    void TargetControllerComponent::onReadRegistersEvent(const Events::RetrieveRegistersFromTarget& event) {
-        try {
-            auto registers = this->target->readRegisters(event.descriptors);
-
-            if (registers.size() > 0) {
-                auto registersRetrievedEvent = std::make_shared<Events::RegistersRetrievedFromTarget>();
-                registersRetrievedEvent->correlationId = event.id;
-                registersRetrievedEvent->registers = registers;
-                EventManager::triggerEvent(registersRetrievedEvent);
-            }
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to read registers from target - " + exception.getMessage());
             this->emitErrorEvent(event.id, exception.getMessage());
         }
     }

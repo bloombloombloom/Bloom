@@ -6,6 +6,7 @@
 #include "Commands/StopTargetExecution.hpp"
 #include "Commands/ResumeTargetExecution.hpp"
 #include "Commands/ResetTarget.hpp"
+#include "Commands/ReadTargetRegisters.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -18,6 +19,7 @@ namespace Bloom::TargetController
     using Commands::StopTargetExecution;
     using Commands::ResumeTargetExecution;
     using Commands::ResetTarget;
+    using Commands::ReadTargetRegisters;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -75,10 +77,10 @@ namespace Bloom::TargetController
     }
 
     TargetRegisters TargetControllerConsole::readRegisters(const TargetRegisterDescriptors& descriptors) {
-        auto readRegistersEvent = std::make_shared<RetrieveRegistersFromTarget>();
-        readRegistersEvent->descriptors = descriptors;
-
-        return this->triggerTargetControllerEventAndWaitForResponse(readRegistersEvent)->registers;
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<ReadTargetRegisters>(descriptors),
+            this->defaultTimeout
+        )->registers;
     }
 
     void TargetControllerConsole::writeRegisters(const TargetRegisters& registers) {
