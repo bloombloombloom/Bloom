@@ -355,10 +355,6 @@ namespace Bloom::Widgets
 
         QObject::connect(writeRegisterTask, &InsightWorkerTask::completed, this, [this, targetRegister] {
             this->registerValueContainer->setDisabled(false);
-            emit this->insightWorker.targetRegistersWritten(
-                {targetRegister},
-                DateTime::currentDateTime()
-            );
             this->registerHistoryWidget->updateCurrentItemValue(targetRegister.value);
             this->registerHistoryWidget->selectCurrentItem();
         });
