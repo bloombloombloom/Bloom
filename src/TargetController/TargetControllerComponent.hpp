@@ -22,10 +22,12 @@
 #include "Commands/ResetTarget.hpp"
 #include "Commands/ReadTargetRegisters.hpp"
 #include "Commands/WriteTargetRegisters.hpp"
+#include "Commands/ReadTargetMemory.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
 #include "Responses/TargetRegistersRead.hpp"
+#include "Responses/TargetMemoryRead.hpp"
 
 #include "TargetControllerState.hpp"
 
@@ -298,6 +300,7 @@ namespace Bloom::TargetController
             Commands::ReadTargetRegisters& command
         );
         std::unique_ptr<Responses::Response> handleWriteTargetRegisters(Commands::WriteTargetRegisters& command);
+        std::unique_ptr<Responses::TargetMemoryRead> handleReadTargetMemory(Commands::ReadTargetMemory& command);
 
         /**
          * Will attempt to step execution on the target and emit a TargetExecutionResumed event.
@@ -305,13 +308,6 @@ namespace Bloom::TargetController
          * @param event
          */
         void onStepTargetExecutionEvent(const Events::StepTargetExecution& event);
-
-        /**
-         * Will attempt to read memory from the target and include the data in a MemoryRetrievedFromTarget event.
-         *
-         * @param event
-         */
-        void onReadMemoryEvent(const Events::RetrieveMemoryFromTarget& event);
 
         /**
          * Will attempt to write memory to the target. On success, a MemoryWrittenToTarget event is emitted.

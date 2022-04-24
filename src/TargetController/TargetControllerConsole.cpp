@@ -8,6 +8,7 @@
 #include "Commands/ResetTarget.hpp"
 #include "Commands/ReadTargetRegisters.hpp"
 #include "Commands/WriteTargetRegisters.hpp"
+#include "Commands/ReadTargetMemory.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -22,6 +23,7 @@ namespace Bloom::TargetController
     using Commands::ResetTarget;
     using Commands::ReadTargetRegisters;
     using Commands::WriteTargetRegisters;
+    using Commands::ReadTargetMemory;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -98,13 +100,15 @@ namespace Bloom::TargetController
         std::uint32_t bytes,
         const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
     ) {
-        auto readMemoryEvent = std::make_shared<RetrieveMemoryFromTarget>();
-        readMemoryEvent->memoryType = memoryType;
-        readMemoryEvent->startAddress = startAddress;
-        readMemoryEvent->bytes = bytes;
-        readMemoryEvent->excludedAddressRanges = excludedAddressRanges;
-
-        return this->triggerTargetControllerEventAndWaitForResponse(readMemoryEvent)->data;
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<ReadTargetMemory>(
+                memoryType,
+                startAddress,
+                bytes,
+                excludedAddressRanges
+            ),
+            this->defaultTimeout
+        )->data;
     }
 
     void TargetControllerConsole::writeMemory(

@@ -16,8 +16,6 @@
 #include "RegistersWrittenToTarget.hpp"
 #include "TargetExecutionResumed.hpp"
 #include "TargetExecutionStopped.hpp"
-#include "RetrieveMemoryFromTarget.hpp"
-#include "MemoryRetrievedFromTarget.hpp"
 #include "WriteMemoryToTarget.hpp"
 #include "MemoryWrittenToTarget.hpp"
 #include "SetBreakpointOnTarget.hpp"

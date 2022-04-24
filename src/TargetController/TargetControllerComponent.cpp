@@ -27,9 +27,11 @@ namespace Bloom::TargetController
     using Commands::ResetTarget;
     using Commands::ReadTargetRegisters;
     using Commands::WriteTargetRegisters;
+    using Commands::ReadTargetMemory;
 
     using Responses::Response;
     using Responses::TargetRegistersRead;
+    using Responses::TargetMemoryRead;
 
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
@@ -379,11 +381,11 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(ResetTarget::type);
         this->deregisterCommandHandler(ReadTargetRegisters::type);
         this->deregisterCommandHandler(WriteTargetRegisters::type);
+        this->deregisterCommandHandler(ReadTargetMemory::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
         this->eventListener->deregisterCallbacksForEventType<Events::StepTargetExecution>();
-        this->eventListener->deregisterCallbacksForEventType<Events::RetrieveMemoryFromTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::WriteMemoryToTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::SetBreakpointOnTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::RemoveBreakpointOnTarget>();
@@ -428,6 +430,10 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleWriteTargetRegisters, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<ReadTargetMemory>(
+            std::bind(&TargetControllerComponent::handleReadTargetMemory, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
@@ -438,10 +444,6 @@ namespace Bloom::TargetController
 
         this->eventListener->registerCallbackForEventType<Events::StepTargetExecution>(
             std::bind(&TargetControllerComponent::onStepTargetExecutionEvent, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::RetrieveMemoryFromTarget>(
-            std::bind(&TargetControllerComponent::onReadMemoryEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::WriteMemoryToTarget>(
@@ -783,6 +785,15 @@ namespace Bloom::TargetController
         return std::make_unique<Response>();
     }
 
+    std::unique_ptr<TargetMemoryRead> TargetControllerComponent::handleReadTargetMemory(ReadTargetMemory& command) {
+        return std::make_unique<TargetMemoryRead>(this->target->readMemory(
+            command.memoryType,
+            command.startAddress,
+            command.bytes,
+            command.excludedAddressRanges
+        ));
+    }
+
     void TargetControllerComponent::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {
         try {
             if (this->target->getState() != TargetState::STOPPED) {
@@ -803,25 +814,6 @@ namespace Bloom::TargetController
 
         } catch (const TargetOperationFailure& exception) {
             Logger::error("Failed to step execution on target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
-    }
-
-    void TargetControllerComponent::onReadMemoryEvent(const Events::RetrieveMemoryFromTarget& event) {
-        try {
-            auto memoryReadEvent = std::make_shared<Events::MemoryRetrievedFromTarget>();
-            memoryReadEvent->correlationId = event.id;
-            memoryReadEvent->data = this->target->readMemory(
-                event.memoryType,
-                event.startAddress,
-                event.bytes,
-                event.excludedAddressRanges
-            );
-
-            EventManager::triggerEvent(memoryReadEvent);
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to read memory from target - " + exception.getMessage());
             this->emitErrorEvent(event.id, exception.getMessage());
         }
     }
