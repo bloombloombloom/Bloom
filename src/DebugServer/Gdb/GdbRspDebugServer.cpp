@@ -37,6 +37,8 @@ namespace Bloom::DebugServer::Gdb
 
     using CommandPackets::CommandPacket;
 
+    using TargetController::TargetControllerState;
+
     GdbRspDebugServer::GdbRspDebugServer(
         const DebugServerConfig& debugServerConfig,
         EventListener& eventListener,
@@ -108,8 +110,8 @@ namespace Bloom::DebugServer::Gdb
         Logger::info("GDB RSP address: " + this->debugServerConfig.listeningAddress);
         Logger::info("GDB RSP port: " + std::to_string(this->debugServerConfig.listeningPortNumber));
 
-        this->eventListener.registerCallbackForEventType<Events::TargetControllerStateReported>(
-            std::bind(&GdbRspDebugServer::onTargetControllerStateReported, this, std::placeholders::_1)
+        this->eventListener.registerCallbackForEventType<Events::TargetControllerStateChanged>(
+            std::bind(&GdbRspDebugServer::onTargetControllerStateChanged, this, std::placeholders::_1)
         );
 
         this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
@@ -293,12 +295,9 @@ namespace Bloom::DebugServer::Gdb
         EventManager::triggerEvent(std::make_shared<Events::DebugSessionFinished>());
     }
 
-    void GdbRspDebugServer::onTargetControllerStateReported(const Events::TargetControllerStateReported& event) {
-        if (
-            event.state == TargetController::TargetControllerState::SUSPENDED
-            && this->activeDebugSession.has_value()
-        ) {
-            Logger::warning("Terminating debug session - TargetController suspended unexpectedly");
+    void GdbRspDebugServer::onTargetControllerStateChanged(const Events::TargetControllerStateChanged& event) {
+        if (event.state == TargetControllerState::SUSPENDED && this->activeDebugSession.has_value()) {
+            Logger::warning("TargetController suspended unexpectedly - terminating debug session");
             this->terminateActiveDebugSession();
         }
     }

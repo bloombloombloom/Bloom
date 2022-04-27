@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <queue>
 #include <condition_variable>
@@ -43,6 +44,8 @@
 
 namespace Bloom::TargetController
 {
+    static_assert(std::atomic<TargetControllerState>::is_always_lock_free);
+
     /**
      * The TargetController possesses full control of the debugging target and the debug tool.
      *
@@ -64,6 +67,8 @@ namespace Bloom::TargetController
          * Entry point for the TargetController.
          */
         void run();
+
+        static TargetControllerState getState();
 
         static void registerCommand(std::unique_ptr<Commands::Command> command);
 
@@ -88,7 +93,7 @@ namespace Bloom::TargetController
          * The TC starts off in a suspended state. TargetControllerComponent::resume() is invoked from the startup
          * routine.
          */
-        TargetControllerState state = TargetControllerState::SUSPENDED;
+        static inline std::atomic<TargetControllerState> state = TargetControllerState::SUSPENDED;
 
         ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
@@ -264,13 +269,6 @@ namespace Bloom::TargetController
          * @param event
          */
         void onShutdownTargetControllerEvent(const Events::ShutdownTargetController& event);
-
-        /**
-         * Reports the current state of the TargetController.
-         *
-         * @param event
-         */
-        void onStateReportRequest(const Events::ReportTargetControllerState& event);
 
         /**
          * Obtains a TargetDescriptor from the target and includes it in a TargetDescriptorExtracted event.

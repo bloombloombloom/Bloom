@@ -23,7 +23,7 @@
 #include "Feature.hpp"
 #include "CommandPackets/CommandPacket.hpp"
 
-#include "src/EventManager/Events/TargetControllerStateReported.hpp"
+#include "src/EventManager/Events/TargetControllerStateChanged.hpp"
 #include "src/EventManager/Events/TargetExecutionStopped.hpp"
 
 namespace Bloom::DebugServer::Gdb
@@ -186,7 +186,7 @@ namespace Bloom::DebugServer::Gdb
          *
          * @param event
          */
-        void onTargetControllerStateReported(const Events::TargetControllerStateReported& event);
+        void onTargetControllerStateChanged(const Events::TargetControllerStateChanged& event);
 
         /**
          * If the GDB client is currently waiting for the target execution to stop, this event handler will issue

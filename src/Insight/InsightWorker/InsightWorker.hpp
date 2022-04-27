@@ -12,7 +12,6 @@
 #include "src/EventManager/Events/Events.hpp"
 
 #include "src/TargetController/TargetControllerConsole.hpp"
-#include "src/TargetController/TargetControllerState.hpp"
 
 #include "Tasks/InsightWorkerTask.hpp"
 
@@ -52,8 +51,6 @@ namespace Bloom
         TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole(
             *(this->eventListener)
         );
-        TargetController::TargetControllerState lastTargetControllerState =
-            TargetController::TargetControllerState::ACTIVE;
 
         Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
 
@@ -67,7 +64,7 @@ namespace Bloom
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
         void onTargetResetEvent(const Events::TargetReset& event);
         void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
-        void onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event);
+        void onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event);
 
         void executeTasks();
     };

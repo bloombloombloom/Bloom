@@ -2,6 +2,8 @@
 
 #include "src/EventManager/Events/Events.hpp"
 
+#include "TargetControllerComponent.hpp"
+
 // Commands
 #include "Commands/StopTargetExecution.hpp"
 #include "Commands/ResumeTargetExecution.hpp"
@@ -30,9 +32,7 @@ namespace Bloom::TargetController
     {}
 
     TargetControllerState TargetControllerConsole::getTargetControllerState() {
-        return this->triggerTargetControllerEventAndWaitForResponse(
-            std::make_shared<ReportTargetControllerState>()
-        )->state;
+        return TargetControllerComponent::getState();
     }
 
     bool TargetControllerConsole::isTargetControllerInService() noexcept {

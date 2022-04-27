@@ -3,7 +3,8 @@
 #include <QObject>
 #include <QTimer>
 
-#include "src/Helpers/Thread.hpp"
+#include "src/TargetController/TargetControllerState.hpp"
+
 #include "src/Logger/Logger.hpp"
 
 namespace Bloom
@@ -24,8 +25,8 @@ namespace Bloom
         Logger::debug("Starting InsightWorker thread");
         EventManager::registerListener(this->eventListener);
 
-        this->eventListener->registerCallbackForEventType<Events::TargetControllerStateReported>(
-            std::bind(&InsightWorker::onTargetControllerStateReportedEvent, this, std::placeholders::_1)
+        this->eventListener->registerCallbackForEventType<Events::TargetControllerStateChanged>(
+            std::bind(&InsightWorker::onTargetControllerStateChangedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::TargetExecutionStopped>(
@@ -125,19 +126,13 @@ namespace Bloom
         emit this->targetRegistersWritten(event.registers, event.createdTimestamp);
     }
 
-    void InsightWorker::onTargetControllerStateReportedEvent(const Events::TargetControllerStateReported& event) {
+    void InsightWorker::onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event) {
         using TargetController::TargetControllerState;
 
-        if (
-            this->lastTargetControllerState == TargetControllerState::ACTIVE
-            && event.state == TargetControllerState::SUSPENDED
-        ) {
+        if (event.state == TargetControllerState::SUSPENDED) {
             emit this->targetControllerSuspended();
 
-        } else if (
-            this->lastTargetControllerState == TargetControllerState::SUSPENDED
-            && event.state == TargetControllerState::ACTIVE
-        ) {
+        } else if (event.state == TargetControllerState::ACTIVE) {
             try {
                 emit this->targetControllerResumed(this->targetControllerConsole.getTargetDescriptor());
 
@@ -145,7 +140,6 @@ namespace Bloom
                 Logger::error("Insight resume failed - " + exception.getMessage());
             }
         }
-        this->lastTargetControllerState = event.state;
     }
 
     void InsightWorker::executeTasks() {

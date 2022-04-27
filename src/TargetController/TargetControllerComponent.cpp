@@ -92,6 +92,10 @@ namespace Bloom::TargetController
         this->shutdown();
     }
 
+    TargetControllerState TargetControllerComponent::getState() {
+        return TargetControllerComponent::state;
+    }
+
     void TargetControllerComponent::registerCommand(std::unique_ptr<Command> command) {
         auto commandQueueLock = TargetControllerComponent::commandQueue.acquireLock();
         TargetControllerComponent::commandQueue.getValue().push(std::move(command));
@@ -149,10 +153,6 @@ namespace Bloom::TargetController
         TargetControllerComponent::checkUdevRules();
 
         // Register event handlers
-        this->eventListener->registerCallbackForEventType<Events::ReportTargetControllerState>(
-            std::bind(&TargetControllerComponent::onStateReportRequest, this, std::placeholders::_1)
-        );
-
         this->eventListener->registerCallbackForEventType<Events::ShutdownTargetController>(
             std::bind(&TargetControllerComponent::onShutdownTargetControllerEvent, this, std::placeholders::_1)
         );
@@ -400,8 +400,8 @@ namespace Bloom::TargetController
         this->registerDescriptorsByMemoryType.clear();
         this->registerAddressRangeByMemoryType.clear();
 
-        this->state = TargetControllerState::SUSPENDED;
-        EventManager::triggerEvent(std::make_shared<TargetControllerStateReported>(this->state));
+        TargetControllerComponent::state = TargetControllerState::SUSPENDED;
+        EventManager::triggerEvent(std::make_shared<TargetControllerStateChanged>(TargetControllerComponent::state));
 
         Logger::debug("TargetController suspended");
     }
@@ -478,9 +478,9 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::onRetrieveStackPointerEvent, this, std::placeholders::_1)
         );
 
-        this->state = TargetControllerState::ACTIVE;
+        TargetControllerComponent::state = TargetControllerState::ACTIVE;
         EventManager::triggerEvent(
-            std::make_shared<TargetControllerStateReported>(this->state)
+            std::make_shared<TargetControllerStateChanged>(TargetControllerComponent::state)
         );
 
         if (this->target->getState() != TargetState::RUNNING) {
@@ -692,12 +692,6 @@ namespace Bloom::TargetController
         this->shutdown();
     }
 
-    void TargetControllerComponent::onStateReportRequest(const Events::ReportTargetControllerState& event) {
-        auto stateEvent = std::make_shared<Events::TargetControllerStateReported>(this->state);
-        stateEvent->correlationId = event.id;
-        EventManager::triggerEvent(stateEvent);
-    }
-
     void TargetControllerComponent::onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event) {
         auto targetDescriptorExtracted = std::make_shared<TargetDescriptorExtracted>();
         targetDescriptorExtracted->targetDescriptor = this->getTargetDescriptor();
@@ -707,7 +701,7 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerComponent::onDebugSessionStartedEvent(const Events::DebugSessionStarted&) {
-        if (this->state == TargetControllerState::SUSPENDED) {
+        if (TargetControllerComponent::state == TargetControllerState::SUSPENDED) {
             Logger::debug("Waking TargetController");
 
             this->resume();
