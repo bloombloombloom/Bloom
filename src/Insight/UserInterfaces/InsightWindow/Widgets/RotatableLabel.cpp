@@ -6,9 +6,10 @@ namespace Bloom::Widgets
 {
     void RotatableLabel::paintEvent(QPaintEvent* event) {
         auto painter = QPainter(this);
-        static auto containerSize = this->getContainerSize();
-        static auto textSize = QLabel::minimumSizeHint();
-        static auto margins = this->contentsMargins();
+        const auto containerSize = this->getContainerSize();
+        const auto textSize = QLabel::minimumSizeHint();
+        const auto margins = this->contentsMargins();
+
         painter.setClipRect(0, 0, containerSize.width(), containerSize.height());
         painter.save();
         painter.setPen(Qt::PenStyle::SolidLine);
@@ -16,8 +17,11 @@ namespace Bloom::Widgets
         painter.translate(std::ceil(containerSize.width() / 2), std::ceil(containerSize.height() / 2));
         painter.rotate(this->angle);
         painter.drawText(
-            -(textSize.width() / 2) + margins.left(),
-            (textSize.height() / 2) + margins.top(),
+            -(containerSize.height() / 2) + margins.left(),
+            -(textSize.height() / 2) + margins.top(),
+            textSize.width(),
+            textSize.height(),
+            Qt::AlignTop,
             this->text()
         );
 
