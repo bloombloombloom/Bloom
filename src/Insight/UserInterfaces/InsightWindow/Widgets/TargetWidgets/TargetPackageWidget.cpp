@@ -12,7 +12,11 @@ namespace Bloom::Widgets::InsightTargetWidgets
         Targets::TargetVariant targetVariant,
         InsightWorker& insightWorker,
         QWidget* parent
-    ): QWidget(parent), targetVariant(std::move(targetVariant)), insightWorker(insightWorker) {
+    )
+        : QWidget(parent)
+        , targetVariant(std::move(targetVariant))
+        , insightWorker(insightWorker)
+    {
         QObject::connect(
             &(this->insightWorker),
             &InsightWorker::targetStateUpdated,

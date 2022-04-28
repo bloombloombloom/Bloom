@@ -53,8 +53,7 @@ namespace Bloom::Widgets
             size.setWidth(static_cast<int>(
                 std::cos(angleRadians) * textSize.width()
                 + std::ceil(std::sin(angleRadians) * textSize.height())
-            ))
-            ;
+            ));
             size.setHeight(static_cast<int>(
                 std::sin(angleRadians) * textSize.width()
                 + std::ceil(std::cos(angleRadians) * textSize.height())

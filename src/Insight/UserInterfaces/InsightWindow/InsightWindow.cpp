@@ -160,7 +160,7 @@ namespace Bloom
             &InsightWindow::openAboutWindow
         );
 
-        // Tool bar button connections
+        // Toolbar button connections
         QObject::connect(
             this->refreshIoInspectionButton,
             &QToolButton::clicked,

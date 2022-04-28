@@ -25,7 +25,11 @@ namespace Bloom::Widgets
         const TargetDescriptor& targetDescriptor,
         InsightWorker& insightWorker,
         PanelWidget* parent
-    ): PaneWidget(parent), targetDescriptor(targetDescriptor), insightWorker(insightWorker) {
+    )
+        : PaneWidget(parent)
+        , targetDescriptor(targetDescriptor)
+        , insightWorker(insightWorker)
+    {
         this->setObjectName("target-registers-side-pane");
 
         auto targetRegistersPaneUiFile = QFile(

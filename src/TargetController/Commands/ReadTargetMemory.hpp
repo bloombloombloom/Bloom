@@ -3,7 +3,7 @@
 #include "Command.hpp"
 #include "src/TargetController/Responses/TargetMemoryRead.hpp"
 
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::TargetController::Commands
 {

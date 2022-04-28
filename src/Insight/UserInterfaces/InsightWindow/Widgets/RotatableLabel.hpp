@@ -12,7 +12,9 @@ namespace Bloom::Widgets
     public:
         RotatableLabel(const QString& text, QWidget* parent): QLabel(text, parent) {};
         RotatableLabel(int angleDegrees, const QString& text, QWidget* parent)
-        : QLabel(text, parent), angle(angleDegrees) {};
+            : QLabel(text, parent),
+            angle(angleDegrees)
+        {};
 
         void setAngle(int angleDegrees) {
             this->angle = angleDegrees;
@@ -23,11 +25,11 @@ namespace Bloom::Widgets
 
         [[nodiscard]] QSize sizeHint() const override {
             return this->getContainerSize();
-        };
+        }
 
         [[nodiscard]] QSize minimumSizeHint() const override {
             return this->getContainerSize();
-        };
+        }
 
     private:
         int angle = 90;

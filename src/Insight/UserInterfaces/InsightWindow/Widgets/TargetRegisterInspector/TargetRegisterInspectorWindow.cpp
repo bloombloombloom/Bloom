@@ -9,7 +9,6 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
 
 #include "src/Helpers/Paths.hpp"
-#include "src/Helpers/DateTime.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/ReadTargetRegisters.hpp"
