@@ -5,6 +5,7 @@
 #include "TargetControllerComponent.hpp"
 
 // Commands
+#include "Commands/GetTargetState.hpp"
 #include "Commands/StopTargetExecution.hpp"
 #include "Commands/ResumeTargetExecution.hpp"
 #include "Commands/ResetTarget.hpp"
@@ -20,6 +21,7 @@ namespace Bloom::TargetController
     using namespace Bloom::Events;
     using namespace Bloom::Exceptions;
 
+    using Commands::GetTargetState;
     using Commands::StopTargetExecution;
     using Commands::ResumeTargetExecution;
     using Commands::ResetTarget;
@@ -48,6 +50,13 @@ namespace Bloom::TargetController
         return this->triggerTargetControllerEventAndWaitForResponse(
             std::make_shared<ExtractTargetDescriptor>()
         )->targetDescriptor;
+    }
+
+    Targets::TargetState TargetControllerConsole::getTargetState() {
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<GetTargetState>(),
+            this->defaultTimeout
+        )->targetState;
     }
 
     void TargetControllerConsole::stopTargetExecution() {

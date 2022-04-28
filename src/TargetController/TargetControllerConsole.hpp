@@ -9,11 +9,11 @@
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/EventManager.hpp"
 
+#include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
 #include "src/Targets/TargetVariant.hpp"
-#include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -57,6 +57,13 @@ namespace Bloom::TargetController
          * @return
          */
         Targets::TargetDescriptor getTargetDescriptor();
+
+        /**
+         * Fetches the current target state.
+         *
+         * @return
+         */
+        Targets::TargetState getTargetState();
 
         /**
          * Requests the TargetController to halt execution on the target.

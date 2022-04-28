@@ -22,6 +22,7 @@ namespace Bloom::TargetController
 
     using Commands::Command;
     using Commands::CommandIdType;
+    using Commands::GetTargetState;
     using Commands::StopTargetExecution;
     using Commands::ResumeTargetExecution;
     using Commands::ResetTarget;
@@ -376,6 +377,7 @@ namespace Bloom::TargetController
                 + std::string(exception.what()));
         }
 
+        this->deregisterCommandHandler(GetTargetState::type);
         this->deregisterCommandHandler(StopTargetExecution::type);
         this->deregisterCommandHandler(ResumeTargetExecution::type);
         this->deregisterCommandHandler(ResetTarget::type);
@@ -409,6 +411,10 @@ namespace Bloom::TargetController
     void TargetControllerComponent::resume() {
         this->acquireHardware();
         this->loadRegisterDescriptors();
+
+        this->registerCommandHandler<GetTargetState>(
+            std::bind(&TargetControllerComponent::handleGetTargetState, this, std::placeholders::_1)
+        );
 
         this->registerCommandHandler<StopTargetExecution>(
             std::bind(&TargetControllerComponent::handleStopTargetExecution, this, std::placeholders::_1)
@@ -460,10 +466,6 @@ namespace Bloom::TargetController
 
         this->eventListener->registerCallbackForEventType<Events::SetProgramCounterOnTarget>(
             std::bind(&TargetControllerComponent::onSetProgramCounterEvent, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::InsightThreadStateChanged>(
-            std::bind(&TargetControllerComponent::onInsightStateChangedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RetrieveTargetPinStates>(
@@ -724,6 +726,10 @@ namespace Bloom::TargetController
         if (this->environmentConfig.debugToolConfig.releasePostDebugSession) {
             this->suspend();
         }
+    }
+
+    std::unique_ptr<Responses::TargetState> TargetControllerComponent::handleGetTargetState(GetTargetState& command) {
+        return std::make_unique<Responses::TargetState>(this->target->getState());
     }
 
     std::unique_ptr<Response> TargetControllerComponent::handleStopTargetExecution(StopTargetExecution& command) {

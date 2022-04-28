@@ -10,5 +10,6 @@ namespace Bloom::TargetController::Responses
         ERROR,
         TARGET_REGISTERS_READ,
         TARGET_MEMORY_READ,
+        TARGET_STATE,
     };
 }

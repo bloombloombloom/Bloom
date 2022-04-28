@@ -18,6 +18,7 @@
 
 // Commands
 #include "Commands/Command.hpp"
+#include "Commands/GetTargetState.hpp"
 #include "Commands/StopTargetExecution.hpp"
 #include "Commands/ResumeTargetExecution.hpp"
 #include "Commands/ResetTarget.hpp"
@@ -27,6 +28,7 @@
 
 // Responses
 #include "Responses/Response.hpp"
+#include "Responses/TargetState.hpp"
 #include "Responses/TargetRegistersRead.hpp"
 #include "Responses/TargetMemoryRead.hpp"
 
@@ -291,6 +293,7 @@ namespace Bloom::TargetController
          */
         void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
+        std::unique_ptr<Responses::TargetState> handleGetTargetState(Commands::GetTargetState& command);
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);
         std::unique_ptr<Responses::Response> handleResumeTargetExecution(Commands::ResumeTargetExecution& command);
         std::unique_ptr<Responses::Response> handleResetTarget(Commands::ResetTarget& command);

@@ -14,5 +14,6 @@ namespace Bloom::TargetController::Commands
         READ_TARGET_REGISTERS,
         WRITE_TARGET_REGISTERS,
         READ_TARGET_MEMORY,
+        GET_TARGET_STATE,
     };
 }
