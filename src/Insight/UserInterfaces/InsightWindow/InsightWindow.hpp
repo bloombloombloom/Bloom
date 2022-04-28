@@ -50,6 +50,9 @@ namespace Bloom
 
         void init(Targets::TargetDescriptor targetDescriptor);
 
+    signals:
+        void activatedSignal();
+
     protected:
         void resizeEvent(QResizeEvent* event) override;
         void showEvent(QShowEvent* event) override;

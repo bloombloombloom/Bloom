@@ -139,10 +139,15 @@ namespace Bloom
         QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
         eventDispatchTimer->start(100);
 
+        QObject::connect(
+            this->mainWindow,
+            &InsightWindow::activatedSignal,
+            this->insightWorker,
+            &InsightWorker::onInsightWindowActivated
+        );
+
         this->mainWindow->setInsightConfig(this->insightConfig);
         this->mainWindow->setEnvironmentConfig(this->environmentConfig);
-
-        this->mainWindow->init(targetDescriptor);
 
         // Prepare worker thread
         this->workerThread = new QThread();
@@ -151,6 +156,8 @@ namespace Bloom
         QObject::connect(this->workerThread, &QThread::started, this->insightWorker, &InsightWorker::startup);
         QObject::connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);
         QObject::connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
+
+        this->mainWindow->init(targetDescriptor);
 
         QObject::connect(this->insightWorker, &InsightWorker::ready, this, [this] {
             this->checkBloomVersion();

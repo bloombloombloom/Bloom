@@ -58,6 +58,11 @@ namespace Bloom
         emit this->ready();
     }
 
+    void InsightWorker::onInsightWindowActivated() {
+        this->lastTargetState = this->targetControllerConsole.getTargetState();
+        emit this->targetStateUpdated(this->lastTargetState);
+    }
+
     std::optional<InsightWorkerTask*> InsightWorker::getQueuedTask() {
         auto task = std::optional<InsightWorkerTask*>();
 

@@ -261,6 +261,10 @@ namespace Bloom::Widgets
     }
 
     void TargetRegisterInspectorWindow::onTargetStateChanged(TargetState newState) {
+        if (this->targetState == newState) {
+            return;
+        }
+
         if (newState != TargetState::STOPPED) {
             this->registerValueTextInput->setDisabled(true);
             this->registerValueBitsetWidgetContainer->setDisabled(true);

@@ -922,19 +922,6 @@ namespace Bloom::TargetController
         }
     }
 
-    // TODO: remove this
-    void TargetControllerComponent::onInsightStateChangedEvent(const Events::InsightThreadStateChanged& event) {
-        if (event.getState() == ThreadState::READY) {
-            /*
-             * Insight has just started up.
-             *
-             * Refresh the target state and kick off a target stop/resume execution event. Setting the lastTargetState
-             * to UNKNOWN will be enough to do this. See TargetControllerComponent::fireTargetEvents().
-             */
-            this->lastTargetState = TargetState::UNKNOWN;
-        }
-    }
-
     void TargetControllerComponent::onRetrieveTargetPinStatesEvent(const Events::RetrieveTargetPinStates& event) {
         try {
             if (this->target->getState() != TargetState::STOPPED) {

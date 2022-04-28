@@ -342,14 +342,6 @@ namespace Bloom::TargetController
         void onSetProgramCounterEvent(const Events::SetProgramCounterOnTarget& event);
 
         /**
-         * Will automatically fire a target state update event.
-         * @TODO: get rid of this - Insight should request this itself.
-         *
-         * @param event
-         */
-        void onInsightStateChangedEvent(const Events::InsightThreadStateChanged& event);
-
-        /**
          * Will attempt to obtain the pin states from the target. Will emit a TargetPinStatesRetrieved event on success.
          *
          * @param event

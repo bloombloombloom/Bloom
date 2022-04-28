@@ -63,6 +63,10 @@ namespace Bloom::Widgets::InsightTargetWidgets
     }
 
     void TargetPackageWidget::onTargetStateChanged(TargetState newState) {
+        if (this->targetState == newState) {
+            return;
+        }
+
         this->targetState = newState;
 
         if (newState == TargetState::RUNNING) {

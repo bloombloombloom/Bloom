@@ -30,11 +30,9 @@ namespace Bloom
 
         void queueTask(InsightWorkerTask* task);
 
-        void dispatchEvents() {
-            this->eventListener->dispatchCurrentEvents();
-        }
-
         void startup();
+
+        void onInsightWindowActivated();
 
     signals:
         void ready();
@@ -57,6 +55,10 @@ namespace Bloom
         QTimer* eventDispatchTimer = nullptr;
 
         SyncSafe<std::queue<InsightWorkerTask*>> queuedTasks;
+
+        void dispatchEvents() {
+            this->eventListener->dispatchCurrentEvents();
+        }
 
         std::optional<InsightWorkerTask*> getQueuedTask();
 

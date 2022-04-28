@@ -243,6 +243,10 @@ void TargetMemoryInspectionPane::sanitiseSettings() {
 }
 
 void TargetMemoryInspectionPane::onTargetStateChanged(Targets::TargetState newState) {
+    if (this->targetState == newState) {
+        return;
+    }
+
     using Targets::TargetState;
     this->targetState = newState;
 

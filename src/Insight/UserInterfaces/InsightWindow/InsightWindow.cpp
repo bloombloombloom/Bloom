@@ -347,6 +347,7 @@ namespace Bloom
 
         this->setUiDisabled(this->targetState != TargetState::STOPPED);
         this->activated = true;
+        emit this->activatedSignal();
     }
 
     void InsightWindow::populateVariantMenu() {

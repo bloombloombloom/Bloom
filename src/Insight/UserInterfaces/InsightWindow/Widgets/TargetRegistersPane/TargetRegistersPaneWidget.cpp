@@ -231,6 +231,10 @@ namespace Bloom::Widgets
     }
 
     void TargetRegistersPaneWidget::onTargetStateChanged(Targets::TargetState newState) {
+        if (this->targetState == newState) {
+            return;
+        }
+
         using Targets::TargetState;
         this->targetState = newState;
 
