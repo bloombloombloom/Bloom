@@ -36,6 +36,10 @@ namespace Bloom::TargetController::Commands
             return Command::type;
         }
 
+        [[nodiscard]] virtual bool requiresStoppedTargetState() const {
+            return false;
+        }
+
     private:
         static inline std::atomic<CommandIdType> lastCommandId = 0;
     };

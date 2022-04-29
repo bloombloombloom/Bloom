@@ -22,5 +22,9 @@ namespace Bloom::TargetController::Commands
         [[nodiscard]] CommandType getType() const override {
             return ResumeTargetExecution::type;
         }
+
+        [[nodiscard]] bool requiresStoppedTargetState() const override {
+            return true;
+        }
     };
 }

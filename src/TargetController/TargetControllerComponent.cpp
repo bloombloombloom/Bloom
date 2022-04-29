@@ -285,6 +285,10 @@ namespace Bloom::TargetController
                     throw Exception("No handler registered for this command.");
                 }
 
+                if (command->requiresStoppedTargetState() && this->lastTargetState != TargetState::STOPPED) {
+                    this->target->stop();
+                }
+
                 this->registerCommandResponse(
                     commandId,
                     this->commandHandlersByCommandType.at(commandType)(*(command.get()))

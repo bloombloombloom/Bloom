@@ -24,5 +24,9 @@ namespace Bloom::TargetController::Commands
         [[nodiscard]] CommandType getType() const override {
             return ReadTargetRegisters::type;
         }
+
+        [[nodiscard]] bool requiresStoppedTargetState() const override {
+            return true;
+        }
     };
 }
