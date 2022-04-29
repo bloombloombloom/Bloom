@@ -69,7 +69,7 @@ namespace Bloom
          *
          * @return
          */
-        static inline std::string compiledResourcesPath() {
+        static std::string compiledResourcesPath() {
 #ifdef BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE
             return {BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE};
 #else
@@ -85,7 +85,7 @@ namespace Bloom
          *
          * @return
          */
-        static inline std::string homeDomainName() {
+        static std::string homeDomainName() {
 #ifdef BLOOM_HOME_DOMAIN_NAME_OVERRIDE
             return {BLOOM_HOME_DOMAIN_NAME_OVERRIDE};
 #else

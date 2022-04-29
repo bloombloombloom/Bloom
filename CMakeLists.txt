@@ -60,10 +60,18 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 
     # CMAKE_BUILD_RPATH needs to point to the local Qt installation, to use Gammaray during development.
     # This is because the distributed Qt binaries may not be compatible with the local installation of Gammaray
+    # If you don't intend to use Gammaray, you can comment this out
     set(CMAKE_BUILD_RPATH /opt/Qt/6.1.2/gcc_64/lib/)
 endif()
 
-add_executable(Bloom build/resources/TargetDescriptionFiles/AVR/Mapping.json)
+add_executable(Bloom)
+
+target_sources(
+    Bloom
+    PRIVATE
+        build/resources/TargetDescriptionFiles/AVR/Mapping.json
+)
+
 add_subdirectory(src)
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
@@ -192,34 +200,7 @@ add_custom_command(
     ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/UDevRules/99-bloom.rules
 )
 
-# Installation configuration
-set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/release/")
-
-install(TARGETS Bloom DESTINATION bin PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
-
-install(
-    DIRECTORY build/bin/plugins
-    DESTINATION "bin"
-    DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-)
-
-install(
-    DIRECTORY build/bin/platforms
-    DESTINATION "bin"
-    DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-)
-
-install(
-    DIRECTORY build/resources
-    DESTINATION "."
-    DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-)
-
-install(
-    DIRECTORY build/bin/lib
-    DESTINATION "bin"
-    DIRECTORY_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-)
+include(./Installing.cmake)
 
 configure_file(
     "${PROJECT_SOURCE_DIR}/Packaging.cmake"
