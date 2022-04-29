@@ -21,7 +21,6 @@
 #include "RemoveBreakpointOnTarget.hpp"
 #include "BreakpointSetOnTarget.hpp"
 #include "BreakpointRemovedOnTarget.hpp"
-#include "StepTargetExecution.hpp"
 #include "SetProgramCounterOnTarget.hpp"
 #include "ProgramCounterSetOnTarget.hpp"
 #include "ExtractTargetDescriptor.hpp"

@@ -12,6 +12,7 @@
 #include "Commands/ReadTargetRegisters.hpp"
 #include "Commands/WriteTargetRegisters.hpp"
 #include "Commands/ReadTargetMemory.hpp"
+#include "Commands/StepTargetExecution.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -28,6 +29,7 @@ namespace Bloom::TargetController
     using Commands::ReadTargetRegisters;
     using Commands::WriteTargetRegisters;
     using Commands::ReadTargetMemory;
+    using Commands::StepTargetExecution;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -80,13 +82,16 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerConsole::stepTargetExecution(std::optional<std::uint32_t> fromAddress) {
-        auto stepExecutionEvent = std::make_shared<StepTargetExecution>();
+        auto stepExecutionCommand = std::make_unique<StepTargetExecution>();
 
         if (fromAddress.has_value()) {
-            stepExecutionEvent->fromProgramCounter = fromAddress.value();
+            stepExecutionCommand->fromProgramCounter = fromAddress.value();
         }
 
-        this->triggerTargetControllerEventAndWaitForResponse(stepExecutionEvent);
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::move(stepExecutionCommand),
+            this->defaultTimeout
+        );
     }
 
     TargetRegisters TargetControllerConsole::readRegisters(const TargetRegisterDescriptors& descriptors) {

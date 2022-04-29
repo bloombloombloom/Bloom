@@ -29,6 +29,7 @@ namespace Bloom::TargetController
     using Commands::ReadTargetRegisters;
     using Commands::WriteTargetRegisters;
     using Commands::ReadTargetMemory;
+    using Commands::StepTargetExecution;
 
     using Responses::Response;
     using Responses::TargetRegistersRead;
@@ -388,10 +389,10 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(ReadTargetRegisters::type);
         this->deregisterCommandHandler(WriteTargetRegisters::type);
         this->deregisterCommandHandler(ReadTargetMemory::type);
+        this->deregisterCommandHandler(StepTargetExecution::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
-        this->eventListener->deregisterCallbacksForEventType<Events::StepTargetExecution>();
         this->eventListener->deregisterCallbacksForEventType<Events::WriteMemoryToTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::SetBreakpointOnTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::RemoveBreakpointOnTarget>();
@@ -444,16 +445,16 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleReadTargetMemory, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<StepTargetExecution>(
+            std::bind(&TargetControllerComponent::handleStepTargetExecution, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ExtractTargetDescriptor>(
             std::bind(&TargetControllerComponent::onExtractTargetDescriptor, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::StepTargetExecution>(
-            std::bind(&TargetControllerComponent::onStepTargetExecutionEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::WriteMemoryToTarget>(
@@ -798,28 +799,16 @@ namespace Bloom::TargetController
         ));
     }
 
-    void TargetControllerComponent::onStepTargetExecutionEvent(const Events::StepTargetExecution& event) {
-        try {
-            if (this->target->getState() != TargetState::STOPPED) {
-                // We can't step the target if it's already running.
-                throw TargetOperationFailure("Target is already running");
-            }
-
-            if (event.fromProgramCounter.has_value()) {
-                this->target->setProgramCounter(event.fromProgramCounter.value());
-            }
-
-            this->target->step();
-            this->lastTargetState = TargetState::RUNNING;
-
-            auto executionResumedEvent = std::make_shared<Events::TargetExecutionResumed>();
-            executionResumedEvent->correlationId = event.id;
-            EventManager::triggerEvent(executionResumedEvent);
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to step execution on target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
+    std::unique_ptr<Response> TargetControllerComponent::handleStepTargetExecution(StepTargetExecution& command) {
+        if (command.fromProgramCounter.has_value()) {
+            this->target->setProgramCounter(command.fromProgramCounter.value());
         }
+
+        this->target->step();
+        this->lastTargetState = TargetState::RUNNING;
+        EventManager::triggerEvent(std::make_shared<Events::TargetExecutionResumed>());
+
+        return std::make_unique<Response>();
     }
 
     void TargetControllerComponent::onWriteMemoryEvent(const Events::WriteMemoryToTarget& event) {
