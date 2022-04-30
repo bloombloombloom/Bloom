@@ -27,8 +27,10 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         static constexpr int MINIMUM_WIDTH = PinBodyWidget::WIDTH;
         static constexpr int WIDTH_SPACING = 4;
         static constexpr int PIN_LABEL_SPACING = 2;
-        static constexpr int PIN_LABEL_LONG_LINE_LENGTH = 25;
-        static constexpr int PIN_LABEL_SHORT_LINE_LENGTH = 5;
+        static constexpr int PIN_NAME_LABEL_LONG_LINE_LENGTH = 25;
+        static constexpr int PIN_NAME_LABEL_SHORT_LINE_LENGTH = 5;
+        static constexpr int PIN_DIRECTION_LABEL_LONG_LINE_LENGTH = 22;
+        static constexpr int PIN_DIRECTION_LABEL_SHORT_LINE_LENGTH = 21;
         static constexpr int LABEL_HEIGHT = 20;
         static constexpr int MAXIMUM_LABEL_WIDTH = 42;
         static constexpr int MAXIMUM_LABEL_HEIGHT = 20;

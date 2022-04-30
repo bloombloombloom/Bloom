@@ -18,7 +18,9 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         const TargetVariant& targetVariant,
         InsightWorker& insightWorker,
         QWidget* parent
-    ): TargetPackageWidget(targetVariant, insightWorker, parent) {
+    )
+        : TargetPackageWidget(targetVariant, insightWorker, parent)
+    {
         auto stylesheetFile = QFile(QString::fromStdString(
                 Paths::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/"
@@ -75,8 +77,8 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         const auto width = bodyWidgetWidth;
         const auto height = (
             (
-                PinWidget::MAXIMUM_HEIGHT + PinWidget::WIDTH_SPACING + PinWidget::PIN_LABEL_LONG_LINE_LENGTH
-                + PinWidget::PIN_LABEL_SHORT_LINE_LENGTH + (
+                PinWidget::MAXIMUM_HEIGHT + PinWidget::WIDTH_SPACING + PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
+                + PinWidget::PIN_DIRECTION_LABEL_LONG_LINE_LENGTH + (
                     (PinWidget::LABEL_HEIGHT + PinWidget::PIN_LABEL_SPACING) * 2
                 )
             ) * 2) + bodyWidgetHeight;
@@ -121,8 +123,8 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         static const auto pinDirectionFontColor = QColor(0x8A, 0x8A, 0x8D);
         static const auto pinChangedFontColor = QColor(0x4D, 0x7B, 0xBA);
 
-        static const auto inDirectionText = QString("IN");
-        static const auto outDirectionText = QString("OUT");
+        static const auto inDirectionText = QString("INPUT");
+        static const auto outDirectionText = QString("OUTPUT");
 
         for (const auto* pinWidget : this->pinWidgets) {
             const auto pinGeoPosition = pinWidget->pos();
@@ -133,13 +135,13 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
 
             if (pinWidget->position == Position::TOP) {
                 painter.setPen(lineColor);
-                const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                    PinWidget::PIN_LABEL_LONG_LINE_LENGTH
-                    : PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
+                const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0
+                    ? PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
+                    : PinWidget::PIN_NAME_LABEL_SHORT_LINE_LENGTH
                 );
-                const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                    PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
-                    : PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+                const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0
+                    ? PinWidget::PIN_DIRECTION_LABEL_SHORT_LINE_LENGTH
+                    : PinWidget::PIN_DIRECTION_LABEL_LONG_LINE_LENGTH
                 );
 
                 painter.drawLine(QLine(
@@ -191,13 +193,13 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
 
             } else if (pinWidget->position == Position::BOTTOM) {
                 painter.setPen(lineColor);
-                const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                    PinWidget::PIN_LABEL_LONG_LINE_LENGTH
-                    : PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
+                const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0
+                    ? PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
+                    : PinWidget::PIN_NAME_LABEL_SHORT_LINE_LENGTH
                 );
-                const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                    PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
-                    : PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+                const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0
+                    ? PinWidget::PIN_DIRECTION_LABEL_SHORT_LINE_LENGTH
+                    : PinWidget::PIN_DIRECTION_LABEL_LONG_LINE_LENGTH
                 );
 
                 painter.drawLine(QLine(
