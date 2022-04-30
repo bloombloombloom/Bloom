@@ -13,7 +13,7 @@ namespace Bloom::TargetController::Responses
 
         Targets::TargetRegisters registers;
 
-        TargetRegistersRead(const Targets::TargetRegisters& registers)
+        explicit TargetRegistersRead(const Targets::TargetRegisters& registers)
             : registers(registers)
         {}
 

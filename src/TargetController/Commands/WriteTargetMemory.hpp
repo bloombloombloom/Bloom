@@ -17,7 +17,7 @@ namespace Bloom::TargetController::Commands
         std::uint32_t startAddress;
         Targets::TargetMemoryBuffer buffer;
 
-        explicit WriteTargetMemory(
+        WriteTargetMemory(
             Targets::TargetMemoryType memoryType,
             std::uint32_t startAddress,
             const Targets::TargetMemoryBuffer& buffer

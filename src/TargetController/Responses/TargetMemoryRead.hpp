@@ -13,7 +13,7 @@ namespace Bloom::TargetController::Responses
 
         Targets::TargetMemoryBuffer data;
 
-        TargetMemoryRead(const Targets::TargetMemoryBuffer& data)
+        explicit TargetMemoryRead(const Targets::TargetMemoryBuffer& data)
             : data(data)
         {}
 

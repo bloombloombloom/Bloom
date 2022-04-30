@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <set>
+
 #include "Command.hpp"
 #include "src/TargetController/Responses/TargetMemoryRead.hpp"
 
@@ -20,7 +23,7 @@ namespace Bloom::TargetController::Commands
         std::uint32_t bytes;
         std::set<Targets::TargetMemoryAddressRange> excludedAddressRanges;
 
-        explicit ReadTargetMemory(
+        ReadTargetMemory(
             Targets::TargetMemoryType memoryType,
             std::uint32_t startAddress,
             std::uint32_t bytes,

@@ -13,7 +13,7 @@ namespace Bloom::TargetController::Responses
 
         Targets::TargetState targetState;
 
-        TargetState(Targets::TargetState targetState)
+        explicit TargetState(Targets::TargetState targetState)
             : targetState(targetState)
         {}
 
