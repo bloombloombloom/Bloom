@@ -14,6 +14,7 @@
 #include "Commands/ReadTargetMemory.hpp"
 #include "Commands/WriteTargetMemory.hpp"
 #include "Commands/StepTargetExecution.hpp"
+#include "Commands/SetBreakpoint.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -32,6 +33,7 @@ namespace Bloom::TargetController
     using Commands::ReadTargetMemory;
     using Commands::WriteTargetMemory;
     using Commands::StepTargetExecution;
+    using Commands::SetBreakpoint;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -139,10 +141,10 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerConsole::setBreakpoint(TargetBreakpoint breakpoint) {
-        auto event = std::make_shared<SetBreakpointOnTarget>();
-        event->breakpoint = breakpoint;
-
-        this->triggerTargetControllerEventAndWaitForResponse(event);
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<SetBreakpoint>(breakpoint),
+            this->defaultTimeout
+        );
     }
 
     void TargetControllerConsole::removeBreakpoint(TargetBreakpoint breakpoint) {

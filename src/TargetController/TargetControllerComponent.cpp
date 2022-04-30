@@ -31,6 +31,7 @@ namespace Bloom::TargetController
     using Commands::ReadTargetMemory;
     using Commands::WriteTargetMemory;
     using Commands::StepTargetExecution;
+    using Commands::SetBreakpoint;
 
     using Responses::Response;
     using Responses::TargetRegistersRead;
@@ -393,10 +394,10 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(ReadTargetMemory::type);
         this->deregisterCommandHandler(WriteTargetMemory::type);
         this->deregisterCommandHandler(StepTargetExecution::type);
+        this->deregisterCommandHandler(SetBreakpoint::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
-        this->eventListener->deregisterCallbacksForEventType<Events::SetBreakpointOnTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::RemoveBreakpointOnTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::SetProgramCounterOnTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::InsightThreadStateChanged>();
@@ -455,16 +456,16 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleStepTargetExecution, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<SetBreakpoint>(
+            std::bind(&TargetControllerComponent::handleSetBreakpoint, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ExtractTargetDescriptor>(
             std::bind(&TargetControllerComponent::onExtractTargetDescriptor, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::SetBreakpointOnTarget>(
-            std::bind(&TargetControllerComponent::onSetBreakpointEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RemoveBreakpointOnTarget>(
@@ -859,18 +860,9 @@ namespace Bloom::TargetController
         return std::make_unique<Response>();
     }
 
-    void TargetControllerComponent::onSetBreakpointEvent(const Events::SetBreakpointOnTarget& event) {
-        try {
-            this->target->setBreakpoint(event.breakpoint.address);
-            auto breakpointSetEvent = std::make_shared<Events::BreakpointSetOnTarget>();
-            breakpointSetEvent->correlationId = event.id;
-
-            EventManager::triggerEvent(breakpointSetEvent);
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to set breakpoint on target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
+    std::unique_ptr<Response> TargetControllerComponent::handleSetBreakpoint(SetBreakpoint& command) {
+        this->target->setBreakpoint(command.breakpoint.address);
+        return std::make_unique<Response>();
     }
 
     void TargetControllerComponent::onRemoveBreakpointEvent(const Events::RemoveBreakpointOnTarget& event) {
