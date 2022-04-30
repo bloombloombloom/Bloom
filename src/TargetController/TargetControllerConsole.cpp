@@ -15,6 +15,7 @@
 #include "Commands/WriteTargetMemory.hpp"
 #include "Commands/StepTargetExecution.hpp"
 #include "Commands/SetBreakpoint.hpp"
+#include "Commands/RemoveBreakpoint.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -34,6 +35,7 @@ namespace Bloom::TargetController
     using Commands::WriteTargetMemory;
     using Commands::StepTargetExecution;
     using Commands::SetBreakpoint;
+    using Commands::RemoveBreakpoint;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -148,10 +150,10 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerConsole::removeBreakpoint(TargetBreakpoint breakpoint) {
-        auto event = std::make_shared<RemoveBreakpointOnTarget>();
-        event->breakpoint = breakpoint;
-
-        this->triggerTargetControllerEventAndWaitForResponse(event);
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<RemoveBreakpoint>(breakpoint),
+            this->defaultTimeout
+        );
     }
 
     Targets::TargetPinStateMappingType TargetControllerConsole::getPinStates(int variantId) {

@@ -16,8 +16,6 @@
 #include "TargetExecutionResumed.hpp"
 #include "TargetExecutionStopped.hpp"
 #include "MemoryWrittenToTarget.hpp"
-#include "RemoveBreakpointOnTarget.hpp"
-#include "BreakpointRemovedOnTarget.hpp"
 #include "SetProgramCounterOnTarget.hpp"
 #include "ProgramCounterSetOnTarget.hpp"
 #include "ExtractTargetDescriptor.hpp"

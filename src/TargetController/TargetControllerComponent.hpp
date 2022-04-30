@@ -28,6 +28,7 @@
 #include "Commands/WriteTargetMemory.hpp"
 #include "Commands/StepTargetExecution.hpp"
 #include "Commands/SetBreakpoint.hpp"
+#include "Commands/RemoveBreakpoint.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
@@ -308,14 +309,7 @@ namespace Bloom::TargetController
         std::unique_ptr<Responses::Response> handleWriteTargetMemory(Commands::WriteTargetMemory& command);
         std::unique_ptr<Responses::Response> handleStepTargetExecution(Commands::StepTargetExecution& command);
         std::unique_ptr<Responses::Response> handleSetBreakpoint(Commands::SetBreakpoint& command);
-
-        /**
-         * Will attempt to remove a breakpoint at the specified address, on the target. On success, the
-         * BreakpointRemovedOnTarget event is emitted.
-         *
-         * @param event
-         */
-        void onRemoveBreakpointEvent(const Events::RemoveBreakpointOnTarget& event);
+        std::unique_ptr<Responses::Response> handleRemoveBreakpoint(Commands::RemoveBreakpoint& command);
 
         /**
          * Will update the program counter value on the target. On success, a ProgramCounterSetOnTarget event is
