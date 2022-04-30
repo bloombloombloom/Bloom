@@ -25,6 +25,7 @@
 #include "Commands/ReadTargetRegisters.hpp"
 #include "Commands/WriteTargetRegisters.hpp"
 #include "Commands/ReadTargetMemory.hpp"
+#include "Commands/WriteTargetMemory.hpp"
 #include "Commands/StepTargetExecution.hpp"
 
 // Responses
@@ -303,14 +304,8 @@ namespace Bloom::TargetController
         );
         std::unique_ptr<Responses::Response> handleWriteTargetRegisters(Commands::WriteTargetRegisters& command);
         std::unique_ptr<Responses::TargetMemoryRead> handleReadTargetMemory(Commands::ReadTargetMemory& command);
+        std::unique_ptr<Responses::Response> handleWriteTargetMemory(Commands::WriteTargetMemory& command);
         std::unique_ptr<Responses::Response> handleStepTargetExecution(Commands::StepTargetExecution& command);
-
-        /**
-         * Will attempt to write memory to the target. On success, a MemoryWrittenToTarget event is emitted.
-         *
-         * @param event
-         */
-        void onWriteMemoryEvent(const Events::WriteMemoryToTarget& event);
 
         /**
          * Will attempt to set the specific breakpoint on the target. On success, the BreakpointSetOnTarget event will

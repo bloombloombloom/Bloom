@@ -29,6 +29,7 @@ namespace Bloom::TargetController
     using Commands::ReadTargetRegisters;
     using Commands::WriteTargetRegisters;
     using Commands::ReadTargetMemory;
+    using Commands::WriteTargetMemory;
     using Commands::StepTargetExecution;
 
     using Responses::Response;
@@ -389,11 +390,11 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(ReadTargetRegisters::type);
         this->deregisterCommandHandler(WriteTargetRegisters::type);
         this->deregisterCommandHandler(ReadTargetMemory::type);
+        this->deregisterCommandHandler(WriteTargetMemory::type);
         this->deregisterCommandHandler(StepTargetExecution::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
-        this->eventListener->deregisterCallbacksForEventType<Events::WriteMemoryToTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::SetBreakpointOnTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::RemoveBreakpointOnTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::SetProgramCounterOnTarget>();
@@ -445,6 +446,10 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleReadTargetMemory, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<WriteTargetMemory>(
+            std::bind(&TargetControllerComponent::handleWriteTargetMemory, this, std::placeholders::_1)
+        );
+
         this->registerCommandHandler<StepTargetExecution>(
             std::bind(&TargetControllerComponent::handleStepTargetExecution, this, std::placeholders::_1)
         );
@@ -455,10 +460,6 @@ namespace Bloom::TargetController
 
         this->eventListener->registerCallbackForEventType<Events::ExtractTargetDescriptor>(
             std::bind(&TargetControllerComponent::onExtractTargetDescriptor, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::WriteMemoryToTarget>(
-            std::bind(&TargetControllerComponent::onWriteMemoryEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::SetBreakpointOnTarget>(
@@ -799,6 +800,55 @@ namespace Bloom::TargetController
         ));
     }
 
+    std::unique_ptr<Response> TargetControllerComponent::handleWriteTargetMemory(WriteTargetMemory& command) {
+        const auto& buffer = command.buffer;
+        const auto bufferSize = command.buffer.size();
+        const auto bufferStartAddress = command.startAddress;
+
+        this->target->writeMemory(command.memoryType, bufferStartAddress, buffer);
+        EventManager::triggerEvent(std::make_shared<Events::MemoryWrittenToTarget>());
+
+        if (
+            EventManager::isEventTypeListenedFor(Events::RegistersWrittenToTarget::type)
+            && this->registerDescriptorsByMemoryType.contains(command.memoryType)
+        ) {
+            /*
+             * The memory type we just wrote to contains some number of registers - if we've written to any address
+             * that is known to store the value of a register, trigger a RegistersWrittenToTarget event
+             */
+            const auto bufferEndAddress = static_cast<std::uint32_t>(bufferStartAddress + (bufferSize - 1));
+            auto registerDescriptors = this->getRegisterDescriptorsWithinAddressRange(
+                bufferStartAddress,
+                bufferEndAddress,
+                command.memoryType
+            );
+
+            if (!registerDescriptors.empty()) {
+                auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
+
+                for (const auto& registerDescriptor : registerDescriptors) {
+                    const auto registerSize = registerDescriptor.size;
+                    const auto registerStartAddress = registerDescriptor.startAddress.value();
+                    const auto registerEndAddress = registerStartAddress + (registerSize - 1);
+
+                    if (registerStartAddress < bufferStartAddress || registerEndAddress > bufferEndAddress) {
+                        continue;
+                    }
+
+                    const auto bufferBeginIt = buffer.begin() + (registerStartAddress - bufferStartAddress);
+                    registersWrittenEvent->registers.emplace_back(TargetRegister(
+                        registerDescriptor,
+                        TargetMemoryBuffer(bufferBeginIt, bufferBeginIt + registerSize)
+                    ));
+                }
+
+                EventManager::triggerEvent(registersWrittenEvent);
+            }
+        }
+
+        return std::make_unique<Response>();
+    }
+
     std::unique_ptr<Response> TargetControllerComponent::handleStepTargetExecution(StepTargetExecution& command) {
         if (command.fromProgramCounter.has_value()) {
             this->target->setProgramCounter(command.fromProgramCounter.value());
@@ -809,62 +859,6 @@ namespace Bloom::TargetController
         EventManager::triggerEvent(std::make_shared<Events::TargetExecutionResumed>());
 
         return std::make_unique<Response>();
-    }
-
-    void TargetControllerComponent::onWriteMemoryEvent(const Events::WriteMemoryToTarget& event) {
-        try {
-            const auto& buffer = event.buffer;
-            const auto bufferSize = event.buffer.size();
-            const auto bufferStartAddress = event.startAddress;
-
-            this->target->writeMemory(event.memoryType, event.startAddress, event.buffer);
-
-            auto memoryWrittenEvent = std::make_shared<Events::MemoryWrittenToTarget>();
-            memoryWrittenEvent->correlationId = event.id;
-            EventManager::triggerEvent(memoryWrittenEvent);
-
-            if (EventManager::isEventTypeListenedFor(Events::RegistersWrittenToTarget::type)
-                && this->registerDescriptorsByMemoryType.contains(event.memoryType)
-            ) {
-                /*
-                 * The memory type we just wrote to contains some number of registers - if we've written to any address
-                 * that is known to store the value of a register, trigger a RegistersWrittenToTarget event
-                 */
-                const auto bufferEndAddress = static_cast<std::uint32_t>(bufferStartAddress + (bufferSize - 1));
-                auto registerDescriptors = this->getRegisterDescriptorsWithinAddressRange(
-                    bufferStartAddress,
-                    bufferEndAddress,
-                    event.memoryType
-                );
-
-                if (!registerDescriptors.empty()) {
-                    auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
-                    registersWrittenEvent->correlationId = event.id;
-
-                    for (const auto& registerDescriptor : registerDescriptors) {
-                        const auto registerSize = registerDescriptor.size;
-                        const auto registerStartAddress = registerDescriptor.startAddress.value();
-                        const auto registerEndAddress = registerStartAddress + (registerSize - 1);
-
-                        if (registerStartAddress < bufferStartAddress || registerEndAddress > bufferEndAddress) {
-                            continue;
-                        }
-
-                        const auto bufferBeginIt = buffer.begin() + (registerStartAddress - bufferStartAddress);
-                        registersWrittenEvent->registers.emplace_back(TargetRegister(
-                            registerDescriptor,
-                            TargetMemoryBuffer(bufferBeginIt, bufferBeginIt + registerSize)
-                        ));
-                    }
-
-                    EventManager::triggerEvent(registersWrittenEvent);
-                }
-            }
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to write memory to target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
     }
 
     void TargetControllerComponent::onSetBreakpointEvent(const Events::SetBreakpointOnTarget& event) {

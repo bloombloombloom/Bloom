@@ -12,6 +12,7 @@
 #include "Commands/ReadTargetRegisters.hpp"
 #include "Commands/WriteTargetRegisters.hpp"
 #include "Commands/ReadTargetMemory.hpp"
+#include "Commands/WriteTargetMemory.hpp"
 #include "Commands/StepTargetExecution.hpp"
 
 #include "src/Logger/Logger.hpp"
@@ -29,6 +30,7 @@ namespace Bloom::TargetController
     using Commands::ReadTargetRegisters;
     using Commands::WriteTargetRegisters;
     using Commands::ReadTargetMemory;
+    using Commands::WriteTargetMemory;
     using Commands::StepTargetExecution;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
@@ -130,12 +132,10 @@ namespace Bloom::TargetController
         std::uint32_t startAddress,
         const TargetMemoryBuffer& buffer
     ) {
-        auto writeMemoryEvent = std::make_shared<WriteMemoryToTarget>();
-        writeMemoryEvent->memoryType = memoryType;
-        writeMemoryEvent->startAddress = startAddress;
-        writeMemoryEvent->buffer = buffer;
-
-        this->triggerTargetControllerEventAndWaitForResponse(writeMemoryEvent);
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<WriteTargetMemory>(memoryType, startAddress, buffer),
+            this->defaultTimeout
+        );
     }
 
     void TargetControllerConsole::setBreakpoint(TargetBreakpoint breakpoint) {
