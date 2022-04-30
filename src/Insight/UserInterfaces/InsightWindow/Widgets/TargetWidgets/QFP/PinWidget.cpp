@@ -80,7 +80,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         if (this->position == Position::LEFT || this->position == Position::RIGHT) {
             this->pinNumberLabel->setFixedSize(
                 PinWidget::MAXIMUM_PIN_NUMBER_LABEL_WIDTH,
-                PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2
+                PinWidget::MAXIMUM_HORIZONTAL_HEIGHT
             );
 
         } else if (this->position == Position::TOP || this->position == Position::BOTTOM) {
