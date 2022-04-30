@@ -116,15 +116,15 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         static auto pinNameFont = QFont("'Ubuntu', sans-serif");
         static auto pinDirectionFont = pinNameFont;
         pinNameFont.setPixelSize(11);
-        pinDirectionFont.setPixelSize(9);
+        pinDirectionFont.setPixelSize(10);
 
         static const auto lineColor = QColor(0x4F, 0x4F, 0x4F);
         static const auto pinNameFontColor = QColor(0xA6, 0xA7, 0xAA);
         static const auto pinDirectionFontColor = QColor(0x8A, 0x8A, 0x8D);
         static const auto pinChangedFontColor = QColor(0x4D, 0x7B, 0xBA);
 
-        static const auto inDirectionText = QString("INPUT");
-        static const auto outDirectionText = QString("OUTPUT");
+        static const auto inDirectionText = QString("IN");
+        static const auto outDirectionText = QString("OUT");
 
         for (const auto* pinWidget : this->pinWidgets) {
             const auto pinGeoPosition = pinWidget->pos();
