@@ -289,7 +289,7 @@ namespace Bloom::TargetController
                 }
 
                 if (command->requiresStoppedTargetState() && this->lastTargetState != TargetState::STOPPED) {
-                    this->target->stop();
+                    throw Exception("Illegal target state - command requires target to be stopped");
                 }
 
                 this->registerCommandResponse(
@@ -494,6 +494,7 @@ namespace Bloom::TargetController
 
         if (this->target->getState() != TargetState::RUNNING) {
             this->target->run();
+            this->lastTargetState = TargetState::RUNNING;
         }
     }
 
