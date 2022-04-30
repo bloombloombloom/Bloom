@@ -19,7 +19,6 @@
 #include "ExtractTargetDescriptor.hpp"
 #include "TargetDescriptorExtracted.hpp"
 #include "InsightThreadStateChanged.hpp"
-#include "RetrieveTargetPinStates.hpp"
 #include "TargetPinStatesRetrieved.hpp"
 #include "SetTargetPinState.hpp"
 #include "RetrieveStackPointerFromTarget.hpp"

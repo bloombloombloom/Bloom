@@ -20,5 +20,6 @@ namespace Bloom::TargetController::Commands
         SET_BREAKPOINT,
         REMOVE_BREAKPOINT,
         SET_PROGRAM_COUNTER,
+        GET_TARGET_PIN_STATES,
     };
 }

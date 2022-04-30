@@ -11,5 +11,6 @@ namespace Bloom::TargetController::Responses
         TARGET_REGISTERS_READ,
         TARGET_MEMORY_READ,
         TARGET_STATE,
+        TARGET_PIN_STATES,
     };
 }

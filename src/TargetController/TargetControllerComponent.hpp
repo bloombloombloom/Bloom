@@ -30,12 +30,14 @@
 #include "Commands/SetBreakpoint.hpp"
 #include "Commands/RemoveBreakpoint.hpp"
 #include "Commands/SetProgramCounter.hpp"
+#include "Commands/GetTargetPinStates.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
 #include "Responses/TargetState.hpp"
 #include "Responses/TargetRegistersRead.hpp"
 #include "Responses/TargetMemoryRead.hpp"
+#include "Responses/TargetPinStates.hpp"
 
 #include "TargetControllerState.hpp"
 
@@ -312,13 +314,7 @@ namespace Bloom::TargetController
         std::unique_ptr<Responses::Response> handleSetBreakpoint(Commands::SetBreakpoint& command);
         std::unique_ptr<Responses::Response> handleRemoveBreakpoint(Commands::RemoveBreakpoint& command);
         std::unique_ptr<Responses::Response> handleSetProgramCounter(Commands::SetProgramCounter& command);
-
-        /**
-         * Will attempt to obtain the pin states from the target. Will emit a TargetPinStatesRetrieved event on success.
-         *
-         * @param event
-         */
-        void onRetrieveTargetPinStatesEvent(const Events::RetrieveTargetPinStates& event);
+        std::unique_ptr<Responses::TargetPinStates> handleGetTargetPinStates(Commands::GetTargetPinStates& command);
 
         /**
          * Will update a pin state for a particular pin. Will emit a TargetPinStatesRetrieved with the new pin

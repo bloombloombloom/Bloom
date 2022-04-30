@@ -34,10 +34,12 @@ namespace Bloom::TargetController
     using Commands::SetBreakpoint;
     using Commands::RemoveBreakpoint;
     using Commands::SetProgramCounter;
+    using Commands::GetTargetPinStates;
 
     using Responses::Response;
     using Responses::TargetRegistersRead;
     using Responses::TargetMemoryRead;
+    using Responses::TargetPinStates;
 
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
@@ -399,11 +401,11 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(SetBreakpoint::type);
         this->deregisterCommandHandler(RemoveBreakpoint::type);
         this->deregisterCommandHandler(SetProgramCounter::type);
+        this->deregisterCommandHandler(GetTargetPinStates::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
         this->eventListener->deregisterCallbacksForEventType<Events::InsightThreadStateChanged>();
-        this->eventListener->deregisterCallbacksForEventType<Events::RetrieveTargetPinStates>();
         this->eventListener->deregisterCallbacksForEventType<Events::SetTargetPinState>();
         this->eventListener->deregisterCallbacksForEventType<Events::RetrieveStackPointerFromTarget>();
 
@@ -470,16 +472,16 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleSetProgramCounter, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<GetTargetPinStates>(
+            std::bind(&TargetControllerComponent::handleGetTargetPinStates, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ExtractTargetDescriptor>(
             std::bind(&TargetControllerComponent::onExtractTargetDescriptor, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::RetrieveTargetPinStates>(
-            std::bind(&TargetControllerComponent::onRetrieveTargetPinStatesEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::SetTargetPinState>(
@@ -877,25 +879,8 @@ namespace Bloom::TargetController
         return std::make_unique<Response>();
     }
 
-    void TargetControllerComponent::onRetrieveTargetPinStatesEvent(const Events::RetrieveTargetPinStates& event) {
-        try {
-            if (this->target->getState() != TargetState::STOPPED) {
-                throw TargetOperationFailure(
-                    "Invalid target state - target must be stopped before pin states can be retrieved"
-                );
-            }
-
-            auto pinStatesRetrieved = std::make_shared<Events::TargetPinStatesRetrieved>();
-            pinStatesRetrieved->correlationId = event.id;
-            pinStatesRetrieved->variantId = event.variantId;
-            pinStatesRetrieved->pinSatesByNumber = this->target->getPinStates(event.variantId);
-
-            EventManager::triggerEvent(pinStatesRetrieved);
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to retrieve target pin states - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
+    std::unique_ptr<TargetPinStates> TargetControllerComponent::handleGetTargetPinStates(GetTargetPinStates& command) {
+        return std::make_unique<TargetPinStates>(this->target->getPinStates(command.variantId));
     }
 
     void TargetControllerComponent::onSetPinStateEvent(const Events::SetTargetPinState& event) {
