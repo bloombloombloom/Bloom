@@ -806,7 +806,9 @@ namespace Bloom::TargetController
         const auto bufferStartAddress = command.startAddress;
 
         this->target->writeMemory(command.memoryType, bufferStartAddress, buffer);
-        EventManager::triggerEvent(std::make_shared<Events::MemoryWrittenToTarget>());
+        EventManager::triggerEvent(
+            std::make_shared<Events::MemoryWrittenToTarget>(command.memoryType, bufferStartAddress, bufferSize)
+        );
 
         if (
             EventManager::isEventTypeListenedFor(Events::RegistersWrittenToTarget::type)

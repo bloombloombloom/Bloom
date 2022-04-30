@@ -13,7 +13,19 @@ namespace Bloom::Events
         static constexpr EventType type = EventType::MEMORY_WRITTEN_TO_TARGET;
         static inline const std::string name = "MemoryWrittenToTarget";
 
-        MemoryWrittenToTarget() = default;
+        Targets::TargetMemoryType memoryType;
+        std::uint32_t startAddress;
+        std::uint32_t size;
+
+        MemoryWrittenToTarget(
+            Targets::TargetMemoryType memoryType,
+            std::uint32_t startAddress,
+            std::uint32_t size
+        )
+            : memoryType(memoryType)
+            , startAddress(startAddress)
+            , size(size)
+        {};
 
         [[nodiscard]] EventType getType() const override {
             return MemoryWrittenToTarget::type;
