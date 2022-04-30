@@ -107,15 +107,15 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 
         const auto height = horizontalLayoutHeight + (verticalPinWidgetHeight * 2) + (
             (
-                PinWidget::PIN_LABEL_LONG_LINE_LENGTH
-                + PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
+                PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
+                + PinWidget::PIN_DIRECTION_LABEL_LONG_LINE_LENGTH
                 + (PinWidget::MAXIMUM_LABEL_HEIGHT * 2)
                 + (PinWidget::PIN_LABEL_SPACING * 3)
             ) * 2
         );
         const auto width = verticalLayoutWidth + (horizontalPinWidgetWidth * 2) + (
             (
-                PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+                PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
                 + PinWidget::MAXIMUM_LABEL_WIDTH
                 + PinWidget::MAXIMUM_PIN_DIRECTION_LABEL_WIDTH
                 + (PinWidget::PIN_LABEL_SPACING * 2)
@@ -194,7 +194,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         static auto pinNameFont = QFont("'Ubuntu', sans-serif");
         static auto pinDirectionFont = pinNameFont;
         pinNameFont.setPixelSize(11);
-        pinDirectionFont.setPixelSize(9);
+        pinDirectionFont.setPixelSize(10);
 
         static const auto lineColor = QColor(0x4F, 0x4F, 0x4F);
         static const auto pinNameFontColor = QColor(0xA6, 0xA7, 0xAA);
@@ -214,7 +214,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
             if (pinWidget->position == Position::LEFT) {
                 painter.setPen(lineColor);
                 painter.drawLine(QLine(
-                    pinGeoPosition.x() - PinWidget::PIN_LABEL_LONG_LINE_LENGTH,
+                    pinGeoPosition.x() - PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH,
                     pinGeoPosition.y() + (PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2),
                     pinGeoPosition.x(),
                     pinGeoPosition.y() + (PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2)
@@ -223,7 +223,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
                 painter.setPen(pinStateChanged ? pinChangedFontColor : pinNameFontColor);
                 painter.drawText(
                     QRect(
-                        pinGeoPosition.x() - PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+                        pinGeoPosition.x() - PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
                             - PinWidget::MAXIMUM_LABEL_WIDTH - (PinWidget::PIN_LABEL_SPACING * 2),
                         pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
                             - (PinWidget::MAXIMUM_LABEL_HEIGHT / 2),
@@ -240,7 +240,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
                     painter.setPen(pinDirectionFontColor);
                     painter.drawText(
                         QRect(
-                            pinGeoPosition.x() - PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+                            pinGeoPosition.x() - PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
                                 - PinWidget::MAXIMUM_LABEL_WIDTH - (PinWidget::PIN_LABEL_SPACING * 3)
                                 - PinWidget::MAXIMUM_PIN_DIRECTION_LABEL_WIDTH,
                             pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
@@ -259,7 +259,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
                     pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH,
                     pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                     pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH
-                        + PinWidget::PIN_LABEL_LONG_LINE_LENGTH,
+                        + PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH,
                     pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
                 ));
 
@@ -267,7 +267,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
                 painter.drawText(
                     QRect(
                         pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH
-                            + PinWidget::PIN_LABEL_LONG_LINE_LENGTH + 8,
+                            + PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH + 8,
                         pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
                             - (PinWidget::MAXIMUM_LABEL_HEIGHT / 2),
                         PinWidget::MAXIMUM_LABEL_WIDTH,
@@ -284,7 +284,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
                     painter.drawText(
                         QRect(
                             pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH
-                                + PinWidget::PIN_LABEL_LONG_LINE_LENGTH + PinWidget::MAXIMUM_LABEL_WIDTH
+                                + PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH + PinWidget::MAXIMUM_LABEL_WIDTH
                                 + (PinWidget::PIN_LABEL_SPACING * 3),
                             pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
                                 - (PinWidget::MAXIMUM_LABEL_HEIGHT / 2),
@@ -298,13 +298,13 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 
             } else if (pinWidget->position == Position::TOP) {
                 painter.setPen(lineColor);
-                const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                    PinWidget::PIN_LABEL_LONG_LINE_LENGTH
-                    : PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
+                const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0
+                    ? PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
+                    : PinWidget::PIN_NAME_LABEL_SHORT_LINE_LENGTH
                 );
-                const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                    PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
-                    : PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+                const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0
+                    ? PinWidget::PIN_DIRECTION_LABEL_SHORT_LINE_LENGTH
+                    : PinWidget::PIN_DIRECTION_LABEL_LONG_LINE_LENGTH
                 );
 
                 painter.drawLine(QLine(
@@ -356,13 +356,13 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 
             } else if (pinWidget->position == Position::BOTTOM) {
                 painter.setPen(lineColor);
-                const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                    PinWidget::PIN_LABEL_LONG_LINE_LENGTH
-                    : PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
+                const auto pinNameLabelLineLength = (pinWidget->getPinNumber() % 2 == 0
+                    ? PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
+                    : PinWidget::PIN_NAME_LABEL_SHORT_LINE_LENGTH
                 );
-                const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0 ?
-                    PinWidget::PIN_LABEL_SHORT_LINE_LENGTH
-                    : PinWidget::PIN_LABEL_LONG_LINE_LENGTH
+                const auto pinDirectionLabelLineLength = (pinWidget->getPinNumber() % 2 == 0
+                    ? PinWidget::PIN_DIRECTION_LABEL_SHORT_LINE_LENGTH
+                    : PinWidget::PIN_DIRECTION_LABEL_LONG_LINE_LENGTH
                 );
 
                 painter.drawLine(QLine(

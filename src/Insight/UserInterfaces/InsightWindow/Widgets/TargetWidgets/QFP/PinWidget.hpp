@@ -26,8 +26,10 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
     public:
         static constexpr int PIN_WIDGET_LAYOUT_PADDING = 46;
         static constexpr int WIDTH_SPACING = 4;
-        static constexpr int PIN_LABEL_LONG_LINE_LENGTH = 25;
-        static constexpr int PIN_LABEL_SHORT_LINE_LENGTH = 5;
+        static constexpr int PIN_NAME_LABEL_LONG_LINE_LENGTH = 25;
+        static constexpr int PIN_NAME_LABEL_SHORT_LINE_LENGTH = 5;
+        static constexpr int PIN_DIRECTION_LABEL_LONG_LINE_LENGTH = 22;
+        static constexpr int PIN_DIRECTION_LABEL_SHORT_LINE_LENGTH = 21;
         static constexpr int PIN_LABEL_SPACING = 2;
         static constexpr int LABEL_HEIGHT = 20;
         static constexpr int MAXIMUM_PIN_NUMBER_LABEL_WIDTH = 26;
