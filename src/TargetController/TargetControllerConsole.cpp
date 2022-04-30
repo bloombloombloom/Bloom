@@ -16,6 +16,7 @@
 #include "Commands/StepTargetExecution.hpp"
 #include "Commands/SetBreakpoint.hpp"
 #include "Commands/RemoveBreakpoint.hpp"
+#include "Commands/SetProgramCounter.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -36,6 +37,7 @@ namespace Bloom::TargetController
     using Commands::StepTargetExecution;
     using Commands::SetBreakpoint;
     using Commands::RemoveBreakpoint;
+    using Commands::SetProgramCounter;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -152,6 +154,13 @@ namespace Bloom::TargetController
     void TargetControllerConsole::removeBreakpoint(TargetBreakpoint breakpoint) {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<RemoveBreakpoint>(breakpoint),
+            this->defaultTimeout
+        );
+    }
+
+    void TargetControllerConsole::setProgramCounter(std::uint32_t address) {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<SetProgramCounter>(address),
             this->defaultTimeout
         );
     }

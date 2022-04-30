@@ -33,6 +33,7 @@ namespace Bloom::TargetController
     using Commands::StepTargetExecution;
     using Commands::SetBreakpoint;
     using Commands::RemoveBreakpoint;
+    using Commands::SetProgramCounter;
 
     using Responses::Response;
     using Responses::TargetRegistersRead;
@@ -397,10 +398,10 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(StepTargetExecution::type);
         this->deregisterCommandHandler(SetBreakpoint::type);
         this->deregisterCommandHandler(RemoveBreakpoint::type);
+        this->deregisterCommandHandler(SetProgramCounter::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
-        this->eventListener->deregisterCallbacksForEventType<Events::SetProgramCounterOnTarget>();
         this->eventListener->deregisterCallbacksForEventType<Events::InsightThreadStateChanged>();
         this->eventListener->deregisterCallbacksForEventType<Events::RetrieveTargetPinStates>();
         this->eventListener->deregisterCallbacksForEventType<Events::SetTargetPinState>();
@@ -465,16 +466,16 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleRemoveBreakpoint, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<SetProgramCounter>(
+            std::bind(&TargetControllerComponent::handleSetProgramCounter, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ExtractTargetDescriptor>(
             std::bind(&TargetControllerComponent::onExtractTargetDescriptor, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::SetProgramCounterOnTarget>(
-            std::bind(&TargetControllerComponent::onSetProgramCounterEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::RetrieveTargetPinStates>(
@@ -871,24 +872,9 @@ namespace Bloom::TargetController
         return std::make_unique<Response>();
     }
 
-    void TargetControllerComponent::onSetProgramCounterEvent(const Events::SetProgramCounterOnTarget& event) {
-        try {
-            if (this->target->getState() != TargetState::STOPPED) {
-                throw TargetOperationFailure(
-                    "Invalid target state - target must be stopped before the program counter can be updated"
-                );
-            }
-
-            this->target->setProgramCounter(event.address);
-            auto programCounterSetEvent = std::make_shared<Events::ProgramCounterSetOnTarget>();
-            programCounterSetEvent->correlationId = event.id;
-
-            EventManager::triggerEvent(programCounterSetEvent);
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to set program counter on target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
+    std::unique_ptr<Response> TargetControllerComponent::handleSetProgramCounter(SetProgramCounter& command) {
+        this->target->setProgramCounter(command.address);
+        return std::make_unique<Response>();
     }
 
     void TargetControllerComponent::onRetrieveTargetPinStatesEvent(const Events::RetrieveTargetPinStates& event) {

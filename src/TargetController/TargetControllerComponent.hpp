@@ -29,6 +29,7 @@
 #include "Commands/StepTargetExecution.hpp"
 #include "Commands/SetBreakpoint.hpp"
 #include "Commands/RemoveBreakpoint.hpp"
+#include "Commands/SetProgramCounter.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
@@ -310,14 +311,7 @@ namespace Bloom::TargetController
         std::unique_ptr<Responses::Response> handleStepTargetExecution(Commands::StepTargetExecution& command);
         std::unique_ptr<Responses::Response> handleSetBreakpoint(Commands::SetBreakpoint& command);
         std::unique_ptr<Responses::Response> handleRemoveBreakpoint(Commands::RemoveBreakpoint& command);
-
-        /**
-         * Will update the program counter value on the target. On success, a ProgramCounterSetOnTarget event is
-         * emitted.
-         *
-         * @param event
-         */
-        void onSetProgramCounterEvent(const Events::SetProgramCounterOnTarget& event);
+        std::unique_ptr<Responses::Response> handleSetProgramCounter(Commands::SetProgramCounter& command);
 
         /**
          * Will attempt to obtain the pin states from the target. Will emit a TargetPinStatesRetrieved event on success.

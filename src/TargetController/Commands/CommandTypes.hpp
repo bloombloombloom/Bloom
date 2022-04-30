@@ -19,5 +19,6 @@ namespace Bloom::TargetController::Commands
         WRITE_TARGET_MEMORY,
         SET_BREAKPOINT,
         REMOVE_BREAKPOINT,
+        SET_PROGRAM_COUNTER,
     };
 }

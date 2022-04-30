@@ -145,6 +145,13 @@ namespace Bloom::TargetController
         void removeBreakpoint(Targets::TargetBreakpoint breakpoint);
 
         /**
+         * Sets the target's program counter to the given address.
+         *
+         * @param address
+         */
+        void setProgramCounter(std::uint32_t address);
+
+        /**
          * Retrieves the pin states for a particular target variant.
          *
          * @param variantId
