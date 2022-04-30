@@ -717,12 +717,6 @@ namespace Bloom::TargetController
             this->resume();
             this->fireTargetEvents();
         }
-
-        this->resetTarget();
-
-        if (this->target->getState() != TargetState::STOPPED) {
-            this->target->stop();
-        }
     }
 
     void TargetControllerComponent::onDebugSessionFinishedEvent(const DebugSessionFinished&) {

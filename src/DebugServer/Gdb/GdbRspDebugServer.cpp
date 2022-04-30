@@ -173,6 +173,9 @@ namespace Bloom::DebugServer::Gdb
                         throw DebugSessionAborted("TargetController not in service");
                     }
                 }
+
+                this->targetControllerConsole.stopTargetExecution();
+                this->targetControllerConsole.resetTarget();
             }
 
             auto commandPacket = this->waitForCommandPacket();
