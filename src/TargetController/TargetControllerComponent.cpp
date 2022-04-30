@@ -150,6 +150,7 @@ namespace Bloom::TargetController
         Logger::info("Starting TargetController");
         this->setThreadState(ThreadState::STARTING);
         this->blockAllSignalsOnCurrentThread();
+        this->eventListener->setInterruptEventNotifier(&TargetControllerComponent::notifier);
         EventManager::registerListener(this->eventListener);
 
         // Install Bloom's udev rules if not already installed
