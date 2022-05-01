@@ -32,6 +32,7 @@
 #include "Commands/SetProgramCounter.hpp"
 #include "Commands/GetTargetPinStates.hpp"
 #include "Commands/SetTargetPinState.hpp"
+#include "Commands/GetTargetStackPointer.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
@@ -39,6 +40,7 @@
 #include "Responses/TargetRegistersRead.hpp"
 #include "Responses/TargetMemoryRead.hpp"
 #include "Responses/TargetPinStates.hpp"
+#include "Responses/TargetStackPointer.hpp"
 
 #include "TargetControllerState.hpp"
 
@@ -317,13 +319,8 @@ namespace Bloom::TargetController
         std::unique_ptr<Responses::Response> handleSetProgramCounter(Commands::SetProgramCounter& command);
         std::unique_ptr<Responses::TargetPinStates> handleGetTargetPinStates(Commands::GetTargetPinStates& command);
         std::unique_ptr<Responses::Response> handleSetTargetPinState(Commands::SetTargetPinState& command);
-
-        /**
-         * Will retrieve the current stack pointer from the target. Will emit a StackPointerRetrievedFromTarget event
-         * containing the retrieved stack pointer value.
-         *
-         * @param event
-         */
-        void onRetrieveStackPointerEvent(const Events::RetrieveStackPointerFromTarget& event);
+        std::unique_ptr<Responses::TargetStackPointer> handleGetTargetStackPointer(
+            Commands::GetTargetStackPointer& command
+        );
     };
 }

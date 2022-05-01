@@ -36,11 +36,13 @@ namespace Bloom::TargetController
     using Commands::SetProgramCounter;
     using Commands::GetTargetPinStates;
     using Commands::SetTargetPinState;
+    using Commands::GetTargetStackPointer;
 
     using Responses::Response;
     using Responses::TargetRegistersRead;
     using Responses::TargetMemoryRead;
     using Responses::TargetPinStates;
+    using Responses::TargetStackPointer;
 
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
@@ -405,10 +407,10 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(SetProgramCounter::type);
         this->deregisterCommandHandler(GetTargetPinStates::type);
         this->deregisterCommandHandler(SetTargetPinState::type);
+        this->deregisterCommandHandler(GetTargetStackPointer::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
-        this->eventListener->deregisterCallbacksForEventType<Events::RetrieveStackPointerFromTarget>();
 
         this->lastTargetState = TargetState::UNKNOWN;
         this->cachedTargetDescriptor = std::nullopt;
@@ -481,16 +483,16 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleSetTargetPinState, this, std::placeholders::_1)
         );
 
+        this->registerCommandHandler<GetTargetStackPointer>(
+            std::bind(&TargetControllerComponent::handleGetTargetStackPointer, this, std::placeholders::_1)
+        );
+
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::ExtractTargetDescriptor>(
             std::bind(&TargetControllerComponent::onExtractTargetDescriptor, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::RetrieveStackPointerFromTarget>(
-            std::bind(&TargetControllerComponent::onRetrieveStackPointerEvent, this, std::placeholders::_1)
         );
 
         TargetControllerComponent::state = TargetControllerState::ACTIVE;
@@ -889,23 +891,9 @@ namespace Bloom::TargetController
         return std::make_unique<Response>();
     }
 
-    void TargetControllerComponent::onRetrieveStackPointerEvent(const Events::RetrieveStackPointerFromTarget& event) {
-        try {
-            if (this->target->getState() != TargetState::STOPPED) {
-                throw TargetOperationFailure(
-                    "Invalid target state - target must be stopped before stack pointer can be retrieved"
-                );
-            }
-
-            auto stackPointerRetrieved = std::make_shared<Events::StackPointerRetrievedFromTarget>();
-            stackPointerRetrieved->correlationId = event.id;
-            stackPointerRetrieved->stackPointer = this->target->getStackPointer();
-
-            EventManager::triggerEvent(stackPointerRetrieved);
-
-        } catch (const TargetOperationFailure& exception) {
-            Logger::error("Failed to retrieve stack pointer value from target - " + exception.getMessage());
-            this->emitErrorEvent(event.id, exception.getMessage());
-        }
+    std::unique_ptr<TargetStackPointer> TargetControllerComponent::handleGetTargetStackPointer(
+        GetTargetStackPointer& command
+    ) {
+        return std::make_unique<TargetStackPointer>(this->target->getStackPointer());
     }
 }

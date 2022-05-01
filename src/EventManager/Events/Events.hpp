@@ -19,8 +19,6 @@
 #include "ExtractTargetDescriptor.hpp"
 #include "TargetDescriptorExtracted.hpp"
 #include "InsightThreadStateChanged.hpp"
-#include "RetrieveStackPointerFromTarget.hpp"
-#include "StackPointerRetrievedFromTarget.hpp"
 #include "TargetReset.hpp"
 
 namespace Bloom::Events

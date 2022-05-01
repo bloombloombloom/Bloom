@@ -19,6 +19,7 @@
 #include "Commands/SetProgramCounter.hpp"
 #include "Commands/GetTargetPinStates.hpp"
 #include "Commands/SetTargetPinState.hpp"
+#include "Commands/GetTargetStackPointer.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -42,6 +43,7 @@ namespace Bloom::TargetController
     using Commands::SetProgramCounter;
     using Commands::GetTargetPinStates;
     using Commands::SetTargetPinState;
+    using Commands::GetTargetStackPointer;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -184,8 +186,9 @@ namespace Bloom::TargetController
     }
 
     std::uint32_t TargetControllerConsole::getStackPointer() {
-        return this->triggerTargetControllerEventAndWaitForResponse(
-            std::make_shared<RetrieveStackPointerFromTarget>()
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<GetTargetStackPointer>(),
+            this->defaultTimeout
         )->stackPointer;
     }
 
