@@ -1,7 +1,5 @@
 #include "TargetControllerConsole.hpp"
 
-#include "src/EventManager/Events/Events.hpp"
-
 #include "TargetControllerComponent.hpp"
 
 // Commands
@@ -28,7 +26,6 @@
 namespace Bloom::TargetController
 {
     using namespace Bloom::Targets;
-    using namespace Bloom::Events;
     using namespace Bloom::Exceptions;
 
     using Commands::GetTargetDescriptor;
@@ -48,10 +45,6 @@ namespace Bloom::TargetController
     using Commands::SetTargetPinState;
     using Commands::GetTargetStackPointer;
     using Commands::GetTargetProgramCounter;
-
-    TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
-        : eventListener(eventListener)
-    {}
 
     TargetControllerState TargetControllerConsole::getTargetControllerState() {
         return TargetControllerComponent::getState();

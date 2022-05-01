@@ -114,9 +114,7 @@ namespace Bloom::DebugServer::Gdb
          *
          * See documentation in src/DebugServer/Gdb/README.md for more on how GDB commands are processed.
          */
-        TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole(
-            this->eventListener
-        );
+        TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole();
 
         /**
          * Listening socket address

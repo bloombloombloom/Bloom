@@ -46,9 +46,7 @@ namespace Bloom
     private:
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightWorkerEventListener");
 
-        TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole(
-            *(this->eventListener)
-        );
+        TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole();
 
         Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
 

@@ -78,9 +78,7 @@ namespace Bloom
             this->insightProjectSettings
         );
 
-        TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole(
-            this->eventListener
-        );
+        TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole();
 
         /**
          * Insight consists of two threads - the main thread where the main Qt event loop runs (for the GUI), and
