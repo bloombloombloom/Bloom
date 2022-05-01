@@ -180,8 +180,7 @@ namespace Bloom
          */
         template<class EventTypeA, class EventTypeB = EventTypeA, class EventTypeC = EventTypeB>
         auto waitForEvent(
-            std::optional<std::chrono::milliseconds> timeout = std::nullopt,
-            std::optional<int> correlationId = std::nullopt
+            std::optional<std::chrono::milliseconds> timeout = std::nullopt
         ) {
             // Different return types, depending on how many event type arguments are passed in.
             using MonoType = std::optional<Events::SharedEventPointer<EventTypeA>>;
@@ -246,25 +245,16 @@ namespace Bloom
             }
 
             Events::SharedGenericEventPointer foundEvent = nullptr;
-            auto eventsFound = [&eventTypes, &eventQueueByType, &correlationId, &foundEvent] () -> bool {
+            auto eventsFound = [&eventTypes, &eventQueueByType, &foundEvent] () -> bool {
                 for (const auto& eventType : eventTypes) {
                     if (eventQueueByType.find(eventType) != eventQueueByType.end()
                         && !eventQueueByType.find(eventType)->second.empty()
                     ) {
                         auto& queue = eventQueueByType.find(eventType)->second;
                         while (!queue.empty()) {
-                            auto event = queue.front();
-
-                            if (!correlationId.has_value()
-                                || (event->correlationId.has_value() && event->correlationId == correlationId)
-                            ) {
-                                foundEvent = event;
-                                queue.pop();
-                                return true;
-                            }
-
-                            // Events that match in type but not correlation ID are discarded
+                            foundEvent = queue.front();
                             queue.pop();
+                            return true;
                         }
                     }
                 }

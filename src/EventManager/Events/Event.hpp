@@ -38,7 +38,6 @@ namespace Bloom::Events
     public:
         int id = ++(Event::lastEventId);
         QDateTime createdTimestamp = DateTime::currentDateTime();
-        std::optional<int> correlationId;
 
         static constexpr EventType type = EventType::GENERIC;
         static inline const std::string name = "GenericEvent";
