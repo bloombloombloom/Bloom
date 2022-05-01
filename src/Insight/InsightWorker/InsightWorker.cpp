@@ -121,10 +121,10 @@ namespace Bloom
     }
 
     void InsightWorker::onTargetResetEvent(const Events::TargetReset& event) {
-        // TODO: Pull PC from target. This will be done as part of the TC refactor (https://github.com/navnavnav/Bloom/issues/25)
         this->lastTargetState = TargetState::STOPPED;
+        emit this->targetStateUpdated(TargetState::RUNNING);
         emit this->targetStateUpdated(TargetState::STOPPED);
-        emit this->targetProgramCounterUpdated(0);
+        emit this->targetProgramCounterUpdated(this->targetControllerConsole.getProgramCounter());
     }
 
     void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {
