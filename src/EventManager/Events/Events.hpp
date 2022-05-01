@@ -16,8 +16,6 @@
 #include "TargetExecutionResumed.hpp"
 #include "TargetExecutionStopped.hpp"
 #include "MemoryWrittenToTarget.hpp"
-#include "ExtractTargetDescriptor.hpp"
-#include "TargetDescriptorExtracted.hpp"
 #include "InsightThreadStateChanged.hpp"
 #include "TargetReset.hpp"
 

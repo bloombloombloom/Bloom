@@ -1,0 +1,26 @@
+#pragma once
+
+#include <cstdint>
+
+#include "Response.hpp"
+
+#include "src/Targets/TargetDescriptor.hpp"
+
+namespace Bloom::TargetController::Responses
+{
+    class TargetDescriptor: public Response
+    {
+    public:
+        static constexpr ResponseType type = ResponseType::TARGET_DESCRIPTOR;
+
+        Targets::TargetDescriptor targetDescriptor;
+
+        explicit TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
+            : targetDescriptor(targetDescriptor)
+        {}
+
+        [[nodiscard]] ResponseType getType() const override {
+            return TargetDescriptor::type;
+        }
+    };
+}

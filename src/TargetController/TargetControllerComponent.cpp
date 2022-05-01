@@ -22,6 +22,7 @@ namespace Bloom::TargetController
 
     using Commands::Command;
     using Commands::CommandIdType;
+    using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
     using Commands::StopTargetExecution;
     using Commands::ResumeTargetExecution;
@@ -393,6 +394,7 @@ namespace Bloom::TargetController
                 + std::string(exception.what()));
         }
 
+        this->deregisterCommandHandler(GetTargetDescriptor::type);
         this->deregisterCommandHandler(GetTargetState::type);
         this->deregisterCommandHandler(StopTargetExecution::type);
         this->deregisterCommandHandler(ResumeTargetExecution::type);
@@ -410,7 +412,6 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(GetTargetStackPointer::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
-        this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
 
         this->lastTargetState = TargetState::UNKNOWN;
         this->cachedTargetDescriptor = std::nullopt;
@@ -426,6 +427,10 @@ namespace Bloom::TargetController
     void TargetControllerComponent::resume() {
         this->acquireHardware();
         this->loadRegisterDescriptors();
+
+        this->registerCommandHandler<GetTargetDescriptor>(
+            std::bind(&TargetControllerComponent::handleGetTargetDescriptor, this, std::placeholders::_1)
+        );
 
         this->registerCommandHandler<GetTargetState>(
             std::bind(&TargetControllerComponent::handleGetTargetState, this, std::placeholders::_1)
@@ -489,10 +494,6 @@ namespace Bloom::TargetController
 
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
-        );
-
-        this->eventListener->registerCallbackForEventType<Events::ExtractTargetDescriptor>(
-            std::bind(&TargetControllerComponent::onExtractTargetDescriptor, this, std::placeholders::_1)
         );
 
         TargetControllerComponent::state = TargetControllerState::ACTIVE;
@@ -710,14 +711,6 @@ namespace Bloom::TargetController
         this->shutdown();
     }
 
-    void TargetControllerComponent::onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event) {
-        auto targetDescriptorExtracted = std::make_shared<TargetDescriptorExtracted>();
-        targetDescriptorExtracted->targetDescriptor = this->getTargetDescriptor();
-
-        targetDescriptorExtracted->correlationId = event.id;
-        EventManager::triggerEvent(targetDescriptorExtracted);
-    }
-
     void TargetControllerComponent::onDebugSessionStartedEvent(const Events::DebugSessionStarted&) {
         if (TargetControllerComponent::state == TargetControllerState::SUSPENDED) {
             Logger::debug("Waking TargetController");
@@ -736,6 +729,12 @@ namespace Bloom::TargetController
         if (this->environmentConfig.debugToolConfig.releasePostDebugSession) {
             this->suspend();
         }
+    }
+
+    std::unique_ptr<Responses::TargetDescriptor> TargetControllerComponent::handleGetTargetDescriptor(
+        GetTargetDescriptor& command
+    ) {
+        return std::make_unique<Responses::TargetDescriptor>(this->getTargetDescriptor());
     }
 
     std::unique_ptr<Responses::TargetState> TargetControllerComponent::handleGetTargetState(GetTargetState& command) {

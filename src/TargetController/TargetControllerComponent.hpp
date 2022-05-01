@@ -18,6 +18,7 @@
 
 // Commands
 #include "Commands/Command.hpp"
+#include "Commands/GetTargetDescriptor.hpp"
 #include "Commands/GetTargetState.hpp"
 #include "Commands/StopTargetExecution.hpp"
 #include "Commands/ResumeTargetExecution.hpp"
@@ -36,6 +37,7 @@
 
 // Responses
 #include "Responses/Response.hpp"
+#include "Responses/TargetDescriptor.hpp"
 #include "Responses/TargetState.hpp"
 #include "Responses/TargetRegistersRead.hpp"
 #include "Responses/TargetMemoryRead.hpp"
@@ -283,13 +285,6 @@ namespace Bloom::TargetController
         void onShutdownTargetControllerEvent(const Events::ShutdownTargetController& event);
 
         /**
-         * Obtains a TargetDescriptor from the target and includes it in a TargetDescriptorExtracted event.
-         *
-         * @param event
-         */
-        void onExtractTargetDescriptor(const Events::ExtractTargetDescriptor& event);
-
-        /**
          * Will hold the target stopped at it's current state.
          *
          * @param event
@@ -303,6 +298,7 @@ namespace Bloom::TargetController
          */
         void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
+        std::unique_ptr<Responses::TargetDescriptor> handleGetTargetDescriptor(Commands::GetTargetDescriptor& command);
         std::unique_ptr<Responses::TargetState> handleGetTargetState(Commands::GetTargetState& command);
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);
         std::unique_ptr<Responses::Response> handleResumeTargetExecution(Commands::ResumeTargetExecution& command);
