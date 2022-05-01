@@ -145,6 +145,13 @@ namespace Bloom::TargetController
         void removeBreakpoint(Targets::TargetBreakpoint breakpoint);
 
         /**
+         * Retrieves the current program counter value from the target.
+         *
+         * @return
+         */
+        std::uint32_t getProgramCounter();
+
+        /**
          * Sets the target's program counter to the given address.
          *
          * @param address

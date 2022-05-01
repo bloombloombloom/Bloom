@@ -34,6 +34,7 @@
 #include "Commands/GetTargetPinStates.hpp"
 #include "Commands/SetTargetPinState.hpp"
 #include "Commands/GetTargetStackPointer.hpp"
+#include "Commands/GetTargetProgramCounter.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
@@ -43,6 +44,7 @@
 #include "Responses/TargetMemoryRead.hpp"
 #include "Responses/TargetPinStates.hpp"
 #include "Responses/TargetStackPointer.hpp"
+#include "Responses/TargetProgramCounter.hpp"
 
 #include "TargetControllerState.hpp"
 
@@ -317,6 +319,9 @@ namespace Bloom::TargetController
         std::unique_ptr<Responses::Response> handleSetTargetPinState(Commands::SetTargetPinState& command);
         std::unique_ptr<Responses::TargetStackPointer> handleGetTargetStackPointer(
             Commands::GetTargetStackPointer& command
+        );
+        std::unique_ptr<Responses::TargetProgramCounter> handleGetTargetProgramCounter(
+            Commands::GetTargetProgramCounter& command
         );
     };
 }

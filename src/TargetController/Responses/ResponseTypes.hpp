@@ -13,6 +13,7 @@ namespace Bloom::TargetController::Responses
         TARGET_STATE,
         TARGET_PIN_STATES,
         TARGET_STACK_POINTER,
+        TARGET_PROGRAM_COUNTER,
         TARGET_DESCRIPTOR,
     };
 }

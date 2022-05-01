@@ -38,12 +38,14 @@ namespace Bloom::TargetController
     using Commands::GetTargetPinStates;
     using Commands::SetTargetPinState;
     using Commands::GetTargetStackPointer;
+    using Commands::GetTargetProgramCounter;
 
     using Responses::Response;
     using Responses::TargetRegistersRead;
     using Responses::TargetMemoryRead;
     using Responses::TargetPinStates;
     using Responses::TargetStackPointer;
+    using Responses::TargetProgramCounter;
 
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
@@ -410,6 +412,7 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(GetTargetPinStates::type);
         this->deregisterCommandHandler(SetTargetPinState::type);
         this->deregisterCommandHandler(GetTargetStackPointer::type);
+        this->deregisterCommandHandler(GetTargetProgramCounter::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
 
@@ -490,6 +493,10 @@ namespace Bloom::TargetController
 
         this->registerCommandHandler<GetTargetStackPointer>(
             std::bind(&TargetControllerComponent::handleGetTargetStackPointer, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<GetTargetProgramCounter>(
+            std::bind(&TargetControllerComponent::handleGetTargetProgramCounter, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
@@ -894,5 +901,11 @@ namespace Bloom::TargetController
         GetTargetStackPointer& command
     ) {
         return std::make_unique<TargetStackPointer>(this->target->getStackPointer());
+    }
+
+    std::unique_ptr<TargetProgramCounter> TargetControllerComponent::handleGetTargetProgramCounter(
+        GetTargetProgramCounter& command
+    ) {
+        return std::make_unique<TargetProgramCounter>(this->target->getProgramCounter());
     }
 }
