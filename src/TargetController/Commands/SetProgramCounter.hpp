@@ -16,7 +16,6 @@ namespace Bloom::TargetController::Commands
 
         std::uint32_t address = 0;
 
-        SetProgramCounter() = default;
         explicit SetProgramCounter(std::uint32_t address)
             : address(address)
         {};

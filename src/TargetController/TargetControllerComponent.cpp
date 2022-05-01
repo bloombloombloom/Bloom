@@ -178,6 +178,7 @@ namespace Bloom::TargetController
         std::string,
         std::function<std::unique_ptr<DebugTool>()>
     > TargetControllerComponent::getSupportedDebugTools() {
+        // The debug tool names in this mapping should always be lower-case.
         return std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
             {
                 "atmel-ice",
@@ -407,7 +408,6 @@ namespace Bloom::TargetController
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
         this->eventListener->deregisterCallbacksForEventType<Events::ExtractTargetDescriptor>();
-        this->eventListener->deregisterCallbacksForEventType<Events::InsightThreadStateChanged>();
         this->eventListener->deregisterCallbacksForEventType<Events::RetrieveStackPointerFromTarget>();
 
         this->lastTargetState = TargetState::UNKNOWN;
