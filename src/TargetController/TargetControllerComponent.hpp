@@ -151,6 +151,13 @@ namespace Bloom::TargetController
          */
         std::map<Targets::TargetMemoryType, Targets::TargetMemoryAddressRange> registerAddressRangeByMemoryType;
 
+        /**
+         * Registers a handler function for a particular command type.
+         * Only one handler function can be registered per command type.
+         *
+         * @tparam CommandType
+         * @param callback
+         */
         template<class CommandType>
         void registerCommandHandler(std::function<std::unique_ptr<Responses::Response>(CommandType&)> callback) {
             auto parentCallback = [callback] (Commands::Command& command) {
@@ -161,6 +168,13 @@ namespace Bloom::TargetController
             this->commandHandlersByCommandType.insert(std::pair(CommandType::type, parentCallback));
         }
 
+        /**
+         * Removes any registered handler for a given command type. After calling this function, any commands issued
+         * for the given command type will be rejected with a "No handler registered for this command." error, until a
+         * handler is registered again.
+         *
+         * @param commandType
+         */
         void deregisterCommandHandler(Commands::CommandType commandType);
 
         /**
@@ -198,8 +212,18 @@ namespace Bloom::TargetController
          */
         std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>> getSupportedTargets();
 
+        /**
+         * Processes any pending commands in the queue.
+         */
         void processQueuedCommands();
 
+        /**
+         * Records a response for a given command ID. Notifies the TargetControllerComponent::responsesByCommandIdCv
+         * condition variable of the new response.
+         *
+         * @param commandId
+         * @param response
+         */
         void registerCommandResponse(Commands::CommandIdType commandId, std::unique_ptr<Responses::Response> response);
 
         /**
@@ -269,14 +293,10 @@ namespace Bloom::TargetController
         void resetTarget();
 
         /**
-         * When the TargetController fails to handle an event, a TargetControllerErrorOccurred event is emitted, with
-         * a correlation ID matching the ID of the event that triggered the handler.
+         * Returns a cached instance of the target's TargetDescriptor.
          *
-         * @param correlationId
-         * @param errorMessage
+         * @return
          */
-        void emitErrorEvent(int correlationId, const std::string& errorMessage);
-
         Targets::TargetDescriptor& getTargetDescriptor();
 
         /**

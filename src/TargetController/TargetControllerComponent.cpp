@@ -20,8 +20,9 @@ namespace Bloom::TargetController
     using namespace Bloom::Events;
     using namespace Bloom::Exceptions;
 
-    using Commands::Command;
     using Commands::CommandIdType;
+
+    using Commands::Command;
     using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
     using Commands::StopTargetExecution;
@@ -697,13 +698,6 @@ namespace Bloom::TargetController
         this->target->reset();
 
         EventManager::triggerEvent(std::make_shared<Events::TargetReset>());
-    }
-
-    void TargetControllerComponent::emitErrorEvent(int correlationId, const std::string& errorMessage) {
-        auto errorEvent = std::make_shared<Events::TargetControllerErrorOccurred>();
-        errorEvent->correlationId = correlationId;
-        errorEvent->errorMessage = errorMessage;
-        EventManager::triggerEvent(errorEvent);
     }
 
     Targets::TargetDescriptor& TargetControllerComponent::getTargetDescriptor() {
