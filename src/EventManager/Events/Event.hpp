@@ -15,7 +15,6 @@ namespace Bloom::Events
     enum class EventType: std::uint8_t
     {
         GENERIC,
-        RESET_TARGET,
         DEBUG_SESSION_STARTED,
         DEBUG_SESSION_FINISHED,
         TARGET_CONTROLLER_THREAD_STATE_CHANGED,
