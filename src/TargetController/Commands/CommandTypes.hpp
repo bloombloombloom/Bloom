@@ -21,5 +21,6 @@ namespace Bloom::TargetController::Commands
         REMOVE_BREAKPOINT,
         SET_PROGRAM_COUNTER,
         GET_TARGET_PIN_STATES,
+        SET_TARGET_PIN_STATE,
     };
 }

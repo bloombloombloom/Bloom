@@ -18,6 +18,7 @@
 #include "Commands/RemoveBreakpoint.hpp"
 #include "Commands/SetProgramCounter.hpp"
 #include "Commands/GetTargetPinStates.hpp"
+#include "Commands/SetTargetPinState.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -40,6 +41,7 @@ namespace Bloom::TargetController
     using Commands::RemoveBreakpoint;
     using Commands::SetProgramCounter;
     using Commands::GetTargetPinStates;
+    using Commands::SetTargetPinState;
 
     TargetControllerConsole::TargetControllerConsole(EventListener& eventListener)
         : eventListener(eventListener)
@@ -175,11 +177,10 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerConsole::setPinState(TargetPinDescriptor pinDescriptor, TargetPinState pinState) {
-        auto updateEvent = std::make_shared<SetTargetPinState>();
-        updateEvent->pinDescriptor = std::move(pinDescriptor);
-        updateEvent->pinState = pinState;
-
-        this->triggerTargetControllerEventAndWaitForResponse(updateEvent);
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<SetTargetPinState>(pinDescriptor, pinState),
+            this->defaultTimeout
+        );
     }
 
     std::uint32_t TargetControllerConsole::getStackPointer() {
