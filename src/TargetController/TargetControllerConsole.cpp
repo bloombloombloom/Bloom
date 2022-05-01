@@ -21,13 +21,8 @@
 #include "Commands/GetTargetStackPointer.hpp"
 #include "Commands/GetTargetProgramCounter.hpp"
 
-#include "src/Logger/Logger.hpp"
-
 namespace Bloom::TargetController
 {
-    using namespace Bloom::Targets;
-    using namespace Bloom::Exceptions;
-
     using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
     using Commands::StopTargetExecution;
@@ -46,6 +41,22 @@ namespace Bloom::TargetController
     using Commands::GetTargetStackPointer;
     using Commands::GetTargetProgramCounter;
 
+    using Targets::TargetDescriptor;
+    using Targets::TargetState;
+
+    using Targets::TargetRegisters;
+    using Targets::TargetRegisterDescriptors;
+
+    using Targets::TargetMemoryType;
+    using Targets::TargetMemoryAddressRange;
+    using Targets::TargetMemoryBuffer;
+
+    using Targets::TargetBreakpoint;
+
+    using Targets::TargetPinDescriptor;
+    using Targets::TargetPinState;
+    using Targets::TargetPinStateMappingType;
+
     TargetControllerState TargetControllerConsole::getTargetControllerState() {
         return TargetControllerComponent::getState();
     }
@@ -59,14 +70,14 @@ namespace Bloom::TargetController
         }
     }
 
-    Targets::TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
+    TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetDescriptor>(),
             this->defaultTimeout
         )->targetDescriptor;
     }
 
-    Targets::TargetState TargetControllerConsole::getTargetState() {
+    TargetState TargetControllerConsole::getTargetState() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetState>(),
             this->defaultTimeout
@@ -124,7 +135,7 @@ namespace Bloom::TargetController
         TargetMemoryType memoryType,
         std::uint32_t startAddress,
         std::uint32_t bytes,
-        const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
+        const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ReadTargetMemory>(
@@ -176,7 +187,7 @@ namespace Bloom::TargetController
         );
     }
 
-    Targets::TargetPinStateMappingType TargetControllerConsole::getPinStates(int variantId) {
+    TargetPinStateMappingType TargetControllerConsole::getPinStates(int variantId) {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetPinStates>(variantId),
             this->defaultTimeout

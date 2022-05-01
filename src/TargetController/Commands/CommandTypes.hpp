@@ -8,6 +8,7 @@ namespace Bloom::TargetController::Commands
     {
         GENERIC,
         GET_TARGET_CONTROLLER_STATE,
+        GET_TARGET_DESCRIPTOR,
         STOP_TARGET_EXECUTION,
         RESUME_TARGET_EXECUTION,
         RESET_TARGET,
@@ -24,6 +25,5 @@ namespace Bloom::TargetController::Commands
         SET_TARGET_PIN_STATE,
         GET_TARGET_STACK_POINTER,
         GET_TARGET_PROGRAM_COUNTER,
-        GET_TARGET_DESCRIPTOR,
     };
 }
