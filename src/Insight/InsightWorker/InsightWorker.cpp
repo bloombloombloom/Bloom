@@ -121,10 +121,15 @@ namespace Bloom
     }
 
     void InsightWorker::onTargetResetEvent(const Events::TargetReset& event) {
-        this->lastTargetState = TargetState::STOPPED;
-        emit this->targetStateUpdated(TargetState::RUNNING);
-        emit this->targetStateUpdated(TargetState::STOPPED);
-        emit this->targetProgramCounterUpdated(this->targetControllerConsole.getProgramCounter());
+        try {
+            this->lastTargetState = TargetState::STOPPED;
+            emit this->targetStateUpdated(TargetState::RUNNING);
+            emit this->targetStateUpdated(TargetState::STOPPED);
+            emit this->targetProgramCounterUpdated(this->targetControllerConsole.getProgramCounter());
+
+        } catch (const Exceptions::Exception& exception) {
+            Logger::debug("Error handling TargetReset event - " + exception.getMessage());
+        }
     }
 
     void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {
