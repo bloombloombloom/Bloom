@@ -115,7 +115,7 @@ namespace Bloom::Exceptions
             {Avr8CommandFailureCode::ILLEGAL_TARGET_ID, "Illegal target ID"},
             {Avr8CommandFailureCode::CLOCK_VALUE_OUT_OF_RANGE, "Clock value out of range"},
             {Avr8CommandFailureCode::TIMEOUT_OCCURRED, "A timeout occurred"},
-            {Avr8CommandFailureCode::READ_AN_ILLEGAL_OCD_STATUS, "Read an illegal OCD status"},
+            {Avr8CommandFailureCode::READ_AN_ILLEGAL_OCD_STATUS, "Read an illegal OCD status - check OCDEN fuse bit (if applicable)"},
             {Avr8CommandFailureCode::NVM_FAILED_TO_BE_ENABLED, "NVM failed to be enabled"},
             {Avr8CommandFailureCode::NVM_FAILED_TO_BE_DISABLED, "NVM failed to be disabled"},
             {Avr8CommandFailureCode::ILLEGAL_CONTROL_OR_STATUS_BITS, "Illegal control/status bits"},
