@@ -17,7 +17,7 @@
 #include "Commands/StepTargetExecution.hpp"
 #include "Commands/SetBreakpoint.hpp"
 #include "Commands/RemoveBreakpoint.hpp"
-#include "Commands/SetProgramCounter.hpp"
+#include "Commands/SetTargetProgramCounter.hpp"
 #include "Commands/GetTargetPinStates.hpp"
 #include "Commands/SetTargetPinState.hpp"
 #include "Commands/GetTargetStackPointer.hpp"
@@ -43,7 +43,7 @@ namespace Bloom::TargetController
     using Commands::StepTargetExecution;
     using Commands::SetBreakpoint;
     using Commands::RemoveBreakpoint;
-    using Commands::SetProgramCounter;
+    using Commands::SetTargetProgramCounter;
     using Commands::GetTargetPinStates;
     using Commands::SetTargetPinState;
     using Commands::GetTargetStackPointer;
@@ -178,7 +178,7 @@ namespace Bloom::TargetController
 
     void TargetControllerConsole::setProgramCounter(std::uint32_t address) {
         this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<SetProgramCounter>(address),
+            std::make_unique<SetTargetProgramCounter>(address),
             this->defaultTimeout
         );
     }

@@ -30,7 +30,7 @@
 #include "Commands/StepTargetExecution.hpp"
 #include "Commands/SetBreakpoint.hpp"
 #include "Commands/RemoveBreakpoint.hpp"
-#include "Commands/SetProgramCounter.hpp"
+#include "Commands/SetTargetProgramCounter.hpp"
 #include "Commands/GetTargetPinStates.hpp"
 #include "Commands/SetTargetPinState.hpp"
 #include "Commands/GetTargetStackPointer.hpp"
@@ -314,7 +314,7 @@ namespace Bloom::TargetController
         std::unique_ptr<Responses::Response> handleStepTargetExecution(Commands::StepTargetExecution& command);
         std::unique_ptr<Responses::Response> handleSetBreakpoint(Commands::SetBreakpoint& command);
         std::unique_ptr<Responses::Response> handleRemoveBreakpoint(Commands::RemoveBreakpoint& command);
-        std::unique_ptr<Responses::Response> handleSetProgramCounter(Commands::SetProgramCounter& command);
+        std::unique_ptr<Responses::Response> handleSetProgramCounter(Commands::SetTargetProgramCounter& command);
         std::unique_ptr<Responses::TargetPinStates> handleGetTargetPinStates(Commands::GetTargetPinStates& command);
         std::unique_ptr<Responses::Response> handleSetTargetPinState(Commands::SetTargetPinState& command);
         std::unique_ptr<Responses::TargetStackPointer> handleGetTargetStackPointer(

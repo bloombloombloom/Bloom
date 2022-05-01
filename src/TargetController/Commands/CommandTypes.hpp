@@ -19,7 +19,7 @@ namespace Bloom::TargetController::Commands
         STEP_TARGET_EXECUTION,
         SET_BREAKPOINT,
         REMOVE_BREAKPOINT,
-        SET_PROGRAM_COUNTER,
+        SET_TARGET_PROGRAM_COUNTER,
         GET_TARGET_PIN_STATES,
         SET_TARGET_PIN_STATE,
         GET_TARGET_STACK_POINTER,

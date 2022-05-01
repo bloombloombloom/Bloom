@@ -8,20 +8,20 @@
 
 namespace Bloom::TargetController::Commands
 {
-    class SetProgramCounter: public Command
+    class SetTargetProgramCounter: public Command
     {
     public:
-        static constexpr CommandType type = CommandType::SET_PROGRAM_COUNTER;
-        static inline const std::string name = "SetProgramCounter";
+        static constexpr CommandType type = CommandType::SET_TARGET_PROGRAM_COUNTER;
+        static inline const std::string name = "SetTargetProgramCounter";
 
         std::uint32_t address = 0;
 
-        explicit SetProgramCounter(std::uint32_t address)
+        explicit SetTargetProgramCounter(std::uint32_t address)
             : address(address)
         {};
 
         [[nodiscard]] CommandType getType() const override {
-            return SetProgramCounter::type;
+            return SetTargetProgramCounter::type;
         }
 
         [[nodiscard]] bool requiresStoppedTargetState() const override {

@@ -34,7 +34,7 @@ namespace Bloom::TargetController
     using Commands::StepTargetExecution;
     using Commands::SetBreakpoint;
     using Commands::RemoveBreakpoint;
-    using Commands::SetProgramCounter;
+    using Commands::SetTargetProgramCounter;
     using Commands::GetTargetPinStates;
     using Commands::SetTargetPinState;
     using Commands::GetTargetStackPointer;
@@ -408,7 +408,7 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(StepTargetExecution::type);
         this->deregisterCommandHandler(SetBreakpoint::type);
         this->deregisterCommandHandler(RemoveBreakpoint::type);
-        this->deregisterCommandHandler(SetProgramCounter::type);
+        this->deregisterCommandHandler(SetTargetProgramCounter::type);
         this->deregisterCommandHandler(GetTargetPinStates::type);
         this->deregisterCommandHandler(SetTargetPinState::type);
         this->deregisterCommandHandler(GetTargetStackPointer::type);
@@ -479,7 +479,7 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::handleRemoveBreakpoint, this, std::placeholders::_1)
         );
 
-        this->registerCommandHandler<SetProgramCounter>(
+        this->registerCommandHandler<SetTargetProgramCounter>(
             std::bind(&TargetControllerComponent::handleSetProgramCounter, this, std::placeholders::_1)
         );
 
@@ -883,7 +883,7 @@ namespace Bloom::TargetController
         return std::make_unique<Response>();
     }
 
-    std::unique_ptr<Response> TargetControllerComponent::handleSetProgramCounter(SetProgramCounter& command) {
+    std::unique_ptr<Response> TargetControllerComponent::handleSetProgramCounter(SetTargetProgramCounter& command) {
         this->target->setProgramCounter(command.address);
         return std::make_unique<Response>();
     }
