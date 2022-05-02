@@ -12,6 +12,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/XplainedMini/XplainedMini.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/XplainedNano/XplainedNano.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/CuriosityNano/CuriosityNano.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/JtagIce3/JtagIce3.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/CmsisDapInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/Command.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/Response.cpp

@@ -234,6 +234,12 @@ namespace Bloom::TargetController
                     return std::make_unique<DebugToolDrivers::CuriosityNano>();
                 }
             },
+            {
+                "jtagice3",
+                [] {
+                    return std::make_unique<DebugToolDrivers::JtagIce3>();
+                }
+            },
         };
     }
 

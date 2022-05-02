@@ -10,3 +10,4 @@
 #include "src/DebugToolDrivers/Microchip/XplainedMini/XplainedMini.hpp"
 #include "src/DebugToolDrivers/Microchip/XplainedNano/XplainedNano.hpp"
 #include "src/DebugToolDrivers/Microchip/CuriosityNano/CuriosityNano.hpp"
+#include "src/DebugToolDrivers/Microchip/JtagIce3/JtagIce3.hpp"
