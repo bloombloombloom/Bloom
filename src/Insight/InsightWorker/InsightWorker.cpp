@@ -109,6 +109,7 @@ namespace Bloom
         );
 
         if (!resumedEvent.has_value()) {
+            Logger::debug("Accepted TargetExecutionStopped event");
             this->lastTargetState = TargetState::STOPPED;
             emit this->targetStateUpdated(TargetState::STOPPED);
             emit this->targetProgramCounterUpdated(event.programCounter);
