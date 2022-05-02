@@ -69,7 +69,8 @@ and is expected to handle the command and deliver any necessary response to the 
 `handle()` member function - a reference to the active `DebugSession` object, and a reference to a
 `TargetControllerConsole` object. The `DebugSession` object provides access to the current connection with the GDB
 client, as well as other debug session specific information. The `TargetControllerConsole` object provides an interface
-to the `TargetController`, for any GDB commands that need to interface with the connected target.
+to the `TargetController`, for any GDB commands that need to interface with the connected target (see the
+[TargetController documentation](../../TargetController/README.md) for more on this).
 
 Handling the `SetBreakpoint` command packet:
 
