@@ -122,6 +122,10 @@ namespace Bloom
 
     void InsightWorker::onTargetResetEvent(const Events::TargetReset& event) {
         try {
+            if (this->targetControllerConsole.getTargetState() != TargetState::STOPPED) {
+                return;
+            }
+
             this->lastTargetState = TargetState::STOPPED;
             emit this->targetStateUpdated(TargetState::RUNNING);
             emit this->targetStateUpdated(TargetState::STOPPED);
