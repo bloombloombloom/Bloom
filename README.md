@@ -2,14 +2,14 @@
 
 Bloom can be downloaded at https://bloom.oscillate.io/download.
 
-Bloom is a debug interface for embedded systems development on Linux. This is the official repository for Bloom's 
+Bloom is a debug interface for embedded systems development on Linux. This is the official repository for Bloom's
 source code. For information on how to use Bloom, please visit https://bloom.oscillate.io.
 
-Bloom implements a number of user-space device drivers, enabling support for many debug tools (such as the Atmel-ICE, 
+Bloom implements a number of user-space device drivers, enabling support for many debug tools (such as the Atmel-ICE,
 Power Debugger, MPLAB SNAP, etc). Bloom exposes an interface to the connected target, via a GDB RSP server. This allows
 any IDE with GDB RSP client capabilities to interface with Bloom and gain full access to the target.
 
-Currently, Bloom only supports AVR8 targets from Microchip. Bloom was designed to accommodate targets from different 
+Currently, Bloom only supports AVR8 targets from Microchip. Bloom was designed to accommodate targets from different
 families and architectures. Support for other target families will be considered as and when requested.
 
 ### License
@@ -27,21 +27,22 @@ Bloom is a multithreaded event-driven program written in C++. It consists of fou
 - SignalHandler
 
 ##### TargetController
-The TargetController possesses full control of the connected debug tool and target. Execution of user-space 
+The TargetController possesses full control of the connected debug tool and target. Execution of user-space
 device drivers takes place here. All interaction with the connected hardware goes through the TargetController.
-It exposes an interface to the connected hardware via events. The TargetController runs on a dedicated thread.
-See source code in src/TargetController/ for more.
+It exposes an interface to the connected hardware via a command-response mechanism. The TargetController runs on a
+dedicated thread. See the [TargetController documentation](./src/TargetController/README.md) and source code in
+src/TargetController/ for more.
 
 ##### DebugServer
 The DebugServer exposes an interface to the connected target, for third-party programs such as IDEs. Currently, Bloom
-only supports one server - the AVR GDB RSP server. With this server, any IDE with GDB RSP support can interface with 
-Bloom and thus the connected AVR target. The DebugServer runs on a dedicated thread. See the 
+only supports one server - the AVR GDB RSP server. With this server, any IDE with GDB RSP support can interface with
+Bloom and thus the connected AVR target. The DebugServer runs on a dedicated thread. See the
 [DebugServer documentation](./src/DebugServer/README.md) and source code in src/DebugServer/ for more.
 
 ##### Insight
-Insight is a graphical user interface that provides insight into the connected target. It presents the target's 
-memories, GPIO pin states & registers, along with the ability to manipulate them. Insight occupies Bloom's main thread 
-and employs a single worker thread for background tasks. Unlike other components within Bloom, Insight relies heavily 
+Insight is a graphical user interface that provides insight into the connected target. It presents the target's
+memories, GPIO pin states & registers, along with the ability to manipulate them. Insight occupies Bloom's main thread
+and employs a single worker thread for background tasks. Unlike other components within Bloom, Insight relies heavily
 on the Qt framework for its GUI capabilities and other useful utilities. See source code in src/Insight/ for more.
 
 ##### SignalHandler
@@ -49,13 +50,10 @@ The SignalHandler is responsible for handling any UNIX signals issued to Bloom. 
 other threads within Bloom do not accept any UNIX signals.
 See source code in src/SignalHandler/ for more.
 
-#### Inter-component communication
-The components described above interact with each other using an event-based mechanism. More on this to follow.
-
 ---
 
 ### Building Bloom
-To compile Bloom, the following dependencies must be resolved. The accompanying installation commands require support 
+To compile Bloom, the following dependencies must be resolved. The accompanying installation commands require support
 for apt-get.
 
 #### CMake version 3.22 or later:
@@ -96,9 +94,9 @@ sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
 
 - If CMake fails to find the Qt packages, you may need to tell it where to look:
 `export CMAKE_PREFIX_PATH=/path/to/Qt-installation/6.1.2/gcc_64/`
-- Use the build directory build/cmake-build-debug, when generating the build system for the debug build as it's already 
+- Use the build directory build/cmake-build-debug, when generating the build system for the debug build as it's already
   gitingored. (You'll have to create it)
-- Use the build directory build/cmake-build-release, when generating the build system for the release build as it's 
+- Use the build directory build/cmake-build-release, when generating the build system for the release build as it's
   already gitingored. (You'll have to create it)
 - To generate the build system with cmake (for debug build)
   ```
@@ -120,9 +118,9 @@ sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
   ```
 - To use Gammaray for GUI debugging, be sure to build Bloom with the debug configuration. Your local installation of
   Gammaray will likely be incompatible with the distributed Qt binaries, which ld will use if you've built with the
-  release config. Building with the debug config will disable the RPATH and prevent Qt from loading any plugins from 
+  release config. Building with the debug config will disable the RPATH and prevent Qt from loading any plugins from
   the distribution directory. NOTE: Since upgrading to Qt6, Gammaray has not been of much use. It doesn't currently
-  support Qt6, but I've tried building the `work/qt6-support` branch from https://github.com/KDAB/GammaRay and it 
+  support Qt6, but I've tried building the `work/qt6-support` branch from https://github.com/KDAB/GammaRay and it
   *kind of* works. It crashes a lot.
 
 More documentation to follow.
