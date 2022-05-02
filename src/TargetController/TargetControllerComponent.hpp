@@ -16,6 +16,8 @@
 #include "src/Helpers/SyncSafe.hpp"
 #include "src/Helpers/ConditionVariableNotifier.hpp"
 
+#include "TargetControllerState.hpp"
+
 // Commands
 #include "Commands/Command.hpp"
 #include "Commands/GetTargetDescriptor.hpp"
@@ -45,8 +47,6 @@
 #include "Responses/TargetPinStates.hpp"
 #include "Responses/TargetStackPointer.hpp"
 #include "Responses/TargetProgramCounter.hpp"
-
-#include "TargetControllerState.hpp"
 
 #include "src/DebugToolDrivers/DebugTools.hpp"
 #include "src/Targets/Target.hpp"
@@ -161,8 +161,8 @@ namespace Bloom::TargetController
         template<class CommandType>
         void registerCommandHandler(std::function<std::unique_ptr<Responses::Response>(CommandType&)> callback) {
             auto parentCallback = [callback] (Commands::Command& command) {
-                    // Downcast the command to the expected type
-                    return callback(dynamic_cast<CommandType&>(command));
+                // Downcast the command to the expected type
+                return callback(dynamic_cast<CommandType&>(command));
             };
 
             this->commandHandlersByCommandType.insert(std::pair(CommandType::type, parentCallback));
@@ -320,6 +320,7 @@ namespace Bloom::TargetController
          */
         void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
+        // Command handlers
         std::unique_ptr<Responses::TargetDescriptor> handleGetTargetDescriptor(Commands::GetTargetDescriptor& command);
         std::unique_ptr<Responses::TargetState> handleGetTargetState(Commands::GetTargetState& command);
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);
