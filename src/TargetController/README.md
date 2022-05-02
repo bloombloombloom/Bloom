@@ -19,7 +19,7 @@ All TargetController commands can be found in [src/TargetController/Commands](./
 
 **NOTE:** Components within Bloom do not typically concern themselves with the TargetController command-response
 mechanism. Instead, they use the `TargetControllerConsole` class, which encapsulates the command-response mechanism and
-provides a simplified means for other components to interact with the connected hardware. For more, see
+provides a simplified means for interaction with the connected hardware. For more, see
 [The TargetControllerConsole class](#the-targetcontrollerconsole-class) section below.
 
 Commands can be sent to the TargetController via the [`Bloom::TargetController::CommandManager`](./CommandManager.hpp)
@@ -42,17 +42,16 @@ const auto readMemoryResponse = tcCommandManager.sendCommandAndWaitForResponse(
     std::chrono::milliseconds(1000) // Response timeout
 );
 
-const auto& data = readmemoryResponse->data;
+const auto& data = readMemoryResponse->data;
 ```
 
 `readMemoryResponse` will be of type `std::unique_ptr<TargetController::Responses::TargetMemoryRead>`.
 
 The `CommandManager::sendCommandAndWaitForResponse<CommandType>(std::unique_ptr<CommandType> command, std::chrono::milliseconds timeout)`
 member function is a template function. It will issue the command to the TargetController and wait for a response, or
-until a timeout has been reached. Because `CommandManager::sendCommandAndWaitForResponse()` is a template function, it
-is able to resolve the appropriate response type at compile-time (see the `SuccessResponseType` alias in some command
-classes). If the TargetController responds with an error, or the timeout is reached,
-`CommandManager::sendCommandAndWaitForResponse()` will throw an exception.
+until a timeout has been reached. Because it is a template function, it is able to resolve the appropriate response
+type at compile-time (see the `SuccessResponseType` alias in some command classes). If the TargetController responds
+with an error, or the timeout is reached, `CommandManager::sendCommandAndWaitForResponse()` will throw an exception.
 
 #### The TargetControllerConsole class
 
@@ -71,11 +70,45 @@ const auto data = tcConsole.readMemory(
 ```
 
 The `TargetControllerConsole` class does not require any dependencies at construction. It can be constructed in
-different threads and used freely to gain access to the connected hardware.
+different threads and used freely to gain access to the connected hardware, from any component within Bloom.
 
 All components within Bloom should use the `TargetControllerConsole` class to interact with the connected hardware. They
-**should not** directly issue commands via the [`Bloom::TargetController::CommandManager`](./CommandManager.hpp) unless
-there is a very good reason to do so.
-`
+**should not** directly issue commands via the `Bloom::TargetController::CommandManager`, unless there is a very good
+reason to do so.
+
+### TargetController suspension
+
+The TargetController possesses the ability to go into a suspended state. In this state, control of the connected
+hardware is surrendered - Bloom will no longer be able to interact with the debug tool or target. The purpose of this
+state is to allow other programs access to the hardware, without requiring the termination of the Bloom process. The
+TargetController goes into a suspended state at the end of a debug session, if the user has enabled this via the
+`releasePostDebugSession` debug tool parameter, in their project configuration file (bloom.json). See
+`TargetControllerComponent::onDebugSessionFinishedEvent()` for more.
+
+When in a suspended state, the TargetController will reject most commands. More specifically, any command that
+requires access to the debug tool or target. Issuing any of these commands whilst the TargetController is suspended
+will result in an error response.
+
+Upon suspension, the TargetController will trigger a `Bloom::Events::TargetControllerStateChanged` event. Other
+components listen for this event to promptly perform the necessary actions in response to the state change. For example,
+the [GDB debug server implementation](../DebugServer/Gdb/README.md) will terminate any active debug session:
+
+```c++
+void GdbRspDebugServer::onTargetControllerStateChanged(const Events::TargetControllerStateChanged& event) {
+    if (event.state == TargetControllerState::SUSPENDED && this->activeDebugSession.has_value()) {
+        Logger::warning("TargetController suspended unexpectedly - terminating debug session");
+        this->terminateActiveDebugSession();
+    }
+}
+```
+
+In some cases, the TargetController may be forced to go into a suspended state. This could be in response to another
+program stealing control of the hardware. Actually, this is what led to the introduction of TargetController suspension.
+See the corresponding [GitHub issue](https://github.com/navnavnav/Bloom/issues/3) for more.
+
+For more on TargetController suspension, see `TargetControllerComponent::suspend()` and
+`TargetControllerComponent::resume()`.
+
+---
 
 TODO: Cover debug tool & target drivers.
