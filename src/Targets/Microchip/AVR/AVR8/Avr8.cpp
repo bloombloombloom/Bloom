@@ -171,6 +171,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         this->activated = true;
+        this->avr8DebugInterface->reset();
     }
 
     void Avr8::deactivate() {
