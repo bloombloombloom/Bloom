@@ -1177,7 +1177,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->waitForStoppedEvent();
 
         } catch (const Exception& exception) {
-            Logger::error(
+            Logger::warning(
                 "Execution on AVR8 target could not be halted post attach - " + exception.getMessage()
             );
         }
