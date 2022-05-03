@@ -2,7 +2,6 @@
 
 #include <QGraphicsView>
 #include <QWidget>
-#include <QLabel>
 #include <vector>
 #include <QEvent>
 
@@ -10,6 +9,7 @@
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "ByteItemGraphicsScene.hpp"
 #include "HexViewerWidgetSettings.hpp"
 
@@ -26,7 +26,7 @@ namespace Bloom::Widgets
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             InsightWorker& insightWorker,
             const HexViewerWidgetSettings& settings,
-            QLabel* hoveredAddressLabel,
+            Label* hoveredAddressLabel,
             QWidget* parent
         );
 

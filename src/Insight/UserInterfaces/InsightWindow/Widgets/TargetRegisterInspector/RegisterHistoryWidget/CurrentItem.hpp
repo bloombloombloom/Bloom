@@ -2,9 +2,9 @@
 
 #include <QDateTime>
 #include <QHBoxLayout>
-#include <QLabel>
 
 #include "Item.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgWidget.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
@@ -23,6 +23,6 @@ namespace Bloom::Widgets
 
     private:
         QHBoxLayout* layout = new QHBoxLayout(this);
-        QLabel* titleLabel = new QLabel(this);
+        Label* titleLabel = new Label(this);
     };
 }

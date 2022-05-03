@@ -1,6 +1,8 @@
 #include "AboutWindow.hpp"
 
-#include <QtUiTools>
+
+#include "UiLoader.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 #include "src/Helpers/Paths.hpp"
@@ -30,12 +32,12 @@ namespace Bloom
             throw Exception("Failed to open AboutWindow QSS file");
         }
 
-        auto uiLoader = QUiLoader();
+        auto uiLoader = UiLoader(this);
         this->windowWidget = uiLoader.load(&aboutWindowUiFile, parent);
         this->windowWidget->setStyleSheet(aboutWindowStylesheet.readAll());
         this->windowWidget->setFixedSize(400, 300);
 
-        auto versionLabel = this->windowWidget->findChild<QLabel*>("version-label");
+        auto versionLabel = this->windowWidget->findChild<Widgets::Label*>("version-label");
 
         if (versionLabel != nullptr) {
             versionLabel->setText("Bloom v" + QString::fromStdString(Application::VERSION.toString()));

@@ -2,9 +2,9 @@
 
 #include <QDateTime>
 #include <QVBoxLayout>
-#include <QLabel>
 
 #include "Item.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 namespace Bloom::Widgets
 {
@@ -21,8 +21,8 @@ namespace Bloom::Widgets
 
     private:
         QVBoxLayout* layout = new QVBoxLayout(this);
-        QLabel* dateLabel = new QLabel(this);
-        QLabel* valueLabel = new QLabel(this);
-        QLabel* descriptionLabel = new QLabel(this);
+        Label* dateLabel = new Label(this);
+        Label* valueLabel = new Label(this);
+        Label* descriptionLabel = new Label(this);
     };
 }

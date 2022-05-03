@@ -12,7 +12,7 @@ namespace Bloom::Widgets
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
         InsightWorker& insightWorker,
         const HexViewerWidgetSettings& settings,
-        QLabel* hoveredAddressLabel,
+        Label* hoveredAddressLabel,
         QGraphicsView* parent
     )
         : QGraphicsScene(parent)

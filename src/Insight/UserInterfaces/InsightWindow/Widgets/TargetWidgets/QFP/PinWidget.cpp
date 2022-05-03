@@ -45,7 +45,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         this->pinNameLabelText = QString::fromStdString(pinDescriptor.name).toUpper();
         this->pinNameLabelText.truncate(5);
 
-        this->pinNumberLabel = new QLabel(this);
+        this->pinNumberLabel = new Label(this);
         this->pinNumberLabel->setObjectName("target-pin-number");
         auto pinNumberText = QString::number(pinDescriptor.number);
         pinNumberText.truncate(5);

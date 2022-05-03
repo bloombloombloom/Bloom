@@ -12,14 +12,17 @@
                     </widget>
                 </item>
                 <item alignment="Qt::AlignHCenter">
-                    <widget class="QLabel" name="version-label">
+                    <widget class="Label" name="version-label">
                         <property name="text">
                             <string>Bloom</string>
                         </property>
                     </widget>
                 </item>
                 <item alignment="Qt::AlignHCenter">
-                    <widget class="QLabel" name="link-label">
+                    <widget class="Label" name="link-label">
+                        <property name="textFormat">
+                            <enum>Qt::TextFormat::RichText</enum>
+                        </property>
                         <property name="text">
                             <string><![CDATA[
                             <a style="color: #3F86A0;" href="https://bloom.oscillate.io/">https://bloom.oscillate.io</a>
@@ -31,7 +34,7 @@
                     </widget>
                 </item>
                 <item alignment="Qt::AlignHCenter">
-                    <widget class="QLabel" name="author-label">
+                    <widget class="Label" name="author-label">
                         <property name="text">
                             <string>Nav Mohammed</string>
                         </property>
@@ -45,7 +48,10 @@
                     </spacer>
                 </item>
                 <item alignment="Qt::AlignHCenter">
-                    <widget class="QLabel" name="os-link-label">
+                    <widget class="Label" name="os-link-label">
+                        <property name="textFormat">
+                            <enum>Qt::TextFormat::RichText</enum>
+                        </property>
                         <property name="text">
                             <string><![CDATA[
                             <span>Powered by <a style="color: #3F86A0;" href="https://bloom.oscillate.io/powered-by">open-source software</a></span>

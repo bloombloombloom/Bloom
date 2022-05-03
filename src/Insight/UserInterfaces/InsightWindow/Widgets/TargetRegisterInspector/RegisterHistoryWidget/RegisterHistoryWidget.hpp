@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QWidget>
-#include <QLabel>
 #include <QVBoxLayout>
 #include <set>
 #include <QSize>

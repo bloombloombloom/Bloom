@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QWidget>
-#include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <set>
@@ -14,6 +13,7 @@
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetState.hpp"
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "BitsetWidget/BitsetWidget.hpp"
 #include "RegisterHistoryWidget/RegisterHistoryWidget.hpp"
 
@@ -47,8 +47,8 @@ namespace Bloom::Widgets
         InsightWorker& insightWorker;
 
         QWidget* container = nullptr;
-        QLabel* registerNameLabel = nullptr;
-        QLabel* registerDescriptionLabel = nullptr;
+        Label* registerNameLabel = nullptr;
+        Label* registerDescriptionLabel = nullptr;
 
         QScrollArea* contentContainer = nullptr;
         RegisterHistoryWidget* registerHistoryWidget = nullptr;

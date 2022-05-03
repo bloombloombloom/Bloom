@@ -10,9 +10,11 @@ namespace Bloom::Widgets
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
         InsightWorker& insightWorker,
         const HexViewerWidgetSettings& settings,
-        QLabel* hoveredAddressLabel,
+        Label* hoveredAddressLabel,
         QWidget* parent
-    ): QGraphicsView(parent) {
+    )
+        : QGraphicsView(parent)
+    {
         this->setObjectName("graphics-view");
         this->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);

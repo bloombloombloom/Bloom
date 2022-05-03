@@ -2,7 +2,6 @@
 
 #include <QtCore>
 #include <QMainWindow>
-#include <QLabel>
 #include <QEvent>
 #include <memory>
 #include <optional>
@@ -17,6 +16,7 @@
 
 #include "Widgets/PanelWidget.hpp"
 
+#include "Widgets/Label.hpp"
 #include "Widgets/SvgToolButton.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
@@ -77,8 +77,8 @@ namespace Bloom
         QWidget* layoutContainer = nullptr;
         QWidget* container = nullptr;
         QMenu* variantMenu = nullptr;
-        QLabel* targetNameLabel = nullptr;
-        QLabel* targetIdLabel = nullptr;
+        Widgets::Label* targetNameLabel = nullptr;
+        Widgets::Label* targetIdLabel = nullptr;
         AboutWindow* aboutWindowWidget = nullptr;
 
         QWidget* header = nullptr;
@@ -89,7 +89,7 @@ namespace Bloom
         Widgets::TargetRegistersPaneWidget* targetRegistersSidePane = nullptr;
         QToolButton* targetRegistersButton = nullptr;
 
-        QLabel* ioUnavailableWidget = nullptr;
+        Widgets::Label* ioUnavailableWidget = nullptr;
         Widgets::InsightTargetWidgets::TargetPackageWidgetContainer* ioContainerWidget = nullptr;
         Widgets::InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
 
@@ -105,8 +105,8 @@ namespace Bloom
         QToolButton* eepromInspectionButton = nullptr;
 
         QWidget* footer = nullptr;
-        QLabel* targetStatusLabel = nullptr;
-        QLabel* programCounterValueLabel = nullptr;
+        Widgets::Label* targetStatusLabel = nullptr;
+        Widgets::Label* programCounterValueLabel = nullptr;
 
         std::map<QString, Targets::TargetVariant> supportedVariantsByName;
         const Targets::TargetVariant* selectedVariant = nullptr;

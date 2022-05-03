@@ -1,19 +1,23 @@
 #pragma once
 
-#include <QLabel>
 #include <QSize>
+
+#include "Label.hpp"
 
 namespace Bloom::Widgets
 {
-    class RotatableLabel: public QLabel
+    class RotatableLabel: public Label
     {
         Q_OBJECT
 
     public:
-        RotatableLabel(const QString& text, QWidget* parent): QLabel(text, parent) {};
+        RotatableLabel(const QString& text, QWidget* parent)
+            : Label(text, parent)
+        {};
+
         RotatableLabel(int angleDegrees, const QString& text, QWidget* parent)
-            : QLabel(text, parent),
-            angle(angleDegrees)
+            : Label(text, parent)
+            , angle(angleDegrees)
         {};
 
         void setAngle(int angleDegrees) {

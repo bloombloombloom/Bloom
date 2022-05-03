@@ -16,7 +16,7 @@
                     <property name="minimumHeight">
                         <number>30</number>
                     </property>
-                    <widget class="QLabel" name="title">
+                    <widget class="Label" name="title">
                         <property name="text"><string>Register History</string></property>
                     </widget>
                 </widget>

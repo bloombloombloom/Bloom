@@ -7,6 +7,7 @@
 #include <set>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Helpers/DateTime.hpp"
@@ -25,7 +26,11 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryBuffer& currentValue,
         InsightWorker& insightWorker,
         QWidget* parent
-    ): QWidget(parent), registerDescriptor(registerDescriptor), insightWorker(insightWorker) {
+    )
+        : QWidget(parent)
+        , registerDescriptor(registerDescriptor)
+        , insightWorker(insightWorker)
+    {
         this->setObjectName("target-register-history-widget");
         this->setFixedWidth(300);
 
@@ -49,8 +54,8 @@ namespace Bloom::Widgets
 
         this->itemContainer = this->container->findChild<QWidget*>("item-container");
         this->itemContainerLayout = this->itemContainer->findChild<QVBoxLayout*>("item-container-layout");
-        auto titleBar = this->container->findChild<QWidget*>("title-bar");
-        auto title = titleBar->findChild<QLabel*>("title");
+        auto* titleBar = this->container->findChild<QWidget*>("title-bar");
+        auto* title = titleBar->findChild<Label*>("title");
 
         titleBar->setContentsMargins(0, 0, 0, 0);
         title->setFixedHeight(titleBar->height());
@@ -76,7 +81,7 @@ namespace Bloom::Widgets
 
         auto* separatorWidget = new QWidget(this);
         auto* separatorLayout = new QHBoxLayout(separatorWidget);
-        auto* separatorLabel = new QLabel("Select an item to restore", separatorWidget);
+        auto* separatorLabel = new Label("Select an item to restore", separatorWidget);
         separatorWidget->setFixedHeight(40);
         separatorWidget->setObjectName("separator-widget");
         separatorLayout->setContentsMargins(0, 10, 0, 10);

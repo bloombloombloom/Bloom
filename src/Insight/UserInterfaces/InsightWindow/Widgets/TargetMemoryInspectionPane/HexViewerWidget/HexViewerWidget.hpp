@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QWidget>
-#include <QLabel>
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <vector>
@@ -11,6 +10,7 @@
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TextInput.hpp"
 
@@ -63,7 +63,7 @@ namespace Bloom::Widgets
         QWidget* byteItemGraphicsViewContainer = nullptr;
         ByteItemContainerGraphicsView* byteItemGraphicsView = nullptr;
         ByteItemGraphicsScene* byteItemGraphicsScene = nullptr;
-        QLabel* hoveredAddressLabel = nullptr;
+        Label* hoveredAddressLabel = nullptr;
 
         SvgToolButton* highlightStackMemoryButton = nullptr;
         SvgToolButton* highlightFocusedMemoryButton = nullptr;

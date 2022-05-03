@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QDialog>
-#include <QLabel>
 #include <QPushButton>
 #include <QShowEvent>
+
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 namespace Bloom::Widgets
 {
@@ -19,7 +20,7 @@ namespace Bloom::Widgets
 
     private:
         QWidget* container = nullptr;
-        QLabel* errorMessageDescriptionLabel = nullptr;
+        Label* errorMessageDescriptionLabel = nullptr;
         QPushButton* okButton = nullptr;
     };
 }

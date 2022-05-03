@@ -4,7 +4,6 @@
 #include <QGraphicsView>
 #include <QScrollBar>
 #include <QWidget>
-#include <QLabel>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <map>
@@ -20,6 +19,8 @@
 #include "src/Targets/TargetState.hpp"
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
+
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "ByteItem.hpp"
 #include "ByteAddressContainer.hpp"
@@ -44,7 +45,7 @@ namespace Bloom::Widgets
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             InsightWorker& insightWorker,
             const HexViewerWidgetSettings& settings,
-            QLabel* hoveredAddressLabel,
+            Label* hoveredAddressLabel,
             QGraphicsView* parent
         );
 
@@ -91,7 +92,7 @@ namespace Bloom::Widgets
         const HexViewerWidgetSettings& settings;
 
         QGraphicsView* parent = nullptr;
-        QLabel* hoveredAddressLabel = nullptr;
+        Label* hoveredAddressLabel = nullptr;
 
         ByteAddressContainer* byteAddressContainer = nullptr;
 

@@ -3,7 +3,6 @@
 #include <QWidget>
 #include <unordered_set>
 #include <QVBoxLayout>
-#include <QLabel>
 #include <QSize>
 #include <set>
 
@@ -11,8 +10,9 @@
 #include "ItemWidget.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
-#include "../ClickableWidget.hpp"
-#include "../SvgWidget.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgWidget.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 namespace Bloom::Widgets
 {
@@ -46,7 +46,7 @@ namespace Bloom::Widgets
         ItemWidget* headerWidget = new ItemWidget(this);
         SvgWidget* arrowIcon = new SvgWidget(this->headerWidget);
         SvgWidget* registerGroupIcon = new SvgWidget(this->headerWidget);
-        QLabel* label = new QLabel(this->headerWidget);
+        Label* label = new Label(this->headerWidget);
         QWidget* bodyWidget = new QWidget(this);
     };
 }

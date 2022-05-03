@@ -69,7 +69,7 @@ namespace Bloom::Widgets
         this->bottomBar->setContentsMargins(0, 0, 0, 0);
         this->bottomBar->layout()->setContentsMargins(5, 0, 5, 0);
 
-        this->hoveredAddressLabel = this->bottomBar->findChild<QLabel*>("byte-address-label");
+        this->hoveredAddressLabel = this->bottomBar->findChild<Label*>("byte-address-label");
 
         this->byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
         this->byteItemGraphicsView = new ByteItemContainerGraphicsView(

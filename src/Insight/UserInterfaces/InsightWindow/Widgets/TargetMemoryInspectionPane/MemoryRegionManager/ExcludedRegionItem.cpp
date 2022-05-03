@@ -12,7 +12,9 @@ namespace Bloom::Widgets
         const ExcludedMemoryRegion& region,
         const Targets::TargetMemoryDescriptor& memoryDescriptor,
         QWidget* parent
-    ): memoryRegion(region), RegionItem(region, memoryDescriptor, parent) {
+    )
+        : memoryRegion(region), RegionItem(region, memoryDescriptor, parent)
+    {
         auto formUiFile = QFile(
             QString::fromStdString(Paths::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"

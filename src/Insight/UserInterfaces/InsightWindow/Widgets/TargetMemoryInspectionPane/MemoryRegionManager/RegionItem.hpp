@@ -1,11 +1,12 @@
 #pragma once
 
 #include <QVBoxLayout>
-#include <QLabel>
 #include <QComboBox>
 #include <map>
 #include <QString>
 #include <QStringList>
+
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TextInput.hpp"
@@ -75,10 +76,10 @@ namespace Bloom::Widgets
 
     private:
         QVBoxLayout* layout = new QVBoxLayout(this);
-        QLabel* nameLabel = new QLabel(this);
-        QLabel* typeLabel = new QLabel(this);
-        QLabel* addressRangeLabel = new QLabel(this);
-        QLabel* timeLabel = new QLabel(this);
+        Label* nameLabel = new Label(this);
+        Label* typeLabel = new Label(this);
+        Label* addressRangeLabel = new Label(this);
+        Label* timeLabel = new Label(this);
 
         static inline const std::map<QString, AddressRangeTypeOption> addressRangeTypeOptionsByName = std::map<
             QString, AddressRangeTypeOption

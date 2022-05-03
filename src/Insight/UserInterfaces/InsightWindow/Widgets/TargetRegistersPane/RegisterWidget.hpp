@@ -3,7 +3,6 @@
 #include <QWidget>
 #include <unordered_set>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QAction>
 #include <QSize>
 #include <QEvent>
@@ -12,6 +11,7 @@
 #include "ItemWidget.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/TargetRegisterInspectorWindow.hpp"
 
@@ -55,8 +55,8 @@ namespace Bloom::Widgets
         InsightWorker& insightWorker;
         QHBoxLayout* layout = new QHBoxLayout(this);
         SvgWidget* registerIcon = new SvgWidget(this);
-        QLabel* nameLabel = new QLabel(this);
-        QLabel* valueLabel = new QLabel(this);
+        Label* nameLabel = new Label(this);
+        Label* valueLabel = new Label(this);
 
         // Context-menu actions
         QAction* openInspectionWindowAction = new QAction("Inspect", this);

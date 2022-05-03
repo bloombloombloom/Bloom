@@ -70,7 +70,7 @@
                                                             <number>20</number>
                                                         </property>
                                                         <item>
-                                                            <widget class="QLabel" name="register-details-name-label">
+                                                            <widget class="Label" name="register-details-name-label">
                                                                 <property name="sizePolicy">
                                                                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                                                                 </property>
@@ -130,7 +130,7 @@
                                                     </spacer>
                                                 </item>
                                                 <item>
-                                                    <widget class="QLabel" name="register-details-label">
+                                                    <widget class="Label" name="register-details-label">
                                                         <property name="wordWrap">
                                                             <bool>true</bool>
                                                         </property>
@@ -160,7 +160,7 @@
                                                             <number>20</number>
                                                         </property>
                                                         <item>
-                                                            <widget class="QLabel" name="register-details-start-address-label">
+                                                            <widget class="Label" name="register-details-start-address-label">
                                                                 <property name="sizePolicy">
                                                                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                                                                 </property>
@@ -196,7 +196,7 @@
                                                             <number>20</number>
                                                         </property>
                                                         <item>
-                                                            <widget class="QLabel" name="register-details-size-label">
+                                                            <widget class="Label" name="register-details-size-label">
                                                                 <property name="sizePolicy">
                                                                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                                                                 </property>
@@ -232,7 +232,7 @@
                                                             <number>20</number>
                                                         </property>
                                                         <item alignment="Qt::AlignTop">
-                                                            <widget class="QLabel" name="register-details-description-label">
+                                                            <widget class="Label" name="register-details-description-label">
                                                                 <property name="sizePolicy">
                                                                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                                                                 </property>
@@ -294,7 +294,7 @@
                                                     <number>0</number>
                                                 </property>
                                                 <item>
-                                                    <widget class="QLabel" name="read-only-indicator-label">
+                                                    <widget class="Label" name="read-only-indicator-label">
                                                         <property name="visible">
                                                             <bool>false</bool>
                                                         </property>

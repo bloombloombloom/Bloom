@@ -3,9 +3,10 @@
 #include <QWidget>
 #include <cstdint>
 #include <QBoxLayout>
-#include <QLabel>
 
-#include "../TargetPinWidget.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinWidget.hpp"
+
 #include "PinBodyWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
@@ -55,9 +56,9 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 
     private:
         QBoxLayout* layout = nullptr;
-        QLabel* pinNumberLabel = nullptr;
-        QLabel* pinNameLabel = nullptr;
-        QLabel* pinDirectionLabel = nullptr;
+        Label* pinNumberLabel = nullptr;
+        Label* pinNameLabel = nullptr;
+        Label* pinDirectionLabel = nullptr;
         PinBodyWidget* bodyWidget = nullptr;
     };
 }

@@ -229,7 +229,7 @@
                                                             </property>
                                                             <layout class="QHBoxLayout">
                                                                 <item alignment="Qt::AlignHCenter">
-                                                                    <widget class="QLabel" name="io-inspection-unavailable">
+                                                                    <widget class="Label" name="io-inspection-unavailable">
                                                                         <property name="visible"><bool>false</bool></property>
                                                                         <property name="alignment">
                                                                             <enum>Qt::AlignCenter</enum>
@@ -331,7 +331,7 @@
                                                         </widget>
                                                     </item>
                                                     <item alignment="Qt::AlignLeft">
-                                                        <widget class="QLabel" name="ram-inspection-btn-label">
+                                                        <widget class="Label" name="ram-inspection-btn-label">
                                                             <property name="text">
                                                                 <string>RAM</string>
                                                             </property>
@@ -382,7 +382,7 @@
                                                         </widget>
                                                     </item>
                                                     <item alignment="Qt::AlignLeft">
-                                                        <widget class="QLabel" name="eeprom-inspection-btn-label">
+                                                        <widget class="Label" name="eeprom-inspection-btn-label">
                                                             <property name="text">
                                                                 <string>EEPROM</string>
                                                             </property>
@@ -418,7 +418,7 @@
                             <property name="margin"><number>0</number></property>
 
                             <item>
-                                <widget class="QLabel" name="target-state">
+                                <widget class="Label" name="target-state">
                                     <property name="toolTip">
                                         <string>Target State</string>
                                     </property>
@@ -432,7 +432,7 @@
                                 </spacer>
                             </item>
                             <item>
-                                <widget class="QLabel" name="target-program-counter-value">
+                                <widget class="Label" name="target-program-counter-value">
                                     <property name="text">
                                         <string>-</string>
                                     </property>
@@ -442,14 +442,14 @@
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="target-name">
+                                <widget class="Label" name="target-name">
                                     <property name="toolTip">
                                         <string>Target Name</string>
                                     </property>
                                 </widget>
                             </item>
                             <item>
-                                <widget class="QLabel" name="target-id">
+                                <widget class="Label" name="target-id">
                                     <property name="toolTip">
                                         <string>Target ID</string>
                                     </property>

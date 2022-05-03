@@ -23,7 +23,7 @@
             <item>
                 <layout class="QHBoxLayout" name="name-row">
                     <item alignment="Qt::AlignVCenter">
-                        <widget class="QLabel" name="name-label">
+                        <widget class="Label" name="name-label">
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                             </property>
@@ -97,7 +97,7 @@
                 </spacer>
             </item>
             <item>
-                <widget class="QLabel" name="address-range-description-label">
+                <widget class="Label" name="address-range-description-label">
                     <property name="sizePolicy">
                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
                     </property>
@@ -124,7 +124,7 @@
             <item>
                 <layout class="QHBoxLayout" name="address-type-row">
                     <item alignment="Qt::AlignVCenter">
-                        <widget class="QLabel" name="address-type-label">
+                        <widget class="Label" name="address-type-label">
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                             </property>
@@ -187,7 +187,7 @@
             <item>
                 <layout class="QHBoxLayout" name="start-address-row">
                     <item alignment="Qt::AlignVCenter">
-                        <widget class="QLabel" name="start-address-label">
+                        <widget class="Label" name="start-address-label">
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                             </property>
@@ -247,7 +247,7 @@
             <item>
                 <layout class="QHBoxLayout" name="end-address-row">
                     <item alignment="Qt::AlignVCenter">
-                        <widget class="QLabel" name="end-address-label">
+                        <widget class="Label" name="end-address-label">
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                             </property>
@@ -291,7 +291,7 @@
                         </spacer>
                     </item>
                     <item alignment="Qt::AlignVCenter">
-                        <widget class="QLabel" name="size-label">
+                        <widget class="Label" name="size-label">
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                             </property>
@@ -371,7 +371,7 @@
                 </spacer>
             </item>
             <item>
-                <widget class="QLabel" name="value-annotations-description-label">
+                <widget class="Label" name="value-annotations-description-label">
                     <property name="sizePolicy">
                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
                     </property>
@@ -396,7 +396,7 @@
                 </spacer>
             </item>
             <item>
-                <widget class="QLabel" name="integer-width-notice-label">
+                <widget class="Label" name="integer-width-notice-label">
                     <property name="sizePolicy">
                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
                     </property>
@@ -423,7 +423,7 @@
             <item>
                 <layout class="QHBoxLayout" name="data-type-row">
                     <item alignment="Qt::AlignVCenter">
-                        <widget class="QLabel" name="data-type-label">
+                        <widget class="Label" name="data-type-label">
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                             </property>
@@ -486,7 +486,7 @@
             <item>
                 <layout class="QHBoxLayout" name="endianness-row">
                     <item alignment="Qt::AlignVCenter">
-                        <widget class="QLabel" name="endianness-label">
+                        <widget class="Label" name="endianness-label">
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                             </property>

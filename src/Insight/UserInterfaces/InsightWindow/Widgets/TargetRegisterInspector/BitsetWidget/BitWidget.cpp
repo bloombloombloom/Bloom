@@ -29,8 +29,8 @@ namespace Bloom::Widgets
             this
         );
 
-        this->bitLabel = new QLabel("Bit", this);
-        this->bitNumberLabel = new QLabel(QString::number(this->bitNumber), this);
+        this->bitLabel = new Label("Bit", this);
+        this->bitNumberLabel = new Label(QString::number(this->bitNumber), this);
 
         this->bitLabel->setObjectName("register-bit-label");
         this->bitNumberLabel->setObjectName("register-bit-number-label");

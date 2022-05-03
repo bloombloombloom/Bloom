@@ -165,7 +165,7 @@
                     <item alignment="Qt::AlignLeft">
                         <layout class="QStackedLayout" name="stacked-form-layout">
                             <item>
-                                <widget class="QLabel" name="stacked-form-placeholder-label">
+                                <widget class="Label" name="stacked-form-placeholder-label">
                                     <property name="sizePolicy">
                                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
                                     </property>

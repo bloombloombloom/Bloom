@@ -4,6 +4,7 @@
 
 // Custom widgets
 #include "Widgets/PanelWidget.hpp"
+#include "Widgets/Label.hpp"
 #include "Widgets/RotatableLabel.hpp"
 #include "Widgets/LabeledSeparator.hpp"
 #include "Widgets/TextInput.hpp"
@@ -22,6 +23,15 @@ namespace Bloom
                 "PanelWidget",
                 [this] (QWidget* parent, const QString& name) {
                     auto* widget = new PanelWidget(parent);
+                    widget->setObjectName(name);
+                    widget->setStyleSheet(parent->styleSheet());
+                    return widget;
+                }
+            },
+            {
+                "Label",
+                [this] (QWidget* parent, const QString& name) {
+                    auto* widget = new Label(parent);
                     widget->setObjectName(name);
                     widget->setStyleSheet(parent->styleSheet());
                     return widget;

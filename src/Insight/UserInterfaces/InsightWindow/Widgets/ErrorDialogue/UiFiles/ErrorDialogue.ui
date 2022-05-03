@@ -36,7 +36,7 @@
                         </spacer>
                     </item>
                     <item alignment="Qt::AlignVCenter">
-                        <widget class="QLabel" name="error-message-description-label">
+                        <widget class="Label" name="error-message-description-label">
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
                             </property>

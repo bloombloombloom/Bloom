@@ -2,7 +2,6 @@
 
 #include <QWidget>
 #include <bitset>
-#include <QLabel>
 #include <QSize>
 #include <QString>
 #include <QEvent>

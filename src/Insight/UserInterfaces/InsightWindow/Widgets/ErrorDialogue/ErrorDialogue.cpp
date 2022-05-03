@@ -15,7 +15,9 @@ namespace Bloom::Widgets
         const QString& windowTitle,
         const QString& errorMessage,
         QWidget* parent
-    ): QDialog(parent) {
+    )
+        : QDialog(parent)
+    {
         this->setObjectName("error-dialogue");
         this->setAttribute(Qt::WA_DeleteOnClose, true);
         this->setWindowTitle(windowTitle);
@@ -45,7 +47,7 @@ namespace Bloom::Widgets
         auto uiLoader = UiLoader(this);
         this->container = uiLoader.load(&dialogueUiFile, this);
 
-        this->errorMessageDescriptionLabel = this->container->findChild<QLabel*>(
+        this->errorMessageDescriptionLabel = this->container->findChild<Label*>(
             "error-message-description-label"
         );
         this->okButton = this->container->findChild<QPushButton*>("ok-btn");

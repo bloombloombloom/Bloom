@@ -1,10 +1,10 @@
 #include "TargetMemoryInspectionPane.hpp"
 
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QToolButton>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/ReadTargetMemory.hpp"
 #include "src/Insight/InsightWorker/Tasks/ReadStackPointer.hpp"
@@ -49,7 +49,7 @@ namespace Bloom::Widgets
         this->titleBar = this->container->findChild<QWidget*>("title-bar");
 
         this->titleBar->layout()->setContentsMargins(7, 0, 7, 0);
-        auto* titleLabel = this->titleBar->findChild<QLabel*>("title");
+        auto* titleLabel = this->titleBar->findChild<Label*>("title");
         titleLabel->setText(
             this->targetMemoryDescriptor.type == TargetMemoryType::EEPROM ? "Internal EEPROM" : "Internal RAM"
         );

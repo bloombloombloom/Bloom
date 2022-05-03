@@ -11,7 +11,10 @@ namespace Bloom::Widgets
         const MemoryRegion& region,
         const Targets::TargetMemoryDescriptor& memoryDescriptor,
         QWidget* parent
-    ): memoryDescriptor(memoryDescriptor), ClickableWidget(parent) {
+    )
+        : memoryDescriptor(memoryDescriptor)
+        , ClickableWidget(parent)
+    {
         this->setObjectName("region-item");
         this->setFixedHeight(50);
         this->layout->setContentsMargins(5, 5, 5, 0);

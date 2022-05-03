@@ -9,7 +9,9 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         const TargetVariant& targetVariant,
         InsightWorker& insightWorker,
         QWidget* parent
-    ): TargetPinWidget(pinDescriptor, targetVariant, insightWorker, parent) {
+    )
+        : TargetPinWidget(pinDescriptor, targetVariant, insightWorker, parent)
+    {
         this->setFixedSize(PinWidget::MINIMUM_WIDTH, PinWidget::MAXIMUM_HEIGHT);
 
         this->layout = new QVBoxLayout();
@@ -28,7 +30,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         this->pinNameLabelText = QString::fromStdString(pinDescriptor.name).toUpper();
         this->pinNameLabelText.truncate(5);
 
-        this->pinNumberLabel = new QLabel(this);
+        this->pinNumberLabel = new Label(this);
         this->pinNumberLabel->setObjectName("target-pin-number");
         this->pinNumberLabel->setText(QString::number(pinDescriptor.number));
         this->pinNumberLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);

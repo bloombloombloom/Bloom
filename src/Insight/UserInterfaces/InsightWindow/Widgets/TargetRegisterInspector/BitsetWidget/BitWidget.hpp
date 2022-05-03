@@ -2,13 +2,13 @@
 
 #include <QWidget>
 #include <bitset>
-#include <QLabel>
 #include <QSize>
 #include <QString>
 #include <QEvent>
 #include <QPaintEvent>
 #include <QPainter>
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.hpp"
 
 #include "BitBodyWidget.hpp"
@@ -49,7 +49,7 @@ namespace Bloom::Widgets
 
         BitBodyWidget* body = nullptr;
 
-        QLabel* bitLabel = nullptr;
-        QLabel* bitNumberLabel = nullptr;
+        Label* bitLabel = nullptr;
+        Label* bitNumberLabel = nullptr;
     };
 }

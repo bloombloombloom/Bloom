@@ -95,7 +95,7 @@ namespace Bloom
         this->ioContainerWidget = this->windowContainer->findChild<InsightTargetWidgets::TargetPackageWidgetContainer*>(
             "io-container"
         );
-        this->ioUnavailableWidget = this->windowContainer->findChild<QLabel*>("io-inspection-unavailable");
+        this->ioUnavailableWidget = this->windowContainer->findChild<Label*>("io-inspection-unavailable");
 
         auto* fileMenu = this->mainMenuBar->findChild<QMenu*>("file-menu");
         auto* helpMenu = this->mainMenuBar->findChild<QMenu*>("help-menu");
@@ -124,10 +124,10 @@ namespace Bloom
         this->eepromInspectionButton = this->container->findChild<QToolButton*>("eeprom-inspection-btn");
 
         this->footer = this->windowContainer->findChild<QWidget*>("footer");
-        this->targetStatusLabel = this->footer->findChild<QLabel*>("target-state");
-        this->programCounterValueLabel = this->footer->findChild<QLabel*>("target-program-counter-value");
-        this->targetNameLabel = this->footer->findChild<QLabel*>("target-name");
-        this->targetIdLabel = this->footer->findChild<QLabel*>("target-id");
+        this->targetStatusLabel = this->footer->findChild<Label*>("target-state");
+        this->programCounterValueLabel = this->footer->findChild<Label*>("target-program-counter-value");
+        this->targetNameLabel = this->footer->findChild<Label*>("target-name");
+        this->targetIdLabel = this->footer->findChild<Label*>("target-id");
         this->variantMenu = this->footer->findChild<QMenu*>("target-variant-menu");
 
         const auto windowSize = this->size();

@@ -123,7 +123,7 @@ namespace Bloom::Widgets
             this->registerValueTextInput->setDisabled(true);
             this->applyButton->setVisible(false);
 
-            auto* readOnlyIndicatorLabel = this->registerValueContainer->findChild<QLabel*>(
+            auto* readOnlyIndicatorLabel = this->registerValueContainer->findChild<Label*>(
                 "read-only-indicator-label"
             );
             readOnlyIndicatorLabel->show();
