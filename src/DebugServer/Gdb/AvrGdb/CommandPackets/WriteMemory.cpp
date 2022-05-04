@@ -91,8 +91,16 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
             const auto& memoryDescriptor = memoryDescriptorsByType.at(this->memoryType);
 
+            /*
+             * In AVR targets, RAM is mapped to many registers and peripherals - we don't want to block GDB from
+             * accessing them.
+             */
+            const auto memoryStartAddress = (this->memoryType == Targets::TargetMemoryType::RAM)
+                ? 0x00
+                : memoryDescriptor.addressRange.startAddress;
+
             if (
-                this->startAddress < memoryDescriptor.addressRange.startAddress
+                this->startAddress < memoryStartAddress
                 || (this->startAddress + (this->buffer.size() - 1)) > memoryDescriptor.addressRange.endAddress
             ) {
                 throw Exception(
