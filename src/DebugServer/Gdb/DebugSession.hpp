@@ -12,7 +12,7 @@ namespace Bloom::DebugServer::Gdb
     public:
         Connection connection;
 
-        const TargetDescriptor& targetDescriptor;
+        const TargetDescriptor& gdbTargetDescriptor;
 
         /**
          * When the GDB client is waiting for the target to halt, this is set to true so we know when to notify the

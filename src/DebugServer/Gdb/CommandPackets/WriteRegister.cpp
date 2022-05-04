@@ -46,7 +46,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling WriteRegister packet");
 
         try {
-            auto targetRegisterDescriptor = debugSession.targetDescriptor.getTargetRegisterDescriptorFromNumber(
+            auto targetRegisterDescriptor = debugSession.gdbTargetDescriptor.getTargetRegisterDescriptorFromNumber(
                 this->registerNumber
             );
 
@@ -63,7 +63,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                 }
 
                 if (this->registerValue.size() > targetRegisterDescriptor.size) {
-                    const auto& gdbRegisterDescriptor = debugSession.targetDescriptor.getRegisterDescriptorFromNumber(
+                    const auto& gdbRegisterDescriptor = debugSession.gdbTargetDescriptor.getRegisterDescriptorFromNumber(
                         this->registerNumber
                     );
                     throw Exception("Cannot set value for " + gdbRegisterDescriptor.name

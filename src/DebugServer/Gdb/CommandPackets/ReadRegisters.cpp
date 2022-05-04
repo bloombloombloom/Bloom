@@ -34,7 +34,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling ReadRegisters packet");
 
         try {
-            const auto& targetDescriptor = debugSession.targetDescriptor;
+            const auto& targetDescriptor = debugSession.gdbTargetDescriptor;
             auto descriptors = TargetRegisterDescriptors();
 
             if (this->registerNumber.has_value()) {

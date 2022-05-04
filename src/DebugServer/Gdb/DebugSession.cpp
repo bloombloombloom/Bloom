@@ -6,7 +6,7 @@ namespace Bloom::DebugServer::Gdb
 {
     DebugSession::DebugSession(Connection&& connection, const TargetDescriptor& targetDescriptor)
         : connection(std::move(connection))
-        , targetDescriptor(targetDescriptor)
+        , gdbTargetDescriptor(targetDescriptor)
     {}
 
     void DebugSession::terminate() {
