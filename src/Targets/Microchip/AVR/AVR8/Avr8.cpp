@@ -676,6 +676,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
     void Avr8::loadTargetMemoryDescriptors() {
         const auto ramStartAddress = this->targetParameters->ramStartAddress.value();
+        const auto flashStartAddress = this->targetParameters->flashStartAddress.value();
 
         this->targetMemoryDescriptorsByType.insert(std::pair(
             TargetMemoryType::RAM,
@@ -684,6 +685,17 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 TargetMemoryAddressRange(
                     ramStartAddress,
                     ramStartAddress + this->targetParameters->ramSize.value() - 1
+                )
+            )
+        ));
+
+        this->targetMemoryDescriptorsByType.insert(std::pair(
+            TargetMemoryType::FLASH,
+            TargetMemoryDescriptor(
+                TargetMemoryType::FLASH,
+                TargetMemoryAddressRange(
+                    flashStartAddress,
+                    flashStartAddress + this->targetParameters->flashSize.value() - 1
                 )
             )
         ));
