@@ -72,9 +72,31 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::debug("Handling WriteMemory packet");
 
         try {
+            const auto& memoryDescriptorsByType = debugSession.gdbTargetDescriptor.targetDescriptor.memoryDescriptorsByType;
+
+            if (!memoryDescriptorsByType.contains(this->memoryType)) {
+                throw Exception("Target does not support the requested memory type.");
+            }
+
             if (this->memoryType == Targets::TargetMemoryType::FLASH) {
                 throw Exception(
                     "GDB client requested a flash memory write - This is not currently supported by Bloom."
+                );
+            }
+
+            if (this->buffer.size() == 0) {
+                debugSession.connection.writePacket(OkResponsePacket());
+                return;
+            }
+
+            const auto& memoryDescriptor = memoryDescriptorsByType.at(this->memoryType);
+
+            if (
+                this->startAddress < memoryDescriptor.addressRange.startAddress
+                || (this->startAddress + (this->buffer.size() - 1)) > memoryDescriptor.addressRange.endAddress
+            ) {
+                throw Exception(
+                    "GDB requested access to memory which is outside the target's memory range"
                 );
             }
 

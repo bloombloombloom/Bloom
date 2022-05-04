@@ -60,6 +60,48 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::debug("Handling ReadMemory packet");
 
         try {
+            const auto& memoryDescriptorsByType = debugSession.gdbTargetDescriptor.targetDescriptor.memoryDescriptorsByType;
+
+            if (!memoryDescriptorsByType.contains(this->memoryType)) {
+                throw Exception("Target does not support the requested memory type.");
+            }
+
+            if (this->bytes == 0) {
+                debugSession.connection.writePacket(
+                    ResponsePacket(std::vector<unsigned char>())
+                );
+                return;
+            }
+
+            const auto& memoryDescriptor = memoryDescriptorsByType.at(this->memoryType);
+
+            if (
+                this->startAddress < memoryDescriptor.addressRange.startAddress
+                || (this->startAddress + (this->bytes - 1)) > memoryDescriptor.addressRange.endAddress
+            ) {
+                /*
+                 * GDB can be configured to generate backtraces past the main function and the internal entry point
+                 * of the application. Although this isn't very useful to most devs, CLion now seems to enable it by
+                 * default. Somewhere between CLion 2021.1 and 2022.1, it began issuing the "-gdb-set backtrace past-entry on"
+                 * command to GDB, at the beginning of each debug session.
+                 *
+                 * This means that GDB will attempt to walk down the stack to identify every frame. The problem is that
+                 * GDB doesn't really know where the stack begins, so it ends up in a loop, continually issuing read
+                 * memory commands. This has exposed an issue on our end - we need to validate the requested memory
+                 * address range and reject any request for a range that's not within the target's memory. We do this
+                 * here.
+                 *
+                 * We don't throw an exception here, because this isn't really an error and so it's best not to report
+                 * it as such. I don't think it's an error because it's expected behaviour, even though we respond to
+                 * GDB with an error response.
+                 */
+                Logger::debug(
+                    "GDB requested access to memory which is outside the target's memory range - returning error response"
+                );
+                debugSession.connection.writePacket(ErrorResponsePacket());
+                return;
+            }
+
             auto memoryBuffer = targetControllerConsole.readMemory(
                 this->memoryType,
                 this->startAddress,
