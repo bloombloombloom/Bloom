@@ -13,6 +13,9 @@
         <!-- The contents of help.txt is presented to the user in response to the invocation of the help command -->
         <file alias="/compiled/resources/help.txt">../resources/help.txt</file>
 
+        <!-- The contents of gdbHelpMonitorInfo.txt is presented to the user in response to the invocation of the "monitor help" GDB command -->
+        <file alias="/compiled/resources/gdbHelpMonitorInfo.txt">../resources/gdbHelpMonitorInfo.txt</file>
+
         <!-- The bloom.template.json is a template configuration file that is used to initiate a new project, via the init command -->
         <file alias="/compiled/resources/bloom.template.json">../resources/bloom.template.json</file>
 

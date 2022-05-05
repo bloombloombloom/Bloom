@@ -1,0 +1,7 @@
+Supported Bloom commands:
+
+  help                Displays this help text.
+  version             Outputs Bloom's version information.
+  version machine     Outputs Bloom's version information in JSON format.
+
+  reset               Resets the target and holds it in a stopped state.

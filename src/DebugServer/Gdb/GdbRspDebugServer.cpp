@@ -26,6 +26,7 @@
 #include "CommandPackets/RemoveBreakpoint.hpp"
 #include "CommandPackets/Monitor.hpp"
 #include "CommandPackets/ResetTarget.hpp"
+#include "CommandPackets/HelpMonitorInfo.hpp"
 #include "CommandPackets/BloomVersion.hpp"
 #include "CommandPackets/BloomVersionMachine.hpp"
 
@@ -295,6 +296,10 @@ namespace Bloom::DebugServer::Gdb
             if (rawPacketString.find("qRcmd") == 1) {
                 // This is a monitor packet
                 auto monitorCommand = std::make_unique<CommandPackets::Monitor>(rawPacket);
+
+                if (monitorCommand->command == "help") {
+                    return std::make_unique<CommandPackets::HelpMonitorInfo>(std::move(*(monitorCommand.get())));
+                }
 
                 if (monitorCommand->command == "version") {
                     return std::make_unique<CommandPackets::BloomVersion>(std::move(*(monitorCommand.get())));
