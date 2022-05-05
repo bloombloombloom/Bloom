@@ -26,6 +26,7 @@
 #include "CommandPackets/RemoveBreakpoint.hpp"
 #include "CommandPackets/Monitor.hpp"
 #include "CommandPackets/ResetTarget.hpp"
+#include "CommandPackets/BloomVersion.hpp"
 
 // Response packets
 #include "ResponsePackets/TargetStopped.hpp"
@@ -294,6 +295,9 @@ namespace Bloom::DebugServer::Gdb
                 // This is a monitor packet
                 auto monitorCommand = std::make_unique<CommandPackets::Monitor>(rawPacket);
 
+                if (monitorCommand->command == "version") {
+                    return std::make_unique<CommandPackets::BloomVersion>(std::move(*(monitorCommand.get())));
+                }
                 if (monitorCommand->command == "reset") {
                     return std::make_unique<CommandPackets::ResetTarget>(std::move(*(monitorCommand.get())));
                 }
