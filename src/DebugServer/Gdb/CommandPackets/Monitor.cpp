@@ -23,7 +23,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     }
 
     void Monitor::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
-        Logger::error("Unknown custom GDB command (" + this->command + ") received.");
+        Logger::error("Unknown custom GDB command (\"" + this->command + "\") received.");
         debugSession.connection.writePacket(EmptyResponsePacket());
     }
 }
