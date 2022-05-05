@@ -27,6 +27,7 @@
 #include "CommandPackets/Monitor.hpp"
 #include "CommandPackets/ResetTarget.hpp"
 #include "CommandPackets/BloomVersion.hpp"
+#include "CommandPackets/BloomVersionMachine.hpp"
 
 // Response packets
 #include "ResponsePackets/TargetStopped.hpp"
@@ -298,6 +299,11 @@ namespace Bloom::DebugServer::Gdb
                 if (monitorCommand->command == "version") {
                     return std::make_unique<CommandPackets::BloomVersion>(std::move(*(monitorCommand.get())));
                 }
+
+                if (monitorCommand->command == "version machine") {
+                    return std::make_unique<CommandPackets::BloomVersionMachine>(std::move(*(monitorCommand.get())));
+                }
+
                 if (monitorCommand->command == "reset") {
                     return std::make_unique<CommandPackets::ResetTarget>(std::move(*(monitorCommand.get())));
                 }
