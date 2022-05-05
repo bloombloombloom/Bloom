@@ -209,6 +209,6 @@ configure_file(
 )
 
 set(CPACK_GENERATOR "DEB;RPM")
-set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CPack.cmake")
+set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/Packaging.cmake")
 
 include(CPack)
