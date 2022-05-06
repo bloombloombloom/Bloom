@@ -3,7 +3,7 @@ A debug interface for embedded systems development on Linux.
 Usage:
   bloom [ENVIRONMENT_NAME/COMMAND]
 
-If no environment name or command is provided, Bloom will fallback to the environment named "default".
+If no environment name or command is provided, Bloom will fall back to the environment named "default".
 If no such environment exists, Bloom will exit.
 
 Commands:

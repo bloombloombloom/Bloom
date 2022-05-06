@@ -85,6 +85,35 @@ namespace Bloom
         return geteuid() == 0;
     }
 
+    std::map<std::string, std::function<int()>> Application::getCommandToHandlerMapping() {
+        return std::map<std::string, std::function<int()>> {
+            {
+                "--help",
+                std::bind(&Application::presentHelpText, this)
+            },
+            {
+                "-h",
+                std::bind(&Application::presentHelpText, this)
+            },
+            {
+                "--version",
+                std::bind(&Application::presentVersionText, this)
+            },
+            {
+                "-v",
+                std::bind(&Application::presentVersionText, this)
+            },
+            {
+                "--version-machine",
+                std::bind(&Application::presentVersionMachineText, this)
+            },
+            {
+                "init",
+                std::bind(&Application::initProject, this)
+            },
+        };
+    }
+
     void Application::startup() {
         auto& applicationEventListener = this->applicationEventListener;
         EventManager::registerListener(applicationEventListener);

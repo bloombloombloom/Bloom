@@ -138,34 +138,7 @@ namespace Bloom
          *
          * @return
          */
-        auto getCommandToHandlerMapping() {
-            return std::map<std::string, std::function<int()>> {
-                {
-                    "--help",
-                    std::bind(&Application::presentHelpText, this)
-                },
-                {
-                    "-h",
-                    std::bind(&Application::presentHelpText, this)
-                },
-                {
-                    "--version",
-                    std::bind(&Application::presentVersionText, this)
-                },
-                {
-                    "-v",
-                    std::bind(&Application::presentVersionText, this)
-                },
-                {
-                    "--version-machine",
-                    std::bind(&Application::presentVersionMachineText, this)
-                },
-                {
-                    "init",
-                    std::bind(&Application::initProject, this)
-                },
-            };
-        }
+        std::map<std::string, std::function<int()>> getCommandToHandlerMapping();
 
         /**
          * Kicks off the application.

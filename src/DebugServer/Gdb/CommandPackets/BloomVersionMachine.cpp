@@ -4,7 +4,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
 #include "src/Application.hpp"
@@ -15,7 +14,6 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     using TargetController::TargetControllerConsole;
 
-    using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::ResponsePacket;
 
     using Exceptions::Exception;
