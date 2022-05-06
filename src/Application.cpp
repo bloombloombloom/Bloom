@@ -287,6 +287,21 @@ namespace Bloom
         return EXIT_SUCCESS;
     }
 
+    int Application::presentVersionMachineText() {
+        Logger::silence();
+
+        std::cout << QJsonDocument(QJsonObject({
+            {"version", QString::fromStdString(Application::VERSION.toString())},
+            {"components", QJsonObject({
+                {"major", Application::VERSION.getMajor()},
+                {"minor", Application::VERSION.getMinor()},
+                {"patch", Application::VERSION.getPatch()},
+            })},
+        })).toJson().toStdString();
+
+        return EXIT_SUCCESS;
+    }
+
     int Application::initProject() {
         auto configFile = QFile(
             QString::fromStdString(std::filesystem::current_path().string() + "/bloom.json")

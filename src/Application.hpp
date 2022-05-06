@@ -157,6 +157,10 @@ namespace Bloom
                     std::bind(&Application::presentVersionText, this)
                 },
                 {
+                    "--version-machine",
+                    std::bind(&Application::presentVersionMachineText, this)
+                },
+                {
                     "init",
                     std::bind(&Application::initProject, this)
                 },
@@ -209,6 +213,13 @@ namespace Bloom
          * @return
          */
         int presentVersionText();
+
+        /**
+         * Presents the current Bloom version number, in JSON format.
+         *
+         * @return
+         */
+        int presentVersionMachineText();
 
         /**
          * Initialises a project in the user's working directory.
