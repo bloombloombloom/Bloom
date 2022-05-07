@@ -1,0 +1,17 @@
+pkgname=@CPACK_PACKAGE_NAME_LOWER@
+pkgver=@CMAKE_PROJECT_VERSION@
+pkgrel=1
+pkgdesc="@CPACK_PACKAGE_DESCRIPTION_SUMMARY@"
+arch=('i686' 'x86_64')
+url="@CMAKE_PROJECT_HOMEPAGE_URL@"
+license=('LGPLv3')
+install=bloom.install
+
+package(){
+	depends=('fontconfig>=2.11.94' 'freetype2>=2.6' 'gcc-libs>=5' 'glibc>=2.18' 'libgl' 'libglvnd' 'libpng12' 'libx11' 'libxcb' 'libxext' 'libxkbcommon>=0.5.0' 'libxkbcommon-x11>=0.5.0' 'libxrender' 'xcb-util-image>=0.2.1' 'xcb-util-keysyms>=0.4.0' 'xcb-util-renderutil' 'xcb-util-wm>=0.4.1' 'zlib>=1.1.4')
+
+  mkdir -p "${pkgdir}/@CPACK_PACKAGING_INSTALL_PREFIX@"
+
+	# Extract package data
+	cp -R @CMAKE_INSTALL_PREFIX@* "${pkgdir}/@CPACK_PACKAGING_INSTALL_PREFIX@"
+}

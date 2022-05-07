@@ -203,12 +203,4 @@ add_custom_command(
 
 include(./Installing.cmake)
 
-configure_file(
-    "${PROJECT_SOURCE_DIR}/Packaging.cmake"
-    "${PROJECT_BINARY_DIR}/Packaging.cmake"
-)
-
-set(CPACK_GENERATOR "DEB;RPM")
-set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/Packaging.cmake")
-
-include(CPack)
+include(./Packaging.cmake)
