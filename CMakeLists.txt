@@ -123,8 +123,6 @@ target_link_options(
 if (${ENABLE_SANITIZERS})
     message(WARNING "Sanitizers have been enabled")
 
-    # For TSAN, see ThreadSanitizerSuppression.txt
-
     # Some sanitizers are not compatible with each other.
     target_compile_options(
         Bloom
