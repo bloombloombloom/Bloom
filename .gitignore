@@ -8,4 +8,5 @@ build/bin/bloom
 build/bin/bloom.json
 *.deb
 *.rpm
+*.pkg.tar.zst
 src/Generated
