@@ -201,6 +201,6 @@ add_custom_command(
     ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/UDevRules/99-bloom.rules
 )
 
-include(./Installing.cmake)
+include(./cmake/Installing.cmake)
 
-include(./Packaging.cmake)
+include(./cmake/Packaging.cmake)

@@ -20,7 +20,7 @@
 # NOTE: The above commands assume Bloom has been built in 'release' mode, and the install target has been run.
 
 configure_file(
-    "${PROJECT_SOURCE_DIR}/PackageGeneratorConfig.cmake"
+    "${PROJECT_SOURCE_DIR}/cmake/PackageGeneratorConfig.cmake"
     "${PROJECT_BINARY_DIR}/PackageGeneratorConfig.cmake"
 )
 
