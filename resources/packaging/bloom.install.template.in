@@ -1,37 +1,37 @@
 post_install() {
-	xdg-icon-resource forceupdate --theme hicolor &> /dev/null
+  xdg-icon-resource forceupdate --theme hicolor &> /dev/null
 
-	BLOOM_UDEV_FILE_PATH=/etc/udev/rules.d/
+  BLOOM_UDEV_FILE_PATH=/etc/udev/rules.d/
 
-	if [ ! -f "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ ! -L "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ ! -e "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ]; then
-	  sudo ln -s /opt/bloom/resources/UDevRules/99-bloom.rules "$BLOOM_UDEV_FILE_PATH";
-	fi
+  if [ ! -f "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ ! -L "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ ! -e "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ]; then
+    sudo ln -s /opt/bloom/resources/UDevRules/99-bloom.rules "$BLOOM_UDEV_FILE_PATH";
+  fi
 
 
-	if [ -f "/usr/bin/bloom" ] || [ -L "/usr/bin/bloom" ] || [ -e "/usr/bin/bloom" ]; then
-	  sudo rm /usr/bin/bloom;
-	fi
+  if [ -f "/usr/bin/bloom" ] || [ -L "/usr/bin/bloom" ] || [ -e "/usr/bin/bloom" ]; then
+    sudo rm /usr/bin/bloom;
+  fi
 
-	sudo chmod u=rwx,g=rwx,o=rx -R /opt/bloom
-	ln -s /opt/bloom/bin/bloom /usr/bin/bloom;
-	update-desktop-database -q
+  sudo chmod u=rwx,g=rwx,o=rx -R /opt/bloom
+  ln -s /opt/bloom/bin/bloom /usr/bin/bloom;
+  update-desktop-database -q
 }
 
 post_upgrade() {
-	post_install
+  post_install
 }
 
 post_remove() {
-	xdg-icon-resource forceupdate --theme hicolor &> /dev/null
+  xdg-icon-resource forceupdate --theme hicolor &> /dev/null
 
-	BLOOM_UDEV_FILE_PATH=/etc/udev/rules.d/
+  BLOOM_UDEV_FILE_PATH=/etc/udev/rules.d/
 
-	if [ -f "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ -L "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ -e "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ]; then
-	  sudo rm "$BLOOM_UDEV_FILE_PATH/99-bloom.rules";
-	fi
+  if [ -f "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ -L "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ] || [ -e "${BLOOM_UDEV_FILE_PATH}/99-bloom.rules" ]; then
+    sudo rm "$BLOOM_UDEV_FILE_PATH/99-bloom.rules";
+  fi
 
-	if [ -f "/usr/bin/bloom" ] || [ -L "/usr/bin/bloom" ] || [ -e "/usr/bin/bloom" ]; then
-	  sudo rm /usr/bin/bloom;
-	fi
-	update-desktop-database -q
+  if [ -f "/usr/bin/bloom" ] || [ -L "/usr/bin/bloom" ] || [ -e "/usr/bin/bloom" ]; then
+    sudo rm /usr/bin/bloom;
+  fi
+  update-desktop-database -q
 }
