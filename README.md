@@ -52,7 +52,7 @@ See source code in src/SignalHandler/ for more.
 
 ---
 
-### Building Bloom
+### Building Bloom from source
 To compile Bloom, the following dependencies must be resolved. The accompanying installation commands require support
 for apt-get.
 

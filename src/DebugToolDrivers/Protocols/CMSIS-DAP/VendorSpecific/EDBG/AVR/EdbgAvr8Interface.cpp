@@ -546,9 +546,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
 
             auto memoryType = Avr8MemoryType::SRAM;
-            if (registerDescriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER
+            if (
+                registerDescriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER
                 && (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI)
-                ) {
+            ) {
                 memoryType = Avr8MemoryType::REGISTER_FILE;
             }
 
@@ -578,8 +579,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
                     avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
 
-                } else if (this->configVariant == Avr8ConfigVariant::XMEGA
-                    || this->configVariant == Avr8ConfigVariant::UPDI) {
+                } else if (
+                    this->configVariant == Avr8ConfigVariant::XMEGA
+                    || this->configVariant == Avr8ConfigVariant::UPDI
+                ) {
                     avr8MemoryType = Avr8MemoryType::APPL_FLASH;
 
                 } else {
