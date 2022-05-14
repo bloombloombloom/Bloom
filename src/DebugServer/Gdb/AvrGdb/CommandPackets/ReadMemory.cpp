@@ -79,13 +79,15 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
              * In AVR targets, RAM is mapped to many registers and peripherals - we don't want to block GDB from
              * accessing them.
              */
-            const auto memoryStartAddress = (this->memoryType == Targets::TargetMemoryType::RAM)
+            const auto permittedStartAddress = (this->memoryType == Targets::TargetMemoryType::RAM)
                 ? 0x00
                 : memoryDescriptor.addressRange.startAddress;
 
+            const auto permittedEndAddress = memoryDescriptor.addressRange.endAddress + 2;
+
             if (
-                this->startAddress < memoryStartAddress
-                || (this->startAddress + (this->bytes - 1)) > memoryDescriptor.addressRange.endAddress
+                this->startAddress < permittedStartAddress
+                || (this->startAddress + (this->bytes - 1)) > permittedEndAddress
             ) {
                 /*
                  * GDB can be configured to generate backtraces past the main function and the internal entry point
@@ -110,11 +112,24 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 return;
             }
 
-            auto memoryBuffer = targetControllerConsole.readMemory(
-                this->memoryType,
-                this->startAddress,
-                this->bytes
-            );
+            const auto bytesToRead = (this->startAddress <= memoryDescriptor.addressRange.endAddress)
+                ? std::min(this->bytes, (memoryDescriptor.addressRange.endAddress - this->startAddress) + 1)
+                : 0;
+
+            auto memoryBuffer = Targets::TargetMemoryBuffer();
+
+            if (bytesToRead > 0) {
+                memoryBuffer = targetControllerConsole.readMemory(
+                    this->memoryType,
+                    this->startAddress,
+                    bytesToRead
+                );
+            }
+
+            if (bytesToRead < this->bytes) {
+                // GDB requested some out-of-bounds memory - fill the inaccessible bytes with 0s
+                memoryBuffer.insert(memoryBuffer.end(), (this->bytes - bytesToRead), 0x00);
+            }
 
             debugSession.connection.writePacket(
                 ResponsePacket(Packet::toHex(memoryBuffer))
