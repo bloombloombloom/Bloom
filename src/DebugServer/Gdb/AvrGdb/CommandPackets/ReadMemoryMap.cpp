@@ -37,13 +37,13 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         }
 
         bool conversionStatus = false;
-        this->offset = packetSegments.at(0).toUInt(&conversionStatus, 10);
+        this->offset = packetSegments.at(0).toUInt(&conversionStatus, 16);
 
         if (!conversionStatus) {
             throw Exception("Failed to parse offset from read memory map packet data");
         }
 
-        this->length = packetSegments.at(1).toUInt(&conversionStatus, 10);
+        this->length = packetSegments.at(1).toUInt(&conversionStatus, 16);
 
         if (!conversionStatus) {
             throw Exception("Failed to parse read length from read memory map packet data");
