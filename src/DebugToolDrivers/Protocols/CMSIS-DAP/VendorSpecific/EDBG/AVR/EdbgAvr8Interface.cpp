@@ -1376,8 +1376,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 int pagesRequired = static_cast<int>(bytes / pageSize);
                 TargetMemoryBuffer memoryBuffer;
 
-                for (auto i = 1; i <= pagesRequired; i++) {
-                    auto pageBuffer = this->readMemory(type, startAddress + (pageSize * i), pageSize);
+                for (auto i = 0; i < pagesRequired; i++) {
+                    auto pageBuffer = this->readMemory(
+                        type,
+                        startAddress + static_cast<std::uint32_t>(pageSize * i),
+                        pageSize
+                    );
                     memoryBuffer.insert(memoryBuffer.end(), pageBuffer.begin(), pageBuffer.end());
                 }
 
