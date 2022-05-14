@@ -696,7 +696,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 TargetMemoryAddressRange(
                     flashStartAddress,
                     flashStartAddress + this->targetParameters->flashSize.value() - 1
-                )
+                ),
+                this->targetParameters->flashPageSize
             )
         ));
 

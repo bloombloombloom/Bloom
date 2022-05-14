@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <optional>
 
 namespace Bloom::Targets
 {
@@ -26,7 +27,9 @@ namespace Bloom::Targets
 
         TargetMemoryAddressRange() = default;
         TargetMemoryAddressRange(std::uint32_t startAddress, std::uint32_t endAddress)
-        : startAddress(startAddress), endAddress(endAddress) {};
+            : startAddress(startAddress)
+            , endAddress(endAddress)
+        {};
 
         bool operator == (const TargetMemoryAddressRange& rhs) const {
             return this->startAddress == rhs.startAddress && this->endAddress == rhs.endAddress;
@@ -56,9 +59,17 @@ namespace Bloom::Targets
     {
         TargetMemoryType type;
         TargetMemoryAddressRange addressRange;
+        std::optional<std::uint32_t> pageSize;
 
-        TargetMemoryDescriptor(TargetMemoryType type, TargetMemoryAddressRange addressRange)
-        : type(type), addressRange(addressRange) {};
+        TargetMemoryDescriptor(
+            TargetMemoryType type,
+            TargetMemoryAddressRange addressRange,
+            std::optional<std::uint32_t> pageSize = std::nullopt
+        )
+            : type(type)
+            , addressRange(addressRange)
+            , pageSize(pageSize)
+        {};
 
         bool operator == (const TargetMemoryDescriptor& rhs) const {
             return this->type == rhs.type && this->addressRange == rhs.addressRange;
