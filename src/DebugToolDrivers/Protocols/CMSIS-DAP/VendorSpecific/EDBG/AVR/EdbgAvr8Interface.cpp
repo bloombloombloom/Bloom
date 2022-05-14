@@ -1281,7 +1281,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return output;
         }
 
-        if (type == Avr8MemoryType::FLASH_PAGE) {
+        if (type == Avr8MemoryType::FLASH_PAGE || type == Avr8MemoryType::SPM) {
             // Flash reads must be done in pages
             auto pageSize = this->targetParameters.flashPageSize.value_or(0);
 
@@ -1416,7 +1416,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return output;
         }
 
-        if (type != Avr8MemoryType::FLASH_PAGE) {
+        if (type != Avr8MemoryType::FLASH_PAGE && type != Avr8MemoryType::SPM) {
             /*
              * EDBG AVR8 debug tools behave in a really weird way when responding with more than two packets
              * for a single read (non-flash) memory command. The data they return in this case appears to be of little
