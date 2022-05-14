@@ -47,6 +47,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
             const RawPacketType& rawPacket
         ) override;
 
+        std::set<std::pair<Feature, std::optional<std::string>>> getSupportedFeatures() override ;
+
     private:
         std::optional<TargetDescriptor> gdbTargetDescriptor;
     };
