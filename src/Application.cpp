@@ -20,7 +20,7 @@ namespace Bloom
             this->setName("Bloom");
 
             if (!arguments.empty()) {
-                const auto& firstArg = arguments.front();
+                auto& firstArg = arguments.front();
                 const auto commandsToCallbackMapping = this->getCommandToHandlerMapping();
 
                 if (commandsToCallbackMapping.contains(firstArg)) {
@@ -32,7 +32,7 @@ namespace Bloom
                 }
 
                 // If the first argument didn't map to a command, we assume it's an environment name
-                this->selectedEnvironmentName = firstArg;
+                this->selectedEnvironmentName = std::move(firstArg);
             }
 
 #ifdef BLOOM_DEBUG_BUILD
@@ -153,7 +153,7 @@ namespace Bloom
     }
 
     void Application::shutdown() {
-        auto appState = Thread::getThreadState();
+        const auto appState = Thread::getThreadState();
         if (appState == ThreadState::STOPPED || appState == ThreadState::SHUTDOWN_INITIATED) {
             return;
         }
@@ -244,7 +244,7 @@ namespace Bloom
                 + Paths::projectDirPath());
         }
 
-        auto jsonObject = QJsonDocument::fromJson(jsonConfigFile.readAll()).object();
+        const auto jsonObject = QJsonDocument::fromJson(jsonConfigFile.readAll()).object();
         jsonConfigFile.close();
 
         this->projectConfig = ProjectConfig(jsonObject);

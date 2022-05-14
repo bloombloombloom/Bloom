@@ -13,8 +13,6 @@ set(ENABLE_SANITIZERS off)
 
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 
-link_directories(/usr/local/lib)
-
 set(CMAKE_AUTOMOC ON)
 set(AUTOGEN_BUILD_DIR ../build/)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/bin")

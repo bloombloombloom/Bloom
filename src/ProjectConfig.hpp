@@ -17,17 +17,17 @@ namespace Bloom
      * key to allow users to select different debugging environments between debugging sessions.
      *
      * On application startup, we extract the config from this JSON file and generate an ProjectConfig object.
-     * See Application::extractConfig() for more on this.
+     * See Application::loadProjectConfiguration() for more on this.
      *
      * Some config parameters are specific to certain entities within Bloom, but have no significance across the
-     * rest of the application. For example, AVR8 targets require 'physicalInterface' and 'configVariant' parameters.
-     * These are used to configure the AVR8 target, but have no significance across the rest of the application.
-     * This is why some configuration structs (like TargetConfig) include a QJsonObject member, typically named jsonObject.
-     * When instances of these structs are passed to the appropriate entities, any configuration required by those
-     * entities is extracted from the jsonObject member. This means we don't have to worry about any entity specific
-     * config parameters at the application level. We can simply extract what we need at an entity level and the rest
-     * of the application can remain oblivious. For an example on extracting entity specific config, see
-     * AVR8::preActivationConfigure().
+     * rest of the application. For example, AVR8 targets require the 'physicalInterface' and other AVR8 specific
+     * parameters. These are used to configure AVR8 targets, but have no significance across the rest of the
+     * application. This is why some configuration structs (like TargetConfig) include a QJsonObject member, typically
+     * named jsonObject. When instances of these structs are passed to the appropriate entities, any configuration
+     * required by those entities is extracted from the jsonObject member. This means we don't have to worry about any
+     * entity specific config parameters at the application level. We can simply extract what we need at an entity
+     * level and the rest of the application can remain oblivious. For an example on extracting entity specific
+     * config, see AVR8::preActivationConfigure().
      *
      * For more on project configuration, see Bloom documentation at https://bloom.oscillate.io/docs/configuration
      */

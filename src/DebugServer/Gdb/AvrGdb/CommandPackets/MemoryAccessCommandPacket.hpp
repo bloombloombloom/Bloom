@@ -14,8 +14,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
      * architecture.
      *
      * With the GDB implementation for the AVR architecture, read/write memory commands include a special memory
-     * address. The memory type (FLASH, RAM, EEPROM, etc) is embedded within the 7 most significant bits of the memory
-     * address.
+     * address. The memory type (FLASH, RAM, EEPROM, etc) is embedded within the 7 most significant bits of the second
+     * most significant byte of the memory address.
      *
      * This class provides functions to extract and remove the memory type from a given memory address.
      */
@@ -30,7 +30,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         /**
          * The mask used by the AVR GDB client to encode the memory type into memory addresses.
          */
-        static constexpr std::uint32_t AVR_GDB_MEMORY_ADDRESS_MASK = 0xFE0000U;
+        static constexpr std::uint32_t AVR_GDB_MEMORY_ADDRESS_MASK = 0x00FE0000U;
 
         /**
          * avr-gdb uses the most significant 15 bits in memory addresses to indicate the type of memory being
