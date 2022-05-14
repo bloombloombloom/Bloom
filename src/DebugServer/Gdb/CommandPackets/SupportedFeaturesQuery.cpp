@@ -64,9 +64,6 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
 
         // Respond with a SupportedFeaturesResponse packet, listing all supported GDB features by Bloom
-        debugSession.connection.writePacket(SupportedFeaturesResponse({
-            {Feature::SOFTWARE_BREAKPOINTS, std::nullopt},
-            {Feature::PACKET_SIZE, std::to_string(debugSession.connection.getMaxPacketSize())},
-        }));
+        debugSession.connection.writePacket(SupportedFeaturesResponse(debugSession.supportedFeatures));
     }
 }

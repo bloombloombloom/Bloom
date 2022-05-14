@@ -164,6 +164,20 @@ namespace Bloom::DebugServer::Gdb
         virtual std::unique_ptr<CommandPackets::CommandPacket> resolveCommandPacket(const RawPacketType& rawPacket);
 
         /**
+         * Should return a set of GDB features supported by the GDB server. Each supported feature may come with an
+         * optional value.
+         *
+         * The set of features returned by this function will be stored against the active debug session object.
+         *
+         * Derived GDB server implementations may override this function to include any features that are specific to
+         * those implementations.
+         *
+         * @return
+         */
+        virtual std::set<std::pair<Feature, std::optional<std::string>>> getSupportedFeatures();
+
+
+        /**
          * Terminates any active debug session (if any) by closing the connection to the GDB client.
          */
         void terminateActiveDebugSession();

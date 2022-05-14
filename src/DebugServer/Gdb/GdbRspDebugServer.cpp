@@ -146,7 +146,11 @@ namespace Bloom::DebugServer::Gdb
                 Logger::info("Accepted GDP RSP connection from " + connection->getIpAddress());
 
                 this->activeDebugSession.emplace(
-                    DebugSession(std::move(connection.value()), this->getGdbTargetDescriptor())
+                    DebugSession(
+                        std::move(connection.value()),
+                        this->getSupportedFeatures(),
+                        this->getGdbTargetDescriptor()
+                    )
                 );
 
                 EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
@@ -323,6 +327,12 @@ namespace Bloom::DebugServer::Gdb
         }
 
         return std::make_unique<CommandPacket>(rawPacket);
+    }
+
+    std::set<std::pair<Feature, std::optional<std::string>>> GdbRspDebugServer::getSupportedFeatures() {
+        return {
+            {Feature::SOFTWARE_BREAKPOINTS, std::nullopt},
+        };
     }
 
     void GdbRspDebugServer::terminateActiveDebugSession() {

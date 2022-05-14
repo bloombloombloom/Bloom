@@ -4,14 +4,27 @@
 
 #include "TargetDescriptor.hpp"
 #include "Connection.hpp"
+#include "Feature.hpp"
 
 namespace Bloom::DebugServer::Gdb
 {
     class DebugSession
     {
     public:
+        /**
+         * The connection serving this debug session.
+         */
         Connection connection;
 
+        /**
+         * A set of all GDB features supported for this debug session, along with any optional values (some GDB
+         * features can be specified with a value, such as Feature::PACKET_SIZE).
+         */
+        std::set<std::pair<Feature, std::optional<std::string>>> supportedFeatures;
+
+        /**
+         * The GDB target descriptor of the connected target.
+         */
         const TargetDescriptor& gdbTargetDescriptor;
 
         /**
@@ -20,7 +33,11 @@ namespace Bloom::DebugServer::Gdb
          */
         bool waitingForBreak = false;
 
-        DebugSession(Connection&& connection, const TargetDescriptor& targetDescriptor);
+        DebugSession(
+            Connection&& connection,
+            const std::set<std::pair<Feature, std::optional<std::string>>>& supportedFeatures,
+            const TargetDescriptor& targetDescriptor
+        );
 
         void terminate();
     };
