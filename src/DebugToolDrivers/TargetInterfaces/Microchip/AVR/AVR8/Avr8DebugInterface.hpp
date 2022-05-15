@@ -200,5 +200,15 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          * @return
          */
         virtual Targets::TargetState getTargetState() = 0;
+
+        /**
+         * Should prepare the debug interface for programming the target.
+         */
+        virtual void enableProgrammingMode() = 0;
+
+        /**
+         * Should prepare the debug interface for resuming debugging operations after a programming session.
+         */
+        virtual void disableProgrammingMode() = 0;
     };
 }
