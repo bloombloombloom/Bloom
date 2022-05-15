@@ -34,6 +34,8 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/SetXmegaSoftwareBreakpoint.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/ClearAllSoftwareBreakpoints.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/ClearSoftwareBreakpoints.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/EnterProgrammingMode.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/LeaveProgrammingMode.hpp"
 
 // AVR events
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Events/AVR8Generic/BreakEvent.hpp"
@@ -674,6 +676,26 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         return this->targetState;
+    }
+
+    void EdbgAvr8Interface::enableProgrammingMode() {
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            CommandFrames::Avr8Generic::EnterProgrammingMode()
+        );
+
+        if (response.getResponseId() == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("Failed to enter programming mode on EDBG debug tool", response);
+        }
+    }
+
+    void EdbgAvr8Interface::disableProgrammingMode() {
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            CommandFrames::Avr8Generic::LeaveProgrammingMode()
+        );
+
+        if (response.getResponseId() == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("Failed to leave programming mode on EDBG debug tool", response);
+        }
     }
 
     void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {

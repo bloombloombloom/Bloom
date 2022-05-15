@@ -250,6 +250,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         Targets::TargetState getTargetState() override;
 
+        /**
+         * Enters programming mode on the EDBG debug tool.
+         */
+        void enableProgrammingMode() override;
+
+        /**
+         * Leaves programming mode on the EDBG debug tool.
+         */
+        void disableProgrammingMode() override;
+
     private:
         /**
          * The AVR8 Generic protocol is a sub-protocol of the EDBG AVR protocol, which is served via CMSIS-DAP vendor
