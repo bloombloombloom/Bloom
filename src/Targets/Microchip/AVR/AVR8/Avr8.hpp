@@ -122,6 +122,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             const TargetPinState& state
         ) override;
 
+        void enableProgrammingMode() override;
+
+        void disableProgrammingMode() override;
+
+        bool programmingModeEnabled() override;
+
     protected:
         DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* targetPowerManagementInterface = nullptr;
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* avr8DebugInterface = nullptr;
@@ -138,6 +144,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<int, TargetVariant> targetVariantsById;
         std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
+
+        bool programmingModeActive = false;
 
         /**
          * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.

@@ -573,6 +573,20 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
     }
 
+    void Avr8::enableProgrammingMode() {
+        this->avr8DebugInterface->enableProgrammingMode();
+        this->programmingModeActive = true;
+    }
+
+    void Avr8::disableProgrammingMode() {
+        this->avr8DebugInterface->disableProgrammingMode();
+        this->programmingModeActive = false;
+    }
+
+    bool Avr8::programmingModeEnabled() {
+        return this->programmingModeActive;
+    }
+
     void Avr8::loadTargetDescriptionFile() {
         this->targetDescriptionFile = TargetDescription::TargetDescriptionFile(
             this->getId(),
