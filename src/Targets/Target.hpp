@@ -308,6 +308,23 @@ namespace Bloom::Targets
             const TargetPinState& state
         ) = 0;
 
+        /**
+         * Should prepare the target for programming.
+         */
+        virtual void enableProgrammingMode() = 0;
+
+        /**
+         * Should prepare the target for resuming debugging operations after programming.
+         */
+        virtual void disableProgrammingMode() = 0;
+
+        /**
+         * Should return true if programming is currently enabled. Otherwise false.
+         *
+         * @return
+         */
+        virtual bool programmingModeEnabled() = 0;
+
     protected:
         /**
          * Target related configuration provided by the user. This is passed in via the first stage of target
