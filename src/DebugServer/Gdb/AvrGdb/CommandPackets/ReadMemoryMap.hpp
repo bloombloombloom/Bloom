@@ -7,7 +7,7 @@
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
-     * The ReadMemoryMap class implements a structure for "qXfer:memory-map:read::..." packet. Upon receiving this
+     * The ReadMemoryMap class implements a structure for the "qXfer:memory-map:read::..." packet. Upon receiving this
      * packet, the server is expected to respond with the target's memory map.
      */
     class ReadMemoryMap: public Gdb::CommandPackets::CommandPacket
