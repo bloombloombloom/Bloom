@@ -340,100 +340,17 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * This mapping allows us to determine which config variant to select, based on the target family and the
          * selected physical interface.
          */
-        static inline auto getConfigVariantsByFamilyAndPhysicalInterface() {
-            using Targets::Microchip::Avr::Avr8Bit::Family;
-            using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
-            return std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>({
-                {
-                    Family::MEGA,
-                    {
-                        {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
-                        {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                    }
-                },
-                {
-                    Family::TINY,
-                    {
-                        {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
-                        {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                    }
-                },
-                {
-                    Family::XMEGA,
-                    {
-                        {PhysicalInterface::JTAG, Avr8ConfigVariant::XMEGA},
-                        {PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
-                    }
-                },
-                {
-                    Family::DA,
-                    {
-                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                    }
-                },
-                {
-                    Family::DB,
-                    {
-                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                    }
-                },
-                {
-                    Family::DD,
-                    {
-                        {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                    }
-                },
-            });
-        };
+        static std::map<
+            Targets::Microchip::Avr::Avr8Bit::Family,
+            std::map<Targets::Microchip::Avr::Avr8Bit::PhysicalInterface, Avr8ConfigVariant>
+        > getConfigVariantsByFamilyAndPhysicalInterface();
 
         /**
          * Will attempt to resolve the config variant with the information currently held.
          *
          * @return
          */
-        std::optional<Avr8ConfigVariant> resolveConfigVariant() {
-            if (this->family.has_value()) {
-                auto configVariantsByFamily = EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface();
-
-                if (configVariantsByFamily.contains(this->family.value())) {
-                    auto configVariantsByPhysicalInterface = configVariantsByFamily
-                        .at(this->family.value());
-
-                    if (configVariantsByPhysicalInterface.contains(this->targetConfig->physicalInterface)) {
-                        return configVariantsByPhysicalInterface.at(this->targetConfig->physicalInterface);
-                    }
-                }
-
-            } else {
-                /*
-                 * If there is no family set, we may be able to resort to a simpler mapping of physical interfaces
-                 * to config variants. But this will only work if the selected physical interface is *NOT* JTAG.
-                 *
-                 * This is because JTAG is the only physical interface that could map to two different config
-                 * variants (MEGAJTAG and XMEGA). The only way we can figure out which config variant to use is if we
-                 * know the target family.
-                 *
-                 * This is why we don't allow users to use ambiguous target names (such as the generic "avr8" target
-                 * name), when using the JTAG physical interface. We won't be able to resolve the correct target
-                 * variant. Users are required to specify the exact target name in their config, when using the JTAG
-                 * physical interface. That way, this->family will be set by the time resolveConfigVariant() is called.
-                 */
-                using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
-                static std::map<PhysicalInterface, Avr8ConfigVariant> physicalInterfacesToConfigVariants = {
-                    {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-                    {PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
-                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                };
-
-                if (physicalInterfacesToConfigVariants.contains(this->targetConfig->physicalInterface)) {
-                    return physicalInterfacesToConfigVariants.at(this->targetConfig->physicalInterface);
-                }
-            }
-
-            return std::nullopt;
-        }
+        std::optional<Avr8ConfigVariant> resolveConfigVariant();
 
         /**
          * Sets an AVR8 parameter on the debug tool. See the Avr8EdbgParameters class and protocol documentation

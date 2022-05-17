@@ -696,6 +696,93 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("Failed to leave programming mode on EDBG debug tool", response);
         }
+
+    std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>
+    EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface() {
+        return std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>({
+            {
+                Family::MEGA,
+                {
+                    {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
+                    {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                }
+            },
+            {
+                Family::TINY,
+                {
+                    {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
+                    {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                }
+            },
+            {
+                Family::XMEGA,
+                {
+                    {PhysicalInterface::JTAG, Avr8ConfigVariant::XMEGA},
+                    {PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
+                }
+            },
+            {
+                Family::DA,
+                {
+                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                }
+            },
+            {
+                Family::DB,
+                {
+                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                }
+            },
+            {
+                Family::DD,
+                {
+                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                }
+            },
+        });
+    }
+
+    std::optional<Avr8ConfigVariant> EdbgAvr8Interface::resolveConfigVariant() {
+        if (this->family.has_value()) {
+            auto configVariantsByFamily = EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface();
+
+            if (configVariantsByFamily.contains(this->family.value())) {
+                auto configVariantsByPhysicalInterface = configVariantsByFamily
+                    .at(this->family.value());
+
+                if (configVariantsByPhysicalInterface.contains(this->targetConfig->physicalInterface)) {
+                    return configVariantsByPhysicalInterface.at(this->targetConfig->physicalInterface);
+                }
+            }
+
+        } else {
+            /*
+             * If there is no family set, we may be able to resort to a simpler mapping of physical interfaces
+             * to config variants. But this will only work if the selected physical interface is *NOT* JTAG.
+             *
+             * This is because JTAG is the only physical interface that could map to two different config
+             * variants (MEGAJTAG and XMEGA). The only way we can figure out which config variant to use is if we
+             * know the target family.
+             *
+             * This is why we don't allow users to use ambiguous target names (such as the generic "avr8" target
+             * name), when using the JTAG physical interface. We won't be able to resolve the correct target
+             * variant. Users are required to specify the exact target name in their config, when using the JTAG
+             * physical interface. That way, this->family will be set by the time resolveConfigVariant() is called.
+             */
+            static std::map<PhysicalInterface, Avr8ConfigVariant> physicalInterfacesToConfigVariants = {
+                {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                {PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
+                {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+            };
+
+            if (physicalInterfacesToConfigVariants.contains(this->targetConfig->physicalInterface)) {
+                return physicalInterfacesToConfigVariants.at(this->targetConfig->physicalInterface);
+            }
+        }
+
+        return std::nullopt;
     }
 
     void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
