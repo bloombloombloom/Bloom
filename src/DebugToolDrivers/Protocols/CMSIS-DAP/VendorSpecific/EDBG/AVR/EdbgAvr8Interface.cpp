@@ -686,6 +686,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("Failed to enter programming mode on EDBG debug tool", response);
         }
+
+        this->programmingModeEnabled = true;
     }
 
     void EdbgAvr8Interface::disableProgrammingMode() {
@@ -696,6 +698,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("Failed to leave programming mode on EDBG debug tool", response);
         }
+
+        this->programmingModeEnabled = false;
+    }
 
     std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>
     EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface() {

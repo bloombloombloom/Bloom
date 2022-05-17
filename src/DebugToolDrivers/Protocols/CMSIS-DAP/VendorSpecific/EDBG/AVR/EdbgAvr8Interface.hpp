@@ -336,6 +336,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         bool targetAttached = false;
 
+        bool programmingModeEnabled = false;
+
         /**
          * This mapping allows us to determine which config variant to select, based on the target family and the
          * selected physical interface.
