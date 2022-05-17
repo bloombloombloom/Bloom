@@ -470,6 +470,24 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         void clearEvents();
 
         /**
+         * Aligns a memory address for a given memory type's page size.
+         *
+         * @param memoryType
+         * @param address
+         * @return
+         */
+        std::uint32_t alignMemoryAddress(Avr8MemoryType memoryType, std::uint32_t address);
+
+        /**
+         * Aligns a number of bytes used to address memory, for a given memory type's page size.
+         *
+         * @param memoryType
+         * @param bytes
+         * @return
+         */
+        std::uint32_t alignMemoryBytes(Avr8MemoryType memoryType, std::uint32_t bytes);
+
+        /**
          * Reads memory on the target.
          *
          * This method will handle any alignment requirements for the selected memory type.

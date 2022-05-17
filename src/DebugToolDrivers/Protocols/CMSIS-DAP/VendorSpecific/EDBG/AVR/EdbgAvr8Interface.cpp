@@ -1337,6 +1337,46 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         while (this->getAvrEvent() != nullptr) {}
     }
 
+    std::uint32_t EdbgAvr8Interface::alignMemoryAddress(Avr8MemoryType memoryType, std::uint32_t address) {
+        std::uint16_t pageSize = (
+            memoryType == Avr8MemoryType::FLASH_PAGE
+            || memoryType == Avr8MemoryType::SPM
+        )
+            ? this->targetParameters.flashPageSize.value()
+            : this->targetParameters.eepromPageSize.value();
+
+        if (this->maximumMemoryAccessSizePerRequest.has_value() && pageSize > this->maximumMemoryAccessSizePerRequest) {
+            throw Exception(
+                "Cannot align memory address - page size exceeds the maximum memory access size per request."
+            );
+        }
+
+        if ((address % pageSize) != 0) {
+            return static_cast<std::uint32_t>(std::floor(
+                static_cast<float>(address) / static_cast<float>(pageSize)
+            ) * pageSize);
+        }
+
+        return address;
+    }
+
+    std::uint32_t EdbgAvr8Interface::alignMemoryBytes(Avr8MemoryType memoryType, std::uint32_t bytes) {
+        std::uint16_t pageSize = (
+            memoryType == Avr8MemoryType::FLASH_PAGE
+             || memoryType == Avr8MemoryType::SPM
+        )
+            ? this->targetParameters.flashPageSize.value()
+            : this->targetParameters.eepromPageSize.value();
+
+        if ((bytes % pageSize) != 0) {
+            return static_cast<std::uint32_t>(std::ceil(
+                static_cast<float>(bytes) / static_cast<float>(pageSize)
+            ) * pageSize);
+        }
+
+        return bytes;
+    }
+
     TargetMemoryBuffer EdbgAvr8Interface::readMemory(
         Avr8MemoryType type,
         std::uint32_t startAddress,
@@ -1396,112 +1436,38 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (type == Avr8MemoryType::FLASH_PAGE || type == Avr8MemoryType::SPM) {
-            // Flash reads must be done in pages
-            auto pageSize = this->targetParameters.flashPageSize.value_or(0);
+            const auto alignedStartAddress = this->alignMemoryAddress(type, startAddress);
+            const auto alignedBytes = this->alignMemoryBytes(type, bytes + (startAddress - alignedStartAddress));
 
-            if (pageSize < 1
-                || (
-                    this->maximumMemoryAccessSizePerRequest.has_value()
-                    && pageSize > this->maximumMemoryAccessSizePerRequest
-                )
-            ) {
-                throw Exception("Missing/invalid flash page size parameter");
+            if (alignedStartAddress != startAddress || alignedBytes != bytes) {
+                const auto memoryBuffer = this->readMemory(type, alignedStartAddress, alignedBytes, excludedAddresses);
+
+                const auto offset = memoryBuffer.begin() + (startAddress - alignedStartAddress);
+                return TargetMemoryBuffer(offset, offset + bytes);
             }
 
-            if ((bytes % pageSize) != 0 || (startAddress % pageSize) != 0) {
-                /*
-                 * The number of bytes to read and/or the start address are not aligned.
-                 *
-                 * Align both and call this function again.
-                 */
-                auto alignedAddress = startAddress;
-                auto alignedBytesToRead = bytes;
+            if (type == Avr8MemoryType::FLASH_PAGE && this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+                // With the FLASH_PAGE memory type, in debugWire sessions, we can only read one page at a time.
+                auto pageSize = this->targetParameters.flashPageSize.value();
 
-                if ((bytes % pageSize) != 0) {
-                    auto pagesRequired = static_cast<std::uint32_t>(std::ceil(
-                        static_cast<float>(bytes) / static_cast<float>(pageSize)
-                    ));
+                if (bytes > pageSize) {
+                    // bytes should always be a multiple of pageSize (given the code above)
+                    assert(bytes % pageSize == 0);
+                    int pagesRequired = static_cast<int>(bytes / pageSize);
+                    TargetMemoryBuffer memoryBuffer;
 
-                    alignedBytesToRead = (pagesRequired * pageSize);
-                }
-
-                if ((startAddress % pageSize) != 0) {
-                    alignedAddress = static_cast<std::uint32_t>(std::floor(
-                        static_cast<float>(startAddress) / static_cast<float>(pageSize)
-                    ) * pageSize);
-
-                    /*
-                     * Given that we've pushed the start address back, this must be accounted for in the number of
-                     * bytes to read. We'll need to include the difference as those are the bytes we're actually
-                     * interested in.
-                     *
-                     * For example:
-                     *
-                     * Given: page size = 4
-                     * Given: dummy memory (each character represents one byte, with first byte at 0x00) = aaaabbbbccccdddd
-                     * Given: requested start address = 0x05
-                     * Given: requested bytes to read = 4
-                     *
-                     * The start address (0x05) would be:
-                     * aaaabbbbccccdddd
-                     *      ^
-                     * Because only 4 bytes were requested, starting at address 0x05, we're only interested in the bytes
-                     * at addresses 0x05, 0x06, 0x07 and 0x08 (that's bytes bbbc).
-                     *
-                     * But the start address isn't aligned, so we need to align it by pushing it back to the beginning
-                     * of the page (so we'd set it to 0x04, for this example), which is what we do above, when setting
-                     * alignedAddress:
-                     * aaaabbbbccccdddd
-                     *     ^
-                     * But now we'll only be reading 4 bytes from start address 0x04, meaning we won't be reading
-                     * that 4th byte (0x08). So we need to account for this by adding the difference of the requested
-                     * start address and the aligned start address to the number of bytes to read, to ensure that we're
-                     * reading all of the bytes that we're interested in. But this will throw off the aligned bytes!!
-                     * So we need to also account for this by aligning the additional bytes before adding them to
-                     * alignedBytesToRead.
-                     *
-                     * However, we could simply get away with just adding the bytes without aligning
-                     * them (alignedBytesToRead += (address - alignedAddress);), as the subsequent recursive call will
-                     * align them for us, but it will result in an unnecessary recursion, so we'll just align the
-                     * additional bytes here.
-                     */
-                    if ((startAddress - alignedAddress) > (alignedBytesToRead - bytes)) {
-                        alignedBytesToRead += static_cast<std::uint32_t>(std::ceil(
-                            static_cast<float>(startAddress - alignedAddress) / static_cast<float>(pageSize)
-                        )) * pageSize;
+                    for (auto i = 0; i < pagesRequired; i++) {
+                        auto pageBuffer = this->readMemory(
+                            type,
+                            startAddress + static_cast<std::uint32_t>(pageSize * i),
+                            pageSize
+                        );
+                        memoryBuffer.insert(memoryBuffer.end(), pageBuffer.begin(), pageBuffer.end());
                     }
+
+                    return memoryBuffer;
                 }
-
-                /*
-                 * Now that the start address and bytes to read have been aligned, we can simply invoke this function
-                 * for a second time, with the aligned values. Then, return the requested data and discard the rest.
-                 */
-                auto memoryBuffer = this->readMemory(type, alignedAddress, alignedBytesToRead, excludedAddresses);
-                return TargetMemoryBuffer(
-                    memoryBuffer.begin() + (startAddress - alignedAddress),
-                    memoryBuffer.begin() + (startAddress - alignedAddress) + bytes
-                );
             }
-
-            // We can only read one flash page at a time.
-            if (bytes > pageSize) {
-                // bytes should always be a multiple of pageSize (given the code above)
-                assert(bytes % pageSize == 0);
-                int pagesRequired = static_cast<int>(bytes / pageSize);
-                TargetMemoryBuffer memoryBuffer;
-
-                for (auto i = 0; i < pagesRequired; i++) {
-                    auto pageBuffer = this->readMemory(
-                        type,
-                        startAddress + static_cast<std::uint32_t>(pageSize * i),
-                        pageSize
-                    );
-                    memoryBuffer.insert(memoryBuffer.end(), pageBuffer.begin(), pageBuffer.end());
-                }
-
-                return memoryBuffer;
-            }
-
         }
 
         /*
