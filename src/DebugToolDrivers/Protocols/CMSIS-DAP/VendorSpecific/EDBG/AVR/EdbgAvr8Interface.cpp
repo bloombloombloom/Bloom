@@ -1562,15 +1562,52 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return response.getMemoryBuffer();
     }
 
-    void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t address, const TargetMemoryBuffer& buffer) {
-        if (type == Avr8MemoryType::FLASH_PAGE) {
-            // TODO: Implement support for writing to flash
-            throw Exception("Writing to flash memory is not supported.");
+    void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
+        if (type == Avr8MemoryType::FLASH_PAGE || type == Avr8MemoryType::SPM) {
+            const auto bytes = static_cast<std::uint32_t>(buffer.size());
+
+            const auto alignedStartAddress = this->alignMemoryAddress(type, startAddress);
+            const auto alignedBytes = this->alignMemoryBytes(type, bytes + (startAddress - alignedStartAddress));
+
+            if (alignedStartAddress != startAddress || alignedBytes != bytes) {
+                auto alignedBuffer = this->readMemory(type, alignedStartAddress, alignedBytes);
+                assert(alignedBuffer.size() >= buffer.size());
+
+                const auto offset = alignedBuffer.begin() + (startAddress - alignedStartAddress);
+                std::copy(buffer.begin(), buffer.end(), offset);
+
+                return this->writeMemory(type, alignedStartAddress, alignedBuffer);
+            }
+
+            if (type == Avr8MemoryType::FLASH_PAGE && this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+                // With the FLASH_PAGE memory type, in debugWire sessions, we can only write one page at a time.
+                const auto pageSize = this->targetParameters.flashPageSize.value();
+
+                if (bytes > pageSize) {
+                    assert(bytes % pageSize == 0);
+                    int pagesRequired = static_cast<int>(bytes / pageSize);
+
+                    for (auto i = 0; i < pagesRequired; i++) {
+                        const auto offset = static_cast<std::uint32_t>(pageSize * i);
+                        auto pageBuffer = TargetMemoryBuffer();
+                        pageBuffer.reserve(pageSize);
+                        std::move(
+                            buffer.begin() + offset,
+                            buffer.begin() + offset + pageSize,
+                            std::back_inserter(pageBuffer)
+                        );
+
+                        this->writeMemory(type, startAddress + offset, pageBuffer);
+                    }
+
+                    return;
+                }
+            }
         }
 
         auto commandFrame = CommandFrames::Avr8Generic::WriteMemory(
             type,
-            address,
+            startAddress,
             buffer
         );
 
