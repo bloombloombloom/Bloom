@@ -459,7 +459,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             ioState = TargetPinState::IoState::LOW;
         }
 
-        if (!padDescriptor.ddrSetAddress.has_value()
+        if (
+            !padDescriptor.ddrSetAddress.has_value()
             || !padDescriptor.gpioPortSetAddress.has_value()
             || !padDescriptor.gpioPinNumber.has_value()
         ) {

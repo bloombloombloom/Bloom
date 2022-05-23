@@ -1419,7 +1419,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                         segmentSize
                     );
 
-                    output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
+                    std::move(segmentBuffer.begin(), segmentBuffer.end(), std::back_inserter(output));
                 }
 
                 output.emplace_back(0x00);
@@ -1436,7 +1436,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     finalReadBytes
                 );
 
-                output.insert(output.end(), segmentBuffer.begin(), segmentBuffer.end());
+                std::move(segmentBuffer.begin(), segmentBuffer.end(), std::back_inserter(output));
             }
 
             return output;
@@ -1447,15 +1447,18 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             const auto alignedBytes = this->alignMemoryBytes(type, bytes + (startAddress - alignedStartAddress));
 
             if (alignedStartAddress != startAddress || alignedBytes != bytes) {
-                const auto memoryBuffer = this->readMemory(type, alignedStartAddress, alignedBytes, excludedAddresses);
+                auto memoryBuffer = this->readMemory(type, alignedStartAddress, alignedBytes, excludedAddresses);
 
                 const auto offset = memoryBuffer.begin() + (startAddress - alignedStartAddress);
-                return TargetMemoryBuffer(offset, offset + bytes);
+                auto output = TargetMemoryBuffer(bytes);
+                std::move(offset, offset + bytes, std::back_inserter(output));
+
+                return output;
             }
 
             if (type == Avr8MemoryType::FLASH_PAGE && this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
                 // With the FLASH_PAGE memory type, in debugWire sessions, we can only read one page at a time.
-                auto pageSize = this->targetParameters.flashPageSize.value();
+                const auto pageSize = this->targetParameters.flashPageSize.value();
 
                 if (bytes > pageSize) {
                     // bytes should always be a multiple of pageSize (given the code above)
@@ -1469,7 +1472,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                             startAddress + static_cast<std::uint32_t>(pageSize * i),
                             pageSize
                         );
-                        memoryBuffer.insert(memoryBuffer.end(), pageBuffer.begin(), pageBuffer.end());
+                        std::move(pageBuffer.begin(), pageBuffer.end(), std::back_inserter(memoryBuffer));
                     }
 
                     return memoryBuffer;
@@ -1489,8 +1492,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             output.reserve(bytes);
 
             for (float i = 1; i <= totalReadsRequired; i++) {
-                auto bytesToRead = static_cast<std::uint32_t>((bytes - output.size()) > maximumRequestSize ?
-                                                              maximumRequestSize : bytes - output.size());
+                const auto bytesToRead = static_cast<std::uint32_t>(
+                    (bytes - output.size()) > maximumRequestSize ? maximumRequestSize : bytes - output.size()
+                );
+
                 auto data = this->readMemory(
                     type,
                     static_cast<std::uint32_t>(startAddress + output.size()),

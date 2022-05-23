@@ -375,9 +375,9 @@ namespace Bloom
     }
 
     void Application::stopSignalHandler() {
-        if (this->signalHandler.getThreadState() != ThreadState::STOPPED
-            && this->signalHandler.getThreadState() != ThreadState::UNINITIALISED
-        ) {
+        const auto shThreadState = this->signalHandler.getThreadState();
+
+        if (shThreadState != ThreadState::STOPPED && shThreadState != ThreadState::UNINITIALISED) {
             this->signalHandler.triggerShutdown();
 
             /*
