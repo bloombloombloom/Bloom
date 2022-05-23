@@ -570,6 +570,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         std::uint32_t bytes,
         const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
     ) {
+        if (
+            this->programmingModeEnabled
+            && (memoryType == TargetMemoryType::RAM || memoryType == TargetMemoryType::EEPROM)
+        ) {
+            throw Exception("Cannot access RAM or EEPROM when programming mode is enabled");
+        }
+
         auto avr8MemoryType = Avr8MemoryType::SRAM;
 
         switch (memoryType) {
@@ -581,14 +588,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
                     avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
 
+                } else if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
+                    avr8MemoryType = this->programmingModeEnabled ? Avr8MemoryType::FLASH_PAGE : Avr8MemoryType::SPM;
+
                 } else if (
                     this->configVariant == Avr8ConfigVariant::XMEGA
                     || this->configVariant == Avr8ConfigVariant::UPDI
                 ) {
                     avr8MemoryType = Avr8MemoryType::APPL_FLASH;
-
-                } else {
-                    avr8MemoryType = Avr8MemoryType::SPM;
                 }
                 break;
             }
