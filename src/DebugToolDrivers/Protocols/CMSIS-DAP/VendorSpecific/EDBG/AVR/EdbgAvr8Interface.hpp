@@ -470,6 +470,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         void clearEvents();
 
         /**
+         * Checks if alignment is required for memory access via a given Avr8MemoryType.
+         *
+         * @param memoryType
+         * @return
+         */
+        bool alignmentRequired(Avr8MemoryType memoryType);
+
+        /**
          * Aligns a memory address for a given memory type's page size.
          *
          * @param memoryType

@@ -1344,41 +1344,77 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         while (this->getAvrEvent() != nullptr) {}
     }
 
-    std::uint32_t EdbgAvr8Interface::alignMemoryAddress(Avr8MemoryType memoryType, std::uint32_t address) {
-        std::uint16_t pageSize = (
+    bool EdbgAvr8Interface::alignmentRequired(Avr8MemoryType memoryType) {
+        return
             memoryType == Avr8MemoryType::FLASH_PAGE
             || memoryType == Avr8MemoryType::SPM
-        )
-            ? this->targetParameters.flashPageSize.value()
-            : this->targetParameters.eepromPageSize.value();
+            || (memoryType == Avr8MemoryType::APPL_FLASH && this->configVariant == Avr8ConfigVariant::UPDI)
+        ;
+    }
 
-        if (this->maximumMemoryAccessSizePerRequest.has_value() && pageSize > this->maximumMemoryAccessSizePerRequest) {
+    std::uint32_t EdbgAvr8Interface::alignMemoryAddress(Avr8MemoryType memoryType, std::uint32_t address) {
+        std::uint16_t alignTo = 1;
+
+        // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
+        switch (memoryType) {
+            case Avr8MemoryType::FLASH_PAGE:
+            case Avr8MemoryType::SPM: {
+                alignTo = this->targetParameters.flashPageSize.value();
+                break;
+            }
+            case Avr8MemoryType::APPL_FLASH: {
+                if (this->configVariant == Avr8ConfigVariant::UPDI) {
+                    // For UPDI sessions, memory access via the APPL_FLASH must be word aligned.
+                    alignTo = 2;
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        if (this->maximumMemoryAccessSizePerRequest.has_value() && alignTo > this->maximumMemoryAccessSizePerRequest) {
             throw Exception(
-                "Cannot align memory address - page size exceeds the maximum memory access size per request."
+                "Cannot align memory address - alignment size exceeds the maximum memory access size per request."
             );
         }
 
-        if ((address % pageSize) != 0) {
+        if ((address % alignTo) != 0) {
             return static_cast<std::uint32_t>(std::floor(
-                static_cast<float>(address) / static_cast<float>(pageSize)
-            ) * pageSize);
+                static_cast<float>(address) / static_cast<float>(alignTo)
+            ) * alignTo);
         }
 
         return address;
     }
 
     std::uint32_t EdbgAvr8Interface::alignMemoryBytes(Avr8MemoryType memoryType, std::uint32_t bytes) {
-        std::uint16_t pageSize = (
-            memoryType == Avr8MemoryType::FLASH_PAGE
-             || memoryType == Avr8MemoryType::SPM
-        )
-            ? this->targetParameters.flashPageSize.value()
-            : this->targetParameters.eepromPageSize.value();
+        std::uint16_t alignTo = 1;
 
-        if ((bytes % pageSize) != 0) {
+        // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
+        switch (memoryType) {
+            case Avr8MemoryType::FLASH_PAGE:
+            case Avr8MemoryType::SPM: {
+                alignTo = this->targetParameters.flashPageSize.value();
+                break;
+            }
+            case Avr8MemoryType::APPL_FLASH: {
+                if (this->configVariant == Avr8ConfigVariant::UPDI) {
+                    // For UPDI sessions, memory access via the APPL_FLASH must be word aligned.
+                    alignTo = 2;
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        if ((bytes % alignTo) != 0) {
             return static_cast<std::uint32_t>(std::ceil(
-                static_cast<float>(bytes) / static_cast<float>(pageSize)
-            ) * pageSize);
+                static_cast<float>(bytes) / static_cast<float>(alignTo)
+            ) * alignTo);
         }
 
         return bytes;
@@ -1442,7 +1478,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return output;
         }
 
-        if (type == Avr8MemoryType::FLASH_PAGE || type == Avr8MemoryType::SPM) {
+        if (this->alignmentRequired(type)) {
             const auto alignedStartAddress = this->alignMemoryAddress(type, startAddress);
             const auto alignedBytes = this->alignMemoryBytes(type, bytes + (startAddress - alignedStartAddress));
 
@@ -1456,28 +1492,28 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
                 return output;
             }
+        }
 
-            if (type == Avr8MemoryType::FLASH_PAGE && this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
-                // With the FLASH_PAGE memory type, in debugWire sessions, we can only read one page at a time.
-                const auto pageSize = this->targetParameters.flashPageSize.value();
+        if (type == Avr8MemoryType::FLASH_PAGE) {
+            // With the FLASH_PAGE memory type, we can only read one page at a time.
+            const auto pageSize = this->targetParameters.flashPageSize.value();
 
-                if (bytes > pageSize) {
-                    // bytes should always be a multiple of pageSize (given the code above)
-                    assert(bytes % pageSize == 0);
-                    int pagesRequired = static_cast<int>(bytes / pageSize);
-                    TargetMemoryBuffer memoryBuffer;
+            if (bytes > pageSize) {
+                // bytes should always be a multiple of pageSize (given the code above)
+                assert(bytes % pageSize == 0);
+                int pagesRequired = static_cast<int>(bytes / pageSize);
+                TargetMemoryBuffer memoryBuffer;
 
-                    for (auto i = 0; i < pagesRequired; i++) {
-                        auto pageBuffer = this->readMemory(
-                            type,
-                            startAddress + static_cast<std::uint32_t>(pageSize * i),
-                            pageSize
-                        );
-                        std::move(pageBuffer.begin(), pageBuffer.end(), std::back_inserter(memoryBuffer));
-                    }
-
-                    return memoryBuffer;
+                for (auto i = 0; i < pagesRequired; i++) {
+                    auto pageBuffer = this->readMemory(
+                        type,
+                        startAddress + static_cast<std::uint32_t>(pageSize * i),
+                        pageSize
+                    );
+                    std::move(pageBuffer.begin(), pageBuffer.end(), std::back_inserter(memoryBuffer));
                 }
+
+                return memoryBuffer;
             }
         }
 
@@ -1569,9 +1605,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
-        if (type == Avr8MemoryType::FLASH_PAGE || type == Avr8MemoryType::SPM) {
-            const auto bytes = static_cast<std::uint32_t>(buffer.size());
+        const auto bytes = static_cast<std::uint32_t>(buffer.size());
 
+        if (this->alignmentRequired(type)) {
             const auto alignedStartAddress = this->alignMemoryAddress(type, startAddress);
             const auto alignedBytes = this->alignMemoryBytes(type, bytes + (startAddress - alignedStartAddress));
 
@@ -1584,30 +1620,30 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
                 return this->writeMemory(type, alignedStartAddress, alignedBuffer);
             }
+        }
 
-            if (type == Avr8MemoryType::FLASH_PAGE && this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
-                // With the FLASH_PAGE memory type, in debugWire sessions, we can only write one page at a time.
-                const auto pageSize = this->targetParameters.flashPageSize.value();
+        if (type == Avr8MemoryType::FLASH_PAGE) {
+            // With the FLASH_PAGE memory type, we can only write one page at a time.
+            const auto pageSize = this->targetParameters.flashPageSize.value();
 
-                if (bytes > pageSize) {
-                    assert(bytes % pageSize == 0);
-                    int pagesRequired = static_cast<int>(bytes / pageSize);
+            if (bytes > pageSize) {
+                assert(bytes % pageSize == 0);
+                int pagesRequired = static_cast<int>(bytes / pageSize);
 
-                    for (auto i = 0; i < pagesRequired; i++) {
-                        const auto offset = static_cast<std::uint32_t>(pageSize * i);
-                        auto pageBuffer = TargetMemoryBuffer();
-                        pageBuffer.reserve(pageSize);
-                        std::move(
-                            buffer.begin() + offset,
-                            buffer.begin() + offset + pageSize,
-                            std::back_inserter(pageBuffer)
-                        );
+                for (auto i = 0; i < pagesRequired; i++) {
+                    const auto offset = static_cast<std::uint32_t>(pageSize * i);
+                    auto pageBuffer = TargetMemoryBuffer();
+                    pageBuffer.reserve(pageSize);
+                    std::move(
+                        buffer.begin() + offset,
+                        buffer.begin() + offset + pageSize,
+                        std::back_inserter(pageBuffer)
+                    );
 
-                        this->writeMemory(type, startAddress + offset, pageBuffer);
-                    }
-
-                    return;
+                    this->writeMemory(type, startAddress + offset, pageBuffer);
                 }
+
+                return;
             }
         }
 
