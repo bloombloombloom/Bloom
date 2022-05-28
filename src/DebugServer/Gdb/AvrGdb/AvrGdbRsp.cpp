@@ -4,6 +4,7 @@
 #include "CommandPackets/ReadMemory.hpp"
 #include "CommandPackets/WriteMemory.hpp"
 #include "CommandPackets/ReadMemoryMap.hpp"
+#include "CommandPackets/FlashErase.hpp"
 
 namespace Bloom::DebugServer::Gdb::AvrGdb
 {
@@ -34,6 +35,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
         using AvrGdb::CommandPackets::ReadMemory;
         using AvrGdb::CommandPackets::WriteMemory;
         using AvrGdb::CommandPackets::ReadMemoryMap;
+        using AvrGdb::CommandPackets::FlashErase;
 
         if (rawPacket.size() >= 2) {
             if (rawPacket[1] == 'm') {
@@ -48,6 +50,10 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
 
             if (rawPacketString.find("qXfer:memory-map:read::") == 0) {
                 return std::make_unique<ReadMemoryMap>(rawPacket);
+            }
+
+            if (rawPacketString.find("vFlashErase") == 0) {
+                return std::make_unique<FlashErase>(rawPacket);
             }
         }
 
