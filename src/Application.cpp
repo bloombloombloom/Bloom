@@ -21,11 +21,11 @@ namespace Bloom
 
             if (!arguments.empty()) {
                 auto& firstArg = arguments.front();
-                const auto commandsToCallbackMapping = this->getCommandToHandlerMapping();
+                const auto commandHandlersByCommandName = this->getCommandHandlersByCommandName();
 
-                if (commandsToCallbackMapping.contains(firstArg)) {
+                if (commandHandlersByCommandName.contains(firstArg)) {
                     // User has passed an argument that maps to a command callback - invoke the callback and shutdown
-                    auto returnValue = commandsToCallbackMapping.at(firstArg)();
+                    const auto returnValue = commandHandlersByCommandName.at(firstArg)();
 
                     this->shutdown();
                     return returnValue;
@@ -85,7 +85,7 @@ namespace Bloom
         return geteuid() == 0;
     }
 
-    std::map<std::string, std::function<int()>> Application::getCommandToHandlerMapping() {
+    std::map<std::string, std::function<int()>> Application::getCommandHandlersByCommandName() {
         return std::map<std::string, std::function<int()>> {
             {
                 "--help",

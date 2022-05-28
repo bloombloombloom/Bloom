@@ -131,14 +131,14 @@ namespace Bloom
 
         /**
          * Some CLI arguments are interpreted as commands and thus require specific handler methods to be called.
-         * This mapping maps command strings to the appropriate handler methods. The mapped handler method is invoked
-         * when the command is provided as an argument from the CLI.
+         * This mapping maps command names to the appropriate handler methods. The mapped handler method is invoked
+         * when the command name is provided as an argument from the CLI.
          *
          * See Application::run() for more on this.
          *
          * @return
          */
-        std::map<std::string, std::function<int()>> getCommandToHandlerMapping();
+        std::map<std::string, std::function<int()>> getCommandHandlersByCommandName();
 
         /**
          * Kicks off the application.
