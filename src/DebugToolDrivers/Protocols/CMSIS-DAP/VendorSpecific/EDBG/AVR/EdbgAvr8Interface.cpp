@@ -1450,7 +1450,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 auto memoryBuffer = this->readMemory(type, alignedStartAddress, alignedBytes, excludedAddresses);
 
                 const auto offset = memoryBuffer.begin() + (startAddress - alignedStartAddress);
-                auto output = TargetMemoryBuffer(bytes);
+                auto output = TargetMemoryBuffer();
+                output.reserve(bytes);
                 std::move(offset, offset + bytes, std::back_inserter(output));
 
                 return output;
