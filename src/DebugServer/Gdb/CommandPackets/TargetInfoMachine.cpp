@@ -42,19 +42,19 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             {TargetMemoryType::EEPROM, QString("EEPROM")},
         });
 
-        auto memoryDescriptors = QJsonArray();
+        auto memoryDescriptorsJson = QJsonArray();
 
         for (const auto& [memoryType, memoryDescriptor] : targetDescriptor.memoryDescriptorsByType) {
             if (!memoryTypeNamesByType.contains(memoryType)) {
                 continue;
             }
 
-            memoryDescriptors.push_back(QJsonObject({
+            memoryDescriptorsJson.push_back(QJsonObject({
                 {"name", memoryTypeNamesByType.at(memoryType)},
                 {"size", static_cast<qint64>(memoryDescriptor.size())},
                 {"addressRange", QJsonObject({
-                    {"startAddress", static_cast<qint64>(memoryDescriptor.addressRange.startAddress)},
-                    {"endAddress", static_cast<qint64>(memoryDescriptor.addressRange.endAddress)},
+                    {"startAddress", "0x" + QString::number(memoryDescriptor.addressRange.startAddress, 16)},
+                    {"endAddress", "0x" + QString::number(memoryDescriptor.addressRange.endAddress, 16)},
                 })}
             }));
         }
@@ -63,7 +63,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             {"target", QJsonObject({
                 {"name", QString::fromStdString(targetDescriptor.name)},
                 {"id", QString::fromStdString(targetDescriptor.id)},
-                {"memoryDescriptors", memoryDescriptors},
+                {"memoryDescriptors", memoryDescriptorsJson},
             })},
         });
     }
