@@ -78,12 +78,6 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 throw Exception("Target does not support the requested memory type.");
             }
 
-            if (this->memoryType == Targets::TargetMemoryType::FLASH) {
-                throw Exception(
-                    "GDB client requested a flash memory write - This is not currently supported by Bloom."
-                );
-            }
-
             if (this->buffer.size() == 0) {
                 debugSession.connection.writePacket(OkResponsePacket());
                 return;
