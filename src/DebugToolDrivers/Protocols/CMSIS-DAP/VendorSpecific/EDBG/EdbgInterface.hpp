@@ -41,7 +41,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
             // An AVR command frame can be split into multiple CMSIS-DAP commands. Each command
             // containing a fragment of the AvrCommandFrame.
             return this->sendAvrCommandsAndWaitForResponse(avrCommandFrame.generateAvrCommands(
-                this->getUsbHidInputReportSize() - 3 // Minus 3 to accommodate AVR command bytes
+                this->getUsbHidInputReportSize() - 4 // Minus 4 to accommodate AVR command bytes
             ));
         }
 
