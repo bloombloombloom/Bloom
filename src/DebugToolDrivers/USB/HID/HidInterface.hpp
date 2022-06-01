@@ -50,7 +50,7 @@ namespace Bloom::Usb
          *
          * @param buffer
          */
-        void write(std::vector<unsigned char> buffer);
+        void write(std::vector<unsigned char>&& buffer);
 
         /**
          * Resolves a device path from a USB interface number.

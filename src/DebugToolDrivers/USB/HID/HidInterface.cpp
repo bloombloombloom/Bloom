@@ -71,7 +71,7 @@ namespace Bloom::Usb
         return output;
     }
 
-    void HidInterface::write(std::vector<unsigned char> buffer) {
+    void HidInterface::write(std::vector<unsigned char>&& buffer) {
         if (buffer.size() > this->getInputReportSize()) {
             throw DeviceCommunicationFailure(
                 "Cannot send data via HID interface - data exceeds maximum packet size."
@@ -87,7 +87,7 @@ namespace Bloom::Usb
         }
 
         int transferred = 0;
-        auto length = buffer.size();
+        const auto length = buffer.size();
 
         if ((transferred = hid_write(this->getHidDevice(), buffer.data(), length)) != length) {
             Logger::debug("Attempted to write " + std::to_string(length)

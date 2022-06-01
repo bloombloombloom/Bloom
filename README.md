@@ -2,7 +2,7 @@
 
 Bloom can be downloaded at https://bloom.oscillate.io/download.
 
-Bloom is a debug interface for embedded systems development on Linux. This is the official repository for Bloom's
+Bloom is a debug interface for embedded systems development on GNU/Linux. This is the official repository for Bloom's
 source code. For information on how to use Bloom, please visit https://bloom.oscillate.io.
 
 Bloom implements a number of user-space device drivers, enabling support for many debug tools (such as the Atmel-ICE,

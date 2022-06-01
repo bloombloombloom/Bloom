@@ -11,16 +11,17 @@ namespace Bloom
     void SignalHandler::run() {
         try {
             this->startup();
-            auto signalSet = this->getRegisteredSignalSet();
+            const auto signalSet = this->getRegisteredSignalSet();
             int signalNumber = 0;
 
             Logger::debug("SignalHandler ready");
             while(Thread::getThreadState() == ThreadState::READY) {
-                if (sigwait(&signalSet, &signalNumber) == 0) {
+                if (::sigwait(&signalSet, &signalNumber) == 0) {
                     Logger::debug("SIGNAL " + std::to_string(signalNumber) + " received");
-                    if (this->handlersMappedBySignalNum.contains(signalNumber)) {
+
+                    if (this->handlersBySignalNum.contains(signalNumber)) {
                         // We have a registered handler for this signal.
-                        this->handlersMappedBySignalNum.at(signalNumber)();
+                        this->handlersBySignalNum.at(signalNumber)();
                     }
                 }
             }
@@ -39,15 +40,15 @@ namespace Bloom
         Logger::debug("Starting SignalHandler");
         // Block all signal interrupts
         auto signalSet = this->getRegisteredSignalSet();
-        sigprocmask(SIG_SETMASK, &signalSet, NULL);
+        ::sigprocmask(SIG_SETMASK, &signalSet, NULL);
 
         // Register handlers
-        this->handlersMappedBySignalNum.insert(std::pair(
+        this->handlersBySignalNum.insert(std::pair(
             SIGINT,
             std::bind(&SignalHandler::triggerApplicationShutdown, this)
         ));
 
-        this->handlersMappedBySignalNum.insert(std::pair(
+        this->handlersBySignalNum.insert(std::pair(
             SIGTERM,
             std::bind(&SignalHandler::triggerApplicationShutdown, this)
         ));
@@ -58,10 +59,10 @@ namespace Bloom
         }
     }
 
-    sigset_t SignalHandler::getRegisteredSignalSet() const {
-        sigset_t set = {};
-        if (sigfillset(&set) == -1) {
-            throw Exceptions::Exception("sigfillset() failed - error number: " + std::to_string(errno));
+    ::sigset_t SignalHandler::getRegisteredSignalSet() const {
+        ::sigset_t set = {};
+        if (::sigfillset(&set) == -1) {
+            throw Exceptions::Exception("::sigfillset() failed - error number: " + std::to_string(errno));
         }
 
         return set;

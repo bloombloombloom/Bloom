@@ -12,7 +12,7 @@ namespace Bloom
     using Exceptions::Exception;
 
     EventFdNotifier::EventFdNotifier() {
-        this->fileDescriptor = ::eventfd(0, EFD_NONBLOCK);
+        this->fileDescriptor = ::eventfd(0, ::EFD_NONBLOCK);
 
         if (this->fileDescriptor < 0) {
             throw Exception(
@@ -40,7 +40,7 @@ namespace Bloom
     }
 
     void EventFdNotifier::clear() {
-        eventfd_t counter = {};
+        ::eventfd_t counter = {};
         if (::eventfd_read(this->fileDescriptor.value(), &counter) < 0 && errno != EAGAIN) {
             throw Exceptions::Exception("Failed to clear EventFdNotifier object - eventfd_read failed - "
                 "error number: " + std::to_string(errno));

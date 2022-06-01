@@ -1,11 +1,9 @@
 #include "Avr8.hpp"
 
-#include <cstdint>
-#include <QtCore>
-#include <QJsonDocument>
 #include <cassert>
 #include <bitset>
 #include <limits>
+#include <thread>
 
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"

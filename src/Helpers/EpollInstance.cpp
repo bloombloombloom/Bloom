@@ -23,7 +23,7 @@ namespace Bloom
     }
 
     void EpollInstance::addEntry(int fileDescriptor, std::uint16_t eventMask) {
-        struct epoll_event event = {
+        struct ::epoll_event event = {
             .events = eventMask,
             .data = {
                 .fd = fileDescriptor

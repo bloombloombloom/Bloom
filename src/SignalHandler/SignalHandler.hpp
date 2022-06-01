@@ -27,9 +27,9 @@ namespace Bloom
 
     private:
         /**
-         * Mapping of signal numbers to functions.
+         * Mapping of signal numbers to handler functions.
          */
-        std::map<int, std::function<void()>> handlersMappedBySignalNum;
+        std::map<int, std::function<void()>> handlersBySignalNum;
 
         /**
          * We keep record of the number of shutdown signals received. See definition of triggerApplicationShutdown()
@@ -49,7 +49,7 @@ namespace Bloom
          *
          * @return
          */
-        [[nodiscard]] sigset_t getRegisteredSignalSet() const;
+        [[nodiscard]] ::sigset_t getRegisteredSignalSet() const;
 
         /**
          * Handler for SIGINT, SIGTERM, etc signals.
