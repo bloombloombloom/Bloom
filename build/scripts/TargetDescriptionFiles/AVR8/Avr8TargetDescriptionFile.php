@@ -732,7 +732,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
 
             if (is_null($this->nvmModuleBaseAddress)) {
-                $failures[] = 'Missing NVM start address.';
+                $failures[] = 'Missing NVM module base address.';
+            }
 
             if (is_null($this->mcuModuleBaseAddress)) {
                 $failures[] = 'Missing MCU module base address.';

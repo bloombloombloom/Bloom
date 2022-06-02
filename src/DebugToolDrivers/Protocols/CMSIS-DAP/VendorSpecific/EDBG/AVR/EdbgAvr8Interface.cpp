@@ -31,7 +31,6 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/SetProgramCounter.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/DisableDebugWire.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/SetSoftwareBreakpoints.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/SetXmegaSoftwareBreakpoint.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/ClearAllSoftwareBreakpoints.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/ClearSoftwareBreakpoints.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/EnterProgrammingMode.hpp"
@@ -47,6 +46,31 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using namespace Avr8Bit;
     using namespace Bloom::Exceptions;
 
+    using CommandFrames::Avr8Generic::Stop;
+    using CommandFrames::Avr8Generic::Run;
+    using CommandFrames::Avr8Generic::RunTo;
+    using CommandFrames::Avr8Generic::Step;
+    using CommandFrames::Avr8Generic::Reset;
+    using CommandFrames::Avr8Generic::GetProgramCounter;
+    using CommandFrames::Avr8Generic::SetProgramCounter;
+    using CommandFrames::Avr8Generic::GetDeviceId;
+    using CommandFrames::Avr8Generic::SetSoftwareBreakpoints;
+    using CommandFrames::Avr8Generic::ClearSoftwareBreakpoints;
+    using CommandFrames::Avr8Generic::ClearAllSoftwareBreakpoints;
+    using CommandFrames::Avr8Generic::ReadMemory;
+    using CommandFrames::Avr8Generic::EnterProgrammingMode;
+    using CommandFrames::Avr8Generic::LeaveProgrammingMode;
+    using CommandFrames::Avr8Generic::SetParameter;
+    using CommandFrames::Avr8Generic::GetParameter;
+    using CommandFrames::Avr8Generic::ActivatePhysical;
+    using CommandFrames::Avr8Generic::DeactivatePhysical;
+    using CommandFrames::Avr8Generic::Attach;
+    using CommandFrames::Avr8Generic::Detach;
+    using CommandFrames::Avr8Generic::ReadMemory;
+    using CommandFrames::Avr8Generic::WriteMemory;
+    using CommandFrames::Avr8Generic::EraseMemory;
+    using CommandFrames::Avr8Generic::DisableDebugWire;
+
     using Bloom::Targets::TargetState;
     using Bloom::Targets::TargetMemoryType;
     using Bloom::Targets::TargetMemoryBuffer;
@@ -55,6 +79,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using Bloom::Targets::TargetRegisterDescriptors;
     using Bloom::Targets::TargetRegisterType;
     using Bloom::Targets::TargetRegisters;
+
+    EdbgAvr8Interface::EdbgAvr8Interface(EdbgInterface& edbgInterface)
+        : edbgInterface(edbgInterface)
+    {}
 
     void EdbgAvr8Interface::configure(const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig) {
         this->targetConfig = targetConfig;
@@ -165,9 +193,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::stop() {
-        auto commandFrame = CommandFrames::Avr8Generic::Stop();
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            Stop()
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Stop target command failed", response);
         }
@@ -179,9 +208,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::run() {
         this->clearEvents();
-        auto commandFrame = CommandFrames::Avr8Generic::Run();
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            Run()
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Run command failed", response);
         }
@@ -191,9 +221,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::runTo(std::uint32_t address) {
         this->clearEvents();
-        auto commandFrame = CommandFrames::Avr8Generic::RunTo(address);
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            RunTo(address)
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Run-to command failed", response);
         }
@@ -202,9 +233,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::step() {
-        auto commandFrame = CommandFrames::Avr8Generic::Step();
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            Step()
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Step target command failed", response);
         }
@@ -213,9 +245,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::reset() {
-        auto commandFrame = CommandFrames::Avr8Generic::Reset();
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            Reset()
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Reset target command failed", response);
         }
@@ -291,8 +324,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->stop();
         }
 
-        auto commandFrame = CommandFrames::Avr8Generic::GetProgramCounter();
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            GetProgramCounter()
+        );
+
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Get program counter command failed", response);
         }
@@ -309,8 +344,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * The program counter will be given in byte address form, but the EDBG tool will be expecting it in word
          * address (16-bit) form. This is why we divide it by 2.
          */
-        auto commandFrame = CommandFrames::Avr8Generic::SetProgramCounter(programCounter / 2);
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            SetProgramCounter(programCounter / 2)
+        );
+
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Set program counter command failed", response);
         }
@@ -342,9 +379,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return TargetSignature(signatureMemory[0], signatureMemory[1], signatureMemory[2]);
         }
 
-        auto commandFrame = CommandFrames::Avr8Generic::GetDeviceId();
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            GetDeviceId()
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Get device ID command failed", response);
         }
@@ -353,27 +391,30 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setBreakpoint(std::uint32_t address) {
-        auto commandFrame = CommandFrames::Avr8Generic::SetSoftwareBreakpoints({address});
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            SetSoftwareBreakpoints({address})
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Set software breakpoint command failed", response);
         }
     }
 
     void EdbgAvr8Interface::clearBreakpoint(std::uint32_t address) {
-        auto commandFrame = CommandFrames::Avr8Generic::ClearSoftwareBreakpoints({address});
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            ClearSoftwareBreakpoints({address})
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Clear software breakpoint command failed", response);
         }
     }
 
     void EdbgAvr8Interface::clearAllBreakpoints() {
-        auto commandFrame = CommandFrames::Avr8Generic::ClearAllSoftwareBreakpoints();
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            ClearAllSoftwareBreakpoints()
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Clear all software breakpoints command failed", response);
         }
@@ -504,7 +545,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             // Construct our TargetRegister objects directly from the flat memory buffer
             for (const auto& descriptor : descriptors) {
                 /*
-                 * Multi-byte AVR8 registers are stored in LSB form.
+                 * Multibyte AVR8 registers are stored in LSB form.
                  *
                  * This is why we use reverse iterators when extracting our data from flatMemoryBuffer. Doing so allows
                  * us to extract the data in MSB form (as is expected for all register values held in TargetRegister
@@ -684,7 +725,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::enableProgrammingMode() {
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
-            CommandFrames::Avr8Generic::EnterProgrammingMode()
+            EnterProgrammingMode()
         );
 
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
@@ -703,7 +744,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::disableProgrammingMode() {
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
-            CommandFrames::Avr8Generic::LeaveProgrammingMode()
+            LeaveProgrammingMode()
         );
 
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
@@ -802,18 +843,20 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
-        auto commandFrame = CommandFrames::Avr8Generic::SetParameter(parameter, value);
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            SetParameter(parameter, value)
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("Failed to set parameter on device!", response);
         }
     }
 
     std::vector<unsigned char> EdbgAvr8Interface::getParameter(const Avr8EdbgParameter& parameter, std::uint8_t size) {
-        auto commandFrame = CommandFrames::Avr8Generic::GetParameter(parameter, size);
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            GetParameter(parameter, size)
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("Failed to get parameter from device!", response);
         }
@@ -1262,9 +1305,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
-        auto commandFrame = CommandFrames::Avr8Generic::ActivatePhysical(applyExternalReset);
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            ActivatePhysical(applyExternalReset)
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             if (!applyExternalReset) {
                 // Try again with external reset applied
@@ -1280,9 +1324,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::deactivatePhysical() {
-        auto commandFrame = CommandFrames::Avr8Generic::DeactivatePhysical();
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            DeactivatePhysical()
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Deactivate physical interface command failed", response);
         }
@@ -1299,11 +1344,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * value of the breakAfterAttach flag. So we still expect a stop event to be received shortly after issuing
          * the attach command.
          */
-        auto commandFrame = CommandFrames::Avr8Generic::Attach(
-            this->configVariant != Avr8ConfigVariant::MEGAJTAG
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            Attach(
+                this->configVariant != Avr8ConfigVariant::MEGAJTAG
+            )
         );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Attach command failed", response);
         }
@@ -1322,9 +1368,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::detach() {
-        auto commandFrame = CommandFrames::Avr8Generic::Detach();
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            Detach()
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Detach command failed", response);
         }
@@ -1609,14 +1656,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        auto commandFrame = CommandFrames::Avr8Generic::ReadMemory(
-            type,
-            startAddress,
-            bytes,
-            excludedAddresses
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            ReadMemory(
+                type,
+                startAddress,
+                bytes,
+                excludedAddresses
+            )
         );
-
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Read memory command failed", response);
         }
@@ -1667,21 +1714,23 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        auto commandFrame = CommandFrames::Avr8Generic::WriteMemory(
-            type,
-            startAddress,
-            buffer
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            WriteMemory(
+                type,
+                startAddress,
+                buffer
+            )
         );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Write memory command failed", response);
         }
 
+    }
 
     void EdbgAvr8Interface::eraseMemory(Avr8EraseMemoryMode mode) {
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
-            CommandFrames::Avr8Generic::EraseMemory(mode)
+            EraseMemory(mode)
         );
 
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
@@ -1707,9 +1756,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::disableDebugWire() {
-        auto commandFrame = CommandFrames::Avr8Generic::DisableDebugWire();
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            DisableDebugWire()
+        );
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Disable debugWire command failed", response);
         }

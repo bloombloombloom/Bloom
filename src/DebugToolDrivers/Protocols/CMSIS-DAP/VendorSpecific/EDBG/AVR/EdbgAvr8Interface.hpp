@@ -26,8 +26,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class EdbgAvr8Interface: public TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface
     {
     public:
-        explicit EdbgAvr8Interface(EdbgInterface& edbgInterface)
-        : edbgInterface(edbgInterface) {};
+        explicit EdbgAvr8Interface(EdbgInterface& edbgInterface);
 
         /**
          * Some EDBG devices don't seem to operate correctly when actioning the masked memory read EDBG command. The
