@@ -62,6 +62,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $userSignaturesPdiOffset = null;
     public ?int $productSignaturesPdiOffset = null;
     public ?int $nvmModuleBaseAddress = null;
+    public ?int $mcuModuleBaseAddress = null;
 
     // UPDI specific target params
     public ?int $ocdBaseAddress = null;
@@ -476,6 +477,18 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                     }
                 }
             }
+
+            if (isset($this->peripheralModulesByName['mcu'])) {
+                $mcuModule = $this->peripheralModulesByName['mcu'];
+
+                if (isset($mcuModule->instancesMappedByName['mcu'])) {
+                    $mcuInstance = $mcuModule->instancesMappedByName['mcu'];
+
+                    if (isset($mcuInstance->registerGroupsMappedByName['mcu'])) {
+                        $this->mcuModuleBaseAddress = $mcuInstance->registerGroupsMappedByName['mcu']->offset;
+                    }
+                }
+            }
         }
 
         if (in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterface)) {
@@ -720,6 +733,9 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             if (is_null($this->nvmModuleBaseAddress)) {
                 $failures[] = 'Missing NVM start address.';
+
+            if (is_null($this->mcuModuleBaseAddress)) {
+                $failures[] = 'Missing MCU module base address.';
             }
         }
 
