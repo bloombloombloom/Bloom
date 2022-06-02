@@ -179,4 +179,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     inline bool operator == (Avr8ResponseId id, unsigned char rawId) {
         return rawId == id;
     }
+
+    enum class Avr8EraseMemoryMode: unsigned char
+    {
+        CHIP = 0x00,
+        APPLICATION_SECTION = 0x01,
+        BOOT_SECTION = 0x02,
+        EEPROM = 0x03,
+    };
 }

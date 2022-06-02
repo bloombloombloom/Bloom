@@ -36,6 +36,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/ClearSoftwareBreakpoints.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/EnterProgrammingMode.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/LeaveProgrammingMode.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/EraseMemory.hpp"
 
 // AVR events
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Events/AVR8Generic/BreakEvent.hpp"
@@ -691,6 +692,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         this->programmingModeEnabled = true;
+
+        if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+            Logger::warning(
+                "The entire application section of program memory will be erased, in preparation for programming"
+            );
+            this->eraseMemory(Avr8EraseMemoryMode::APPLICATION_SECTION);
+        }
     }
 
     void EdbgAvr8Interface::disableProgrammingMode() {
@@ -1658,6 +1666,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(commandFrame);
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Write memory command failed", response);
+        }
+
+
+    void EdbgAvr8Interface::eraseMemory(Avr8EraseMemoryMode mode) {
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            CommandFrames::Avr8Generic::EraseMemory(mode)
+        );
+
+        if (response.getResponseId() == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 erase memory command failed", response);
         }
     }
 

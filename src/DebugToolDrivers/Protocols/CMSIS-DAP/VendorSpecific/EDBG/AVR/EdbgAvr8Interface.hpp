@@ -538,6 +538,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         void writeMemory(Avr8MemoryType type, std::uint32_t address, const Targets::TargetMemoryBuffer& buffer);
 
         /**
+         * Erases a particular region of memory, depending on the value of mode.
+         *
+         * @param mode
+         */
+        void eraseMemory(Avr8EraseMemoryMode mode);
+
+        /**
          * Fetches the current target state.
          *
          * This currently uses AVR BREAK events to determine if a target has stopped. The lack of any
