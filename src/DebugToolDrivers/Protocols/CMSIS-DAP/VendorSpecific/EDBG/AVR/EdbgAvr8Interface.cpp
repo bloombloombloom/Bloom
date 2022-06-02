@@ -1027,6 +1027,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw DeviceInitializationFailure("Missing required parameter: NVM_BASE");
         }
 
+        if (!this->targetParameters.mcuModuleBaseAddress.has_value()) {
+            throw DeviceInitializationFailure("Missing required parameter: SIGNATURE_OFFSET (MCU module base address)");
+        }
+
         Logger::debug("Setting APPL_BASE_ADDR AVR8 parameter");
         this->setParameter(
             Avr8EdbgParameters::DEVICE_XMEGA_APPL_BASE_ADDR,
@@ -1110,6 +1114,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             Avr8EdbgParameters::DEVICE_XMEGA_NVM_BASE,
             this->targetParameters.nvmModuleBaseAddress.value()
         );
+
+        Logger::debug("Setting SIGNATURE_OFFSET AVR8 parameter");
+        this->setParameter(
+            Avr8EdbgParameters::DEVICE_XMEGA_SIGNATURE_OFFSET,
+            this->targetParameters.mcuModuleBaseAddress.value()
         );
     }
 

@@ -1230,6 +1230,18 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                     }
                 }
             }
+
+            if (peripheralModules.contains("mcu")) {
+                const auto& mcuModule = peripheralModules.at("mcu");
+
+                if (mcuModule.instancesMappedByName.contains("mcu")) {
+                    const auto& mcuInstance = mcuModule.instancesMappedByName.at("mcu");
+
+                    if (mcuInstance.registerGroupsMappedByName.contains("mcu")) {
+                        targetParameters.mcuModuleBaseAddress = mcuInstance.registerGroupsMappedByName.at("mcu").offset;
+                    }
+                }
+            }
         }
     }
 
