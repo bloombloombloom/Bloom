@@ -61,7 +61,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $lockRegistersPdiOffset = null;
     public ?int $userSignaturesPdiOffset = null;
     public ?int $productSignaturesPdiOffset = null;
-    public ?int $nvmBaseAddress = null;
+    public ?int $nvmModuleBaseAddress = null;
 
     // UPDI specific target params
     public ?int $ocdBaseAddress = null;
@@ -472,7 +472,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                     $nvmInstance = $nvmModule->instancesMappedByName['nvm'];
 
                     if (isset($nvmInstance->registerGroupsMappedByName['nvm'])) {
-                        $this->nvmBaseAddress = $nvmInstance->registerGroupsMappedByName['nvm']->offset;
+                        $this->nvmModuleBaseAddress = $nvmInstance->registerGroupsMappedByName['nvm']->offset;
                     }
                 }
             }
@@ -486,7 +486,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                     $nvmInstance = $nvmModule->instancesMappedByName['nvmctrl'];
 
                     if (isset($nvmInstance->registerGroupsMappedByName['nvmctrl'])) {
-                        $this->nvmBaseAddress = $nvmInstance->registerGroupsMappedByName['nvmctrl']->offset;
+                        $this->nvmModuleBaseAddress = $nvmInstance->registerGroupsMappedByName['nvmctrl']->offset;
                     }
                 }
             }
@@ -718,13 +718,13 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 $failures[] = 'Missing lock registers PDI offset.';
             }
 
-            if (is_null($this->nvmBaseAddress)) {
+            if (is_null($this->nvmModuleBaseAddress)) {
                 $failures[] = 'Missing NVM start address.';
             }
         }
 
         if (in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterface)) {
-            if (is_null($this->nvmBaseAddress)) {
+            if (is_null($this->nvmModuleBaseAddress)) {
                 $failures[] = 'Missing NVM base address.';
             }
 

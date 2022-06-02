@@ -1226,7 +1226,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                     const auto& nvmInstance = nvmModule.instancesMappedByName.at("nvm");
 
                     if (nvmInstance.registerGroupsMappedByName.contains("nvm")) {
-                        targetParameters.nvmBaseAddress = nvmInstance.registerGroupsMappedByName.at("nvm").offset;
+                        targetParameters.nvmModuleBaseAddress = nvmInstance.registerGroupsMappedByName.at("nvm").offset;
                     }
                 }
             }
@@ -1245,7 +1245,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 const auto& nvmCtrlInstance = nvmCtrlModule.instancesMappedByName.at("nvmctrl");
 
                 if (nvmCtrlInstance.registerGroupsMappedByName.contains("nvmctrl")) {
-                    targetParameters.nvmBaseAddress = nvmCtrlInstance.registerGroupsMappedByName.at(
+                    targetParameters.nvmModuleBaseAddress = nvmCtrlInstance.registerGroupsMappedByName.at(
                         "nvmctrl"
                     ).offset;
                 }

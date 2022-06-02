@@ -1023,7 +1023,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw DeviceInitializationFailure("Missing required parameter: EEPROM_PAGE_SIZE");
         }
 
-        if (!this->targetParameters.nvmBaseAddress.has_value()) {
+        if (!this->targetParameters.nvmModuleBaseAddress.has_value()) {
             throw DeviceInitializationFailure("Missing required parameter: NVM_BASE");
         }
 
@@ -1108,7 +1108,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         Logger::debug("Setting NVM_BASE AVR8 parameter");
         this->setParameter(
             Avr8EdbgParameters::DEVICE_XMEGA_NVM_BASE,
-            this->targetParameters.nvmBaseAddress.value()
+            this->targetParameters.nvmModuleBaseAddress.value()
+        );
         );
     }
 
@@ -1172,11 +1173,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             );
         }
 
-        if (this->targetParameters.nvmBaseAddress.has_value()) {
+        if (this->targetParameters.nvmModuleBaseAddress.has_value()) {
             Logger::debug("Setting DEVICE_UPDI_NVMCTRL_ADDR AVR8 parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_NVMCTRL_ADDR,
-                this->targetParameters.nvmBaseAddress.value()
+                this->targetParameters.nvmModuleBaseAddress.value()
             );
         }
 

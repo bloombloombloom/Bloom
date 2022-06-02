@@ -52,7 +52,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<std::uint32_t> lockRegistersPdiOffset;
         std::optional<std::uint32_t> userSignaturesPdiOffset;
         std::optional<std::uint32_t> productSignaturesPdiOffset;
-        std::optional<std::uint16_t> nvmBaseAddress;
+        std::optional<std::uint16_t> nvmModuleBaseAddress;
 
         // UPDI specific target params
         std::optional<std::uint16_t> ocdModuleAddress;
