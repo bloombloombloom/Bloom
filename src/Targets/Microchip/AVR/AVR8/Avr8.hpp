@@ -13,6 +13,7 @@
 #include "Family.hpp"
 #include "TargetParameters.hpp"
 #include "PadDescriptor.hpp"
+#include "ProgrammingSession.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
 #include "TargetDescription/TargetDescriptionFile.hpp"
@@ -145,7 +146,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
 
-        bool programmingModeActive = false;
+        std::optional<ProgrammingSession> programmingSession;
 
         /**
          * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.
