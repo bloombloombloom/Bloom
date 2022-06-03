@@ -140,7 +140,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         FLASH_PAGE = 0xB0,
 
         /**
-         * The APPL_FLASH memory type can be used to read/write flash memory on the target.
+         * The APPL_FLASH memory type can be used to read/write to the application section of the flash memory on the
+         * target.
          *
          * Only available with the XMEGA (PDI) and UPDI (PDI_1W) config variants.
          *
@@ -148,6 +149,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * any attempts of writing data.
          */
         APPL_FLASH = 0xC0,
+        BOOT_FLASH = 0xC1,
 
         /**
          * The SPM memory type can be used to read memory from the target whilst in debugging mode.

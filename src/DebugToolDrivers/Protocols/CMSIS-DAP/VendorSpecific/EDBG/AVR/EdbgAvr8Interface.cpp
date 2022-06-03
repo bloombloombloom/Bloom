@@ -693,7 +693,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 } else if (
                     this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
                 ) {
-                    avr8MemoryType = Avr8MemoryType::APPL_FLASH;
+                    const auto bootSectionStartAddress = this->targetParameters.bootSectionStartAddress.value();
+                    if (startAddress >= bootSectionStartAddress) {
+                        avr8MemoryType = Avr8MemoryType::BOOT_FLASH;
+
+                        /*
+                         * When using the BOOT_FLASH memory type, the address should be relative to the start of the
+                         * boot section.
+                         */
+                        startAddress -= bootSectionStartAddress;
+
+                    } else {
+                        avr8MemoryType = Avr8MemoryType::APPL_FLASH;
+                    }
                 }
                 break;
             }
@@ -1410,6 +1422,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             memoryType == Avr8MemoryType::FLASH_PAGE
             || memoryType == Avr8MemoryType::SPM
             || memoryType == Avr8MemoryType::APPL_FLASH
+            || memoryType == Avr8MemoryType::BOOT_FLASH
         ;
     }
 
@@ -1423,7 +1436,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 alignTo = this->targetParameters.flashPageSize.value();
                 break;
             }
-            case Avr8MemoryType::APPL_FLASH: {
+            case Avr8MemoryType::APPL_FLASH:
+            case Avr8MemoryType::BOOT_FLASH: {
                 if (this->configVariant == Avr8ConfigVariant::UPDI) {
                     // For UPDI sessions, memory access via the APPL_FLASH must be word aligned.
                     alignTo = 2;
@@ -1463,7 +1477,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 alignTo = this->targetParameters.flashPageSize.value();
                 break;
             }
-            case Avr8MemoryType::APPL_FLASH: {
+            case Avr8MemoryType::APPL_FLASH:
+            case Avr8MemoryType::BOOT_FLASH: {
                 if (this->configVariant == Avr8ConfigVariant::UPDI) {
                     // For UPDI sessions, memory access via the APPL_FLASH must be word aligned.
                     alignTo = 2;
@@ -1561,8 +1576,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        if (type == Avr8MemoryType::FLASH_PAGE || type == Avr8MemoryType::APPL_FLASH) {
-            // With the FLASH_PAGE and APPL_FLASH memory types, we can only read one page at a time.
+        if (
+            type == Avr8MemoryType::FLASH_PAGE
+            || type == Avr8MemoryType::APPL_FLASH
+            || type == Avr8MemoryType::BOOT_FLASH
+        ) {
+            // With the FLASH_PAGE, APPL_FLASH and BOOT_FLASH memory types, we can only read one page at a time.
             const auto pageSize = this->targetParameters.flashPageSize.value();
 
             if (bytes > pageSize) {
@@ -1612,7 +1631,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return output;
         }
 
-        if (type != Avr8MemoryType::FLASH_PAGE && type != Avr8MemoryType::SPM && type != Avr8MemoryType::APPL_FLASH) {
+        if (
+            type != Avr8MemoryType::FLASH_PAGE
+            && type != Avr8MemoryType::SPM
+            && type != Avr8MemoryType::APPL_FLASH
+            && type != Avr8MemoryType::BOOT_FLASH
+        ) {
             /*
              * EDBG AVR8 debug tools behave in a really weird way when responding with more than two packets
              * for a single read (non-flash) memory command. The data they return in this case appears to be of little
@@ -1689,8 +1713,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        if (type == Avr8MemoryType::FLASH_PAGE || type == Avr8MemoryType::APPL_FLASH) {
-            // With the FLASH_PAGE and APPL_FLASH memory type, we can only write one page at a time.
+        if (
+            type == Avr8MemoryType::FLASH_PAGE
+            || type == Avr8MemoryType::APPL_FLASH
+            || type == Avr8MemoryType::BOOT_FLASH
+        ) {
+            // With the FLASH_PAGE, APPL_FLASH and BOOT_FLASH memory types, we can only write one page at a time.
             const auto pageSize = this->targetParameters.flashPageSize.value();
 
             if (bytes > pageSize) {
