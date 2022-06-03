@@ -323,6 +323,47 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     }
 
     void Avr8::writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
+        if (
+            memoryType == TargetMemoryType::FLASH && this->programmingSession.has_value()
+            && this->targetConfig->physicalInterface == PhysicalInterface::PDI
+        ) {
+            // For PDI targets, we must erase the appropriate section before the first write.
+            const auto startSection = this->getProgramMemorySectionFromAddress(startAddress);
+            const auto endSection = this->getProgramMemorySectionFromAddress(
+                static_cast<std::uint32_t>(startAddress + buffer.size() - 1)
+            );
+
+            if (startSection != endSection) {
+                throw Exception(
+                    "Requested program memory write spans more than one section (APPLICATION and BOOT) - aborting."
+                );
+            }
+
+            if (
+                !this->programmingSession->applicationSectionErased
+                && (
+                    startSection == ProgramMemorySection::APPLICATION
+                    || endSection == ProgramMemorySection::APPLICATION
+                )
+            ) {
+                Logger::warning("Erasing program memory APPLICATION section, in preparation for writing.");
+                this->avr8DebugInterface->eraseProgramMemorySection(ProgramMemorySection::APPLICATION);
+                this->programmingSession->applicationSectionErased = true;
+            }
+
+            if (
+                !this->programmingSession->bootSectionErased
+                    && (
+                        startSection == ProgramMemorySection::BOOT
+                        || endSection == ProgramMemorySection::BOOT
+                    )
+            ) {
+                Logger::warning("Erasing program memory BOOT section, in preparation for writing.");
+                this->avr8DebugInterface->eraseProgramMemorySection(ProgramMemorySection::BOOT);
+                this->programmingSession->bootSectionErased = true;
+            }
+        }
+
         this->avr8DebugInterface->writeMemory(memoryType, startAddress, buffer);
     }
 
@@ -918,5 +959,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             this->avrIspInterface->deactivate();
             throw exception;
         }
+    }
+
+    ProgramMemorySection Avr8::getProgramMemorySectionFromAddress(std::uint32_t address) {
+        return address >= this->targetParameters->bootSectionStartAddress.value()
+            ? ProgramMemorySection::BOOT
+            : ProgramMemorySection::APPLICATION;
     }
 }

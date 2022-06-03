@@ -720,6 +720,24 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return this->writeMemory(avr8MemoryType, startAddress, buffer);
     }
 
+    void EdbgAvr8Interface::eraseProgramMemorySection(ProgramMemorySection section) {
+        if (this->configVariant != Avr8ConfigVariant::XMEGA) {
+            throw Exception("AVR8 erase command not supported for non-XMEGA config variants.");
+        }
+
+        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+            EraseMemory(
+                section == ProgramMemorySection::BOOT
+                    ? Avr8EraseMemoryMode::BOOT_SECTION
+                    : Avr8EraseMemoryMode::APPLICATION_SECTION
+            )
+        );
+
+        if (response.getResponseId() == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 erase memory command failed", response);
+        }
+    }
+
     TargetState EdbgAvr8Interface::getTargetState() {
         /*
          * We are not informed when a target goes from a stopped state to a running state, so there is no need
@@ -745,13 +763,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         this->programmingModeEnabled = true;
-
-        if (this->configVariant == Avr8ConfigVariant::XMEGA) {
-            Logger::warning(
-                "The entire application section of program memory will be erased, in preparation for programming"
-            );
-            this->eraseMemory(Avr8EraseMemoryMode::APPLICATION_SECTION);
-        }
     }
 
     void EdbgAvr8Interface::disableProgrammingMode() {
@@ -1754,15 +1765,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw Avr8CommandFailure("AVR8 Write memory command failed", response);
         }
 
-    }
-
-    void EdbgAvr8Interface::eraseMemory(Avr8EraseMemoryMode mode) {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
-            EraseMemory(mode)
-        );
-
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 erase memory command failed", response);
         }
     }
 

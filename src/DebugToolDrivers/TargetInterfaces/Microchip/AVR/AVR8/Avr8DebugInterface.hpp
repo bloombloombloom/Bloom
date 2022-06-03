@@ -8,6 +8,7 @@
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/ProgramMemorySection.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 
 #include "src/Targets/TargetState.hpp"
@@ -193,6 +194,13 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
             std::uint32_t startAddress,
             const Targets::TargetMemoryBuffer& buffer
         ) = 0;
+
+        /**
+         * Should erase a particular program memory section.
+         *
+         * @param section
+         */
+        virtual void eraseProgramMemorySection(Targets::Microchip::Avr::Avr8Bit::ProgramMemorySection section) = 0;
 
         /**
          * Should obtain the current target state.

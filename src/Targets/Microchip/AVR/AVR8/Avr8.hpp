@@ -14,6 +14,7 @@
 #include "TargetParameters.hpp"
 #include "PadDescriptor.hpp"
 #include "ProgrammingSession.hpp"
+#include "ProgramMemorySection.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
 #include "TargetDescription/TargetDescriptionFile.hpp"
@@ -182,5 +183,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          *  True to set the fuse, false to clear it.
          */
         void writeDwenFuseBit(bool setFuse);
+
+        /**
+         * Resolves the program memory section from a program memory address.
+         *
+         * @param address
+         * @return
+         */
+        ProgramMemorySection getProgramMemorySectionFromAddress(std::uint32_t address);
     };
 }
