@@ -192,7 +192,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             const std::string& fuseBitName
         ) const;
 
-        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFlashMemorySegment() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::AddressSpace> getProgramMemoryAddressSpace() const;
+        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFlashApplicationMemorySegment(
+            const Targets::TargetDescription::AddressSpace& programAddressSpace
+        ) const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRamMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getIoMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRegisterMemorySegment() const;

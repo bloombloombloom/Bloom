@@ -14,6 +14,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     using namespace Bloom::Exceptions;
 
     using Bloom::Targets::TargetDescription::RegisterGroup;
+    using Bloom::Targets::TargetDescription::AddressSpace;
     using Bloom::Targets::TargetDescription::MemorySegment;
     using Bloom::Targets::TargetDescription::MemorySegmentType;
     using Bloom::Targets::TargetDescription::Register;
@@ -177,13 +178,16 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         const auto& peripheralModules = this->getPeripheralModulesMappedByName();
         const auto& propertyGroups = this->getPropertyGroupsMappedByName();
 
-        auto flashMemorySegment = this->getFlashMemorySegment();
-        if (flashMemorySegment.has_value()) {
-            targetParameters.flashSize = flashMemorySegment->size;
-            targetParameters.flashStartAddress = flashMemorySegment->startAddress;
+        const auto programMemoryAddressSpace = this->getProgramMemoryAddressSpace();
 
-            if (flashMemorySegment->pageSize.has_value()) {
-                targetParameters.flashPageSize = flashMemorySegment->pageSize.value();
+        if (programMemoryAddressSpace.has_value()) {
+            targetParameters.flashSize = programMemoryAddressSpace->size;
+            targetParameters.flashStartAddress = programMemoryAddressSpace->startAddress;
+
+            const auto appMemorySegment = this->getFlashApplicationMemorySegment(programMemoryAddressSpace.value());
+
+            if (appMemorySegment.has_value() && appMemorySegment->pageSize.has_value()) {
+                targetParameters.flashPageSize = appMemorySegment->pageSize.value();
             }
         }
 
@@ -672,29 +676,33 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         return std::nullopt;
     }
 
-    std::optional<MemorySegment> TargetDescriptionFile::getFlashMemorySegment() const {
-        const auto& addressMapping = this->addressSpacesMappedById;
-        auto programAddressSpaceIt = addressMapping.find("prog");
+    std::optional<AddressSpace> TargetDescriptionFile::getProgramMemoryAddressSpace() const {
+        if (this->addressSpacesMappedById.contains("prog")) {
+            return this->addressSpacesMappedById.at("prog");
+        }
 
-        // Flash memory attributes are typically found in memory segments within the program address space.
-        if (programAddressSpaceIt != addressMapping.end()) {
-            const auto& programAddressSpace = programAddressSpaceIt->second;
-            const auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
+        return std::nullopt;
+    }
 
-            if (programMemorySegments.find(MemorySegmentType::FLASH) != programMemorySegments.end()) {
-                const auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
+    std::optional<MemorySegment> TargetDescriptionFile::getFlashApplicationMemorySegment(
+        const AddressSpace& programAddressSpace
+    ) const {
+        const auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
 
-                /*
-                 * In AVR8 TDFs, flash memory segments are typically named "APP_SECTION", "PROGMEM" or "FLASH".
-                 */
-                auto flashSegmentIt = flashMemorySegments.find("app_section") != flashMemorySegments.end() ?
-                    flashMemorySegments.find("app_section")
-                    : flashMemorySegments.find("progmem") != flashMemorySegments.end()
-                    ? flashMemorySegments.find("progmem") : flashMemorySegments.find("flash");
+        if (programMemorySegments.find(MemorySegmentType::FLASH) != programMemorySegments.end()) {
+            const auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
 
-                if (flashSegmentIt != flashMemorySegments.end()) {
-                    return flashSegmentIt->second;
-                }
+            /*
+             * In AVR8 TDFs, flash application memory segments are typically named "APP_SECTION", "PROGMEM" or
+             * "FLASH".
+             */
+            auto flashSegmentIt = flashMemorySegments.find("app_section") != flashMemorySegments.end() ?
+                flashMemorySegments.find("app_section")
+                : flashMemorySegments.find("progmem") != flashMemorySegments.end()
+                ? flashMemorySegments.find("progmem") : flashMemorySegments.find("flash");
+
+            if (flashSegmentIt != flashMemorySegments.end()) {
+                return flashSegmentIt->second;
             }
         }
 
