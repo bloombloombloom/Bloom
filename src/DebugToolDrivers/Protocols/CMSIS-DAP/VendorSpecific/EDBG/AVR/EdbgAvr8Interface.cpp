@@ -1785,7 +1785,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::refreshTargetState() {
-        auto avrEvent = this->getAvrEvent();
+        const auto avrEvent = this->getAvrEvent();
 
         if (avrEvent != nullptr && avrEvent->getEventId() == AvrEventId::AVR8_BREAK_EVENT) {
             auto* breakEvent = dynamic_cast<BreakEvent*>(avrEvent.get());

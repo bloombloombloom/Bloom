@@ -9,15 +9,12 @@
 
 #include "src/Application.hpp"
 #include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     using TargetController::TargetControllerConsole;
 
     using ResponsePackets::ResponsePacket;
-
-    using Exceptions::Exception;
 
     TargetInfoMachine::TargetInfoMachine(Monitor&& monitorPacket)
         : Monitor(std::move(monitorPacket))
