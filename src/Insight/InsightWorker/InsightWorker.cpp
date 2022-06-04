@@ -117,8 +117,10 @@ namespace Bloom
     }
 
     void InsightWorker::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
-        this->lastTargetState = TargetState::RUNNING;
-        emit this->targetStateUpdated(TargetState::RUNNING);
+        if (this->lastTargetState != TargetState::RUNNING) {
+            this->lastTargetState = TargetState::RUNNING;
+            emit this->targetStateUpdated(TargetState::RUNNING);
+        }
     }
 
     void InsightWorker::onTargetResetEvent(const Events::TargetReset& event) {
@@ -127,9 +129,11 @@ namespace Bloom
                 return;
             }
 
-            this->lastTargetState = TargetState::STOPPED;
-            emit this->targetStateUpdated(TargetState::RUNNING);
-            emit this->targetStateUpdated(TargetState::STOPPED);
+            if (this->lastTargetState != TargetState::STOPPED) {
+                this->lastTargetState = TargetState::STOPPED;
+                emit this->targetStateUpdated(TargetState::STOPPED);
+            }
+
             emit this->targetProgramCounterUpdated(this->targetControllerConsole.getProgramCounter());
 
         } catch (const Exceptions::Exception& exception) {
