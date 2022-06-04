@@ -720,16 +720,18 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return this->writeMemory(avr8MemoryType, startAddress, buffer);
     }
 
-    void EdbgAvr8Interface::eraseProgramMemorySection(ProgramMemorySection section) {
-        if (this->configVariant != Avr8ConfigVariant::XMEGA) {
-            throw Exception("AVR8 erase command not supported for non-XMEGA config variants.");
+    void EdbgAvr8Interface::eraseProgramMemory(std::optional<Avr8Bit::ProgramMemorySection> section) {
+        if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+            throw Exception("AVR8 erase command not supported for debugWire config variant.");
         }
 
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
             EraseMemory(
-                section == ProgramMemorySection::BOOT
-                    ? Avr8EraseMemoryMode::BOOT_SECTION
-                    : Avr8EraseMemoryMode::APPLICATION_SECTION
+                section.has_value()
+                    ? section == ProgramMemorySection::BOOT
+                        ? Avr8EraseMemoryMode::BOOT_SECTION
+                        : Avr8EraseMemoryMode::APPLICATION_SECTION
+                    : Avr8EraseMemoryMode::CHIP
             )
         );
 

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <set>
+#include <optional>
 
 #include "src/Targets/Microchip/AVR/AVR8/Avr8TargetConfig.hpp"
 
@@ -196,11 +197,14 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
         ) = 0;
 
         /**
-         * Should erase a particular program memory section.
+         * Should erase the target's entire program memory, or a specific section where applicable.
          *
          * @param section
+         *  The section to erase, or std::nullopt to erase the entire program memory.
          */
-        virtual void eraseProgramMemorySection(Targets::Microchip::Avr::Avr8Bit::ProgramMemorySection section) = 0;
+        virtual void eraseProgramMemory(
+            std::optional<Targets::Microchip::Avr::Avr8Bit::ProgramMemorySection> section = std::nullopt
+        ) = 0;
 
         /**
          * Should obtain the current target state.

@@ -243,11 +243,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         ) override;
 
         /**
-         * Issues the "Erase" command to erase a particular section of program memory.
+         * Issues the "Erase" command to erase a particular section of program memory, or the entire chip.
          *
          * @param section
          */
-        void eraseProgramMemorySection(Targets::Microchip::Avr::Avr8Bit::ProgramMemorySection section) override;
+        void eraseProgramMemory(
+            std::optional<Targets::Microchip::Avr::Avr8Bit::ProgramMemorySection> section = std::nullopt
+        ) override;
 
         /**
          * Returns the current state of the target.
