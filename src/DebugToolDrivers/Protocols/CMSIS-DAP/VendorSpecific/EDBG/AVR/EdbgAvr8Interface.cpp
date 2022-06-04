@@ -627,16 +627,29 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 break;
             }
             case TargetMemoryType::FLASH: {
-                if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+                if (
+                    this->configVariant == Avr8ConfigVariant::DEBUG_WIRE
+                    || this->configVariant == Avr8ConfigVariant::UPDI
+                ) {
                     avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
 
                 } else if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
                     avr8MemoryType = this->programmingModeEnabled ? Avr8MemoryType::FLASH_PAGE : Avr8MemoryType::SPM;
 
-                } else if (
-                    this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
-                ) {
-                    avr8MemoryType = Avr8MemoryType::APPL_FLASH;
+                } else if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+                    const auto bootSectionStartAddress = this->targetParameters.bootSectionStartAddress.value();
+                    if (startAddress >= bootSectionStartAddress) {
+                        avr8MemoryType = Avr8MemoryType::BOOT_FLASH;
+
+                        /*
+                         * When using the BOOT_FLASH memory type, the address should be relative to the start of the
+                         * boot section.
+                         */
+                        startAddress -= bootSectionStartAddress;
+
+                    } else {
+                        avr8MemoryType = Avr8MemoryType::APPL_FLASH;
+                    }
                 }
                 break;
             }
@@ -684,15 +697,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 break;
             }
             case TargetMemoryType::FLASH: {
-                if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+                if (
+                    this->configVariant == Avr8ConfigVariant::DEBUG_WIRE
+                    || this->configVariant == Avr8ConfigVariant::UPDI
+                ) {
                     avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
 
                 } else if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
                     avr8MemoryType = this->programmingModeEnabled ? Avr8MemoryType::FLASH_PAGE : Avr8MemoryType::SPM;
 
-                } else if (
-                    this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
-                ) {
+                } else if (this->configVariant == Avr8ConfigVariant::XMEGA) {
                     const auto bootSectionStartAddress = this->targetParameters.bootSectionStartAddress.value();
                     if (startAddress >= bootSectionStartAddress) {
                         avr8MemoryType = Avr8MemoryType::BOOT_FLASH;
