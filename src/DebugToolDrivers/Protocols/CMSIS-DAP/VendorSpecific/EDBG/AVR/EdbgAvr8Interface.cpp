@@ -789,6 +789,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         this->programmingModeEnabled = false;
+
+        if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
+            this->deactivatePhysical();
+            this->setTargetParameters(this->targetParameters);
+            this->targetAttached = false;
+            this->activate();
+            this->stop();
+        }
     }
 
     std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>
