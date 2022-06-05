@@ -700,11 +700,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 if (
                     this->configVariant == Avr8ConfigVariant::DEBUG_WIRE
                     || this->configVariant == Avr8ConfigVariant::UPDI
+                    || this->configVariant == Avr8ConfigVariant::MEGAJTAG
                 ) {
                     avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
-
-                } else if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
-                    avr8MemoryType = this->programmingModeEnabled ? Avr8MemoryType::FLASH_PAGE : Avr8MemoryType::SPM;
 
                 } else if (this->configVariant == Avr8ConfigVariant::XMEGA) {
                     const auto bootSectionStartAddress = this->targetParameters.bootSectionStartAddress.value();
@@ -1458,10 +1456,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
         switch (memoryType) {
-            case Avr8MemoryType::FLASH_PAGE:
-            case Avr8MemoryType::SPM: {
+            case Avr8MemoryType::FLASH_PAGE: {
                 alignTo = this->targetParameters.flashPageSize.value();
                 break;
+            }
+            case Avr8MemoryType::SPM: {
+                // Memory access via the SPM type must be word aligned.
+                alignTo = 2;
             }
             case Avr8MemoryType::APPL_FLASH:
             case Avr8MemoryType::BOOT_FLASH: {
@@ -1499,10 +1500,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
         switch (memoryType) {
-            case Avr8MemoryType::FLASH_PAGE:
-            case Avr8MemoryType::SPM: {
+            case Avr8MemoryType::FLASH_PAGE: {
                 alignTo = this->targetParameters.flashPageSize.value();
                 break;
+            }
+            case Avr8MemoryType::SPM: {
+                // Memory access via the SPM type must be word aligned.
+                alignTo = 2;
             }
             case Avr8MemoryType::APPL_FLASH:
             case Avr8MemoryType::BOOT_FLASH: {
@@ -1607,8 +1611,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             type == Avr8MemoryType::FLASH_PAGE
             || type == Avr8MemoryType::APPL_FLASH
             || type == Avr8MemoryType::BOOT_FLASH
+            || (type == Avr8MemoryType::SPM && this->configVariant == Avr8ConfigVariant::MEGAJTAG)
         ) {
-            // With the FLASH_PAGE, APPL_FLASH and BOOT_FLASH memory types, we can only read one page at a time.
+            // With the FLASH_PAGE, APPL_FLASH, BOOT_FLASH and SPM memory types, we can only read one page at a time.
             const auto pageSize = this->targetParameters.flashPageSize.value();
 
             if (bytes > pageSize) {
