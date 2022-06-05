@@ -42,6 +42,8 @@ namespace Bloom
         void targetControllerSuspended();
         void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
+        void programmingModeEnabled();
+        void programmingModeDisabled();
 
     private:
         EventListenerPointer eventListener = std::make_shared<EventListener>("InsightWorkerEventListener");
@@ -65,6 +67,8 @@ namespace Bloom
         void onTargetResetEvent(const Events::TargetReset& event);
         void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
         void onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event);
+        void onProgrammingModeEnabledEvent(const Events::ProgrammingModeEnabled& event);
+        void onProgrammingModeDisabledEvent(const Events::ProgrammingModeDisabled& event);
 
         void executeTasks();
     };

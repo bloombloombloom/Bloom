@@ -31,6 +31,20 @@ namespace Bloom::Widgets::InsightTargetWidgets
             &TargetPackageWidget::onRegistersWritten
         );
 
+        QObject::connect(
+            &(this->insightWorker),
+            &InsightWorker::programmingModeEnabled,
+            this,
+            &TargetPackageWidget::onProgrammingModeEnabled
+        );
+
+        QObject::connect(
+            &(this->insightWorker),
+            &InsightWorker::programmingModeDisabled,
+            this,
+            &TargetPackageWidget::onProgrammingModeDisabled
+        );
+
         this->setDisabled(true);
     }
 
@@ -82,6 +96,18 @@ namespace Bloom::Widgets::InsightTargetWidgets
                     this->setDisabled(false);
                 }
             });
+        }
+    }
+
+    void TargetPackageWidget::onProgrammingModeEnabled() {
+        if (this->targetState == TargetState::STOPPED) {
+            this->setDisabled(true);
+        }
+    }
+
+    void TargetPackageWidget::onProgrammingModeDisabled() {
+        if (this->targetState == TargetState::STOPPED) {
+            this->setDisabled(false);
         }
     }
 

@@ -46,6 +46,8 @@ namespace Bloom::Widgets::InsightTargetWidgets
     protected slots:
         virtual void updatePinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber);
         void onTargetStateChanged(Targets::TargetState newState);
+        void onProgrammingModeEnabled();
+        void onProgrammingModeDisabled();
         void onRegistersWritten(Targets::TargetRegisters targetRegisters);
     };
 }

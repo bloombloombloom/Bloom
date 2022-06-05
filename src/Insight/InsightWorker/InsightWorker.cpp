@@ -45,6 +45,14 @@ namespace Bloom
             std::bind(&InsightWorker::onTargetRegistersWrittenEvent, this, std::placeholders::_1)
         );
 
+        this->eventListener->registerCallbackForEventType<Events::ProgrammingModeEnabled>(
+            std::bind(&InsightWorker::onProgrammingModeEnabledEvent, this, std::placeholders::_1)
+        );
+
+        this->eventListener->registerCallbackForEventType<Events::ProgrammingModeDisabled>(
+            std::bind(&InsightWorker::onProgrammingModeDisabledEvent, this, std::placeholders::_1)
+        );
+
         this->eventDispatchTimer = new QTimer(this);
         QObject::connect(this->eventDispatchTimer, &QTimer::timeout, this, &InsightWorker::dispatchEvents);
         this->eventDispatchTimer->start(5);
@@ -159,6 +167,14 @@ namespace Bloom
                 Logger::error("Insight resume failed - " + exception.getMessage());
             }
         }
+    }
+
+    void InsightWorker::onProgrammingModeEnabledEvent(const Events::ProgrammingModeEnabled& event) {
+        emit this->programmingModeEnabled();
+    }
+
+    void InsightWorker::onProgrammingModeDisabledEvent(const Events::ProgrammingModeDisabled& event) {
+        emit this->programmingModeDisabled();
     }
 
     void InsightWorker::executeTasks() {

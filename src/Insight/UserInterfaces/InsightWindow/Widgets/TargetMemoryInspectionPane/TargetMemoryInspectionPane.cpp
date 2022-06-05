@@ -86,6 +86,20 @@ namespace Bloom::Widgets
         );
 
         QObject::connect(
+            &insightWorker,
+            &InsightWorker::programmingModeEnabled,
+            this,
+            &TargetMemoryInspectionPane::onProgrammingModeEnabled
+        );
+
+        QObject::connect(
+            &insightWorker,
+            &InsightWorker::programmingModeDisabled,
+            this,
+            &TargetMemoryInspectionPane::onProgrammingModeDisabled
+        );
+
+        QObject::connect(
             this->hexViewerWidget->refreshButton,
             &QToolButton::clicked,
             this,
@@ -294,5 +308,13 @@ namespace Bloom::Widgets
 
     void TargetMemoryInspectionPane::onMemoryRegionsChange() {
         this->hexViewerWidget->refreshRegions();
+    }
+
+    void TargetMemoryInspectionPane::onProgrammingModeEnabled() {
+        this->hexViewerWidget->setDisabled(true);
+    }
+
+    void TargetMemoryInspectionPane::onProgrammingModeDisabled() {
+        this->hexViewerWidget->setDisabled(this->targetState != Targets::TargetState::STOPPED);
     }
 }

@@ -213,6 +213,20 @@ namespace Bloom
             this,
             &InsightWindow::onTargetProgramCounterUpdate
         );
+
+        QObject::connect(
+            &(this->insightWorker),
+            &InsightWorker::programmingModeEnabled,
+            this,
+            &InsightWindow::onProgrammingModeEnabled
+        );
+
+        QObject::connect(
+            &(this->insightWorker),
+            &InsightWorker::programmingModeDisabled,
+            this,
+            &InsightWindow::onProgrammingModeDisabled
+        );
     }
 
     void InsightWindow::init(TargetDescriptor targetDescriptor) {
@@ -861,6 +875,15 @@ namespace Bloom
         }
 
         this->adjustMinimumSize();
+    }
+
+    void InsightWindow::onProgrammingModeEnabled() {
+        this->targetStatusLabel->setText("Programming Mode Enabled");
+        this->programCounterValueLabel->setText("-");
+    }
+
+    void InsightWindow::onProgrammingModeDisabled() {
+        this->onTargetStateUpdate(this->targetState);
     }
 
     void InsightWindow::recordInsightSettings() {
