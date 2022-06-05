@@ -18,6 +18,8 @@
 #include "MemoryWrittenToTarget.hpp"
 #include "InsightThreadStateChanged.hpp"
 #include "TargetReset.hpp"
+#include "ProgrammingModeEnabled.hpp"
+#include "ProgrammingModeDisabled.hpp"
 
 namespace Bloom::Events
 {

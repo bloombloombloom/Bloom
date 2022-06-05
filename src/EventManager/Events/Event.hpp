@@ -30,6 +30,8 @@ namespace Bloom::Events
         MEMORY_WRITTEN_TO_TARGET,
         INSIGHT_THREAD_STATE_CHANGED,
         TARGET_RESET,
+        PROGRAMMING_MODE_ENABLED,
+        PROGRAMMING_MODE_DISABLED,
     };
 
     class Event
