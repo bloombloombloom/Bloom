@@ -109,6 +109,23 @@ See the corresponding [GitHub issue](https://github.com/navnavnav/Bloom/issues/3
 For more on TargetController suspension, see `TargetControllerComponent::suspend()` and
 `TargetControllerComponent::resume()`.
 
+### Programming mode
+
+When a component needs to write to the target's program memory, it must enable programming mode on the target. This can
+be done by issuing the `EnableProgrammingMode` command to the TargetController (see
+`TargetControllerConsole::enableProgrammingMode()`). Once programming mode has been enabled, the TargetController will
+reject any subsequent commands that involve debug operations (such as `ResumeTargetExecution`, `RaedTargetRegisters`,
+etc), until programming mode has been disabled.
+
+The TargetController will emit `ProgrammingModeEnabled` and `ProgrammingModeDisabled` events when it enables/disables
+programming mode. Components should listen for these events to ensure that they disable any means for the user to trigger
+debugging operations whilst programming mode is enabled. For example, the Insight component will disable much of its
+GUI components when programming mode is enabled.
+
+It shouldn't be too much of a problem if a component attempts to perform a debug operation on the target whilst
+programming mode is enabled, as the TargetController will just respond with an error. But still, it would be best to
+avoid doing this where possible.
+
 ---
 
 TODO: Cover debug tool & target drivers.
