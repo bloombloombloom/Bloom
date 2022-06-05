@@ -1457,7 +1457,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
         switch (memoryType) {
             case Avr8MemoryType::FLASH_PAGE: {
-                alignTo = this->targetParameters.flashPageSize.value();
+                alignTo = (this->configVariant == Avr8ConfigVariant::UPDI)
+                    ? 2
+                    : this->targetParameters.flashPageSize.value();
                 break;
             }
             case Avr8MemoryType::SPM: {
@@ -1501,7 +1503,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
         switch (memoryType) {
             case Avr8MemoryType::FLASH_PAGE: {
-                alignTo = this->targetParameters.flashPageSize.value();
+                alignTo = (this->configVariant == Avr8ConfigVariant::UPDI)
+                          ? 2
+                          : this->targetParameters.flashPageSize.value();
                 break;
             }
             case Avr8MemoryType::SPM: {
@@ -1720,6 +1724,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 excludedAddresses
             )
         );
+
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Read memory command failed", response);
         }
@@ -1784,8 +1789,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         if (response.getResponseId() == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Write memory command failed", response);
-        }
-
         }
     }
 
