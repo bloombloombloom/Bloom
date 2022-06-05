@@ -335,7 +335,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
                 if (startSection != endSection) {
                     throw Exception(
-                        "Requested program memory write spans more than one section (APPLICATION and BOOT) - aborting."
+                        "Requested program memory write spans more than one section (APPLICATION and BOOT) - aborting"
                     );
                 }
 
@@ -346,7 +346,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                         || endSection == ProgramMemorySection::APPLICATION
                     )
                 ) {
-                    Logger::warning("Erasing program memory APPLICATION section, in preparation for programming.");
+                    Logger::warning("Erasing program memory APPLICATION section, in preparation for programming");
                     this->avr8DebugInterface->eraseProgramMemory(ProgramMemorySection::APPLICATION);
                     this->programmingSession->applicationSectionErased = true;
                 }
@@ -358,13 +358,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                         || endSection == ProgramMemorySection::BOOT
                     )
                 ) {
-                    Logger::warning("Erasing program memory BOOT section, in preparation for programming.");
+                    Logger::warning("Erasing program memory BOOT section, in preparation for programming");
                     this->avr8DebugInterface->eraseProgramMemory(ProgramMemorySection::BOOT);
                     this->programmingSession->bootSectionErased = true;
                 }
 
             } else if (!this->programmingSession->chipErased) {
-                Logger::warning("Erasing entire chip, in preparation for programming.");
+                Logger::warning("Erasing entire chip, in preparation for programming");
                 this->avr8DebugInterface->eraseProgramMemory();
                 this->programmingSession->chipErased = true;
             }

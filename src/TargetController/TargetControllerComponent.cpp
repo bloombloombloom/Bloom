@@ -725,13 +725,17 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerComponent::enableProgrammingMode() {
+        Logger::debug("Enabling programming mode");
         this->target->enableProgrammingMode();
+        Logger::warning("Programming mode enabled");
 
         EventManager::triggerEvent(std::make_shared<Events::ProgrammingModeEnabled>());
     }
 
     void TargetControllerComponent::disableProgrammingMode() {
+        Logger::debug("Disabling programming mode");
         this->target->disableProgrammingMode();
+        Logger::info("Programming mode disabled");
 
         EventManager::triggerEvent(std::make_shared<Events::ProgrammingModeDisabled>());
     }
