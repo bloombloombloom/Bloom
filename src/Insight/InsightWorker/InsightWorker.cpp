@@ -151,6 +151,19 @@ namespace Bloom
 
     void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {
         emit this->targetRegistersWritten(event.registers, event.createdTimestamp);
+
+        for (const auto& reg : event.registers) {
+            if (reg.descriptor.type == Targets::TargetRegisterType::PROGRAM_COUNTER) {
+                try {
+                    emit this->targetProgramCounterUpdated(this->targetControllerConsole.getProgramCounter());
+
+                } catch (const Exceptions::Exception& exception) {
+                    Logger::debug("Error reading program counter - " + exception.getMessage());
+                }
+
+                break;
+            }
+        }
     }
 
     void InsightWorker::onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event) {
