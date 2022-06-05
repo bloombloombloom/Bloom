@@ -65,7 +65,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
                 "CMSIS Response type must be derived from the Response class."
             );
 
-            const auto rawResponse = this->getUsbHidInterface().read(10000);
+            const auto rawResponse = this->getUsbHidInterface().read(15000);
 
             if (rawResponse.empty()) {
                 throw Exceptions::DeviceCommunicationFailure("Empty CMSIS-DAP response received");
