@@ -56,11 +56,39 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             }));
         }
 
+        auto registerDescriptorsJson = QJsonArray();
+
+        for (const auto& [registerType, registerDescriptors] : targetDescriptor.registerDescriptorsByType) {
+            for (const auto& registerDescriptor : registerDescriptors) {
+                if (!registerDescriptor.name.has_value() || !registerDescriptor.startAddress.has_value()) {
+                    continue;
+                }
+
+                registerDescriptorsJson.push_back(QJsonObject({
+                    {"name", QString::fromStdString(registerDescriptor.name.value())},
+                    {"groupName", QString::fromStdString(registerDescriptor.groupName.value_or("Other"))},
+                    {
+                        "description",
+                        registerDescriptor.description.has_value()
+                            ? QString::fromStdString(registerDescriptor.description.value())
+                            : QJsonValue()
+                    },
+                    {"size", static_cast<qint64>(registerDescriptor.size)},
+                    {"startAddress", "0x" + QString::number(registerDescriptor.startAddress.value(), 16)},
+                    {
+                        "gdbStartAddress",
+                        "0x" + QString::number(registerDescriptor.startAddress.value() | 0x00800000UL, 16)
+                    },
+                }));
+            }
+        }
+
         return QJsonObject({
             {"target", QJsonObject({
                 {"name", QString::fromStdString(targetDescriptor.name)},
                 {"id", QString::fromStdString(targetDescriptor.id)},
                 {"memoryDescriptors", memoryDescriptorsJson},
+                {"registerDescriptors", registerDescriptorsJson},
             })},
         });
     }
