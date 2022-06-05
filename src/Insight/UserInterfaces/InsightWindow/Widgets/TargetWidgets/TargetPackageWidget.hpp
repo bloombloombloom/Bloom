@@ -43,7 +43,6 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
-    protected slots:
         virtual void updatePinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber);
         void onTargetStateChanged(Targets::TargetState newState);
         void onProgrammingModeEnabled();

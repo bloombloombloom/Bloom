@@ -484,7 +484,8 @@ namespace Bloom
         this->selectedVariant = variant;
         this->variantMenu->setTitle(QString::fromStdString(variant->name + " (" + variant->packageName + ")"));
 
-        if (variant->package == TargetPackage::DIP
+        if (
+            variant->package == TargetPackage::DIP
             || variant->package == TargetPackage::SOIC
             || variant->package == TargetPackage::SSOP
         ) {

@@ -75,7 +75,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
     std::set<std::pair<Feature, std::optional<std::string>>> AvrGdbRsp::getSupportedFeatures() {
         auto supportedFeatures = GdbRspDebugServer::getSupportedFeatures();
 
-        // The AVR GDB server supports the
+        // The AVR GDB server supports the 'qXfer:memory-map:read' GDB command.
         supportedFeatures.insert({
             Feature::MEMORY_MAP_READ, std::nullopt
         });
