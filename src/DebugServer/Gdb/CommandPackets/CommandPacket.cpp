@@ -56,12 +56,6 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             return;
         }
 
-        if (packetString.find("vFlashDone") == 0) {
-            Logger::debug("Handling vFlashDone");
-            debugSession.connection.writePacket(OkResponsePacket());
-            return;
-        }
-
         Logger::debug("Unknown GDB RSP packet: " + packetString + " - returning empty response");
 
         // Respond with an empty packet
