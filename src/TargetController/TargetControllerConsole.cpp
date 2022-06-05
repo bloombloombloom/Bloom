@@ -20,6 +20,8 @@
 #include "Commands/SetTargetPinState.hpp"
 #include "Commands/GetTargetStackPointer.hpp"
 #include "Commands/GetTargetProgramCounter.hpp"
+#include "Commands/EnableProgrammingMode.hpp"
+#include "Commands/DisableProgrammingMode.hpp"
 
 namespace Bloom::TargetController
 {
@@ -40,6 +42,8 @@ namespace Bloom::TargetController
     using Commands::SetTargetPinState;
     using Commands::GetTargetStackPointer;
     using Commands::GetTargetProgramCounter;
+    using Commands::EnableProgrammingMode;
+    using Commands::DisableProgrammingMode;
 
     using Targets::TargetDescriptor;
     using Targets::TargetState;
@@ -211,6 +215,20 @@ namespace Bloom::TargetController
     void TargetControllerConsole::resetTarget() {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ResetTarget>(),
+            this->defaultTimeout
+        );
+    }
+
+    void TargetControllerConsole::enableProgrammingMode() {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<EnableProgrammingMode>(),
+            this->defaultTimeout
+        );
+    }
+
+    void TargetControllerConsole::disableProgrammingMode() {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<DisableProgrammingMode>(),
             this->defaultTimeout
         );
     }

@@ -183,6 +183,20 @@ namespace Bloom::TargetController
          */
         void resetTarget();
 
+        /**
+         * Enables programming mode on the target.
+         *
+         * From the point of invoking this function, the TargetController will reject any subsequent commands for
+         * debug operations (such as ResumeTargetExecution, ReadTargetRegisters, etc), until programming mode has
+         * been disabled.
+         */
+        void enableProgrammingMode();
+
+        /**
+         * Disables programming mode on the target.
+         */
+        void disableProgrammingMode();
+
     private:
         CommandManager commandManager = CommandManager();
 

@@ -40,6 +40,8 @@ namespace Bloom::TargetController
     using Commands::SetTargetPinState;
     using Commands::GetTargetStackPointer;
     using Commands::GetTargetProgramCounter;
+    using Commands::EnableProgrammingMode;
+    using Commands::DisableProgrammingMode;
 
     using Responses::Response;
     using Responses::TargetRegistersRead;
@@ -311,6 +313,12 @@ namespace Bloom::TargetController
                     throw Exception("Illegal target state - command requires target to be stopped");
                 }
 
+                if (this->target->programmingModeEnabled() && command->requiresDebugMode()) {
+                    throw Exception(
+                        "Illegal target state - command cannot be serviced whilst the target is in programming mode."
+                    );
+                }
+
                 this->registerCommandResponse(
                     commandId,
                     this->commandHandlersByCommandType.at(commandType)(*(command.get()))
@@ -420,6 +428,8 @@ namespace Bloom::TargetController
         this->deregisterCommandHandler(SetTargetPinState::type);
         this->deregisterCommandHandler(GetTargetStackPointer::type);
         this->deregisterCommandHandler(GetTargetProgramCounter::type);
+        this->deregisterCommandHandler(EnableProgrammingMode::type);
+        this->deregisterCommandHandler(DisableProgrammingMode::type);
 
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
 
@@ -504,6 +514,14 @@ namespace Bloom::TargetController
 
         this->registerCommandHandler<GetTargetProgramCounter>(
             std::bind(&TargetControllerComponent::handleGetTargetProgramCounter, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<EnableProgrammingMode>(
+            std::bind(&TargetControllerComponent::handleEnableProgrammingMode, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<DisableProgrammingMode>(
+            std::bind(&TargetControllerComponent::handleDisableProgrammingMode, this, std::placeholders::_1)
         );
 
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
@@ -706,6 +724,18 @@ namespace Bloom::TargetController
         EventManager::triggerEvent(std::make_shared<Events::TargetReset>());
     }
 
+    void TargetControllerComponent::enableProgrammingMode() {
+        this->target->enableProgrammingMode();
+
+        EventManager::triggerEvent(std::make_shared<Events::ProgrammingModeEnabled>());
+    }
+
+    void TargetControllerComponent::disableProgrammingMode() {
+        this->target->disableProgrammingMode();
+
+        EventManager::triggerEvent(std::make_shared<Events::ProgrammingModeDisabled>());
+    }
+
     Targets::TargetDescriptor& TargetControllerComponent::getTargetDescriptor() {
         if (!this->cachedTargetDescriptor.has_value()) {
             this->cachedTargetDescriptor = this->target->getDescriptor();
@@ -815,6 +845,12 @@ namespace Bloom::TargetController
         const auto bufferSize = command.buffer.size();
         const auto bufferStartAddress = command.startAddress;
 
+        const auto& targetDescriptor = this->getTargetDescriptor();
+
+        if (command.memoryType == targetDescriptor.programMemoryType && !this->target->programmingModeEnabled()) {
+            throw Exception("Cannot write to program memory - programming mode not enabled.");
+        }
+
         this->target->writeMemory(command.memoryType, bufferStartAddress, buffer);
         EventManager::triggerEvent(
             std::make_shared<Events::MemoryWrittenToTarget>(command.memoryType, bufferStartAddress, bufferSize)
@@ -822,6 +858,7 @@ namespace Bloom::TargetController
 
         if (
             EventManager::isEventTypeListenedFor(Events::RegistersWrittenToTarget::type)
+            && command.memoryType == targetDescriptor.programMemoryType
             && this->registerDescriptorsByMemoryType.contains(command.memoryType)
         ) {
             /*
@@ -907,5 +944,21 @@ namespace Bloom::TargetController
         GetTargetProgramCounter& command
     ) {
         return std::make_unique<TargetProgramCounter>(this->target->getProgramCounter());
+    }
+
+    std::unique_ptr<Response> TargetControllerComponent::handleEnableProgrammingMode(EnableProgrammingMode& command) {
+        if (!this->target->programmingModeEnabled()) {
+            this->enableProgrammingMode();
+        }
+
+        return std::make_unique<Response>();
+    }
+
+    std::unique_ptr<Response> TargetControllerComponent::handleDisableProgrammingMode(DisableProgrammingMode& command) {
+        if (this->target->programmingModeEnabled()) {
+            this->disableProgrammingMode();
+        }
+
+        return std::make_unique<Response>();
     }
 }

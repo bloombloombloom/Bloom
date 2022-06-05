@@ -24,5 +24,7 @@ namespace Bloom::TargetController::Commands
         SET_TARGET_PIN_STATE,
         GET_TARGET_STACK_POINTER,
         GET_TARGET_PROGRAM_COUNTER,
+        ENABLE_PROGRAMMING_MODE,
+        DISABLE_PROGRAMMING_MODE,
     };
 }

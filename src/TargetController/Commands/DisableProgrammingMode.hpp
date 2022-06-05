@@ -1,0 +1,27 @@
+#pragma once
+
+#include "Command.hpp"
+
+namespace Bloom::TargetController::Commands
+{
+    class DisableProgrammingMode: public Command
+    {
+    public:
+        static constexpr CommandType type = CommandType::DISABLE_PROGRAMMING_MODE;
+        static inline const std::string name = "DisableProgrammingMode";
+
+        DisableProgrammingMode() = default;
+
+        [[nodiscard]] CommandType getType() const override {
+            return DisableProgrammingMode::type;
+        }
+
+        [[nodiscard]] bool requiresStoppedTargetState() const override {
+            return true;
+        }
+
+        [[nodiscard]] bool requiresDebugMode() const override {
+            return false;
+        }
+    };
+}

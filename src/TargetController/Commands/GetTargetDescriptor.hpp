@@ -17,5 +17,9 @@ namespace Bloom::TargetController::Commands
         [[nodiscard]] CommandType getType() const override {
             return GetTargetDescriptor::type;
         }
+
+        [[nodiscard]] bool requiresDebugMode() const override {
+            return false;
+        }
     };
 }

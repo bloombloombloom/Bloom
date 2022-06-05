@@ -34,5 +34,9 @@ namespace Bloom::TargetController::Commands
         [[nodiscard]] bool requiresStoppedTargetState() const override {
             return true;
         }
+
+        [[nodiscard]] bool requiresDebugMode() const override {
+            return this->memoryType == Targets::TargetMemoryType::RAM;
+        }
     };
 }

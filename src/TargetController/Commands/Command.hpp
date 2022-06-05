@@ -40,6 +40,10 @@ namespace Bloom::TargetController::Commands
             return false;
         }
 
+        [[nodiscard]] virtual bool requiresDebugMode() const {
+            return true;
+        }
+
     private:
         static inline std::atomic<CommandIdType> lastCommandId = 0;
     };

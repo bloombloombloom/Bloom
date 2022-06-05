@@ -37,6 +37,8 @@
 #include "Commands/SetTargetPinState.hpp"
 #include "Commands/GetTargetStackPointer.hpp"
 #include "Commands/GetTargetProgramCounter.hpp"
+#include "Commands/EnableProgrammingMode.hpp"
+#include "Commands/DisableProgrammingMode.hpp"
 
 // Responses
 #include "Responses/Response.hpp"
@@ -293,6 +295,17 @@ namespace Bloom::TargetController
         void resetTarget();
 
         /**
+         * Puts the target into programming mode and disables command handlers for debug commands (commands that serve
+         * debug operations such as SetBreakpoint, ResumeTargetExecution, etc).
+         */
+        void enableProgrammingMode();
+
+        /**
+         * Pulls the target out of programming mode and enables command handlers for debug commands.
+         */
+        void disableProgrammingMode();
+
+        /**
          * Returns a cached instance of the target's TargetDescriptor.
          *
          * @return
@@ -344,5 +357,7 @@ namespace Bloom::TargetController
         std::unique_ptr<Responses::TargetProgramCounter> handleGetTargetProgramCounter(
             Commands::GetTargetProgramCounter& command
         );
+        std::unique_ptr<Responses::Response> handleEnableProgrammingMode(Commands::EnableProgrammingMode& command);
+        std::unique_ptr<Responses::Response> handleDisableProgrammingMode(Commands::DisableProgrammingMode& command);
     };
 }
