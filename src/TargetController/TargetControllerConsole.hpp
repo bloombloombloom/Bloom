@@ -200,6 +200,6 @@ namespace Bloom::TargetController
     private:
         CommandManager commandManager = CommandManager();
 
-        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(20000);
+        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(60000);
     };
 }
