@@ -52,6 +52,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::debug("Handling FlashWrite packet");
 
         try {
+            targetControllerConsole.enableProgrammingMode();
+
             targetControllerConsole.writeMemory(
                 Targets::TargetMemoryType::FLASH,
                 this->startAddress,
