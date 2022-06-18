@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "ByteItem.hpp"
+
 namespace Bloom::Widgets
 {
     ValueAnnotationItem::ValueAnnotationItem(const FocusedMemoryRegion& focusedMemoryRegion)
@@ -29,6 +31,32 @@ namespace Bloom::Widgets
         painter->setFont(font);
 
         AnnotationItem::paint(painter, option, widget);
+
+        if (this->size > 1) {
+            /*
+             * Draw a circle just above the first byte item of the region, to indicate the first byte used to generate
+             * the value (which will depend on the configured endianness of the region).
+             */
+            using Targets::TargetMemoryEndianness;
+
+            auto fillColor = this->getLineColor();
+            fillColor.setAlpha(this->isEnabled() ? 255 : 100);
+
+            painter->setPen(fillColor);
+            painter->setBrush(fillColor);
+
+            constexpr auto radius = 2;
+            painter->drawEllipse(
+                QPoint(
+                    this->endianness == TargetMemoryEndianness::BIG
+                        ? ByteItem::WIDTH / 2
+                        : this->width - (ByteItem::WIDTH / 2),
+                    AnnotationItem::TOP_HEIGHT - AnnotationItem::VERTICAL_LINE_LENGTH
+                ),
+                radius,
+                radius
+            );
+        }
     }
 
     void ValueAnnotationItem::refreshLabelText() {
