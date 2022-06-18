@@ -18,6 +18,7 @@ namespace Bloom::Widgets
     public:
         static constexpr int TOP_HEIGHT = 26;
         static constexpr int BOTTOM_HEIGHT = 26;
+        static constexpr int VERTICAL_LINE_LENGTH = 5;
 
         const int width;
         const int height;

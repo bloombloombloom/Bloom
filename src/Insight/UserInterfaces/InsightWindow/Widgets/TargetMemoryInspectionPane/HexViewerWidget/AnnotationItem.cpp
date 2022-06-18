@@ -67,11 +67,10 @@ namespace Bloom::Widgets
             );
         }
 
-        constexpr auto verticalLineLength = 5;
         const auto verticalLineYStart = this->position == AnnotationItemPosition::BOTTOM ? 0
             : AnnotationItem::TOP_HEIGHT;
         const auto verticalLineYEnd = this->position == AnnotationItemPosition::BOTTOM ?
-            verticalLineLength : AnnotationItem::TOP_HEIGHT - verticalLineLength;
+            AnnotationItem::VERTICAL_LINE_LENGTH : AnnotationItem::TOP_HEIGHT - AnnotationItem::VERTICAL_LINE_LENGTH;
 
         const auto labelRect = QRect(
             (this->width - labelSize.width()) / 2,
