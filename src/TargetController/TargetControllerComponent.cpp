@@ -261,7 +261,7 @@ namespace Bloom::TargetController
         });
 
         // Include all targets from AVR8 target description files
-        auto avr8PdMapping = Avr8TargetDescriptionFile::getTargetDescriptionMapping();
+        const auto avr8PdMapping = Avr8TargetDescriptionFile::getTargetDescriptionMapping();
 
         for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); mapIt++) {
             // Each target signature maps to an array of targets, as numerous targets can possess the same signature.
@@ -293,7 +293,7 @@ namespace Bloom::TargetController
         auto commands = std::queue<std::unique_ptr<Command>>();
 
         {
-            auto queueLock = TargetControllerComponent::commandQueue.acquireLock();
+            const auto queueLock = TargetControllerComponent::commandQueue.acquireLock();
             commands.swap(TargetControllerComponent::commandQueue.getValue());
         }
 
@@ -337,7 +337,7 @@ namespace Bloom::TargetController
         CommandIdType commandId,
         std::unique_ptr<Response> response
     ) {
-        auto responseMappingLock = TargetControllerComponent::responsesByCommandId.acquireLock();
+        const auto responseMappingLock = TargetControllerComponent::responsesByCommandId.acquireLock();
         TargetControllerComponent::responsesByCommandId.getValue().insert(
             std::pair(commandId, std::move(response))
         );
@@ -588,7 +588,8 @@ namespace Bloom::TargetController
         while (this->target->supportsPromotion()) {
             auto promotedTarget = this->target->promote();
 
-            if (promotedTarget == nullptr
+            if (
+                promotedTarget == nullptr
                 || std::type_index(typeid(*promotedTarget)) == std::type_index(typeid(*this->target))
             ) {
                 break;
