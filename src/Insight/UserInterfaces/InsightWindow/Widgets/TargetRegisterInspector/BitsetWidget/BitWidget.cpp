@@ -29,19 +29,11 @@ namespace Bloom::Widgets
             this
         );
 
-        this->bitLabel = new Label("Bit", this);
         this->bitNumberLabel = new Label(QString::number(this->bitNumber), this);
-
-        this->bitLabel->setObjectName("register-bit-label");
         this->bitNumberLabel->setObjectName("register-bit-number-label");
-
-        this->bitLabel->setFixedHeight(BitWidget::LABEL_HEIGHT);
         this->bitNumberLabel->setFixedHeight(BitWidget::LABEL_HEIGHT);
-
-        this->bitLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
         this->bitNumberLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
-        layout->addWidget(this->bitLabel);
         layout->addWidget(this->bitNumberLabel);
         layout->addSpacing(BitWidget::VERTICAL_SPACING);
         layout->addWidget(this->body);

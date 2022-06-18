@@ -24,11 +24,10 @@ namespace Bloom::Widgets
 
     public:
         static constexpr int LABEL_HEIGHT = 14;
-        static constexpr int LABEL_COUNT = 2;
         static constexpr int WIDTH = BitBodyWidget::WIDTH;
-        static constexpr int HEIGHT = BitBodyWidget::HEIGHT + (BitWidget::LABEL_HEIGHT * BitWidget::LABEL_COUNT)
+        static constexpr int HEIGHT = BitBodyWidget::HEIGHT + BitWidget::LABEL_HEIGHT
             + BitWidget::VERTICAL_SPACING;
-        static constexpr int SPACING = 6;
+        static constexpr int SPACING = 5;
 
         BitWidget(
             int bitIndex,
@@ -48,8 +47,6 @@ namespace Bloom::Widgets
         bool readOnly = true;
 
         BitBodyWidget* body = nullptr;
-
-        Label* bitLabel = nullptr;
         Label* bitNumberLabel = nullptr;
     };
 }
