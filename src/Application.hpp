@@ -33,19 +33,16 @@ namespace Bloom
     class Application: public Thread
     {
     public:
-        static const inline VersionNumber VERSION = VersionNumber(BLOOM_VERSION);
+        static const inline VersionNumber VERSION = VersionNumber(std::string(BLOOM_VERSION));
 
-        explicit Application() = default;
+        explicit Application(std::vector<std::string>&& arguments);
 
         /**
          * Main entry-point for the Bloom program.
          *
-         * @param arguments
-         *  A vector of string arguments passed from the user via the cli.
-         *
          * @return
          */
-        int run(const std::vector<std::string>& arguments);
+        int run();
 
         /**
          * Checks if the current effective user running Bloom has root privileges.
@@ -55,6 +52,8 @@ namespace Bloom
         static bool isRunningAsRoot();
 
     private:
+        std::vector<std::string> arguments;
+
         EventListenerPointer applicationEventListener = std::make_shared<EventListener>("ApplicationEventListener");
 
         /**
@@ -67,14 +66,13 @@ namespace Bloom
         std::thread signalHandlerThread;
 
         /**
-         * The TargetController possesses full control of the connect debug tool and target. It runs on a
+         * The TargetController possesses full control of the connected debug tool and target. It runs on a
          * dedicated thread.
          *
          * See the TargetController class for more on this.
          *
          * I could have used std::optional here, for the late initialisation, but given that we're using
-         * std::unique_ptr for the debug server (for polymorphism), I thought I'd keep it consistent and just use
-         * std::unique_ptr for lazy loading.
+         * std::unique_ptr for the debug server (for polymorphism), I thought I'd keep it consistent.
          */
         std::unique_ptr<TargetController::TargetControllerComponent> targetController = nullptr;
         std::thread targetControllerThread;
@@ -94,10 +92,8 @@ namespace Bloom
          *
          * Insight is optional - users can disable it via their project configuration.
          *
-         * When the user closes the Insight GUI, control of the main thread is returned to Application::run(). How we
-         * deal with the GUI being closed at this point depends on user configuration.
-         *
-         * See the Insight class for more on this.
+         * When the user closes the Insight GUI, control of the main thread is returned to Application::run(). See the
+         * Insight class for more on this.
          *
          * Because Insight is optional, we only construct the Insight object when we need it. We can't use
          * std::optional here because the Insight class extends QObject, which disables the copy constructor and

@@ -539,12 +539,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 targetPin.variantId = targetVariant.id;
 
                 // TODO: REMOVE THIS:
-                if (tdPin.pad.find("vcc") == 0
+                if (
+                    tdPin.pad.find("vcc") == 0
                     || tdPin.pad.find("avcc") == 0
                     || tdPin.pad.find("aref") == 0
                     || tdPin.pad.find("avdd") == 0
                     || tdPin.pad.find("vdd") == 0
-                    ) {
+                ) {
                     targetPin.type = TargetPinType::VCC;
 
                 } else if (tdPin.pad.find("gnd") == 0) {

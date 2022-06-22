@@ -89,6 +89,11 @@ When in a suspended state, the TargetController will reject most commands. More 
 requires access to the debug tool or target. Issuing any of these commands whilst the TargetController is suspended
 will result in an error response.
 
+In some cases, the TargetController may be forced to go into a suspended state. This could be in response to the user
+disconnecting the debug tool, or from another program stealing control of the hardware. Actually, this is what led to
+the introduction of TargetController suspension. See the corresponding
+[GitHub issue](https://github.com/navnavnav/Bloom/issues/3) for more.
+
 Upon suspension, the TargetController will trigger a `Bloom::Events::TargetControllerStateChanged` event. Other
 components listen for this event to promptly perform the necessary actions in response to the state change. For example,
 the [GDB debug server implementation](../DebugServer/Gdb/README.md) will terminate any active debug session:
@@ -102,10 +107,6 @@ void GdbRspDebugServer::onTargetControllerStateChanged(const Events::TargetContr
 }
 ```
 
-In some cases, the TargetController may be forced to go into a suspended state. This could be in response to another
-program stealing control of the hardware. Actually, this is what led to the introduction of TargetController suspension.
-See the corresponding [GitHub issue](https://github.com/navnavnav/Bloom/issues/3) for more.
-
 For more on TargetController suspension, see `TargetControllerComponent::suspend()` and
 `TargetControllerComponent::resume()`.
 
@@ -114,7 +115,7 @@ For more on TargetController suspension, see `TargetControllerComponent::suspend
 When a component needs to write to the target's program memory, it must enable programming mode on the target. This can
 be done by issuing the `EnableProgrammingMode` command to the TargetController (see
 `TargetControllerConsole::enableProgrammingMode()`). Once programming mode has been enabled, the TargetController will
-reject any subsequent commands that involve debug operations (such as `ResumeTargetExecution`, `RaedTargetRegisters`,
+reject any subsequent commands that involve debug operations (such as `ResumeTargetExecution`, `ReadTargetRegisters`,
 etc), until programming mode has been disabled.
 
 The TargetController will emit `ProgrammingModeEnabled` and `ProgrammingModeDisabled` events when it enables/disables

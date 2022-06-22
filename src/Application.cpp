@@ -1,26 +1,28 @@
 #include "Application.hpp"
 
 #include <iostream>
-#include <csignal>
-#include <thread>
 #include <QJsonDocument>
 #include <unistd.h>
-#include <filesystem>
 
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"
+
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace Bloom
 {
     using namespace Exceptions;
 
-    int Application::run(const std::vector<std::string>& arguments) {
+    Application::Application(std::vector<std::string>&& arguments)
+        : arguments(std::move(arguments))
+    {}
+
+    int Application::run() {
         try {
             this->setName("Bloom");
 
-            if (!arguments.empty()) {
-                auto& firstArg = arguments.front();
+            if (this->arguments.size() > 1) {
+                auto& firstArg = this->arguments.at(1);
                 const auto commandHandlersByCommandName = this->getCommandHandlersByCommandName();
 
                 if (commandHandlersByCommandName.contains(firstArg)) {
@@ -36,7 +38,7 @@ namespace Bloom
             }
 
 #ifdef BLOOM_DEBUG_BUILD
-            Logger::warning("This is a debug build - some functions may not work as expected.");
+            Logger::warning("This is a debug build - some functions may not work as expected");
 #endif
 
             this->startup();
@@ -332,9 +334,7 @@ namespace Bloom
     }
 
     int Application::initProject() {
-        auto configFile = QFile(
-            QString::fromStdString(std::filesystem::current_path().string() + "/bloom.json")
-        );
+        auto configFile = QFile(QString::fromStdString(Paths::projectConfigPath()));
 
         if (configFile.exists()) {
             throw Exception("Bloom configuration file (bloom.json) already exists in working directory.");
