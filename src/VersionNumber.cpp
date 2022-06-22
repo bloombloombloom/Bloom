@@ -1,6 +1,5 @@
 #include "VersionNumber.hpp"
 
-#include <QString>
 #include <QStringList>
 
 namespace Bloom
@@ -15,15 +14,18 @@ namespace Bloom
         );
     }
 
-    VersionNumber::VersionNumber(const std::string& versionNumber) {
-        auto versionNumberQStr = QString::fromStdString(versionNumber);
-        const auto explodedString = versionNumberQStr.split('.');
+    VersionNumber::VersionNumber(const std::string& versionNumber)
+        : VersionNumber(QString::fromStdString(versionNumber))
+    {}
+
+    VersionNumber::VersionNumber(QString versionNumber) {
+        const auto explodedString = versionNumber.split('.');
 
         this->major = explodedString.value(0, "0").toUShort();
         this->minor = explodedString.value(1, "0").toUShort();
         this->patch = explodedString.value(2, "0").toUShort();
 
-        this->combined = versionNumberQStr.remove('.').toUInt();
+        this->combined = versionNumber.remove('.').toUInt();
     }
 
     std::string VersionNumber::toString() const {

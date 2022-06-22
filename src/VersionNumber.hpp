@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <QString>
 
 namespace Bloom
 {
@@ -10,6 +11,7 @@ namespace Bloom
     public:
         VersionNumber(std::uint16_t major, std::uint16_t minor, std::uint16_t patch);
         VersionNumber(const std::string& versionNumber);
+        VersionNumber(QString versionNumber);
 
         std::string toString() const;
 

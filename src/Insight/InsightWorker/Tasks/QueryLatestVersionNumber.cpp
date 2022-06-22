@@ -28,7 +28,7 @@ namespace Bloom
             if (jsonResponseObject.contains("latestVersionNumber")) {
                 emit this->latestVersionNumberRetrieved(
                     VersionNumber(
-                        jsonResponseObject.value("latestVersionNumber").toString().toStdString()
+                        jsonResponseObject.value("latestVersionNumber").toString()
                     )
                 );
             }
