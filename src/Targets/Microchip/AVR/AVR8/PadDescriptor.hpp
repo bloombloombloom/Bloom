@@ -21,22 +21,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::string name;
 
         std::optional<std::uint8_t> gpioPinNumber;
-
-        /**
-         * AVR8 GPIO pins can be manipulated by writing to an IO register address. The gpioPortAddress member
-         * holds this address.
-         */
-        std::optional<std::uint16_t> gpioPortSetAddress;
+        std::optional<std::uint16_t> gpioPortAddress;
         std::optional<std::uint16_t> gpioPortInputAddress;
-
-        std::optional<std::uint16_t> gpioPortClearAddress;
-
-        /**
-         * The data direction of a pin is configured via a data direction register (DDR), which, like the
-         * gpioPortSetAddress, is an IO register.
-         */
-        std::optional<std::uint16_t> ddrSetAddress;
-
-        std::optional<std::uint16_t> ddrClearAddress;
+        std::optional<std::uint16_t> gpioDdrAddress;
     };
 }

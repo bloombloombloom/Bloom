@@ -441,8 +441,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                             for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
                                 if (registerName.find("port") == 0) {
                                     // This is the data register for the port
-                                    padDescriptor.gpioPortSetAddress = portRegister.offset;
-                                    padDescriptor.gpioPortClearAddress = portRegister.offset;
+                                    padDescriptor.gpioPortAddress = portRegister.offset;
 
                                 } else if (registerName.find("pin") == 0) {
                                     // This is the input data register for the port
@@ -450,8 +449,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
                                 } else if (registerName.find("ddr") == 0) {
                                     // This is the data direction register for the port
-                                    padDescriptor.ddrSetAddress = portRegister.offset;
-                                    padDescriptor.ddrClearAddress = portRegister.offset;
+                                    padDescriptor.gpioDdrAddress = portRegister.offset;
                                 }
                             }
 
@@ -460,46 +458,31 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                             auto registerGroup = portModule->registerGroupsMappedByName.find("port")->second;
 
                             for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
-                                if (registerName.find("outset") == 0) {
+                                if (registerName == "out") {
                                     // Include the port register offset
-                                    padDescriptor.gpioPortSetAddress = (portPeripheralRegisterGroup.has_value()
-                                        && portPeripheralRegisterGroup->offset.has_value()) ?
-                                        portPeripheralRegisterGroup->offset.value_or(0) : 0;
+                                    padDescriptor.gpioPortAddress = (
+                                        portPeripheralRegisterGroup.has_value()
+                                        && portPeripheralRegisterGroup->offset.has_value()
+                                    )
+                                        ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
+                                        : 0 + portRegister.offset;
 
-                                    padDescriptor.gpioPortSetAddress = padDescriptor.gpioPortSetAddress.value()
-                                        + portRegister.offset;
 
-                                } else if (registerName.find("outclr") == 0) {
-                                    padDescriptor.gpioPortClearAddress = (portPeripheralRegisterGroup.has_value()
-                                        && portPeripheralRegisterGroup->offset.has_value()) ?
-                                        portPeripheralRegisterGroup->offset.value_or(0) : 0;
-
-                                    padDescriptor.gpioPortClearAddress = padDescriptor.gpioPortClearAddress.value()
-                                        + portRegister.offset;
-
-                                } else if (registerName.find("dirset") == 0) {
-                                    padDescriptor.ddrSetAddress = (portPeripheralRegisterGroup.has_value()
-                                        && portPeripheralRegisterGroup->offset.has_value()) ?
-                                        portPeripheralRegisterGroup->offset.value_or(0) : 0;
-
-                                    padDescriptor.ddrSetAddress = padDescriptor.ddrSetAddress.value()
-                                        + portRegister.offset;
-
-                                } else if (registerName.find("dirclr") == 0) {
-                                    padDescriptor.ddrClearAddress = (portPeripheralRegisterGroup.has_value()
-                                        && portPeripheralRegisterGroup->offset.has_value()) ?
-                                        portPeripheralRegisterGroup->offset.value_or(0) : 0;
-
-                                    padDescriptor.ddrClearAddress = padDescriptor.ddrClearAddress.value()
-                                        + portRegister.offset;
+                                } else if (registerName == "dir") {
+                                    padDescriptor.gpioDdrAddress = (
+                                        portPeripheralRegisterGroup.has_value()
+                                            && portPeripheralRegisterGroup->offset.has_value()
+                                    )
+                                        ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
+                                        : 0 + portRegister.offset;
 
                                 } else if (registerName == "in") {
-                                    padDescriptor.gpioPortInputAddress = (portPeripheralRegisterGroup.has_value()
-                                        && portPeripheralRegisterGroup->offset.has_value()) ?
-                                        portPeripheralRegisterGroup->offset.value_or(0) : 0;
-
-                                    padDescriptor.gpioPortInputAddress = padDescriptor.gpioPortInputAddress.value()
-                                        + portRegister.offset;
+                                    padDescriptor.gpioPortInputAddress = (
+                                        portPeripheralRegisterGroup.has_value()
+                                            && portPeripheralRegisterGroup->offset.has_value()
+                                    )
+                                        ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
+                                        : 0 + portRegister.offset;
                                 }
                             }
                         }
@@ -570,7 +553,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
                 if (this->padDescriptorsByName.contains(targetPin.padName)) {
                     const auto& pad = this->padDescriptorsByName.at(targetPin.padName);
-                    if (pad.gpioPortSetAddress.has_value() && pad.ddrSetAddress.has_value()) {
+                    if (pad.gpioPortAddress.has_value() && pad.gpioDdrAddress.has_value()) {
                         targetPin.type = TargetPinType::GPIO;
                     }
                 }

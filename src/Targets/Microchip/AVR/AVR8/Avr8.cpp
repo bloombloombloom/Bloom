@@ -452,23 +452,23 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
                 auto pinState = TargetPinState();
 
-                if (pad.ddrSetAddress.has_value()) {
-                    auto dataDirectionRegisterValue = readMemoryBitset(pad.ddrSetAddress.value());
-                    pinState.ioDirection = dataDirectionRegisterValue.test(pad.gpioPinNumber.value()) ?
+                if (pad.gpioDdrAddress.has_value()) {
+                    const auto ddrValue = readMemoryBitset(pad.gpioDdrAddress.value());
+
+                    pinState.ioDirection = ddrValue.test(pad.gpioPinNumber.value()) ?
                         TargetPinState::IoDirection::OUTPUT : TargetPinState::IoDirection::INPUT;
 
                     if (pinState.ioDirection == TargetPinState::IoDirection::OUTPUT
-                        && pad.gpioPortSetAddress.has_value()
+                        && pad.gpioPortAddress.has_value()
                     ) {
-                        auto portRegisterValue = readMemoryBitset(pad.gpioPortSetAddress.value());
-                        pinState.ioState = portRegisterValue.test(pad.gpioPinNumber.value()) ?
+                        const auto portRegisterValueBitset = readMemoryBitset(pad.gpioPortAddress.value());
+                        pinState.ioState = portRegisterValueBitset.test(pad.gpioPinNumber.value()) ?
                             TargetPinState::IoState::HIGH : TargetPinState::IoState::LOW;
 
                     } else if (pinState.ioDirection == TargetPinState::IoDirection::INPUT
                         && pad.gpioPortInputAddress.has_value()
                     ) {
-                        auto portInputRegisterValue = readMemoryBitset(pad.gpioPortInputAddress.value());
-                        auto h = portInputRegisterValue.to_string();
+                        const auto portInputRegisterValue = readMemoryBitset(pad.gpioPortInputAddress.value());
                         pinState.ioState = portInputRegisterValue.test(pad.gpioPinNumber.value()) ?
                             TargetPinState::IoState::HIGH : TargetPinState::IoState::LOW;
                     }
@@ -495,126 +495,63 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             throw Exception("Missing IO direction state");
         }
 
-        auto& variant = this->targetVariantsById.at(variantId);
-        auto& padDescriptor = this->padDescriptorsByName.at(pinDescriptor.padName);
+        const auto& variant = this->targetVariantsById.at(variantId);
+        const auto& padDescriptor = this->padDescriptorsByName.at(pinDescriptor.padName);
         auto ioState = state.ioState;
 
         if (state.ioDirection == TargetPinState::IoDirection::INPUT) {
-            // When setting the direction to INPUT, we must always set the IO pinstate to LOW
+            // When setting the direction to INPUT, we must always set the IO pin state to LOW
             ioState = TargetPinState::IoState::LOW;
         }
 
         if (
-            !padDescriptor.ddrSetAddress.has_value()
-            || !padDescriptor.gpioPortSetAddress.has_value()
+            !padDescriptor.gpioDdrAddress.has_value()
+            || !padDescriptor.gpioPortAddress.has_value()
             || !padDescriptor.gpioPinNumber.has_value()
         ) {
             throw Exception("Inadequate pad descriptor");
         }
 
-        auto pinNumber = padDescriptor.gpioPinNumber.value();
-        auto ddrSetAddress = padDescriptor.ddrSetAddress.value();
-        auto ddrSetValue = this->readMemory(TargetMemoryType::RAM, ddrSetAddress, 1);
+        const auto pinNumber = padDescriptor.gpioPinNumber.value();
+        const auto ddrAddress = padDescriptor.gpioDdrAddress.value();
+        const auto ddrValue = this->readMemory(TargetMemoryType::RAM, ddrAddress, 1);
 
-        if (ddrSetValue.empty()) {
-            throw Exception("Failed to read DDSR value");
+        if (ddrValue.empty()) {
+            throw Exception("Failed to read DDR value");
         }
 
-        auto ddrSetBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(ddrSetValue.front());
-        if (ddrSetBitset.test(pinNumber) != (state.ioDirection == TargetPinState::IoDirection::OUTPUT)) {
+        auto ddrValueBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(ddrValue.front());
+        if (ddrValueBitset.test(pinNumber) != (state.ioDirection == TargetPinState::IoDirection::OUTPUT)) {
             // DDR needs updating
-            ddrSetBitset.set(pinNumber, (state.ioDirection == TargetPinState::IoDirection::OUTPUT));
+            ddrValueBitset.set(pinNumber, (state.ioDirection == TargetPinState::IoDirection::OUTPUT));
 
             this->writeMemory(
                 TargetMemoryType::RAM,
-                ddrSetAddress,
-                {static_cast<unsigned char>(ddrSetBitset.to_ulong())}
+                ddrAddress,
+                {static_cast<unsigned char>(ddrValueBitset.to_ulong())}
             );
         }
 
-        if (padDescriptor.ddrClearAddress.has_value() && padDescriptor.ddrClearAddress != ddrSetAddress) {
-            // We also need to ensure the data direction clear register value is correct
-            auto ddrClearAddress = padDescriptor.ddrClearAddress.value();
-            auto ddrClearValue = this->readMemory(TargetMemoryType::RAM, ddrClearAddress, 1);
-
-            if (ddrClearValue.empty()) {
-                throw Exception("Failed to read DDCR value");
-            }
-
-            auto ddrClearBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(ddrClearValue.front());
-            if (ddrClearBitset.test(pinNumber) == (state.ioDirection == TargetPinState::IoDirection::INPUT)) {
-                ddrClearBitset.set(pinNumber, (state.ioDirection == TargetPinState::IoDirection::INPUT));
-
-                this->writeMemory(
-                    TargetMemoryType::RAM,
-                    ddrClearAddress,
-                    {static_cast<unsigned char>(ddrClearBitset.to_ulong())}
-                );
-            }
-        }
-
         if (ioState.has_value()) {
-            auto portSetAddress = padDescriptor.gpioPortSetAddress.value();
+            const auto portRegisterAddress = padDescriptor.gpioPortAddress.value();
+            const auto portRegisterValue = this->readMemory(TargetMemoryType::RAM, portRegisterAddress, 1);
 
-            if (ioState == TargetPinState::IoState::HIGH
-                || !padDescriptor.gpioPortClearAddress.has_value()
-                || padDescriptor.gpioPortClearAddress == portSetAddress
-            ) {
-                if (padDescriptor.gpioPortClearAddress != portSetAddress) {
-                    /*
-                     * We don't need to read the SET register if the SET and CLEAR operations are performed via
-                     * different registers.
-                     *
-                     * Instead, we can just set the appropriate bit against the SET register.
-                     */
-                    this->writeMemory(
-                        TargetMemoryType::RAM,
-                        portSetAddress,
-                        {static_cast<unsigned char>(0x01 << pinNumber)}
-                    );
-
-                } else {
-                    auto portSetRegisterValue = this->readMemory(
-                        TargetMemoryType::RAM,
-                        portSetAddress,
-                        1
-                    );
-
-                    if (portSetRegisterValue.empty()) {
-                        throw Exception("Failed to read PORT register value");
-                    }
-
-                    auto portSetBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(
-                        portSetRegisterValue.front()
-                    );
-                    if (portSetBitset.test(pinNumber) != (ioState == TargetPinState::IoState::HIGH)) {
-                        // PORT set register needs updating
-                        portSetBitset.set(pinNumber, (ioState == TargetPinState::IoState::HIGH));
-
-                        this->writeMemory(
-                            TargetMemoryType::RAM,
-                            portSetAddress,
-                            {static_cast<unsigned char>(portSetBitset.to_ulong())}
-                        );
-                    }
-                }
+            if (portRegisterValue.empty()) {
+                throw Exception("Failed to read PORT register value");
             }
 
-            /*
-             * We only need to update the PORT clear register if the IO state was set to LOW, and the clear register is
-             * not the same register as the set register.
-             */
-            if (ioState == TargetPinState::IoState::LOW
-                && padDescriptor.gpioPortClearAddress.has_value()
-                && padDescriptor.gpioPortClearAddress != portSetAddress
-            ) {
-                // We also need to ensure the PORT clear register value is correct
-                auto portClearAddress = padDescriptor.gpioPortClearAddress.value();
+            auto portRegisterValueBitset = std::bitset<std::numeric_limits<unsigned char>::digits>(
+                portRegisterValue.front()
+            );
+
+            if (portRegisterValueBitset.test(pinNumber) != (ioState == TargetPinState::IoState::HIGH)) {
+                // PORT set register needs updating
+                portRegisterValueBitset.set(pinNumber, (ioState == TargetPinState::IoState::HIGH));
 
                 this->writeMemory(
                     TargetMemoryType::RAM,
-                    portClearAddress,
-                    {static_cast<unsigned char>(0x01 << pinNumber)}
+                    portRegisterAddress,
+                    {static_cast<unsigned char>(portRegisterValueBitset.to_ulong())}
                 );
             }
         }
