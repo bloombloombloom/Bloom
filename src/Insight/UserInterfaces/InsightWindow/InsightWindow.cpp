@@ -84,7 +84,7 @@ namespace Bloom
 
         QApplication::setWindowIcon(QIcon(
             QString::fromStdString(Paths::compiledResourcesPath()
-                + "/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg"
+                + "/src/Insight/UserInterfaces/InsightWindow/Images/bloom-icon.svg"
             )
         ));
 

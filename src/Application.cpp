@@ -405,8 +405,9 @@ namespace Bloom
             this->targetController.get()
         );
 
-        auto tcStateChangeEvent =
-            this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>();
+        const auto tcStateChangeEvent = this->applicationEventListener->waitForEvent<
+            Events::TargetControllerThreadStateChanged
+        >();
 
         if (!tcStateChangeEvent.has_value() || tcStateChangeEvent->get()->getState() != ThreadState::READY) {
             throw Exception("TargetController failed to startup.");
@@ -418,7 +419,7 @@ namespace Bloom
             return;
         }
 
-        auto targetControllerState = this->targetController->getThreadState();
+        const auto targetControllerState = this->targetController->getThreadState();
         if (targetControllerState == ThreadState::STARTING || targetControllerState == ThreadState::READY) {
             EventManager::triggerEvent(std::make_shared<Events::ShutdownTargetController>());
             this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>(
@@ -443,7 +444,9 @@ namespace Bloom
             this->debugServer.get()
         );
 
-        auto dsStateChangeEvent = this->applicationEventListener->waitForEvent<Events::DebugServerThreadStateChanged>();
+        const auto dsStateChangeEvent = this->applicationEventListener->waitForEvent<
+            Events::DebugServerThreadStateChanged
+        >();
 
         if (!dsStateChangeEvent.has_value() || dsStateChangeEvent->get()->getState() != ThreadState::READY) {
             throw Exception("DebugServer failed to startup.");
@@ -455,7 +458,7 @@ namespace Bloom
             return;
         }
 
-        auto debugServerState = this->debugServer->getThreadState();
+        const auto debugServerState = this->debugServer->getThreadState();
         if (debugServerState == ThreadState::STARTING || debugServerState == ThreadState::READY) {
             EventManager::triggerEvent(std::make_shared<Events::ShutdownDebugServer>());
             this->applicationEventListener->waitForEvent<Events::DebugServerThreadStateChanged>(

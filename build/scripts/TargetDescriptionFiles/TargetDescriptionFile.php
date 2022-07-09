@@ -85,10 +85,11 @@ class TargetDescriptionFile
         $this->loadPinouts();
     }
 
-    protected function rawValueToInt(string $value): ?int
+    protected function stringToInt(string $value): ?int
     {
-        return stristr($value, '0x') !== false ? (int) hexdec($value) :
-            (strlen($value) > 0 ? (int) $value : null);
+        return stristr($value, '0x') !== false
+            ? (int) hexdec($value)
+            : (strlen($value) > 0 ? (int) $value : null);
     }
 
     private function loadVariants(): void
@@ -133,9 +134,9 @@ class TargetDescriptionFile
 
             $addressSpace->name = isset($addressSpaceAttrs['name']) ? $addressSpaceAttrs['name'] : null;
             $addressSpace->startAddress = isset($addressSpaceAttrs['start'])
-                ? $this->rawValueToInt($addressSpaceAttrs['start']) : null;
+                ? $this->stringToInt($addressSpaceAttrs['start']) : null;
             $addressSpace->size = isset($addressSpaceAttrs['size'])
-                ? $this->rawValueToInt($addressSpaceAttrs['size']) : null;
+                ? $this->stringToInt($addressSpaceAttrs['size']) : null;
 
             $memorySegmentElements = $addressSpaceElement->xpath('memory-segment');
             foreach ($memorySegmentElements as $memorySegmentElement) {
@@ -144,12 +145,12 @@ class TargetDescriptionFile
 
                 $memorySegment->name = isset($memorySegmentAttrs['name']) ? $memorySegmentAttrs['name'] : null;
                 $memorySegment->startAddress = isset($memorySegmentAttrs['start'])
-                    ? $this->rawValueToInt($memorySegmentAttrs['start']) : null;
+                    ? $this->stringToInt($memorySegmentAttrs['start']) : null;
                 $memorySegment->type = isset($memorySegmentAttrs['type']) ? $memorySegmentAttrs['type'] : null;
                 $memorySegment->size = isset($memorySegmentAttrs['size'])
-                    ? $this->rawValueToInt($memorySegmentAttrs['size']) : null;
+                    ? $this->stringToInt($memorySegmentAttrs['size']) : null;
                 $memorySegment->pageSize = isset($memorySegmentAttrs['pagesize'])
-                    ? $this->rawValueToInt($memorySegmentAttrs['pagesize']) : null;
+                    ? $this->stringToInt($memorySegmentAttrs['pagesize']) : null;
 
                 $addressSpace->memorySegmentsByTypeAndName[strtolower($memorySegment->type)]
                 [strtolower($memorySegment->name)] = $memorySegment;
@@ -201,7 +202,7 @@ class TargetDescriptionFile
         }
 
         $registerGroup->offset = isset($registerGroupAttrs['offset'])
-            ? $this->rawValueToInt($registerGroupAttrs['offset']) : null;
+            ? $this->stringToInt($registerGroupAttrs['offset']) : null;
 
         $registerElements = $registerGroupElement->xpath('register');
         foreach ($registerElements as $registerElement) {
@@ -214,9 +215,9 @@ class TargetDescriptionFile
             }
 
             $register->offset = isset($registerAttrs['offset'])
-                ? $this->rawValueToInt($registerAttrs['offset']) : null;
+                ? $this->stringToInt($registerAttrs['offset']) : null;
             $register->size = isset($registerAttrs['size'])
-                ? $this->rawValueToInt($registerAttrs['size']) : null;
+                ? $this->stringToInt($registerAttrs['size']) : null;
 
             $bitFieldElements = $registerElement->xpath('bitfield');
             foreach ($bitFieldElements as $bitFieldElement) {
@@ -282,7 +283,7 @@ class TargetDescriptionFile
 
                 $signal->padName = isset($signalAttrs['pad']) ? $signalAttrs['pad'] : null;
                 $signal->function = isset($signalAttrs['function']) ? $signalAttrs['function'] : null;
-                $signal->index = isset($signalAttrs['index']) ? $this->rawValueToInt($signalAttrs['index']) : null;
+                $signal->index = isset($signalAttrs['index']) ? $this->stringToInt($signalAttrs['index']) : null;
 
                 $moduleInstance->signals[] = $signal;
             }
@@ -376,7 +377,7 @@ class TargetDescriptionFile
                 $pin = new Pin();
 
                 $pin->pad = isset($pinAttrs['pad']) ? $pinAttrs['pad'] : null;
-                $pin->position = isset($pinAttrs['position']) ? $this->rawValueToInt($pinAttrs['position']) : null;
+                $pin->position = isset($pinAttrs['position']) ? $this->stringToInt($pinAttrs['position']) : null;
 
                 $pinout->pins[] = $pin;
             }

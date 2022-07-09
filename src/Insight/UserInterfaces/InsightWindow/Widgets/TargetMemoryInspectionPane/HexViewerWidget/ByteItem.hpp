@@ -60,7 +60,6 @@ namespace Bloom::Widgets
     private:
         unsigned char value = 0x00;
         bool valueInitialised = false;
-        bool valueChanged = false;
 
         const HexViewerWidgetSettings& settings;
 

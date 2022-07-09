@@ -145,19 +145,19 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $this->signature = new Signature();
 
             if (isset($signaturePropertyGroup->propertiesMappedByName['signature0'])) {
-                $this->signature->byteZero = $this->rawValueToInt(
+                $this->signature->byteZero = $this->stringToInt(
                     $signaturePropertyGroup->propertiesMappedByName['signature0']->value
                 );
             }
 
             if (isset($signaturePropertyGroup->propertiesMappedByName['signature1'])) {
-                $this->signature->byteOne = $this->rawValueToInt(
+                $this->signature->byteOne = $this->stringToInt(
                     $signaturePropertyGroup->propertiesMappedByName['signature1']->value
                 );
             }
 
             if (isset($signaturePropertyGroup->propertiesMappedByName['signature2'])) {
-                $this->signature->byteTwo = $this->rawValueToInt(
+                $this->signature->byteTwo = $this->stringToInt(
                     $signaturePropertyGroup->propertiesMappedByName['signature2']->value
                 );
             }
@@ -166,71 +166,71 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         $ispParamPropertyGroup = $this->propertyGroupsByName['isp_interface'] ?? null;
         if (!empty($ispParamPropertyGroup)) {
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_timeout'])) {
-                $this->ispProgramModeTimeout = $this->rawValueToInt(
+                $this->ispProgramModeTimeout = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_timeout']->value
                 );
             }
 
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_stabdelay'])) {
-                $this->ispProgramModeStabilizationDelay = $this->rawValueToInt(
+                $this->ispProgramModeStabilizationDelay = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_stabdelay']->value
                 );
             }
 
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_cmdexedelay'])) {
-                $this->ispProgramModeCommandExecutionDelay = $this->rawValueToInt(
+                $this->ispProgramModeCommandExecutionDelay = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_cmdexedelay']->value
                 );
             }
 
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_synchloops'])) {
-                $this->ispProgramModeSyncLoops = $this->rawValueToInt(
+                $this->ispProgramModeSyncLoops = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_synchloops']->value
                 );
             }
 
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_bytedelay'])) {
-                $this->ispProgramModeByteDelay = $this->rawValueToInt(
+                $this->ispProgramModeByteDelay = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_bytedelay']->value
                 );
             }
 
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_pollvalue'])) {
-                $this->ispProgramModePollValue = $this->rawValueToInt(
+                $this->ispProgramModePollValue = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_pollvalue']->value
                 );
             }
 
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_pollindex'])) {
-                $this->ispProgramModePollIndex = $this->rawValueToInt(
+                $this->ispProgramModePollIndex = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispenterprogmode_pollindex']->value
                 );
             }
 
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispleaveprogmode_predelay'])) {
-                $this->ispProgramModePreDelay = $this->rawValueToInt(
+                $this->ispProgramModePreDelay = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispleaveprogmode_predelay']->value
                 );
             }
 
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispleaveprogmode_postdelay'])) {
-                $this->ispProgramModePostDelay = $this->rawValueToInt(
+                $this->ispProgramModePostDelay = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispleaveprogmode_postdelay']->value
                 );
             }
 
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispreadsign_pollindex'])) {
-                $this->ispReadSignaturePollIndex = $this->rawValueToInt(
+                $this->ispReadSignaturePollIndex = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispreadsign_pollindex']->value
                 );
             }
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispreadfuse_pollindex'])) {
-                $this->ispReadFusePollIndex = $this->rawValueToInt(
+                $this->ispReadFusePollIndex = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispreadfuse_pollindex']->value
                 );
             }
             if (isset($ispParamPropertyGroup->propertiesMappedByName['ispreadlock_pollindex'])) {
-                $this->ispReadLockPollIndex = $this->rawValueToInt(
+                $this->ispReadLockPollIndex = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispreadlock_pollindex']->value
                 );
             }
@@ -310,7 +310,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             $this->ocdRevision = isset($ocdProperties['ocd_revision']) ? (int) $ocdProperties['ocd_revision']->value : null;
             $this->ocdDataRegister = isset($ocdProperties['ocd_datareg'])
-                ? $this->rawValueToInt($ocdProperties['ocd_datareg']->value) : null;
+                ? $this->stringToInt($ocdProperties['ocd_datareg']->value) : null;
         }
 
         if (isset($this->modulesByName['cpu'])) {
@@ -427,42 +427,42 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             if (isset($pdiInterfacePropertiesByName['app_section_offset'])) {
                 $this->appSectionPdiOffset = isset($pdiInterfacePropertiesByName['app_section_offset']->value)
-                    ? $this->rawValueToInt($pdiInterfacePropertiesByName['app_section_offset']->value) : null;
+                    ? $this->stringToInt($pdiInterfacePropertiesByName['app_section_offset']->value) : null;
             }
 
             if (isset($pdiInterfacePropertiesByName['boot_section_offset'])) {
                 $this->bootSectionPdiOffset = isset($pdiInterfacePropertiesByName['boot_section_offset']->value)
-                    ? $this->rawValueToInt($pdiInterfacePropertiesByName['boot_section_offset']->value) : null;
+                    ? $this->stringToInt($pdiInterfacePropertiesByName['boot_section_offset']->value) : null;
             }
 
             if (isset($pdiInterfacePropertiesByName['datamem_offset'])) {
                 $this->ramPdiOffset = isset($pdiInterfacePropertiesByName['datamem_offset']->value)
-                    ? $this->rawValueToInt($pdiInterfacePropertiesByName['datamem_offset']->value) : null;
+                    ? $this->stringToInt($pdiInterfacePropertiesByName['datamem_offset']->value) : null;
             }
 
             if (isset($pdiInterfacePropertiesByName['eeprom_offset'])) {
                 $this->eepromPdiOffset = isset($pdiInterfacePropertiesByName['eeprom_offset']->value)
-                    ? $this->rawValueToInt($pdiInterfacePropertiesByName['eeprom_offset']->value) : null;
+                    ? $this->stringToInt($pdiInterfacePropertiesByName['eeprom_offset']->value) : null;
             }
 
             if (isset($pdiInterfacePropertiesByName['user_signatures_offset'])) {
                 $this->userSignaturesPdiOffset = isset($pdiInterfacePropertiesByName['user_signatures_offset']->value)
-                    ? $this->rawValueToInt($pdiInterfacePropertiesByName['user_signatures_offset']->value) : null;
+                    ? $this->stringToInt($pdiInterfacePropertiesByName['user_signatures_offset']->value) : null;
             }
 
             if (isset($pdiInterfacePropertiesByName['prod_signatures_offset'])) {
                 $this->productSignaturesPdiOffset = isset($pdiInterfacePropertiesByName['prod_signatures_offset']->value)
-                    ? $this->rawValueToInt($pdiInterfacePropertiesByName['prod_signatures_offset']->value) : null;
+                    ? $this->stringToInt($pdiInterfacePropertiesByName['prod_signatures_offset']->value) : null;
             }
 
             if (isset($pdiInterfacePropertiesByName['fuse_registers_offset'])) {
                 $this->fuseRegistersPdiOffset = isset($pdiInterfacePropertiesByName['fuse_registers_offset']->value)
-                    ? $this->rawValueToInt($pdiInterfacePropertiesByName['fuse_registers_offset']->value) : null;
+                    ? $this->stringToInt($pdiInterfacePropertiesByName['fuse_registers_offset']->value) : null;
             }
 
             if (isset($pdiInterfacePropertiesByName['lock_registers_offset'])) {
                 $this->lockRegistersPdiOffset = isset($pdiInterfacePropertiesByName['lock_registers_offset']->value)
-                    ? $this->rawValueToInt($pdiInterfacePropertiesByName['lock_registers_offset']->value) : null;
+                    ? $this->stringToInt($pdiInterfacePropertiesByName['lock_registers_offset']->value) : null;
             }
 
             if (isset($this->peripheralModulesByName['nvm'])) {
@@ -509,12 +509,12 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
                 if (isset($updiInterfacePropertiesByName['ocd_base_addr'])) {
                     $this->ocdBaseAddress = isset($updiInterfacePropertiesByName['ocd_base_addr']->value)
-                        ? $this->rawValueToInt($updiInterfacePropertiesByName['ocd_base_addr']->value) : null;
+                        ? $this->stringToInt($updiInterfacePropertiesByName['ocd_base_addr']->value) : null;
                 }
 
                 if (isset($updiInterfacePropertiesByName['progmem_offset'])) {
                     $this->programMemoryUpdiStartAddress = isset($updiInterfacePropertiesByName['progmem_offset']->value)
-                        ? $this->rawValueToInt($updiInterfacePropertiesByName['progmem_offset']->value) : null;
+                        ? $this->stringToInt($updiInterfacePropertiesByName['progmem_offset']->value) : null;
                 }
             }
 
@@ -522,25 +522,25 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 if (isset($dataAddressSpace->memorySegmentsByTypeAndName['signatures']['signatures'])) {
                     $signatureMemSegment = $dataAddressSpace->memorySegmentsByTypeAndName['signatures']['signatures'];
                     $this->signatureSegmentSize = isset($signatureMemSegment->size)
-                        ? $this->rawValueToInt($signatureMemSegment->size) : null;
+                        ? $this->stringToInt($signatureMemSegment->size) : null;
 
                     $this->signatureSegmentStartAddress = isset($signatureMemSegment->startAddress)
-                        ? $this->rawValueToInt($signatureMemSegment->startAddress) : null;
+                        ? $this->stringToInt($signatureMemSegment->startAddress) : null;
                 }
 
                 if (isset($dataAddressSpace->memorySegmentsByTypeAndName['fuses']['fuses'])) {
                     $fusesMemSegment = $dataAddressSpace->memorySegmentsByTypeAndName['fuses']['fuses'];
                     $this->fuseSegmentSize = isset($fusesMemSegment->size)
-                        ? $this->rawValueToInt($fusesMemSegment->size) : null;
+                        ? $this->stringToInt($fusesMemSegment->size) : null;
 
                     $this->fuseSegmentStartAddress = isset($fusesMemSegment->startAddress)
-                        ? $this->rawValueToInt($fusesMemSegment->startAddress) : null;
+                        ? $this->stringToInt($fusesMemSegment->startAddress) : null;
                 }
 
                 if (isset($dataAddressSpace->memorySegmentsByTypeAndName['lockbits']['lockbits'])) {
                     $lockbitsMemSegment = $dataAddressSpace->memorySegmentsByTypeAndName['lockbits']['lockbits'];
                     $this->lockbitsSegmentStartAddress = isset($lockbitsMemSegment->startAddress)
-                        ? $this->rawValueToInt($lockbitsMemSegment->startAddress) : null;
+                        ? $this->stringToInt($lockbitsMemSegment->startAddress) : null;
                 }
             }
         }

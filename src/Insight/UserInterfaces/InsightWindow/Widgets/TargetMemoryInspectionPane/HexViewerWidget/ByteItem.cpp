@@ -41,8 +41,6 @@ namespace Bloom::Widgets
     }
 
     void ByteItem::setValue(unsigned char value) {
-        this->valueChanged = this->valueInitialised && this->value != value;
-
         this->value = value;
         this->hexValue = QString::number(this->value, 16).rightJustified(2, '0').toUpper();
         this->asciiValue = (this->value >= 32 && this->value <= 126)
@@ -63,7 +61,6 @@ namespace Bloom::Widgets
 
         static const auto widgetRect = this->boundingRect();
         static const auto standardTextColor = QColor(0xAF, 0xB1, 0xB3);
-        static const auto valueChangedTextColor = QColor(0x54, 0x7F, 0xBA);
         static auto font = QFont("'Ubuntu', sans-serif");
 
         static const auto highlightedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);

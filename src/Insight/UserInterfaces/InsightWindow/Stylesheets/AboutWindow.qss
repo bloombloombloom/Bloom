@@ -13,7 +13,7 @@ QMainWindow {
     min-width: 150px;
     max-height: 150px;
     max-width: 150px;
-    image: url(":/compiled/src/Insight/UserInterfaces/InsightWindow/Images/BloomIcon.svg");
+    image: url(":/compiled/src/Insight/UserInterfaces/InsightWindow/Images/bloom-icon.svg");
     image-position: center;
 }
 
