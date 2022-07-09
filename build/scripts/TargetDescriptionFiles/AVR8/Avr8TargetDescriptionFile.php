@@ -251,16 +251,15 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
         $progAddressSpace = $this->addressSpacesById['prog'] ?? null;
         if (!empty($progAddressSpace)) {
-            $flashMemorySegment = $progAddressSpace->memorySegmentsByTypeAndName['flash']['flash']
-                ?? $progAddressSpace->memorySegmentsByTypeAndName['flash']['app_section']
-                ?? $progAddressSpace->memorySegmentsByTypeAndName['flash']['progmem'] ?? null;
+            $this->flashSize = $progAddressSpace->size;
+            $this->flashStartAddress = $progAddressSpace->startAddress;
+
+            $firstFlashMemorySegment = reset($progAddressSpace->memorySegmentsByTypeAndName['flash']);
             $bootSectionMemorySegment = $progAddressSpace->memorySegmentsByTypeAndName['flash']['boot_section_1']
                 ?? $progAddressSpace->memorySegmentsByTypeAndName['flash']['boot_section'] ?? null;
 
-            if (!empty($flashMemorySegment)) {
-                $this->flashSize = $flashMemorySegment->size;
-                $this->flashStartAddress = $flashMemorySegment->startAddress;
-                $this->flashPageSize = $flashMemorySegment->pageSize;
+            if (!empty($firstFlashMemorySegment)) {
+                $this->flashPageSize = $firstFlashMemorySegment->pageSize;
             }
 
             if (!empty($bootSectionMemorySegment)) {
