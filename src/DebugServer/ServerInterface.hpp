@@ -12,6 +12,8 @@ namespace Bloom::DebugServer
     class ServerInterface
     {
     public:
+        virtual ~ServerInterface() = default;
+
         /**
          * Should return the name of the server.
          *
