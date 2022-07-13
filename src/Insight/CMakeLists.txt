@@ -93,7 +93,7 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/UiFiles/TargetMemoryInspectionPane.ui"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/UiFiles/HexViewerWidget.ui"
-        "./UserInterfaces/InsightWindow/Images/BloomIcon.svg"
+        "./UserInterfaces/InsightWindow/Images/bloom-icon.svg"
         "./UserInterfaces/InsightWindow/Images/RAM.svg"
         "./UserInterfaces/InsightWindow/Images/refresh.svg"
         "./UserInterfaces/InsightWindow/Images/refresh-disabled.svg"
