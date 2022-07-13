@@ -115,7 +115,7 @@ target_compile_options(
 
 target_link_options(
     Bloom
-    PUBLIC [=[-Wl,--disable-new-dtags]=] #,--verbose
+    PUBLIC [=[-Wl,-z,origin]=] #,--verbose
 )
 
 if (${ENABLE_SANITIZERS})
