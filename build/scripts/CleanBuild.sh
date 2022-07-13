@@ -10,9 +10,9 @@ rm -fr Bloom-*.rpm;
 rm -fr bloom-*.pkg.tar.zst;
 rm -fr "_CPack_Packages";
 
-export CMAKE_PREFIX_PATH=/opt/Qt/6.1.2/gcc_64/
+export CMAKE_PREFIX_PATH=/opt/Qt/6.2.4/gcc_64/
 
-cd build/cmake-build-release/ && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=/usr/local/install/bin/g++ ../../
+cd build/cmake-build-release/ && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=/usr/bin/g++ ../../
 cd /home/nav/Projects/Bloom/ && cmake --build /home/nav/Projects/Bloom/build/cmake-build-release --target clean
 
 cmake --build /home/nav/Projects/Bloom/build/cmake-build-release --target Bloom

@@ -28,7 +28,7 @@ namespace Bloom
         , insightProjectSettings(insightProjectSettings)
         , application(
             (
-                QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, false),
+                QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true),
 #ifndef BLOOM_DEBUG_BUILD
                 QCoreApplication::addLibraryPath(QString::fromStdString(Paths::applicationDirPath() + "/plugins")),
 #endif

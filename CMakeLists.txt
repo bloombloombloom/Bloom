@@ -59,7 +59,7 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     # CMAKE_BUILD_RPATH needs to point to the local Qt installation, to use Gammaray during development.
     # This is because the distributed Qt binaries may not be compatible with the local installation of Gammaray
     # If you don't intend to use Gammaray, you can comment this out
-    set(CMAKE_BUILD_RPATH /opt/Qt/6.1.2/gcc_64/lib/)
+    set(CMAKE_BUILD_RPATH /opt/Qt/6.2.4/gcc_64/lib/)
 endif()
 
 add_executable(Bloom)
@@ -80,7 +80,7 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     # The QT source directory is specified as an include path just so that CLion can navigate to the Qt implementation
     # files, during debugging. No QT headers are actually included via this method. Feel free to comment this out if
     # you don't possess the Qt source code on your machine. You may need to invalidate CMake cache.
-    target_include_directories(Bloom PUBLIC /opt/Qt/6.1.2/Src)
+    target_include_directories(Bloom PUBLIC /opt/Qt/6.2.4/Src)
 endif()
 
 target_link_libraries(Bloom -lstdc++fs)
