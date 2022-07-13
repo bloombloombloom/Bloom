@@ -78,3 +78,73 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/FocusedRegionItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/ExcludedRegionItem.cpp
 )
+
+# Insight resources
+qt_add_resources(
+    Bloom
+    "InsightResources"
+    PREFIX
+        "/compiled/src/Insight"
+    FILES
+        # Insight Window
+        "./UserInterfaces/InsightWindow/Stylesheets/Global.qss"
+        "./UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui"
+        "./UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/UiFiles/TargetMemoryInspectionPane.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/UiFiles/HexViewerWidget.ui"
+        "./UserInterfaces/InsightWindow/Images/BloomIcon.svg"
+        "./UserInterfaces/InsightWindow/Images/RAM.svg"
+        "./UserInterfaces/InsightWindow/Images/refresh.svg"
+        "./UserInterfaces/InsightWindow/Images/refresh-disabled.svg"
+        "./UserInterfaces/InsightWindow/Images/down-arrow.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/collapse-all.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/expand-all.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/arrow.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register-group.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/search-registers.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon-disabled.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-stack-memory.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-stack-memory-disabled.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-focused-memory.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-focused-memory-disabled.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/manage-focused-regions.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-hovered-rows-columns.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-hovered-rows-columns-disabled.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/display-annotations.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/display-annotations-disabled.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/ascii-view.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/ascii-view-disabled.svg"
+
+        # Target package widgets
+        "./UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss"
+        "./UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss"
+
+        # Target register inspector window
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/TargetRegisterInspectorWindow.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg"
+
+        # Focused memory region manager window
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/MemoryRegionManagerWindow.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Stylesheets/MemoryRegionManagerWindow.qss"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/FocusedMemoryRegionForm.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/ExcludedMemoryRegionForm.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/icon.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/add-region.svg"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Images/remove-region.svg"
+
+        # About window
+        "./UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui"
+        "./UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss"
+
+        # Error dialogue
+        "./UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui"
+        "./UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss"
+        "./UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg"
+)

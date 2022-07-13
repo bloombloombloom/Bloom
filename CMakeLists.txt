@@ -5,9 +5,6 @@ set(CMAKE_PROJECT_HOMEPAGE_URL "https://bloom.oscillate.io")
 
 set(CMAKE_VERBOSE_MAKEFILE off)
 
-# Create directory for generated sources
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/Generated)
-
 set(CMAKE_CXX_STANDARD 20)
 set(ENABLE_SANITIZERS off)
 
@@ -68,6 +65,17 @@ target_sources(
     Bloom
     PRIVATE
         build/resources/TargetDescriptionFiles/AVR/Mapping.json
+)
+
+qt_add_resources(
+    Bloom
+    "ApplicationResources"
+    PREFIX
+        "/compiled"
+    FILES
+        "./resources/bloom.template.json"
+        "./resources/help.txt"
+        "./resources/gdbHelpMonitorInfo.txt"
 )
 
 add_subdirectory(src)
@@ -164,19 +172,6 @@ add_custom_command(
     COMMAND echo 'Processing AVR target description files.'
     COMMAND
     php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/Avr8TargetDescriptionFiles.php
-)
-
-# Compile resources
-add_custom_command(
-    OUTPUT
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Generated/resources.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Generated/resources_fake.cpp
-    DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.qrc
-    COMMAND echo 'Compiling QT resources. |${CMAKE_BUILD_TYPE}|'
-    COMMAND
-    rcc -o ${CMAKE_CURRENT_SOURCE_DIR}/src/Generated/resources.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.qrc
 )
 
 # Copy resources/fonts into build/resources/Fonts
