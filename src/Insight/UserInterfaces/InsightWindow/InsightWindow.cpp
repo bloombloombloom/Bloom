@@ -678,6 +678,8 @@ namespace Bloom
                 (containerSize.height() / 2) - this->mainMenuBar->height() - this->bottomMenuBar->height() - 20
             )
         );
+
+        this->bottomPanel->setMinimumResize(static_cast<int>(containerSize.height() * 0.25));
     }
 
     void InsightWindow::adjustMinimumSize() {
