@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <QEvent>
 #include <QGraphicsItem>
+#include <QFont>
 #include <optional>
 #include <set>
 
@@ -39,8 +40,8 @@ namespace Bloom::Widgets
             std::size_t byteIndex,
             std::uint32_t address,
             std::optional<std::uint32_t>& currentStackPointer,
-            std::optional<ByteItem*>& hoveredByteItem,
-            std::optional<AnnotationItem*>& hoveredAnnotationItem,
+            ByteItem** hoveredByteItem,
+            AnnotationItem** hoveredAnnotationItem,
             std::set<std::uint32_t>& highlightedAddresses,
             const HexViewerWidgetSettings& settings
         );
@@ -66,9 +67,12 @@ namespace Bloom::Widgets
         QString hexValue;
         std::optional<QString> asciiValue;
 
-        std::optional<ByteItem*>& hoveredByteItem;
-        std::optional<AnnotationItem*>& hoveredAnnotationItem;
+        ByteItem** hoveredByteItem;
+        AnnotationItem** hoveredAnnotationItem;
         std::optional<std::uint32_t>& currentStackPointer;
         std::set<std::uint32_t>& highlightedAddresses;
+
+        const QColor* getBackgroundColor();
+        const QColor* getTextColor();
     };
 }

@@ -72,8 +72,8 @@ namespace Bloom::Widgets
 
         bool enabled = true;
 
-        std::optional<ByteItem*> hoveredByteWidget;
-        std::optional<AnnotationItem*> hoveredAnnotationItem;
+        ByteItem* hoveredByteWidget = nullptr;
+        AnnotationItem* hoveredAnnotationItem = nullptr;
 
         std::optional<std::uint32_t> currentStackPointer;
 

@@ -8,8 +8,8 @@ namespace Bloom::Widgets
         std::size_t byteIndex,
         std::uint32_t address,
         std::optional<std::uint32_t>& currentStackPointer,
-        std::optional<ByteItem*>& hoveredByteItem,
-        std::optional<AnnotationItem*>& hoveredAnnotationItem,
+        ByteItem** hoveredByteItem,
+        AnnotationItem** hoveredAnnotationItem,
         std::set<std::uint32_t>& highlightedAddresses,
         const HexViewerWidgetSettings& settings
     )
@@ -57,116 +57,172 @@ namespace Bloom::Widgets
         );
         painter->setPen(Qt::PenStyle::NoPen);
 
-        // TODO: This code could do with some tidying. It's getting quite messy.
-
         static const auto widgetRect = this->boundingRect();
-        static const auto standardTextColor = QColor(0xAF, 0xB1, 0xB3);
-        static auto font = QFont("'Ubuntu', sans-serif");
+        static const auto font = QFont("'Ubuntu', sans-serif", 8);
 
-        static const auto highlightedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
-        static const auto focusedRegionBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
-        static const auto stackMemoryBackgroundColor = QColor(0x67, 0x57, 0x20, 210);
-        static const auto hoveredBackgroundColor = QColor(0x8E, 0x8B, 0x83, 70);
-        static const auto hoveredNeighbourBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
-        static const auto hoveredAnnotationBackgroundColor = QColor(0x8E, 0x8B, 0x83, 50);
+        const auto* backgroundColor = this->getBackgroundColor();
+        const auto* textColor = this->getTextColor();
 
-        const auto isEnabled = this->isEnabled();
-
-        const auto highlightingEnabled = !this->highlightedAddresses.empty();
-        const auto highlightedByte = highlightingEnabled && this->highlightedAddresses.contains(this->address);
-
-        auto textColor = standardTextColor;
-        auto asciiTextColor = QColor(0xA7, 0x77, 0x26);
-
-        auto backgroundColor = std::optional<QColor>();
-
-        font.setPixelSize(11);
-        painter->setFont(font);
-
-        if (highlightedByte) {
-            backgroundColor = highlightedBackgroundColor;
-            asciiTextColor = standardTextColor;
-
-        } else if (this->settings.highlightStackMemory && this->currentStackPointer.has_value()
-            && this->address > this->currentStackPointer
-        ) {
-            // This byte is within the stack memory
-            backgroundColor = stackMemoryBackgroundColor;
-            asciiTextColor = standardTextColor;
-
-        } else if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
-            // This byte is within a focused region
-            backgroundColor = focusedRegionBackgroundColor;
-        }
-
-        const auto* hoveredByteItem = this->hoveredByteItem.value_or(nullptr);
-        const auto* hoveredAnnotationItem = this->hoveredAnnotationItem.value_or(nullptr);
-        if (hoveredByteItem != nullptr) {
-            if (hoveredByteItem == this) {
-                if (backgroundColor.has_value()) {
-                    backgroundColor->setAlpha(255);
-
-                } else {
-                    backgroundColor = hoveredBackgroundColor;
-                }
-
-            } else if (this->settings.highlightHoveredRowAndCol
-                && (
-                    hoveredByteItem->currentColumnIndex == this->currentColumnIndex
-                    || hoveredByteItem->currentRowIndex == this->currentRowIndex
-                )
-            ) {
-                if (backgroundColor.has_value()) {
-                    backgroundColor->setAlpha(220);
-
-                } else {
-                    backgroundColor = hoveredNeighbourBackgroundColor;
-                }
-            }
-
-        } else if (
-            !this->settings.highlightFocusedMemory
-            && hoveredAnnotationItem != nullptr
-            && this->address >= hoveredAnnotationItem->startAddress
-            && this->address <= hoveredAnnotationItem->endAddress
-        ) {
-            backgroundColor = hoveredAnnotationBackgroundColor;
-        }
-
-        if (backgroundColor.has_value()) {
-            if (!isEnabled || (highlightingEnabled && !highlightedByte)) {
-                backgroundColor->setAlpha(100);
-            }
-
-            painter->setBrush(backgroundColor.value());
+        if (backgroundColor != nullptr) {
+            painter->setBrush(*backgroundColor);
             painter->drawRect(widgetRect);
         }
 
+        painter->setFont(font);
+        painter->setPen(*textColor);
+
         if (this->valueInitialised && this->excludedMemoryRegion == nullptr) {
-            if (this->settings.displayAsciiValues && this->asciiValue.has_value()) {
-                if (!isEnabled || (highlightingEnabled && !highlightedByte)) {
-                    asciiTextColor.setAlpha(100);
-                }
-
-                painter->setPen(asciiTextColor);
-                painter->drawText(widgetRect, Qt::AlignCenter, this->asciiValue.value());
-
-            } else {
-                if (!isEnabled || (highlightingEnabled && !highlightedByte) || this->settings.displayAsciiValues) {
-                    textColor.setAlpha(100);
-                }
-
-                painter->setPen(textColor);
-                painter->drawText(widgetRect, Qt::AlignCenter, this->hexValue);
-                return;
-            }
+            painter->drawText(
+                widgetRect,
+                Qt::AlignCenter,
+                this->settings.displayAsciiValues && this->asciiValue.has_value()
+                    ? this->asciiValue.value()
+                    : this->hexValue
+            );
 
         } else {
-            textColor.setAlpha(100);
-            painter->setPen(textColor);
-
             static const auto placeholderString = QString("??");
             painter->drawText(widgetRect, Qt::AlignCenter, placeholderString);
         }
+    }
+
+    const QColor* ByteItem::getBackgroundColor() {
+        /*
+         * Due to the sheer number of byte items, painting them can be quite expensive. This function needs to be fast.
+         *
+         * The background colors vary in alpha value, depending on certain states. We create a static object for each
+         * color variant, so that we don't have to make copies or call QColor::setAlpha() for each ByteItem.
+         */
+        static const auto highlightedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
+        static const auto focusedRegionBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
+        static const auto stackMemoryBackgroundColor = QColor(0x67, 0x57, 0x20, 210);
+
+        static const auto disabledHighlightedBackgroundColor = QColor(
+            highlightedBackgroundColor.red(),
+            highlightedBackgroundColor.green(),
+            highlightedBackgroundColor.blue(),
+            100
+        );
+
+        static const auto disabledFocusedRegionBackgroundColor = QColor(
+            focusedRegionBackgroundColor.red(),
+            focusedRegionBackgroundColor.green(),
+            focusedRegionBackgroundColor.blue(),
+            100
+        );
+
+        static const auto disabledStackMemoryBackgroundColor = QColor(
+            stackMemoryBackgroundColor.red(),
+            stackMemoryBackgroundColor.green(),
+            stackMemoryBackgroundColor.blue(),
+            100
+        );
+
+        static const auto hoveredStackMemoryBackgroundColor = QColor(
+            stackMemoryBackgroundColor.red(),
+            stackMemoryBackgroundColor.green(),
+            stackMemoryBackgroundColor.blue(),
+            255
+        );
+
+        static const auto hoveredBackgroundColor = QColor(0x8E, 0x8B, 0x83, 70);
+        static const auto hoveredNeighbourBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
+
+        if (this->isEnabled()) {
+            if (this->highlightedAddresses.contains(this->address)) {
+                return &(highlightedBackgroundColor);
+            }
+
+            const auto* hoveredByteItem = *(this->hoveredByteItem);
+            const auto hovered = hoveredByteItem == this;
+            const auto hoveredNeighbour =
+                !hovered
+                && hoveredByteItem != nullptr
+                && this->settings.highlightHoveredRowAndCol
+                && (
+                    hoveredByteItem->currentColumnIndex == this->currentColumnIndex
+                    || hoveredByteItem->currentRowIndex == this->currentRowIndex
+                );
+
+            if (
+                this->settings.highlightStackMemory
+                && this->currentStackPointer.has_value()
+                && this->address > this->currentStackPointer
+            ) {
+                return hovered ? &(hoveredStackMemoryBackgroundColor) : &(stackMemoryBackgroundColor);
+            }
+
+            if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
+                return &(focusedRegionBackgroundColor);
+            }
+
+            if (hoveredNeighbour) {
+                return &(hoveredNeighbourBackgroundColor);
+            }
+
+            if (hovered) {
+                return &(hoveredBackgroundColor);
+            }
+
+        } else {
+            if (this->highlightedAddresses.contains(this->address)) {
+                return &(disabledHighlightedBackgroundColor);
+
+            } else if (
+                this->settings.highlightStackMemory
+                && this->currentStackPointer.has_value()
+                && this->address > this->currentStackPointer
+            ) {
+                return &(disabledStackMemoryBackgroundColor);
+
+            } else if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
+                return &(disabledFocusedRegionBackgroundColor);
+            }
+        }
+
+        return nullptr;
+    }
+
+    const QColor* ByteItem::getTextColor() {
+        static const auto standardTextColor = QColor(0xAF, 0xB1, 0xB3);
+        static const auto asciiModeTextColor = QColor(0xA7, 0x77, 0x26);
+
+        static const auto fadedStandardTextColor = QColor(
+            standardTextColor.red(),
+            standardTextColor.green(),
+            standardTextColor.blue(),
+            100
+        );
+
+        static const auto fadedAsciiModeTextColor = QColor(
+            asciiModeTextColor.red(),
+            asciiModeTextColor.green(),
+            asciiModeTextColor.blue(),
+            100
+        );
+
+        const auto displayAsAscii = this->settings.displayAsciiValues && this->asciiValue.has_value();
+
+        if (this->isEnabled() && this->valueInitialised) {
+            if (!displayAsAscii) {
+                if (
+                    this->excludedMemoryRegion != nullptr
+                    || this->settings.displayAsciiValues
+                    || (!this->highlightedAddresses.empty() && !this->highlightedAddresses.contains(this->address))
+                ) {
+                    return &(fadedStandardTextColor);
+                }
+
+                return &(standardTextColor);
+            }
+
+            if (!this->highlightedAddresses.empty() && !this->highlightedAddresses.contains(this->address)) {
+                return &(fadedAsciiModeTextColor);
+            }
+
+            return &(asciiModeTextColor);
+        }
+
+        return displayAsAscii ? &(fadedAsciiModeTextColor) : &(fadedStandardTextColor);
     }
 }

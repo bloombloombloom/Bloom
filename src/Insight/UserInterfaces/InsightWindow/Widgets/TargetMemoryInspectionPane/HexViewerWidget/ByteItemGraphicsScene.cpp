@@ -39,8 +39,8 @@ namespace Bloom::Widgets
                 i,
                 address,
                 this->currentStackPointer,
-                this->hoveredByteWidget,
-                this->hoveredAnnotationItem,
+                &(this->hoveredByteWidget),
+                &(this->hoveredAnnotationItem),
                 this->highlightedAddresses,
                 settings
             );
@@ -110,7 +110,7 @@ namespace Bloom::Widgets
         }
 
         // Refresh annotation items
-        this->hoveredAnnotationItem = std::nullopt;
+        this->hoveredAnnotationItem = nullptr;
         for (auto* annotationItem : this->annotationItems) {
             this->removeItem(annotationItem);
             delete annotationItem;
@@ -191,8 +191,6 @@ namespace Bloom::Widgets
                 std::max(sceneHeight, this->parent->height())
             );
         }
-
-        this->update();
     }
 
     void ByteItemGraphicsScene::setEnabled(bool enabled) {
@@ -232,7 +230,7 @@ namespace Bloom::Widgets
     }
 
     bool ByteItemGraphicsScene::event(QEvent* event) {
-        if (event->type() == QEvent::Type::GraphicsSceneLeave && this->hoveredByteWidget.has_value()) {
+        if (event->type() == QEvent::Type::GraphicsSceneLeave && this->hoveredByteWidget != nullptr) {
             this->onByteWidgetLeave();
         }
 
@@ -254,7 +252,7 @@ namespace Bloom::Widgets
             return;
         }
 
-        if (this->hoveredByteWidget.has_value()) {
+        if (this->hoveredByteWidget != nullptr) {
             this->onByteWidgetLeave();
         }
 
@@ -263,7 +261,7 @@ namespace Bloom::Widgets
             return;
         }
 
-        if (this->hoveredAnnotationItem.has_value()) {
+        if (this->hoveredAnnotationItem != nullptr) {
             this->onAnnotationItemLeave();
         }
     }
@@ -414,8 +412,8 @@ namespace Bloom::Widgets
     }
 
     void ByteItemGraphicsScene::onByteWidgetEnter(ByteItem* widget) {
-        if (this->hoveredByteWidget.has_value()) {
-            if (this->hoveredByteWidget.value() == widget) {
+        if (this->hoveredByteWidget != nullptr) {
+            if (this->hoveredByteWidget == widget) {
                 // This byte item is already marked as hovered
                 return;
             }
@@ -444,8 +442,8 @@ namespace Bloom::Widgets
     }
 
     void ByteItemGraphicsScene::onByteWidgetLeave() {
-        auto* byteItem = this->hoveredByteWidget.value();
-        this->hoveredByteWidget = std::nullopt;
+        auto* byteItem = this->hoveredByteWidget;
+        this->hoveredByteWidget = nullptr;
 
         this->hoveredAddressLabel->setText("Relative Address (Absolute Address):");
 
@@ -464,8 +462,8 @@ namespace Bloom::Widgets
     }
 
     void ByteItemGraphicsScene::onAnnotationItemEnter(AnnotationItem* annotationItem) {
-        if (this->hoveredAnnotationItem.has_value()) {
-            if (this->hoveredAnnotationItem.value() == annotationItem) {
+        if (this->hoveredAnnotationItem != nullptr) {
+            if (this->hoveredAnnotationItem == annotationItem) {
                 return;
             }
 
@@ -484,8 +482,8 @@ namespace Bloom::Widgets
     }
 
     void ByteItemGraphicsScene::onAnnotationItemLeave() {
-        auto* annotationItem = this->hoveredAnnotationItem.value();
-        this->hoveredAnnotationItem = std::nullopt;
+        auto* annotationItem = this->hoveredAnnotationItem;
+        this->hoveredAnnotationItem = nullptr;
 
         for (
             auto byteItemAddress = annotationItem->startAddress;
