@@ -30,7 +30,7 @@ namespace Bloom::Targets
         TargetRegisterType type = TargetRegisterType::OTHER;
         TargetMemoryType memoryType = TargetMemoryType::OTHER;
 
-        std::optional<std::string> name = "";
+        std::optional<std::string> name;
         std::optional<std::string> groupName;
         std::optional<std::string> description;
 

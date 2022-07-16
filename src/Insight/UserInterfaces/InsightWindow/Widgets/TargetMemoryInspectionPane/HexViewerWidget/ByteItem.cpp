@@ -167,15 +167,17 @@ namespace Bloom::Widgets
         } else {
             if (this->highlightedAddresses.contains(this->address)) {
                 return &(disabledHighlightedBackgroundColor);
+            }
 
-            } else if (
+            if (
                 this->settings.highlightStackMemory
                 && this->currentStackPointer.has_value()
                 && this->address > this->currentStackPointer
             ) {
                 return &(disabledStackMemoryBackgroundColor);
+            }
 
-            } else if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
+            if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
                 return &(disabledFocusedRegionBackgroundColor);
             }
         }

@@ -801,7 +801,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          *
          * The precautions described above may reduce the likelihood of Bloom bricking the connected target, but there
          * is still a chance that all of the checks pass, and we still brick the device. Now would be a good time to
-         * remind the user of liabilities in regards to Bloom and its contributors.
+         * remind the user of liabilities in regard to Bloom and its contributors.
          */
         Logger::warning(
             "Updating the DWEN fuse bit is a potentially dangerous operation. Bloom is provided \"AS IS\", "

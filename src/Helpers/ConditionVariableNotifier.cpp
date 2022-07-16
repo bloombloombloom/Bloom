@@ -3,7 +3,7 @@
 namespace Bloom
 {
     void ConditionVariableNotifier::notify() {
-        auto lock = std::unique_lock(this->mutex);
+        const auto lock = std::unique_lock(this->mutex);
         this->notified = true;
         this->conditionalVariable.notify_all();
     }

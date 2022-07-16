@@ -79,7 +79,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         );
 
         const auto& payload = response.getPayload();
-        if (response.getStatusCode() != StatusCode::OK
+        if (
+            response.getStatusCode() != StatusCode::OK
             || payload.size() < 4
             || static_cast<StatusCode>(payload[3]) != StatusCode::OK
         ) {
@@ -97,10 +98,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         );
 
         const auto& payload = response.getPayload();
-        if (response.getStatusCode() != StatusCode::OK
+        if (
+            response.getStatusCode() != StatusCode::OK
             || payload.size() < 4
             || static_cast<StatusCode>(payload[3]) != StatusCode::OK
-            ) {
+        ) {
             throw TargetOperationFailure(
                 "Failed to read lock bit byte via ISP - response frame status code/size indicates a failure."
             );
@@ -129,7 +131,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         const auto& payload = response.getPayload();
 
-        if (response.getStatusCode() != StatusCode::OK
+        if (
+            response.getStatusCode() != StatusCode::OK
             || payload.size() < 4
             || static_cast<StatusCode>(payload[3]) != StatusCode::OK
         ) {

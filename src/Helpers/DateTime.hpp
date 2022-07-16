@@ -19,7 +19,7 @@ namespace Bloom
          * @return
          */
         static QDateTime currentDateTime() {
-            auto lock = std::unique_lock(DateTime::currentDateTimeMutex);
+            const auto lock = std::unique_lock(DateTime::systemClockMutex);
             return QDateTime::currentDateTime();
         }
 
@@ -32,11 +32,11 @@ namespace Bloom
          * @return
          */
         static QString getTimeZoneAbbreviation(const QDateTime& dateTime) {
-            auto lock = std::unique_lock(DateTime::currentDateTimeMutex);
+            const auto lock = std::unique_lock(DateTime::systemClockMutex);
             return dateTime.timeZoneAbbreviation();
         }
 
     private:
-        static inline std::mutex currentDateTimeMutex;
+        static inline std::mutex systemClockMutex;
     };
 }

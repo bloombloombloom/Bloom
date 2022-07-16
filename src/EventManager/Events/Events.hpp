@@ -26,8 +26,5 @@ namespace Bloom::Events
     template <class EventType>
     using SharedEventPointer = std::shared_ptr<const EventType>;
 
-    template <class EventType>
-    using SharedEventPointerNonConst = std::shared_ptr<EventType>;
-
     using SharedGenericEventPointer = SharedEventPointer<Event>;
 }
