@@ -2,6 +2,8 @@
 
 #include <QLayout>
 
+#include "PaneWidget.hpp"
+
 namespace Bloom::Widgets
 {
     PanelWidget::PanelWidget(QWidget* parent): QFrame(parent) {
@@ -55,6 +57,20 @@ namespace Bloom::Widgets
         } else if (this->panelType == PanelWidgetType::BOTTOM) {
             this->setFixedHeight(std::min(std::max(size, this->minimumResize), this->maximumResize));
         }
+    }
+
+    void PanelWidget::updateVisibility() {
+        const auto paneWidgets = this->findChildren<PaneWidget*>();
+
+        auto visible = false;
+        for (const auto& paneWidget : paneWidgets) {
+            if (paneWidget->activated && paneWidget->attached) {
+                visible = true;
+                break;
+            }
+        }
+
+        this->setVisible(visible);
     }
 
     bool PanelWidget::event(QEvent* event) {

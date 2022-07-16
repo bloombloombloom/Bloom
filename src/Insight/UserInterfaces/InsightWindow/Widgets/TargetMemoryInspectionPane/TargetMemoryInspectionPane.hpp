@@ -35,14 +35,12 @@ namespace Bloom::Widgets
         );
 
         void refreshMemoryValues(std::optional<std::function<void(void)>> callback = std::nullopt);
-        void activate();
-        void deactivate();
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
 
-        virtual void postActivate();
-        virtual void postDeactivate();
+        void postActivate();
+        void postDeactivate();
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;

@@ -115,6 +115,20 @@ namespace Bloom::Widgets
         itemLayout->addStretch(1);
 
         QObject::connect(
+            this,
+            &PaneWidget::paneActivated,
+            this,
+            &TargetRegistersPaneWidget::postActivate
+        );
+
+        QObject::connect(
+            this,
+            &PaneWidget::paneDeactivated,
+            this,
+            &TargetRegistersPaneWidget::postDeactivate
+        );
+
+        QObject::connect(
             &insightWorker,
             &InsightWorker::targetStateUpdated,
             this,
@@ -186,18 +200,6 @@ namespace Bloom::Widgets
         }
 
         this->insightWorker.queueTask(readRegisterTask);
-    }
-
-    void TargetRegistersPaneWidget::activate() {
-        this->show();
-        this->activated = true;
-        this->postActivate();
-    }
-
-    void TargetRegistersPaneWidget::deactivate() {
-        this->hide();
-        this->activated = false;
-        this->postDeactivate();
     }
 
     void TargetRegistersPaneWidget::onItemSelectionChange(ItemWidget* newlySelectedWidget) {

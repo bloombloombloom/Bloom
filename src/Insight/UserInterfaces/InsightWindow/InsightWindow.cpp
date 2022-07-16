@@ -827,16 +827,9 @@ namespace Bloom
             this->targetRegistersSidePane->deactivate();
             this->targetRegistersButton->setChecked(false);
 
-            /*
-             * Given that the target registers side pane is currently the only pane in the left panel, the panel
-             * will be empty so no need to leave it visible.
-             */
-            this->leftPanel->setVisible(false);
-
         } else {
             this->targetRegistersSidePane->activate();
             this->targetRegistersButton->setChecked(true);
-            this->leftPanel->setVisible(true);
         }
 
         this->adjustMinimumSize();
@@ -845,7 +838,6 @@ namespace Bloom
     void InsightWindow::toggleRamInspectionPane() {
         if (this->ramInspectionPane->activated) {
             this->ramInspectionPane->deactivate();
-            this->bottomPanel->hide();
             this->ramInspectionButton->setChecked(false);
 
         } else {
@@ -854,7 +846,6 @@ namespace Bloom
             }
 
             this->ramInspectionPane->activate();
-            this->bottomPanel->show();
             this->ramInspectionButton->setChecked(true);
         }
 
@@ -864,7 +855,6 @@ namespace Bloom
     void InsightWindow::toggleEepromInspectionPane() {
         if (this->eepromInspectionPane->activated) {
             this->eepromInspectionPane->deactivate();
-            this->bottomPanel->hide();
             this->eepromInspectionButton->setChecked(false);
 
         } else {
@@ -873,7 +863,6 @@ namespace Bloom
             }
 
             this->eepromInspectionPane->activate();
-            this->bottomPanel->show();
             this->eepromInspectionButton->setChecked(true);
         }
 

@@ -12,15 +12,29 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        bool activated = false;
+        bool activated = true;
+        bool attached = true;
         PanelWidget* parentPanel = nullptr;
 
-        explicit PaneWidget(PanelWidget* parent): QWidget(parent), parentPanel(parent) {};
+        explicit PaneWidget(PanelWidget* parent);
 
         [[nodiscard]] PaneState getCurrentState() const {
             return PaneState(
                 this->activated
             );
         }
+
+        void activate();
+        void deactivate();
+
+    signals:
+        void paneActivated();
+        void paneDeactivated();
+        void paneAttached();
+        void paneDetached();
+
+    protected:
+        void detach();
+        void attach();
     };
 }

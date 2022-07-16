@@ -64,6 +64,15 @@ namespace Bloom::Widgets
             );
         }
 
+        /**
+         * Will evaluate whether the panel should still be visible or not (depending on whether there are any
+         * visible and attached child panes).
+         *
+         * This function is called whenever a child pane is activated/deactivate/attached/detached.
+         * See PaneWidget::PaneWidget() for more.
+         */
+        void updateVisibility();
+
     protected:
         int handleSize = 10;
         int minimumResize = 10;

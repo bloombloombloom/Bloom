@@ -38,16 +38,13 @@ namespace Bloom::Widgets
 
         void refreshRegisterValues(std::optional<std::function<void(void)>> callback = std::nullopt);
 
-        void activate();
-        void deactivate();
-
         void onItemSelectionChange(Bloom::Widgets::ItemWidget* newlySelectedWidget);
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
 
-        virtual void postActivate();
-        virtual void postDeactivate();
+        void postActivate();
+        void postDeactivate();
 
     private:
         const Targets::TargetDescriptor& targetDescriptor;
