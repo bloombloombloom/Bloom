@@ -553,8 +553,27 @@ namespace Bloom
             );
 
             bottomPanelLayout->addWidget(this->ramInspectionPane);
+
+            QObject::connect(
+                this->ramInspectionPane,
+                &PaneWidget::paneActivated,
+                this,
+                &InsightWindow::onRamInspectionPaneStateChanged
+            );
+            QObject::connect(
+                this->ramInspectionPane,
+                &PaneWidget::paneDeactivated,
+                this,
+                &InsightWindow::onRamInspectionPaneStateChanged
+            );
+            QObject::connect(
+                this->ramInspectionPane,
+                &PaneWidget::paneAttached,
+                this,
+                &InsightWindow::onRamInspectionPaneStateChanged
+            );
+
             this->ramInspectionPane->deactivate();
-            this->ramInspectionButton->setChecked(false);
             this->ramInspectionButton->setDisabled(false);
         }
 
@@ -573,8 +592,27 @@ namespace Bloom
             );
 
             bottomPanelLayout->addWidget(this->eepromInspectionPane);
+
+            QObject::connect(
+                this->eepromInspectionPane,
+                &PaneWidget::paneActivated,
+                this,
+                &InsightWindow::onEepromInspectionPaneStateChanged
+            );
+            QObject::connect(
+                this->eepromInspectionPane,
+                &PaneWidget::paneDeactivated,
+                this,
+                &InsightWindow::onEepromInspectionPaneStateChanged
+            );
+            QObject::connect(
+                this->eepromInspectionPane,
+                &PaneWidget::paneAttached,
+                this,
+                &InsightWindow::onEepromInspectionPaneStateChanged
+            );
+
             this->eepromInspectionPane->deactivate();
-            this->eepromInspectionButton->setChecked(false);
             this->eepromInspectionButton->setDisabled(false);
         }
     }
@@ -837,33 +875,83 @@ namespace Bloom
 
     void InsightWindow::toggleRamInspectionPane() {
         if (this->ramInspectionPane->activated) {
+            if (!this->ramInspectionPane->attached) {
+                this->ramInspectionPane->activateWindow();
+                this->ramInspectionButton->setChecked(true);
+
+                return;
+            }
+
             this->ramInspectionPane->deactivate();
-            this->ramInspectionButton->setChecked(false);
 
         } else {
-            if (this->eepromInspectionPane != nullptr && this->eepromInspectionPane->activated) {
-                this->toggleEepromInspectionPane();
+            if (
+                this->ramInspectionPane->attached
+                && this->eepromInspectionPane != nullptr
+                && this->eepromInspectionPane->activated
+                && this->eepromInspectionPane->attached
+            ) {
+                this->eepromInspectionPane->deactivate();
             }
 
             this->ramInspectionPane->activate();
-            this->ramInspectionButton->setChecked(true);
+        }
+    }
+
+    void InsightWindow::toggleEepromInspectionPane() {
+        if (this->eepromInspectionPane->activated) {
+            if (!this->eepromInspectionPane->attached) {
+                this->eepromInspectionPane->activateWindow();
+                this->eepromInspectionButton->setChecked(true);
+
+                return;
+            }
+
+            this->eepromInspectionPane->deactivate();
+
+        } else {
+            if (
+                this->eepromInspectionPane->attached
+                && this->ramInspectionPane != nullptr
+                && this->ramInspectionPane->activated
+                && this->ramInspectionPane->attached
+            ) {
+                this->ramInspectionPane->deactivate();
+            }
+
+            this->eepromInspectionPane->activate();
+        }
+    }
+
+    void InsightWindow::onRamInspectionPaneStateChanged() {
+        this->ramInspectionButton->setChecked(this->ramInspectionPane->activated);
+
+        if (
+            this->ramInspectionPane->activated
+            && this->ramInspectionPane->attached
+            && this->eepromInspectionPane != nullptr
+            && this->eepromInspectionPane->activated
+            && this->eepromInspectionPane->attached
+        ) {
+            // Both panes cannot be attached and activated at the same time.
+            this->eepromInspectionPane->deactivate();
         }
 
         this->adjustMinimumSize();
     }
 
-    void InsightWindow::toggleEepromInspectionPane() {
-        if (this->eepromInspectionPane->activated) {
-            this->eepromInspectionPane->deactivate();
-            this->eepromInspectionButton->setChecked(false);
+    void InsightWindow::onEepromInspectionPaneStateChanged() {
+        this->eepromInspectionButton->setChecked(this->eepromInspectionPane->activated);
 
-        } else {
-            if (this->ramInspectionPane != nullptr && this->ramInspectionPane->activated) {
-                this->toggleRamInspectionPane();
-            }
-
-            this->eepromInspectionPane->activate();
-            this->eepromInspectionButton->setChecked(true);
+        if (
+            this->eepromInspectionPane->activated
+            && this->eepromInspectionPane->attached
+            && this->ramInspectionPane != nullptr
+            && this->ramInspectionPane->activated
+            && this->ramInspectionPane->attached
+        ) {
+            // Both panes cannot be attached and activated at the same time.
+            this->ramInspectionPane->deactivate();
         }
 
         this->adjustMinimumSize();

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
     <widget class="QWidget" name="container">
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+        </property>
         <layout class="QVBoxLayout">
             <property name="spacing">
                 <number>0</number>

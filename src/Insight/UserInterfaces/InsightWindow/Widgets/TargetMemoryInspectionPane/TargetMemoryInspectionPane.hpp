@@ -38,9 +38,12 @@ namespace Bloom::Widgets
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
+        void closeEvent(QCloseEvent* event) override;
 
         void postActivate();
         void postDeactivate();
+        void postAttach();
+        void postDetach();
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;

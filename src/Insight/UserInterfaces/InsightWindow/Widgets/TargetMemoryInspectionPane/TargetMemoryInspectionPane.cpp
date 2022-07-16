@@ -32,6 +32,15 @@ namespace Bloom::Widgets
     {
         this->setObjectName("target-memory-inspection-pane");
 
+        const auto memoryName = QString(
+            this->targetMemoryDescriptor.type == TargetMemoryType::EEPROM
+                ? "Internal EEPROM"
+                : "Internal RAM"
+        );
+
+        this->setWindowTitle("Memory Inspection - " + memoryName);
+        this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
         auto memoryInspectionPaneUiFile = QFile(
             QString::fromStdString(Paths::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/UiFiles/TargetMemoryInspectionPane.ui"
@@ -44,15 +53,13 @@ namespace Bloom::Widgets
 
         auto uiLoader = UiLoader(this);
         this->container = uiLoader.load(&memoryInspectionPaneUiFile, this);
-        this->container->setFixedSize(parent->width(), parent->maximumHeight());
+        this->container->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         this->titleBar = this->container->findChild<QWidget*>("title-bar");
 
         this->titleBar->layout()->setContentsMargins(7, 0, 7, 0);
         auto* titleLabel = this->titleBar->findChild<Label*>("title");
-        titleLabel->setText(
-            this->targetMemoryDescriptor.type == TargetMemoryType::EEPROM ? "Internal EEPROM" : "Internal RAM"
-        );
+        titleLabel->setText(memoryName);
 
         // Quick sanity check to ensure the validity of persisted settings.
         this->sanitiseSettings();
@@ -74,10 +81,52 @@ namespace Bloom::Widgets
         subContainerLayout->insertWidget(1, this->hexViewerWidget);
 
         QObject::connect(
+            this,
+            &PaneWidget::paneActivated,
+            this,
+            &TargetMemoryInspectionPane::postActivate
+        );
+
+        QObject::connect(
+            this,
+            &PaneWidget::paneDeactivated,
+            this,
+            &TargetMemoryInspectionPane::postDeactivate
+        );
+
+        QObject::connect(
+            this,
+            &PaneWidget::paneAttached,
+            this,
+            &TargetMemoryInspectionPane::postAttach
+        );
+
+        QObject::connect(
+            this,
+            &PaneWidget::paneDetached,
+            this,
+            &TargetMemoryInspectionPane::postDetach
+        );
+
+        QObject::connect(
             this->manageMemoryRegionsButton,
             &QToolButton::clicked,
             this,
             &TargetMemoryInspectionPane::openMemoryRegionManagerWindow
+        );
+
+        QObject::connect(
+            this->detachPaneButton,
+            &QToolButton::clicked,
+            this,
+            &TargetMemoryInspectionPane::detach
+        );
+
+        QObject::connect(
+            this->attachPaneButton,
+            &QToolButton::clicked,
+            this,
+            &TargetMemoryInspectionPane::attach
         );
 
         QObject::connect(
@@ -181,22 +230,14 @@ namespace Bloom::Widgets
         this->insightWorker.queueTask(readMemoryTask);
     }
 
-    void TargetMemoryInspectionPane::activate() {
-        this->show();
-        this->activated = true;
-        this->postActivate();
-    }
-
-    void TargetMemoryInspectionPane::deactivate() {
-        this->hide();
-        this->activated = false;
-        this->postDeactivate();
-    }
-
     void TargetMemoryInspectionPane::resizeEvent(QResizeEvent* event) {
-        const auto parentSize = this->parentPanel->size();
-        const auto width = parentSize.width() - 1;
-        this->container->setFixedSize(width, parentSize.height());
+        const auto size = this->size();
+        this->container->setFixedSize(size.width() - 1, size.height());
+    }
+
+    void TargetMemoryInspectionPane::closeEvent(QCloseEvent* event) {
+        this->deactivate();
+        QWidget::closeEvent(event);
     }
 
     void TargetMemoryInspectionPane::postActivate() {
@@ -209,6 +250,16 @@ namespace Bloom::Widgets
 
     void TargetMemoryInspectionPane::postDeactivate() {
 
+    }
+
+    void TargetMemoryInspectionPane::postAttach() {
+        this->attachPaneButton->hide();
+        this->detachPaneButton->show();
+    }
+
+    void TargetMemoryInspectionPane::postDetach() {
+        this->detachPaneButton->hide();
+        this->attachPaneButton->show();
     }
 
     void TargetMemoryInspectionPane::sanitiseSettings() {

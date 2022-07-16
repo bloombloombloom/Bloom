@@ -139,6 +139,8 @@ namespace Bloom
         void toggleTargetRegistersPane();
         void toggleRamInspectionPane();
         void toggleEepromInspectionPane();
+        void onRamInspectionPaneStateChanged();
+        void onEepromInspectionPaneStateChanged();
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();
 
