@@ -50,6 +50,8 @@ namespace Bloom::Widgets
 
         QWidget* titleBar = nullptr;
         SvgToolButton* manageMemoryRegionsButton = nullptr;
+        SvgToolButton* detachPaneButton = nullptr;
+        SvgToolButton* attachPaneButton = nullptr;
         HexViewerWidget* hexViewerWidget = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;

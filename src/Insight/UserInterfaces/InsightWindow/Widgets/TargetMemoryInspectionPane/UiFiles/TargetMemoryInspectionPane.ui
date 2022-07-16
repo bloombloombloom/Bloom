@@ -94,6 +94,66 @@
                             </layout>
                         </widget>
                     </item>
+                    <item alignment="Qt::AlignLeft">
+                        <widget class="QWidget" name="rh-side-bar">
+                            <property name="minimumWidth">
+                                <number>30</number>
+                            </property>
+                            <property name="maximumWidth">
+                                <number>30</number>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Expanding"/>
+                            </property>
+                            <layout class="QVBoxLayout" name="rh-side-bar-layout">
+                                <property name="spacing">
+                                    <number>3</number>
+                                </property>
+                                <property name="margin">
+                                    <number>2</number>
+                                </property>
+                                <item>
+                                    <spacer name="vertical-spacer">
+                                        <property name="sizeHint">
+                                            <size>
+                                                <height>3</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item alignment="Qt::AlignHCenter">
+                                    <widget class="SvgToolButton" name="detach-pane-btn">
+                                        <property name="svgFilePath">
+                                            <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/detach-pane-icon.svg</string>
+                                        </property>
+                                        <property name="toolTip">
+                                            <string>Detach Pane</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item alignment="Qt::AlignHCenter">
+                                    <widget class="SvgToolButton" name="attach-pane-btn">
+                                        <property name="svgFilePath">
+                                            <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/attach-pane-icon.svg</string>
+                                        </property>
+                                        <property name="toolTip">
+                                            <string>Attach Pane</string>
+                                        </property>
+                                        <property name="visible">
+                                            <bool>false</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="vertical-spacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </widget>
+                    </item>
 
                 </layout>
             </item>

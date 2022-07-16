@@ -59,6 +59,8 @@ namespace Bloom::Widgets
 
         auto* subContainerLayout = this->container->findChild<QHBoxLayout*>("sub-container-layout");
         this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
+        this->detachPaneButton = this->container->findChild<SvgToolButton*>("detach-pane-btn");
+        this->attachPaneButton = this->container->findChild<SvgToolButton*>("attach-pane-btn");
         this->hexViewerWidget = new HexViewerWidget(
             this->targetMemoryDescriptor,
             this->settings.hexViewerWidgetSettings,
@@ -69,7 +71,7 @@ namespace Bloom::Widgets
         );
         this->hexViewerWidget->setDisabled(true);
 
-        subContainerLayout->addWidget(this->hexViewerWidget);
+        subContainerLayout->insertWidget(1, this->hexViewerWidget);
 
         QObject::connect(
             this->manageMemoryRegionsButton,

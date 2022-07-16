@@ -332,6 +332,10 @@ QScrollBar::sub-line:vertical {
 }
 
 /* Target Memory Inspection Pane */
+#target-memory-inspection-pane {
+    background-color: #373835;
+}
+
 #target-memory-inspection-pane #title-bar {
     background-color: #383F43;
     border-bottom: 1px solid #2F2F2D;
@@ -345,7 +349,12 @@ QScrollBar::sub-line:vertical {
     border-right: 1px solid #41423f;
 }
 
-#target-memory-inspection-pane #lh-side-bar QToolButton {
+#target-memory-inspection-pane #rh-side-bar {
+    border-left: 1px solid #41423f;
+}
+
+#target-memory-inspection-pane #lh-side-bar QToolButton,
+#target-memory-inspection-pane #rh-side-bar QToolButton {
     background-color: transparent;
     border: none;
     padding: 0;
@@ -353,7 +362,8 @@ QScrollBar::sub-line:vertical {
     qproperty-buttonHeight: 21;
 }
 
-#target-memory-inspection-pane #lh-side-bar QToolButton:hover {
+#target-memory-inspection-pane #lh-side-bar QToolButton:hover,
+#target-memory-inspection-pane #rh-side-bar QToolButton:hover {
     background-color: #454541;
     border: none;
 }
@@ -463,4 +473,10 @@ QScrollBar::sub-line:vertical {
 
 #hex-viewer-container #graphics-view-container #address-container QLabel:disabled {
     color: rgba(175, 177, 179, 0.3);
+}
+
+#hex-viewer-container QScrollBar:vertical {
+    background-color: transparent;
+    width: 12px;
+    margin: 1px 3px 1px 0px;
 }

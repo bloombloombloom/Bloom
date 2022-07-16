@@ -98,6 +98,8 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Images/refresh.svg"
         "./UserInterfaces/InsightWindow/Images/refresh-disabled.svg"
         "./UserInterfaces/InsightWindow/Images/down-arrow.svg"
+        "./UserInterfaces/InsightWindow/Images/detach-pane-icon.svg"
+        "./UserInterfaces/InsightWindow/Images/attach-pane-icon.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/collapse-all.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/expand-all.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/arrow.svg"
