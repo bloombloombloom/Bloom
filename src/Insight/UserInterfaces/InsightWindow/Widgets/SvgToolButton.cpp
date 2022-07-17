@@ -1,7 +1,5 @@
 #include "SvgToolButton.hpp"
 
-#include <QMenu>
-
 namespace Bloom::Widgets
 {
     SvgToolButton::SvgToolButton(QWidget* parent): QToolButton(parent) {
@@ -17,8 +15,20 @@ namespace Bloom::Widgets
              */
             auto* menuWidget = qobject_cast<QMenu*>(childEvent->child());
             if (menuWidget != nullptr && menuWidget != this->menu()) {
-                this->setMenu(menuWidget);
+                if (this->contextMenuEnabled) {
+                    this->contextMenu = menuWidget;
+                    this->setContextMenuPolicy(Qt::ContextMenuPolicy::DefaultContextMenu);
+
+                } else {
+                    this->setMenu(menuWidget);
+                }
             }
+        }
+    }
+
+    void SvgToolButton::contextMenuEvent(QContextMenuEvent* event) {
+        if (this->contextMenu != nullptr) {
+            this->contextMenu->exec(this->mapToGlobal(QPoint(0, this->height())));
         }
     }
 }

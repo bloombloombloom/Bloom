@@ -3,6 +3,8 @@
 #include <QToolButton>
 #include <QString>
 #include <QChildEvent>
+#include <QContextMenuEvent>
+#include <QMenu>
 
 #include "SvgWidget.hpp"
 
@@ -16,6 +18,7 @@ namespace Bloom::Widgets
 
         Q_PROPERTY(int buttonWidth READ getButtonWidth WRITE setButtonWidth DESIGNABLE true)
         Q_PROPERTY(int buttonHeight READ getButtonHeight WRITE setButtonHeight DESIGNABLE true)
+        Q_PROPERTY(bool contextMenuEnabled READ getContextMenuEnabled WRITE setContextMenuEnabled DESIGNABLE true)
 
     public:
         explicit SvgToolButton(QWidget* parent);
@@ -56,6 +59,14 @@ namespace Bloom::Widgets
             return this->buttonHeight;
         }
 
+        void setContextMenuEnabled(bool enabled) {
+            this->contextMenuEnabled = enabled;
+        }
+
+        [[nodiscard]] bool getContextMenuEnabled() const {
+            return this->contextMenuEnabled;
+        }
+
         void startSpin() {
             this->svgWidget->startSpin();
         }
@@ -65,10 +76,14 @@ namespace Bloom::Widgets
         }
     protected:
         void childEvent(QChildEvent* childEvent) override;
+        void contextMenuEvent(QContextMenuEvent* event) override;
 
     private:
         SvgWidget* svgWidget = new SvgWidget(this);
         int buttonWidth = 0;
         int buttonHeight = 0;
+        bool contextMenuEnabled = false;
+
+        QMenu* contextMenu = nullptr;
     };
 }
