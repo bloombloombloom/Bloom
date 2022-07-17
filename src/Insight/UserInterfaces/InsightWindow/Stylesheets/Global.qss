@@ -69,6 +69,18 @@ QMenu::separator {
     height: 1px;
 }
 
+QMenu::indicator {
+    padding-left: 10px;
+}
+
+QMenu::indicator:non-exclusive:checked {
+    image: url(":/compiled/src/Insight/UserInterfaces/InsightWindow/Images/checked-action-icon.svg");
+}
+
+QMenu::indicator:non-exclusive:unchecked {
+    image: url(":/compiled/src/Insight/UserInterfaces/InsightWindow/Images/unchecked-action-icon.svg");
+}
+
 QMenu#help-menu::separator {
     margin: 1px 0;
 }
@@ -174,7 +186,16 @@ QPushButton:disabled {
     color: #8d8d90;
 }
 
+QToolButton::menu-indicator {
+    image: none;
+}
+
 Bloom--Widgets--LabeledSeparator {
     qproperty-lineColor: #454545;
     color: #a6a6a6;
+}
+
+Bloom--Widgets--SvgToolButton QMenu::item {
+    padding-left: 10px;
+    min-width: 250px;
 }

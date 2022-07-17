@@ -53,6 +53,11 @@ namespace Bloom::Widgets
 
         QWidget* titleBar = nullptr;
         SvgToolButton* manageMemoryRegionsButton = nullptr;
+
+        SvgToolButton* refreshButton = nullptr;
+        QAction* refreshOnTargetStopAction = nullptr;
+        QAction* refreshOnActivationAction = nullptr;
+
         SvgToolButton* detachPaneButton = nullptr;
         SvgToolButton* attachPaneButton = nullptr;
         HexViewerWidget* hexViewerWidget = nullptr;
@@ -63,6 +68,8 @@ namespace Bloom::Widgets
 
         void sanitiseSettings();
         void onTargetStateChanged(Targets::TargetState newState);
+        void setRefreshOnTargetStopEnabled(bool enabled);
+        void setRefreshOnActivationEnabled(bool enabled);
         void onMemoryRead(const Targets::TargetMemoryBuffer& buffer);
         void openMemoryRegionManagerWindow();
         void onMemoryRegionsChange();

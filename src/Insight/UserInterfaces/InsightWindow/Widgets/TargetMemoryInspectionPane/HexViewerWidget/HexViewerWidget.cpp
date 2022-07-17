@@ -48,7 +48,6 @@ namespace Bloom::Widgets
         this->toolBar = this->container->findChild<QWidget*>("tool-bar");
         this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
 
-        this->refreshButton = this->toolBar->findChild<SvgToolButton*>("refresh-memory-btn");
         this->highlightStackMemoryButton = this->toolBar->findChild<SvgToolButton*>(
             "highlight-stack-memory-btn"
         );

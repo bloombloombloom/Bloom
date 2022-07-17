@@ -4,7 +4,7 @@
         <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
         </property>
-        <layout class="QVBoxLayout">
+        <layout class="QVBoxLayout" name="container-layout">
             <property name="spacing">
                 <number>0</number>
             </property>
@@ -43,122 +43,137 @@
                 </widget>
             </item>
             <item>
-                <layout class="QHBoxLayout" name="sub-container-layout">
-                    <property name="spacing">
-                        <number>0</number>
+                <widget class="QWidget" name="top-bar">
+                    <property name="minimumHeight">
+                        <number>30</number>
                     </property>
-                    <property name="margin">
-                        <number>0</number>
+                    <property name="maximumHeight">
+                        <number>30</number>
                     </property>
-                    <item alignment="Qt::AlignLeft">
-                        <widget class="QWidget" name="lh-side-bar">
-                            <property name="minimumWidth">
-                                <number>30</number>
-                            </property>
-                            <property name="maximumWidth">
-                                <number>30</number>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy hsizetype="Fixed" vsizetype="Expanding"/>
-                            </property>
-                            <layout class="QVBoxLayout" name="lh-side-bar-layout">
-                                <property name="spacing">
-                                    <number>3</number>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>5</width>
+                                    </size>
                                 </property>
-                                <property name="margin">
-                                    <number>0</number>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
                                 </property>
-                                <item>
-                                    <spacer name="vertical-spacer">
-                                        <property name="sizeHint">
-                                            <size>
-                                                <height>3</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                </item>
-                                <item alignment="Qt::AlignHCenter">
-                                    <widget class="SvgToolButton" name="manage-memory-regions-btn">
-                                        <property name="svgFilePath">
-                                            <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/manage-focused-regions.svg</string>
-                                        </property>
-                                        <property name="toolTip">
-                                            <string>Manage Memory Regions</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item>
-                                    <spacer name="vertical-spacer">
-                                        <property name="orientation">
-                                            <enum>Qt::Vertical</enum>
-                                        </property>
-                                    </spacer>
-                                </item>
-                            </layout>
-                        </widget>
-                    </item>
-                    <item alignment="Qt::AlignLeft">
-                        <widget class="QWidget" name="rh-side-bar">
-                            <property name="minimumWidth">
-                                <number>30</number>
-                            </property>
-                            <property name="maximumWidth">
-                                <number>30</number>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy hsizetype="Fixed" vsizetype="Expanding"/>
-                            </property>
-                            <layout class="QVBoxLayout" name="rh-side-bar-layout">
-                                <property name="spacing">
-                                    <number>3</number>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="manage-memory-regions-btn">
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/manage-focused-regions.svg</string>
                                 </property>
-                                <property name="margin">
-                                    <number>2</number>
+                                <property name="toolTip">
+                                    <string>Manage Memory Regions</string>
                                 </property>
-                                <item>
-                                    <spacer name="vertical-spacer">
-                                        <property name="sizeHint">
-                                            <size>
-                                                <height>3</height>
-                                            </size>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="refresh-memory-btn">
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh.svg</string>
+                                </property>
+                                <property name="disabledSvgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Refresh Memory (right-click for auto-refresh options)</string>
+                                </property>
+                                <property name="popupMode">
+                                    <enum>QToolButton::InstantPopup</enum>
+                                </property>
+                                <property name="contextMenuEnabled">
+                                    <bool>true</bool>
+                                </property>
+                                <widget class="QMenu" name="refresh-menu">
+                                    <addaction name="refresh-target-stopped"/>
+                                    <addaction name="refresh-activation"/>
+                                    <action name="refresh-target-stopped">
+                                        <property name="text">
+                                            <string>After target execution stops</string>
                                         </property>
-                                    </spacer>
-                                </item>
-                                <item alignment="Qt::AlignHCenter">
-                                    <widget class="SvgToolButton" name="detach-pane-btn">
-                                        <property name="svgFilePath">
-                                            <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/detach-pane-icon.svg</string>
+                                        <property name="checkable">
+                                            <bool>true</bool>
                                         </property>
-                                        <property name="toolTip">
-                                            <string>Detach Pane</string>
+                                        <property name="checked">
+                                            <bool>true</bool>
                                         </property>
-                                    </widget>
-                                </item>
-                                <item alignment="Qt::AlignHCenter">
-                                    <widget class="SvgToolButton" name="attach-pane-btn">
-                                        <property name="svgFilePath">
-                                            <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/attach-pane-icon.svg</string>
+                                    </action>
+                                    <action name="refresh-activation">
+                                        <property name="text">
+                                            <string>After opening this pane</string>
                                         </property>
-                                        <property name="toolTip">
-                                            <string>Attach Pane</string>
+                                        <property name="checkable">
+                                            <bool>true</bool>
                                         </property>
-                                        <property name="visible">
-                                            <bool>false</bool>
+                                        <property name="checked">
+                                            <bool>true</bool>
                                         </property>
-                                    </widget>
-                                </item>
-                                <item>
-                                    <spacer name="vertical-spacer">
-                                        <property name="orientation">
-                                            <enum>Qt::Vertical</enum>
-                                        </property>
-                                    </spacer>
-                                </item>
-                            </layout>
-                        </widget>
-                    </item>
-
-                </layout>
+                                    </action>
+                                </widget>
+                            </widget>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="orientation">
+                                    <enum>Qt::Horizontal</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item alignment="Qt::AlignHCenter">
+                            <widget class="SvgToolButton" name="detach-pane-btn">
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/detach-pane-icon.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Detach Pane</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item alignment="Qt::AlignHCenter">
+                            <widget class="SvgToolButton" name="attach-pane-btn">
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/attach-pane-icon.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Attach Pane</string>
+                                </property>
+                                <property name="visible">
+                                    <bool>false</bool>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>5</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                    </layout>
+                </widget>
             </item>
         </layout>
     </widget>

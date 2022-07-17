@@ -1,6 +1,6 @@
 #include "TargetMemoryInspectionPane.hpp"
 
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QToolButton>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
@@ -64,10 +64,16 @@ namespace Bloom::Widgets
         // Quick sanity check to ensure the validity of persisted settings.
         this->sanitiseSettings();
 
-        auto* subContainerLayout = this->container->findChild<QHBoxLayout*>("sub-container-layout");
+        auto* containerLayout = this->container->findChild<QVBoxLayout*>("container-layout");
         this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
+
+        this->refreshButton = this->container->findChild<SvgToolButton*>("refresh-memory-btn");
+        this->refreshOnTargetStopAction = this->refreshButton->findChild<QAction*>("refresh-target-stopped");
+        this->refreshOnActivationAction = this->refreshButton->findChild<QAction*>("refresh-activation");
+
         this->detachPaneButton = this->container->findChild<SvgToolButton*>("detach-pane-btn");
         this->attachPaneButton = this->container->findChild<SvgToolButton*>("attach-pane-btn");
+
         this->hexViewerWidget = new HexViewerWidget(
             this->targetMemoryDescriptor,
             this->settings.hexViewerWidgetSettings,
@@ -78,7 +84,9 @@ namespace Bloom::Widgets
         );
         this->hexViewerWidget->setDisabled(true);
 
-        subContainerLayout->insertWidget(1, this->hexViewerWidget);
+        containerLayout->addWidget(this->hexViewerWidget);
+
+        this->setRefreshOnTargetStopEnabled(this->settings.refreshOnTargetStop);
 
         QObject::connect(
             this,
@@ -116,6 +124,33 @@ namespace Bloom::Widgets
         );
 
         QObject::connect(
+            this->refreshButton,
+            &QToolButton::clicked,
+            this,
+            [this] {
+                this->refreshMemoryValues();
+            }
+        );
+
+        QObject::connect(
+            this->refreshOnTargetStopAction,
+            &QAction::triggered,
+            this,
+            [this] (bool checked) {
+                this->setRefreshOnTargetStopEnabled(checked);
+            }
+        );
+
+        QObject::connect(
+            this->refreshOnActivationAction,
+            &QAction::triggered,
+            this,
+            [this] (bool checked) {
+                this->setRefreshOnActivationEnabled(checked);
+            }
+        );
+
+        QObject::connect(
             this->detachPaneButton,
             &QToolButton::clicked,
             this,
@@ -149,20 +184,11 @@ namespace Bloom::Widgets
             this,
             &TargetMemoryInspectionPane::onProgrammingModeDisabled
         );
-
-        QObject::connect(
-            this->hexViewerWidget->refreshButton,
-            &QToolButton::clicked,
-            this,
-            [this] {
-                this->refreshMemoryValues();
-            }
-        );
     }
 
     void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function<void(void)>> callback) {
-        this->hexViewerWidget->refreshButton->setDisabled(true);
-        this->hexViewerWidget->refreshButton->startSpin();
+        this->refreshButton->setDisabled(true);
+        this->refreshButton->startSpin();
 
         auto excludedAddressRanges = std::set<Targets::TargetMemoryAddressRange>();
         std::transform(
@@ -210,10 +236,10 @@ namespace Bloom::Widgets
             &InsightWorkerTask::finished,
             this,
             [this] {
-                this->hexViewerWidget->refreshButton->stopSpin();
+                this->refreshButton->stopSpin();
 
                 if (this->targetState == Targets::TargetState::STOPPED) {
-                    this->hexViewerWidget->refreshButton->setDisabled(false);
+                    this->refreshButton->setDisabled(false);
                 }
             }
         );
@@ -241,7 +267,10 @@ namespace Bloom::Widgets
     }
 
     void TargetMemoryInspectionPane::postActivate() {
-        if (this->targetState == Targets::TargetState::STOPPED) {
+        if (
+            this->settings.refreshOnActivation
+            && this->targetState == Targets::TargetState::STOPPED
+        ) {
             this->refreshMemoryValues([this] {
                 this->hexViewerWidget->setDisabled(false);
             });
@@ -319,13 +348,28 @@ namespace Bloom::Widgets
         this->targetState = newState;
 
         if (newState == TargetState::STOPPED && this->activated) {
-            this->refreshMemoryValues([this] {
+            if (this->settings.refreshOnTargetStop) {
+                this->refreshMemoryValues([this] {
+                    this->hexViewerWidget->setDisabled(false);
+                });
+
+            } else {
                 this->hexViewerWidget->setDisabled(false);
-            });
+            }
 
         } else if (newState == TargetState::RUNNING) {
             this->hexViewerWidget->setDisabled(true);
         }
+    }
+
+    void TargetMemoryInspectionPane::setRefreshOnTargetStopEnabled(bool enabled) {
+        this->refreshOnTargetStopAction->setChecked(enabled);
+        this->settings.refreshOnTargetStop = enabled;
+    }
+
+    void TargetMemoryInspectionPane::setRefreshOnActivationEnabled(bool enabled) {
+        this->refreshOnActivationAction->setChecked(enabled);
+        this->settings.refreshOnActivation = enabled;
     }
 
     void TargetMemoryInspectionPane::onMemoryRead(const Targets::TargetMemoryBuffer& buffer) {

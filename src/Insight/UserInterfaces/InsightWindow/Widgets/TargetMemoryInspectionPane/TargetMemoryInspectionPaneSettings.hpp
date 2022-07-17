@@ -12,6 +12,9 @@ namespace Bloom::Widgets
     struct TargetMemoryInspectionPaneSettings
     {
         bool activated = false;
+        bool refreshOnTargetStop = true;
+        bool refreshOnActivation = true;
+
         HexViewerWidgetSettings hexViewerWidgetSettings;
 
         std::vector<FocusedMemoryRegion> focusedMemoryRegions;

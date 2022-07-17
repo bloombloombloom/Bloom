@@ -30,22 +30,6 @@
                             <number>0</number>
                         </property>
                         <item>
-                            <widget class="SvgToolButton" name="refresh-memory-btn">
-                                <property name="svgFilePath">
-                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh.svg</string>
-                                </property>
-                                <property name="disabledSvgFilePath">
-                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</string>
-                                </property>
-                                <property name="toolTip">
-                                    <string>Refresh Memory</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item>
-                            <widget class="QFrame" name="separator"/>
-                        </item>
-                        <item>
                             <spacer name="horizontal-spacer">
                                 <property name="sizeHint">
                                     <size>

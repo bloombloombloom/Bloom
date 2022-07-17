@@ -28,8 +28,6 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        SvgToolButton* refreshButton = nullptr;
-
         HexViewerWidget(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             HexViewerWidgetSettings& settings,

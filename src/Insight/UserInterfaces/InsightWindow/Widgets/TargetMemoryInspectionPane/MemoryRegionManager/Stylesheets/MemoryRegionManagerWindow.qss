@@ -49,6 +49,10 @@
     border: none;
 }
 
+#region-selector-tool-bar Bloom--Widgets--SvgToolButton QMenu::item {
+    padding-left: 25px;
+}
+
 #region-selector-tool-bar #separator {
     background-color: transparent;
     border-right: 1px solid #41423f;
