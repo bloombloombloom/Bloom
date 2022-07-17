@@ -30,7 +30,7 @@ namespace Bloom::Widgets
             addressLabel->setAddressHex(firstByteItem->relativeAddressHex);
             addressLabel->setPos(
                 leftMargin,
-                firstByteItem->pos().y()
+                firstByteItem->pos().y() + 3 // +3 to have the address item and byte item align vertically, from center
             );
         }
 
