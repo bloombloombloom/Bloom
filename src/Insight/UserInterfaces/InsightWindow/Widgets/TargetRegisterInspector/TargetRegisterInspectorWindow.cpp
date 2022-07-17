@@ -62,7 +62,7 @@ namespace Bloom::Widgets
         }
 
         this->setStyleSheet(windowStylesheet.readAll());
-        this->setFixedSize(1075, 610);
+        this->setFixedSize(1120, 610);
 
         auto uiLoader = UiLoader(this);
         this->container = uiLoader.load(&windowUiFile, this);
@@ -160,7 +160,7 @@ namespace Bloom::Widgets
             );
             this->bitsetWidgets.push_back(bitsetWidget);
 
-            if (((registerByteIndex + 1) % 3) == 0) {
+            if (((registerByteIndex + 1) % 4) == 0) {
                 bitsetSingleHorizontalLayout->addStretch(1);
                 registerBitsetWidgetLayout->addLayout(bitsetSingleHorizontalLayout);
                 bitsetSingleHorizontalLayout = new QHBoxLayout();
