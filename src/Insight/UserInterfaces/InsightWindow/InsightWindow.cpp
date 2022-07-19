@@ -344,19 +344,24 @@ namespace Bloom
 
         if (lastBottomPanelState.has_value()) {
             this->bottomPanel->setSize(lastBottomPanelState->size);
+        }
 
-            if (this->ramInspectionPane != nullptr
-                && this->insightProjectSettings.previousRamInspectionPaneState.has_value()
-                && this->insightProjectSettings.previousRamInspectionPaneState->activated
-            ) {
-                this->toggleRamInspectionPane();
+        if (
+            this->ramInspectionPane != nullptr
+            && this->insightProjectSettings.previousRamInspectionPaneState.has_value()
+        ) {
+            this->ramInspectionPane->restoreLastPaneState(
+                this->insightProjectSettings.previousRamInspectionPaneState.value()
+            );
+        }
 
-            } else if (this->eepromInspectionPane != nullptr
-                && this->insightProjectSettings.previousEepromInspectionPaneState.has_value()
-                && this->insightProjectSettings.previousEepromInspectionPaneState->activated
-            ) {
-                this->toggleEepromInspectionPane();
-            }
+        if (
+            this->eepromInspectionPane != nullptr
+            && this->insightProjectSettings.previousEepromInspectionPaneState.has_value()
+        ) {
+            this->eepromInspectionPane->restoreLastPaneState(
+                this->insightProjectSettings.previousEepromInspectionPaneState.value()
+            );
         }
 
         this->setUiDisabled(this->targetState != TargetState::STOPPED);

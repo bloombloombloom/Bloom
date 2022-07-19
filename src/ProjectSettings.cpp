@@ -292,8 +292,34 @@ namespace Bloom
     }
 
     Widgets::PaneState InsightProjectSettings::paneStateFromJson(const QJsonObject& jsonObject) const {
+        auto detachedWindowState = std::optional<Widgets::DetachedWindowState>(std::nullopt);
+
+        if (jsonObject.contains("detachedWindowState")) {
+            detachedWindowState = Widgets::DetachedWindowState();
+
+            const auto detachedWindowStateObject = jsonObject.value("detachedWindowState").toObject();
+
+            if (detachedWindowStateObject.contains("size")) {
+                const auto sizeObject = detachedWindowStateObject.value("size").toObject();
+                detachedWindowState->size = QSize(
+                    sizeObject.value("width").toInt(0),
+                    sizeObject.value("height").toInt(0)
+                );
+            }
+
+            if (detachedWindowStateObject.contains("position")) {
+                const auto positionObject = detachedWindowStateObject.value("position").toObject();
+                detachedWindowState->position = QPoint(
+                    positionObject.value("x").toInt(0),
+                    positionObject.value("y").toInt(0)
+                );
+            }
+        }
+
         return Widgets::PaneState(
-            (jsonObject.contains("activated") ? jsonObject.value("activated").toBool() : false)
+            (jsonObject.contains("activated") ? jsonObject.value("activated").toBool() : false),
+            (jsonObject.contains("attached") ? jsonObject.value("attached").toBool() : true),
+            detachedWindowState
         );
     }
 
@@ -376,8 +402,30 @@ namespace Bloom
     }
 
     QJsonObject InsightProjectSettings::paneStateToJson(const Widgets::PaneState& paneState) const {
-        return QJsonObject({
+        auto json = QJsonObject({
             {"activated", paneState.activated},
+            {"attached", paneState.attached},
         });
+
+        if (paneState.detachedWindowState.has_value()) {
+            json.insert("detachedWindowState", QJsonObject({
+                {
+                    "size",
+                    QJsonObject({
+                        {"width", paneState.detachedWindowState->size.width()},
+                        {"height", paneState.detachedWindowState->size.height()},
+                    })
+                },
+                {
+                    "position",
+                    QJsonObject({
+                        {"x", paneState.detachedWindowState->position.x()},
+                        {"y", paneState.detachedWindowState->position.y()},
+                    })
+                }
+            }));
+        }
+
+        return json;
     }
 }

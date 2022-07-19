@@ -16,6 +16,14 @@ namespace Bloom::Widgets
         QObject::connect(this, &PaneWidget::paneDetached, parent, &PanelWidget::updateVisibility);
     }
 
+    PaneState PaneWidget::getCurrentState() const {
+        return PaneState(
+            this->activated,
+            this->attached,
+            this->getDetachedWindowState()
+        );
+    }
+
     void PaneWidget::activate() {
         if (this->activated) {
             return;
@@ -36,18 +44,51 @@ namespace Bloom::Widgets
         emit this->paneDeactivated();
     }
 
+    void PaneWidget::restoreLastPaneState(const PaneState& lastPaneState) {
+        if (lastPaneState.detachedWindowState.has_value()) {
+            this->lastDetachedWindowState = lastPaneState.detachedWindowState;
+        }
+
+        if (!lastPaneState.attached && lastPaneState.detachedWindowState.has_value()) {
+            this->detach();
+        }
+
+        if (lastPaneState.activated) {
+            this->activate();
+        }
+    }
+
     void PaneWidget::detach() {
+        if (!this->attached) {
+            return;
+        }
+
         this->setWindowFlag(Qt::Window);
-        this->show();
+
+        if (this->lastDetachedWindowState.has_value()) {
+            this->resize(this->lastDetachedWindowState->size);
+            this->move(this->lastDetachedWindowState->position);
+        }
+
+        if (this->activated) {
+            this->show();
+        }
 
         this->attached = false;
         emit this->paneDetached();
     }
 
     void PaneWidget::attach() {
+        if (this->attached) {
+            return;
+        }
+
+        this->lastDetachedWindowState = this->getDetachedWindowState();
         this->setWindowFlag(Qt::Window, false);
-        this->hide();
-        this->show();
+
+        if (this->activated) {
+            this->show();
+        }
 
         this->attached = true;
         emit this->paneAttached();
@@ -58,4 +99,11 @@ namespace Bloom::Widgets
         QWidget::closeEvent(event);
     }
 
+    std::optional<DetachedWindowState> PaneWidget::getDetachedWindowState() const {
+        if (!this->attached) {
+            return DetachedWindowState(this->size(), this->pos());
+        }
+
+        return this->lastDetachedWindowState;
+    }
 }

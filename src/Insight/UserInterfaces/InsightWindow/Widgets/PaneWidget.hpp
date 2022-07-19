@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <optional>
 
 #include "PanelWidget.hpp"
 #include "PaneState.hpp"
@@ -18,14 +19,12 @@ namespace Bloom::Widgets
 
         explicit PaneWidget(PanelWidget* parent);
 
-        [[nodiscard]] PaneState getCurrentState() const {
-            return PaneState(
-                this->activated
-            );
-        }
+        [[nodiscard]] PaneState getCurrentState() const;
 
         void activate();
         void deactivate();
+
+        void restoreLastPaneState(const PaneState& lastPaneState);
 
     signals:
         void paneActivated();
@@ -38,5 +37,10 @@ namespace Bloom::Widgets
         void attach();
 
         void closeEvent(QCloseEvent* event) override;
+
+    private:
+        std::optional<DetachedWindowState> lastDetachedWindowState;
+
+        std::optional<DetachedWindowState> getDetachedWindowState() const;
     };
 }
