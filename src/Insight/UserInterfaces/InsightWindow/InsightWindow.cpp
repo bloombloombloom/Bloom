@@ -334,12 +334,18 @@ namespace Bloom
         if (lastLeftPanelState.has_value() && this->leftPanel != nullptr) {
             this->leftPanel->setSize(lastLeftPanelState->size);
 
-            if (lastLeftPanelState->open && this->targetRegistersSidePane != nullptr
-                && this->insightProjectSettings.previousRegistersPaneState.has_value()
-                && this->insightProjectSettings.previousRegistersPaneState->activated
-            ) {
-                this->toggleTargetRegistersPane();
-            }
+        }
+        if (
+            this->targetRegistersSidePane != nullptr
+            && this->insightProjectSettings.previousRegistersPaneState.has_value()
+        ) {
+            auto& lastRegisterSidePaneState = this->insightProjectSettings.previousRegistersPaneState.value();
+
+            // The register pane cannot be detached
+            lastRegisterSidePaneState.attached = true;
+            lastRegisterSidePaneState.detachedWindowState = std::nullopt;
+
+            this->targetRegistersSidePane->restoreLastPaneState(lastRegisterSidePaneState);
         }
 
         if (lastBottomPanelState.has_value()) {
@@ -535,8 +541,22 @@ namespace Bloom
             this->leftPanel
         );
         leftPanelLayout->addWidget(this->targetRegistersSidePane);
-        this->targetRegistersButton->setChecked(false);
+
+        QObject::connect(
+            this->targetRegistersSidePane,
+            &PaneWidget::paneActivated,
+            this,
+            &InsightWindow::onRegistersPaneStateChanged
+        );
+        QObject::connect(
+            this->targetRegistersSidePane,
+            &PaneWidget::paneDeactivated,
+            this,
+            &InsightWindow::onRegistersPaneStateChanged
+        );
+
         this->targetRegistersButton->setDisabled(false);
+        this->targetRegistersSidePane->deactivate();
 
         auto& memoryInspectionPaneSettingsByMemoryType =
             this->insightProjectSettings.memoryInspectionPaneSettingsByMemoryType;
@@ -868,14 +888,10 @@ namespace Bloom
     void InsightWindow::toggleTargetRegistersPane() {
         if (this->targetRegistersSidePane->activated) {
             this->targetRegistersSidePane->deactivate();
-            this->targetRegistersButton->setChecked(false);
 
         } else {
             this->targetRegistersSidePane->activate();
-            this->targetRegistersButton->setChecked(true);
         }
-
-        this->adjustMinimumSize();
     }
 
     void InsightWindow::toggleRamInspectionPane() {
@@ -926,6 +942,11 @@ namespace Bloom
 
             this->eepromInspectionPane->activate();
         }
+    }
+
+    void InsightWindow::onRegistersPaneStateChanged() {
+        this->targetRegistersButton->setChecked(this->targetRegistersSidePane->activated);
+        this->adjustMinimumSize();
     }
 
     void InsightWindow::onRamInspectionPaneStateChanged() {
