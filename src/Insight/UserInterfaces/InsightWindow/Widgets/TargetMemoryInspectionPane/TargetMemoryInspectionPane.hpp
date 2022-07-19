@@ -38,7 +38,6 @@ namespace Bloom::Widgets
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
-        void closeEvent(QCloseEvent* event) override;
 
         void postActivate();
         void postDeactivate();

@@ -36,5 +36,7 @@ namespace Bloom::Widgets
     protected:
         void detach();
         void attach();
+
+        void closeEvent(QCloseEvent* event) override;
     };
 }

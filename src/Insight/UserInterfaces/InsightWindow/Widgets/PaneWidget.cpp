@@ -52,4 +52,10 @@ namespace Bloom::Widgets
         this->attached = true;
         emit this->paneAttached();
     }
+
+    void PaneWidget::closeEvent(QCloseEvent* event) {
+        this->deactivate();
+        QWidget::closeEvent(event);
+    }
+
 }

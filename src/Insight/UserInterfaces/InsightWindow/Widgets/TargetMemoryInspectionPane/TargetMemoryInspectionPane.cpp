@@ -261,11 +261,6 @@ namespace Bloom::Widgets
         this->container->setFixedSize(size.width() - 1, size.height());
     }
 
-    void TargetMemoryInspectionPane::closeEvent(QCloseEvent* event) {
-        this->deactivate();
-        QWidget::closeEvent(event);
-    }
-
     void TargetMemoryInspectionPane::postActivate() {
         if (
             this->settings.refreshOnActivation
