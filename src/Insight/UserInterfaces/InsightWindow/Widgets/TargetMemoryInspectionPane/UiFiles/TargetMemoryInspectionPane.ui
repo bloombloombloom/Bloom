@@ -45,10 +45,10 @@
             <item>
                 <widget class="QWidget" name="top-bar">
                     <property name="minimumHeight">
-                        <number>30</number>
+                        <number>28</number>
                     </property>
                     <property name="maximumHeight">
-                        <number>30</number>
+                        <number>28</number>
                     </property>
                     <property name="sizePolicy">
                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
