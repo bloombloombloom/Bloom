@@ -87,7 +87,7 @@
                                             <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</string>
                                         </property>
                                         <property name="toolTip">
-                                            <string>Refresh GPIO Pin States</string>
+                                            <string>Refresh Registers And GPIO Pin States</string>
                                         </property>
                                     </widget>
                                 </item>

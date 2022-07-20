@@ -246,7 +246,6 @@ namespace Bloom
             this,
             &InsightWindow::onProgrammingModeEnabled
         );
-
         QObject::connect(
             &(this->insightWorker),
             &InsightWorker::programmingModeDisabled,
