@@ -73,6 +73,10 @@ namespace Bloom::Widgets
          */
         void updateVisibility();
 
+    signals:
+        void closed();
+        void opened();
+
     protected:
         int handleSize = 10;
         int minimumResize = 10;

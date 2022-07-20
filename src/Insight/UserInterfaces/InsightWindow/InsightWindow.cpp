@@ -168,6 +168,32 @@ namespace Bloom
             &InsightWindow::refresh
         );
 
+        // Panel connections
+        QObject::connect(
+            this->leftPanel,
+            &PanelWidget::opened,
+            this,
+            &InsightWindow::adjustMinimumSize
+        );
+        QObject::connect(
+            this->leftPanel,
+            &PanelWidget::closed,
+            this,
+            &InsightWindow::adjustMinimumSize
+        );
+        QObject::connect(
+            this->bottomPanel,
+            &PanelWidget::opened,
+            this,
+            &InsightWindow::adjustMinimumSize
+        );
+        QObject::connect(
+            this->bottomPanel,
+            &PanelWidget::closed,
+            this,
+            &InsightWindow::adjustMinimumSize
+        );
+
         // Panel button connections
         QObject::connect(
             this->targetRegistersButton,
@@ -946,7 +972,6 @@ namespace Bloom
 
     void InsightWindow::onRegistersPaneStateChanged() {
         this->targetRegistersButton->setChecked(this->targetRegistersSidePane->activated);
-        this->adjustMinimumSize();
     }
 
     void InsightWindow::onRamInspectionPaneStateChanged() {
@@ -962,8 +987,6 @@ namespace Bloom
             // Both panes cannot be attached and activated at the same time.
             this->eepromInspectionPane->deactivate();
         }
-
-        this->adjustMinimumSize();
     }
 
     void InsightWindow::onEepromInspectionPaneStateChanged() {
@@ -979,8 +1002,6 @@ namespace Bloom
             // Both panes cannot be attached and activated at the same time.
             this->ramInspectionPane->deactivate();
         }
-
-        this->adjustMinimumSize();
     }
 
     void InsightWindow::onProgrammingModeEnabled() {

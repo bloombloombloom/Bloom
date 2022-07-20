@@ -84,6 +84,13 @@ namespace Bloom::Widgets
             }
         }
 
+        if (event->type() == QEvent::Type::Close || event->type() == QEvent::Type::Hide) {
+            emit this->closed();
+
+        } else if (event->type() == QEvent::Type::Show) {
+            emit this->opened();
+        }
+
         return QFrame::event(event);
     }
 
