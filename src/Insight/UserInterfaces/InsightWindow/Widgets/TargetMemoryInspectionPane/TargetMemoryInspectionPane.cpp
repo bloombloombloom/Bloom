@@ -87,6 +87,7 @@ namespace Bloom::Widgets
         containerLayout->addWidget(this->hexViewerWidget);
 
         this->setRefreshOnTargetStopEnabled(this->settings.refreshOnTargetStop);
+        this->setRefreshOnActivationEnabled(this->settings.refreshOnActivation);
 
         QObject::connect(
             this,

@@ -148,6 +148,14 @@ namespace Bloom
     ) const {
         auto inspectionPaneSettings = Widgets::TargetMemoryInspectionPaneSettings();
 
+        if (jsonObject.contains("refreshOnTargetStop")) {
+            inspectionPaneSettings.refreshOnTargetStop = jsonObject.value("refreshOnTargetStop").toBool();
+        }
+
+        if (jsonObject.contains("refreshOnActivation")) {
+            inspectionPaneSettings.refreshOnActivation = jsonObject.value("refreshOnActivation").toBool();
+        }
+
         if (jsonObject.contains("hexViewerSettings")) {
             auto& hexViewerSettings = inspectionPaneSettings.hexViewerWidgetSettings;
             const auto hexViewerSettingsObj = jsonObject.find("hexViewerSettings")->toObject();
@@ -326,7 +334,10 @@ namespace Bloom
     QJsonObject InsightProjectSettings::memoryInspectionPaneSettingsToJson(
         const Widgets::TargetMemoryInspectionPaneSettings& inspectionPaneSettings
     ) const {
-        auto settingsObj = QJsonObject();
+        auto settingsObj = QJsonObject({
+            {"refreshOnTargetStop", inspectionPaneSettings.refreshOnTargetStop},
+            {"refreshOnActivation", inspectionPaneSettings.refreshOnActivation},
+        });
 
         const auto& hexViewerSettings = inspectionPaneSettings.hexViewerWidgetSettings;
         settingsObj.insert("hexViewerSettings", QJsonObject({
