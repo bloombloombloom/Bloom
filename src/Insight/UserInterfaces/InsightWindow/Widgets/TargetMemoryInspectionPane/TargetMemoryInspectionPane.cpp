@@ -212,8 +212,8 @@ namespace Bloom::Widgets
             readMemoryTask,
             &ReadTargetMemory::targetMemoryRead,
             this,
-            [this] (const Targets::TargetMemoryBuffer& buffer) {
-                this->onMemoryRead(buffer);
+            [this] (const Targets::TargetMemoryBuffer& data) {
+                this->onMemoryRead(data);
 
                 // Refresh the stack pointer if this is RAM.
                 if (this->targetMemoryDescriptor.type == Targets::TargetMemoryType::RAM) {
@@ -264,7 +264,7 @@ namespace Bloom::Widgets
 
     void TargetMemoryInspectionPane::postActivate() {
         if (
-            this->settings.refreshOnActivation
+            (this->settings.refreshOnActivation || !this->data.has_value())
             && this->targetState == Targets::TargetState::STOPPED
         ) {
             this->refreshMemoryValues([this] {
@@ -344,7 +344,7 @@ namespace Bloom::Widgets
         this->targetState = newState;
 
         if (newState == TargetState::STOPPED && this->activated) {
-            if (this->settings.refreshOnTargetStop) {
+            if (this->settings.refreshOnTargetStop || !this->data.has_value()) {
                 this->refreshMemoryValues([this] {
                     this->hexViewerWidget->setDisabled(false);
                 });
@@ -368,8 +368,11 @@ namespace Bloom::Widgets
         this->settings.refreshOnActivation = enabled;
     }
 
-    void TargetMemoryInspectionPane::onMemoryRead(const Targets::TargetMemoryBuffer& buffer) {
-        this->hexViewerWidget->updateValues(buffer);
+    void TargetMemoryInspectionPane::onMemoryRead(const Targets::TargetMemoryBuffer& data) {
+        assert(data.size() == this->targetMemoryDescriptor.size());
+
+        this->data = data;
+        this->hexViewerWidget->updateValues(this->data.value());
     }
 
     void TargetMemoryInspectionPane::openMemoryRegionManagerWindow() {

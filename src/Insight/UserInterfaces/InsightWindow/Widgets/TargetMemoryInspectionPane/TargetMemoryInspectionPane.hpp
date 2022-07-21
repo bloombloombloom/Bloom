@@ -48,6 +48,8 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
         InsightWorker& insightWorker;
 
+        std::optional<Targets::TargetMemoryBuffer> data;
+
         QWidget* container = nullptr;
 
         QWidget* titleBar = nullptr;
@@ -69,7 +71,7 @@ namespace Bloom::Widgets
         void onTargetStateChanged(Targets::TargetState newState);
         void setRefreshOnTargetStopEnabled(bool enabled);
         void setRefreshOnActivationEnabled(bool enabled);
-        void onMemoryRead(const Targets::TargetMemoryBuffer& buffer);
+        void onMemoryRead(const Targets::TargetMemoryBuffer& data);
         void openMemoryRegionManagerWindow();
         void onMemoryRegionsChange();
         void onProgrammingModeEnabled();
