@@ -12,6 +12,7 @@ set(CMAKE_AUTOMOC ON)
 set(AUTOGEN_BUILD_DIR ../build/)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/bin")
 
+find_package(yaml-cpp 0.7.0 REQUIRED)
 find_package(Qt6Core REQUIRED)
 find_package(Qt6Gui REQUIRED)
 find_package(Qt6Widgets REQUIRED)
@@ -80,6 +81,7 @@ add_subdirectory(src)
 
 set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
 target_include_directories(Bloom PUBLIC ./)
+target_include_directories(Bloom PUBLIC ${YAML_CPP_INCLUDE_DIR})
 
 if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     # When Qt isn't playing nice, it's very useful to have access to the Qt source code, to step through.
@@ -93,6 +95,7 @@ target_link_libraries(Bloom -lstdc++fs)
 target_link_libraries(Bloom -lpthread)
 target_link_libraries(Bloom -lusb-1.0)
 target_link_libraries(Bloom -lhidapi-libusb)
+target_link_libraries(Bloom ${YAML_CPP_LIBRARIES})
 target_link_libraries(Bloom Qt6::Core)
 target_link_libraries(Bloom Qt6::Gui)
 target_link_libraries(Bloom Qt6::UiTools)

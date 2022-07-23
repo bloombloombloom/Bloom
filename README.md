@@ -67,6 +67,14 @@ Also, build-essential (`sudo apt-get install build-essential`).
 #### libusb v1.0 & libhidapi
 `sudo apt-get install libusb-1.0-0-dev libhidapi-dev`
 
+#### yaml-cpp (version 0.7.0 or later)
+I had to build this from source as I'm on Ubuntu 20.04 LTS, which only hosts version 0.6.2 on the package repository.
+It seems that since Ubuntu 22.04 LTS/Debian 12, there is a package for version 0.7.0 (see
+https://packages.ubuntu.com/source/jammy/yaml-cpp and https://packages.debian.org/bookworm/libyaml-cpp-dev).
+`sudo apt-get install libyaml-cpp-dev` should work if your package repository hosts version 0.7.0 or later. If not, you
+can build the library from source by following the instructions at https://github.com/jbeder/yaml-cpp#readme. Be sure
+to configure the build with `-DYAML_BUILD_SHARED_LIBS=ON`, to build the shared object binaries.
+
 #### PHP version 8 or later, with the xml extension
 Some of Bloom's build scripts are written in PHP.
 
