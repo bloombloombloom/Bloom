@@ -27,7 +27,10 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling HelpMonitorInfo packet");
 
         try {
-            // The file gdbHelpMonitorInfo.txt is included in the binary image as a resource. See src/resource.qrc
+            /*
+             * The file gdbHelpMonitorInfo.txt is included in the binary image as a resource. See the root-level
+             * CMakeLists.txt for more.
+             */
             auto helpFile = QFile(
                 QString::fromStdString(Paths::compiledResourcesPath() + "/resources/gdbHelpMonitorInfo.txt")
             );

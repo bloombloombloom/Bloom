@@ -288,7 +288,7 @@ namespace Bloom
          */
         Logger::silence();
 
-        // The file help.txt is included in the binary image as a resource. See src/resource.qrc
+        // The file help.txt is included in Bloom's binary, as a resource. See the root-level CMakeLists.txt for more.
         auto helpFile = QFile(QString::fromStdString(Paths::compiledResourcesPath() + "/resources/help.txt"));
 
         if (!helpFile.open(QIODevice::ReadOnly)) {
@@ -341,8 +341,8 @@ namespace Bloom
         }
 
         /*
-         * The file bloom.template.yaml is just a template Bloom config file that is included in the binary image as
-         * a resource. See the root-level CMakeLists.txt for more.
+         * The file bloom.template.yaml is just a template Bloom config file that is included in Bloom's binary, as a
+         * resource. See the root-level CMakeLists.txt for more.
          *
          * We simply copy the template file into the user's working directory.
          */
