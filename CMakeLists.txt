@@ -72,7 +72,7 @@ qt_add_resources(
     PREFIX
         "/compiled"
     FILES
-        "./resources/bloom.template.json"
+        "./resources/bloom.template.yaml"
         "./resources/help.txt"
         "./resources/gdbHelpMonitorInfo.txt"
 )

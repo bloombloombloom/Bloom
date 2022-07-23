@@ -341,13 +341,13 @@ namespace Bloom
         }
 
         /*
-         * The file bloom.template.json is just a template Bloom config file that is included in the binary image as
-         * a resource. See src/resource.qrc
+         * The file bloom.template.yaml is just a template Bloom config file that is included in the binary image as
+         * a resource. See the root-level CMakeLists.txt for more.
          *
          * We simply copy the template file into the user's working directory.
          */
         auto templateConfigFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()+ "/resources/bloom.template.json")
+            QString::fromStdString(Paths::compiledResourcesPath()+ "/resources/bloom.template.yaml")
         );
 
         if (!templateConfigFile.open(QIODevice::ReadOnly)) {
