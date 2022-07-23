@@ -3,41 +3,44 @@
 #include <memory>
 #include <map>
 #include <string>
-#include <QJsonObject>
+#include <yaml-cpp/yaml.h>
 
 namespace Bloom
 {
     /*
-     * Currently, all user configuration is stored in a JSON file (bloom.json), in the user's project directory.
+     * Currently, all user configuration is stored in a YAML file (bloom.yaml), in the user's project directory.
      *
-     * The JSON config file should define debugging environment objects. A debugging environment object is just
-     * a user defined JSON object that holds parameters relating to a specific debugging environment (e.g config params
-     * for the DebugTool, Target configuration and any debug server config). Because a config file
-     * can define multiple debugging environments, each object should be assigned a key in the config file. We use this
-     * key to allow users to select different debugging environments between debugging sessions.
+     * The YAML config file should define parameters for specific debug environments. Because a config file can define
+     * multiple debug environments, each environment must be assigned a unique name that can be used to identify the
+     * environment. This is why the 'environments' parameter is a YAML map, with the key being the environment name.
      *
-     * On application startup, we extract the config from this JSON file and generate an ProjectConfig object.
+     * On application startup, we extract the config from this YAML file and generate a ProjectConfig object.
      * See Application::loadProjectConfiguration() for more on this.
      *
      * Some config parameters are specific to certain entities within Bloom, but have no significance across the
      * rest of the application. For example, AVR8 targets require the 'physicalInterface' and other AVR8 specific
      * parameters. These are used to configure AVR8 targets, but have no significance across the rest of the
-     * application. This is why some configuration structs (like TargetConfig) include a QJsonObject member, typically
-     * named jsonObject. When instances of these structs are passed to the appropriate entities, any configuration
-     * required by those entities is extracted from the jsonObject member. This means we don't have to worry about any
-     * entity specific config parameters at the application level. We can simply extract what we need at an entity
-     * level and the rest of the application can remain oblivious. For an example on extracting entity specific
-     * config, see AVR8::preActivationConfigure().
+     * application. This is why some configuration structs (like TargetConfig) include a YAML::Node member.
+     * When instances of these structs are passed to the appropriate entities, any configuration required by those
+     * entities is extracted from the YAML::Node member. This means we don't have to worry about any entity specific
+     * config parameters at the application level. We can simply extract what we need at an entity level and the rest
+     * of the application can remain oblivious. For an example on extracting entity specific config, see
+     * Avr8TargetConfig::Avr8TargetConfig() and Avr8::preActivationConfigure().
      *
      * For more on project configuration, see Bloom documentation at https://bloom.oscillate.io/docs/configuration
+     */
+
+    /*
+     * Initially, we used the JSON format for project configuration files, but this was changed in version 0.11.0.
+     * See https://github.com/navnavnav/Bloom/issues/50 for more.
      */
 
     /**
      * Configuration relating to a specific target.
      *
      * Please don't define any target specific configuration here, unless it applies to *all* targets across
-     * the application. If a target requires specific config, it should be extracted from the jsonObject member.
-     * This should be done in Target::preActivationConfigure(), to which an instance of TargetConfig is passed.
+     * the application. If a target requires specific config, it should be extracted from the YAML::Node (targetNode)
+     * member. This should be done in Target::preActivationConfigure(), to which an instance of TargetConfig is passed.
      * See the comment above on entity specific config for more on this.
      */
     struct TargetConfig
@@ -54,16 +57,20 @@ namespace Bloom
          */
         std::optional<std::string> variantName;
 
-        QJsonObject jsonObject;
+        /**
+         * For extracting any target specific configuration. See Avr8TargetConfig::Avr8TargetConfig() and
+         * Avr8::preActivationConfigure() for an example of this.
+         */
+        YAML::Node targetNode;
 
         TargetConfig() = default;
 
         /**
-         * Obtains config parameters from JSON object.
+         * Obtains config parameters from YAML node.
          *
-         * @param jsonObject
+         * @param targetNode
          */
-        explicit TargetConfig(const QJsonObject& jsonObject);
+        explicit TargetConfig(const YAML::Node& targetNode);
     };
 
     /**
@@ -71,7 +78,7 @@ namespace Bloom
      *
      * As with the TargetConfig struct, please don't add any manufacture/model specific configuration here. This
      * configuration should apply to all supported debug tools. Specific configuration can be extracted from the
-     * jsonObject member, as described in the TargetConfig comment above.
+     * YAML::Node (debugToolNode) member, as described in the TargetConfig comment above.
      */
     struct DebugToolConfig
     {
@@ -89,16 +96,19 @@ namespace Bloom
          */
         bool releasePostDebugSession = true;
 
-        QJsonObject jsonObject;
+        /**
+         * For extracting any debug tool specific configuration.
+         */
+        YAML::Node debugToolNode;
 
         DebugToolConfig() = default;
 
         /**
-         * Obtains config parameters from JSON object.
+         * Obtains config parameters from YAML node.
          *
-         * @param jsonObject
+         * @param debugToolNode
          */
-        explicit DebugToolConfig(const QJsonObject& jsonObject);
+        explicit DebugToolConfig(const YAML::Node& debugToolNode);
     };
 
     /**
@@ -106,17 +116,25 @@ namespace Bloom
      */
     struct DebugServerConfig
     {
+        /**
+         * The name of the selected debug server.
+         */
         std::string name;
-        QJsonObject jsonObject;
+
+        /**
+         * For extracting any debug server specific configuration. See GdbDebugServerConfig::GdbDebugServerConfig() and
+         * GdbRspDebugServer::GdbRspDebugServer() for an example of this.
+         */
+        YAML::Node debugServerNode;
 
         DebugServerConfig() = default;
 
         /**
-         * Obtains config parameters from JSON object.
+         * Obtains config parameters from YAML node.
          *
-         * @param jsonObject
+         * @param debugServerNode
          */
-        explicit DebugServerConfig(const QJsonObject& jsonObject);
+        explicit DebugServerConfig(const YAML::Node& debugServerNode);
     };
 
     struct InsightConfig
@@ -126,11 +144,11 @@ namespace Bloom
         InsightConfig() = default;
 
         /**
-         * Obtains config parameters from JSON object.
+         * Obtains config parameters from YAML node.
          *
-         * @param jsonObject
+         * @param insightNode
          */
-        explicit InsightConfig(const QJsonObject& jsonObject);
+        explicit InsightConfig(const YAML::Node& insightNode);
     };
 
     /**
@@ -142,7 +160,7 @@ namespace Bloom
     struct EnvironmentConfig
     {
         /**
-         * The environment name is stored as the key to the JSON object containing the environment parameters.
+         * The environment name is stored as the key to the YAML map containing the environment parameters.
          *
          * Environment names must be unique.
          */
@@ -179,11 +197,12 @@ namespace Bloom
         std::optional<InsightConfig> insightConfig;
 
         /**
-         * Obtains config parameters from JSON object.
+         * Obtains config parameters from YAML node.
          *
-         * @param jsonObject
+         * @param name
+         * @param environmentNode
          */
-        EnvironmentConfig(std::string name, QJsonObject jsonObject);
+        EnvironmentConfig(std::string name, const YAML::Node& environmentNode);
     };
 
     /**
@@ -211,10 +230,10 @@ namespace Bloom
         bool debugLoggingEnabled = false;
 
         /**
-         * Obtains config parameters from JSON object.
+         * Obtains config parameters from YAML node.
          *
-         * @param jsonObject
+         * @param configNode
          */
-        explicit ProjectConfig(const QJsonObject& jsonObject);
+        explicit ProjectConfig(const YAML::Node& configNode);
     };
 }

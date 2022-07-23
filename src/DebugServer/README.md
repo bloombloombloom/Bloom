@@ -11,7 +11,7 @@ connected AVR target, by implementing the
 Each server must implement the interface defined in the [`ServerInterface` class](./ServerInterface.hpp).
 
 At startup, the DebugServer will select the appropriate server implementation, based on the user's project 
-configuration (bloom.json - see [`DebugServerConfig`](../ProjectConfig.hpp)). Each server implementation is mapped to a 
+configuration (bloom.yaml - see [`DebugServerConfig`](../ProjectConfig.hpp)). Each server implementation is mapped to a 
 config name, which is to be used in the project configuration file. For the mapping, see 
 `DebugServerComponent::getAvailableServersByName()`. After initialising the server (via `ServerInterface::init()`), 
 control of the DebugServer thread will then be handed over to the server implementation (via `ServerInterface::run()`). 

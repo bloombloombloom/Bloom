@@ -43,7 +43,7 @@ namespace Bloom::DebugServer
         EventListenerPointer eventListener = std::make_shared<EventListener>("DebugServerEventListener");
 
         /**
-         * Project configuration for the debug server (extracted from the user project's bloom.json).
+         * Project configuration for the debug server (extracted from the user project's bloom.yaml).
          */
         DebugServerConfig debugServerConfig;
 
@@ -62,7 +62,7 @@ namespace Bloom::DebugServer
         /**
          * Returns a mapping of server configuration names to lambdas/std::functions.
          *
-         * The server configuration name is what the user will use in their project configuration (bloom.json), when
+         * The server configuration name is what the user will use in their project configuration (bloom.yaml), when
          * selecting a debug server. It *must* be lower-case.
          *
          * The lambda should return an instance of the server implementation.

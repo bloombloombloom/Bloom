@@ -5,7 +5,7 @@ build/cmake-build-debug
 build/cmake-build-release
 build/resources
 build/bin/bloom
-build/bin/bloom.json
+build/bin/bloom.yaml
 *.deb
 *.rpm
 *.pkg.tar.zst

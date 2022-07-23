@@ -2,6 +2,7 @@
 
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QJsonObject>
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Logger/Logger.hpp"
@@ -46,7 +47,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             if (targetName.has_value() && matchingDescriptionFiles.empty()) {
                 throw Exception("Failed to resolve target description file for target \"" + targetName.value()
                     + "\" - target signature \"" + targetSignatureHex + "\" does not belong to target with name \"" +
-                    targetName.value() + "\". Please review your bloom.json configuration.");
+                    targetName.value() + "\". Please review your bloom.yaml configuration.");
             }
 
             if (matchingDescriptionFiles.size() == 1) {

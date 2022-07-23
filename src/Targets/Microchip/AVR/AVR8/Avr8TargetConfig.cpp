@@ -1,6 +1,6 @@
 #include "Avr8TargetConfig.hpp"
 
-#include "src/Logger/Logger.hpp"
+#include "src/Helpers/String.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
@@ -8,12 +8,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     Avr8TargetConfig::Avr8TargetConfig(const TargetConfig& targetConfig): TargetConfig(targetConfig) {
         using Bloom::Exceptions::InvalidConfig;
 
-        if (!targetConfig.jsonObject.contains("physicalInterface")) {
+        const auto& targetNode = targetConfig.targetNode;
+
+        if (!targetNode["physicalInterface"]) {
             throw InvalidConfig("Missing physical interface config parameter for AVR8 target.");
         }
 
-        const auto physicalInterfaceName = targetConfig.jsonObject.value("physicalInterface").toString().toLower()
-            .toStdString();
+        const auto physicalInterfaceName = String::asciiToLower(targetNode["physicalInterface"].as<std::string>());
 
         static const auto physicalInterfacesByName = Avr8TargetConfig::getPhysicalInterfacesByName();
 
@@ -23,26 +24,20 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         this->physicalInterface = physicalInterfacesByName.at(physicalInterfaceName);
 
-        if (targetConfig.jsonObject.contains("updateDwenFuseBit")) {
-            this->updateDwenFuseBit = targetConfig.jsonObject.value("updateDwenFuseBit").toBool();
+        if (targetNode["updateDwenFuseBit"]) {
+            this->updateDwenFuseBit = targetNode["updateDwenFuseBit"].as<bool>();
         }
 
-        if (targetConfig.jsonObject.contains("cycleTargetPowerPostDwenUpdate")) {
-            this->cycleTargetPowerPostDwenUpdate = targetConfig.jsonObject.value(
-                "cycleTargetPowerPostDwenUpdate"
-            ).toBool();
+        if (targetNode["cycleTargetPowerPostDwenUpdate"]) {
+            this->cycleTargetPowerPostDwenUpdate = targetNode["cycleTargetPowerPostDwenUpdate"].as<bool>();
         }
 
-        if (targetConfig.jsonObject.contains("disableDebugWirePreDisconnect")) {
-            this->disableDebugWireOnDeactivate = targetConfig.jsonObject.value(
-                "disableDebugWirePreDisconnect"
-            ).toBool();
+        if (targetNode["disableDebugWirePreDisconnect"]) {
+            this->disableDebugWireOnDeactivate = targetNode["disableDebugWirePreDisconnect"].as<bool>();
         }
 
-        if (targetConfig.jsonObject.contains("targetPowerCycleDelay")) {
-            this->targetPowerCycleDelay = std::chrono::milliseconds(targetConfig.jsonObject.value(
-                "targetPowerCycleDelay"
-            ).toInt(static_cast<int>(this->targetPowerCycleDelay.count())));
+        if (targetNode["targetPowerCycleDelay"]) {
+            this->targetPowerCycleDelay = std::chrono::milliseconds(targetNode["targetPowerCycleDelay"].as<int>());
         }
     }
 }

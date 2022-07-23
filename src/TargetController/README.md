@@ -82,7 +82,7 @@ The TargetController possesses the ability to go into a suspended state. In this
 hardware is surrendered - Bloom will no longer be able to interact with the debug tool or target. The purpose of this
 state is to allow other programs access to the hardware, without requiring the termination of the Bloom process. The
 TargetController goes into a suspended state at the end of a debug session, if the user has enabled this via the
-`releasePostDebugSession` debug tool parameter, in their project configuration file (bloom.json). See
+`releasePostDebugSession` debug tool parameter, in their project configuration file (bloom.yaml). See
 `TargetControllerComponent::onDebugSessionFinishedEvent()` for more.
 
 When in a suspended state, the TargetController will reject most commands. More specifically, any command that

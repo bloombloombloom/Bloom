@@ -234,22 +234,22 @@ namespace Bloom
     }
 
     void Application::loadProjectConfiguration() {
-        auto jsonConfigFile = QFile(QString::fromStdString(Paths::projectConfigPath()));
+        auto configFile = QFile(QString::fromStdString(Paths::projectConfigPath()));
 
-        if (!jsonConfigFile.exists()) {
-            throw InvalidConfig("Bloom configuration file (bloom.json) not found. Working directory: "
+        if (!configFile.exists()) {
+            throw InvalidConfig("Bloom configuration file (bloom.yaml) not found. Working directory: "
                 + Paths::projectDirPath());
         }
 
-        if (!jsonConfigFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            throw InvalidConfig("Failed to load Bloom configuration file (bloom.json) Working directory: "
+        if (!configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            throw InvalidConfig("Failed to open Bloom configuration file (bloom.yaml) Working directory: "
                 + Paths::projectDirPath());
         }
 
-        const auto jsonObject = QJsonDocument::fromJson(jsonConfigFile.readAll()).object();
-        jsonConfigFile.close();
+        const auto configNode = YAML::Load(configFile.readAll().toStdString());
+        configFile.close();
 
-        this->projectConfig = ProjectConfig(jsonObject);
+        this->projectConfig = ProjectConfig(configNode);
 
         // Validate the selected environment
         if (!this->projectConfig->environments.contains(this->selectedEnvironmentName)) {
@@ -337,7 +337,7 @@ namespace Bloom
         auto configFile = QFile(QString::fromStdString(Paths::projectConfigPath()));
 
         if (configFile.exists()) {
-            throw Exception("Bloom configuration file (bloom.json) already exists in working directory.");
+            throw Exception("Bloom configuration file (bloom.yaml) already exists in working directory.");
         }
 
         /*
@@ -358,7 +358,7 @@ namespace Bloom
         }
 
         if (!configFile.open(QIODevice::ReadWrite)) {
-            throw Exception("Failed to create Bloom configuration file (bloom.json)");
+            throw Exception("Failed to create Bloom configuration file (bloom.yaml)");
         }
 
         configFile.write(templateConfigFile.readAll());
@@ -366,7 +366,7 @@ namespace Bloom
         configFile.close();
         templateConfigFile.close();
 
-        Logger::info("Bloom configuration file (bloom.json) created in working directory.");
+        Logger::info("Bloom configuration file (bloom.yaml) created in working directory.");
         return EXIT_SUCCESS;
     }
 

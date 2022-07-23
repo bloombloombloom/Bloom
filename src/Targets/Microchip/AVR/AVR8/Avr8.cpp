@@ -26,6 +26,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
         Target::preActivationConfigure(targetConfig);
 
+        // Extract AVR8 specific target config
         this->targetConfig = Avr8TargetConfig(targetConfig);
 
         if (this->family.has_value()) {
@@ -87,7 +88,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 "Failed to validate connected target - target signature mismatch.\nThe target signature"
                 " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
                 + tdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the configuration"
-                + " file (bloom.json)."
+                + " file (bloom.yaml)."
             );
         }
     }

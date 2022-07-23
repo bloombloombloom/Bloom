@@ -1,111 +1,168 @@
 #include "ProjectConfig.hpp"
 
+#include "src/Helpers/String.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace Bloom
 {
-    ProjectConfig::ProjectConfig(const QJsonObject& jsonObject) {
-        if (!jsonObject.contains("environments")) {
+    ProjectConfig::ProjectConfig(const YAML::Node& configNode) {
+        if (!configNode["environments"]) {
             throw Exceptions::InvalidConfig(
-                "No environments found - please review the bloom.json configuration file and ensure that "
+                "No environments found - please review the bloom.yaml configuration file and ensure that "
                 "no syntax errors are present."
             );
         }
 
-        // Extract all environment objects from JSON config.
-        auto environments = jsonObject.find("environments").value().toObject();
+        if (!configNode["environments"].IsMap()) {
+            throw Exceptions::InvalidConfig(
+                "Invalid environments configuration provided - 'environments' must be of mapping type."
+            );
+        }
+
+        const auto& environments = configNode["environments"];
+
         for (auto environmentIt = environments.begin(); environmentIt != environments.end(); environmentIt++) {
-            auto environmentName = environmentIt.key().toStdString();
+            auto environmentName = std::optional<std::string>(std::nullopt);
 
             try {
+                environmentName = environmentIt->first.as<std::string>();
+
+                if (!String::isAscii(environmentName.value())) {
+                    throw Exceptions::InvalidConfig(
+                        "Environment name ('" + environmentName.value() + "') is not in ASCII form."
+                    );
+                }
+
                 this->environments.insert(
                     std::pair(
-                        environmentName,
-                        EnvironmentConfig(environmentName, environmentIt.value().toObject())
+                        environmentName.value(),
+                        EnvironmentConfig(environmentName.value(), environmentIt->second)
                     )
                 );
 
             } catch (Exceptions::InvalidConfig& exception) {
-                Logger::error("Invalid environment config for environment '" + environmentName + "': "
-                    + exception.getMessage() + " Environment will be ignored.");
+                Logger::error(
+                    "Invalid environment config for environment '" + environmentName.value() + "': "
+                        + exception.getMessage() + " Environment will be ignored."
+                );
+
+            } catch (YAML::BadConversion& exception) {
+                Logger::error(
+                    "Invalid environment name provided. Environment names must be ASCII strings. Environment will be "
+                    "ignored"
+                );
             }
         }
 
-        if (jsonObject.contains("debugServer")) {
-            this->debugServerConfig = DebugServerConfig(jsonObject.find("debugServer")->toObject());
+        if (configNode["debugServer"]) {
+            this->debugServerConfig = DebugServerConfig(configNode["debugServer"]);
         }
 
-        if (jsonObject.contains("insight")) {
-            this->insightConfig = InsightConfig(jsonObject.find("insight")->toObject());
+        if (configNode["insight"]) {
+            this->insightConfig = InsightConfig(configNode["insight"]);
         }
 
-        if (jsonObject.contains("debugLoggingEnabled")) {
-            this->debugLoggingEnabled = jsonObject.find("debugLoggingEnabled").value().toBool();
-        }
-    }
-
-    InsightConfig::InsightConfig(const QJsonObject& jsonObject) {
-        if (jsonObject.contains("enabled")) {
-            this->insightEnabled = jsonObject.find("enabled").value().toBool();
+        if (configNode["debugLoggingEnabled"]) {
+            this->debugLoggingEnabled = configNode["debugLoggingEnabled"].as<bool>(this->debugLoggingEnabled);
         }
     }
 
-    EnvironmentConfig::EnvironmentConfig(std::string name, QJsonObject jsonObject) {
-        if (!jsonObject.contains("debugTool")) {
-            throw Exceptions::InvalidConfig("No debug tool configuration provided.");
-        }
-
-        if (!jsonObject.contains("target")) {
-            throw Exceptions::InvalidConfig("No target configuration provided.");
-        }
-
-        this->name = std::move(name);
-        this->shutdownPostDebugSession = jsonObject.value(
-            "shutdownPostDebugSession"
-        ).toBool(this->shutdownPostDebugSession);
-        this->debugToolConfig = DebugToolConfig(jsonObject.find("debugTool")->toObject());
-        this->targetConfig = TargetConfig(jsonObject.find("target")->toObject());
-
-        if (jsonObject.contains("debugServer")) {
-            this->debugServerConfig = DebugServerConfig(jsonObject.find("debugServer")->toObject());
-        }
-
-        if (jsonObject.contains("insight")) {
-            this->insightConfig = InsightConfig(jsonObject.find("insight")->toObject());
+    InsightConfig::InsightConfig(const YAML::Node& insightNode) {
+        if (insightNode["enabled"]) {
+            this->insightEnabled = insightNode["enabled"].as<bool>(this->insightEnabled);
         }
     }
 
-    TargetConfig::TargetConfig(const QJsonObject& jsonObject) {
-        if (!jsonObject.contains("name")) {
+    EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environmentNode)
+        : name(std::move(name))
+    {
+        if (!environmentNode["debugTool"]) {
+            throw Exceptions::InvalidConfig("Missing debug tool configuration.");
+        }
+
+        if (!environmentNode["debugTool"].IsMap()) {
+            throw Exceptions::InvalidConfig(
+                "Invalid debug tool configuration provided - 'debugTool' must be of mapping type."
+            );
+        }
+
+        if (!environmentNode["target"]) {
+            throw Exceptions::InvalidConfig("Missing target configuration.");
+        }
+
+        if (!environmentNode["target"].IsMap()) {
+            throw Exceptions::InvalidConfig(
+                "Invalid target configuration provided - 'target' must be of mapping type."
+            );
+        }
+
+        this->debugToolConfig = DebugToolConfig(environmentNode["debugTool"]);
+        this->targetConfig = TargetConfig(environmentNode["target"]);
+
+        if (environmentNode["debugServer"]) {
+            if (!environmentNode["debugServer"].IsMap()) {
+                throw Exceptions::InvalidConfig(
+                    "Invalid debug server configuration provided - 'debugServer' must be of mapping type."
+                );
+            }
+
+            this->debugServerConfig = DebugServerConfig(environmentNode["debugServer"]);
+        }
+
+        if (environmentNode["insight"]) {
+            if (!environmentNode["insight"].IsMap()) {
+                throw Exceptions::InvalidConfig(
+                    "Invalid insight configuration provided - 'insight' must be of mapping type."
+                );
+            }
+
+            this->insightConfig = InsightConfig(environmentNode["insight"]);
+        }
+
+        if (environmentNode["shutdownPostDebugSession"]) {
+            this->shutdownPostDebugSession = environmentNode["shutdownPostDebugSession"].as<bool>(
+                this->shutdownPostDebugSession
+            );
+        }
+    }
+
+    TargetConfig::TargetConfig(const YAML::Node& targetNode) {
+        if (!targetNode["name"]) {
             throw Exceptions::InvalidConfig("No target name found.");
         }
 
-        this->name = jsonObject.find("name")->toString().toLower().toStdString();
+        this->name = String::asciiToLower(targetNode["name"].as<std::string>());
 
-        if (jsonObject.contains("variantName")) {
-            this->variantName = jsonObject.find("variantName").value().toString().toLower().toStdString();
+        if (targetNode["variantName"]) {
+            this->variantName = String::asciiToLower(targetNode["variantName"].as<std::string>());
         }
 
-        this->jsonObject = jsonObject;
+        this->targetNode = targetNode;
     }
 
-    DebugToolConfig::DebugToolConfig(const QJsonObject& jsonObject) {
-        if (!jsonObject.contains("name")) {
+    DebugToolConfig::DebugToolConfig(const YAML::Node& debugToolNode) {
+        if (!debugToolNode["name"]) {
             throw Exceptions::InvalidConfig("No debug tool name found.");
         }
 
-        this->name = jsonObject.find("name")->toString().toLower().toStdString();
+        this->name = String::asciiToLower(debugToolNode["name"].as<std::string>());
 
-        if (jsonObject.contains("releasePostDebugSession")) {
-            this->releasePostDebugSession = jsonObject.find("releasePostDebugSession").value().toBool();
+        if (debugToolNode["releasePostDebugSession"]) {
+            this->releasePostDebugSession = debugToolNode["releasePostDebugSession"].as<bool>(
+                this->releasePostDebugSession
+            );
         }
 
-        this->jsonObject = jsonObject;
+        this->debugToolNode = debugToolNode;
     }
 
-    DebugServerConfig::DebugServerConfig(const QJsonObject& jsonObject) {
-        this->name = jsonObject.find("name")->toString().toLower().toStdString();
-        this->jsonObject = jsonObject;
+    DebugServerConfig::DebugServerConfig(const YAML::Node& debugServerNode) {
+        if (!debugServerNode["name"]) {
+            throw Exceptions::InvalidConfig("No debug server name found.");
+        }
+
+        this->name = String::asciiToLower(debugServerNode["name"].as<std::string>());
+        this->debugServerNode = debugServerNode;
     }
 }

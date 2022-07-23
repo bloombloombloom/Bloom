@@ -34,12 +34,12 @@ namespace Bloom
         }
 
         /**
-         * Returns the path to the current project's configuration file (bloom.json).
+         * Returns the path to the current project's configuration file (bloom.yaml).
          *
          * @return
          */
         static std::string projectConfigPath() {
-            return Paths::projectDirPath() + "/bloom.json";
+            return Paths::projectDirPath() + "/bloom.yaml";
         }
 
         /**
