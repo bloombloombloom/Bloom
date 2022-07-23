@@ -177,7 +177,10 @@ namespace Bloom
         }
 
         if (this->workerThread != nullptr && this->workerThread->isRunning()) {
+            Logger::debug("Stopping InsightWorker thread");
             this->workerThread->quit();
+            Logger::debug("Waiting for InsightWorker thread to stop");
+            this->workerThread->wait();
         }
 
         this->application.exit(0);
