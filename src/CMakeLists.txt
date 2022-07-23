@@ -7,6 +7,7 @@ target_sources(
         # Helpers & other
         ${CMAKE_CURRENT_SOURCE_DIR}/Logger/Logger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/Paths.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/String.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/EpollInstance.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/EventFdNotifier.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/ConditionVariableNotifier.cpp
