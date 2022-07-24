@@ -33,6 +33,9 @@ namespace Bloom
     /*
      * Initially, we used the JSON format for project configuration files, but this was changed in version 0.11.0.
      * See https://github.com/navnavnav/Bloom/issues/50 for more.
+     *
+     * Because JSON is a subset of YAML, we can (and do) fallback to bloom.json in the absence of bloom.yaml.
+     * See Application::loadProjectConfiguration() for more.
      */
 
     /**
