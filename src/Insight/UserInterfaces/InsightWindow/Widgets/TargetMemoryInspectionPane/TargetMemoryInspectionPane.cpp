@@ -212,7 +212,7 @@ namespace Bloom::Widgets
             readMemoryTask,
             &ReadTargetMemory::targetMemoryRead,
             this,
-            [this] (const Targets::TargetMemoryBuffer& data) {
+            [this, callback] (const Targets::TargetMemoryBuffer& data) {
                 this->onMemoryRead(data);
 
                 // Refresh the stack pointer if this is RAM.
@@ -227,31 +227,56 @@ namespace Bloom::Widgets
                         }
                     );
 
+                    QObject::connect(
+                        readStackPointerTask,
+                        &InsightWorkerTask::finished,
+                        this,
+                        [this] {
+                            this->refreshButton->stopSpin();
+
+                            if (this->targetState == Targets::TargetState::STOPPED) {
+                                this->refreshButton->setDisabled(false);
+                            }
+                        }
+                    );
+
+                    if (callback.has_value()) {
+                        QObject::connect(
+                            readStackPointerTask,
+                            &InsightWorkerTask::completed,
+                            this,
+                            callback.value()
+                        );
+                    }
+
                     this->insightWorker.queueTask(readStackPointerTask);
                 }
             }
         );
 
-        QObject::connect(
-            readMemoryTask,
-            &InsightWorkerTask::finished,
-            this,
-            [this] {
-                this->refreshButton->stopSpin();
-
-                if (this->targetState == Targets::TargetState::STOPPED) {
-                    this->refreshButton->setDisabled(false);
-                }
-            }
-        );
-
-        if (callback.has_value()) {
+        // If we're refreshing RAM, the UI should only be updated once we've retrieved the current stack pointer.
+        if (this->targetMemoryDescriptor.type != Targets::TargetMemoryType::RAM) {
             QObject::connect(
                 readMemoryTask,
-                &InsightWorkerTask::completed,
+                &InsightWorkerTask::finished,
                 this,
-                callback.value()
+                [this] {
+                    this->refreshButton->stopSpin();
+
+                    if (this->targetState == Targets::TargetState::STOPPED) {
+                        this->refreshButton->setDisabled(false);
+                    }
+                }
             );
+
+            if (callback.has_value()) {
+                QObject::connect(
+                    readMemoryTask,
+                    &InsightWorkerTask::completed,
+                    this,
+                    callback.value()
+                );
+            }
         }
 
         this->insightWorker.queueTask(readMemoryTask);
