@@ -160,7 +160,7 @@ namespace Bloom::TargetController
         this->setName("TC");
         Logger::info("Starting TargetController");
         this->setThreadState(ThreadState::STARTING);
-        this->blockAllSignalsOnCurrentThread();
+        this->blockAllSignals();
         this->eventListener->setInterruptEventNotifier(&TargetControllerComponent::notifier);
         EventManager::registerListener(this->eventListener);
 
