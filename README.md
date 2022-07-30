@@ -75,6 +75,11 @@ https://packages.ubuntu.com/source/jammy/yaml-cpp and https://packages.debian.or
 can build the library from source by following the instructions at https://github.com/jbeder/yaml-cpp#readme. Be sure
 to configure the build with `-DYAML_BUILD_SHARED_LIBS=ON`, to build the shared object binaries.
 
+NOTE: If you build yaml-cpp from source, it's probably best to use the `master` branch. Don't bother checking out to
+the `yaml-cpp-0.7.0` tag, as there is an issue with the CMake configuration provided in that version. This issue results
+in link errors when building Bloom. In other words, use version 0.7.0 or later if you're installing yaml-cpp via a
+package, but if you're building from source, use the latest source from the `master` branch of the yaml-cpp repository.
+
 #### PHP version 8 or later, with the xml extension
 Some of Bloom's build scripts are written in PHP.
 
