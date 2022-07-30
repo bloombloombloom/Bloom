@@ -41,7 +41,7 @@ namespace Bloom::Widgets
                 this->currentStackPointer,
                 &(this->hoveredByteWidget),
                 &(this->hoveredAnnotationItem),
-                this->highlightedAddresses,
+                this->highlightedByteItems,
                 settings
             );
 
@@ -79,8 +79,19 @@ namespace Bloom::Widgets
     }
 
     void ByteItemGraphicsScene::setHighlightedAddresses(const std::set<std::uint32_t>& highlightedAddresses) {
-        this->highlightedAddresses = highlightedAddresses;
-        this->invalidateChildItemCaches();
+        this->highlightedByteItems.clear();
+
+        for (auto& [address, byteItem] : this->byteItemsByAddress) {
+            if (highlightedAddresses.contains(address)) {
+                byteItem->highlighted = true;
+                this->highlightedByteItems.insert(byteItem);
+
+            } else {
+                byteItem->highlighted = false;
+            }
+
+            byteItem->update();
+        }
     }
 
     void ByteItemGraphicsScene::refreshRegions() {

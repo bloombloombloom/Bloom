@@ -33,6 +33,7 @@ namespace Bloom::Widgets
         std::size_t currentRowIndex = 0;
         std::size_t currentColumnIndex = 0;
 
+        bool highlighted = false;
         const FocusedMemoryRegion* focusedMemoryRegion = nullptr;
         const ExcludedMemoryRegion* excludedMemoryRegion = nullptr;
 
@@ -42,7 +43,7 @@ namespace Bloom::Widgets
             std::optional<std::uint32_t>& currentStackPointer,
             ByteItem** hoveredByteItem,
             AnnotationItem** hoveredAnnotationItem,
-            std::set<std::uint32_t>& highlightedAddresses,
+            std::set<ByteItem*>& highlightedByteItems,
             const HexViewerWidgetSettings& settings
         );
 
@@ -70,7 +71,7 @@ namespace Bloom::Widgets
         ByteItem** hoveredByteItem;
         AnnotationItem** hoveredAnnotationItem;
         std::optional<std::uint32_t>& currentStackPointer;
-        std::set<std::uint32_t>& highlightedAddresses;
+        std::set<ByteItem*>& highlightedByteItems;
 
         const QColor* getBackgroundColor();
         const QColor* getTextColor();

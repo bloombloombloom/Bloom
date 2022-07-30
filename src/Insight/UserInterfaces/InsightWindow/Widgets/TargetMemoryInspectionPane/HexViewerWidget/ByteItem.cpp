@@ -10,7 +10,7 @@ namespace Bloom::Widgets
         std::optional<std::uint32_t>& currentStackPointer,
         ByteItem** hoveredByteItem,
         AnnotationItem** hoveredAnnotationItem,
-        std::set<std::uint32_t>& highlightedAddresses,
+        std::set<ByteItem*>& highlightedByteItems,
         const HexViewerWidgetSettings& settings
     )
         : QGraphicsItem(nullptr)
@@ -19,7 +19,7 @@ namespace Bloom::Widgets
         , currentStackPointer(currentStackPointer)
         , hoveredByteItem(hoveredByteItem)
         , hoveredAnnotationItem(hoveredAnnotationItem)
-        , highlightedAddresses(highlightedAddresses)
+        , highlightedByteItems(highlightedByteItems)
         , settings(settings)
     {
         this->setCacheMode(
@@ -129,7 +129,7 @@ namespace Bloom::Widgets
         static const auto hoveredNeighbourBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
 
         if (this->isEnabled()) {
-            if (this->highlightedAddresses.contains(this->address)) {
+            if (this->highlighted) {
                 return &(highlightedBackgroundColor);
             }
 
@@ -165,7 +165,7 @@ namespace Bloom::Widgets
             }
 
         } else {
-            if (this->highlightedAddresses.contains(this->address)) {
+            if (this->highlighted) {
                 return &(disabledHighlightedBackgroundColor);
             }
 
@@ -210,16 +210,12 @@ namespace Bloom::Widgets
                 if (
                     this->excludedMemoryRegion != nullptr
                     || this->settings.displayAsciiValues
-                    || (!this->highlightedAddresses.empty() && !this->highlightedAddresses.contains(this->address))
+                    || (!this->highlightedByteItems.empty() && !this->highlighted)
                 ) {
                     return &(fadedStandardTextColor);
                 }
 
                 return &(standardTextColor);
-            }
-
-            if (!this->highlightedAddresses.empty() && !this->highlightedAddresses.contains(this->address)) {
-                return &(fadedAsciiModeTextColor);
             }
 
             return &(asciiModeTextColor);

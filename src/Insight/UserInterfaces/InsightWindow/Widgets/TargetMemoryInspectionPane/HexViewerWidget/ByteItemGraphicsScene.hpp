@@ -96,7 +96,7 @@ namespace Bloom::Widgets
 
         ByteAddressContainer* byteAddressContainer = nullptr;
 
-        std::set<std::uint32_t> highlightedAddresses;
+        std::set<ByteItem*> highlightedByteItems;
 
         int getSceneWidth() {
             /*
