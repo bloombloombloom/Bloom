@@ -4,6 +4,7 @@
 #include <bitset>
 #include <limits>
 #include <thread>
+#include <algorithm>
 
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"
@@ -31,6 +32,46 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         if (this->family.has_value()) {
             this->avr8DebugInterface->setFamily(this->family.value());
+
+            if (!this->supportedPhysicalInterfaces.contains(this->targetConfig->physicalInterface)) {
+                /*
+                 * The user has selected a physical interface that does not appear to be supported by the selected
+                 * target.
+                 *
+                 * Bloom's target description files provide a list of supported physical interfaces for each target
+                 * (which is how this->supportedPhysicalInterfaces is populated), but it's possible that this list may
+                 * be wrong/incomplete. For this reason, we don't throw an exception here. Instead, we just present the
+                 * user with a warning and a list of physical interfaces known to be supported by their selected target.
+                 */
+                const auto physicalInterfaceNames = getPhysicalInterfaceNames();
+
+                std::string supportedPhysicalInterfaceList = std::accumulate(
+                    this->supportedPhysicalInterfaces.begin(),
+                    this->supportedPhysicalInterfaces.end(),
+                    std::string(),
+                    [&physicalInterfaceNames] (const std::string& string, PhysicalInterface physicalInterface) {
+                        if (physicalInterface == PhysicalInterface::ISP) {
+                            /*
+                             * Don't include the ISP interface in the list of supported interfaces, as doing so may
+                             * mislead the user into thinking the ISP interface can be used for debugging operations.
+                             */
+                            return string;
+                        }
+
+                        return string + "\n - " + physicalInterfaceNames.at(physicalInterface);
+                    }
+                );
+
+                Logger::warning(
+                    "\nThe selected target (" + this->name + ") does not support the selected physical interface ("
+                        + physicalInterfaceNames.at(this->targetConfig->physicalInterface) + "). Target activation "
+                        "will likely fail. The target supports the following physical interfaces: \n"
+                        + supportedPhysicalInterfaceList + "\n\nFor physical interface configuration values, see "
+                        + Paths::homeDomainName() + "/docs/configuration/avr8-physical-interfaces. \n\nIf this "
+                        "information is incorrect, please report this to Bloom developers via "
+                        + Paths::homeDomainName() + "/report-issue.\n"
+                );
+            }
 
         } else {
             if (this->targetConfig->physicalInterface == PhysicalInterface::JTAG) {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
+#include <string>
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
@@ -12,4 +14,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         PDI,
         UPDI,
     };
+
+    /**
+     * Returns a mapping of physical interfaces to their marketing name.
+     *
+     * @return
+     */
+    std::map<PhysicalInterface, std::string> getPhysicalInterfaceNames();
 }
