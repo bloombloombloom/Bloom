@@ -106,8 +106,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          *
          * @return
          */
-        [[nodiscard]] const auto& getSupportedDebugPhysicalInterfaces() const {
-            return this->supportedDebugPhysicalInterfaces;
+        [[nodiscard]] const auto& getSupportedPhysicalInterfaces() const {
+            return this->supportedPhysicalInterfaces;
         }
 
         /**
@@ -161,7 +161,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             };
         };
 
-        std::set<PhysicalInterface> supportedDebugPhysicalInterfaces;
+        std::set<PhysicalInterface> supportedPhysicalInterfaces;
 
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
@@ -169,9 +169,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
 
         /**
-         * Populates this->supportedDebugPhysicalInterfaces with physical interfaces defined in the TDF.
+         * Populates this->supportedPhysicalInterfaces with physical interfaces defined in the TDF.
          */
-        void loadDebugPhysicalInterfaces();
+        void loadSupportedPhysicalInterfaces();
 
         /**
          * Generates a collection of PadDescriptor objects from data in the TDF and populates this->padDescriptorsByName.

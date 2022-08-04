@@ -579,6 +579,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         this->name = this->targetDescriptionFile->getTargetName();
         this->family = this->targetDescriptionFile->getFamily();
+        this->supportedPhysicalInterfaces = this->targetDescriptionFile->getSupportedPhysicalInterfaces();
 
         this->targetParameters = this->targetDescriptionFile->getTargetParameters();
         this->padDescriptorsByName = this->targetDescriptionFile->getPadDescriptorsMappedByName();
@@ -736,8 +737,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             );
         }
 
-        const auto& supportedPhysicalInterfaces = this->targetDescriptionFile->getSupportedDebugPhysicalInterfaces();
-        if (!supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)) {
+        if (!this->supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)) {
             throw Exception(
                 "Target does not support debugWire physical interface - check target configuration or "
                     "report this issue via " + Paths::homeDomainName() + "/report-issue"

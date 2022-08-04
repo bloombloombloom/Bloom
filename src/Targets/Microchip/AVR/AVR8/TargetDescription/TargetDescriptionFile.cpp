@@ -96,7 +96,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     void TargetDescriptionFile::init(const QDomDocument& xml) {
         Targets::TargetDescription::TargetDescriptionFile::init(xml);
 
-        this->loadDebugPhysicalInterfaces();
+        this->loadSupportedPhysicalInterfaces();
         this->loadPadDescriptors();
         this->loadTargetVariants();
         this->loadTargetRegisterDescriptors();
@@ -270,7 +270,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             }
         }
 
-        const auto& supportedPhysicalInterfaces = this->getSupportedDebugPhysicalInterfaces();
+        const auto& supportedPhysicalInterfaces = this->getSupportedPhysicalInterfaces();
 
         if (supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)
             || supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)
@@ -396,17 +396,18 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         return this->getFuseBitsDescriptorByName("spien");
     }
 
-    void TargetDescriptionFile::loadDebugPhysicalInterfaces() {
+    void TargetDescriptionFile::loadSupportedPhysicalInterfaces() {
         auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
            {"updi", PhysicalInterface::UPDI},
            {"debugwire", PhysicalInterface::DEBUG_WIRE},
            {"jtag", PhysicalInterface::DEBUG_WIRE},
            {"pdi", PhysicalInterface::PDI},
+           {"isp", PhysicalInterface::ISP},
         });
 
         for (const auto& [interfaceName, interface]: this->interfacesByName) {
             if (interfaceNamesToInterfaces.contains(interfaceName)) {
-                this->supportedDebugPhysicalInterfaces.insert(interfaceNamesToInterfaces.at(interfaceName));
+                this->supportedPhysicalInterfaces.insert(interfaceNamesToInterfaces.at(interfaceName));
             }
         }
     }

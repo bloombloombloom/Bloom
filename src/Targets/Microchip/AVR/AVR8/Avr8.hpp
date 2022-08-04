@@ -140,6 +140,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::optional<Family> family;
         std::optional<TargetDescription::TargetDescriptionFile> targetDescriptionFile;
 
+        std::set<PhysicalInterface> supportedPhysicalInterfaces;
+
         std::optional<TargetParameters> targetParameters;
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
