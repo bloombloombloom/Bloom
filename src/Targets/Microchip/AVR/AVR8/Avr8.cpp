@@ -69,7 +69,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
     void Avr8::postActivationConfigure() {
         if (!this->targetDescriptionFile.has_value()) {
-            this->loadTargetDescriptionFile();
             this->initFromTargetDescriptionFile();
         }
 
@@ -572,15 +571,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         return this->programmingSession.has_value();
     }
 
-    void Avr8::loadTargetDescriptionFile() {
+    void Avr8::initFromTargetDescriptionFile() {
         this->targetDescriptionFile = TargetDescription::TargetDescriptionFile(
             this->getId(),
             (!this->name.empty()) ? std::optional(this->name) : std::nullopt
         );
-    }
 
-    void Avr8::initFromTargetDescriptionFile() {
-        assert(this->targetDescriptionFile.has_value());
         this->name = this->targetDescriptionFile->getTargetName();
         this->family = this->targetDescriptionFile->getFamily();
 
@@ -590,13 +586,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         if (!this->targetParameters->stackPointerRegisterLowAddress.has_value()) {
             throw Exception(
-                "Failed to load sufficient AVR8 target paramters - missting stack pointer start address"
+                "Failed to load sufficient AVR8 target parameters - missing stack pointer start address"
             );
         }
 
         if (!this->targetParameters->statusRegisterStartAddress.has_value()) {
             throw Exception(
-                "Failed to load sufficient AVR8 target parameters - missting status register start address"
+                "Failed to load sufficient AVR8 target parameters - missing status register start address"
             );
         }
 

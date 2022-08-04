@@ -29,7 +29,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         explicit Avr8() = default;
         Avr8(std::string name, const TargetSignature& signature): name(std::move(name)) {
             this->id = signature;
-            this->loadTargetDescriptionFile();
             this->initFromTargetDescriptionFile();
         };
 
@@ -148,11 +147,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
 
         std::optional<ProgrammingSession> programmingSession;
-
-        /**
-         * Resolves the appropriate TDF for the AVR8 target and populates this->targetDescriptionFile.
-         */
-        void loadTargetDescriptionFile();
 
         /**
          * Initiates the AVR8 instance from data extracted from the TDF.
