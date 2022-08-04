@@ -77,16 +77,16 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             if (this->targetConfig->physicalInterface == PhysicalInterface::JTAG) {
                 throw InvalidConfig(
                     "The JTAG physical interface cannot be used with an ambiguous target name"
-                    " - please specify the exact name of the target in your configuration file. "
-                    "See " + Paths::homeDomainName() + "/docs/supported-targets"
+                        " - please specify the exact name of the target in your configuration file. "
+                        "See " + Paths::homeDomainName() + "/docs/supported-targets"
                 );
             }
 
             if (this->targetConfig->physicalInterface == PhysicalInterface::UPDI) {
                 throw InvalidConfig(
                     "The UPDI physical interface cannot be used with an ambiguous target name"
-                    " - please specify the exact name of the target in your configuration file. "
-                    "See " + Paths::homeDomainName() + "/docs/supported-targets"
+                        " - please specify the exact name of the target in your configuration file. "
+                        "See " + Paths::homeDomainName() + "/docs/supported-targets"
                 );
             }
         }
@@ -97,7 +97,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         ) {
             Logger::warning(
                 "The connected debug tool (or associated driver) does not provide any ISP interface. "
-                "Bloom will be unable to update the DWEN fuse bit in the event of a debugWire activation failure."
+                    "Bloom will be unable to update the DWEN fuse bit in the event of a debugWire activation failure."
             );
         }
 
@@ -126,9 +126,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         if (targetSignature != tdSignature) {
             throw Exception(
                 "Failed to validate connected target - target signature mismatch.\nThe target signature"
-                " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
-                + tdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the configuration"
-                + " file (bloom.yaml)."
+                    " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
+                    + tdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the "
+                    + "configuration file (bloom.yaml)."
             );
         }
     }

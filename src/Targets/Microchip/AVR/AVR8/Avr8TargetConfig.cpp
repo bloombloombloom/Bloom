@@ -1,6 +1,7 @@
 #include "Avr8TargetConfig.hpp"
 
 #include "src/Helpers/String.hpp"
+#include "src/Helpers/Paths.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
@@ -16,13 +17,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         const auto physicalInterfaceName = String::asciiToLower(targetNode["physicalInterface"].as<std::string>());
 
-        static const auto physicalInterfacesByName = Avr8TargetConfig::getPhysicalInterfacesByName();
-
-        if (!physicalInterfacesByName.contains(physicalInterfaceName)) {
-            throw InvalidConfig("Invalid physical interface config parameter for AVR8 target.");
+        if (!Avr8TargetConfig::debugPhysicalInterfacesByConfigName.contains(physicalInterfaceName)) {
+            throw InvalidConfig(
+                "Invalid physical interface provided (\"" + physicalInterfaceName + "\") for AVR8 target. "
+                "See " + Paths::homeDomainName() + "/docs/configuration/avr8-physical-interfaces for valid physical "
+                "interface configuration values."
+            );
         }
 
-        this->physicalInterface = physicalInterfacesByName.at(physicalInterfaceName);
+        this->physicalInterface = Avr8TargetConfig::debugPhysicalInterfacesByConfigName.at(physicalInterfaceName);
 
         if (targetNode["updateDwenFuseBit"]) {
             this->updateDwenFuseBit = targetNode["updateDwenFuseBit"].as<bool>();

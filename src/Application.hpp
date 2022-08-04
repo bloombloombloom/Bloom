@@ -159,7 +159,7 @@ namespace Bloom
         void saveProjectSettings();
 
         /**
-         * Extracts the project config from the user's JSON config file and populates the following members:
+         * Extracts the project config from the user's config file and populates the following members:
          *  - this->projectConfig
          *  - this->environmentConfig
          *  - this->debugServerConfig

@@ -13,7 +13,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     /**
      * Extending the generic TargetConfig struct to accommodate AVR8 target configuration parameters.
      */
-    class Avr8TargetConfig: public TargetConfig
+    struct Avr8TargetConfig: public TargetConfig
     {
     public:
         /**
@@ -70,14 +70,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         explicit Avr8TargetConfig(const TargetConfig& targetConfig);
 
     private:
-        static inline auto getPhysicalInterfacesByName() {
-            return std::map<std::string, PhysicalInterface>({
-                {"debugwire", PhysicalInterface::DEBUG_WIRE}, // Deprecated - left here for backwards compatibility
-                {"debug-wire", PhysicalInterface::DEBUG_WIRE},
-                {"pdi", PhysicalInterface::PDI},
-                {"jtag", PhysicalInterface::JTAG},
-                {"updi", PhysicalInterface::UPDI},
-            });
-        };
+        static inline auto debugPhysicalInterfacesByConfigName = std::map<std::string, PhysicalInterface>({
+            {"debugwire", PhysicalInterface::DEBUG_WIRE}, // Deprecated - left here for backwards compatibility
+            {"debug-wire", PhysicalInterface::DEBUG_WIRE},
+            {"pdi", PhysicalInterface::PDI},
+            {"jtag", PhysicalInterface::JTAG},
+            {"updi", PhysicalInterface::UPDI},
+        });
     };
 }

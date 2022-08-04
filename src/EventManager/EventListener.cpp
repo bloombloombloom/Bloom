@@ -92,7 +92,7 @@ namespace Bloom
         std::sort(
             output.begin(),
             output.end(),
-            [](const SharedGenericEventPointer& a, const SharedGenericEventPointer& b) {
+            [] (const SharedGenericEventPointer& a, const SharedGenericEventPointer& b) {
                 return a->id < b->id;
             }
         );
