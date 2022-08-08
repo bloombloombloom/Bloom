@@ -24,9 +24,10 @@ namespace Bloom::Widgets
     TargetRegistersPaneWidget::TargetRegistersPaneWidget(
         const TargetDescriptor& targetDescriptor,
         InsightWorker& insightWorker,
+        PaneState& paneState,
         PanelWidget* parent
     )
-        : PaneWidget(parent)
+        : PaneWidget(paneState, parent)
         , targetDescriptor(targetDescriptor)
         , insightWorker(insightWorker)
     {
@@ -141,6 +142,16 @@ namespace Bloom::Widgets
             this,
             &TargetRegistersPaneWidget::onRegistersRead
         );
+
+        // Restore the state
+        if (!this->state.attached) {
+            // The register pane cannot be detached.
+            this->state.attached = true;
+        }
+
+        if (this->state.activated) {
+            this->activate();
+        }
     }
 
     void TargetRegistersPaneWidget::filterRegisters(const QString& keyword) {
@@ -244,7 +255,7 @@ namespace Bloom::Widgets
         using Targets::TargetState;
         this->targetState = newState;
 
-        if (newState == TargetState::STOPPED && this->activated) {
+        if (newState == TargetState::STOPPED && this->state.activated) {
             this->refreshRegisterValues();
         }
     }

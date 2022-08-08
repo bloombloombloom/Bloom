@@ -43,19 +43,19 @@ namespace Bloom
         }
 
         if (jsonObject.contains("previousRegistersPaneState")) {
-            this->previousRegistersPaneState = this->paneStateFromJson(
+            this->registersPaneState = this->paneStateFromJson(
                 jsonObject.find("previousRegistersPaneState")->toObject()
             );
         }
 
         if (jsonObject.contains("previousRamInspectionPaneState")) {
-            this->previousRamInspectionPaneState = this->paneStateFromJson(
+            this->ramInspectionPaneState = this->paneStateFromJson(
                 jsonObject.find("previousRamInspectionPaneState")->toObject()
             );
         }
 
         if (jsonObject.contains("previousEepromInspectionPaneState")) {
-            this->previousEepromInspectionPaneState = this->paneStateFromJson(
+            this->eepromInspectionPaneState = this->paneStateFromJson(
                 jsonObject.find("previousEepromInspectionPaneState")->toObject()
             );
         }
@@ -119,24 +119,24 @@ namespace Bloom
             );
         }
 
-        if (this->previousRegistersPaneState.has_value()) {
+        if (this->registersPaneState.has_value()) {
             insightObj.insert(
                 "previousRegistersPaneState",
-                this->paneStateToJson(this->previousRegistersPaneState.value())
+                this->paneStateToJson(this->registersPaneState.value())
             );
         }
 
-        if (this->previousRamInspectionPaneState.has_value()) {
+        if (this->ramInspectionPaneState.has_value()) {
             insightObj.insert(
                 "previousRamInspectionPaneState",
-                this->paneStateToJson(this->previousRamInspectionPaneState.value())
+                this->paneStateToJson(this->ramInspectionPaneState.value())
             );
         }
 
-        if (this->previousEepromInspectionPaneState.has_value()) {
+        if (this->eepromInspectionPaneState.has_value()) {
             insightObj.insert(
                 "previousEepromInspectionPaneState",
-                this->paneStateToJson(this->previousEepromInspectionPaneState.value())
+                this->paneStateToJson(this->eepromInspectionPaneState.value())
             );
         }
 

@@ -22,9 +22,9 @@ namespace Bloom
         std::optional<QSize> mainWindowSize;
         std::optional<Widgets::PanelState> previousLeftPanelState;
         std::optional<Widgets::PanelState> previousBottomPanelState;
-        std::optional<Widgets::PaneState> previousRegistersPaneState;
-        std::optional<Widgets::PaneState> previousRamInspectionPaneState;
-        std::optional<Widgets::PaneState> previousEepromInspectionPaneState;
+        std::optional<Widgets::PaneState> registersPaneState;
+        std::optional<Widgets::PaneState> ramInspectionPaneState;
+        std::optional<Widgets::PaneState> eepromInspectionPaneState;
 
         std::map<
             Targets::TargetMemoryType,

@@ -31,6 +31,7 @@ namespace Bloom::Widgets
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             TargetMemoryInspectionPaneSettings& settings,
             InsightWorker& insightWorker,
+            PaneState& paneState,
             PanelWidget* parent
         );
 

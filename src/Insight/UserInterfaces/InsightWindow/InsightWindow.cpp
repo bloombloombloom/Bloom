@@ -266,6 +266,8 @@ namespace Bloom
         this->layoutContainer->setFixedSize(windowSize);
 
         this->adjustPanels();
+
+        this->insightProjectSettings.mainWindowSize = windowSize;
     }
 
     void InsightWindow::showEvent(QShowEvent* event) {
@@ -358,41 +360,10 @@ namespace Bloom
 
         if (lastLeftPanelState.has_value() && this->leftPanel != nullptr) {
             this->leftPanel->setSize(lastLeftPanelState->size);
-
-        }
-        if (
-            this->targetRegistersSidePane != nullptr
-            && this->insightProjectSettings.previousRegistersPaneState.has_value()
-        ) {
-            auto& lastRegisterSidePaneState = this->insightProjectSettings.previousRegistersPaneState.value();
-
-            // The register pane cannot be detached
-            lastRegisterSidePaneState.attached = true;
-            lastRegisterSidePaneState.detachedWindowState = std::nullopt;
-
-            this->targetRegistersSidePane->restoreLastPaneState(lastRegisterSidePaneState);
         }
 
         if (lastBottomPanelState.has_value()) {
             this->bottomPanel->setSize(lastBottomPanelState->size);
-        }
-
-        if (
-            this->ramInspectionPane != nullptr
-            && this->insightProjectSettings.previousRamInspectionPaneState.has_value()
-        ) {
-            this->ramInspectionPane->restoreLastPaneState(
-                this->insightProjectSettings.previousRamInspectionPaneState.value()
-            );
-        }
-
-        if (
-            this->eepromInspectionPane != nullptr
-            && this->insightProjectSettings.previousEepromInspectionPaneState.has_value()
-        ) {
-            this->eepromInspectionPane->restoreLastPaneState(
-                this->insightProjectSettings.previousEepromInspectionPaneState.value()
-            );
         }
 
         this->setUiDisabled(this->targetState != TargetState::STOPPED);
@@ -559,10 +530,15 @@ namespace Bloom
 
     void InsightWindow::createPanes() {
         // Target registers pane
+        if (!this->insightProjectSettings.registersPaneState.has_value()) {
+            this->insightProjectSettings.registersPaneState = PaneState(false, true, std::nullopt);
+        }
+
         auto* leftPanelLayout = this->leftPanel->layout();
         this->targetRegistersSidePane = new TargetRegistersPaneWidget(
             this->targetDescriptor,
             this->insightWorker,
+            *(this->insightProjectSettings.registersPaneState),
             this->leftPanel
         );
         leftPanelLayout->addWidget(this->targetRegistersSidePane);
@@ -589,6 +565,10 @@ namespace Bloom
         // Target memory inspection panes
         auto* bottomPanelLayout = this->bottomPanel->layout();
         if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::RAM)) {
+            if (!this->insightProjectSettings.ramInspectionPaneState.has_value()) {
+                this->insightProjectSettings.ramInspectionPaneState = PaneState(false, true, std::nullopt);
+            }
+
             auto& ramDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::RAM);
 
             if (!memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::RAM)) {
@@ -599,6 +579,7 @@ namespace Bloom
                 ramDescriptor,
                 memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::RAM],
                 this->insightWorker,
+                *(this->insightProjectSettings.ramInspectionPaneState),
                 this->bottomPanel
             );
 
@@ -623,11 +604,15 @@ namespace Bloom
                 &InsightWindow::onRamInspectionPaneStateChanged
             );
 
-            this->ramInspectionPane->deactivate();
             this->ramInspectionButton->setDisabled(false);
+            this->onRamInspectionPaneStateChanged();
         }
 
         if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::EEPROM)) {
+            if (!this->insightProjectSettings.eepromInspectionPaneState.has_value()) {
+                this->insightProjectSettings.eepromInspectionPaneState = PaneState(false, true, std::nullopt);
+            }
+
             auto& eepromDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::EEPROM);
 
             if (!memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::EEPROM)) {
@@ -638,6 +623,7 @@ namespace Bloom
                 eepromDescriptor,
                 memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::EEPROM],
                 this->insightWorker,
+                *(this->insightProjectSettings.eepromInspectionPaneState),
                 this->bottomPanel
             );
 
@@ -662,8 +648,8 @@ namespace Bloom
                 &InsightWindow::onEepromInspectionPaneStateChanged
             );
 
-            this->eepromInspectionPane->deactivate();
             this->eepromInspectionButton->setDisabled(false);
+            this->onEepromInspectionPaneStateChanged();
         }
     }
 
@@ -855,7 +841,7 @@ namespace Bloom
                 if (this->targetState == TargetState::STOPPED) {
                     this->targetPackageWidget->setDisabled(false);
 
-                    if (this->targetRegistersSidePane == nullptr || !this->targetRegistersSidePane->activated) {
+                    if (this->targetRegistersSidePane == nullptr || !this->targetRegistersSidePane->state.activated) {
                         this->refreshIoInspectionButton->stopSpin();
                         this->setUiDisabled(false);
                     }
@@ -863,7 +849,7 @@ namespace Bloom
             });
         }
 
-        if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->activated) {
+        if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->state.activated) {
             this->targetRegistersSidePane->refreshRegisterValues([this] {
                 this->refreshIoInspectionButton->stopSpin();
                 this->setUiDisabled(false);
@@ -911,7 +897,7 @@ namespace Bloom
     }
 
     void InsightWindow::toggleTargetRegistersPane() {
-        if (this->targetRegistersSidePane->activated) {
+        if (this->targetRegistersSidePane->state.activated) {
             this->targetRegistersSidePane->deactivate();
 
         } else {
@@ -920,8 +906,8 @@ namespace Bloom
     }
 
     void InsightWindow::toggleRamInspectionPane() {
-        if (this->ramInspectionPane->activated) {
-            if (!this->ramInspectionPane->attached) {
+        if (this->ramInspectionPane->state.activated) {
+            if (!this->ramInspectionPane->state.attached) {
                 this->ramInspectionPane->activateWindow();
                 this->ramInspectionButton->setChecked(true);
 
@@ -932,10 +918,10 @@ namespace Bloom
 
         } else {
             if (
-                this->ramInspectionPane->attached
+                this->ramInspectionPane->state.attached
                 && this->eepromInspectionPane != nullptr
-                && this->eepromInspectionPane->activated
-                && this->eepromInspectionPane->attached
+                && this->eepromInspectionPane->state.activated
+                && this->eepromInspectionPane->state.attached
             ) {
                 this->eepromInspectionPane->deactivate();
             }
@@ -945,8 +931,8 @@ namespace Bloom
     }
 
     void InsightWindow::toggleEepromInspectionPane() {
-        if (this->eepromInspectionPane->activated) {
-            if (!this->eepromInspectionPane->attached) {
+        if (this->eepromInspectionPane->state.activated) {
+            if (!this->eepromInspectionPane->state.attached) {
                 this->eepromInspectionPane->activateWindow();
                 this->eepromInspectionButton->setChecked(true);
 
@@ -957,10 +943,10 @@ namespace Bloom
 
         } else {
             if (
-                this->eepromInspectionPane->attached
+                this->eepromInspectionPane->state.attached
                 && this->ramInspectionPane != nullptr
-                && this->ramInspectionPane->activated
-                && this->ramInspectionPane->attached
+                && this->ramInspectionPane->state.activated
+                && this->ramInspectionPane->state.attached
             ) {
                 this->ramInspectionPane->deactivate();
             }
@@ -970,18 +956,18 @@ namespace Bloom
     }
 
     void InsightWindow::onRegistersPaneStateChanged() {
-        this->targetRegistersButton->setChecked(this->targetRegistersSidePane->activated);
+        this->targetRegistersButton->setChecked(this->targetRegistersSidePane->state.activated);
     }
 
     void InsightWindow::onRamInspectionPaneStateChanged() {
-        this->ramInspectionButton->setChecked(this->ramInspectionPane->activated);
+        this->ramInspectionButton->setChecked(this->ramInspectionPane->state.activated);
 
         if (
-            this->ramInspectionPane->activated
-            && this->ramInspectionPane->attached
+            this->ramInspectionPane->state.activated
+            && this->ramInspectionPane->state.attached
             && this->eepromInspectionPane != nullptr
-            && this->eepromInspectionPane->activated
-            && this->eepromInspectionPane->attached
+            && this->eepromInspectionPane->state.activated
+            && this->eepromInspectionPane->state.attached
         ) {
             // Both panes cannot be attached and activated at the same time.
             this->eepromInspectionPane->deactivate();
@@ -989,14 +975,14 @@ namespace Bloom
     }
 
     void InsightWindow::onEepromInspectionPaneStateChanged() {
-        this->eepromInspectionButton->setChecked(this->eepromInspectionPane->activated);
+        this->eepromInspectionButton->setChecked(this->eepromInspectionPane->state.activated);
 
         if (
-            this->eepromInspectionPane->activated
-            && this->eepromInspectionPane->attached
+            this->eepromInspectionPane->state.activated
+            && this->eepromInspectionPane->state.attached
             && this->ramInspectionPane != nullptr
-            && this->ramInspectionPane->activated
-            && this->ramInspectionPane->attached
+            && this->ramInspectionPane->state.activated
+            && this->ramInspectionPane->state.attached
         ) {
             // Both panes cannot be attached and activated at the same time.
             this->ramInspectionPane->deactivate();
@@ -1013,29 +999,13 @@ namespace Bloom
     }
 
     void InsightWindow::recordInsightSettings() {
-        auto& projectSettings = this->insightProjectSettings;
-
-        projectSettings.mainWindowSize = this->size();
-
         if (this->activated) {
             if (this->leftPanel != nullptr) {
-                projectSettings.previousLeftPanelState = this->leftPanel->getCurrentState();
-
-                if (this->targetRegistersSidePane != nullptr) {
-                    projectSettings.previousRegistersPaneState = this->targetRegistersSidePane->getCurrentState();
-                }
+                this->insightProjectSettings.previousLeftPanelState = this->leftPanel->getCurrentState();
             }
 
             if (this->bottomPanel != nullptr) {
-                projectSettings.previousBottomPanelState = this->bottomPanel->getCurrentState();
-
-                if (this->ramInspectionPane != nullptr) {
-                    projectSettings.previousRamInspectionPaneState = this->ramInspectionPane->getCurrentState();
-                }
-
-                if (this->eepromInspectionPane != nullptr) {
-                    projectSettings.previousEepromInspectionPaneState = this->eepromInspectionPane->getCurrentState();
-                }
+                this->insightProjectSettings.previousBottomPanelState = this->bottomPanel->getCurrentState();
             }
         }
     }

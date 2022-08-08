@@ -23,9 +23,10 @@ namespace Bloom::Widgets
         const TargetMemoryDescriptor& targetMemoryDescriptor,
         TargetMemoryInspectionPaneSettings& settings,
         InsightWorker& insightWorker,
+        PaneState& paneState,
         PanelWidget* parent
     )
-        : PaneWidget(parent)
+        : PaneWidget(paneState, parent)
         , targetMemoryDescriptor(targetMemoryDescriptor)
         , settings(settings)
         , insightWorker(insightWorker)
@@ -185,6 +186,15 @@ namespace Bloom::Widgets
             this,
             &TargetMemoryInspectionPane::onProgrammingModeDisabled
         );
+
+        // Restore the state
+        if (!this->state.attached) {
+            this->detach();
+        }
+
+        if (this->state.activated) {
+            this->activate();
+        }
     }
 
     void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function<void(void)>> callback) {
@@ -368,7 +378,7 @@ namespace Bloom::Widgets
         using Targets::TargetState;
         this->targetState = newState;
 
-        if (newState == TargetState::STOPPED && this->activated) {
+        if (newState == TargetState::STOPPED && this->state.activated) {
             if (this->settings.refreshOnTargetStop || !this->data.has_value()) {
                 this->refreshMemoryValues([this] {
                     this->hexViewerWidget->setDisabled(false);

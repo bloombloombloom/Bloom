@@ -29,6 +29,7 @@ namespace Bloom::Widgets
         TargetRegistersPaneWidget(
             const Targets::TargetDescriptor& targetDescriptor,
             InsightWorker& insightWorker,
+            PaneState& paneState,
             PanelWidget *parent
         );
 

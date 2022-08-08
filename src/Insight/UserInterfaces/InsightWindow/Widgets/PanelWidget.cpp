@@ -64,7 +64,7 @@ namespace Bloom::Widgets
 
         auto visible = false;
         for (const auto& paneWidget : paneWidgets) {
-            if (paneWidget->activated && paneWidget->attached) {
+            if (paneWidget->state.activated && paneWidget->state.attached) {
                 visible = true;
                 break;
             }
