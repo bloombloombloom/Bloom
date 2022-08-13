@@ -97,6 +97,9 @@ namespace Bloom
         );
         this->ioUnavailableWidget = this->windowContainer->findChild<Label*>("io-inspection-unavailable");
 
+        auto* horizontalContentLayout = this->container->findChild<QHBoxLayout*>("horizontal-content-layout");
+        auto* verticalContentLayout = this->container->findChild<QVBoxLayout*>("vertical-content-layout");
+
         auto* fileMenu = this->mainMenuBar->findChild<QMenu*>("file-menu");
         auto* helpMenu = this->mainMenuBar->findChild<QMenu*>("help-menu");
         auto* quitAction = fileMenu->findChild<QAction*>("close-insight");
@@ -107,8 +110,25 @@ namespace Bloom
         this->header = this->windowContainer->findChild<QWidget*>("header");
         this->refreshIoInspectionButton = this->header->findChild<SvgToolButton*>("refresh-io-inspection-btn");
 
+        // Create panel states
+        if (!this->insightProjectSettings.previousLeftPanelState.has_value()) {
+            this->insightProjectSettings.previousLeftPanelState = PanelState();
+        }
+
+        if (!this->insightProjectSettings.previousBottomPanelState.has_value()) {
+            this->insightProjectSettings.previousBottomPanelState = PanelState();
+        }
+
         this->leftMenuBar = this->container->findChild<QWidget*>("left-side-menu-bar");
-        this->leftPanel = this->container->findChild<PanelWidget*>("left-panel");
+        this->leftPanel = new PanelWidget(
+            PanelWidgetType::LEFT,
+            this->insightProjectSettings.previousLeftPanelState.value(),
+            this->container
+        );
+        this->leftPanel->setObjectName("left-panel");
+        this->leftPanel->setHandleSize(6);
+        this->leftPanel->setMinimumResize(300);
+        horizontalContentLayout->insertWidget(0, this->leftPanel);
 
         this->targetRegistersButton = this->container->findChild<QToolButton*>("target-registers-btn");
         auto* targetRegisterButtonLayout = this->targetRegistersButton->findChild<QVBoxLayout*>();
@@ -118,7 +138,14 @@ namespace Bloom
         targetRegisterButtonLayout->insertWidget(0, registersBtnLabel, 0, Qt::AlignTop);
 
         this->bottomMenuBar = this->container->findChild<QWidget*>("bottom-menu-bar");
-        this->bottomPanel = this->container->findChild<PanelWidget*>("bottom-panel");
+        this->bottomPanel = new PanelWidget(
+            PanelWidgetType::BOTTOM,
+            this->insightProjectSettings.previousBottomPanelState.value(),
+            this->container
+        );
+        this->bottomPanel->setObjectName("bottom-panel");
+        this->bottomPanel->setHandleSize(10);
+        verticalContentLayout->insertWidget(1, this->bottomPanel);
 
         this->ramInspectionButton = this->container->findChild<QToolButton*>("ram-inspection-btn");
         this->eepromInspectionButton = this->container->findChild<QToolButton*>("eeprom-inspection-btn");
@@ -276,7 +303,6 @@ namespace Bloom
     }
 
     void InsightWindow::closeEvent(QCloseEvent* event) {
-        this->recordInsightSettings();
 
         return QMainWindow::closeEvent(event);
     }
@@ -996,17 +1022,5 @@ namespace Bloom
 
     void InsightWindow::onProgrammingModeDisabled() {
         this->onTargetStateUpdate(this->targetState);
-    }
-
-    void InsightWindow::recordInsightSettings() {
-        if (this->activated) {
-            if (this->leftPanel != nullptr) {
-                this->insightProjectSettings.previousLeftPanelState = this->leftPanel->getCurrentState();
-            }
-
-            if (this->bottomPanel != nullptr) {
-                this->insightProjectSettings.previousBottomPanelState = this->bottomPanel->getCurrentState();
-            }
-        }
     }
 }

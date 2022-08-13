@@ -1,61 +1,66 @@
 #include "PanelWidget.hpp"
 
-#include <QLayout>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 #include "PaneWidget.hpp"
 
 namespace Bloom::Widgets
 {
-    PanelWidget::PanelWidget(QWidget* parent): QFrame(parent) {
+    PanelWidget::PanelWidget(PanelWidgetType type, PanelState& state, QWidget* parent)
+        : panelType(type)
+        , state(state)
+        , QFrame(parent)
+    {
         this->setMouseTracking(false);
         this->setAttribute(Qt::WA_Hover, true);
+
+        if (this->panelType == PanelWidgetType::LEFT) {
+            this->resizeCursor = Qt::SplitHCursor;
+            this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+
+            auto* layout = new QVBoxLayout(this);
+            layout->setSpacing(0);
+            layout->setContentsMargins(0, 0, 0, 0);
+            this->setLayout(layout);
+
+        } else {
+            this->resizeCursor = Qt::SplitVCursor;
+            this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+
+            auto* layout = new QHBoxLayout(this);
+            layout->setSpacing(0);
+            layout->setContentsMargins(0, 0, 0, 0);
+            this->setLayout(layout);
+        }
     }
 
     void PanelWidget::setMinimumResize(int minimumResize) {
         this->minimumResize = minimumResize;
 
-        const auto currentSize = this->size();
-
-        if (this->panelType == PanelWidgetType::LEFT && currentSize.width() < this->minimumResize) {
-            this->setFixedWidth(this->minimumResize);
-
-        } else if (this->panelType == PanelWidgetType::BOTTOM && currentSize.height() < this->minimumResize) {
-            this->setFixedHeight(this->minimumResize);
+        if (this->state.size < this->minimumResize) {
+            this->setSize(this->minimumResize);
         }
     }
 
     void PanelWidget::setMaximumResize(int maximumResize) {
         this->maximumResize = maximumResize;
 
-        const auto currentSize = this->size();
-
-        if (this->panelType == PanelWidgetType::LEFT && currentSize.width() > this->maximumResize) {
-            this->setFixedWidth(this->maximumResize);
-
-        } else if (this->panelType == PanelWidgetType::BOTTOM && currentSize.height() > this->maximumResize) {
-            this->setFixedHeight(this->maximumResize);
-        }
-    }
-
-    void PanelWidget::setPanelType(PanelWidgetType panelType) {
-        this->panelType = panelType;
-
-        if (this->panelType == PanelWidgetType::LEFT) {
-            this->resizeCursor = Qt::SplitHCursor;
-            this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
-
-        } else {
-            this->resizeCursor = Qt::SplitVCursor;
-            this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+        if (this->state.size > this->maximumResize) {
+            this->setSize(this->maximumResize);
         }
     }
 
     void PanelWidget::setSize(int size) {
         if (this->panelType == PanelWidgetType::LEFT) {
-            this->setFixedWidth(std::min(std::max(size, this->minimumResize), this->maximumResize));
+            const auto width = std::min(std::max(size, this->minimumResize), this->maximumResize);
+            this->setFixedWidth(width);
+            this->state.size = width;
 
         } else if (this->panelType == PanelWidgetType::BOTTOM) {
-            this->setFixedHeight(std::min(std::max(size, this->minimumResize), this->maximumResize));
+            const auto height = std::min(std::max(size, this->minimumResize), this->maximumResize);
+            this->setFixedHeight(height);
+            this->state.size = height;
         }
     }
 
@@ -85,9 +90,11 @@ namespace Bloom::Widgets
         }
 
         if (event->type() == QEvent::Type::Close || event->type() == QEvent::Type::Hide) {
+            this->state.open = false;
             emit this->closed();
 
         } else if (event->type() == QEvent::Type::Show) {
+            this->state.open = true;
             emit this->opened();
         }
 

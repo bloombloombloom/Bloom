@@ -24,10 +24,11 @@ namespace Bloom::Widgets
         Q_OBJECT
         Q_PROPERTY(int handleSize READ getHandleSize WRITE setHandleSize DESIGNABLE true)
         Q_PROPERTY(int minimumResize READ getMinimumResize WRITE setMinimumResize DESIGNABLE true)
-        Q_PROPERTY(Bloom::Widgets::PanelWidgetType panelType READ getPanelType WRITE setPanelType DESIGNABLE true)
 
     public:
-        explicit PanelWidget(QWidget* parent);
+        PanelState& state;
+
+        explicit PanelWidget(PanelWidgetType type, PanelState& state, QWidget* parent);
 
         void setHandleSize(int handleSize) {
             this->handleSize = handleSize;
@@ -36,8 +37,6 @@ namespace Bloom::Widgets
         void setMinimumResize(int minimumResize);
 
         void setMaximumResize(int maximumResize);
-
-        void setPanelType(PanelWidgetType panelType);
 
         void setSize(int size);
 
@@ -51,17 +50,6 @@ namespace Bloom::Widgets
 
         [[nodiscard]] int getMaximumResize() const {
             return this->maximumResize;
-        }
-
-        PanelWidgetType getPanelType() {
-            return this->panelType;
-        }
-
-        PanelState getCurrentState() {
-            return PanelState(
-                this->panelType == PanelWidgetType::LEFT ? this->width() : this->height(),
-                this->isVisible()
-            );
         }
 
         /**

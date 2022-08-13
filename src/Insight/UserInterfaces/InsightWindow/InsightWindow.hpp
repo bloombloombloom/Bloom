@@ -144,7 +144,5 @@ namespace Bloom
         void onEepromInspectionPaneStateChanged();
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();
-
-        void recordInsightSettings();
     };
 }

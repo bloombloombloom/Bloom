@@ -183,7 +183,7 @@
                                         </widget>
                                     </item>
                                     <item>
-                                        <layout class="QVBoxLayout">
+                                        <layout class="QVBoxLayout" name="vertical-content-layout">
                                             <property name="spacing">
                                                 <number>0</number>
                                             </property>
@@ -191,37 +191,14 @@
                                                 <number>0</number>
                                             </property>
                                             <item>
-                                                <layout class="QHBoxLayout">
+                                                <layout class="QHBoxLayout" name="horizontal-content-layout">
                                                     <property name="spacing">
                                                         <number>0</number>
                                                     </property>
                                                     <property name="margin">
                                                         <number>0</number>
                                                     </property>
-                                                    <item>
-                                                        <widget class="PanelWidget" name="left-panel">
-                                                            <property name="visible">
-                                                                <bool>false</bool>
-                                                            </property>
-                                                            <property name="maximumWidth">
-                                                                <number>300</number>
-                                                            </property>
-                                                            <property name="minimumResize">
-                                                                <number>300</number>
-                                                            </property>
-                                                            <property name="handleSize">
-                                                                <number>6</number>
-                                                            </property>
-                                                            <layout class="QVBoxLayout" name="left-panel-layout">
-                                                                <property name="spacing">
-                                                                    <number>0</number>
-                                                                </property>
-                                                                <property name="margin">
-                                                                    <number>0</number>
-                                                                </property>
-                                                            </layout>
-                                                        </widget>
-                                                    </item>
+                                                    <!-- The left panel is inserted here. See InsightWindow::InsightWindow() for more -->
                                                     <item>
                                                         <widget class="TargetPackageWidgetContainer" name="io-container">
                                                             <property name="sizePolicy">
@@ -244,27 +221,7 @@
                                                     </item>
                                                 </layout>
                                             </item>
-                                            <item>
-                                                <widget class="PanelWidget" name="bottom-panel">
-                                                    <property name="visible">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="panelType">
-                                                        <enum>PanelWidgetType::BOTTOM</enum>
-                                                    </property>
-                                                    <property name="handleSize">
-                                                        <number>10</number>
-                                                    </property>
-                                                    <layout class="QHBoxLayout" name="bottom-panel-layout">
-                                                        <property name="spacing">
-                                                            <number>0</number>
-                                                        </property>
-                                                        <property name="margin">
-                                                            <number>0</number>
-                                                        </property>
-                                                    </layout>
-                                                </widget>
-                                            </item>
+                                            <!-- The bottom panel is inserted here. See InsightWindow::InsightWindow() for more -->
                                         </layout>
                                     </item>
                                 </layout>
