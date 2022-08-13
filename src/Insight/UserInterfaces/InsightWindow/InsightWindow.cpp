@@ -557,7 +557,7 @@ namespace Bloom
         );
 
         this->targetRegistersButton->setDisabled(false);
-        this->targetRegistersSidePane->deactivate();
+        this->onRegistersPaneStateChanged();
 
         auto& memoryInspectionPaneSettingsByMemoryType =
             this->insightProjectSettings.memoryInspectionPaneSettingsByMemoryType;
