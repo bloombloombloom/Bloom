@@ -295,6 +295,8 @@ namespace Bloom::Widgets
     void TargetMemoryInspectionPane::resizeEvent(QResizeEvent* event) {
         const auto size = this->size();
         this->container->setFixedSize(size.width() - 1, size.height());
+
+        PaneWidget::resizeEvent(event);
     }
 
     void TargetMemoryInspectionPane::postActivate() {

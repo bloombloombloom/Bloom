@@ -58,12 +58,16 @@ namespace Bloom::Widgets
         if (!this->state.attached && this->state.detachedWindowState.has_value()) {
             this->state.detachedWindowState->size = this->size();
         }
+
+        QWidget::resizeEvent(event);
     }
 
     void PaneWidget::moveEvent(QMoveEvent* event) {
         if (!this->state.attached && this->state.detachedWindowState.has_value()) {
             this->state.detachedWindowState->position = this->pos();
         }
+
+        QWidget::moveEvent(event);
     }
 
     void PaneWidget::closeEvent(QCloseEvent* event) {

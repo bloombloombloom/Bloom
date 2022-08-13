@@ -235,6 +235,8 @@ namespace Bloom::Widgets
          * the scroll area.
          */
         this->itemScrollArea->setFixedWidth(width - this->parentPanel->getHandleSize());
+
+        PaneWidget::resizeEvent(event);
     }
 
     void TargetRegistersPaneWidget::postActivate() {
