@@ -59,7 +59,7 @@ namespace Bloom
     class Logger
     {
     public:
-        static void configure(ProjectConfig& projectConfig);
+        static void configure(const ProjectConfig& projectConfig);
 
         static void silence();
 

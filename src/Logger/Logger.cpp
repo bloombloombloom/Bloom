@@ -4,7 +4,7 @@
 
 namespace Bloom
 {
-    void Logger::configure(ProjectConfig& projectConfig) {
+    void Logger::configure(const ProjectConfig& projectConfig) {
         if (projectConfig.debugLoggingEnabled) {
             Logger::debugPrintingEnabled = true;
             Logger::debug("Debug log printing has been enabled");
