@@ -172,9 +172,8 @@ namespace Bloom
         }
 
         Logger::info("Shutting down Insight");
-        if (this->mainWindow->isVisible()) {
-            this->mainWindow->close();
-        }
+
+        this->mainWindow->close();
 
         if (this->workerThread != nullptr && this->workerThread->isRunning()) {
             Logger::debug("Stopping InsightWorker thread");

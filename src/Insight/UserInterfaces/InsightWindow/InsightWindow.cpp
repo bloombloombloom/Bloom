@@ -303,6 +303,7 @@ namespace Bloom
     }
 
     void InsightWindow::closeEvent(QCloseEvent* event) {
+        this->deactivate();
 
         return QMainWindow::closeEvent(event);
     }
@@ -714,7 +715,14 @@ namespace Bloom
     }
 
     void InsightWindow::deactivate() {
-        this->recordInsightSettings();
+        const auto insightProjectSettings = this->insightProjectSettings;
+        const auto childWidgets = this->findChildren<QWidget*>();
+
+        for (auto* widget : childWidgets) {
+            if (widget->windowFlags() & Qt::Window) {
+                widget->close();
+            }
+        }
 
         if (this->selectedVariant != nullptr) {
             this->previouslySelectedVariant = *(this->selectedVariant);
@@ -746,6 +754,7 @@ namespace Bloom
 
         this->setUiDisabled(true);
         this->activated = false;
+        this->insightProjectSettings = insightProjectSettings;
     }
 
     void InsightWindow::adjustPanels() {
