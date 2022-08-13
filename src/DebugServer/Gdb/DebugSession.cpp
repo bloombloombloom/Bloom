@@ -1,6 +1,7 @@
 #include "DebugSession.hpp"
 
 #include "src/Logger/Logger.hpp"
+#include "src/EventManager/EventManager.hpp"
 
 namespace Bloom::DebugServer::Gdb
 {
@@ -16,9 +17,11 @@ namespace Bloom::DebugServer::Gdb
         this->supportedFeatures.insert({
             Feature::PACKET_SIZE, std::to_string(this->connection.getMaxPacketSize())
         });
+
+        EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
     }
 
-    void DebugSession::terminate() {
-
+    DebugSession::~DebugSession() {
+        EventManager::triggerEvent(std::make_shared<Events::DebugSessionFinished>());
     }
 }

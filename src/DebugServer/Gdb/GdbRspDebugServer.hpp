@@ -176,12 +176,6 @@ namespace Bloom::DebugServer::Gdb
          */
         virtual std::set<std::pair<Feature, std::optional<std::string>>> getSupportedFeatures();
 
-
-        /**
-         * Terminates any active debug session (if any) by closing the connection to the GDB client.
-         */
-        void terminateActiveDebugSession();
-
         /**
          * Should return the GDB target descriptor for the connected target.
          *

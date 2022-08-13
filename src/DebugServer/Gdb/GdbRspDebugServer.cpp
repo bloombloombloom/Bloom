@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "src/EventManager/EventManager.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "Exceptions/ClientDisconnected.hpp"
@@ -124,7 +125,7 @@ namespace Bloom::DebugServer::Gdb
     }
 
     void GdbRspDebugServer::close() {
-        this->terminateActiveDebugSession();
+        this->activeDebugSession.reset();
 
         if (this->serverSocketFileDescriptor.has_value()) {
             ::close(this->serverSocketFileDescriptor.value());
@@ -146,14 +147,10 @@ namespace Bloom::DebugServer::Gdb
                 Logger::info("Accepted GDP RSP connection from " + connection->getIpAddress());
 
                 this->activeDebugSession.emplace(
-                    DebugSession(
-                        std::move(connection.value()),
-                        this->getSupportedFeatures(),
-                        this->getGdbTargetDescriptor()
-                    )
+                    std::move(connection.value()),
+                    this->getSupportedFeatures(),
+                    this->getGdbTargetDescriptor()
                 );
-
-                EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
 
                 /*
                  * Before proceeding with a new debug session, we must ensure that the TargetController is able to
@@ -177,7 +174,7 @@ namespace Bloom::DebugServer::Gdb
                         !targetControllerStateChangedEvent.has_value()
                         || targetControllerStateChangedEvent->get()->state != TargetControllerState::ACTIVE
                     ) {
-                        this->terminateActiveDebugSession();
+                        this->activeDebugSession.reset();
                         throw DebugSessionAborted("TargetController not in service");
                     }
                 }
@@ -197,24 +194,24 @@ namespace Bloom::DebugServer::Gdb
 
         } catch (const ClientDisconnected&) {
             Logger::info("GDB RSP client disconnected");
-            this->terminateActiveDebugSession();
+            this->activeDebugSession.reset();
             return;
 
         } catch (const ClientCommunicationError& exception) {
             Logger::error(
                 "GDB RSP client communication error - " + exception.getMessage() + " - closing connection"
             );
-            this->terminateActiveDebugSession();
+            this->activeDebugSession.reset();
             return;
 
         } catch (const ClientNotSupported& exception) {
             Logger::error("Invalid GDB RSP client - " + exception.getMessage() + " - closing connection");
-            this->terminateActiveDebugSession();
+            this->activeDebugSession.reset();
             return;
 
         } catch (const DebugSessionAborted& exception) {
             Logger::warning("GDB debug session aborted - " + exception.getMessage());
-            this->terminateActiveDebugSession();
+            this->activeDebugSession.reset();
             return;
 
         } catch (const DebugServerInterrupted&) {
@@ -335,21 +332,10 @@ namespace Bloom::DebugServer::Gdb
         };
     }
 
-    void GdbRspDebugServer::terminateActiveDebugSession() {
-        if (!this->activeDebugSession.has_value()) {
-            return;
-        }
-
-        this->activeDebugSession->terminate();
-        this->activeDebugSession = std::nullopt;
-
-        EventManager::triggerEvent(std::make_shared<Events::DebugSessionFinished>());
-    }
-
     void GdbRspDebugServer::onTargetControllerStateChanged(const Events::TargetControllerStateChanged& event) {
         if (event.state == TargetControllerState::SUSPENDED && this->activeDebugSession.has_value()) {
             Logger::warning("TargetController suspended unexpectedly - terminating debug session");
-            this->terminateActiveDebugSession();
+            this->activeDebugSession.reset();
         }
     }
 
@@ -364,14 +350,14 @@ namespace Bloom::DebugServer::Gdb
 
         } catch (const ClientDisconnected&) {
             Logger::info("GDB RSP client disconnected");
-            this->terminateActiveDebugSession();
+            this->activeDebugSession.reset();
             return;
 
         } catch (const ClientCommunicationError& exception) {
             Logger::error(
                 "GDB RSP client communication error - " + exception.getMessage() + " - closing connection"
             );
-            this->terminateActiveDebugSession();
+            this->activeDebugSession.reset();
             return;
 
         } catch (const DebugServerInterrupted&) {

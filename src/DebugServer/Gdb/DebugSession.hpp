@@ -39,6 +39,12 @@ namespace Bloom::DebugServer::Gdb
             const TargetDescriptor& targetDescriptor
         );
 
-        void terminate();
+        DebugSession(const DebugSession& other) = delete;
+        DebugSession(DebugSession&& other) = delete;
+
+        DebugSession& operator = (const DebugSession& other) = delete;
+        DebugSession& operator = (DebugSession&& other) = delete;
+
+        ~DebugSession();
     };
 }

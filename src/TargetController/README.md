@@ -102,7 +102,7 @@ the [GDB debug server implementation](../DebugServer/Gdb/README.md) will termina
 void GdbRspDebugServer::onTargetControllerStateChanged(const Events::TargetControllerStateChanged& event) {
     if (event.state == TargetControllerState::SUSPENDED && this->activeDebugSession.has_value()) {
         Logger::warning("TargetController suspended unexpectedly - terminating debug session");
-        this->terminateActiveDebugSession();
+        this->activeDebugSession.reset();
     }
 }
 ```
