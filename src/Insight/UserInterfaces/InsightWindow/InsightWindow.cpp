@@ -303,7 +303,9 @@ namespace Bloom
     }
 
     void InsightWindow::closeEvent(QCloseEvent* event) {
-        this->deactivate();
+        if (this->activated) {
+            this->deactivate();
+        }
 
         return QMainWindow::closeEvent(event);
     }
@@ -684,6 +686,8 @@ namespace Bloom
         if (this->targetRegistersSidePane != nullptr) {
             this->targetRegistersSidePane->deactivate();
             this->targetRegistersSidePane->deleteLater();
+            this->targetRegistersSidePane = nullptr;
+
             this->leftPanel->setVisible(false);
             this->targetRegistersButton->setChecked(false);
             this->targetRegistersButton->setDisabled(true);
