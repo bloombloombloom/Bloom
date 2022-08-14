@@ -451,9 +451,12 @@ namespace Bloom::Widgets
 
     void TargetMemoryInspectionPane::onProgrammingModeEnabled() {
         this->hexViewerWidget->setDisabled(true);
+        this->refreshButton->setDisabled(true);
     }
 
     void TargetMemoryInspectionPane::onProgrammingModeDisabled() {
-        this->hexViewerWidget->setDisabled(this->targetState != Targets::TargetState::STOPPED);
+        const auto disabled = this->targetState != Targets::TargetState::STOPPED;
+        this->hexViewerWidget->setDisabled(disabled);
+        this->refreshButton->setDisabled(disabled);
     }
 }
