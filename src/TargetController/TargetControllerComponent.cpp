@@ -170,6 +170,84 @@ namespace Bloom::TargetController
         // Install Bloom's udev rules if not already installed
         TargetControllerComponent::checkUdevRules();
 
+        // Register command handlers
+
+        this->registerCommandHandler<GetTargetDescriptor>(
+            std::bind(&TargetControllerComponent::handleGetTargetDescriptor, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<GetTargetState>(
+            std::bind(&TargetControllerComponent::handleGetTargetState, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<StopTargetExecution>(
+            std::bind(&TargetControllerComponent::handleStopTargetExecution, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<ResumeTargetExecution>(
+            std::bind(&TargetControllerComponent::handleResumeTargetExecution, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<ResetTarget>(
+            std::bind(&TargetControllerComponent::handleResetTarget, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<ReadTargetRegisters>(
+            std::bind(&TargetControllerComponent::handleReadTargetRegisters, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<WriteTargetRegisters>(
+            std::bind(&TargetControllerComponent::handleWriteTargetRegisters, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<ReadTargetMemory>(
+            std::bind(&TargetControllerComponent::handleReadTargetMemory, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<WriteTargetMemory>(
+            std::bind(&TargetControllerComponent::handleWriteTargetMemory, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<StepTargetExecution>(
+            std::bind(&TargetControllerComponent::handleStepTargetExecution, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<SetBreakpoint>(
+            std::bind(&TargetControllerComponent::handleSetBreakpoint, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<RemoveBreakpoint>(
+            std::bind(&TargetControllerComponent::handleRemoveBreakpoint, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<SetTargetProgramCounter>(
+            std::bind(&TargetControllerComponent::handleSetProgramCounter, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<GetTargetPinStates>(
+            std::bind(&TargetControllerComponent::handleGetTargetPinStates, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<SetTargetPinState>(
+            std::bind(&TargetControllerComponent::handleSetTargetPinState, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<GetTargetStackPointer>(
+            std::bind(&TargetControllerComponent::handleGetTargetStackPointer, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<GetTargetProgramCounter>(
+            std::bind(&TargetControllerComponent::handleGetTargetProgramCounter, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<EnableProgrammingMode>(
+            std::bind(&TargetControllerComponent::handleEnableProgrammingMode, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<DisableProgrammingMode>(
+            std::bind(&TargetControllerComponent::handleDisableProgrammingMode, this, std::placeholders::_1)
+        );
+
         // Register event handlers
         this->eventListener->registerCallbackForEventType<Events::ShutdownTargetController>(
             std::bind(&TargetControllerComponent::onShutdownTargetControllerEvent, this, std::placeholders::_1)
@@ -309,14 +387,20 @@ namespace Bloom::TargetController
                     throw Exception("No handler registered for this command.");
                 }
 
-                if (command->requiresStoppedTargetState() && this->lastTargetState != TargetState::STOPPED) {
-                    throw Exception("Illegal target state - command requires target to be stopped");
+                if (this->state != TargetControllerState::ACTIVE && command->requiresActiveState()) {
+                    throw Exception("Command rejected - TargetController not in active state.");
                 }
 
-                if (this->target->programmingModeEnabled() && command->requiresDebugMode()) {
-                    throw Exception(
-                        "Illegal target state - command cannot be serviced whilst the target is in programming mode."
-                    );
+                if (this->state == TargetControllerState::ACTIVE) {
+                    if (command->requiresStoppedTargetState() && this->lastTargetState != TargetState::STOPPED) {
+                        throw Exception("Command rejected - command requires target execution to be stopped.");
+                    }
+
+                    if (this->target->programmingModeEnabled() && command->requiresDebugMode()) {
+                        throw Exception(
+                            "Command rejected - command cannot be serviced whilst the target is in programming mode."
+                        );
+                    }
                 }
 
                 this->registerCommandResponse(
@@ -411,26 +495,6 @@ namespace Bloom::TargetController
                 + std::string(exception.what()));
         }
 
-        this->deregisterCommandHandler(GetTargetDescriptor::type);
-        this->deregisterCommandHandler(GetTargetState::type);
-        this->deregisterCommandHandler(StopTargetExecution::type);
-        this->deregisterCommandHandler(ResumeTargetExecution::type);
-        this->deregisterCommandHandler(ResetTarget::type);
-        this->deregisterCommandHandler(ReadTargetRegisters::type);
-        this->deregisterCommandHandler(WriteTargetRegisters::type);
-        this->deregisterCommandHandler(ReadTargetMemory::type);
-        this->deregisterCommandHandler(WriteTargetMemory::type);
-        this->deregisterCommandHandler(StepTargetExecution::type);
-        this->deregisterCommandHandler(SetBreakpoint::type);
-        this->deregisterCommandHandler(RemoveBreakpoint::type);
-        this->deregisterCommandHandler(SetTargetProgramCounter::type);
-        this->deregisterCommandHandler(GetTargetPinStates::type);
-        this->deregisterCommandHandler(SetTargetPinState::type);
-        this->deregisterCommandHandler(GetTargetStackPointer::type);
-        this->deregisterCommandHandler(GetTargetProgramCounter::type);
-        this->deregisterCommandHandler(EnableProgrammingMode::type);
-        this->deregisterCommandHandler(DisableProgrammingMode::type);
-
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
 
         this->lastTargetState = TargetState::UNKNOWN;
@@ -447,82 +511,6 @@ namespace Bloom::TargetController
     void TargetControllerComponent::resume() {
         this->acquireHardware();
         this->loadRegisterDescriptors();
-
-        this->registerCommandHandler<GetTargetDescriptor>(
-            std::bind(&TargetControllerComponent::handleGetTargetDescriptor, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<GetTargetState>(
-            std::bind(&TargetControllerComponent::handleGetTargetState, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<StopTargetExecution>(
-            std::bind(&TargetControllerComponent::handleStopTargetExecution, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<ResumeTargetExecution>(
-            std::bind(&TargetControllerComponent::handleResumeTargetExecution, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<ResetTarget>(
-            std::bind(&TargetControllerComponent::handleResetTarget, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<ReadTargetRegisters>(
-            std::bind(&TargetControllerComponent::handleReadTargetRegisters, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<WriteTargetRegisters>(
-            std::bind(&TargetControllerComponent::handleWriteTargetRegisters, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<ReadTargetMemory>(
-            std::bind(&TargetControllerComponent::handleReadTargetMemory, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<WriteTargetMemory>(
-            std::bind(&TargetControllerComponent::handleWriteTargetMemory, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<StepTargetExecution>(
-            std::bind(&TargetControllerComponent::handleStepTargetExecution, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<SetBreakpoint>(
-            std::bind(&TargetControllerComponent::handleSetBreakpoint, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<RemoveBreakpoint>(
-            std::bind(&TargetControllerComponent::handleRemoveBreakpoint, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<SetTargetProgramCounter>(
-            std::bind(&TargetControllerComponent::handleSetProgramCounter, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<GetTargetPinStates>(
-            std::bind(&TargetControllerComponent::handleGetTargetPinStates, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<SetTargetPinState>(
-            std::bind(&TargetControllerComponent::handleSetTargetPinState, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<GetTargetStackPointer>(
-            std::bind(&TargetControllerComponent::handleGetTargetStackPointer, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<GetTargetProgramCounter>(
-            std::bind(&TargetControllerComponent::handleGetTargetProgramCounter, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<EnableProgrammingMode>(
-            std::bind(&TargetControllerComponent::handleEnableProgrammingMode, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<DisableProgrammingMode>(
-            std::bind(&TargetControllerComponent::handleDisableProgrammingMode, this, std::placeholders::_1)
-        );
 
         this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
             std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)

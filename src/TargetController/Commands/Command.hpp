@@ -36,6 +36,10 @@ namespace Bloom::TargetController::Commands
             return Command::type;
         }
 
+        [[nodiscard]] virtual bool requiresActiveState() const {
+            return true;
+        }
+
         [[nodiscard]] virtual bool requiresStoppedTargetState() const {
             return false;
         }
