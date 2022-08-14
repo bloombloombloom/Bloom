@@ -33,6 +33,8 @@ namespace Bloom::Widgets
             layout->setContentsMargins(0, 0, 0, 0);
             this->setLayout(layout);
         }
+
+        this->setSize(this->state.size);
     }
 
     void PanelWidget::setMinimumResize(int minimumResize) {

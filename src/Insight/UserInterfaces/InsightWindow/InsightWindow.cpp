@@ -384,17 +384,6 @@ namespace Bloom
 
         this->createPanes();
 
-        const auto& lastLeftPanelState = this->insightProjectSettings.leftPanelState;
-        const auto& lastBottomPanelState = this->insightProjectSettings.bottomPanelState;
-
-        if (lastLeftPanelState.has_value() && this->leftPanel != nullptr) {
-            this->leftPanel->setSize(lastLeftPanelState->size);
-        }
-
-        if (lastBottomPanelState.has_value()) {
-            this->bottomPanel->setSize(lastBottomPanelState->size);
-        }
-
         this->setUiDisabled(this->targetState != TargetState::STOPPED);
         this->activated = true;
         emit this->activatedSignal();
