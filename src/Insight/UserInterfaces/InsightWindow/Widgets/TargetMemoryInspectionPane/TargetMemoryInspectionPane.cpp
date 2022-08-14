@@ -188,12 +188,18 @@ namespace Bloom::Widgets
         );
 
         // Restore the state
-        if (!this->state.attached) {
+        if (this->state.attached) {
+            this->attach();
+
+        } else {
             this->detach();
         }
 
         if (this->state.activated) {
             this->activate();
+
+        } else {
+            this->deactivate();
         }
     }
 

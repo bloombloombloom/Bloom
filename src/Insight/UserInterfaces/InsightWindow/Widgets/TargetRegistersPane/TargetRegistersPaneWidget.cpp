@@ -144,14 +144,15 @@ namespace Bloom::Widgets
         );
 
         // Restore the state
-        if (!this->state.attached) {
-            // The register pane cannot be detached.
-            this->state.attached = true;
-        }
-
         if (this->state.activated) {
             this->activate();
+
+        } else {
+            this->deactivate();
         }
+
+        // The register pane cannot be detached.
+        this->attach();
     }
 
     void TargetRegistersPaneWidget::filterRegisters(const QString& keyword) {

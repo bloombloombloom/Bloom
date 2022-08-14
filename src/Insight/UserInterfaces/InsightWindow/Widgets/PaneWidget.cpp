@@ -24,9 +24,7 @@ namespace Bloom::Widgets
     }
 
     void PaneWidget::deactivate() {
-        if (this->isVisible()) {
-            this->hide();
-        }
+        this->hide();
 
         this->state.activated = false;
         emit this->paneDeactivated();
@@ -44,6 +42,11 @@ namespace Bloom::Widgets
         }
 
         this->state.attached = false;
+
+        if (this->state.activated) {
+            this->show();
+        }
+
         emit this->paneDetached();
     }
 
@@ -51,6 +54,10 @@ namespace Bloom::Widgets
         this->setWindowFlag(Qt::Window, false);
 
         this->state.attached = true;
+
+        if (this->state.activated) {
+            this->show();
+        }
         emit this->paneAttached();
     }
 
