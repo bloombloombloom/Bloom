@@ -41,6 +41,7 @@ namespace Bloom::Widgets
             this->state.detachedWindowState = DetachedWindowState(this->size(), this->pos());
         }
 
+        this->setMinimumSize(1100, 600);
         this->state.attached = false;
 
         if (this->state.activated) {
@@ -53,6 +54,7 @@ namespace Bloom::Widgets
     void PaneWidget::attach() {
         this->setWindowFlag(Qt::Window, false);
 
+        this->setMinimumSize(0, 0);
         this->state.attached = true;
 
         if (this->state.activated) {
