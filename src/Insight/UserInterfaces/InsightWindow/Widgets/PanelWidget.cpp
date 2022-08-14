@@ -18,6 +18,7 @@ namespace Bloom::Widgets
         if (this->panelType == PanelWidgetType::LEFT) {
             this->resizeCursor = Qt::SplitHCursor;
             this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+            this->setMaximumResize(this->window()->width() - 100);
 
             auto* layout = new QVBoxLayout(this);
             layout->setSpacing(0);
@@ -27,6 +28,7 @@ namespace Bloom::Widgets
         } else {
             this->resizeCursor = Qt::SplitVCursor;
             this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+            this->setMaximumResize(this->window()->height() - 100);
 
             auto* layout = new QHBoxLayout(this);
             layout->setSpacing(0);
