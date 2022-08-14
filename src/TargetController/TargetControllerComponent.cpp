@@ -23,6 +23,7 @@ namespace Bloom::TargetController
     using Commands::CommandIdType;
 
     using Commands::Command;
+    using Commands::GetState;
     using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
     using Commands::StopTargetExecution;
@@ -109,10 +110,6 @@ namespace Bloom::TargetController
         this->shutdown();
     }
 
-    TargetControllerState TargetControllerComponent::getState() {
-        return TargetControllerComponent::state;
-    }
-
     void TargetControllerComponent::registerCommand(std::unique_ptr<Command> command) {
         auto commandQueueLock = TargetControllerComponent::commandQueue.acquireLock();
         TargetControllerComponent::commandQueue.getValue().push(std::move(command));
@@ -171,6 +168,9 @@ namespace Bloom::TargetController
         TargetControllerComponent::checkUdevRules();
 
         // Register command handlers
+        this->registerCommandHandler<GetState>(
+            std::bind(&TargetControllerComponent::handleGetState, this, std::placeholders::_1)
+        );
 
         this->registerCommandHandler<GetTargetDescriptor>(
             std::bind(&TargetControllerComponent::handleGetTargetDescriptor, this, std::placeholders::_1)
@@ -759,6 +759,10 @@ namespace Bloom::TargetController
         if (this->environmentConfig.debugToolConfig.releasePostDebugSession) {
             this->suspend();
         }
+    }
+
+    std::unique_ptr<Responses::State> TargetControllerComponent::handleGetState(GetState& command) {
+        return std::make_unique<Responses::State>(this->state);
     }
 
     std::unique_ptr<Responses::TargetDescriptor> TargetControllerComponent::handleGetTargetDescriptor(

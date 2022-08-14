@@ -1,8 +1,7 @@
 #include "TargetControllerConsole.hpp"
 
-#include "TargetControllerComponent.hpp"
-
 // Commands
+#include "Commands/GetState.hpp"
 #include "Commands/GetTargetDescriptor.hpp"
 #include "Commands/GetTargetState.hpp"
 #include "Commands/StopTargetExecution.hpp"
@@ -25,6 +24,7 @@
 
 namespace Bloom::TargetController
 {
+    using Commands::GetState;
     using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
     using Commands::StopTargetExecution;
@@ -62,7 +62,10 @@ namespace Bloom::TargetController
     using Targets::TargetPinStateMappingType;
 
     TargetControllerState TargetControllerConsole::getTargetControllerState() {
-        return TargetControllerComponent::getState();
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<GetState>(),
+            this->defaultTimeout
+        )->state;
     }
 
     bool TargetControllerConsole::isTargetControllerInService() noexcept {

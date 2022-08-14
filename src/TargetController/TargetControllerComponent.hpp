@@ -20,6 +20,7 @@
 
 // Commands
 #include "Commands/Command.hpp"
+#include "Commands/GetState.hpp"
 #include "Commands/GetTargetDescriptor.hpp"
 #include "Commands/GetTargetState.hpp"
 #include "Commands/StopTargetExecution.hpp"
@@ -42,6 +43,7 @@
 
 // Responses
 #include "Responses/Response.hpp"
+#include "Responses/State.hpp"
 #include "Responses/TargetDescriptor.hpp"
 #include "Responses/TargetState.hpp"
 #include "Responses/TargetRegistersRead.hpp"
@@ -86,8 +88,6 @@ namespace Bloom::TargetController
          */
         void run();
 
-        static TargetControllerState getState();
-
         static void registerCommand(std::unique_ptr<Commands::Command> command);
 
         static std::optional<std::unique_ptr<Responses::Response>> waitForResponse(
@@ -111,7 +111,7 @@ namespace Bloom::TargetController
          * The TC starts off in a suspended state. TargetControllerComponent::resume() is invoked from the startup
          * routine.
          */
-        static inline std::atomic<TargetControllerState> state = TargetControllerState::SUSPENDED;
+        TargetControllerState state = TargetControllerState::SUSPENDED;
 
         ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
@@ -334,6 +334,7 @@ namespace Bloom::TargetController
         void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
         // Command handlers
+        std::unique_ptr<Responses::State> handleGetState(Commands::GetState& command);
         std::unique_ptr<Responses::TargetDescriptor> handleGetTargetDescriptor(Commands::GetTargetDescriptor& command);
         std::unique_ptr<Responses::TargetState> handleGetTargetState(Commands::GetTargetState& command);
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);
