@@ -111,18 +111,18 @@ namespace Bloom
         this->refreshIoInspectionButton = this->header->findChild<SvgToolButton*>("refresh-io-inspection-btn");
 
         // Create panel states
-        if (!this->insightProjectSettings.previousLeftPanelState.has_value()) {
-            this->insightProjectSettings.previousLeftPanelState = PanelState();
+        if (!this->insightProjectSettings.leftPanelState.has_value()) {
+            this->insightProjectSettings.leftPanelState = PanelState();
         }
 
-        if (!this->insightProjectSettings.previousBottomPanelState.has_value()) {
-            this->insightProjectSettings.previousBottomPanelState = PanelState();
+        if (!this->insightProjectSettings.bottomPanelState.has_value()) {
+            this->insightProjectSettings.bottomPanelState = PanelState();
         }
 
         this->leftMenuBar = this->container->findChild<QWidget*>("left-side-menu-bar");
         this->leftPanel = new PanelWidget(
             PanelWidgetType::LEFT,
-            this->insightProjectSettings.previousLeftPanelState.value(),
+            this->insightProjectSettings.leftPanelState.value(),
             this->container
         );
         this->leftPanel->setObjectName("left-panel");
@@ -140,7 +140,7 @@ namespace Bloom
         this->bottomMenuBar = this->container->findChild<QWidget*>("bottom-menu-bar");
         this->bottomPanel = new PanelWidget(
             PanelWidgetType::BOTTOM,
-            this->insightProjectSettings.previousBottomPanelState.value(),
+            this->insightProjectSettings.bottomPanelState.value(),
             this->container
         );
         this->bottomPanel->setObjectName("bottom-panel");
@@ -384,8 +384,8 @@ namespace Bloom
 
         this->createPanes();
 
-        const auto& lastLeftPanelState = this->insightProjectSettings.previousLeftPanelState;
-        const auto& lastBottomPanelState = this->insightProjectSettings.previousBottomPanelState;
+        const auto& lastLeftPanelState = this->insightProjectSettings.leftPanelState;
+        const auto& lastBottomPanelState = this->insightProjectSettings.bottomPanelState;
 
         if (lastLeftPanelState.has_value() && this->leftPanel != nullptr) {
             this->leftPanel->setSize(lastLeftPanelState->size);

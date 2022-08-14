@@ -30,33 +30,33 @@ namespace Bloom
             }
         }
 
-        if (jsonObject.contains("previousLeftPanelState")) {
-            this->previousLeftPanelState = this->panelStateFromJson(
-                jsonObject.find("previousLeftPanelState")->toObject()
+        if (jsonObject.contains("leftPanelState")) {
+            this->leftPanelState = this->panelStateFromJson(
+                jsonObject.find("leftPanelState")->toObject()
             );
         }
 
-        if (jsonObject.contains("previousBottomPanelState")) {
-            this->previousBottomPanelState = this->panelStateFromJson(
-                jsonObject.find("previousBottomPanelState")->toObject()
+        if (jsonObject.contains("bottomPanelState")) {
+            this->bottomPanelState = this->panelStateFromJson(
+                jsonObject.find("bottomPanelState")->toObject()
             );
         }
 
-        if (jsonObject.contains("previousRegistersPaneState")) {
+        if (jsonObject.contains("registersPaneState")) {
             this->registersPaneState = this->paneStateFromJson(
-                jsonObject.find("previousRegistersPaneState")->toObject()
+                jsonObject.find("registersPaneState")->toObject()
             );
         }
 
-        if (jsonObject.contains("previousRamInspectionPaneState")) {
+        if (jsonObject.contains("ramInspectionPaneState")) {
             this->ramInspectionPaneState = this->paneStateFromJson(
-                jsonObject.find("previousRamInspectionPaneState")->toObject()
+                jsonObject.find("ramInspectionPaneState")->toObject()
             );
         }
 
-        if (jsonObject.contains("previousEepromInspectionPaneState")) {
+        if (jsonObject.contains("eepromInspectionPaneState")) {
             this->eepromInspectionPaneState = this->paneStateFromJson(
-                jsonObject.find("previousEepromInspectionPaneState")->toObject()
+                jsonObject.find("eepromInspectionPaneState")->toObject()
             );
         }
 
@@ -105,37 +105,37 @@ namespace Bloom
 
         insightObj.insert("memoryInspectionPaneSettings", memoryInspectionPaneSettingsObj);
 
-        if (this->previousLeftPanelState.has_value()) {
+        if (this->leftPanelState.has_value()) {
             insightObj.insert(
-                "previousLeftPanelState",
-                this->panelStateToJson(this->previousLeftPanelState.value())
+                "leftPanelState",
+                this->panelStateToJson(this->leftPanelState.value())
             );
         }
 
-        if (this->previousBottomPanelState.has_value()) {
+        if (this->bottomPanelState.has_value()) {
             insightObj.insert(
-                "previousBottomPanelState",
-                this->panelStateToJson(this->previousBottomPanelState.value())
+                "bottomPanelState",
+                this->panelStateToJson(this->bottomPanelState.value())
             );
         }
 
         if (this->registersPaneState.has_value()) {
             insightObj.insert(
-                "previousRegistersPaneState",
+                "registersPaneState",
                 this->paneStateToJson(this->registersPaneState.value())
             );
         }
 
         if (this->ramInspectionPaneState.has_value()) {
             insightObj.insert(
-                "previousRamInspectionPaneState",
+                "ramInspectionPaneState",
                 this->paneStateToJson(this->ramInspectionPaneState.value())
             );
         }
 
         if (this->eepromInspectionPaneState.has_value()) {
             insightObj.insert(
-                "previousEepromInspectionPaneState",
+                "eepromInspectionPaneState",
                 this->paneStateToJson(this->eepromInspectionPaneState.value())
             );
         }

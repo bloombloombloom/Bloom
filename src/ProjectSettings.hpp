@@ -20,8 +20,8 @@ namespace Bloom
     {
     public:
         std::optional<QSize> mainWindowSize;
-        std::optional<Widgets::PanelState> previousLeftPanelState;
-        std::optional<Widgets::PanelState> previousBottomPanelState;
+        std::optional<Widgets::PanelState> leftPanelState;
+        std::optional<Widgets::PanelState> bottomPanelState;
         std::optional<Widgets::PaneState> registersPaneState;
         std::optional<Widgets::PaneState> ramInspectionPaneState;
         std::optional<Widgets::PaneState> eepromInspectionPaneState;
