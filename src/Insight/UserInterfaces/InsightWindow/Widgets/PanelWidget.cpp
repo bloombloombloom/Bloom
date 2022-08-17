@@ -56,16 +56,16 @@ namespace Bloom::Widgets
     }
 
     void PanelWidget::setSize(int size) {
+        size = std::min(std::max(size, this->minimumResize), this->maximumResize);
+
         if (this->panelType == PanelWidgetType::LEFT) {
-            const auto width = std::min(std::max(size, this->minimumResize), this->maximumResize);
-            this->setFixedWidth(width);
-            this->state.size = width;
+            this->setFixedWidth(size);
 
         } else if (this->panelType == PanelWidgetType::BOTTOM) {
-            const auto height = std::min(std::max(size, this->minimumResize), this->maximumResize);
-            this->setFixedHeight(height);
-            this->state.size = height;
+            this->setFixedHeight(size);
         }
+
+        this->state.size = size;
     }
 
     void PanelWidget::updateVisibility() {
