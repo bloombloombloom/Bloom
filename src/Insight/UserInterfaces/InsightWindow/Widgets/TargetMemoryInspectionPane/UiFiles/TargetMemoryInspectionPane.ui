@@ -288,7 +288,28 @@
                                 </property>
                             </spacer>
                         </item>
-                       <!-- Button items here -->
+                        <item>
+                            <widget class="Label" name="memory-capacity-label">
+                                <property name="toolTip">
+                                    <string>Memory Capacity</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>5</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
                         <item>
                             <spacer name="horizontal-spacer">
                                 <property name="orientation">

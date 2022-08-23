@@ -12,6 +12,7 @@
 #include "src/Targets/TargetState.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "HexViewerWidget/HexViewerWidget.hpp"
 #include "MemoryRegionManager/MemoryRegionManagerWindow.hpp"

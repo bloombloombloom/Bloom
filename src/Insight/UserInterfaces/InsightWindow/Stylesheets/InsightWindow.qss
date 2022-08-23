@@ -333,6 +333,10 @@ QScrollBar::sub-line:vertical {
     max-width: 1px;
 }
 
+#target-memory-inspection-pane #memory-capacity-label {
+    color: #8a8a8d;
+}
+
 #hex-viewer-container #tool-bar,
 #hex-viewer-container #search-bar {
     border-bottom: 1px solid #41423f;

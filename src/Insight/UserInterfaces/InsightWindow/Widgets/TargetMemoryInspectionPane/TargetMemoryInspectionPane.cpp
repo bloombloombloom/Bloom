@@ -75,6 +75,9 @@ namespace Bloom::Widgets
         this->detachPaneButton = this->container->findChild<SvgToolButton*>("detach-pane-btn");
         this->attachPaneButton = this->container->findChild<SvgToolButton*>("attach-pane-btn");
 
+        auto* memoryCapacityLabel = this->container->findChild<Label*>("memory-capacity-label");
+        memoryCapacityLabel->setText(QString::number(this->targetMemoryDescriptor.size()) + " Bytes");
+
         this->hexViewerWidget = new HexViewerWidget(
             this->targetMemoryDescriptor,
             this->settings.hexViewerWidgetSettings,
