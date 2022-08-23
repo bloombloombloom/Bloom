@@ -65,7 +65,7 @@ namespace Bloom::Widgets
         // Quick sanity check to ensure the validity of persisted settings.
         this->sanitiseSettings();
 
-        auto* containerLayout = this->container->findChild<QVBoxLayout*>("container-layout");
+        auto* containerLayout = this->container->findChild<QHBoxLayout*>("container-sub-layout");
         this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
 
         this->refreshButton = this->container->findChild<SvgToolButton*>("refresh-memory-btn");
@@ -85,7 +85,7 @@ namespace Bloom::Widgets
         );
         this->hexViewerWidget->setDisabled(true);
 
-        containerLayout->addWidget(this->hexViewerWidget);
+        containerLayout->insertWidget(1, this->hexViewerWidget);
 
         this->setRefreshOnTargetStopEnabled(this->settings.refreshOnTargetStop);
         this->setRefreshOnActivationEnabled(this->settings.refreshOnActivation);

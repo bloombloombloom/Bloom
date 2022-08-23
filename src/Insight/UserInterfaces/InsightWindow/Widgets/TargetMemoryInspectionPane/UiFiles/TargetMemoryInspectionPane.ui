@@ -83,9 +83,6 @@
                             </widget>
                         </item>
                         <item>
-                            <widget class="QFrame" name="separator"/>
-                        </item>
-                        <item>
                             <widget class="SvgToolButton" name="refresh-memory-btn">
                                 <property name="svgFilePath">
                                     <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh.svg</string>
@@ -159,6 +156,145 @@
                                     <bool>false</bool>
                                 </property>
                             </widget>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>5</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="container-sub-layout">
+                    <property name="spacing">
+                        <number>0</number>
+                    </property>
+                    <property name="margin">
+                        <number>0</number>
+                    </property>
+                    <item alignment="Qt::AlignLeft">
+                        <widget class="QWidget" name="lh-side-bar">
+                            <property name="minimumWidth">
+                                <number>30</number>
+                            </property>
+                            <property name="maximumWidth">
+                                <number>30</number>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Expanding"/>
+                            </property>
+                            <layout class="QVBoxLayout" name="lh-side-bar-layout">
+                                <property name="spacing">
+                                    <number>3</number>
+                                </property>
+                                <property name="margin">
+                                    <number>0</number>
+                                </property>
+                                <item>
+                                    <spacer name="vertical-spacer">
+                                        <property name="sizeHint">
+                                            <size>
+                                                <height>3</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <!-- Button items here -->
+                                <item>
+                                    <spacer name="vertical-spacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </widget>
+                    </item>
+                    <item alignment="Qt::AlignLeft">
+                        <widget class="QWidget" name="rh-side-bar">
+                            <property name="minimumWidth">
+                                <number>30</number>
+                            </property>
+                            <property name="maximumWidth">
+                                <number>30</number>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Expanding"/>
+                            </property>
+                            <layout class="QVBoxLayout" name="rh-side-bar-layout">
+                                <property name="spacing">
+                                    <number>3</number>
+                                </property>
+                                <property name="margin">
+                                    <number>0</number>
+                                </property>
+                                <item>
+                                    <spacer name="vertical-spacer">
+                                        <property name="sizeHint">
+                                            <size>
+                                                <height>3</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <!-- Button items here -->
+                                <item>
+                                    <spacer name="vertical-spacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <widget class="QWidget" name="bottom-bar">
+                    <property name="minimumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="maximumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>5</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                       <!-- Button items here -->
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="orientation">
+                                    <enum>Qt::Horizontal</enum>
+                                </property>
+                            </spacer>
                         </item>
                         <item>
                             <spacer name="horizontal-spacer">
