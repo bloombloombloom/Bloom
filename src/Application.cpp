@@ -426,7 +426,7 @@ namespace Bloom
         >();
 
         if (!tcStateChangeEvent.has_value() || tcStateChangeEvent->get()->getState() != ThreadState::READY) {
-            throw Exception("TargetController failed to startup.");
+            throw Exception("TargetController failed to start up");
         }
     }
 
@@ -465,7 +465,7 @@ namespace Bloom
         >();
 
         if (!dsStateChangeEvent.has_value() || dsStateChangeEvent->get()->getState() != ThreadState::READY) {
-            throw Exception("DebugServer failed to startup.");
+            throw Exception("DebugServer failed to start up");
         }
     }
 

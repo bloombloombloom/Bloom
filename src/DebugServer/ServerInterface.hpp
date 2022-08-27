@@ -22,7 +22,7 @@ namespace Bloom::DebugServer
         [[nodiscard]] virtual std::string getName() const = 0;
 
         /**
-         * Called on startup of the DebugServerComponent. The server should implement any initialisation work here.
+         * Called on start up of the DebugServerComponent. The server should implement any initialisation work here.
          */
         virtual void init() = 0;
 

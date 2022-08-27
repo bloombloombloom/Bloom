@@ -129,7 +129,7 @@ namespace Bloom::Targets
          *
          * When a user is debugging an AVR8 target, they may not specify the exact name of the target in their project
          * configuration file. Instead, they may select the generic 'avr8' target (which maps to the generic Avr8 target
-         * class). In cases like this, the data we have on the target, at the point of startup, is very limited; all we
+         * class). In cases like this, the data we have on the target, at the point of start up, is very limited; all we
          * know about the target is that it's part of the AVR8 family. Nothing else. But this is ok, because, when we
          * begin the target configuration and activation process, we are able to learn a lot more about the target.
          * For AVR8 targets, we extract the target signature shortly after activation, and with that signature we find

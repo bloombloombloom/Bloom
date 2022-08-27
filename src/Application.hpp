@@ -28,7 +28,7 @@ namespace Bloom
      * Bloom - a debug interface for embedded systems development on Linux.
      *
      * This is the main entry-point of execution for the Bloom program. The methods within will run on the main
-     * thread. If Insight is enabled, execution will be passed over to Insight::run() upon startup.
+     * thread. If Insight is enabled, execution will be passed over to Insight::run() upon start up.
      */
     class Application: public Thread
     {

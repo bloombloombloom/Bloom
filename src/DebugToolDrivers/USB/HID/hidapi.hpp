@@ -33,7 +33,7 @@ struct hid_device_
     pthread_t thread;
     pthread_mutex_t mutex; // Protects input_reports
     pthread_cond_t condition;
-    pthread_barrier_t barrier; // Ensures correct startup sequence
+    pthread_barrier_t barrier; // Ensures correct start up sequence
     int shutdown_thread;
     int cancelled;
     struct libusb_transfer* transfer;

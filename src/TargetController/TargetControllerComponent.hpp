@@ -108,7 +108,7 @@ namespace Bloom::TargetController
         static inline std::condition_variable responsesByCommandIdCv = std::condition_variable();
 
         /**
-         * The TC starts off in a suspended state. TargetControllerComponent::resume() is invoked from the startup
+         * The TC starts off in a suspended state. TargetControllerComponent::resume() is invoked from the start up
          * routine.
          */
         TargetControllerState state = TargetControllerState::SUSPENDED;

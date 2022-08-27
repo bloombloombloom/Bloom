@@ -95,7 +95,7 @@ namespace Bloom::TargetController
             }
 
         } catch (const TargetControllerStartupFailure& exception) {
-            Logger::error("TargetController failed to startup. See below for errors:");
+            Logger::error("TargetController failed to start up. See below for errors:");
             Logger::error(exception.getMessage());
 
         } catch (const Exception& exception) {

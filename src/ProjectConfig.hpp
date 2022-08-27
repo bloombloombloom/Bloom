@@ -14,7 +14,7 @@ namespace Bloom
      * multiple debug environments, each environment must be assigned a unique name that can be used to identify the
      * environment. This is why the 'environments' parameter is a YAML map, with the key being the environment name.
      *
-     * On application startup, we extract the config from this YAML file and generate a ProjectConfig object.
+     * On application start up, we extract the config from this YAML file and generate a ProjectConfig object.
      * See Application::loadProjectConfiguration() for more on this.
      *
      * Some config parameters are specific to certain entities within Bloom, but have no significance across the
@@ -56,7 +56,7 @@ namespace Bloom
         /**
          * The name of the selected target variant.
          *
-         * Insight uses this to determine which variant to select on startup.
+         * Insight uses this to determine which variant to select on start up.
          */
         std::optional<std::string> variantName;
 

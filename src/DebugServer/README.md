@@ -10,7 +10,7 @@ connected AVR target, by implementing the
 [GDB Remote Serial Protocol](https://sourceware.org/gdb/onlinedocs/gdb/Remote-Protocol.html), over a TCP/IP connection.
 Each server must implement the interface defined in the [`ServerInterface` class](./ServerInterface.hpp).
 
-At startup, the DebugServer will select the appropriate server implementation, based on the user's project 
+At start up, the DebugServer will select the appropriate server implementation, based on the user's project
 configuration (bloom.yaml - see [`DebugServerConfig`](../ProjectConfig.hpp)). Each server implementation is mapped to a 
 config name, which is to be used in the project configuration file. For the mapping, see 
 `DebugServerComponent::getAvailableServersByName()`. After initialising the server (via `ServerInterface::init()`), 
@@ -19,7 +19,7 @@ For more on this, see `DebugServerComponent::startup()` and `DebugServerComponen
 
 #### Servicing events
 
-During startup, the DebugServer will register event handlers for certain events. Once control of the DebugServer thread
+During star tup, the DebugServer will register event handlers for certain events. Once control of the DebugServer thread
 has been handed over to the selected server implementation, the server must ensure that any incoming events are 
 processed ASAP. How this is done is implementation-defined. A reference to the DebugServer's event listener 
 (`DebugServerComponent::eventListener`) can be passed to the server if need be (see 
