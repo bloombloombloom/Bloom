@@ -30,7 +30,6 @@
 #include "CommandPackets/HelpMonitorInfo.hpp"
 #include "CommandPackets/BloomVersion.hpp"
 #include "CommandPackets/BloomVersionMachine.hpp"
-#include "CommandPackets/TargetInfoMachine.hpp"
 #include "CommandPackets/GenerateSvd.hpp"
 
 // Response packets
@@ -314,10 +313,6 @@ namespace Bloom::DebugServer::Gdb
 
                 if (monitorCommand->command == "reset") {
                     return std::make_unique<CommandPackets::ResetTarget>(std::move(*(monitorCommand.release())));
-                }
-
-                if (monitorCommand->command == "target-info machine") {
-                    return std::make_unique<CommandPackets::TargetInfoMachine>(std::move(*(monitorCommand.release())));
                 }
 
                 if (monitorCommand->command.find("svd") == 0) {

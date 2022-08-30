@@ -8,6 +8,5 @@ Supported Bloom commands:
                         file located in the current project directory.
   svd --out             Generates the System View Description (SVD) XML for the current target and sends it to GDB, as
                         command output.
-  target-info machine   Outputs information on the connected target, in JSON format.
 
   reset                 Resets the target and holds it in a stopped state.
