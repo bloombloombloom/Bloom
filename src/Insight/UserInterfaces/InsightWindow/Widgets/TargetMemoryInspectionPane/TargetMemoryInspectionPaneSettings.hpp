@@ -11,8 +11,8 @@ namespace Bloom::Widgets
 {
     struct TargetMemoryInspectionPaneSettings
     {
-        bool refreshOnTargetStop = true;
-        bool refreshOnActivation = true;
+        bool refreshOnTargetStop = false;
+        bool refreshOnActivation = false;
 
         HexViewerWidgetSettings hexViewerWidgetSettings;
 
