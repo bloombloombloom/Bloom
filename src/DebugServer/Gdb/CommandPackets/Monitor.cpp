@@ -19,6 +19,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             );
 
             this->command = std::string(decodedCommand.begin(), decodedCommand.end());
+            this->command.erase(this->command.find_last_not_of(" ") + 1);
         }
     }
 

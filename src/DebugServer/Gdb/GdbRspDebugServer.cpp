@@ -264,7 +264,7 @@ namespace Bloom::DebugServer::Gdb
 
         if (rawPacketString.size() >= 2) {
             /*
-             * First byte of the raw packet will be 0x24 ('$'), so find() should return 1, not 0, when
+             * First byte of the raw packet will be 0x24 ('$'), so std::string::find() should return 1, not 0, when
              * looking for a command identifier string.
              */
             if (rawPacketString.find("qSupported") == 1) {
@@ -300,23 +300,24 @@ namespace Bloom::DebugServer::Gdb
                 auto monitorCommand = std::make_unique<CommandPackets::Monitor>(rawPacket);
 
                 if (monitorCommand->command == "help") {
-                    return std::make_unique<CommandPackets::HelpMonitorInfo>(std::move(*(monitorCommand.get())));
+                    return std::make_unique<CommandPackets::HelpMonitorInfo>(std::move(*(monitorCommand.release())));
                 }
 
                 if (monitorCommand->command == "version") {
-                    return std::make_unique<CommandPackets::BloomVersion>(std::move(*(monitorCommand.get())));
+                    return std::make_unique<CommandPackets::BloomVersion>(std::move(*(monitorCommand.release())));
                 }
 
                 if (monitorCommand->command == "version machine") {
-                    return std::make_unique<CommandPackets::BloomVersionMachine>(std::move(*(monitorCommand.get())));
+                    return std::make_unique<CommandPackets::BloomVersionMachine>(std::move(*(monitorCommand.release())));
                 }
 
                 if (monitorCommand->command == "reset") {
-                    return std::make_unique<CommandPackets::ResetTarget>(std::move(*(monitorCommand.get())));
+                    return std::make_unique<CommandPackets::ResetTarget>(std::move(*(monitorCommand.release())));
                 }
 
                 if (monitorCommand->command == "target-info machine") {
-                    return std::make_unique<CommandPackets::TargetInfoMachine>(std::move(*(monitorCommand.get())));
+                    return std::make_unique<CommandPackets::TargetInfoMachine>(std::move(*(monitorCommand.release())));
+                }
                 }
 
                 return monitorCommand;

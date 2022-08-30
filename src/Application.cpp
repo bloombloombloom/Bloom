@@ -220,7 +220,7 @@ namespace Bloom
 
             if (!jsonSettingsFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
                 throw Exception(
-                    "failed to open/create settings file (" + projectSettingsPath + "). Check file permissions."
+                    "Failed to open/create settings file (" + projectSettingsPath + "). Check file permissions."
                 );
             }
 
