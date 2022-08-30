@@ -16,6 +16,7 @@ namespace Bloom::Targets
     {
         std::string name;
         std::string id;
+        std::string vendorName;
         std::map<TargetMemoryType, TargetMemoryDescriptor> memoryDescriptorsByType;
         std::map<TargetRegisterType, TargetRegisterDescriptors> registerDescriptorsByType;
         std::vector<TargetVariant> variants;

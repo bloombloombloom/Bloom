@@ -31,6 +31,7 @@
 #include "CommandPackets/BloomVersion.hpp"
 #include "CommandPackets/BloomVersionMachine.hpp"
 #include "CommandPackets/TargetInfoMachine.hpp"
+#include "CommandPackets/GenerateSvd.hpp"
 
 // Response packets
 #include "ResponsePackets/TargetStopped.hpp"
@@ -318,6 +319,9 @@ namespace Bloom::DebugServer::Gdb
                 if (monitorCommand->command == "target-info machine") {
                     return std::make_unique<CommandPackets::TargetInfoMachine>(std::move(*(monitorCommand.release())));
                 }
+
+                if (monitorCommand->command.find("svd") == 0) {
+                    return std::make_unique<CommandPackets::GenerateSvd>(std::move(*(monitorCommand.release())));
                 }
 
                 return monitorCommand;

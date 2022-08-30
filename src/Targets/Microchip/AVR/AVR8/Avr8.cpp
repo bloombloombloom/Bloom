@@ -257,6 +257,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         auto descriptor = TargetDescriptor();
         descriptor.id = this->getHumanReadableId();
         descriptor.name = this->getName();
+        descriptor.vendorName = std::string("Microchip");
         descriptor.programMemoryType = Targets::TargetMemoryType::FLASH;
         descriptor.registerDescriptorsByType = this->targetRegisterDescriptorsByType;
         descriptor.memoryDescriptorsByType = this->targetMemoryDescriptorsByType;
