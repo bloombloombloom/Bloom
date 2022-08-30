@@ -18,7 +18,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     using namespace Bloom::Exceptions;
 
     FlashWrite::FlashWrite(const RawPacketType& rawPacket)
-        : MemoryAccessCommandPacket(rawPacket)
+        : CommandPacket(rawPacket)
     {
         if (this->data.size() < 15) {
             throw Exception("Invalid packet length");

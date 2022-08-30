@@ -16,7 +16,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     using namespace Bloom::Exceptions;
 
     FlashDone::FlashDone(const RawPacketType& rawPacket)
-        : MemoryAccessCommandPacket(rawPacket)
+        : CommandPacket(rawPacket)
     {}
 
     void FlashDone::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {

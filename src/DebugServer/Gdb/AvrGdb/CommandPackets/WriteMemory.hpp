@@ -3,7 +3,10 @@
 #include <cstdint>
 #include <optional>
 
-#include "MemoryAccessCommandPacket.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
+#include "src/DebugServer/Gdb/TargetDescriptor.hpp"
+
+#include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -11,7 +14,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
      * The WriteMemory class implements the structure for "M" packets. Upon receiving this packet, the server is
      * expected to write data to the target's memory, at the specified start address.
      */
-    class WriteMemory: public MemoryAccessCommandPacket
+    class WriteMemory: public Gdb::CommandPackets::CommandPacket
     {
     public:
         /**
@@ -29,7 +32,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          */
         Targets::TargetMemoryBuffer buffer;
 
-        explicit WriteMemory(const RawPacketType& rawPacket);
+        explicit WriteMemory(const RawPacketType& rawPacket, const Gdb::TargetDescriptor& gdbTargetDescriptor);
 
         void handle(
             DebugSession& debugSession,

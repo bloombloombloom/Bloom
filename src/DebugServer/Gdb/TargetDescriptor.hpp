@@ -3,9 +3,12 @@
 #include <cstdint>
 #include <optional>
 #include <vector>
+#include <set>
 
+#include "src/Helpers/BiMap.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 #include "RegisterDescriptor.hpp"
 
@@ -14,13 +17,40 @@ namespace Bloom::DebugServer::Gdb
     /**
      * GDB target descriptor.
      */
-    struct TargetDescriptor
+    class TargetDescriptor
     {
+    public:
         Targets::TargetDescriptor targetDescriptor;
 
-        explicit TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
+        explicit TargetDescriptor(
+            const Targets::TargetDescriptor& targetDescriptor,
+            const BiMap<Targets::TargetMemoryType, std::uint32_t>& memoryOffsetsByType
+        )
             : targetDescriptor(targetDescriptor)
+            , memoryOffsetsByType(memoryOffsetsByType)
+            , memoryOffsets(memoryOffsetsByType.getValues())
         {}
+
+        virtual ~TargetDescriptor() = default;
+
+        virtual std::uint32_t getMemoryOffset(Targets::TargetMemoryType memoryType) const {
+            return this->memoryOffsetsByType.valueAt(memoryType).value_or(0);
+        }
+
+        Targets::TargetMemoryType getMemoryTypeFromGdbAddress(std::uint32_t address) const {
+            // Start with the largest offset until we find a match
+            for (
+                auto memoryOffsetIt = this->memoryOffsets.rbegin();
+                memoryOffsetIt != this->memoryOffsets.rend();
+                ++memoryOffsetIt
+            ) {
+                if ((address & *memoryOffsetIt) != 0U) {
+                    return this->memoryOffsetsByType.at(*memoryOffsetIt);
+                }
+            }
+
+            return Targets::TargetMemoryType::FLASH;
+        }
 
         /**
          * Should retrieve the GDB register number, given a target register descriptor. Or std::nullopt if the target
@@ -57,5 +87,9 @@ namespace Bloom::DebugServer::Gdb
          * @return
          */
         virtual const std::vector<GdbRegisterNumberType>& getRegisterNumbers() const = 0;
+
+    private:
+        BiMap<Targets::TargetMemoryType, std::uint32_t> memoryOffsetsByType;
+        std::set<std::uint32_t> memoryOffsets;
     };
 }

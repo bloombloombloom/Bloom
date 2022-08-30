@@ -16,7 +16,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     using namespace Bloom::Exceptions;
 
     FlashErase::FlashErase(const RawPacketType& rawPacket)
-        : MemoryAccessCommandPacket(rawPacket)
+        : CommandPacket(rawPacket)
     {
         const auto packetString = QString::fromLocal8Bit(
             reinterpret_cast<const char*>(this->data.data() + 12),

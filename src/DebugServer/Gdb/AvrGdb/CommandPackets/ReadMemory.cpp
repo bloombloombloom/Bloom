@@ -15,8 +15,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
     using Exceptions::Exception;
 
-    ReadMemory::ReadMemory(const RawPacketType& rawPacket)
-        : MemoryAccessCommandPacket(rawPacket)
+    ReadMemory::ReadMemory(const RawPacketType& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
+        : CommandPacket(rawPacket)
     {
         if (this->data.size() < 4) {
             throw Exception("Invalid packet length");
@@ -46,8 +46,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             throw Exception("Failed to parse start address from read memory packet data");
         }
 
-        this->memoryType = this->getMemoryTypeFromGdbAddress(gdbStartAddress);
-        this->startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(gdbStartAddress);
+        this->memoryType = gdbTargetDescriptor.getMemoryTypeFromGdbAddress(gdbStartAddress);
+        this->startAddress = gdbStartAddress & ~(gdbTargetDescriptor.getMemoryOffset(this->memoryType));
 
         this->bytes = packetSegments.at(1).toUInt(&conversionStatus, 16);
 

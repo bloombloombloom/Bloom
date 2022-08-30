@@ -3,7 +3,10 @@
 #include <cstdint>
 #include <optional>
 
-#include "MemoryAccessCommandPacket.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
+#include "src/DebugServer/Gdb/TargetDescriptor.hpp"
+
+#include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -11,7 +14,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
      * The FlashErase class implements the structure for the "vFlashErase" packet. Upon receiving this packet, the
      * server is expected to erase a particular region of the target's flash memory.
      */
-    class FlashErase: public MemoryAccessCommandPacket
+    class FlashErase: public Gdb::CommandPackets::CommandPacket
     {
     public:
         std::uint32_t startAddress = 0;

@@ -15,8 +15,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Bloom::Exceptions;
 
-    WriteMemory::WriteMemory(const RawPacketType& rawPacket)
-        : MemoryAccessCommandPacket(rawPacket)
+    WriteMemory::WriteMemory(const RawPacketType& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
+        : CommandPacket(rawPacket)
     {
         if (this->data.size() < 4) {
             throw Exception("Invalid packet length");
@@ -45,8 +45,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             throw Exception("Failed to parse start address from write memory packet data");
         }
 
-        this->memoryType = this->getMemoryTypeFromGdbAddress(gdbStartAddress);
-        this->startAddress = this->removeMemoryTypeIndicatorFromGdbAddress(gdbStartAddress);
+        this->memoryType = gdbTargetDescriptor.getMemoryTypeFromGdbAddress(gdbStartAddress);
+        this->startAddress = gdbStartAddress & ~(gdbTargetDescriptor.getMemoryOffset(this->memoryType));
 
         auto lengthAndBufferSegments = packetSegments.at(1).split(":");
         if (lengthAndBufferSegments.size() != 2) {

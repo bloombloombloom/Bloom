@@ -3,7 +3,10 @@
 #include <cstdint>
 #include <optional>
 
-#include "MemoryAccessCommandPacket.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
+#include "src/DebugServer/Gdb/TargetDescriptor.hpp"
+
+#include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -11,7 +14,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
      * The ReadMemory class implements a structure for "m" packets. Upon receiving these packets, the server is
      * expected to read memory from the target and send it the client.
      */
-    class ReadMemory: public MemoryAccessCommandPacket
+    class ReadMemory: public Gdb::CommandPackets::CommandPacket
     {
     public:
         /**
@@ -29,7 +32,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          */
         std::uint32_t bytes = 0;
 
-        explicit ReadMemory(const RawPacketType& rawPacket);
+        explicit ReadMemory(const RawPacketType& rawPacket, const Gdb::TargetDescriptor& gdbTargetDescriptor);
 
         void handle(
             DebugSession& debugSession,

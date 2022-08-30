@@ -13,7 +13,13 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
     using Bloom::Exceptions::Exception;
 
     TargetDescriptor::TargetDescriptor(const Bloom::Targets::TargetDescriptor& targetDescriptor)
-        : DebugServer::Gdb::TargetDescriptor(targetDescriptor)
+        : DebugServer::Gdb::TargetDescriptor(
+            targetDescriptor,
+            {
+                {Targets::TargetMemoryType::FLASH, 0},
+                {Targets::TargetMemoryType::RAM, 0x00800000U},
+            }
+        )
     {
         this->loadRegisterMappings();
     }

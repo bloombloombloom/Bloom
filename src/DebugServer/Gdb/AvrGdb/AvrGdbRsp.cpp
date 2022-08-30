@@ -43,11 +43,11 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
 
         if (rawPacket.size() >= 2) {
             if (rawPacket[1] == 'm') {
-                return std::make_unique<ReadMemory>(rawPacket);
+                return std::make_unique<ReadMemory>(rawPacket, this->gdbTargetDescriptor.value());
             }
 
             if (rawPacket[1] == 'M') {
-                return std::make_unique<WriteMemory>(rawPacket);
+                return std::make_unique<WriteMemory>(rawPacket, this->gdbTargetDescriptor.value());
             }
 
             const auto rawPacketString = std::string(rawPacket.begin() + 1, rawPacket.end());

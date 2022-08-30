@@ -59,6 +59,14 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         const auto& ramDescriptor = memoryDescriptorsByType.at(TargetMemoryType::RAM);
         const auto& flashDescriptor = memoryDescriptorsByType.at(TargetMemoryType::FLASH);
 
+        const auto ramGdbOffset = debugSession.gdbTargetDescriptor.getMemoryOffset(
+            Targets::TargetMemoryType::RAM
+        );
+
+        const auto flashGdbOffset = debugSession.gdbTargetDescriptor.getMemoryOffset(
+            Targets::TargetMemoryType::FLASH
+        );
+
         // We include the start address in ramSize to account for AVR registers in the data address space.
         const auto ramSize = ramDescriptor.size() + ramDescriptor.addressRange.startAddress;
         const auto flashSize = flashDescriptor.size();
@@ -66,8 +74,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
         const auto memoryMap =
             std::string("<memory-map>")
-                + "<memory type=\"ram\" start=\"0x800000\" length=\"" + std::to_string(ramSize) + "\"/>"
-                + "<memory type=\"flash\" start=\"0\" length=\"" + std::to_string(flashSize) + "\">"
+                + "<memory type=\"ram\" start=\"" + std::to_string(ramGdbOffset) + "\" length=\"" + std::to_string(ramSize) + "\"/>"
+                + "<memory type=\"flash\" start=\"" + std::to_string(flashGdbOffset) + "\" length=\"" + std::to_string(flashSize) + "\">"
                     + "<property name=\"blocksize\">" + std::to_string(flashPageSize) + "</property>"
                 + "</memory>"
             + "</memory-map>";

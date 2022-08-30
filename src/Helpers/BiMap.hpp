@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <set>
 
 namespace Bloom
 {
@@ -65,6 +66,26 @@ namespace Bloom
 
         [[nodiscard]] std::unordered_map<TypeA, TypeB> getMap() const {
             return this->map;
+        }
+
+        [[nodiscard]] std::set<TypeB> getKeys() const {
+            auto keys = std::set<TypeB>();
+
+            for (const auto& [key, value] : this->map) {
+                keys.insert(key);
+            }
+
+            return keys;
+        }
+
+        [[nodiscard]] std::set<TypeB> getValues() const {
+            auto values = std::set<TypeB>();
+
+            for (const auto& [key, value] : this->map) {
+                values.insert(value);
+            }
+
+            return values;
         }
 
         void insert(const std::pair<TypeA, TypeB>& pair) {
