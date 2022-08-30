@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <map>
+#include <unordered_map>
 
 namespace Bloom
 {
@@ -22,13 +22,8 @@ namespace Bloom
     public:
         BiMap(std::initializer_list<std::pair<TypeA, TypeB>> elements) {
             for (auto it = elements.begin(); it != elements.end(); ++it) {
-                auto insertResultPair = this->map.insert(std::pair<TypeA, TypeB>{it->first, it->second});
-                this->flippedMap.insert(
-                    std::pair<TypeB, typename std::unordered_map<TypeA, TypeB>::iterator>{
-                        it->second,
-                        insertResultPair.first
-                    }
-                );
+                this->map.insert(std::pair<TypeA, TypeB>{it->first, it->second});
+                this->flippedMap.insert(std::pair<TypeB, TypeA>(it->second, it->first));
             }
         }
 
@@ -54,7 +49,7 @@ namespace Bloom
             std::optional<TypeA> output;
 
             if (this->contains(key)) {
-                output = this->flippedMap.find(key)->second->first;
+                output = this->flippedMap.find(key)->second;
             }
 
             return output;
@@ -65,7 +60,7 @@ namespace Bloom
         }
 
         const TypeA& at(const TypeB& key) const {
-            return this->flippedMap.at(key)->first;
+            return this->flippedMap.at(key);
         }
 
         [[nodiscard]] std::unordered_map<TypeA, TypeB> getMap() const {
@@ -74,14 +69,11 @@ namespace Bloom
 
         void insert(const std::pair<TypeA, TypeB>& pair) {
             auto insertResultPair = this->map.insert(pair);
-            this->flippedMap.insert(std::pair<TypeB, typename std::unordered_map<TypeA, TypeB>::iterator>(
-                pair.second,
-                insertResultPair.first
-            ));
+            this->flippedMap.insert(std::pair<TypeB, TypeA>(pair.second, pair.first));
         }
 
     private:
         std::unordered_map<TypeA, TypeB> map = {};
-        std::unordered_map<TypeB, typename std::unordered_map<TypeA, TypeB>::iterator> flippedMap = {};
+        std::unordered_map<TypeB, TypeA> flippedMap = {};
     };
 }
