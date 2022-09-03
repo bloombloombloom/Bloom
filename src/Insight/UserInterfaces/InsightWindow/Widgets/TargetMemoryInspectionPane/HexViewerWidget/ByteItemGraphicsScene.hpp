@@ -13,6 +13,7 @@
 #include <QString>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
+#include <QKeyEvent>
 #include <optional>
 #include <QGraphicsRectItem>
 #include <QPointF>
@@ -68,6 +69,7 @@ namespace Bloom::Widgets
         void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
         void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
         void mouseReleaseEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
+        void keyPressEvent(QKeyEvent* keyEvent) override;
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
@@ -129,5 +131,6 @@ namespace Bloom::Widgets
         void deselectByteItem(ByteItem* byteItem);
         void toggleByteItemSelection(ByteItem* byteItem);
         void clearByteItemSelection();
+        void selectAllByteItems();
     };
 }

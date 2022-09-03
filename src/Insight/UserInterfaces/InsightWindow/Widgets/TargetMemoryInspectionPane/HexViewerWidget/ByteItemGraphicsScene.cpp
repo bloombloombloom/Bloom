@@ -376,6 +376,21 @@ namespace Bloom::Widgets
         this->clearSelectionRectItem();
     }
 
+    void ByteItemGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
+        const auto key = keyEvent->key();
+
+        if (key == Qt::Key_Escape) {
+            this->clearByteItemSelection();
+            return;
+        }
+
+        const auto modifiers = keyEvent->modifiers();
+        if ((modifiers & Qt::ControlModifier) != 0 && key == Qt::Key_A) {
+            this->selectAllByteItems();
+            return;
+        }
+    }
+
     void ByteItemGraphicsScene::updateAnnotationValues(const Targets::TargetMemoryBuffer& buffer) {
         const auto memoryStartAddress = this->targetMemoryDescriptor.addressRange.startAddress;
         for (auto* valueAnnotationItem : this->valueAnnotationItems) {
@@ -642,4 +657,9 @@ namespace Bloom::Widgets
         this->selectedByteItems.clear();
     }
 
+    void ByteItemGraphicsScene::selectAllByteItems() {
+        for (auto& [address, byteItem] : this->byteItemsByAddress) {
+            this->selectByteItem(byteItem);
+        }
+    }
 }
