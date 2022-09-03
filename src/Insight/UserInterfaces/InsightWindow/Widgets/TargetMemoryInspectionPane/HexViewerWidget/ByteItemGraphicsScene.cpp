@@ -248,14 +248,109 @@ namespace Bloom::Widgets
         return QGraphicsScene::event(event);
     }
 
+    void ByteItemGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) {
+        static const auto rubberBandRectBackgroundColor = QColor(0x3C, 0x59, 0x5C, 0x82);
+        static const auto rubberBandRectBorderColor = QColor(0x3C, 0x59, 0x5C, 255);
+
+        const auto mousePosition = mouseEvent->buttonDownScenePos(Qt::MouseButton::LeftButton);
+
+        if (mousePosition.x() <= this->byteAddressContainer->boundingRect().width()) {
+            return;
+        }
+
+        this->clearSelectionRectItem();
+
+        this->rubberBandInitPoint = std::move(mousePosition);
+        this->rubberBandRectItem = new QGraphicsRectItem(
+            this->rubberBandInitPoint->x(),
+            this->rubberBandInitPoint->y(),
+            1,
+            1
+        );
+        this->rubberBandRectItem->setBrush(rubberBandRectBackgroundColor);
+        this->rubberBandRectItem->setPen(rubberBandRectBorderColor);
+        this->addItem(this->rubberBandRectItem);
+
+        const auto modifiers = mouseEvent->modifiers();
+        if ((modifiers & (Qt::ControlModifier | Qt::ShiftModifier)) == 0) {
+            this->clearByteItemSelection();
+        }
+
+        auto clickedItems = this->items(mousePosition);
+
+        if (!clickedItems.empty()) {
+            auto* clickedByteItem = dynamic_cast<ByteItem*>(clickedItems.last());
+
+            if (clickedByteItem != nullptr) {
+
+                if ((modifiers & Qt::ShiftModifier) != 0) {
+                    for (
+                        auto i = clickedByteItem->address;
+                        i >= this->targetMemoryDescriptor.addressRange.startAddress;
+                        --i
+                    ) {
+                        auto* byteItem = this->byteItemsByAddress.at(i);
+
+                        if (byteItem->selected) {
+                            break;
+                        }
+
+                        this->toggleByteItemSelection(byteItem);
+                    }
+
+                    return;
+                }
+
+                this->toggleByteItemSelection(clickedByteItem);
+            }
+        }
+
+    }
+
     void ByteItemGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) {
-        auto hoveredItems = this->items(mouseEvent->scenePos());
+        const auto mousePosition = mouseEvent->scenePos();
+        auto hoveredItems = this->items(mousePosition);
+
+        if (this->rubberBandRectItem != nullptr && this->rubberBandInitPoint.has_value()) {
+            const auto oldRect = this->rubberBandRectItem->rect();
+
+            this->rubberBandRectItem->setRect(
+                qMin(mousePosition.x(), this->rubberBandInitPoint->x()),
+                qMin(mousePosition.y(), this->rubberBandInitPoint->y()),
+                qAbs(mousePosition.x() - this->rubberBandInitPoint->x()),
+                qAbs(mousePosition.y() - this->rubberBandInitPoint->y())
+            );
+
+            if ((mouseEvent->modifiers() & Qt::ControlModifier) == 0) {
+                this->clearByteItemSelection();
+
+            } else {
+                const auto oldItems = this->items(oldRect, Qt::IntersectsItemShape);
+                for (auto* item : oldItems) {
+                    auto* byteItem = dynamic_cast<ByteItem*>(item);
+
+                    if (byteItem != nullptr && byteItem->selected) {
+                        this->deselectByteItem(byteItem);
+                    }
+                }
+            }
+
+            const auto items = this->items(this->rubberBandRectItem->rect(), Qt::IntersectsItemShape);
+            for (auto* item : items) {
+                auto* byteItem = dynamic_cast<ByteItem*>(item);
+
+                if (byteItem != nullptr && !byteItem->selected) {
+                    this->selectByteItem(byteItem);
+                }
+            }
+        }
+
         ByteItem* hoveredByteItem = nullptr;
         AnnotationItem* hoveredAnnotationItem = nullptr;
 
         if (!hoveredItems.empty()) {
-            hoveredByteItem = dynamic_cast<ByteItem*>(hoveredItems.at(0));
-            hoveredAnnotationItem = dynamic_cast<AnnotationItem*>(hoveredItems.at(0));
+            hoveredByteItem = dynamic_cast<ByteItem*>(hoveredItems.last());
+            hoveredAnnotationItem = dynamic_cast<AnnotationItem*>(hoveredItems.last());
         }
 
         if (hoveredByteItem != nullptr) {
@@ -275,6 +370,10 @@ namespace Bloom::Widgets
         if (this->hoveredAnnotationItem != nullptr) {
             this->onAnnotationItemLeave();
         }
+    }
+
+    void ByteItemGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* mouseEvent) {
+        this->clearSelectionRectItem();
     }
 
     void ByteItemGraphicsScene::updateAnnotationValues(const Targets::TargetMemoryBuffer& buffer) {
@@ -504,4 +603,43 @@ namespace Bloom::Widgets
             this->byteItemsByAddress.at(byteItemAddress)->update();
         }
     }
+
+    void ByteItemGraphicsScene::clearSelectionRectItem() {
+        if (this->rubberBandRectItem != nullptr) {
+            this->removeItem(this->rubberBandRectItem);
+            delete this->rubberBandRectItem;
+            this->rubberBandRectItem = nullptr;
+        }
+    }
+
+    void ByteItemGraphicsScene::selectByteItem(ByteItem* byteItem) {
+        byteItem->selected = true;
+        this->selectedByteItems.insert(byteItem);
+        byteItem->update();
+    }
+
+    void ByteItemGraphicsScene::deselectByteItem(ByteItem* byteItem) {
+        byteItem->selected = false;
+        this->selectedByteItems.erase(byteItem);
+        byteItem->update();
+    }
+
+    void ByteItemGraphicsScene::toggleByteItemSelection(ByteItem* byteItem) {
+        if (byteItem->selected) {
+            this->deselectByteItem(byteItem);
+            return;
+        }
+
+        this->selectByteItem(byteItem);
+    }
+
+    void ByteItemGraphicsScene::clearByteItemSelection() {
+        for (auto* byteItem : this->selectedByteItems) {
+            byteItem->selected = false;
+            byteItem->update();
+        }
+
+        this->selectedByteItems.clear();
+    }
+
 }

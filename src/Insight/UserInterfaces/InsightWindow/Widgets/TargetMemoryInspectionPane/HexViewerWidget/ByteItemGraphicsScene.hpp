@@ -14,6 +14,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
 #include <optional>
+#include <QGraphicsRectItem>
+#include <QPointF>
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"
@@ -63,7 +65,9 @@ namespace Bloom::Widgets
 
     protected:
         bool event(QEvent* event) override;
+        void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
         void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
+        void mouseReleaseEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
@@ -97,6 +101,10 @@ namespace Bloom::Widgets
         ByteAddressContainer* byteAddressContainer = nullptr;
 
         std::set<ByteItem*> highlightedByteItems;
+        std::set<ByteItem*> selectedByteItems;
+
+        QGraphicsRectItem* rubberBandRectItem = nullptr;
+        std::optional<QPointF> rubberBandInitPoint = std::nullopt;
 
         int getSceneWidth() {
             /*
@@ -116,5 +124,10 @@ namespace Bloom::Widgets
         void onByteWidgetLeave();
         void onAnnotationItemEnter(Bloom::Widgets::AnnotationItem* annotationItem);
         void onAnnotationItemLeave();
+        void clearSelectionRectItem();
+        void selectByteItem(ByteItem* byteItem);
+        void deselectByteItem(ByteItem* byteItem);
+        void toggleByteItemSelection(ByteItem* byteItem);
+        void clearByteItemSelection();
     };
 }

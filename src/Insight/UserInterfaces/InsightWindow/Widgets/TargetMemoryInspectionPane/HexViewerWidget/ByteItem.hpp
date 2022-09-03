@@ -34,6 +34,7 @@ namespace Bloom::Widgets
         std::size_t currentColumnIndex = 0;
 
         bool highlighted = false;
+        bool selected = false;
         const FocusedMemoryRegion* focusedMemoryRegion = nullptr;
         const ExcludedMemoryRegion* excludedMemoryRegion = nullptr;
 

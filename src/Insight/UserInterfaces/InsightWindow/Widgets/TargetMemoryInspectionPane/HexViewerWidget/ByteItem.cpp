@@ -94,6 +94,7 @@ namespace Bloom::Widgets
          * color variant, so that we don't have to make copies or call QColor::setAlpha() for each ByteItem.
          */
         static const auto highlightedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
+        static const auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
         static const auto focusedRegionBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
         static const auto stackMemoryBackgroundColor = QColor(0x67, 0x57, 0x20, 210);
 
@@ -101,6 +102,13 @@ namespace Bloom::Widgets
             highlightedBackgroundColor.red(),
             highlightedBackgroundColor.green(),
             highlightedBackgroundColor.blue(),
+            100
+        );
+
+        static const auto disabledSelectedBackgroundColor = QColor(
+            selectedBackgroundColor.red(),
+            selectedBackgroundColor.green(),
+            selectedBackgroundColor.blue(),
             100
         );
 
@@ -131,6 +139,10 @@ namespace Bloom::Widgets
         if (this->isEnabled()) {
             if (this->highlighted) {
                 return &(highlightedBackgroundColor);
+            }
+
+            if (this->selected) {
+                return &(selectedBackgroundColor);
             }
 
             const auto* hoveredByteItem = *(this->hoveredByteItem);
@@ -167,6 +179,10 @@ namespace Bloom::Widgets
         } else {
             if (this->highlighted) {
                 return &(disabledHighlightedBackgroundColor);
+            }
+
+            if (this->selected) {
+                return &(disabledSelectedBackgroundColor);
             }
 
             if (
