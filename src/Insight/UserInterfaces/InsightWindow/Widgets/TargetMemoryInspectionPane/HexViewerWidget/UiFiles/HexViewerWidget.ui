@@ -206,7 +206,7 @@
                         <item>
                             <widget class="Label" name="byte-address-label">
                                 <property name="text">
-                                    <string>Relative Address (Absolute Address):</string>
+                                    <string>Relative Address / Absolute Address:</string>
                                 </property>
                             </widget>
                         </item>

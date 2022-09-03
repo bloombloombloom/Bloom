@@ -435,7 +435,7 @@ namespace Bloom::Widgets
         this->hoveredByteWidget = widget;
 
         this->hoveredAddressLabel->setText(
-            "Relative Address (Absolute Address): " + widget->relativeAddressHex + " (" + widget->addressHex + ")"
+            "Relative Address / Absolute Address: " + widget->relativeAddressHex + " / " + widget->addressHex
         );
 
         if (this->settings.highlightHoveredRowAndCol && !this->byteItemsByRowIndex.empty()) {
@@ -456,7 +456,7 @@ namespace Bloom::Widgets
         auto* byteItem = this->hoveredByteWidget;
         this->hoveredByteWidget = nullptr;
 
-        this->hoveredAddressLabel->setText("Relative Address (Absolute Address):");
+        this->hoveredAddressLabel->setText("Relative Address / Absolute Address:");
 
         if (this->settings.highlightHoveredRowAndCol && !this->byteItemsByRowIndex.empty()) {
             for (auto& byteWidget : this->byteItemsByColumnIndex.at(byteItem->currentColumnIndex)) {
