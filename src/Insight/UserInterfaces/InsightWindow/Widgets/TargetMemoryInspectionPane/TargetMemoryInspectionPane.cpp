@@ -397,10 +397,12 @@ namespace Bloom::Widgets
 
             } else {
                 this->hexViewerWidget->setDisabled(false);
+                this->refreshButton->setDisabled(false);
             }
 
         } else if (newState == TargetState::RUNNING) {
             this->hexViewerWidget->setDisabled(true);
+            this->refreshButton->setDisabled(true);
         }
     }
 
