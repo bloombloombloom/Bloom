@@ -41,10 +41,6 @@ namespace Bloom
             std::bind(&InsightWorker::onTargetResetEvent, this, std::placeholders::_1)
         );
 
-        this->eventListener->registerCallbackForEventType<Events::RegistersWrittenToTarget>(
-            std::bind(&InsightWorker::onTargetRegistersWrittenEvent, this, std::placeholders::_1)
-        );
-
         this->eventListener->registerCallbackForEventType<Events::ProgrammingModeEnabled>(
             std::bind(&InsightWorker::onProgrammingModeEnabledEvent, this, std::placeholders::_1)
         );
@@ -92,7 +88,6 @@ namespace Bloom
 
         this->lastTargetState = TargetState::STOPPED;
         emit this->targetStateUpdated(TargetState::STOPPED);
-        emit this->targetProgramCounterUpdated(event.programCounter);
     }
 
     void InsightWorker::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
@@ -113,27 +108,10 @@ namespace Bloom
                 emit this->targetStateUpdated(TargetState::STOPPED);
             }
 
-            emit this->targetProgramCounterUpdated(this->targetControllerConsole.getProgramCounter());
+            emit this->targetReset();
 
         } catch (const Exceptions::Exception& exception) {
             Logger::debug("Error handling TargetReset event - " + exception.getMessage());
-        }
-    }
-
-    void InsightWorker::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {
-        emit this->targetRegistersWritten(event.registers, event.createdTimestamp);
-
-        for (const auto& reg : event.registers) {
-            if (reg.descriptor.type == Targets::TargetRegisterType::PROGRAM_COUNTER) {
-                try {
-                    emit this->targetProgramCounterUpdated(this->targetControllerConsole.getProgramCounter());
-
-                } catch (const Exceptions::Exception& exception) {
-                    Logger::debug("Error reading program counter - " + exception.getMessage());
-                }
-
-                break;
-            }
         }
     }
 

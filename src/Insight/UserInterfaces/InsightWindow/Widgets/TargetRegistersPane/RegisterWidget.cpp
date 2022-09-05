@@ -229,9 +229,5 @@ namespace Bloom::Widgets
 
     void RegisterWidget::onTargetStateChange(Targets::TargetState newState) {
         this->targetState = newState;
-
-        if (this->targetState == Targets::TargetState::RUNNING) {
-            this->clearInlineValue();
-        }
     }
 }

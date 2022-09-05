@@ -15,6 +15,8 @@
 #include "src/Helpers/Paths.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 
+#include "src/Insight/InsightWorker/Tasks/ReadProgramCounter.hpp"
+
 namespace Bloom
 {
     using namespace Bloom::Exceptions;
@@ -262,9 +264,11 @@ namespace Bloom
         );
         QObject::connect(
             &(this->insightWorker),
-            &InsightWorker::targetProgramCounterUpdated,
+            &InsightWorker::targetReset,
             this,
-            &InsightWindow::onTargetProgramCounterUpdate
+            [this] {
+                this->refreshProgramCounter();
+            }
         );
 
         QObject::connect(
@@ -533,11 +537,7 @@ namespace Bloom
             this->targetPackageWidget->setTargetState(this->targetState);
 
             if (this->targetState == TargetState::STOPPED) {
-                this->targetPackageWidget->refreshPinStates([this] {
-                    if (this->targetState == TargetState::STOPPED) {
-                        this->targetPackageWidget->setDisabled(false);
-                    }
-                });
+                this->refreshPinStates();
             }
 
             this->adjustPanels();
@@ -840,49 +840,79 @@ namespace Bloom
             this->programCounterValueLabel->setText("-");
             this->setUiDisabled(true);
 
+            if (this->targetPackageWidget != nullptr) {
+                this->targetPackageWidget->setDisabled(true);
+            }
+
         } else if (newState == TargetState::STOPPED) {
             this->targetStatusLabel->setText("Stopped");
-            this->setUiDisabled(false);
+            this->refresh();
 
         } else {
             this->targetStatusLabel->setText("Unknown");
         }
     }
 
-    void InsightWindow::onTargetProgramCounterUpdate(quint32 programCounter) {
-        this->programCounterValueLabel->setText(
-            "0x" + QString::number(programCounter, 16).toUpper() + " (" + QString::number(programCounter) + ")"
-        );
-    }
 
     void InsightWindow::refresh() {
         if (this->targetState != TargetState::STOPPED || this->selectedVariant == nullptr) {
             return;
         }
 
-        this->setUiDisabled(true);
         this->refreshIoInspectionButton->startSpin();
+        this->refreshIoInspectionButton->setDisabled(true);
 
         if (this->targetPackageWidget != nullptr) {
-            this->targetPackageWidget->setDisabled(true);
-            this->targetPackageWidget->refreshPinStates([this] {
-                if (this->targetState == TargetState::STOPPED) {
-                    this->targetPackageWidget->setDisabled(false);
-
-                    if (this->targetRegistersSidePane == nullptr || !this->targetRegistersSidePane->state.activated) {
-                        this->refreshIoInspectionButton->stopSpin();
-                        this->setUiDisabled(false);
-                    }
-                }
-            });
+            this->refreshPinStates();
         }
 
-        if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->state.activated) {
-            this->targetRegistersSidePane->refreshRegisterValues([this] {
-                this->refreshIoInspectionButton->stopSpin();
-                this->setUiDisabled(false);
-            });
+        if (this->targetRegistersSidePane != nullptr) {
+            this->targetRegistersSidePane->refreshRegisterValues();
         }
+
+        this->refreshProgramCounter([this] {
+            this->refreshIoInspectionButton->stopSpin();
+
+            if (this->targetState == TargetState::STOPPED) {
+                this->refreshIoInspectionButton->setDisabled(false);
+            }
+        });
+    }
+
+    void InsightWindow::refreshPinStates() {
+        this->targetPackageWidget->setDisabled(true);
+
+        this->targetPackageWidget->refreshPinStates([this] {
+            if (this->targetState == TargetState::STOPPED) {
+                this->targetPackageWidget->setDisabled(false);
+            }
+        });
+    }
+
+    void InsightWindow::refreshProgramCounter(std::optional<std::function<void(void)>> callback) {
+        auto* readProgramCounterTask = new ReadProgramCounter();
+
+        QObject::connect(
+            readProgramCounterTask,
+            &ReadProgramCounter::programCounterRead,
+            this,
+            [this] (std::uint32_t programCounter) {
+                this->programCounterValueLabel->setText(
+                    "0x" + QString::number(programCounter, 16).toUpper() + " (" + QString::number(programCounter) + ")"
+                );
+            }
+        );
+
+        if (callback.has_value()) {
+            QObject::connect(
+                readProgramCounterTask,
+                &ReadProgramCounter::finished,
+                this,
+                callback.value()
+            );
+        }
+
+        this->insightWorker.queueTask(readProgramCounterTask);
     }
 
     void InsightWindow::openReportIssuesUrl() {
@@ -985,6 +1015,10 @@ namespace Bloom
 
     void InsightWindow::onRegistersPaneStateChanged() {
         this->targetRegistersButton->setChecked(this->targetRegistersSidePane->state.activated);
+
+        if (this->targetState == Targets::TargetState::STOPPED && this->targetRegistersSidePane->state.activated) {
+            this->targetRegistersSidePane->refreshRegisterValues();
+        }
     }
 
     void InsightWindow::onRamInspectionPaneStateChanged() {

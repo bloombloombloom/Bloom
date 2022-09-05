@@ -131,8 +131,9 @@ namespace Bloom
         void onTargetControllerSuspended();
         void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void onTargetStateUpdate(Targets::TargetState newState);
-        void onTargetProgramCounterUpdate(quint32 programCounter);
         void refresh();
+        void refreshPinStates();
+        void refreshProgramCounter(std::optional<std::function<void(void)>> callback = std::nullopt);
         void openReportIssuesUrl();
         void openGettingStartedUrl();
         void openAboutWindow();

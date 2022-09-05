@@ -38,7 +38,7 @@ namespace Bloom
         void ready();
         void taskQueued();
         void targetStateUpdated(Bloom::Targets::TargetState newState);
-        void targetProgramCounterUpdated(quint32 programCounter);
+        void targetReset();
         void targetControllerSuspended();
         void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
@@ -65,7 +65,6 @@ namespace Bloom
         void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
         void onTargetResetEvent(const Events::TargetReset& event);
-        void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
         void onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event);
         void onProgrammingModeEnabledEvent(const Events::ProgrammingModeEnabled& event);
         void onProgrammingModeDisabledEvent(const Events::ProgrammingModeDisabled& event);

@@ -44,9 +44,6 @@ namespace Bloom::Widgets
     protected:
         void resizeEvent(QResizeEvent* event) override;
 
-        void postActivate();
-        void postDeactivate();
-
     private:
         const Targets::TargetDescriptor& targetDescriptor;
         InsightWorker& insightWorker;
@@ -70,5 +67,6 @@ namespace Bloom::Widgets
 
         void onTargetStateChanged(Targets::TargetState newState);
         void onRegistersRead(const Targets::TargetRegisters& registers);
+        void clearInlineRegisterValues();
     };
 }

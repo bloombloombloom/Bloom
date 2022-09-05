@@ -86,17 +86,6 @@ namespace Bloom::Widgets::InsightTargetWidgets
         }
 
         this->targetState = newState;
-
-        if (newState == TargetState::RUNNING) {
-            this->setDisabled(true);
-
-        } else if (newState == TargetState::STOPPED) {
-            this->refreshPinStates([this] {
-                if (this->targetState == TargetState::STOPPED) {
-                    this->setDisabled(false);
-                }
-            });
-        }
     }
 
     void TargetPackageWidget::onProgrammingModeEnabled() {

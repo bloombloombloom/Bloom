@@ -116,20 +116,6 @@ namespace Bloom::Widgets
         itemLayout->addStretch(1);
 
         QObject::connect(
-            this,
-            &PaneWidget::paneActivated,
-            this,
-            &TargetRegistersPaneWidget::postActivate
-        );
-
-        QObject::connect(
-            this,
-            &PaneWidget::paneDeactivated,
-            this,
-            &TargetRegistersPaneWidget::postDeactivate
-        );
-
-        QObject::connect(
             &insightWorker,
             &InsightWorker::targetStateUpdated,
             this,
@@ -240,26 +226,15 @@ namespace Bloom::Widgets
         PaneWidget::resizeEvent(event);
     }
 
-    void TargetRegistersPaneWidget::postActivate() {
-        if (this->targetState == Targets::TargetState::STOPPED) {
-            this->refreshRegisterValues();
-        }
-    }
-
-    void TargetRegistersPaneWidget::postDeactivate() {
-
-    }
-
     void TargetRegistersPaneWidget::onTargetStateChanged(Targets::TargetState newState) {
         if (this->targetState == newState) {
             return;
         }
 
-        using Targets::TargetState;
         this->targetState = newState;
 
-        if (newState == TargetState::STOPPED && this->state.activated) {
-            this->refreshRegisterValues();
+        if (this->targetState == Targets::TargetState::RUNNING) {
+            this->clearInlineRegisterValues();
         }
     }
 
@@ -274,6 +249,14 @@ namespace Bloom::Widgets
                     )->setRegisterValue(targetRegister);
                     break;
                 }
+            }
+        }
+    }
+
+    void TargetRegistersPaneWidget::clearInlineRegisterValues() {
+        for (const auto& registerGroupWidget : this->registerGroupWidgets) {
+            for (auto* registerWidget : registerGroupWidget->registerWidgets) {
+                registerWidget->clearInlineValue();
             }
         }
     }
