@@ -7,8 +7,8 @@
 namespace Bloom::Widgets
 {
     AnnotationItem::AnnotationItem(
-        std::uint32_t startAddress,
-        std::size_t size,
+        Targets::TargetMemoryAddress startAddress,
+        Targets::TargetMemorySize size,
         QString labelText,
         AnnotationItemPosition position
     ):

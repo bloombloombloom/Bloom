@@ -39,7 +39,7 @@ namespace Bloom::Widgets
 
         void updateValues(const Targets::TargetMemoryBuffer& buffer);
         void refreshRegions();
-        void setStackPointer(std::uint32_t stackPointer);
+        void setStackPointer(Targets::TargetStackPointer stackPointer);
 
     protected:
         void resizeEvent(QResizeEvent* event) override;

@@ -3,6 +3,8 @@
 #include <QGraphicsItem>
 #include <cstdint>
 
+#include "src/Targets/TargetMemory.hpp"
+
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
 
 namespace Bloom::Widgets
@@ -22,14 +24,14 @@ namespace Bloom::Widgets
 
         const int width;
         const int height;
-        const std::uint32_t startAddress;
-        const std::uint32_t endAddress;
-        const std::size_t size;
+        const Targets::TargetMemoryAddress startAddress;
+        const Targets::TargetMemoryAddress endAddress;
+        const Targets::TargetMemorySize size;
         AnnotationItemPosition position = AnnotationItemPosition::TOP;
 
         AnnotationItem(
-            std::uint32_t startAddress,
-            std::size_t size,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize size,
             QString labelText,
             AnnotationItemPosition position
         );

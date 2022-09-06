@@ -279,8 +279,8 @@ namespace Bloom::TargetController
          * @return
          */
         Targets::TargetRegisterDescriptors getRegisterDescriptorsWithinAddressRange(
-            std::uint32_t startAddress,
-            std::uint32_t endAddress,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemoryAddress endAddress,
             Targets::TargetMemoryType memoryType
         );
 

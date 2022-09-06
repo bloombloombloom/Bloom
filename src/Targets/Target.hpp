@@ -202,14 +202,14 @@ namespace Bloom::Targets
          *
          * @param address
          */
-        virtual void setBreakpoint(std::uint32_t address) = 0;
+        virtual void setBreakpoint(TargetMemoryAddress address) = 0;
 
         /**
          * Should remove a breakpoint at the given address.
          *
          * @param address
          */
-        virtual void removeBreakpoint(std::uint32_t address) = 0;
+        virtual void removeBreakpoint(TargetMemoryAddress address) = 0;
 
         /**
          * Should clear all breakpoints on the target.
@@ -246,8 +246,8 @@ namespace Bloom::Targets
          */
         virtual TargetMemoryBuffer readMemory(
             TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t bytes,
+            TargetMemoryAddress startAddress,
+            TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) = 0;
 
@@ -258,7 +258,7 @@ namespace Bloom::Targets
          * @param startAddress
          * @param buffer
          */
-        virtual void writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) = 0;
+        virtual void writeMemory(TargetMemoryType memoryType, TargetMemoryAddress startAddress, const TargetMemoryBuffer& buffer) = 0;
 
         /**
          * Should return the current state of the target.
@@ -272,21 +272,21 @@ namespace Bloom::Targets
          *
          * @return
          */
-        virtual std::uint32_t getProgramCounter() = 0;
+        virtual TargetProgramCounter getProgramCounter() = 0;
 
         /**
          * Should update the program counter on the target.
          *
          * @param programCounter
          */
-        virtual void setProgramCounter(std::uint32_t programCounter) = 0;
+        virtual void setProgramCounter(TargetProgramCounter programCounter) = 0;
 
         /**
          * Should fetch the current stack pointer value.
          *
          * @return
          */
-        virtual std::uint32_t getStackPointer() = 0;
+        virtual TargetStackPointer getStackPointer() = 0;
 
         /**
          * Should get the current pin states for each pin on the target, mapped by pin number

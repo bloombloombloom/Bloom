@@ -25,8 +25,8 @@ namespace Bloom::Targets
     struct TargetRegisterDescriptor
     {
     public:
-        std::optional<std::uint32_t> startAddress;
-        std::uint32_t size = 0;
+        std::optional<TargetMemoryAddress> startAddress;
+        TargetMemorySize size = 0;
         TargetRegisterType type = TargetRegisterType::OTHER;
         TargetMemoryType memoryType = TargetMemoryType::OTHER;
 

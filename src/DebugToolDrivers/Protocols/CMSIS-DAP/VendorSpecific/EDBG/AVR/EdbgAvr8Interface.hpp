@@ -8,6 +8,7 @@
 #include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Avr8Generic.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
+#include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/Microchip/AVR/Target.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
@@ -65,7 +66,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * @param maximumSize
          */
-        void setMaximumMemoryAccessSizePerRequest(std::uint32_t maximumSize) {
+        void setMaximumMemoryAccessSizePerRequest(Targets::TargetMemorySize maximumSize) {
             this->maximumMemoryAccessSizePerRequest = maximumSize;
         }
 
@@ -122,7 +123,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          *  The (byte) address to run to.
          */
-        void runTo(std::uint32_t address) override;
+        void runTo(Targets::TargetProgramCounter address) override;
 
         /**
          * Issues the "step" command to the debug tool, stepping the execution on the target. The stepping can be
@@ -152,7 +153,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * @return
          */
-        std::uint32_t getProgramCounter() override;
+        Targets::TargetProgramCounter getProgramCounter() override;
 
         /**
          * Issues the "PC Write" command to the debug tool, setting the program counter on the target.
@@ -160,7 +161,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param programCounter
          *  The byte address to set as the program counter.
          */
-        void setProgramCounter(std::uint32_t programCounter) override;
+        void setProgramCounter(Targets::TargetProgramCounter programCounter) override;
 
         /**
          * Issues the "Get ID" command to the debug tool, to extract the signature from the target.
@@ -176,7 +177,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          *  The byte address to position the breakpoint.
          */
-        void setBreakpoint(std::uint32_t address) override;
+        void setBreakpoint(Targets::TargetMemoryAddress address) override;
 
         /**
          * Issues the "Software Breakpoint Clear" command to the debug tool, clearing any breakpoint at the given
@@ -185,7 +186,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          *  The byte address of the breakpoint to clear.
          */
-        void clearBreakpoint(std::uint32_t address) override;
+        void clearBreakpoint(Targets::TargetMemoryAddress address) override;
 
         /**
          * Issues the "Software Breakpoint Clear All" command to the debug tool, clearing all software breakpoints
@@ -222,8 +223,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         Targets::TargetMemoryBuffer readMemory(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t bytes,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) override;
 
@@ -238,7 +239,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         void writeMemory(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
+            Targets::TargetMemoryAddress startAddress,
             const Targets::TargetMemoryBuffer& buffer
         ) override;
 
@@ -321,7 +322,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         /**
          * See the comment for EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest().
          */
-        std::optional<std::uint32_t> maximumMemoryAccessSizePerRequest;
+        std::optional<Targets::TargetMemorySize> maximumMemoryAccessSizePerRequest;
 
         /**
          * We keep record of the current target state for caching purposes. We'll only refresh the target state if the
@@ -492,7 +493,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          * @return
          */
-        std::uint32_t alignMemoryAddress(Avr8MemoryType memoryType, std::uint32_t address);
+        Targets::TargetMemoryAddress alignMemoryAddress(Avr8MemoryType memoryType, Targets::TargetMemoryAddress address);
 
         /**
          * Aligns a number of bytes used to address memory, for a given memory type's page size.
@@ -501,7 +502,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param bytes
          * @return
          */
-        std::uint32_t alignMemoryBytes(Avr8MemoryType memoryType, std::uint32_t bytes);
+        Targets::TargetMemorySize alignMemoryBytes(Avr8MemoryType memoryType, Targets::TargetMemorySize bytes);
 
         /**
          * Reads memory on the target.
@@ -527,9 +528,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         Targets::TargetMemoryBuffer readMemory(
             Avr8MemoryType type,
-            std::uint32_t startAddress,
-            std::uint32_t bytes,
-            const std::set<std::uint32_t>& excludedAddresses = {}
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize bytes,
+            const std::set<Targets::TargetMemoryAddress>& excludedAddresses = {}
         );
 
         /**
@@ -543,7 +544,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          * @param buffer
          */
-        void writeMemory(Avr8MemoryType type, std::uint32_t address, const Targets::TargetMemoryBuffer& buffer);
+        void writeMemory(Avr8MemoryType type, Targets::TargetMemoryAddress address, const Targets::TargetMemoryBuffer& buffer);
 
         /**
          * Fetches the current target state.

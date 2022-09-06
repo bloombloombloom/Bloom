@@ -15,8 +15,8 @@ namespace Bloom
     public:
         ReadTargetMemory(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t size,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize size,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         )
             : memoryType(memoryType)
@@ -32,8 +32,8 @@ namespace Bloom
 
     private:
         Targets::TargetMemoryType memoryType;
-        std::uint32_t startAddress;
-        std::uint32_t size;
+        Targets::TargetMemoryAddress startAddress;
+        Targets::TargetMemorySize size;
         std::set<Targets::TargetMemoryAddressRange> excludedAddressRanges;
     };
 }

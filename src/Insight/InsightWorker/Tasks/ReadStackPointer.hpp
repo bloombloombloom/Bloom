@@ -2,6 +2,8 @@
 
 #include "InsightWorkerTask.hpp"
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Bloom
 {
     class ReadStackPointer: public InsightWorkerTask
@@ -12,7 +14,7 @@ namespace Bloom
         ReadStackPointer() = default;
 
     signals:
-        void stackPointerRead(std::uint32_t stackPointer);
+        void stackPointerRead(Targets::TargetStackPointer stackPointer);
 
     protected:
         void run(TargetController::TargetControllerConsole& targetControllerConsole) override;

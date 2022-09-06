@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "TargetMemory.hpp"
+
 namespace Bloom::Targets
 {
     enum class TargetBreakCause: int
@@ -10,18 +12,16 @@ namespace Bloom::Targets
         UNKNOWN,
     };
 
-    using TargetBreakpointAddress = std::uint32_t;
-
     struct TargetBreakpoint
     {
         /**
          * Byte address of the breakpoint.
          */
-        TargetBreakpointAddress address = 0;
+        TargetMemoryAddress address = 0;
 
         bool disabled = false;
 
         TargetBreakpoint() = default;
-        explicit TargetBreakpoint(TargetBreakpointAddress address): address(address) {};
+        explicit TargetBreakpoint(TargetMemoryAddress address): address(address) {};
     };
 }

@@ -13,7 +13,8 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Helpers/Paths.hpp"
-#include "src/Targets/TargetDescriptor.hpp"
+
+#include "src/Targets/TargetMemory.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/ReadProgramCounter.hpp"
 
@@ -896,7 +897,7 @@ namespace Bloom
             readProgramCounterTask,
             &ReadProgramCounter::programCounterRead,
             this,
-            [this] (std::uint32_t programCounter) {
+            [this] (Targets::TargetProgramCounter programCounter) {
                 this->programCounterValueLabel->setText(
                     "0x" + QString::number(programCounter, 16).toUpper() + " (" + QString::number(programCounter) + ")"
                 );

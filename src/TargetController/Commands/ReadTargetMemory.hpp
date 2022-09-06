@@ -19,14 +19,14 @@ namespace Bloom::TargetController::Commands
         static inline const std::string name = "ReadTargetMemory";
 
         Targets::TargetMemoryType memoryType;
-        std::uint32_t startAddress;
-        std::uint32_t bytes;
+        Targets::TargetMemoryAddress startAddress;
+        Targets::TargetMemorySize bytes;
         std::set<Targets::TargetMemoryAddressRange> excludedAddressRanges;
 
         ReadTargetMemory(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t bytes,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
         )
             : memoryType(memoryType)

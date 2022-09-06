@@ -5,6 +5,8 @@
 
 #include "CommandPacket.hpp"
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     /**
@@ -17,7 +19,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         /**
          * The address from which to begin the step.
          */
-        std::optional<std::size_t> fromProgramCounter;
+        std::optional<Targets::TargetProgramCounter> fromProgramCounter;
 
         explicit StepExecution(const RawPacketType& rawPacket);
 

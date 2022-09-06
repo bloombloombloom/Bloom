@@ -7,6 +7,8 @@
 #include "CommandPacket.hpp"
 #include "src/DebugServer/Gdb/BreakpointType.hpp"
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
     /**
@@ -24,7 +26,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         /**
          * Address at which the breakpoint should be located.
          */
-        std::uint32_t address = 0;
+        Targets::TargetMemoryAddress address = 0;
 
         explicit RemoveBreakpoint(const RawPacketType& rawPacket);
 

@@ -4,6 +4,8 @@
 
 #include "Command.hpp"
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Bloom::TargetController::Commands
 {
     class StepTargetExecution: public Command
@@ -12,10 +14,10 @@ namespace Bloom::TargetController::Commands
         static constexpr CommandType type = CommandType::STEP_TARGET_EXECUTION;
         static inline const std::string name = "StepTargetExecution";
 
-        std::optional<std::uint32_t> fromProgramCounter;
+        std::optional<Targets::TargetProgramCounter> fromProgramCounter;
 
         StepTargetExecution() = default;
-        explicit StepTargetExecution(std::uint32_t fromProgramCounter)
+        explicit StepTargetExecution(Targets::TargetProgramCounter fromProgramCounter)
             : fromProgramCounter(fromProgramCounter)
         {};
 

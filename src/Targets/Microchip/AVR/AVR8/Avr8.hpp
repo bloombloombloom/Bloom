@@ -90,8 +90,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         void step() override;
         void reset() override;
 
-        void setBreakpoint(std::uint32_t address) override;
-        void removeBreakpoint(std::uint32_t address) override;
+        void setBreakpoint(TargetProgramCounter address) override;
+        void removeBreakpoint(TargetProgramCounter address) override;
         void clearAllBreakpoints() override;
 
         void writeRegisters(TargetRegisters registers) override;
@@ -99,23 +99,23 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         TargetMemoryBuffer readMemory(
             TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t bytes,
+            TargetMemoryAddress startAddress,
+            TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) override;
         void writeMemory(
             TargetMemoryType memoryType,
-            std::uint32_t startAddress,
+            TargetMemoryAddress startAddress,
             const TargetMemoryBuffer& buffer
         ) override;
 
         TargetState getState() override;
 
-        std::uint32_t getProgramCounter() override;
+        TargetProgramCounter getProgramCounter() override;
         TargetRegister getProgramCounterRegister();
-        void setProgramCounter(std::uint32_t programCounter) override;
+        void setProgramCounter(TargetProgramCounter programCounter) override;
 
-        std::uint32_t getStackPointer() override;
+        TargetStackPointer getStackPointer() override;
 
         std::map<int, TargetPinState> getPinStates(int variantId) override;
         void setPinState(
@@ -186,6 +186,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * @param address
          * @return
          */
-        ProgramMemorySection getProgramMemorySectionFromAddress(std::uint32_t address);
+        ProgramMemorySection getProgramMemorySectionFromAddress(TargetMemoryAddress address);
     };
 }

@@ -4,6 +4,8 @@
 
 #include "Command.hpp"
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Bloom::TargetController::Commands
 {
     class ResumeTargetExecution: public Command
@@ -12,10 +14,10 @@ namespace Bloom::TargetController::Commands
         static constexpr CommandType type = CommandType::RESUME_TARGET_EXECUTION;
         static inline const std::string name = "ResumeTargetExecution";
 
-        std::optional<std::uint32_t> fromProgramCounter;
+        std::optional<Targets::TargetProgramCounter> fromProgramCounter;
 
         ResumeTargetExecution() = default;
-        explicit ResumeTargetExecution(std::uint32_t fromProgramCounter)
+        explicit ResumeTargetExecution(Targets::TargetProgramCounter fromProgramCounter)
             : fromProgramCounter(fromProgramCounter)
         {};
 

@@ -4,6 +4,8 @@
 
 #include "Response.hpp"
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Bloom::TargetController::Responses
 {
     class TargetProgramCounter: public Response
@@ -11,9 +13,9 @@ namespace Bloom::TargetController::Responses
     public:
         static constexpr ResponseType type = ResponseType::TARGET_PROGRAM_COUNTER;
 
-        std::uint32_t programCounter;
+        Targets::TargetProgramCounter programCounter;
 
-        explicit TargetProgramCounter(std::uint32_t programCounter)
+        explicit TargetProgramCounter(Targets::TargetProgramCounter programCounter)
             : programCounter(programCounter)
         {}
 

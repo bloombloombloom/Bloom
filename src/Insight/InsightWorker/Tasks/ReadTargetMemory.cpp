@@ -25,10 +25,10 @@ namespace Bloom
         for (auto i = 0; i < readsRequired; i++) {
             auto dataSegment = targetControllerConsole.readMemory(
                 this->memoryType,
-                this->startAddress + static_cast<std::uint32_t>(readSize * i),
+                this->startAddress + static_cast<Targets::TargetMemoryAddress>(readSize * i),
                 (this->size - data.size()) >= readSize
                     ? readSize
-                    : static_cast<std::uint32_t>(this->size - data.size()),
+                    : static_cast<Targets::TargetMemorySize>(this->size - data.size()),
                 this->excludedAddressRanges
             );
 

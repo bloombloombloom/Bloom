@@ -34,7 +34,7 @@ namespace Bloom::Widgets
             return this->scene;
         }
 
-        void scrollToByteItemAtAddress(std::uint32_t address);
+        void scrollToByteItemAtAddress(Targets::TargetMemoryAddress address);
 
     protected:
         bool event(QEvent* event) override;

@@ -6,6 +6,12 @@
 
 namespace Bloom::Targets
 {
+    using TargetMemoryAddress = std::uint32_t;
+    using TargetMemorySize = std::uint32_t;
+    using TargetProgramCounter = TargetMemoryAddress;
+    using TargetStackPointer = TargetMemoryAddress;
+    using TargetMemoryBuffer = std::vector<unsigned char>;
+
     enum class TargetMemoryEndianness: std::uint8_t
     {
         BIG,
@@ -22,11 +28,11 @@ namespace Bloom::Targets
 
     struct TargetMemoryAddressRange
     {
-        std::uint32_t startAddress = 0;
-        std::uint32_t endAddress = 0;
+        TargetMemoryAddress startAddress = 0;
+        TargetMemoryAddress endAddress = 0;
 
         TargetMemoryAddressRange() = default;
-        TargetMemoryAddressRange(std::uint32_t startAddress, std::uint32_t endAddress)
+        TargetMemoryAddressRange(TargetMemoryAddress startAddress, TargetMemoryAddress endAddress)
             : startAddress(startAddress)
             , endAddress(endAddress)
         {};
@@ -46,7 +52,7 @@ namespace Bloom::Targets
             ;
         }
 
-        [[nodiscard]] bool contains(std::uint32_t address) const {
+        [[nodiscard]] bool contains(TargetMemoryAddress address) const {
             return address >= this->startAddress && address <= this->endAddress;
         }
 
@@ -75,10 +81,8 @@ namespace Bloom::Targets
             return this->type == rhs.type && this->addressRange == rhs.addressRange;
         }
 
-        [[nodiscard]] std::uint32_t size() const {
+        [[nodiscard]] TargetMemorySize size() const {
             return (this->addressRange.endAddress - this->addressRange.startAddress) + 1;
         }
     };
-
-    using TargetMemoryBuffer = std::vector<unsigned char>;
 }

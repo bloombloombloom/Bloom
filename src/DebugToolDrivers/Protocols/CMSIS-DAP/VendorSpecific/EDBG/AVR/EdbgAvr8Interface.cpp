@@ -74,6 +74,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using Bloom::Targets::TargetState;
     using Bloom::Targets::TargetMemoryType;
     using Bloom::Targets::TargetMemoryBuffer;
+    using Bloom::Targets::TargetMemoryAddress;
+    using Bloom::Targets::TargetMemorySize;
+    using Bloom::Targets::TargetProgramCounter;
     using Bloom::Targets::TargetRegister;
     using Bloom::Targets::TargetRegisterDescriptor;
     using Bloom::Targets::TargetRegisterDescriptors;
@@ -219,7 +222,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         this->targetState = TargetState::RUNNING;
     }
 
-    void EdbgAvr8Interface::runTo(std::uint32_t address) {
+    void EdbgAvr8Interface::runTo(TargetProgramCounter address) {
         this->clearEvents();
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
             RunTo(address)
@@ -319,7 +322,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
     }
 
-    std::uint32_t EdbgAvr8Interface::getProgramCounter() {
+    TargetProgramCounter EdbgAvr8Interface::getProgramCounter() {
         if (this->targetState != TargetState::STOPPED) {
             this->stop();
         }
@@ -335,7 +338,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return response.extractProgramCounter();
     }
 
-    void EdbgAvr8Interface::setProgramCounter(std::uint32_t programCounter) {
+    void EdbgAvr8Interface::setProgramCounter(TargetProgramCounter programCounter) {
         if (this->targetState != TargetState::STOPPED) {
             this->stop();
         }
@@ -366,7 +369,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
              * TODO: Currently, we're assuming the signature will always only ever be three bytes in size, but we may
              *       want to consider pulling the size from the TDF.
              */
-            auto signatureMemory = this->readMemory(
+            const auto signatureMemory = this->readMemory(
                 Avr8MemoryType::SRAM,
                 this->targetParameters.signatureSegmentStartAddress.value(),
                 3
@@ -390,7 +393,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return response.extractSignature(this->targetConfig->physicalInterface);
     }
 
-    void EdbgAvr8Interface::setBreakpoint(std::uint32_t address) {
+    void EdbgAvr8Interface::setBreakpoint(TargetMemoryAddress address) {
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
             SetSoftwareBreakpoints({address})
         );
@@ -400,7 +403,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
     }
 
-    void EdbgAvr8Interface::clearBreakpoint(std::uint32_t address) {
+    void EdbgAvr8Interface::clearBreakpoint(TargetMemoryAddress address) {
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
             ClearSoftwareBreakpoints({address})
         );
@@ -444,10 +447,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         auto descriptorsByType = std::map<TargetRegisterType, std::set<const TargetRegisterDescriptor*>>();
 
         /*
-         * An address range is just an std::pair of integers - the first being the start address, the second being the
-         * end address.
+         * An address range is just an std::pair of addresses - the first being the start address, the second being
+         * the end address.
+         *
+         * TODO: Can't we just use the TargetMemoryAddressRange struct here? Review
          */
-        using AddressRange = std::pair<std::uint32_t, std::uint32_t>;
+        using AddressRange = std::pair<TargetMemoryAddress, TargetMemoryAddress>;
         auto addressRangeByType = std::map<TargetRegisterType, AddressRange>();
 
         for (const auto& descriptor : descriptors) {
@@ -519,7 +524,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
              *
              * See CommandFrames::Avr8Generic::ReadMemory(); and the Microchip EDBG documentation for more.
              */
-            auto excludedAddresses = std::set<std::uint32_t>();
+            auto excludedAddresses = std::set<TargetMemoryAddress>();
             if (memoryType == Avr8MemoryType::SRAM && this->targetParameters.ocdDataRegister.has_value()) {
                 excludedAddresses.insert(
                     this->targetParameters.ocdDataRegister.value()
@@ -608,8 +613,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     TargetMemoryBuffer EdbgAvr8Interface::readMemory(
         TargetMemoryType memoryType,
-        std::uint32_t startAddress,
-        std::uint32_t bytes,
+        TargetMemoryAddress startAddress,
+        TargetMemorySize bytes,
         const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
     ) {
         if (
@@ -667,7 +672,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * We will perform the conversion here.
          */
-        auto excludedAddresses = std::set<std::uint32_t>();
+        auto excludedAddresses = std::set<TargetMemoryAddress>();
         auto endAddress = startAddress + bytes - 1;
 
         for (const auto& addressRange : excludedAddressRanges) {
@@ -686,7 +691,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::writeMemory(
         TargetMemoryType memoryType,
-        std::uint32_t startAddress,
+        TargetMemoryAddress startAddress,
         const TargetMemoryBuffer& buffer
     ) {
         auto avr8MemoryType = Avr8MemoryType::SRAM;
@@ -1459,7 +1464,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         ;
     }
 
-    std::uint32_t EdbgAvr8Interface::alignMemoryAddress(Avr8MemoryType memoryType, std::uint32_t address) {
+    TargetMemoryAddress EdbgAvr8Interface::alignMemoryAddress(
+        Avr8MemoryType memoryType,
+        TargetMemoryAddress address
+    ) {
         std::uint16_t alignTo = 1;
 
         // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
@@ -1497,7 +1505,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if ((address % alignTo) != 0) {
-            return static_cast<std::uint32_t>(std::floor(
+            return static_cast<TargetMemoryAddress>(std::floor(
                 static_cast<float>(address) / static_cast<float>(alignTo)
             ) * alignTo);
         }
@@ -1505,7 +1513,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return address;
     }
 
-    std::uint32_t EdbgAvr8Interface::alignMemoryBytes(Avr8MemoryType memoryType, std::uint32_t bytes) {
+    TargetMemorySize EdbgAvr8Interface::alignMemoryBytes(
+        Avr8MemoryType memoryType,
+        TargetMemorySize bytes
+    ) {
         std::uint16_t alignTo = 1;
 
         // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
@@ -1537,7 +1548,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if ((bytes % alignTo) != 0) {
-            return static_cast<std::uint32_t>(std::ceil(
+            return static_cast<TargetMemorySize>(std::ceil(
                 static_cast<float>(bytes) / static_cast<float>(alignTo)
             ) * alignTo);
         }
@@ -1547,9 +1558,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     TargetMemoryBuffer EdbgAvr8Interface::readMemory(
         Avr8MemoryType type,
-        std::uint32_t startAddress,
-        std::uint32_t bytes,
-        const std::set<std::uint32_t>& excludedAddresses
+        TargetMemoryAddress startAddress,
+        TargetMemorySize bytes,
+        const std::set<TargetMemoryAddress>& excludedAddresses
     ) {
         if (!excludedAddresses.empty() && (this->avoidMaskedMemoryRead || type != Avr8MemoryType::SRAM)) {
             /*
@@ -1632,12 +1643,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 // bytes should always be a multiple of pageSize (given the code above)
                 assert(bytes % pageSize == 0);
                 int pagesRequired = static_cast<int>(bytes / pageSize);
-                TargetMemoryBuffer memoryBuffer;
+                auto memoryBuffer = Targets::TargetMemoryBuffer();
 
                 for (auto i = 0; i < pagesRequired; i++) {
                     auto pageBuffer = this->readMemory(
                         type,
-                        startAddress + static_cast<std::uint32_t>(pageSize * i),
+                        startAddress + static_cast<TargetMemoryAddress>(pageSize * i),
                         pageSize
                     );
                     std::move(pageBuffer.begin(), pageBuffer.end(), std::back_inserter(memoryBuffer));
@@ -1655,17 +1666,17 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         if (this->maximumMemoryAccessSizePerRequest.has_value() && bytes > this->maximumMemoryAccessSizePerRequest) {
             auto maximumRequestSize = this->maximumMemoryAccessSizePerRequest.value();
             auto totalReadsRequired = std::ceil(static_cast<float>(bytes) / static_cast<float>(maximumRequestSize));
-            auto output = std::vector<unsigned char>();
+            auto output = Targets::TargetMemoryBuffer();
             output.reserve(bytes);
 
             for (float i = 1; i <= totalReadsRequired; i++) {
-                const auto bytesToRead = static_cast<std::uint32_t>(
+                const auto bytesToRead = static_cast<TargetMemorySize>(
                     (bytes - output.size()) > maximumRequestSize ? maximumRequestSize : bytes - output.size()
                 );
 
                 auto data = this->readMemory(
                     type,
-                    static_cast<std::uint32_t>(startAddress + output.size()),
+                    static_cast<TargetMemoryAddress>(startAddress + output.size()),
                     bytesToRead,
                     excludedAddresses
                 );
@@ -1704,16 +1715,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                  * This call to readMemory() will result in more than two response packets, so split it into multiple
                  * calls that will result in no more than two response packets per call.
                  */
-                auto output = std::vector<unsigned char>();
+                auto output = TargetMemoryBuffer();
 
                 for (float i = 1; i <= totalReadsRequired; i++) {
-                    auto bytesToRead = static_cast<std::uint32_t>(
+                    auto bytesToRead = static_cast<TargetMemorySize>(
                         (bytes - output.size()) > (singlePacketSize * 2) ? (singlePacketSize * 2)
                         : bytes - output.size()
                     );
                     auto data = this->readMemory(
                         type,
-                        static_cast<std::uint32_t>(startAddress + output.size()),
+                        static_cast<TargetMemoryAddress>(startAddress + output.size()),
                         bytesToRead,
                         excludedAddresses
                     );
@@ -1740,8 +1751,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return response.getMemoryBuffer();
     }
 
-    void EdbgAvr8Interface::writeMemory(Avr8MemoryType type, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
-        const auto bytes = static_cast<std::uint32_t>(buffer.size());
+    void EdbgAvr8Interface::writeMemory(
+        Avr8MemoryType type,
+        TargetMemoryAddress startAddress,
+        const TargetMemoryBuffer& buffer
+    ) {
+        const auto bytes = static_cast<TargetMemorySize>(buffer.size());
 
         if (this->alignmentRequired(type)) {
             const auto alignedStartAddress = this->alignMemoryAddress(type, startAddress);

@@ -73,14 +73,14 @@ namespace Bloom::TargetController
          *
          * @param fromAddress
          */
-        void continueTargetExecution(std::optional<std::uint32_t> fromAddress);
+        void continueTargetExecution(std::optional<Targets::TargetProgramCounter> fromAddress);
 
         /**
          * Requests the TargetController to step execution on the target.
          *
          * @param fromAddress
          */
-        void stepTargetExecution(std::optional<std::uint32_t> fromAddress);
+        void stepTargetExecution(std::optional<Targets::TargetProgramCounter> fromAddress);
 
         /**
          * Requests the TargetController to read register values from the target.
@@ -110,8 +110,8 @@ namespace Bloom::TargetController
          */
         Targets::TargetMemoryBuffer readMemory(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t bytes,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         );
 
@@ -124,7 +124,7 @@ namespace Bloom::TargetController
          */
         void writeMemory(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
+            Targets::TargetMemoryAddress startAddress,
             const Targets::TargetMemoryBuffer& buffer
         );
 
@@ -147,14 +147,14 @@ namespace Bloom::TargetController
          *
          * @return
          */
-        std::uint32_t getProgramCounter();
+        Targets::TargetProgramCounter getProgramCounter();
 
         /**
          * Sets the target's program counter to the given address.
          *
          * @param address
          */
-        void setProgramCounter(std::uint32_t address);
+        void setProgramCounter(Targets::TargetProgramCounter address);
 
         /**
          * Retrieves the pin states for a particular target variant.
@@ -176,7 +176,7 @@ namespace Bloom::TargetController
          *
          * @return
          */
-        std::uint32_t getStackPointer();
+        Targets::TargetStackPointer getStackPointer();
 
         /**
          * Triggers a reset on the target. The target will be held in a stopped state.

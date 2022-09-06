@@ -14,12 +14,12 @@ namespace Bloom::TargetController::Commands
         static inline const std::string name = "WriteTargetMemory";
 
         Targets::TargetMemoryType memoryType;
-        std::uint32_t startAddress;
+        Targets::TargetMemoryAddress startAddress;
         Targets::TargetMemoryBuffer buffer;
 
         WriteTargetMemory(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
+            Targets::TargetMemoryAddress startAddress,
             const Targets::TargetMemoryBuffer& buffer
         )
             : memoryType(memoryType)

@@ -2,6 +2,8 @@
 
 #include "InsightWorkerTask.hpp"
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Bloom
 {
     class ReadProgramCounter: public InsightWorkerTask
@@ -12,7 +14,7 @@ namespace Bloom
         ReadProgramCounter() = default;
 
     signals:
-        void programCounterRead(std::uint32_t programCounter);
+        void programCounterRead(Targets::TargetProgramCounter programCounter);
 
     protected:
         void run(TargetController::TargetControllerConsole& targetControllerConsole) override;

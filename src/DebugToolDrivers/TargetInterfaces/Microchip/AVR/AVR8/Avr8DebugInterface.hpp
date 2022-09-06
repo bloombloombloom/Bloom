@@ -81,7 +81,7 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
         /**
          * Continue execution up to a specific byte address.
          */
-        virtual void runTo(std::uint32_t address) = 0;
+        virtual void runTo(Targets::TargetProgramCounter address) = 0;
 
         /**
          * Step execution on teh AVR8 target.
@@ -122,14 +122,14 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          *
          * @param address
          */
-        virtual void setBreakpoint(std::uint32_t address) = 0;
+        virtual void setBreakpoint(Targets::TargetMemoryAddress address) = 0;
 
         /**
          * Should remove a software breakpoint at a given address.
          *
          * @param address
          */
-        virtual void clearBreakpoint(std::uint32_t address) = 0;
+        virtual void clearBreakpoint(Targets::TargetMemoryAddress address) = 0;
 
         /**
          * Should remove all software and hardware breakpoints on the target.
@@ -141,14 +141,14 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          *
          * @return
          */
-        virtual std::uint32_t getProgramCounter() = 0;
+        virtual Targets::TargetProgramCounter getProgramCounter() = 0;
 
         /**
          * Should update the program counter value on the target.
          *
          * @param programCounter
          */
-        virtual void setProgramCounter(std::uint32_t programCounter) = 0;
+        virtual void setProgramCounter(Targets::TargetProgramCounter programCounter) = 0;
 
         /**
          * Should read the requested registers from the target.
@@ -178,8 +178,8 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          */
         virtual Targets::TargetMemoryBuffer readMemory(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t bytes,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) = 0;
 
@@ -192,7 +192,7 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          */
         virtual void writeMemory(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
+            Targets::TargetMemoryAddress startAddress,
             const Targets::TargetMemoryBuffer& buffer
         ) = 0;
 

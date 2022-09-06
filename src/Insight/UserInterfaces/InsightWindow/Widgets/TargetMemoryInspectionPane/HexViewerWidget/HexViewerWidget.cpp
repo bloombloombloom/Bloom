@@ -173,7 +173,7 @@ namespace Bloom::Widgets
         this->byteItemGraphicsScene->refreshRegions();
     }
 
-    void HexViewerWidget::setStackPointer(std::uint32_t stackPointer) {
+    void HexViewerWidget::setStackPointer(Targets::TargetStackPointer stackPointer) {
         this->byteItemGraphicsScene->updateStackPointer(stackPointer);
     }
 

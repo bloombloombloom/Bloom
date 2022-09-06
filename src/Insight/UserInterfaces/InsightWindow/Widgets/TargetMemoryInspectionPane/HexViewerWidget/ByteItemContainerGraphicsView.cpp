@@ -36,7 +36,7 @@ namespace Bloom::Widgets
 
     }
 
-    void ByteItemContainerGraphicsView::scrollToByteItemAtAddress(std::uint32_t address) {
+    void ByteItemContainerGraphicsView::scrollToByteItemAtAddress(Targets::TargetMemoryAddress address) {
         this->centerOn(this->scene->getByteItemPositionByAddress(address));
     }
 

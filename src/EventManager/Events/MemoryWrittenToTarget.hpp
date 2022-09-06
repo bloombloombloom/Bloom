@@ -14,13 +14,13 @@ namespace Bloom::Events
         static inline const std::string name = "MemoryWrittenToTarget";
 
         Targets::TargetMemoryType memoryType;
-        std::uint32_t startAddress;
-        std::uint32_t size;
+        Targets::TargetMemoryAddress startAddress;
+        Targets::TargetMemorySize size;
 
         MemoryWrittenToTarget(
             Targets::TargetMemoryType memoryType,
-            std::uint32_t startAddress,
-            std::uint32_t size
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize size
         )
             : memoryType(memoryType)
             , startAddress(startAddress)

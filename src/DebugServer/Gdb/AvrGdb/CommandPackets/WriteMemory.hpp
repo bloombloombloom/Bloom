@@ -20,7 +20,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         /**
          * Start address of the memory operation.
          */
-        std::uint32_t startAddress = 0;
+        Targets::TargetMemoryAddress startAddress = 0;
 
         /**
          * The type of memory to read from.

@@ -32,7 +32,7 @@ namespace Bloom::Widgets
         // Construct ByteWidget objects
         const auto memorySize = this->targetMemoryDescriptor.size();
         const auto startAddress = this->targetMemoryDescriptor.addressRange.startAddress;
-        for (std::uint32_t i = 0; i < memorySize; i++) {
+        for (Targets::TargetMemorySize i = 0; i < memorySize; i++) {
             const auto address = startAddress + i;
 
             auto* byteWidget = new ByteItem(

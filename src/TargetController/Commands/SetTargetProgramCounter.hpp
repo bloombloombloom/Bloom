@@ -5,6 +5,7 @@
 #include "Command.hpp"
 
 #include "src/Targets/TargetBreakpoint.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::TargetController::Commands
 {
@@ -14,9 +15,9 @@ namespace Bloom::TargetController::Commands
         static constexpr CommandType type = CommandType::SET_TARGET_PROGRAM_COUNTER;
         static inline const std::string name = "SetTargetProgramCounter";
 
-        std::uint32_t address = 0;
+        Targets::TargetProgramCounter address = 0;
 
-        explicit SetTargetProgramCounter(std::uint32_t address)
+        explicit SetTargetProgramCounter(Targets::TargetProgramCounter address)
             : address(address)
         {};
 

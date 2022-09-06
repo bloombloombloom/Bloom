@@ -53,13 +53,13 @@ namespace Bloom::Widgets
         );
 
         void updateValues(const Targets::TargetMemoryBuffer& buffer);
-        void updateStackPointer(std::uint32_t stackPointer);
-        void setHighlightedAddresses(const std::set<std::uint32_t>& highlightedAddresses);
+        void updateStackPointer(Targets::TargetStackPointer stackPointer);
+        void setHighlightedAddresses(const std::set<Targets::TargetMemoryAddress>& highlightedAddresses);
         void refreshRegions();
         void adjustSize(bool forced = false);
         void setEnabled(bool enabled);
         void invalidateChildItemCaches();
-        QPointF getByteItemPositionByAddress(std::uint32_t address);
+        QPointF getByteItemPositionByAddress(Targets::TargetMemoryAddress address);
 
     signals:
         void byteWidgetsAdjusted();
@@ -81,11 +81,11 @@ namespace Bloom::Widgets
         ByteItem* hoveredByteWidget = nullptr;
         AnnotationItem* hoveredAnnotationItem = nullptr;
 
-        std::optional<std::uint32_t> currentStackPointer;
+        std::optional<Targets::TargetStackPointer> currentStackPointer;
 
         Targets::TargetMemoryBuffer lastValueBuffer;
 
-        std::map<std::uint32_t, ByteItem*> byteItemsByAddress;
+        std::map<Targets::TargetMemoryAddress, ByteItem*> byteItemsByAddress;
         std::vector<AnnotationItem*> annotationItems;
         std::vector<ValueAnnotationItem*> valueAnnotationItems;
         std::map<std::size_t, std::vector<ByteItem*>> byteItemsByRowIndex;

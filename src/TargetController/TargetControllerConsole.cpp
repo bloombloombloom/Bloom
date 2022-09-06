@@ -52,8 +52,12 @@ namespace Bloom::TargetController
     using Targets::TargetRegisterDescriptors;
 
     using Targets::TargetMemoryType;
+    using Targets::TargetMemoryAddress;
+    using Targets::TargetMemorySize;
     using Targets::TargetMemoryAddressRange;
     using Targets::TargetMemoryBuffer;
+    using Targets::TargetProgramCounter;
+    using Targets::TargetStackPointer;
 
     using Targets::TargetBreakpoint;
 
@@ -98,7 +102,7 @@ namespace Bloom::TargetController
         );
     }
 
-    void TargetControllerConsole::continueTargetExecution(std::optional<std::uint32_t> fromAddress) {
+    void TargetControllerConsole::continueTargetExecution(std::optional<TargetProgramCounter> fromAddress) {
         auto resumeExecutionCommand = std::make_unique<ResumeTargetExecution>();
 
         if (fromAddress.has_value()) {
@@ -111,7 +115,7 @@ namespace Bloom::TargetController
         );
     }
 
-    void TargetControllerConsole::stepTargetExecution(std::optional<std::uint32_t> fromAddress) {
+    void TargetControllerConsole::stepTargetExecution(std::optional<TargetProgramCounter> fromAddress) {
         auto stepExecutionCommand = std::make_unique<StepTargetExecution>();
 
         if (fromAddress.has_value()) {
@@ -140,8 +144,8 @@ namespace Bloom::TargetController
 
     TargetMemoryBuffer TargetControllerConsole::readMemory(
         TargetMemoryType memoryType,
-        std::uint32_t startAddress,
-        std::uint32_t bytes,
+        TargetMemoryAddress startAddress,
+        TargetMemorySize bytes,
         const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) {
         return this->commandManager.sendCommandAndWaitForResponse(
@@ -157,7 +161,7 @@ namespace Bloom::TargetController
 
     void TargetControllerConsole::writeMemory(
         TargetMemoryType memoryType,
-        std::uint32_t startAddress,
+        TargetMemoryAddress startAddress,
         const TargetMemoryBuffer& buffer
     ) {
         this->commandManager.sendCommandAndWaitForResponse(
@@ -180,14 +184,14 @@ namespace Bloom::TargetController
         );
     }
 
-    std::uint32_t TargetControllerConsole::getProgramCounter() {
+    TargetProgramCounter TargetControllerConsole::getProgramCounter() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetProgramCounter>(),
             this->defaultTimeout
         )->programCounter;
     }
 
-    void TargetControllerConsole::setProgramCounter(std::uint32_t address) {
+    void TargetControllerConsole::setProgramCounter(TargetProgramCounter address) {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetTargetProgramCounter>(address),
             this->defaultTimeout
@@ -208,7 +212,7 @@ namespace Bloom::TargetController
         );
     }
 
-    std::uint32_t TargetControllerConsole::getStackPointer() {
+    TargetStackPointer TargetControllerConsole::getStackPointer() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetStackPointer>(),
             this->defaultTimeout

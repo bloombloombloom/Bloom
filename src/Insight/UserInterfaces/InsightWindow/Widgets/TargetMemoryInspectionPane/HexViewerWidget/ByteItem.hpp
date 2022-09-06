@@ -7,6 +7,8 @@
 #include <optional>
 #include <set>
 
+#include "src/Targets/TargetMemory.hpp"
+
 #include "HexViewerWidgetSettings.hpp"
 #include "AnnotationItem.hpp"
 
@@ -25,7 +27,7 @@ namespace Bloom::Widgets
         static constexpr int BOTTOM_MARGIN = 5;
 
         std::size_t byteIndex;
-        std::uint32_t address = 0x00;
+        Targets::TargetMemoryAddress address = 0x00;
 
         QString addressHex;
         QString relativeAddressHex;
@@ -40,8 +42,8 @@ namespace Bloom::Widgets
 
         ByteItem(
             std::size_t byteIndex,
-            std::uint32_t address,
-            std::optional<std::uint32_t>& currentStackPointer,
+            Targets::TargetMemoryAddress address,
+            std::optional<Targets::TargetStackPointer>& currentStackPointer,
             ByteItem** hoveredByteItem,
             AnnotationItem** hoveredAnnotationItem,
             std::set<ByteItem*>& highlightedByteItems,
@@ -71,7 +73,7 @@ namespace Bloom::Widgets
 
         ByteItem** hoveredByteItem;
         AnnotationItem** hoveredAnnotationItem;
-        std::optional<std::uint32_t>& currentStackPointer;
+        std::optional<Targets::TargetStackPointer>& currentStackPointer;
         std::set<ByteItem*>& highlightedByteItems;
 
         const QColor* getBackgroundColor();

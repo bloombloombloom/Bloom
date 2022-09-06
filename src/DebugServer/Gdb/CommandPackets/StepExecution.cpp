@@ -17,7 +17,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         : CommandPacket(rawPacket)
     {
         if (this->data.size() > 1) {
-            this->fromProgramCounter = static_cast<std::uint32_t>(
+            this->fromProgramCounter = static_cast<Targets::TargetProgramCounter>(
                 std::stoi(std::string(this->data.begin(), this->data.end()), nullptr, 16)
             );
         }

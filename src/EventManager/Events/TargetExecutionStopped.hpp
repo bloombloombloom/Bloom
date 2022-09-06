@@ -4,7 +4,9 @@
 #include <string>
 
 #include "Event.hpp"
-#include "src/Targets/Target.hpp"
+
+#include "src/Targets/TargetBreakpoint.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::Events
 {
@@ -13,11 +15,14 @@ namespace Bloom::Events
     public:
         static constexpr EventType type = EventType::TARGET_EXECUTION_STOPPED;
         static inline const std::string name = "TargetExecutionStopped";
-        std::uint32_t programCounter;
+
+        Targets::TargetProgramCounter programCounter;
         Targets::TargetBreakCause breakCause;
 
-        TargetExecutionStopped(std::uint32_t programCounter, Targets::TargetBreakCause breakCause) :
-        programCounter(programCounter), breakCause(breakCause) {}
+        TargetExecutionStopped(Targets::TargetProgramCounter programCounter, Targets::TargetBreakCause breakCause)
+            : programCounter(programCounter)
+            , breakCause(breakCause)
+        {}
 
         [[nodiscard]] EventType getType() const override {
             return TargetExecutionStopped::type;

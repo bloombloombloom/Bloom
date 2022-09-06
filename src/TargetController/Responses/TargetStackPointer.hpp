@@ -4,6 +4,8 @@
 
 #include "Response.hpp"
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Bloom::TargetController::Responses
 {
     class TargetStackPointer: public Response
@@ -11,9 +13,9 @@ namespace Bloom::TargetController::Responses
     public:
         static constexpr ResponseType type = ResponseType::TARGET_STACK_POINTER;
 
-        std::uint32_t stackPointer;
+        Targets::TargetStackPointer stackPointer;
 
-        explicit TargetStackPointer(std::uint32_t stackPointer)
+        explicit TargetStackPointer(Targets::TargetStackPointer stackPointer)
             : stackPointer(stackPointer)
         {}
 

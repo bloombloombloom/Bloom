@@ -6,8 +6,8 @@ namespace Bloom::Widgets
 {
     ByteItem::ByteItem(
         std::size_t byteIndex,
-        std::uint32_t address,
-        std::optional<std::uint32_t>& currentStackPointer,
+        Targets::TargetMemoryAddress address,
+        std::optional<Targets::TargetStackPointer>& currentStackPointer,
         ByteItem** hoveredByteItem,
         AnnotationItem** hoveredAnnotationItem,
         std::set<ByteItem*>& highlightedByteItems,

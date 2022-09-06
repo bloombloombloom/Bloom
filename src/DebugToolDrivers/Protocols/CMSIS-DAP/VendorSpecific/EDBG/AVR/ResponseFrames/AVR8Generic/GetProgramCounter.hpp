@@ -3,6 +3,9 @@
 #include <cstdint>
 
 #include "Avr8GenericResponseFrame.hpp"
+
+#include "src/Targets/TargetMemory.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
@@ -13,7 +16,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
         GetProgramCounter() = default;
         explicit GetProgramCounter(const std::vector<AvrResponse>& avrResponses): Avr8GenericResponseFrame(avrResponses) {}
 
-        std::uint32_t extractProgramCounter() {
+        Targets::TargetProgramCounter extractProgramCounter() {
             /*
              * The payload for the PC Read command should always consist of six bytes. Thr first two being the
              * command ID and version, the other four being the PC. The four PC bytes are little-endian.
@@ -24,7 +27,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
                     "frame - unexpected payload size.");
             }
 
-            return static_cast<std::uint32_t>(payload[5] << 24 | payload[4] << 16 | payload[3] << 8 | payload[2]) * 2;
+            return static_cast<Targets::TargetProgramCounter>(
+                payload[5] << 24 | payload[4] << 16 | payload[3] << 8 | payload[2]
+            ) * 2;
         }
     };
 }

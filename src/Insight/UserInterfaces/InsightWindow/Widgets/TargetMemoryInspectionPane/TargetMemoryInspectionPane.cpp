@@ -241,7 +241,7 @@ namespace Bloom::Widgets
                         readStackPointerTask,
                         &ReadStackPointer::stackPointerRead,
                         this,
-                        [this] (std::uint32_t stackPointer) {
+                        [this] (Targets::TargetStackPointer stackPointer) {
                             this->hexViewerWidget->setStackPointer(stackPointer);
                         }
                     );
