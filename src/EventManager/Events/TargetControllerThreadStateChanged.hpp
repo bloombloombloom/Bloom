@@ -13,7 +13,9 @@ namespace Bloom::Events
         static constexpr EventType type = EventType::TARGET_CONTROLLER_THREAD_STATE_CHANGED;
         static inline const std::string name = "TargetControllerThreadStateChanged";
 
-        explicit TargetControllerThreadStateChanged(ThreadState state): state(state) {};
+        explicit TargetControllerThreadStateChanged(ThreadState state)
+            : state(state)
+        {};
 
         [[nodiscard]] EventType getType() const override {
             return TargetControllerThreadStateChanged::type;

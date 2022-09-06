@@ -13,7 +13,9 @@ namespace Bloom::Events
         static constexpr EventType type = EventType::DEBUG_SERVER_THREAD_STATE_CHANGED;
         static inline const std::string name = "DebugServerThreadStateChanged";
 
-        explicit DebugServerThreadStateChanged(ThreadState state): state(state) {};
+        explicit DebugServerThreadStateChanged(ThreadState state)
+            : state(state)
+        {};
 
         [[nodiscard]] EventType getType() const override {
             return DebugServerThreadStateChanged::type;

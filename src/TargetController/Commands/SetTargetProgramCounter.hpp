@@ -4,7 +4,6 @@
 
 #include "Command.hpp"
 
-#include "src/Targets/TargetBreakpoint.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::TargetController::Commands

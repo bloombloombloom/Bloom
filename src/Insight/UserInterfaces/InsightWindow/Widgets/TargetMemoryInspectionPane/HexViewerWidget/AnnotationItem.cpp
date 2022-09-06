@@ -11,16 +11,16 @@ namespace Bloom::Widgets
         Targets::TargetMemorySize size,
         QString labelText,
         AnnotationItemPosition position
-    ):
-        QGraphicsItem(nullptr),
-        startAddress(startAddress),
-        size(size),
-        endAddress(static_cast<std::uint32_t>(startAddress + size - 1)),
-        labelText(std::move(labelText)),
-        position(position),
-        width(static_cast<int>((ByteItem::WIDTH + ByteItem::RIGHT_MARGIN) * size - ByteItem::RIGHT_MARGIN)),
-        height(position == AnnotationItemPosition::TOP ? AnnotationItem::TOP_HEIGHT : AnnotationItem::BOTTOM_HEIGHT
-    ) {
+    )
+        : QGraphicsItem(nullptr)
+        , startAddress(startAddress)
+        , size(size)
+        , endAddress(static_cast<Targets::TargetMemoryAddress>(startAddress + size - 1))
+        , labelText(std::move(labelText))
+        , position(position)
+        , width(static_cast<int>((ByteItem::WIDTH + ByteItem::RIGHT_MARGIN) * size - ByteItem::RIGHT_MARGIN))
+        , height(position == AnnotationItemPosition::TOP ? AnnotationItem::TOP_HEIGHT : AnnotationItem::BOTTOM_HEIGHT)
+    {
         this->setAcceptHoverEvents(true);
         this->setToolTip(this->labelText);
     }
@@ -29,19 +29,22 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryAddressRange& addressRange,
         const QString& labelText,
         AnnotationItemPosition position
-    ): AnnotationItem(
-        addressRange.startAddress,
-        addressRange.endAddress - addressRange.startAddress + 1,
-        labelText,
-        position
-    ) {}
+    )
+        : AnnotationItem(
+            addressRange.startAddress,
+            addressRange.endAddress - addressRange.startAddress + 1,
+            labelText,
+            position
+        )
+    {}
 
     AnnotationItem::AnnotationItem(const FocusedMemoryRegion& focusedMemoryRegion, AnnotationItemPosition position)
-    : AnnotationItem(
-        focusedMemoryRegion.addressRange,
-        focusedMemoryRegion.name,
-        position
-    ) {}
+        : AnnotationItem(
+            focusedMemoryRegion.addressRange,
+            focusedMemoryRegion.name,
+            position
+        )
+    {}
 
     void AnnotationItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
         auto lineColor = this->getLineColor();

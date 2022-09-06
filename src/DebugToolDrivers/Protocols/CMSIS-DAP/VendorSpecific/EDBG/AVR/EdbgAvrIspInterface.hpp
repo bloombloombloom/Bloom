@@ -23,7 +23,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     {
     public:
         explicit EdbgAvrIspInterface(EdbgInterface& edbgInterface)
-        : edbgInterface(edbgInterface) {};
+            : edbgInterface(edbgInterface)
+        {};
 
         /**
          * The EdbgAvrIspInterface doesn't actually require any config from the user, at this point in time. So this

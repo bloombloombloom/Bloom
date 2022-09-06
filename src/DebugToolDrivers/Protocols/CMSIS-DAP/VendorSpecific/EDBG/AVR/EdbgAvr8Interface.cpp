@@ -1,6 +1,5 @@
 #include "EdbgAvr8Interface.hpp"
 
-#include <cstdint>
 #include <thread>
 #include <cmath>
 

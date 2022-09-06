@@ -1,14 +1,14 @@
 #pragma once
 
-#include <string>
 #include <cstdint>
+#include <string>
 #include <map>
 
 #include "TargetPinDescriptor.hpp"
 
 namespace Bloom::Targets
 {
-    enum class TargetPackage: int
+    enum class TargetPackage: std::uint8_t
     {
         UNKNOWN,
 

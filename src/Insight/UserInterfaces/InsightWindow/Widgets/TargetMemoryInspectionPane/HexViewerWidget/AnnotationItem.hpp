@@ -37,8 +37,7 @@ namespace Bloom::Widgets
         );
 
         AnnotationItem(
-            const Targets::TargetMemoryAddressRange&
-            addressRange,
+            const Targets::TargetMemoryAddressRange& addressRange,
             const QString& labelText,
             AnnotationItemPosition position
         );
