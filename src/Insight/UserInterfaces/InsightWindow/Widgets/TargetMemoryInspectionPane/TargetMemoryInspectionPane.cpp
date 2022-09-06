@@ -296,6 +296,20 @@ namespace Bloom::Widgets
                     callback.value()
                 );
             }
+
+        } else {
+            QObject::connect(
+                readMemoryTask,
+                &InsightWorkerTask::failed,
+                this,
+                [this] {
+                    this->refreshButton->stopSpin();
+
+                    if (this->targetState == Targets::TargetState::STOPPED) {
+                        this->refreshButton->setDisabled(false);
+                    }
+                }
+            );
         }
 
         this->insightWorker.queueTask(readMemoryTask);
