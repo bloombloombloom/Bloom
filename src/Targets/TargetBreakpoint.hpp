@@ -19,8 +19,6 @@ namespace Bloom::Targets
          */
         TargetMemoryAddress address = 0;
 
-        bool disabled = false;
-
         TargetBreakpoint() = default;
         explicit TargetBreakpoint(TargetMemoryAddress address): address(address) {};
     };
