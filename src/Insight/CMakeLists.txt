@@ -28,6 +28,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ReadStackPointer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/QueryLatestVersionNumber.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ReadProgramCounter.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/GetTargetState.cpp
 
         # Error dialogue window
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.cpp
