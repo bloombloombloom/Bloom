@@ -4,6 +4,8 @@
 #include <set>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
+#include "src/Insight/InsightSignals.hpp"
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "RegisterGroupWidget.hpp"
 #include "RegisterWidget.hpp"
 
@@ -115,16 +117,18 @@ namespace Bloom::Widgets
 
         itemLayout->addStretch(1);
 
+        auto* insightSignals = InsightSignals::instance();
+
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::targetStateUpdated,
+            insightSignals,
+            &InsightSignals::targetStateUpdated,
             this,
             &TargetRegistersPaneWidget::onTargetStateChanged
         );
 
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::targetRegistersWritten,
+            insightSignals,
+            &InsightSignals::targetRegistersWritten,
             this,
             &TargetRegistersPaneWidget::onRegistersRead
         );
@@ -197,7 +201,7 @@ namespace Bloom::Widgets
             );
         }
 
-        this->insightWorker.queueTask(readRegisterTask);
+        InsightWorker::queueTask(readRegisterTask);
     }
 
     void TargetRegistersPaneWidget::onItemSelectionChange(ItemWidget* newlySelectedWidget) {

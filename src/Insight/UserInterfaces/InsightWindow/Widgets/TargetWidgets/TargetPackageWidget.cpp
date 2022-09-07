@@ -2,6 +2,8 @@
 
 #include <QEvent>
 
+#include "src/Insight/InsightSignals.hpp"
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/InsightWorker/Tasks/RefreshTargetPinStates.hpp"
 
 namespace Bloom::Widgets::InsightTargetWidgets
@@ -17,30 +19,32 @@ namespace Bloom::Widgets::InsightTargetWidgets
         , targetVariant(std::move(targetVariant))
         , insightWorker(insightWorker)
     {
+        auto* insightSignals = InsightSignals::instance();
+
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::targetStateUpdated,
+            insightSignals,
+            &InsightSignals::targetStateUpdated,
             this,
             &TargetPackageWidget::onTargetStateChanged
         );
 
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::targetRegistersWritten,
+            insightSignals,
+            &InsightSignals::targetRegistersWritten,
             this,
             &TargetPackageWidget::onRegistersWritten
         );
 
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::programmingModeEnabled,
+            insightSignals,
+            &InsightSignals::programmingModeEnabled,
             this,
             &TargetPackageWidget::onProgrammingModeEnabled
         );
 
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::programmingModeDisabled,
+            insightSignals,
+            &InsightSignals::programmingModeDisabled,
             this,
             &TargetPackageWidget::onProgrammingModeDisabled
         );
@@ -66,7 +70,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
             );
         }
 
-        this->insightWorker.queueTask(refreshTask);
+        InsightWorker::queueTask(refreshTask);
     }
 
     void TargetPackageWidget::updatePinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber) {

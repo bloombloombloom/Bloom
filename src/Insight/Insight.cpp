@@ -8,11 +8,15 @@
 #include "UserInterfaces/InsightWindow/BloomProxyStyle.hpp"
 
 #include "src/Application.hpp"
+
 #include "InsightWorker/Tasks/QueryLatestVersionNumber.hpp"
+#include "InsightWorker/Tasks/GetTargetState.hpp"
+#include "InsightWorker/Tasks/GetTargetDescriptor.hpp"
 
 namespace Bloom
 {
     using namespace Bloom::Exceptions;
+    using Bloom::Targets::TargetState;
 
     Insight::Insight(
         EventListener& eventListener,
@@ -62,7 +66,33 @@ namespace Bloom
         Logger::info("Starting Insight");
         this->setThreadState(ThreadState::STARTING);
 
-        auto targetDescriptor = this->targetControllerConsole.getTargetDescriptor();
+        this->eventListener.registerCallbackForEventType<Events::TargetControllerStateChanged>(
+            std::bind(&Insight::onTargetControllerStateChangedEvent, this, std::placeholders::_1)
+        );
+
+        this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
+            std::bind(&Insight::onTargetStoppedEvent, this, std::placeholders::_1)
+        );
+
+        this->eventListener.registerCallbackForEventType<Events::TargetExecutionResumed>(
+            std::bind(&Insight::onTargetResumedEvent, this, std::placeholders::_1)
+        );
+
+        this->eventListener.registerCallbackForEventType<Events::TargetReset>(
+            std::bind(&Insight::onTargetResetEvent, this, std::placeholders::_1)
+        );
+
+        this->eventListener.registerCallbackForEventType<Events::RegistersWrittenToTarget>(
+            std::bind(&Insight::onTargetRegistersWrittenEvent, this, std::placeholders::_1)
+        );
+
+        this->eventListener.registerCallbackForEventType<Events::ProgrammingModeEnabled>(
+            std::bind(&Insight::onProgrammingModeEnabledEvent, this, std::placeholders::_1)
+        );
+
+        this->eventListener.registerCallbackForEventType<Events::ProgrammingModeDisabled>(
+            std::bind(&Insight::onProgrammingModeDisabledEvent, this, std::placeholders::_1)
+        );
 
         QApplication::setQuitOnLastWindowClosed(true);
         QApplication::setStyle(new BloomProxyStyle());
@@ -137,13 +167,13 @@ namespace Bloom
          */
         auto* eventDispatchTimer = new QTimer(&(this->application));
         QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
-        eventDispatchTimer->start(100);
+        eventDispatchTimer->start(50);
 
         QObject::connect(
             this->mainWindow,
             &InsightWindow::activatedSignal,
-            this->insightWorker,
-            &InsightWorker::onInsightWindowActivated
+            this,
+            &Insight::onInsightWindowActivated
         );
 
         this->mainWindow->setInsightConfig(this->insightConfig);
@@ -157,7 +187,7 @@ namespace Bloom
         QObject::connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);
         QObject::connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
 
-        this->mainWindow->init(targetDescriptor);
+        this->mainWindow->init(this->targetControllerConsole.getTargetDescriptor());
 
         QObject::connect(this->insightWorker, &InsightWorker::ready, this, [this] {
             this->checkBloomVersion();
@@ -208,5 +238,88 @@ namespace Bloom
         );
 
         this->insightWorker->queueTask(versionQueryTask);
+    }
+
+    void Insight::onInsightWindowActivated() {
+        auto* getTargetStateTask = new GetTargetState();
+        QObject::connect(
+            getTargetStateTask,
+            &GetTargetState::targetState,
+            this,
+            [this] (Targets::TargetState targetState) {
+                this->lastTargetState = targetState;
+                emit this->insightSignals->targetStateUpdated(this->lastTargetState);
+            }
+        );
+
+        InsightWorker::queueTask(getTargetStateTask);
+    }
+
+    void Insight::onTargetStoppedEvent(const Events::TargetExecutionStopped& event) {
+        if (this->lastTargetState == TargetState::STOPPED) {
+            return;
+        }
+
+        this->lastTargetState = TargetState::STOPPED;
+        emit this->insightSignals->targetStateUpdated(TargetState::STOPPED);
+    }
+
+    void Insight::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
+        if (this->lastTargetState != TargetState::RUNNING) {
+            this->lastTargetState = TargetState::RUNNING;
+            emit this->insightSignals->targetStateUpdated(TargetState::RUNNING);
+        }
+    }
+
+    void Insight::onTargetResetEvent(const Events::TargetReset& event) {
+        try {
+            if (this->targetControllerConsole.getTargetState() != TargetState::STOPPED) {
+                return;
+            }
+
+            if (this->lastTargetState != TargetState::STOPPED) {
+                this->lastTargetState = TargetState::STOPPED;
+                emit this->insightSignals->targetStateUpdated(TargetState::STOPPED);
+            }
+
+            emit this->insightSignals->targetReset();
+
+        } catch (const Exceptions::Exception& exception) {
+            Logger::debug("Error handling TargetReset event - " + exception.getMessage());
+        }
+    }
+
+    void Insight::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {
+        emit this->insightSignals->targetRegistersWritten(event.registers, event.createdTimestamp);
+    }
+
+    void Insight::onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event) {
+        using TargetController::TargetControllerState;
+
+        if (event.state == TargetControllerState::SUSPENDED) {
+            emit this->insightSignals->targetControllerSuspended();
+
+        } else if (event.state == TargetControllerState::ACTIVE) {
+            auto* getTargetDescriptorTask = new GetTargetDescriptor();
+
+            QObject::connect(
+                getTargetDescriptorTask,
+                &GetTargetDescriptor::targetDescriptor,
+                this,
+                [this] (Targets::TargetDescriptor targetDescriptor) {
+                    emit this->insightSignals->targetControllerResumed(targetDescriptor);
+                }
+            );
+
+            InsightWorker::queueTask(getTargetDescriptorTask);
+        }
+    }
+
+    void Insight::onProgrammingModeEnabledEvent(const Events::ProgrammingModeEnabled& event) {
+        emit this->insightSignals->programmingModeEnabled();
+    }
+
+    void Insight::onProgrammingModeDisabledEvent(const Events::ProgrammingModeDisabled& event) {
+        emit this->insightSignals->programmingModeDisabled();
     }
 }

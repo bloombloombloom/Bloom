@@ -7,6 +7,7 @@
 #include <set>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
+#include "src/Insight/InsightSignals.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "src/Helpers/Paths.hpp"
@@ -60,16 +61,18 @@ namespace Bloom::Widgets
         titleBar->setContentsMargins(0, 0, 0, 0);
         title->setFixedHeight(titleBar->height());
 
+        auto* insightSignals = InsightSignals::instance();
+
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::targetStateUpdated,
+            insightSignals,
+            &InsightSignals::targetStateUpdated,
             this,
             &RegisterHistoryWidget::onTargetStateChanged
         );
 
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::targetRegistersWritten,
+            insightSignals,
+            &InsightSignals::targetRegistersWritten,
             this,
             &RegisterHistoryWidget::onRegistersWritten
         );

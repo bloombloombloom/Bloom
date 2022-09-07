@@ -4,6 +4,8 @@
 #include <QToolButton>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
+#include "src/Insight/InsightSignals.hpp"
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/ReadTargetMemory.hpp"
@@ -169,23 +171,25 @@ namespace Bloom::Widgets
             &TargetMemoryInspectionPane::attach
         );
 
+        auto* insightSignals = InsightSignals::instance();
+
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::targetStateUpdated,
+            insightSignals,
+            &InsightSignals::targetStateUpdated,
             this,
             &TargetMemoryInspectionPane::onTargetStateChanged
         );
 
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::programmingModeEnabled,
+            insightSignals,
+            &InsightSignals::programmingModeEnabled,
             this,
             &TargetMemoryInspectionPane::onProgrammingModeEnabled
         );
 
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::programmingModeDisabled,
+            insightSignals,
+            &InsightSignals::programmingModeDisabled,
             this,
             &TargetMemoryInspectionPane::onProgrammingModeDisabled
         );
@@ -268,7 +272,7 @@ namespace Bloom::Widgets
                         );
                     }
 
-                    this->insightWorker.queueTask(readStackPointerTask);
+                    InsightWorker::queueTask(readStackPointerTask);
                 }
             }
         );
@@ -312,7 +316,7 @@ namespace Bloom::Widgets
             );
         }
 
-        this->insightWorker.queueTask(readMemoryTask);
+        InsightWorker::queueTask(readMemoryTask);
     }
 
     void TargetMemoryInspectionPane::resizeEvent(QResizeEvent* event) {

@@ -16,6 +16,8 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
+#include "src/Insight/InsightSignals.hpp"
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/InsightWorker/Tasks/ReadProgramCounter.hpp"
 
 namespace Bloom
@@ -244,28 +246,30 @@ namespace Bloom
             &InsightWindow::toggleEepromInspectionPane
         );
 
-        // InsightWorker connections
+        // InsightSignal connections
+        auto* insightSignals = InsightSignals::instance();
+
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::targetControllerSuspended,
+            insightSignals,
+            &InsightSignals::targetControllerSuspended,
             this,
             &InsightWindow::onTargetControllerSuspended
         );
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::targetControllerResumed,
+            insightSignals,
+            &InsightSignals::targetControllerResumed,
             this,
             &InsightWindow::onTargetControllerResumed
         );
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::targetStateUpdated,
+            insightSignals,
+            &InsightSignals::targetStateUpdated,
             this,
             &InsightWindow::onTargetStateUpdate
         );
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::targetReset,
+            insightSignals,
+            &InsightSignals::targetReset,
             this,
             [this] {
                 this->refreshProgramCounter();
@@ -273,14 +277,14 @@ namespace Bloom
         );
 
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::programmingModeEnabled,
+            insightSignals,
+            &InsightSignals::programmingModeEnabled,
             this,
             &InsightWindow::onProgrammingModeEnabled
         );
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::programmingModeDisabled,
+            insightSignals,
+            &InsightSignals::programmingModeDisabled,
             this,
             &InsightWindow::onProgrammingModeDisabled
         );
@@ -913,7 +917,7 @@ namespace Bloom
             );
         }
 
-        this->insightWorker.queueTask(readProgramCounterTask);
+        InsightWorker::queueTask(readProgramCounterTask);
     }
 
     void InsightWindow::openReportIssuesUrl() {

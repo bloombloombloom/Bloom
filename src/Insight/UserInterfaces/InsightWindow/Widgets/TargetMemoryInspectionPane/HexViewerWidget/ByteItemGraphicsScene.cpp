@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "src/Insight/InsightSignals.hpp"
+
 namespace Bloom::Widgets
 {
     using Bloom::Targets::TargetMemoryDescriptor;
@@ -54,8 +56,8 @@ namespace Bloom::Widgets
         }
 
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::targetStateUpdated,
+            InsightSignals::instance(),
+            &InsightSignals::targetStateUpdated,
             this,
             &ByteItemGraphicsScene::onTargetStateChanged
         );

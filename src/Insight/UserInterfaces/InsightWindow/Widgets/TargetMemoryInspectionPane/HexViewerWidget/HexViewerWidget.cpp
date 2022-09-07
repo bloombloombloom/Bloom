@@ -1,6 +1,7 @@
 #include "HexViewerWidget.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
+#include "src/Insight/InsightSignals.hpp"
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Exceptions/Exception.hpp"
@@ -156,8 +157,8 @@ namespace Bloom::Widgets
         );
 
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::targetStateUpdated,
+            InsightSignals::instance(),
+            &InsightSignals::targetStateUpdated,
             this,
             &HexViewerWidget::onTargetStateChanged
         );

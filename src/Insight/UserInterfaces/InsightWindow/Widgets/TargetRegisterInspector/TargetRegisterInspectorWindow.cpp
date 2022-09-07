@@ -6,6 +6,8 @@
 #include <QPlainTextEdit>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
+#include "src/Insight/InsightSignals.hpp"
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
 
 #include "src/Helpers/Paths.hpp"
@@ -200,8 +202,8 @@ namespace Bloom::Widgets
         );
 
         QObject::connect(
-            &insightWorker,
-            &InsightWorker::targetStateUpdated,
+            InsightSignals::instance(),
+            &InsightSignals::targetStateUpdated,
             this,
             &TargetRegisterInspectorWindow::onTargetStateChanged
         );
@@ -345,7 +347,7 @@ namespace Bloom::Widgets
             }
         );
 
-        this->insightWorker.queueTask(readTargetRegisterTask);
+        InsightWorker::queueTask(readTargetRegisterTask);
     }
 
     void TargetRegisterInspectorWindow::applyChanges() {
@@ -374,7 +376,7 @@ namespace Bloom::Widgets
             errorDialogue->show();
         });
 
-        this->insightWorker.queueTask(writeRegisterTask);
+        InsightWorker::queueTask(writeRegisterTask);
     }
 
     void TargetRegisterInspectorWindow::openHelpPage() {

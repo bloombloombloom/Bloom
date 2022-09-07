@@ -1,5 +1,6 @@
 #include "TargetPinWidget.hpp"
 
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/InsightWorker/Tasks/SetTargetPinState.hpp"
 
 namespace Bloom::Widgets::InsightTargetWidgets
@@ -46,7 +47,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
                 this->setDisabled(false);
             });
 
-            this->insightWorker.queueTask(setPinStateTask);
+            InsightWorker::queueTask(setPinStateTask);
         }
     }
 }

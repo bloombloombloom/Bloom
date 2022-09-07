@@ -7,6 +7,8 @@
 
 #include "src/Helpers/Paths.hpp"
 
+#include "src/Insight/InsightSignals.hpp"
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/InsightWorker/Tasks/ReadTargetRegisters.hpp"
 
 namespace Bloom::Widgets
@@ -60,8 +62,8 @@ namespace Bloom::Widgets
         QObject::connect(this->copyValueBinaryAction, &QAction::triggered, this, &RegisterWidget::copyValueBinary);
 
         QObject::connect(
-            &(this->insightWorker),
-            &InsightWorker::targetStateUpdated,
+            InsightSignals::instance(),
+            &InsightSignals::targetStateUpdated,
             this,
             &RegisterWidget::onTargetStateChange
         );
@@ -174,7 +176,7 @@ namespace Bloom::Widgets
             }
         );
 
-        this->insightWorker.queueTask(readRegisterTask);
+        InsightWorker::queueTask(readRegisterTask);
     }
 
     void RegisterWidget::copyName() {

@@ -2,6 +2,7 @@ target_sources(
     Bloom
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/Insight.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/InsightSignals.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/InsightWorker.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/UiLoader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/BloomProxyStyle.cpp

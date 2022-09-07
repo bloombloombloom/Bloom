@@ -4,13 +4,18 @@
 #include <QApplication>
 
 #include "src/Helpers/Thread.hpp"
-#include "src/TargetController/TargetControllerConsole.hpp"
 #include "src/Helpers/Paths.hpp"
 #include "src/ProjectConfig.hpp"
 #include "src/ProjectSettings.hpp"
 
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
+#include "src/EventManager/Events/Events.hpp"
+
+#include "src/TargetController/TargetControllerConsole.hpp"
+#include "src/Targets/TargetState.hpp"
+
+#include "InsightSignals.hpp"
 
 #include "InsightWorker/InsightWorker.hpp"
 #include "UserInterfaces/InsightWindow/InsightWindow.hpp"
@@ -79,6 +84,8 @@ namespace Bloom
         );
 
         TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole();
+        Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
+        InsightSignals* insightSignals = InsightSignals::instance();
 
         /**
          * Insight consists of two threads - the main thread where the main Qt event loop runs (for the GUI), and
@@ -105,5 +112,14 @@ namespace Bloom
         void dispatchEvents() {
             this->eventListener.dispatchCurrentEvents();
         };
+
+        void onInsightWindowActivated();
+        void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
+        void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
+        void onTargetResetEvent(const Events::TargetReset& event);
+        void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
+        void onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event);
+        void onProgrammingModeEnabledEvent(const Events::ProgrammingModeEnabled& event);
+        void onProgrammingModeDisabledEvent(const Events::ProgrammingModeDisabled& event);
     };
 }
