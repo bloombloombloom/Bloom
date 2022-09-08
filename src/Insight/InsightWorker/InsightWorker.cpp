@@ -83,6 +83,7 @@ namespace Bloom
             }
 
             task->deleteLater();
+            emit InsightSignals::instance()->taskProcessed();
         }
     }
 }

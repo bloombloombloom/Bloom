@@ -22,7 +22,8 @@ namespace Bloom
             : memoryType(memoryType)
             , startAddress(startAddress)
             , size(size)
-            , excludedAddressRanges(excludedAddressRanges) {}
+            , excludedAddressRanges(excludedAddressRanges)
+        {}
 
         TaskGroups getTaskGroups() const override {
             return TaskGroups({

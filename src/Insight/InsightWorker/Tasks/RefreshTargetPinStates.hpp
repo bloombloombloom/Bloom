@@ -11,7 +11,9 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        explicit RefreshTargetPinStates(int variantId): variantId(variantId) {}
+        explicit RefreshTargetPinStates(int variantId)
+            : variantId(variantId)
+        {}
 
         TaskGroups getTaskGroups() const override {
             return TaskGroups({

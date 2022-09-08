@@ -28,6 +28,7 @@ namespace Bloom
 
     signals:
         void taskQueued();
+        void taskProcessed();
 
         void targetStateUpdated(Bloom::Targets::TargetState newState);
         void targetReset();

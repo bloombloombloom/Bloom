@@ -10,7 +10,9 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        explicit WriteTargetRegister(const Targets::TargetRegister& targetRegister): targetRegister(targetRegister) {}
+        explicit WriteTargetRegister(const Targets::TargetRegister& targetRegister)
+            : targetRegister(targetRegister)
+        {}
 
         TaskGroups getTaskGroups() const override {
             return TaskGroups({

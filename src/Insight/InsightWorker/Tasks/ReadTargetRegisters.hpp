@@ -10,7 +10,9 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors): descriptors(descriptors) {}
+        explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors)
+            : descriptors(descriptors)
+        {}
 
         TaskGroups getTaskGroups() const override {
             return TaskGroups({

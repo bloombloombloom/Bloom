@@ -10,8 +10,10 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        SetTargetPinState(const Targets::TargetPinDescriptor& pinDescriptor, const Targets::TargetPinState& pinState):
-        pinDescriptor(pinDescriptor), pinState(pinState) {}
+        SetTargetPinState(const Targets::TargetPinDescriptor& pinDescriptor, const Targets::TargetPinState& pinState)
+            : pinDescriptor(pinDescriptor)
+            , pinState(pinState)
+        {}
 
         TaskGroups getTaskGroups() const override {
             return TaskGroups({
