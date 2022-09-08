@@ -181,7 +181,7 @@ namespace Bloom
 
         // Prepare worker thread
         this->workerThread = new QThread();
-        this->workerThread->setObjectName("IW");
+        this->workerThread->setObjectName("IW" + QString::number(this->insightWorker->id));
         this->insightWorker->moveToThread(this->workerThread);
         QObject::connect(this->workerThread, &QThread::started, this->insightWorker, &InsightWorker::startup);
         QObject::connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);

@@ -12,7 +12,7 @@ namespace Bloom
     using Bloom::Targets::TargetState;
 
     void InsightWorker::startup() {
-        Logger::debug("Starting InsightWorker thread");
+        Logger::debug("Starting InsightWorker" + std::to_string(this->id) + " thread");
 
         QObject::connect(
             InsightSignals::instance(),
@@ -21,6 +21,7 @@ namespace Bloom
             &InsightWorker::executeTasks
         );
 
+        Logger::debug("InsightWorker" + std::to_string(this->id) + " thread ready");
         emit this->ready();
     }
 
