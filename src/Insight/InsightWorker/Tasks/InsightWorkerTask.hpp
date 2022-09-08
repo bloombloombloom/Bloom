@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QString>
 
+#include "TaskGroup.hpp"
 #include "src/TargetController/TargetControllerConsole.hpp"
 
 namespace Bloom
@@ -23,6 +24,10 @@ namespace Bloom
         InsightWorkerTaskState state = InsightWorkerTaskState::CREATED;
 
         InsightWorkerTask(): QObject(nullptr) {};
+
+        virtual TaskGroups getTaskGroups() const {
+            return TaskGroups();
+        };
 
         void execute(TargetController::TargetControllerConsole& targetControllerConsole);
 
