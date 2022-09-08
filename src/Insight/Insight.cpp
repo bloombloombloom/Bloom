@@ -45,7 +45,6 @@ namespace Bloom
         try {
             this->startup();
 
-            this->workerThread->start();
             this->setThreadState(ThreadState::READY);
             Logger::info("Insight ready");
             this->application.exec();
@@ -179,20 +178,31 @@ namespace Bloom
         this->mainWindow->setInsightConfig(this->insightConfig);
         this->mainWindow->setEnvironmentConfig(this->environmentConfig);
 
-        // Prepare worker thread
-        this->workerThread = new QThread();
-        this->workerThread->setObjectName("IW" + QString::number(this->insightWorker->id));
-        this->insightWorker->moveToThread(this->workerThread);
-        QObject::connect(this->workerThread, &QThread::started, this->insightWorker, &InsightWorker::startup);
-        QObject::connect(this->workerThread, &QThread::finished, this->insightWorker, &QObject::deleteLater);
-        QObject::connect(this->workerThread, &QThread::finished, this->workerThread, &QThread::deleteLater);
+        // Construct and start worker threads
+        for (std::uint8_t i = 0; i < Insight::INSIGHT_WORKER_COUNT; ++i) {
+            auto* insightWorker = new InsightWorker();
+            auto* workerThread = new QThread();
+
+            workerThread->setObjectName("IW" + QString::number(insightWorker->id));
+            insightWorker->moveToThread(workerThread);
+            QObject::connect(workerThread, &QThread::started, insightWorker, &InsightWorker::startup);
+            QObject::connect(workerThread, &QThread::finished, insightWorker, &QObject::deleteLater);
+            QObject::connect(workerThread, &QThread::finished, workerThread, &QThread::deleteLater);
+
+            this->insightWorkersById[insightWorker->id] = std::pair(insightWorker, workerThread);
+
+            // TODO: Remove this hack. Find a better way to trigger the latest version check.
+            if (i == 0) {
+                QObject::connect(insightWorker, &InsightWorker::ready, this, [this] {
+                    this->checkBloomVersion();
+                });
+            }
+
+            Logger::debug("Starting InsightWorker" + std::to_string(insightWorker->id) + " thread");
+            workerThread->start();
+        }
 
         this->mainWindow->init(this->targetControllerConsole.getTargetDescriptor());
-
-        QObject::connect(this->insightWorker, &InsightWorker::ready, this, [this] {
-            this->checkBloomVersion();
-        });
-
         this->mainWindow->show();
     }
 
@@ -205,11 +215,15 @@ namespace Bloom
 
         this->mainWindow->close();
 
-        if (this->workerThread != nullptr && this->workerThread->isRunning()) {
-            Logger::debug("Stopping InsightWorker thread");
-            this->workerThread->quit();
-            Logger::debug("Waiting for InsightWorker thread to stop");
-            this->workerThread->wait();
+        for (auto& [workerId, workerPair] : this->insightWorkersById) {
+            auto* workerThread = workerPair.second;
+
+            if (workerThread != nullptr && workerThread->isRunning()) {
+                Logger::debug("Stopping InsightWorker" + std::to_string(workerId) + " thread");
+                workerThread->quit();
+                Logger::debug("Waiting for InsightWorker" + std::to_string(workerId) + " thread to stop");
+                workerThread->wait();
+            }
         }
 
         this->application.exit(0);
@@ -237,7 +251,7 @@ namespace Bloom
             }
         );
 
-        this->insightWorker->queueTask(versionQueryTask);
+        InsightWorker::queueTask(versionQueryTask);
     }
 
     void Insight::onInsightWindowActivated() {

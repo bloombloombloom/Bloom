@@ -42,7 +42,7 @@ Bloom and thus the connected AVR target. The DebugServer runs on a dedicated thr
 ##### Insight
 Insight is a graphical user interface that provides insight into the connected target. It presents the target's
 memories, GPIO pin states & registers, along with the ability to manipulate them. Insight occupies Bloom's main thread
-and employs a single worker thread for background tasks. Unlike other components within Bloom, Insight relies heavily
+and employs several worker threads for background tasks. Unlike other components within Bloom, Insight relies heavily
 on the Qt framework for its GUI capabilities and other useful utilities. See source code in src/Insight/ for more.
 
 ##### SignalHandler

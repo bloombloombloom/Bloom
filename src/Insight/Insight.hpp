@@ -2,6 +2,10 @@
 
 #include <QtCore>
 #include <QApplication>
+#include <cstdint>
+#include <map>
+#include <utility>
+#include <QThread>
 
 #include "src/Helpers/Thread.hpp"
 #include "src/Helpers/Paths.hpp"
@@ -62,6 +66,7 @@ namespace Bloom
         void shutdown();
 
     private:
+        static constexpr std::uint8_t INSIGHT_WORKER_COUNT = 3;
         std::string qtApplicationName = "Bloom";
         std::array<char*, 1> qtApplicationArgv = {this->qtApplicationName.data()};
         int qtApplicationArgc = 1;
@@ -75,7 +80,9 @@ namespace Bloom
         EventListener& eventListener;
 
         QApplication application;
-        InsightWorker* insightWorker = new InsightWorker();
+
+        std::map<decltype(InsightWorker::id), std::pair<InsightWorker*, QThread*>> insightWorkersById;
+
         InsightWindow* mainWindow = new InsightWindow(
             this->environmentConfig,
             this->insightConfig,
@@ -85,12 +92,6 @@ namespace Bloom
         TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole();
         Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
         InsightSignals* insightSignals = InsightSignals::instance();
-
-        /**
-         * Insight consists of two threads - the main thread where the main Qt event loop runs (for the GUI), and
-         * a single worker thread to handle any blocking/time-expensive operations.
-         */
-        QThread* workerThread = nullptr;
 
         void startup();
 
