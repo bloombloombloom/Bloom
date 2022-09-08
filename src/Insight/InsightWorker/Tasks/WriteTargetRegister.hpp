@@ -12,6 +12,12 @@ namespace Bloom
     public:
         explicit WriteTargetRegister(const Targets::TargetRegister& targetRegister): targetRegister(targetRegister) {}
 
+        TaskGroups getTaskGroups() const override {
+            return TaskGroups({
+                TaskGroup::USES_TARGET_CONTROLLER,
+            });
+        };
+
     protected:
         void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
 

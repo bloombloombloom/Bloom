@@ -13,6 +13,12 @@ namespace Bloom
     public:
         ReadProgramCounter() = default;
 
+        TaskGroups getTaskGroups() const override {
+            return TaskGroups({
+                TaskGroup::USES_TARGET_CONTROLLER,
+            });
+        };
+
     signals:
         void programCounterRead(Targets::TargetProgramCounter programCounter);
 

@@ -12,6 +12,12 @@ namespace Bloom
     public:
         explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors): descriptors(descriptors) {}
 
+        TaskGroups getTaskGroups() const override {
+            return TaskGroups({
+                TaskGroup::USES_TARGET_CONTROLLER,
+            });
+        };
+
     signals:
         void targetRegistersRead(Targets::TargetRegisters registers);
 

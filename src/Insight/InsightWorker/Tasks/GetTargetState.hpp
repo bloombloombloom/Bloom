@@ -13,6 +13,12 @@ namespace Bloom
     public:
         GetTargetState() = default;
 
+        TaskGroups getTaskGroups() const override {
+            return TaskGroups({
+                TaskGroup::USES_TARGET_CONTROLLER,
+            });
+        };
+
     signals:
         void targetState(Targets::TargetState state);
 

@@ -13,6 +13,12 @@ namespace Bloom
     public:
         GetTargetDescriptor() = default;
 
+        TaskGroups getTaskGroups() const override {
+            return TaskGroups({
+                TaskGroup::USES_TARGET_CONTROLLER,
+            });
+        };
+
     signals:
         void targetDescriptor(Targets::TargetDescriptor targetDescriptor);
 

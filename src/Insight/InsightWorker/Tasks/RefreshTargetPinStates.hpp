@@ -13,6 +13,12 @@ namespace Bloom
     public:
         explicit RefreshTargetPinStates(int variantId): variantId(variantId) {}
 
+        TaskGroups getTaskGroups() const override {
+            return TaskGroups({
+                TaskGroup::USES_TARGET_CONTROLLER,
+            });
+        };
+
     signals:
         void targetPinStatesRetrieved(Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);
 

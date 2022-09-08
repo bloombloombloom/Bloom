@@ -24,6 +24,12 @@ namespace Bloom
             , size(size)
             , excludedAddressRanges(excludedAddressRanges) {}
 
+        TaskGroups getTaskGroups() const override {
+            return TaskGroups({
+                TaskGroup::USES_TARGET_CONTROLLER,
+            });
+        };
+
     signals:
         void targetMemoryRead(Targets::TargetMemoryBuffer buffer);
 
