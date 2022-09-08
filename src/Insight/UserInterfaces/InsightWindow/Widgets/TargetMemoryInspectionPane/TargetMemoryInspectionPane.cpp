@@ -24,14 +24,12 @@ namespace Bloom::Widgets
     TargetMemoryInspectionPane::TargetMemoryInspectionPane(
         const TargetMemoryDescriptor& targetMemoryDescriptor,
         TargetMemoryInspectionPaneSettings& settings,
-        InsightWorker& insightWorker,
         PaneState& paneState,
         PanelWidget* parent
     )
         : PaneWidget(paneState, parent)
         , targetMemoryDescriptor(targetMemoryDescriptor)
         , settings(settings)
-        , insightWorker(insightWorker)
     {
         this->setObjectName("target-memory-inspection-pane");
 
@@ -85,7 +83,6 @@ namespace Bloom::Widgets
             this->settings.hexViewerWidgetSettings,
             this->settings.focusedMemoryRegions,
             this->settings.excludedMemoryRegions,
-            this->insightWorker,
             this
         );
         this->hexViewerWidget->setDisabled(true);

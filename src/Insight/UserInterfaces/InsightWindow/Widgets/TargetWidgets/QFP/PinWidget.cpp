@@ -14,9 +14,8 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
     PinWidget::PinWidget(
         const TargetPinDescriptor& pinDescriptor,
         const TargetVariant& targetVariant,
-        InsightWorker& insightWorker,
         QWidget* parent
-    ): TargetPinWidget(pinDescriptor, targetVariant, insightWorker, parent) {
+    ): TargetPinWidget(pinDescriptor, targetVariant, parent) {
         this->layout = new QBoxLayout(QBoxLayout::TopToBottom);
         this->layout->setContentsMargins(0, 0, 0, 0);
         this->layout->setSpacing(0);

@@ -26,14 +26,12 @@ namespace Bloom::Widgets
 
     TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
         const Targets::TargetRegisterDescriptor& registerDescriptor,
-        InsightWorker& insightWorker,
         TargetState currentTargetState,
         const std::optional<Targets::TargetMemoryBuffer>& registerValue,
         QWidget* parent
     )
         : QWidget(parent)
         , registerDescriptor(registerDescriptor)
-        , insightWorker(insightWorker)
         , registerValue(registerValue.value_or(Targets::TargetMemoryBuffer(registerDescriptor.size, 0)))
     {
         this->setWindowFlag(Qt::Window);
@@ -91,7 +89,6 @@ namespace Bloom::Widgets
         this->registerHistoryWidget = new RegisterHistoryWidget(
             this->registerDescriptor,
             this->registerValue,
-            insightWorker,
             this->container
         );
 

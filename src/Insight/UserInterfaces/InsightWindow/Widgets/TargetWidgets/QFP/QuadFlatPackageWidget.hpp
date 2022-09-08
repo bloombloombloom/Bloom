@@ -22,7 +22,6 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
     public:
         QuadFlatPackageWidget(
             const Targets::TargetVariant& targetVariant,
-            InsightWorker& insightWorker,
             QWidget* parent
         );
 

@@ -16,8 +16,6 @@
 #include "CurrentItem.hpp"
 #include "RegisterHistoryItem.hpp"
 
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
-
 namespace Bloom::Widgets
 {
     class RegisterHistoryWidget: public QWidget
@@ -28,7 +26,6 @@ namespace Bloom::Widgets
         RegisterHistoryWidget(
             const Targets::TargetRegisterDescriptor& registerDescriptor,
             const Targets::TargetMemoryBuffer& currentValue,
-            InsightWorker& insightWorker,
             QWidget* parent
         );
 
@@ -50,7 +47,6 @@ namespace Bloom::Widgets
 
     private:
         Targets::TargetRegisterDescriptor registerDescriptor;
-        InsightWorker& insightWorker;
 
         QWidget* container = nullptr;
         QWidget* itemContainer = nullptr;

@@ -10,16 +10,13 @@
 
 namespace Bloom::Widgets::InsightTargetWidgets::Dip
 {
-    using namespace Bloom::Exceptions;
-
     using Bloom::Targets::TargetVariant;
 
     DualInlinePackageWidget::DualInlinePackageWidget(
         const TargetVariant& targetVariant,
-        InsightWorker& insightWorker,
         QWidget* parent
     )
-        : TargetPackageWidget(targetVariant, insightWorker, parent)
+        : TargetPackageWidget(targetVariant, parent)
     {
         auto stylesheetFile = QFile(QString::fromStdString(
                 Paths::compiledResourcesPath()
@@ -45,7 +42,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         this->bottomPinLayout->setAlignment(Qt::AlignmentFlag::AlignHCenter);
 
         for (const auto& [targetPinNumber, targetPinDescriptor]: targetVariant.pinDescriptorsByNumber) {
-            auto* pinWidget = new PinWidget(targetPinDescriptor, targetVariant, insightWorker, this);
+            auto* pinWidget = new PinWidget(targetPinDescriptor, targetVariant, this);
             this->pinWidgets.push_back(pinWidget);
             TargetPackageWidget::pinWidgets.push_back(pinWidget);
 

@@ -14,7 +14,6 @@
 
 #include "ItemWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 
@@ -28,7 +27,6 @@ namespace Bloom::Widgets
     public:
         TargetRegistersPaneWidget(
             const Targets::TargetDescriptor& targetDescriptor,
-            InsightWorker& insightWorker,
             PaneState& paneState,
             PanelWidget *parent
         );
@@ -46,7 +44,6 @@ namespace Bloom::Widgets
 
     private:
         const Targets::TargetDescriptor& targetDescriptor;
-        InsightWorker& insightWorker;
 
         QWidget* container = nullptr;
 

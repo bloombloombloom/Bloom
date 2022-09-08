@@ -7,10 +7,9 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
     PinWidget::PinWidget(
         const TargetPinDescriptor& pinDescriptor,
         const TargetVariant& targetVariant,
-        InsightWorker& insightWorker,
         QWidget* parent
     )
-        : TargetPinWidget(pinDescriptor, targetVariant, insightWorker, parent)
+        : TargetPinWidget(pinDescriptor, targetVariant, parent)
     {
         this->setFixedSize(PinWidget::MINIMUM_WIDTH, PinWidget::MAXIMUM_HEIGHT);
 

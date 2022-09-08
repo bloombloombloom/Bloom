@@ -77,7 +77,6 @@ namespace Bloom
         QApplication application;
         InsightWorker* insightWorker = new InsightWorker();
         InsightWindow* mainWindow = new InsightWindow(
-            *(this->insightWorker),
             this->environmentConfig,
             this->insightConfig,
             this->insightProjectSettings

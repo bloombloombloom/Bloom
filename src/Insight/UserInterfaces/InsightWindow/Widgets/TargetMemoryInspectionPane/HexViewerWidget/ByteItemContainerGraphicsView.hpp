@@ -7,8 +7,6 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
-
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "ByteItemGraphicsScene.hpp"
 #include "HexViewerWidgetSettings.hpp"
@@ -24,7 +22,6 @@ namespace Bloom::Widgets
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-            InsightWorker& insightWorker,
             const HexViewerWidgetSettings& settings,
             Label* hoveredAddressLabel,
             QWidget* parent

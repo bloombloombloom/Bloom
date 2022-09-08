@@ -10,16 +10,16 @@
 
 namespace Bloom::Widgets
 {
-    using namespace Bloom::Exceptions;
-
     using Bloom::Targets::TargetRegisterDescriptor;
 
     RegisterGroupWidget::RegisterGroupWidget(
         QString name,
         const std::set<TargetRegisterDescriptor>& registerDescriptors,
-        InsightWorker& insightWorker,
         TargetRegistersPaneWidget* parent
-    ): ItemWidget(parent), name(std::move(name)) {
+    )
+        : ItemWidget(parent)
+        , name(std::move(name))
+    {
         this->setObjectName(this->name);
 
         this->headerWidget->setObjectName("register-group-header");
@@ -64,7 +64,7 @@ namespace Bloom::Widgets
                 continue;
             }
 
-            auto* registerWidget = new RegisterWidget(descriptor, insightWorker, this->bodyWidget);
+            auto* registerWidget = new RegisterWidget(descriptor, this->bodyWidget);
             bodyLayout->addWidget(registerWidget, 0, Qt::AlignmentFlag::AlignTop);
 
             QObject::connect(

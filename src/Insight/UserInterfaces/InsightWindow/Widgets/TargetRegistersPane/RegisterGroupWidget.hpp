@@ -8,7 +8,6 @@
 
 #include "TargetRegistersPaneWidget.hpp"
 #include "ItemWidget.hpp"
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgWidget.hpp"
@@ -31,7 +30,6 @@ namespace Bloom::Widgets
         RegisterGroupWidget(
             QString name,
             const std::set<Targets::TargetRegisterDescriptor>& registerDescriptors,
-            InsightWorker& insightWorker,
             TargetRegistersPaneWidget* parent
         );
 

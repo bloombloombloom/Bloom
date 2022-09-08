@@ -12,12 +12,10 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
     TargetPackageWidget::TargetPackageWidget(
         Targets::TargetVariant targetVariant,
-        InsightWorker& insightWorker,
         QWidget* parent
     )
         : QWidget(parent)
         , targetVariant(std::move(targetVariant))
-        , insightWorker(insightWorker)
     {
         auto* insightSignals = InsightSignals::instance();
 

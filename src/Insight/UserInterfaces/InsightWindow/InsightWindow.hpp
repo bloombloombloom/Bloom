@@ -8,7 +8,6 @@
 
 #include "src/ProjectSettings.hpp"
 #include "src/ProjectConfig.hpp"
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetState.hpp"
 
 #include "src/Targets/TargetDescriptor.hpp"
@@ -33,7 +32,6 @@ namespace Bloom
 
     public:
         InsightWindow(
-            InsightWorker& insightWorker,
             const EnvironmentConfig& environmentConfig,
             const InsightConfig& insightConfig,
             InsightProjectSettings& insightProjectSettings
@@ -64,8 +62,6 @@ namespace Bloom
         InsightConfig insightConfig;
         EnvironmentConfig environmentConfig;
         TargetConfig targetConfig;
-
-        InsightWorker& insightWorker;
 
         bool activated = false;
 

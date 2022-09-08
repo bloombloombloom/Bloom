@@ -19,7 +19,6 @@ namespace Bloom::Widgets
 
     RegisterWidget::RegisterWidget(
         TargetRegisterDescriptor descriptor,
-        InsightWorker& insightWorker,
         QWidget *parent
     )
         : ItemWidget(parent)
@@ -27,7 +26,6 @@ namespace Bloom::Widgets
         , searchKeywords(QString::fromStdString(
             this->descriptor.name.value_or("") + this->descriptor.description.value_or("")
         ).toLower())
-        , insightWorker(insightWorker)
     {
         this->setObjectName("register-item");
         this->setFixedHeight(25);
@@ -139,7 +137,6 @@ namespace Bloom::Widgets
         if (this->inspectWindow == nullptr) {
             this->inspectWindow = new TargetRegisterInspectorWindow(
                 this->descriptor,
-                this->insightWorker,
                 this->targetState,
                 this->currentRegister.has_value() ? std::optional(this->currentRegister->value)
                     : std::nullopt,

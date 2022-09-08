@@ -25,13 +25,11 @@ namespace Bloom::Widgets
 
     TargetRegistersPaneWidget::TargetRegistersPaneWidget(
         const TargetDescriptor& targetDescriptor,
-        InsightWorker& insightWorker,
         PaneState& paneState,
         PanelWidget* parent
     )
         : PaneWidget(paneState, parent)
         , targetDescriptor(targetDescriptor)
-        , insightWorker(insightWorker)
     {
         this->setObjectName("target-registers-side-pane");
 
@@ -86,7 +84,6 @@ namespace Bloom::Widgets
         auto* generalPurposeRegisterGroupWidget = new RegisterGroupWidget(
             "CPU General Purpose",
             this->renderedDescriptors,
-            insightWorker,
             this
         );
 
@@ -106,7 +103,6 @@ namespace Bloom::Widgets
             auto* registerGroupWidget = new RegisterGroupWidget(
                 QString::fromStdString(groupName).toUpper(),
                 registerDescriptors,
-                insightWorker,
                 this
             );
 

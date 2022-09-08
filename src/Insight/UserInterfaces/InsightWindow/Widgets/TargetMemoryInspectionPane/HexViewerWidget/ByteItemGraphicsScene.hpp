@@ -21,8 +21,6 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"
 
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
-
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "ByteItem.hpp"
@@ -46,7 +44,6 @@ namespace Bloom::Widgets
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-            InsightWorker& insightWorker,
             const HexViewerWidgetSettings& settings,
             Label* hoveredAddressLabel,
             QGraphicsView* parent
@@ -92,7 +89,6 @@ namespace Bloom::Widgets
         std::map<std::size_t, std::vector<ByteItem*>> byteItemsByColumnIndex;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
-        InsightWorker& insightWorker;
 
         const QMargins margins = QMargins(10, 10, 10, 10);
         const HexViewerWidgetSettings& settings;

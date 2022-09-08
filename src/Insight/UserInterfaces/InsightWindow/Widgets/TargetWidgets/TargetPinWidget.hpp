@@ -3,7 +3,6 @@
 #include <QWidget>
 #include <utility>
 
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"
 
@@ -17,7 +16,6 @@ namespace Bloom::Widgets::InsightTargetWidgets
         TargetPinWidget(
             Targets::TargetPinDescriptor pinDescriptor,
             Targets::TargetVariant targetVariant,
-            InsightWorker& insightWorker,
             QWidget* parent
         );
 
@@ -45,8 +43,6 @@ namespace Bloom::Widgets::InsightTargetWidgets
         virtual void onWidgetBodyClicked();
 
     protected:
-        InsightWorker& insightWorker;
-
         Targets::TargetVariant targetVariant;
         Targets::TargetPinDescriptor pinDescriptor;
         std::optional<Targets::TargetPinState> pinState;

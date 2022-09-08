@@ -43,7 +43,6 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         PinWidget(
             const Targets::TargetPinDescriptor& pinDescriptor,
             const Targets::TargetVariant& targetVariant,
-            InsightWorker& insightWorker,
             QWidget* parent
         );
 

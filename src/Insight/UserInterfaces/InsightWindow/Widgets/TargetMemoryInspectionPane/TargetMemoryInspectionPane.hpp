@@ -6,7 +6,6 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
 #include "src/Targets/TargetState.hpp"
@@ -31,7 +30,6 @@ namespace Bloom::Widgets
         TargetMemoryInspectionPane(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             TargetMemoryInspectionPaneSettings& settings,
-            InsightWorker& insightWorker,
             PaneState& paneState,
             PanelWidget* parent
         );
@@ -48,7 +46,6 @@ namespace Bloom::Widgets
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
-        InsightWorker& insightWorker;
 
         std::optional<Targets::TargetMemoryBuffer> data;
 

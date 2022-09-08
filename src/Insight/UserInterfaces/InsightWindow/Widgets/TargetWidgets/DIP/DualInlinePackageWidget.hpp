@@ -25,7 +25,6 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
     public:
         DualInlinePackageWidget(
             const Targets::TargetVariant& targetVariant,
-            InsightWorker& insightWorker,
             QWidget* parent
         );
 

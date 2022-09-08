@@ -1,5 +1,6 @@
 #include "RegisterHistoryWidget.hpp"
 
+#include <QFile>
 #include <QVBoxLayout>
 #include <QMargins>
 #include <QTableWidget>
@@ -25,12 +26,10 @@ namespace Bloom::Widgets
     RegisterHistoryWidget::RegisterHistoryWidget(
         const Targets::TargetRegisterDescriptor& registerDescriptor,
         const Targets::TargetMemoryBuffer& currentValue,
-        InsightWorker& insightWorker,
         QWidget* parent
     )
         : QWidget(parent)
         , registerDescriptor(registerDescriptor)
-        , insightWorker(insightWorker)
     {
         this->setObjectName("target-register-history-widget");
         this->setFixedWidth(300);

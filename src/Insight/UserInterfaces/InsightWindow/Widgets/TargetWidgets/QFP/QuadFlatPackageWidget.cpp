@@ -17,9 +17,8 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 
     QuadFlatPackageWidget::QuadFlatPackageWidget(
         const TargetVariant& targetVariant,
-        InsightWorker& insightWorker,
         QWidget* parent
-    ): TargetPackageWidget(targetVariant, insightWorker, parent) {
+    ): TargetPackageWidget(targetVariant, parent) {
         assert((targetVariant.pinDescriptorsByNumber.size() % 4) == 0);
 
         auto stylesheetFile = QFile(QString::fromStdString(
@@ -62,7 +61,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
 
         const auto pinCountPerLayout = static_cast<int>(targetVariant.pinDescriptorsByNumber.size() / 4);
         for (const auto& [targetPinNumber, targetPinDescriptor]: targetVariant.pinDescriptorsByNumber) {
-            auto* pinWidget = new PinWidget(targetPinDescriptor, targetVariant, insightWorker, this);
+            auto* pinWidget = new PinWidget(targetPinDescriptor, targetVariant, this);
             this->pinWidgets.push_back(pinWidget);
             TargetPackageWidget::pinWidgets.push_back(pinWidget);
 

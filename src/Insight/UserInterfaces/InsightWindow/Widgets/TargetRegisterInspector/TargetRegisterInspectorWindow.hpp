@@ -17,8 +17,6 @@
 #include "BitsetWidget/BitsetWidget.hpp"
 #include "RegisterHistoryWidget/RegisterHistoryWidget.hpp"
 
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
-
 namespace Bloom::Widgets
 {
     class TargetRegisterInspectorWindow: public QWidget
@@ -28,7 +26,6 @@ namespace Bloom::Widgets
     public:
         TargetRegisterInspectorWindow(
             const Targets::TargetRegisterDescriptor& registerDescriptor,
-            InsightWorker& insightWorker,
             Targets::TargetState currentTargetState,
             const std::optional<Targets::TargetMemoryBuffer>& registerValue = std::nullopt,
             QWidget* parent = nullptr
@@ -44,7 +41,6 @@ namespace Bloom::Widgets
     private:
         Targets::TargetRegisterDescriptor registerDescriptor;
         Targets::TargetMemoryBuffer registerValue;
-        InsightWorker& insightWorker;
 
         QWidget* container = nullptr;
         Label* registerNameLabel = nullptr;

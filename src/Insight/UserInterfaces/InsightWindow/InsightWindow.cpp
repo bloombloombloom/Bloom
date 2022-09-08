@@ -34,13 +34,11 @@ namespace Bloom
     using Bloom::Targets::TargetMemoryType;
 
     InsightWindow::InsightWindow(
-        InsightWorker& insightWorker,
         const EnvironmentConfig& environmentConfig,
         const InsightConfig& insightConfig,
         InsightProjectSettings& insightProjectSettings
     )
         : QMainWindow(nullptr)
-        , insightWorker(insightWorker)
         , environmentConfig(environmentConfig)
         , targetConfig(environmentConfig.targetConfig)
         , insightConfig(insightConfig)
@@ -525,14 +523,12 @@ namespace Bloom
         ) {
             this->targetPackageWidget = new InsightTargetWidgets::Dip::DualInlinePackageWidget(
                 *variant,
-                this->insightWorker,
                 this->ioContainerWidget
             );
 
         } else if (variant->package == TargetPackage::QFP || variant->package == TargetPackage::QFN) {
             this->targetPackageWidget = new InsightTargetWidgets::Qfp::QuadFlatPackageWidget(
                 *variant,
-                this->insightWorker,
                 this->ioContainerWidget
             );
         }
@@ -560,7 +556,6 @@ namespace Bloom
         auto* leftPanelLayout = this->leftPanel->layout();
         this->targetRegistersSidePane = new TargetRegistersPaneWidget(
             this->targetDescriptor,
-            this->insightWorker,
             *(this->insightProjectSettings.registersPaneState),
             this->leftPanel
         );
@@ -601,7 +596,6 @@ namespace Bloom
             this->ramInspectionPane = new TargetMemoryInspectionPane(
                 ramDescriptor,
                 memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::RAM],
-                this->insightWorker,
                 *(this->insightProjectSettings.ramInspectionPaneState),
                 this->bottomPanel
             );
@@ -645,7 +639,6 @@ namespace Bloom
             this->eepromInspectionPane = new TargetMemoryInspectionPane(
                 eepromDescriptor,
                 memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::EEPROM],
-                this->insightWorker,
                 *(this->insightProjectSettings.eepromInspectionPaneState),
                 this->bottomPanel
             );

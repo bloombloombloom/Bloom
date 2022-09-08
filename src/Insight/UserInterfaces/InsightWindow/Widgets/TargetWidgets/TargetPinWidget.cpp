@@ -13,11 +13,9 @@ namespace Bloom::Widgets::InsightTargetWidgets
     TargetPinWidget::TargetPinWidget(
         Targets::TargetPinDescriptor pinDescriptor,
         Targets::TargetVariant targetVariant,
-        InsightWorker& insightWorker,
         QWidget* parent
     )
         : QWidget(parent)
-        , insightWorker(insightWorker)
         , targetVariant(std::move(targetVariant))
         , pinDescriptor(std::move(pinDescriptor)
     ) {

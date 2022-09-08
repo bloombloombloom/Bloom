@@ -8,7 +8,6 @@ namespace Bloom::Widgets
         const TargetMemoryDescriptor& targetMemoryDescriptor,
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-        InsightWorker& insightWorker,
         const HexViewerWidgetSettings& settings,
         Label* hoveredAddressLabel,
         QWidget* parent
@@ -26,7 +25,6 @@ namespace Bloom::Widgets
             targetMemoryDescriptor,
             focusedMemoryRegions,
             excludedMemoryRegions,
-            insightWorker,
             settings,
             hoveredAddressLabel,
             this

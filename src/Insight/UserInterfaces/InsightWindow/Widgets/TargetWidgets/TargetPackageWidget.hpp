@@ -5,11 +5,10 @@
 #include <vector>
 #include <map>
 
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
-
 #include "TargetPinWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
-#include "src/Targets/TargetDescriptor.hpp"
+#include "src/Targets/TargetState.hpp"
+#include "src/Targets/TargetRegister.hpp"
 
 namespace Bloom::Widgets::InsightTargetWidgets
 {
@@ -21,7 +20,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
         Q_OBJECT
 
     public:
-        TargetPackageWidget(Targets::TargetVariant targetVariant, InsightWorker& insightWorker, QWidget* parent);
+        TargetPackageWidget(Targets::TargetVariant targetVariant, QWidget* parent);
         virtual void refreshPinStates(std::optional<std::function<void(void)>> callback = std::nullopt);
 
         virtual void setTargetState(Targets::TargetState targetState) {
@@ -38,7 +37,6 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
     protected:
         Targets::TargetVariant targetVariant;
-        InsightWorker& insightWorker;
         std::vector<TargetPinWidget*> pinWidgets;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;

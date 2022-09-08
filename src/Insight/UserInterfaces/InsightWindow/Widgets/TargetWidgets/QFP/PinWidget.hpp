@@ -48,7 +48,6 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         PinWidget(
             const Targets::TargetPinDescriptor& pinDescriptor,
             const Targets::TargetVariant& targetVariant,
-            InsightWorker& insightWorker,
             QWidget* parent
         );
 

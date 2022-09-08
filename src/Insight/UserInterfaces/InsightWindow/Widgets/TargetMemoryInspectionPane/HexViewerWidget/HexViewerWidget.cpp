@@ -1,5 +1,7 @@
 #include "HexViewerWidget.hpp"
 
+#include <QFile>
+
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/InsightSignals.hpp"
 
@@ -17,7 +19,6 @@ namespace Bloom::Widgets
         HexViewerWidgetSettings& settings,
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-        InsightWorker& insightWorker,
         QWidget* parent
     )
         : QWidget(parent)
@@ -25,7 +26,6 @@ namespace Bloom::Widgets
         , settings(settings)
         , focusedMemoryRegions(focusedMemoryRegions)
         , excludedMemoryRegions(excludedMemoryRegions)
-        , insightWorker(insightWorker)
     {
         this->setObjectName("hex-viewer-widget");
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -76,7 +76,6 @@ namespace Bloom::Widgets
             this->targetMemoryDescriptor,
             this->focusedMemoryRegions,
             this->excludedMemoryRegions,
-            this->insightWorker,
             this->settings,
             this->hoveredAddressLabel,
             this->byteItemGraphicsViewContainer

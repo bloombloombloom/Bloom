@@ -9,7 +9,6 @@
 #include <QString>
 
 #include "ItemWidget.hpp"
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgWidget.hpp"
@@ -29,7 +28,6 @@ namespace Bloom::Widgets
 
         RegisterWidget(
             Targets::TargetRegisterDescriptor descriptor,
-            InsightWorker& insightWorker,
             QWidget *parent
         );
 
@@ -52,7 +50,6 @@ namespace Bloom::Widgets
         void copyValueBinary();
 
     private:
-        InsightWorker& insightWorker;
         QHBoxLayout* layout = new QHBoxLayout(this);
         SvgWidget* registerIcon = new SvgWidget(this);
         Label* nameLabel = new Label(this);

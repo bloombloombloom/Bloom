@@ -8,8 +8,6 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"
 
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
-
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TextInput.hpp"
@@ -33,7 +31,6 @@ namespace Bloom::Widgets
             HexViewerWidgetSettings& settings,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-            InsightWorker& insightWorker,
             QWidget* parent
         );
 
@@ -49,8 +46,6 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
-
-        InsightWorker& insightWorker;
 
         HexViewerWidgetSettings& settings;
 
