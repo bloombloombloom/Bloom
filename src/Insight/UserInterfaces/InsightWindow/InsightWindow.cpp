@@ -325,18 +325,21 @@ namespace Bloom
          * estate for target variants with more than 100 pins.
          *
          * This will be addressed at some point, but for now, we just won't support variants with more than 100 pins.
+         *
+         * I don't think there are any AVR targets with variants with more than 100 pins, so this isn't a problem anyway.
          */
         if (pinCount > 100) {
             return false;
         }
 
-        if (variant.package == TargetPackage::DIP
+        if (
+            variant.package == TargetPackage::DIP
             || variant.package == TargetPackage::SOIC
             || variant.package == TargetPackage::SSOP
         ) {
             // All DIP, SOIC and SSOP variants must have a pin count that is a multiple of two
-            if (pinCount % 2 == 0) {
-                return true;
+            if (pinCount % 2 != 0) {
+                return false;
             }
         }
 
@@ -345,12 +348,12 @@ namespace Bloom
              * All QFP and QFN variants must have a pin count that is a multiple of four. And there must be
              * more than one pin per side.
              */
-            if (pinCount % 4 == 0 && pinCount > 4) {
-                return true;
+            if (pinCount % 4 != 0 || pinCount <= 4) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     void InsightWindow::setUiDisabled(bool disable) {
@@ -469,7 +472,8 @@ namespace Bloom
             std::optional(QString::fromStdString(this->previouslySelectedVariant->name).toLower())
             : std::nullopt;
 
-        if (previouslySelectedVariantName.has_value()
+        if (
+            previouslySelectedVariantName.has_value()
             && this->supportedVariantsByName.contains(previouslySelectedVariantName.value())
         ) {
             this->selectVariant(&(this->supportedVariantsByName.at(previouslySelectedVariantName.value())));

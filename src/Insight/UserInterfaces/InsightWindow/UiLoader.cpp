@@ -17,7 +17,7 @@ namespace Bloom
     using namespace Bloom::Widgets;
 
     UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
-        this->customWidgetConstructorsByWidgetName = decltype(this->customWidgetConstructorsByWidgetName) {
+        this->customWidgetConstructorsByWidgetName = {
             {
                 "Label",
                 [this] (QWidget* parent, const QString& name) {
