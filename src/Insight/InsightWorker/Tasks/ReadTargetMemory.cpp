@@ -15,7 +15,7 @@ namespace Bloom
          * This allows the TargetController to service other commands in-between reads, reducing the likelihood of
          * command timeouts when we're reading lots of data.
          */
-        constexpr auto readSize = 128;
+        constexpr auto readSize = 256;
         const auto readsRequired = static_cast<std::uint32_t>(
             std::ceil(static_cast<float>(this->size) / static_cast<float>(readSize))
         );
