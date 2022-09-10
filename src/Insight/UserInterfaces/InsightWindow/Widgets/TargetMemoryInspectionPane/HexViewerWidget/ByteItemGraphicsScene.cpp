@@ -22,7 +22,6 @@ namespace Bloom::Widgets
         , excludedMemoryRegions(excludedMemoryRegions)
         , settings(settings)
         , hoveredAddressLabel(hoveredAddressLabel)
-        , parent(parent)
     {
         this->setObjectName("byte-widget-container");
 
@@ -60,8 +59,6 @@ namespace Bloom::Widgets
             &ByteItemGraphicsScene::onTargetStateChanged
         );
 
-        this->refreshRegions();
-        this->adjustSize();
     }
 
     void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buffer) {
@@ -153,6 +150,7 @@ namespace Bloom::Widgets
     }
 
     void ByteItemGraphicsScene::adjustSize(bool forced) {
+        const auto* parent = this->getParent();
         const auto width = this->getSceneWidth();
 
         const auto columnCount = static_cast<std::size_t>(
@@ -177,7 +175,7 @@ namespace Bloom::Widgets
                 0,
                 0,
                 width,
-                std::max(static_cast<int>(this->sceneRect().height()), this->parent->viewport()->height())
+                std::max(static_cast<int>(this->sceneRect().height()), parent->viewport()->height())
             );
 
             return;
@@ -199,7 +197,7 @@ namespace Bloom::Widgets
                 0,
                 0,
                 width,
-                std::max(sceneHeight, this->parent->height())
+                std::max(sceneHeight, parent->height())
             );
         }
     }

@@ -166,7 +166,7 @@ namespace Bloom
          */
         auto* eventDispatchTimer = new QTimer(&(this->application));
         QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
-        eventDispatchTimer->start(50);
+        eventDispatchTimer->start(100);
 
         QObject::connect(
             this->mainWindow,

@@ -34,9 +34,13 @@ namespace Bloom::Widgets
             QWidget* parent
         );
 
+        void init();
         void updateValues(const Targets::TargetMemoryBuffer& buffer);
         void refreshRegions();
         void setStackPointer(Targets::TargetStackPointer stackPointer);
+
+    signals:
+        void ready();
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
@@ -53,6 +57,7 @@ namespace Bloom::Widgets
         QWidget* toolBar = nullptr;
         QWidget* bottomBar = nullptr;
 
+        Label* loadingHexViewerLabel = nullptr;
         QWidget* byteItemGraphicsViewContainer = nullptr;
         ByteItemContainerGraphicsView* byteItemGraphicsView = nullptr;
         ByteItemGraphicsScene* byteItemGraphicsScene = nullptr;

@@ -1,17 +1,13 @@
 #include "ByteItemContainerGraphicsView.hpp"
 
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
+#include "src/Insight/InsightWorker/Tasks/ConstructHexViewerByteItemScene.hpp"
+
 namespace Bloom::Widgets
 {
     using Bloom::Targets::TargetMemoryDescriptor;
 
-    ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
-        const TargetMemoryDescriptor& targetMemoryDescriptor,
-        std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
-        std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-        const HexViewerWidgetSettings& settings,
-        Label* hoveredAddressLabel,
-        QWidget* parent
-    )
+    ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(QWidget* parent)
         : QGraphicsView(parent)
     {
         this->setObjectName("graphics-view");
@@ -20,27 +16,52 @@ namespace Bloom::Widgets
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         this->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+    }
 
-        this->scene = new ByteItemGraphicsScene(
+    void ByteItemContainerGraphicsView::initScene(
+        const TargetMemoryDescriptor& targetMemoryDescriptor,
+        std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+        std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
+        const HexViewerWidgetSettings& settings,
+        Label* hoveredAddressLabel
+    ) {
+        auto* constructSceneTask = new ConstructHexViewerByteItemScene(
             targetMemoryDescriptor,
             focusedMemoryRegions,
             excludedMemoryRegions,
             settings,
-            hoveredAddressLabel,
-            this
+            hoveredAddressLabel
         );
 
-        this->setScene(this->scene);
+        QObject::connect(
+            constructSceneTask,
+            &ConstructHexViewerByteItemScene::sceneCreated,
+            this,
+            [this] (ByteItemGraphicsScene* scene) {
+                scene->moveToThread(this->thread());
+                scene->setParent(this);
 
+                this->scene = scene;
+                this->scene->refreshRegions();
+                this->scene->setEnabled(this->isEnabled());
+                this->setScene(this->scene);
+
+                emit this->ready();
+            }
+        );
+
+        InsightWorker::queueTask(constructSceneTask);
     }
 
     void ByteItemContainerGraphicsView::scrollToByteItemAtAddress(Targets::TargetMemoryAddress address) {
-        this->centerOn(this->scene->getByteItemPositionByAddress(address));
+        if (this->scene != nullptr) {
+            this->centerOn(this->scene->getByteItemPositionByAddress(address));
+        }
     }
 
     bool ByteItemContainerGraphicsView::event(QEvent* event) {
         const auto eventType = event->type();
-        if (eventType == QEvent::Type::EnabledChange) {
+        if (eventType == QEvent::Type::EnabledChange && this->scene != nullptr) {
             this->scene->setEnabled(this->isEnabled());
         }
 
@@ -49,6 +70,9 @@ namespace Bloom::Widgets
 
     void ByteItemContainerGraphicsView::resizeEvent(QResizeEvent* event) {
         QGraphicsView::resizeEvent(event);
-        this->scene->adjustSize();
+
+        if (this->scene != nullptr) {
+            this->scene->adjustSize();
+        }
     }
 }

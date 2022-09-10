@@ -93,7 +93,6 @@ namespace Bloom::Widgets
         const QMargins margins = QMargins(10, 10, 10, 10);
         const HexViewerWidgetSettings& settings;
 
-        QGraphicsView* parent = nullptr;
         Label* hoveredAddressLabel = nullptr;
 
         ByteAddressContainer* byteAddressContainer = nullptr;
@@ -104,6 +103,11 @@ namespace Bloom::Widgets
         QGraphicsRectItem* rubberBandRectItem = nullptr;
         std::optional<QPointF> rubberBandInitPoint = std::nullopt;
 
+
+        QGraphicsView* getParent() const {
+            return dynamic_cast<QGraphicsView*>(this->parent());
+        }
+
         int getSceneWidth() {
             /*
              * Minus 2 for the QSS margin on the vertical scrollbar (which isn't accounted for during viewport
@@ -111,7 +115,8 @@ namespace Bloom::Widgets
              *
              * See https://bugreports.qt.io/browse/QTBUG-99189 for more on this.
              */
-            return std::max(this->parent->viewport()->width(), 400) - 2;
+            auto* parent = this->getParent();
+            return std::max(parent != nullptr ? parent->viewport()->width() : 400, 400) - 2;
         }
 
         void updateAnnotationValues(const Targets::TargetMemoryBuffer& buffer);

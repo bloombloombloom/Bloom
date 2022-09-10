@@ -444,6 +444,11 @@ QScrollBar::sub-line:vertical {
     color: rgba(175, 177, 179, 0.3);
 }
 
+#hex-viewer-container #loading-hex-viewer-label {
+    color: #838386;
+    font-size: 14px;
+}
+
 #hex-viewer-container QScrollBar:vertical {
     background-color: transparent;
     width: 12px;

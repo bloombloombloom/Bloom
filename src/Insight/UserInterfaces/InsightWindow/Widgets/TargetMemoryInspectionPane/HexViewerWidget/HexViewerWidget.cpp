@@ -71,16 +71,8 @@ namespace Bloom::Widgets
 
         this->hoveredAddressLabel = this->bottomBar->findChild<Label*>("byte-address-label");
 
+        this->loadingHexViewerLabel = this->container->findChild<Label*>("loading-hex-viewer-label");
         this->byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
-        this->byteItemGraphicsView = new ByteItemContainerGraphicsView(
-            this->targetMemoryDescriptor,
-            this->focusedMemoryRegions,
-            this->excludedMemoryRegions,
-            this->settings,
-            this->hoveredAddressLabel,
-            this->byteItemGraphicsViewContainer
-        );
-        this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
 
         this->setHoveredRowAndColumnHighlightingEnabled(this->settings.highlightHoveredRowAndCol);
         this->setFocusedMemoryHighlightingEnabled(this->settings.highlightFocusedMemory);
@@ -165,16 +157,48 @@ namespace Bloom::Widgets
         this->show();
     }
 
+    void HexViewerWidget::init() {
+        this->byteItemGraphicsView = new ByteItemContainerGraphicsView(this->byteItemGraphicsViewContainer);
+
+        QObject::connect(
+            this->byteItemGraphicsView,
+            &ByteItemContainerGraphicsView::ready,
+            this,
+            [this] {
+                this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
+                this->loadingHexViewerLabel->hide();
+                this->byteItemGraphicsViewContainer->show();
+                this->byteItemGraphicsView->setFixedSize(this->byteItemGraphicsViewContainer->size());
+
+                emit this->ready();
+            }
+        );
+
+        this->byteItemGraphicsView->initScene(
+            this->targetMemoryDescriptor,
+            this->focusedMemoryRegions,
+            this->excludedMemoryRegions,
+            this->settings,
+            this->hoveredAddressLabel
+        );
+    }
+
     void HexViewerWidget::updateValues(const Targets::TargetMemoryBuffer& buffer) {
-        this->byteItemGraphicsScene->updateValues(buffer);
+        if (this->byteItemGraphicsScene != nullptr) {
+            this->byteItemGraphicsScene->updateValues(buffer);
+        }
     }
 
     void HexViewerWidget::refreshRegions() {
-        this->byteItemGraphicsScene->refreshRegions();
+        if (this->byteItemGraphicsScene != nullptr) {
+            this->byteItemGraphicsScene->refreshRegions();
+        }
     }
 
     void HexViewerWidget::setStackPointer(Targets::TargetStackPointer stackPointer) {
-        this->byteItemGraphicsScene->updateStackPointer(stackPointer);
+        if (this->byteItemGraphicsScene != nullptr) {
+            this->byteItemGraphicsScene->updateStackPointer(stackPointer);
+        }
     }
 
     void HexViewerWidget::resizeEvent(QResizeEvent* event) {
@@ -199,38 +223,52 @@ namespace Bloom::Widgets
         this->highlightStackMemoryButton->setChecked(enabled);
         this->settings.highlightStackMemory = enabled;
 
-        this->byteItemGraphicsScene->invalidateChildItemCaches();
+        if (this->byteItemGraphicsScene != nullptr) {
+            this->byteItemGraphicsScene->invalidateChildItemCaches();
+        }
     }
 
     void HexViewerWidget::setHoveredRowAndColumnHighlightingEnabled(bool enabled) {
         this->highlightHoveredRowAndColumnButton->setChecked(enabled);
         this->settings.highlightHoveredRowAndCol = enabled;
 
-        this->byteItemGraphicsScene->invalidateChildItemCaches();
+        if (this->byteItemGraphicsScene != nullptr) {
+            this->byteItemGraphicsScene->invalidateChildItemCaches();
+        }
     }
 
     void HexViewerWidget::setFocusedMemoryHighlightingEnabled(bool enabled) {
         this->highlightFocusedMemoryButton->setChecked(enabled);
         this->settings.highlightFocusedMemory = enabled;
 
-        this->byteItemGraphicsScene->invalidateChildItemCaches();
+        if (this->byteItemGraphicsScene != nullptr) {
+            this->byteItemGraphicsScene->invalidateChildItemCaches();
+        }
     }
 
     void HexViewerWidget::setAnnotationsEnabled(bool enabled) {
         this->displayAnnotationsButton->setChecked(enabled);
         this->settings.displayAnnotations = enabled;
 
-        this->byteItemGraphicsScene->adjustSize(true);
+        if (this->byteItemGraphicsScene != nullptr) {
+            this->byteItemGraphicsScene->adjustSize(true);
+        }
     }
 
     void HexViewerWidget::setDisplayAsciiEnabled(bool enabled) {
         this->displayAsciiButton->setChecked(enabled);
         this->settings.displayAsciiValues = enabled;
 
-        this->byteItemGraphicsScene->invalidateChildItemCaches();
+        if (this->byteItemGraphicsScene != nullptr) {
+            this->byteItemGraphicsScene->invalidateChildItemCaches();
+        }
     }
 
     void HexViewerWidget::onGoToAddressInputChanged() {
+        if (this->byteItemGraphicsScene == nullptr) {
+            return;
+        }
+
         auto addressConversionOk = false;
         const auto address = this->goToAddressInput->text().toUInt(&addressConversionOk, 16);
 
