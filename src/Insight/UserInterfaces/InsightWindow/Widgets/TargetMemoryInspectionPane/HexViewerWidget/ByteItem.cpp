@@ -22,9 +22,11 @@ namespace Bloom::Widgets
         , highlightedByteItems(highlightedByteItems)
         , settings(settings)
     {
+        static const auto cacheResolution = QSize(ByteItem::WIDTH, ByteItem::HEIGHT);
+
         this->setCacheMode(
             QGraphicsItem::CacheMode::ItemCoordinateCache,
-            QSize(ByteItem::WIDTH, ByteItem::HEIGHT)
+            cacheResolution
         );
         this->setAcceptHoverEvents(true);
 

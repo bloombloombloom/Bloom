@@ -4,12 +4,19 @@
 
 namespace Bloom::Widgets
 {
-    void ByteAddressItem::setAddressHex(const QString& addressHex) {
+    ByteAddressItem::ByteAddressItem(
+        std::size_t rowIndex,
+        const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex,
+        QGraphicsItem* parent
+    )
+        : rowIndex(rowIndex)
+        , byteItemsByRowIndex(byteItemsByRowIndex)
+        , QGraphicsItem(parent)
+    {
         this->setCacheMode(
             QGraphicsItem::CacheMode::ItemCoordinateCache,
             QSize(ByteAddressItem::WIDTH, ByteAddressItem::HEIGHT)
         );
-        this->addressHex = addressHex;
     }
 
     void ByteAddressItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
@@ -26,6 +33,10 @@ namespace Bloom::Widgets
 
         painter->setFont(font);
         painter->setPen(fontColor);
-        painter->drawText(widgetRect, Qt::AlignLeft, this->addressHex);
+        painter->drawText(
+            widgetRect,
+            Qt::AlignLeft,
+            this->byteItemsByRowIndex.at(this->rowIndex)[0]->relativeAddressHex
+        );
     }
 }

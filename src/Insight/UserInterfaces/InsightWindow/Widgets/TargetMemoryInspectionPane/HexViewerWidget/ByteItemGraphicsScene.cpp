@@ -44,7 +44,7 @@ namespace Bloom::Widgets
                 settings
             );
 
-            this->byteItemsByAddress.insert(std::pair(
+            this->byteItemsByAddress.emplace(std::pair(
                 address,
                 byteWidget
             ));

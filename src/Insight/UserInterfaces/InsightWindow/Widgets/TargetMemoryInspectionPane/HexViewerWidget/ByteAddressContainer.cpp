@@ -13,34 +13,30 @@ namespace Bloom::Widgets
             const auto rowIndex = static_cast<std::size_t>(mappingPair.first);
             const auto& byteItems = mappingPair.second;
 
-            if (byteItems.empty()) {
-                continue;
-            }
-
             ByteAddressItem* addressLabel = nullptr;
             if (static_cast<int>(rowIndex) > layoutItemMaxIndex) {
-                addressLabel = new ByteAddressItem(this);
-                this->addressItemsByRowIndex.insert(std::pair(rowIndex, addressLabel));
+                addressLabel = new ByteAddressItem(rowIndex, byteItemsByRowIndex, this);
+                this->addressItemsByRowIndex.emplace(rowIndex, addressLabel);
 
             } else {
                 addressLabel = this->addressItemsByRowIndex.at(rowIndex);
+                addressLabel->update();
+                addressLabel->setVisible(true);
             }
 
             const auto& firstByteItem = byteItems.front();
-            addressLabel->setAddressHex(firstByteItem->relativeAddressHex);
             addressLabel->setPos(
                 leftMargin,
                 firstByteItem->pos().y() + 3 // +3 to have the address item and byte item align vertically, from center
             );
         }
 
-        // Delete any address items we no longer need
+        // Hide any address items we no longer need
         const auto addressItemCount = this->addressItemsByRowIndex.size();
 
         if (newRowCount > 0 && newRowCount < addressItemCount) {
             for (auto i = (addressItemCount - 1); i >= newRowCount; i--) {
-                delete this->addressItemsByRowIndex.at(i);
-                this->addressItemsByRowIndex.erase(i);
+                this->addressItemsByRowIndex.at(i)->setVisible(false);
             }
         }
 

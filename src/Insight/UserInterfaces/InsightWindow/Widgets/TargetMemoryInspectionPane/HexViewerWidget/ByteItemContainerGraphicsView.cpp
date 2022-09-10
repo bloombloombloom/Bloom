@@ -16,6 +16,9 @@ namespace Bloom::Widgets
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         this->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+        this->setOptimizationFlag(QGraphicsView::DontSavePainterState, true);
+        this->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
+        this->setCacheMode(QGraphicsView::CacheBackground);
     }
 
     void ByteItemContainerGraphicsView::initScene(

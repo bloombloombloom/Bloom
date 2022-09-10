@@ -1,9 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <QEvent>
 #include <QGraphicsItem>
-#include <optional>
+#include <map>
 
 #include "ByteItem.hpp"
 
@@ -15,9 +14,13 @@ namespace Bloom::Widgets
         static constexpr int WIDTH = 75;
         static constexpr int HEIGHT = ByteItem::HEIGHT;
 
-        explicit ByteAddressItem(QGraphicsItem* parent): QGraphicsItem(parent) {};
+        std::size_t rowIndex = 0;
 
-        void setAddressHex(const QString& address);
+        explicit ByteAddressItem(
+            std::size_t rowIndex,
+            const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex,
+            QGraphicsItem* parent
+        );
 
         [[nodiscard]] QRectF boundingRect() const override {
             return {
@@ -31,6 +34,6 @@ namespace Bloom::Widgets
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     private:
-        QString addressHex;
+        const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex;
     };
 }
