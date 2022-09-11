@@ -454,3 +454,14 @@ QScrollBar::sub-line:vertical {
     width: 12px;
     margin: 1px 3px 1px 0px;
 }
+
+#hex-viewer-container #byte-item-address-container-context-menu.QMenu,
+#hex-viewer-container #byte-item-address-container-context-menu QMenu {
+    min-width: 0;
+}
+
+#hex-viewer-container #byte-item-address-container-context-menu.QMenu::item,
+#hex-viewer-container #byte-item-address-container-context-menu QMenu::item {
+    padding-left: 10px;
+    min-width: 150px;
+}

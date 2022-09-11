@@ -13,10 +13,12 @@
 #include <QString>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
+#include <QGraphicsSceneContextMenuEvent>
 #include <QKeyEvent>
 #include <optional>
 #include <QGraphicsRectItem>
 #include <QPointF>
+#include <QAction>
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"
@@ -32,6 +34,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/AddressType.hpp"
 
 namespace Bloom::Widgets
 {
@@ -67,6 +70,7 @@ namespace Bloom::Widgets
         void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
         void mouseReleaseEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
         void keyPressEvent(QKeyEvent* keyEvent) override;
+        void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
@@ -104,6 +108,10 @@ namespace Bloom::Widgets
         std::optional<QPointF> rubberBandInitPoint = std::nullopt;
 
 
+        // Address label container context menu actions
+        QAction* displayRelativeAddressAction = new QAction("Relative", this);
+        QAction* displayAbsoluteAddressAction = new QAction("Absolute", this);
+
         QGraphicsView* getParent() const {
             return dynamic_cast<QGraphicsView*>(this->parent());
         }
@@ -133,5 +141,6 @@ namespace Bloom::Widgets
         void toggleByteItemSelection(ByteItem* byteItem);
         void clearByteItemSelection();
         void selectAllByteItems();
+        void setAddressType(AddressType type);
     };
 }

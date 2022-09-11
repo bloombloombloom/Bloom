@@ -47,6 +47,12 @@ namespace Bloom::Widgets
         this->update();
     }
 
+    void ByteAddressContainer::invalidateChildItemCaches() {
+        for (auto& [rowIndex, addressItem] : this->addressItemsByRowIndex) {
+            addressItem->update();
+        }
+    }
+
     void ByteAddressContainer::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
         static const auto backgroundColor = QColor(0x35, 0x36, 0x33);
         static const auto borderColor = QColor(0x41, 0x42, 0x3F);

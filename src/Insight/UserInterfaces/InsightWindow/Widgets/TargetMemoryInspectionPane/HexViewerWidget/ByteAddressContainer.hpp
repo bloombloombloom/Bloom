@@ -30,6 +30,7 @@ namespace Bloom::Widgets
         }
 
         void adjustAddressLabels(const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex);
+        void invalidateChildItemCaches();
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     private:

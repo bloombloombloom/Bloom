@@ -1,6 +1,7 @@
 #include "ByteItemGraphicsScene.hpp"
 
 #include <cmath>
+#include <QMenu>
 
 #include "src/Insight/InsightSignals.hpp"
 
@@ -52,6 +53,11 @@ namespace Bloom::Widgets
             this->addItem(byteWidget);
         }
 
+        this->displayRelativeAddressAction->setCheckable(true);
+        this->displayAbsoluteAddressAction->setCheckable(true);
+
+        this->setAddressType(this->settings.addressLabelType);
+
         QObject::connect(
             InsightSignals::instance(),
             &InsightSignals::targetStateUpdated,
@@ -59,6 +65,23 @@ namespace Bloom::Widgets
             &ByteItemGraphicsScene::onTargetStateChanged
         );
 
+        QObject::connect(
+            this->displayRelativeAddressAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                this->setAddressType(AddressType::RELATIVE);
+            }
+        );
+
+        QObject::connect(
+            this->displayAbsoluteAddressAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                this->setAddressType(AddressType::ABSOLUTE);
+            }
+        );
     }
 
     void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buffer) {
@@ -389,6 +412,21 @@ namespace Bloom::Widgets
         }
     }
 
+    void ByteItemGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event) {
+        if (event->scenePos().x() <= ByteAddressContainer::WIDTH) {
+            auto* menu = new QMenu(this->getParent());
+            menu->setObjectName("byte-item-address-container-context-menu");
+
+            auto* addressTypeMenu = new QMenu("Address Type", menu);
+            addressTypeMenu->addAction(this->displayAbsoluteAddressAction);
+            addressTypeMenu->addAction(this->displayRelativeAddressAction);
+            menu->addMenu(addressTypeMenu);
+
+            menu->exec(event->screenPos());
+            return;
+        }
+    }
+
     void ByteItemGraphicsScene::updateAnnotationValues(const Targets::TargetMemoryBuffer& buffer) {
         const auto memoryStartAddress = this->targetMemoryDescriptor.addressRange.startAddress;
         for (auto* valueAnnotationItem : this->valueAnnotationItems) {
@@ -659,5 +697,14 @@ namespace Bloom::Widgets
         for (auto& [address, byteItem] : this->byteItemsByAddress) {
             this->selectByteItem(byteItem);
         }
+    }
+
+    void ByteItemGraphicsScene::setAddressType(AddressType type) {
+        this->settings.addressLabelType = type;
+
+        this->displayRelativeAddressAction->setChecked(this->settings.addressLabelType == AddressType::RELATIVE);
+        this->displayAbsoluteAddressAction->setChecked(this->settings.addressLabelType == AddressType::ABSOLUTE);
+
+        this->byteAddressContainer->invalidateChildItemCaches();
     }
 }
