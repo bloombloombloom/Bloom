@@ -12,7 +12,7 @@ namespace Bloom::Widgets
         const TargetMemoryDescriptor& targetMemoryDescriptor,
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-        const HexViewerWidgetSettings& settings,
+        HexViewerWidgetSettings& settings,
         Label* hoveredAddressLabel,
         QGraphicsView* parent
     )
@@ -25,7 +25,7 @@ namespace Bloom::Widgets
     {
         this->setObjectName("byte-widget-container");
 
-        this->byteAddressContainer = new ByteAddressContainer();
+        this->byteAddressContainer = new ByteAddressContainer(this->settings);
         this->addItem(this->byteAddressContainer);
 
         // Construct ByteWidget objects

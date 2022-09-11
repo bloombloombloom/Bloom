@@ -2,6 +2,10 @@
 
 namespace Bloom::Widgets
 {
+    ByteAddressContainer::ByteAddressContainer(const HexViewerWidgetSettings& settings)
+        : settings(settings)
+    {}
+
     void ByteAddressContainer::adjustAddressLabels(
         const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex
     ) {
@@ -15,7 +19,7 @@ namespace Bloom::Widgets
 
             ByteAddressItem* addressLabel = nullptr;
             if (static_cast<int>(rowIndex) > layoutItemMaxIndex) {
-                addressLabel = new ByteAddressItem(rowIndex, byteItemsByRowIndex, this);
+                addressLabel = new ByteAddressItem(rowIndex, byteItemsByRowIndex, this->settings.addressLabelType, this);
                 this->addressItemsByRowIndex.emplace(rowIndex, addressLabel);
 
             } else {

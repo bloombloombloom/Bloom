@@ -24,7 +24,7 @@ namespace Bloom::Widgets
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-            const HexViewerWidgetSettings& settings,
+            HexViewerWidgetSettings& settings,
             Label* hoveredAddressLabel
         );
 

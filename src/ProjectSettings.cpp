@@ -184,6 +184,12 @@ namespace Bloom
                 hexViewerSettings.displayAnnotations =
                     hexViewerSettingsObj.value("displayAnnotations").toBool();
             }
+
+            if (hexViewerSettingsObj.contains("addressLabelType")) {
+                hexViewerSettings.addressLabelType = InsightProjectSettings::addressTypesByName.valueAt(
+                    hexViewerSettingsObj.value("addressLabelType").toString()
+                ).value_or(hexViewerSettings.addressLabelType);
+            }
         }
 
         if (jsonObject.contains("focusedRegions")) {
@@ -218,7 +224,7 @@ namespace Bloom
 
                 region.createdDate.setSecsSinceEpoch(regionObj.find("createdTimestamp")->toInteger());
 
-                const auto addressInputType = InsightProjectSettings::addressRangeInputTypesByName.valueAt(
+                const auto addressInputType = InsightProjectSettings::addressTypesByName.valueAt(
                     regionObj.find("addressInputType")->toString()
                 );
 
@@ -277,7 +283,7 @@ namespace Bloom
 
                 region.createdDate.setSecsSinceEpoch(regionObj.find("createdTimestamp")->toInteger());
 
-                const auto addressInputType = InsightProjectSettings::addressRangeInputTypesByName.valueAt(
+                const auto addressInputType = InsightProjectSettings::addressTypesByName.valueAt(
                     regionObj.find("addressInputType")->toString()
                 );
 
@@ -334,6 +340,10 @@ namespace Bloom
     QJsonObject InsightProjectSettings::memoryInspectionPaneSettingsToJson(
         const Widgets::TargetMemoryInspectionPaneSettings& inspectionPaneSettings
     ) const {
+        const auto& regionDataTypesByName = InsightProjectSettings::regionDataTypesByName;
+        const auto& regionEndiannessByName = InsightProjectSettings::regionEndiannessByName;
+        const auto& addressTypesByName = InsightProjectSettings::addressTypesByName;
+
         auto settingsObj = QJsonObject({
             {"refreshOnTargetStop", inspectionPaneSettings.refreshOnTargetStop},
             {"refreshOnActivation", inspectionPaneSettings.refreshOnActivation},
@@ -346,17 +356,14 @@ namespace Bloom
             {"highlightHoveredRowAndCol", hexViewerSettings.highlightHoveredRowAndCol},
             {"displayAsciiValues", hexViewerSettings.displayAsciiValues},
             {"displayAnnotations", hexViewerSettings.displayAnnotations},
+            {"addressLabelType", addressTypesByName.valueAt(hexViewerSettings.addressLabelType).value()},
         }));
-
-        const auto& regionDataTypesByName = InsightProjectSettings::regionDataTypesByName;
-        const auto& regionEndiannessByName = InsightProjectSettings::regionEndiannessByName;
-        const auto& addressRangeInputTypesByName = InsightProjectSettings::addressRangeInputTypesByName;
 
         auto focusedRegions = QJsonArray();
         for (const auto& focusedRegion : inspectionPaneSettings.focusedMemoryRegions) {
             if (!regionDataTypesByName.contains(focusedRegion.dataType)
                 || !regionEndiannessByName.contains(focusedRegion.endianness)
-                || !addressRangeInputTypesByName.contains(focusedRegion.addressRangeInputType)
+                || !addressTypesByName.contains(focusedRegion.addressRangeInputType)
             ) {
                 continue;
             }
@@ -370,7 +377,7 @@ namespace Bloom
                 {"name", focusedRegion.name},
                 {"addressRange", addressRangeObj},
                 {"createdTimestamp", focusedRegion.createdDate.toSecsSinceEpoch()},
-                {"addressInputType", addressRangeInputTypesByName.at(focusedRegion.addressRangeInputType)},
+                {"addressInputType", addressTypesByName.at(focusedRegion.addressRangeInputType)},
                 {"dataType", regionDataTypesByName.at(focusedRegion.dataType)},
                 {"endianness", regionEndiannessByName.at(focusedRegion.endianness)},
             });
@@ -380,7 +387,7 @@ namespace Bloom
 
         auto excludedRegions = QJsonArray();
         for (const auto& excludedRegion : inspectionPaneSettings.excludedMemoryRegions) {
-            if (!addressRangeInputTypesByName.contains(excludedRegion.addressRangeInputType)) {
+            if (!addressTypesByName.contains(excludedRegion.addressRangeInputType)) {
                 continue;
             }
 
@@ -393,7 +400,7 @@ namespace Bloom
                 {"name", excludedRegion.name},
                 {"addressRange", addressRangeObj},
                 {"createdTimestamp", excludedRegion.createdDate.toSecsSinceEpoch()},
-                {"addressInputType", addressRangeInputTypesByName.at(excludedRegion.addressRangeInputType)},
+                {"addressInputType", addressTypesByName.at(excludedRegion.addressRangeInputType)},
             });
 
             excludedRegions.push_back(regionObj);

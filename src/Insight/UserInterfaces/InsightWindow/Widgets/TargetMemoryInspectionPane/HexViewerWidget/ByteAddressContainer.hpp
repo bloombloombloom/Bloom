@@ -9,6 +9,7 @@
 
 #include "ByteItem.hpp"
 #include "ByteAddressItem.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/HexViewerWidgetSettings.hpp"
 
 namespace Bloom::Widgets
 {
@@ -17,7 +18,7 @@ namespace Bloom::Widgets
     public:
         static constexpr int WIDTH = 88;
 
-        ByteAddressContainer() = default;
+        ByteAddressContainer(const HexViewerWidgetSettings& settings);
 
         [[nodiscard]] QRectF boundingRect() const override {
             return QRectF(
@@ -28,10 +29,11 @@ namespace Bloom::Widgets
             );
         }
 
-        void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
         void adjustAddressLabels(const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex);
+        void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     private:
+        const HexViewerWidgetSettings& settings;
         std::map<std::size_t, ByteAddressItem*> addressItemsByRowIndex;
     };
 }

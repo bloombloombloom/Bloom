@@ -20,7 +20,7 @@ namespace Bloom
             const Targets::TargetMemoryDescriptor& memoryDescriptor,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-            const Widgets::HexViewerWidgetSettings& settings,
+            Widgets::HexViewerWidgetSettings& settings,
             Widgets::Label* hoveredAddressLabel
         );
 
@@ -38,7 +38,7 @@ namespace Bloom
         const Targets::TargetMemoryDescriptor& memoryDescriptor;
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
-        const Widgets::HexViewerWidgetSettings& settings;
+        Widgets::HexViewerWidgetSettings& settings;
         Widgets::Label* hoveredAddressLabel;
     };
 }

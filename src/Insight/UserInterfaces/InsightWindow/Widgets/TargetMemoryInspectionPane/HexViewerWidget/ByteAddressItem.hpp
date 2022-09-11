@@ -6,6 +6,8 @@
 
 #include "ByteItem.hpp"
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/AddressType.hpp"
+
 namespace Bloom::Widgets
 {
     class ByteAddressItem: public QGraphicsItem
@@ -19,6 +21,7 @@ namespace Bloom::Widgets
         explicit ByteAddressItem(
             std::size_t rowIndex,
             const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex,
+            const AddressType& addressType,
             QGraphicsItem* parent
         );
 
@@ -35,5 +38,6 @@ namespace Bloom::Widgets
 
     private:
         const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex;
+        const AddressType& addressType;
     };
 }

@@ -44,7 +44,7 @@ namespace Bloom::Widgets
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-            const HexViewerWidgetSettings& settings,
+            HexViewerWidgetSettings& settings,
             Label* hoveredAddressLabel,
             QGraphicsView* parent
         );
@@ -91,7 +91,7 @@ namespace Bloom::Widgets
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         const QMargins margins = QMargins(10, 10, 10, 10);
-        const HexViewerWidgetSettings& settings;
+        HexViewerWidgetSettings& settings;
 
         Label* hoveredAddressLabel = nullptr;
 

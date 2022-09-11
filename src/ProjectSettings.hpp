@@ -54,7 +54,7 @@ namespace Bloom
             {Targets::TargetMemoryEndianness::BIG, "big"},
         };
 
-        static const inline BiMap<AddressType, QString> addressRangeInputTypesByName = {
+        static const inline BiMap<AddressType, QString> addressTypesByName = {
             {AddressType::ABSOLUTE, "absolute"},
             {AddressType::RELATIVE, "relative"},
         };

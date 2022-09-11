@@ -7,10 +7,12 @@ namespace Bloom::Widgets
     ByteAddressItem::ByteAddressItem(
         std::size_t rowIndex,
         const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex,
+        const AddressType& addressType,
         QGraphicsItem* parent
     )
         : rowIndex(rowIndex)
         , byteItemsByRowIndex(byteItemsByRowIndex)
+        , addressType(addressType)
         , QGraphicsItem(parent)
     {
         this->setCacheMode(
@@ -36,7 +38,9 @@ namespace Bloom::Widgets
         painter->drawText(
             widgetRect,
             Qt::AlignLeft,
-            this->byteItemsByRowIndex.at(this->rowIndex)[0]->relativeAddressHex
+            this->addressType == AddressType::RELATIVE
+                ? this->byteItemsByRowIndex.at(this->rowIndex)[0]->relativeAddressHex
+                : this->byteItemsByRowIndex.at(this->rowIndex)[0]->addressHex
         );
     }
 }
