@@ -19,10 +19,12 @@ namespace Bloom::Widgets
     struct AddressRangeTypeOption
     {
         QString text;
-        MemoryRegionAddressInputType addressType;
+        AddressType addressType;
 
-        AddressRangeTypeOption(const QString& text, MemoryRegionAddressInputType addressType)
-        : text(text), addressType(addressType) {};
+        AddressRangeTypeOption(const QString& text, AddressType addressType)
+            : text(text)
+            , addressType(addressType)
+        {};
     };
 
     class RegionItem: public ClickableWidget
@@ -64,7 +66,7 @@ namespace Bloom::Widgets
         TextInput* sizeInput = nullptr;
 
         virtual void initFormInputs();
-        [[nodiscard]] MemoryRegionAddressInputType getSelectedAddressInputType() const;
+        [[nodiscard]] AddressType getSelectedAddressInputType() const;
 
         Targets::TargetMemoryAddressRange convertAbsoluteToRelativeAddressRange(
             const Targets::TargetMemoryAddressRange& absoluteAddressRange
@@ -84,8 +86,8 @@ namespace Bloom::Widgets
         static inline const std::map<QString, AddressRangeTypeOption> addressRangeTypeOptionsByName = std::map<
             QString, AddressRangeTypeOption
         >({
-            {"absolute", AddressRangeTypeOption("Absolute", MemoryRegionAddressInputType::ABSOLUTE)},
-            {"relative", AddressRangeTypeOption("Relative", MemoryRegionAddressInputType::RELATIVE)},
+            {"absolute", AddressRangeTypeOption("Absolute", AddressType::ABSOLUTE)},
+            {"relative", AddressRangeTypeOption("Relative", AddressType::RELATIVE)},
         });
 
         void onAddressRangeInputChange();

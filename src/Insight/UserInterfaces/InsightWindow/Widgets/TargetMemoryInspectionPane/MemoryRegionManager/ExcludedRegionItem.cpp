@@ -43,7 +43,7 @@ namespace Bloom::Widgets
         );
         this->memoryRegion.addressRangeInputType = this->getSelectedAddressInputType();
         this->memoryRegion.addressRange =
-            this->memoryRegion.addressRangeInputType == MemoryRegionAddressInputType::RELATIVE ?
+            this->memoryRegion.addressRangeInputType == AddressType::RELATIVE ?
             this->convertRelativeToAbsoluteAddressRange(inputAddressRange) : inputAddressRange;
     }
 }

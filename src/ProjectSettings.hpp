@@ -54,9 +54,9 @@ namespace Bloom
             {Targets::TargetMemoryEndianness::BIG, "big"},
         };
 
-        static const inline BiMap<MemoryRegionAddressInputType, QString> addressRangeInputTypesByName = {
-            {MemoryRegionAddressInputType::ABSOLUTE, "absolute"},
-            {MemoryRegionAddressInputType::RELATIVE, "relative"},
+        static const inline BiMap<AddressType, QString> addressRangeInputTypesByName = {
+            {AddressType::ABSOLUTE, "absolute"},
+            {AddressType::RELATIVE, "relative"},
         };
 
         [[nodiscard]] Widgets::TargetMemoryInspectionPaneSettings memoryInspectionPaneSettingsFromJson(

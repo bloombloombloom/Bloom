@@ -7,6 +7,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Helpers/DateTime.hpp"
+#include "AddressType.hpp"
 
 namespace Bloom
 {
@@ -40,7 +41,7 @@ namespace Bloom
          * See RegionItem::convertRelativeToAbsoluteAddressRange()
          * See RegionItem::convertAbsoluteToRelativeAddressRange()
          */
-        MemoryRegionAddressInputType addressRangeInputType = MemoryRegionAddressInputType::ABSOLUTE;
+        AddressType addressRangeInputType = AddressType::ABSOLUTE;
 
         /**
          * This address range will always be in absolute form. Regardless of the value of this->addressRangeType.

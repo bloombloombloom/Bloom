@@ -106,10 +106,9 @@ namespace Bloom::Widgets
                 + "0x" + QString::number(memoryAddressRange.endAddress, 16).toUpper()
         );
 
-        const auto absoluteAddressRange = addressType == MemoryRegionAddressInputType::RELATIVE ?
-            this->convertRelativeToAbsoluteAddressRange(
-                TargetMemoryAddressRange(startAddress, endAddress)
-            ) : TargetMemoryAddressRange(startAddress, endAddress);
+        const auto absoluteAddressRange = addressType == AddressType::RELATIVE
+            ? this->convertRelativeToAbsoluteAddressRange(TargetMemoryAddressRange(startAddress, endAddress))
+            : TargetMemoryAddressRange(startAddress, endAddress);
 
         if (absoluteAddressRange.startAddress < memoryAddressRange.startAddress
             || absoluteAddressRange.startAddress > memoryAddressRange.endAddress
@@ -148,7 +147,7 @@ namespace Bloom::Widgets
             this->addressTypeInput->addItem(option.text, optionName);
         }
 
-        if (region.addressRangeInputType == MemoryRegionAddressInputType::RELATIVE) {
+        if (region.addressRangeInputType == AddressType::RELATIVE) {
             auto relativeAddressRange = this->convertAbsoluteToRelativeAddressRange(region.addressRange);
             this->addressTypeInput->setCurrentText(RegionItem::addressRangeTypeOptionsByName.at("relative").text);
 
@@ -176,13 +175,13 @@ namespace Bloom::Widgets
         QObject::connect(this->nameInput, &QLineEdit::textEdited, this, &RegionItem::onNameInputChange);
     }
 
-    MemoryRegionAddressInputType RegionItem::getSelectedAddressInputType() const {
+    AddressType RegionItem::getSelectedAddressInputType() const {
         auto selectedAddressTypeOptionName = this->addressTypeInput->currentData().toString();
         if (RegionItem::addressRangeTypeOptionsByName.contains(selectedAddressTypeOptionName)) {
             return RegionItem::addressRangeTypeOptionsByName.at(selectedAddressTypeOptionName).addressType;
         }
 
-        return MemoryRegionAddressInputType::ABSOLUTE;
+        return AddressType::ABSOLUTE;
     }
 
     TargetMemoryAddressRange RegionItem::convertAbsoluteToRelativeAddressRange(
