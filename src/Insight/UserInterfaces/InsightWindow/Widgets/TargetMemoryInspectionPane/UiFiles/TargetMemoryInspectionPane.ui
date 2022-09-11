@@ -318,10 +318,48 @@
                             </spacer>
                         </item>
                         <item>
+                            <widget class="QWidget" name="stale-data-label">
+                                <property name="visible">
+                                    <bool>false</bool>
+                                </property>
+                                <layout class="QHBoxLayout">
+                                    <property name="spacing">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="margin">
+                                        <number>0</number>
+                                    </property>
+                                    <item>
+                                        <widget class="SvgWidget" name="icon">
+                                            <property name="containerHeight">
+                                                <number>15</number>
+                                            </property>
+                                            <property name="containerWidth">
+                                                <number>14</number>
+                                            </property>
+                                            <property name="svgFilePath">
+                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/stale-data-icon.svg</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item>
+                                        <widget class="Label">
+                                            <property name="text">
+                                                <string>Stale data</string>
+                                            </property>
+                                            <property name="toolTip">
+                                                <string>Data may be stale</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                        <item>
                             <spacer name="horizontal-spacer">
                                 <property name="sizeHint">
                                     <size>
-                                        <width>5</width>
+                                        <width>10</width>
                                     </size>
                                 </property>
                                 <property name="sizeType">

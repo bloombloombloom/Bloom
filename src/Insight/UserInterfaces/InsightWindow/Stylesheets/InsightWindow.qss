@@ -337,6 +337,15 @@ QScrollBar::sub-line:vertical {
     color: #8a8a8d;
 }
 
+#target-memory-inspection-pane #stale-data-label QLabel {
+    margin-top: 1px;
+    color: #9a9a9d;
+}
+
+#target-memory-inspection-pane #stale-data-label #icon {
+    margin-top: 2px;
+}
+
 #hex-viewer-container #tool-bar,
 #hex-viewer-container #search-bar {
     border-bottom: 1px solid #41423f;

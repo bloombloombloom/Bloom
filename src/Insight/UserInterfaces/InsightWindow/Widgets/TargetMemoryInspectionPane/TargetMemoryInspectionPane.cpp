@@ -78,6 +78,8 @@ namespace Bloom::Widgets
         auto* memoryCapacityLabel = this->container->findChild<Label*>("memory-capacity-label");
         memoryCapacityLabel->setText(QString::number(this->targetMemoryDescriptor.size()) + " Bytes");
 
+        this->staleDataLabelContainer = this->container->findChild<QWidget*>("stale-data-label");
+
         this->hexViewerWidget = new HexViewerWidget(
             this->targetMemoryDescriptor,
             this->settings.hexViewerWidgetSettings,
@@ -188,6 +190,13 @@ namespace Bloom::Widgets
             &InsightSignals::targetStateUpdated,
             this,
             &TargetMemoryInspectionPane::onTargetStateChanged
+        );
+
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::targetReset,
+            this,
+            &TargetMemoryInspectionPane::onTargetReset
         );
 
         QObject::connect(
@@ -431,6 +440,7 @@ namespace Bloom::Widgets
         } else if (newState == TargetState::RUNNING) {
             this->hexViewerWidget->setDisabled(true);
             this->refreshButton->setDisabled(true);
+            this->setStaleData(this->data.has_value());
         }
     }
 
@@ -449,6 +459,7 @@ namespace Bloom::Widgets
 
         this->data = data;
         this->hexViewerWidget->updateValues(this->data.value());
+        this->setStaleData(false);
     }
 
     void TargetMemoryInspectionPane::openMemoryRegionManagerWindow() {
@@ -482,14 +493,24 @@ namespace Bloom::Widgets
         this->hexViewerWidget->refreshRegions();
     }
 
+    void TargetMemoryInspectionPane::onTargetReset() {
+        this->setStaleData(this->data.has_value());
+    }
+
     void TargetMemoryInspectionPane::onProgrammingModeEnabled() {
         this->hexViewerWidget->setDisabled(true);
         this->refreshButton->setDisabled(true);
+        this->setStaleData(this->data.has_value());
     }
 
     void TargetMemoryInspectionPane::onProgrammingModeDisabled() {
         const auto disabled = this->targetState != Targets::TargetState::STOPPED;
         this->hexViewerWidget->setDisabled(disabled);
         this->refreshButton->setDisabled(disabled);
+    }
+
+    void TargetMemoryInspectionPane::setStaleData(bool staleData) {
+        this->staleData = staleData;
+        this->staleDataLabelContainer->setVisible(this->staleData);
     }
 }

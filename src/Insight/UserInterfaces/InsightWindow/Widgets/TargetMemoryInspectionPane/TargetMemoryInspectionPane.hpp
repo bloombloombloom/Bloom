@@ -62,9 +62,13 @@ namespace Bloom::Widgets
         SvgToolButton* attachPaneButton = nullptr;
         HexViewerWidget* hexViewerWidget = nullptr;
 
+        QWidget* staleDataLabelContainer = nullptr;
+
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         MemoryRegionManagerWindow* memoryRegionManagerWindow = nullptr;
+
+        bool staleData = false;
 
         void sanitiseSettings();
         void onTargetStateChanged(Targets::TargetState newState);
@@ -73,7 +77,9 @@ namespace Bloom::Widgets
         void onMemoryRead(const Targets::TargetMemoryBuffer& data);
         void openMemoryRegionManagerWindow();
         void onMemoryRegionsChange();
+        void onTargetReset();
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();
+        void setStaleData(bool staleData);
     };
 }
