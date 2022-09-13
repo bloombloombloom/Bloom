@@ -1,13 +1,20 @@
 #include "ByteItemContainerGraphicsView.hpp"
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
-#include "src/Insight/InsightWorker/Tasks/ConstructHexViewerByteItemScene.hpp"
+#include "src/Insight/InsightWorker/Tasks/ConstructHexViewerByteItems.hpp"
 
 namespace Bloom::Widgets
 {
     using Bloom::Targets::TargetMemoryDescriptor;
 
-    ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(QWidget* parent)
+    ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
+        const TargetMemoryDescriptor& targetMemoryDescriptor,
+        std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+        std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
+        HexViewerWidgetSettings& settings,
+        Label* hoveredAddressLabel,
+        QWidget* parent
+    )
         : QGraphicsView(parent)
     {
         this->setObjectName("graphics-view");
@@ -19,41 +26,31 @@ namespace Bloom::Widgets
         this->setOptimizationFlag(QGraphicsView::DontSavePainterState, true);
         this->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
         this->setCacheMode(QGraphicsView::CacheBackground);
-    }
 
-    void ByteItemContainerGraphicsView::initScene(
-        const TargetMemoryDescriptor& targetMemoryDescriptor,
-        std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
-        std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
-        HexViewerWidgetSettings& settings,
-        Label* hoveredAddressLabel
-    ) {
-        auto* constructSceneTask = new ConstructHexViewerByteItemScene(
+        this->scene = new ByteItemGraphicsScene(
             targetMemoryDescriptor,
             focusedMemoryRegions,
             excludedMemoryRegions,
             settings,
-            hoveredAddressLabel
+            hoveredAddressLabel,
+            this
         );
 
+        this->setScene(this->scene);
+    }
+
+    void ByteItemContainerGraphicsView::initScene() {
         QObject::connect(
-            constructSceneTask,
-            &ConstructHexViewerByteItemScene::sceneCreated,
+            this->scene,
+            &ByteItemGraphicsScene::ready,
             this,
-            [this] (ByteItemGraphicsScene* scene) {
-                scene->moveToThread(this->thread());
-                scene->setParent(this);
-
-                this->scene = scene;
-                this->scene->refreshRegions();
+            [this] {
                 this->scene->setEnabled(this->isEnabled());
-                this->setScene(this->scene);
-
-                emit this->ready();
+                emit this->sceneReady();
             }
         );
 
-        InsightWorker::queueTask(constructSceneTask);
+        this->scene->init();
     }
 
     void ByteItemContainerGraphicsView::scrollToByteItemAtAddress(Targets::TargetMemoryAddress address) {

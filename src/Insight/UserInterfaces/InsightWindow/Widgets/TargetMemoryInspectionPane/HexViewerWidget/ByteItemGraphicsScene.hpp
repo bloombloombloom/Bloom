@@ -52,6 +52,7 @@ namespace Bloom::Widgets
             QGraphicsView* parent
         );
 
+        void init();
         void updateValues(const Targets::TargetMemoryBuffer& buffer);
         void updateStackPointer(Targets::TargetStackPointer stackPointer);
         void setHighlightedAddresses(const std::set<Targets::TargetMemoryAddress>& highlightedAddresses);
@@ -62,6 +63,7 @@ namespace Bloom::Widgets
         QPointF getByteItemPositionByAddress(Targets::TargetMemoryAddress address);
 
     signals:
+        void ready();
         void byteWidgetsAdjusted();
 
     protected:
@@ -97,6 +99,7 @@ namespace Bloom::Widgets
         const QMargins margins = QMargins(10, 10, 10, 10);
         HexViewerWidgetSettings& settings;
 
+        QGraphicsView* parent = nullptr;
         Label* hoveredAddressLabel = nullptr;
 
         ByteAddressContainer* byteAddressContainer = nullptr;
@@ -112,10 +115,6 @@ namespace Bloom::Widgets
         QAction* displayRelativeAddressAction = new QAction("Relative", this);
         QAction* displayAbsoluteAddressAction = new QAction("Absolute", this);
 
-        QGraphicsView* getParent() const {
-            return dynamic_cast<QGraphicsView*>(this->parent());
-        }
-
         int getSceneWidth() {
             /*
              * Minus 2 for the QSS margin on the vertical scrollbar (which isn't accounted for during viewport
@@ -123,8 +122,7 @@ namespace Bloom::Widgets
              *
              * See https://bugreports.qt.io/browse/QTBUG-99189 for more on this.
              */
-            auto* parent = this->getParent();
-            return std::max(parent != nullptr ? parent->viewport()->width() : 400, 400) - 2;
+            return std::max(this->parent->viewport()->width(), 400) - 2;
         }
 
         void updateAnnotationValues(const Targets::TargetMemoryBuffer& buffer);

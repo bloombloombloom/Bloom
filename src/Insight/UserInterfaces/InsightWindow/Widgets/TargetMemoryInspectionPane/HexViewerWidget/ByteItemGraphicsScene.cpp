@@ -3,7 +3,10 @@
 #include <cmath>
 #include <QMenu>
 
+#include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/InsightSignals.hpp"
+
+#include "src/Insight/InsightWorker/Tasks/ConstructHexViewerByteItems.hpp"
 
 namespace Bloom::Widgets
 {
@@ -17,41 +20,18 @@ namespace Bloom::Widgets
         Label* hoveredAddressLabel,
         QGraphicsView* parent
     )
-        : QGraphicsScene(parent)
-        , targetMemoryDescriptor(targetMemoryDescriptor)
+        : targetMemoryDescriptor(targetMemoryDescriptor)
         , focusedMemoryRegions(focusedMemoryRegions)
         , excludedMemoryRegions(excludedMemoryRegions)
         , settings(settings)
         , hoveredAddressLabel(hoveredAddressLabel)
+        , parent(parent)
+        , QGraphicsScene(parent)
     {
         this->setObjectName("byte-widget-container");
 
         this->byteAddressContainer = new ByteAddressContainer(this->settings);
         this->addItem(this->byteAddressContainer);
-
-        // Construct ByteWidget objects
-        const auto memorySize = this->targetMemoryDescriptor.size();
-        const auto startAddress = this->targetMemoryDescriptor.addressRange.startAddress;
-        for (Targets::TargetMemorySize i = 0; i < memorySize; i++) {
-            const auto address = startAddress + i;
-
-            auto* byteWidget = new ByteItem(
-                i,
-                address,
-                this->currentStackPointer,
-                &(this->hoveredByteWidget),
-                &(this->hoveredAnnotationItem),
-                this->highlightedByteItems,
-                settings
-            );
-
-            this->byteItemsByAddress.emplace(std::pair(
-                address,
-                byteWidget
-            ));
-
-            this->addItem(byteWidget);
-        }
 
         this->displayRelativeAddressAction->setCheckable(true);
         this->displayAbsoluteAddressAction->setCheckable(true);
@@ -82,6 +62,35 @@ namespace Bloom::Widgets
                 this->setAddressType(AddressType::ABSOLUTE);
             }
         );
+        this->setSceneRect(0, 0, this->getSceneWidth(), 0);
+    }
+
+    void ByteItemGraphicsScene::init() {
+        auto* constructByteItemsTask = new ConstructHexViewerByteItems(
+            this->targetMemoryDescriptor,
+            this->currentStackPointer,
+            &(this->hoveredByteWidget),
+            this->highlightedByteItems,
+            this->settings
+        );
+
+        QObject::connect(
+            constructByteItemsTask,
+            &ConstructHexViewerByteItems::byteItems,
+            this,
+            [this] (std::map<Targets::TargetMemoryAddress, ByteItem*>& byteItemsByAddress) {
+                this->byteItemsByAddress = std::move(byteItemsByAddress);
+
+                for (const auto& [address, byteItem] : this->byteItemsByAddress) {
+                    this->addItem(byteItem);
+                }
+
+                this->refreshRegions();
+                emit this->ready();
+            }
+        );
+
+        InsightWorker::queueTask(constructByteItemsTask);
     }
 
     void ByteItemGraphicsScene::updateValues(const Targets::TargetMemoryBuffer& buffer) {
@@ -173,7 +182,6 @@ namespace Bloom::Widgets
     }
 
     void ByteItemGraphicsScene::adjustSize(bool forced) {
-        const auto* parent = this->getParent();
         const auto width = this->getSceneWidth();
 
         const auto columnCount = static_cast<std::size_t>(
@@ -198,7 +206,7 @@ namespace Bloom::Widgets
                 0,
                 0,
                 width,
-                std::max(static_cast<int>(this->sceneRect().height()), parent->viewport()->height())
+                std::max(static_cast<int>(this->sceneRect().height()), this->parent->viewport()->height())
             );
 
             return;
@@ -220,7 +228,7 @@ namespace Bloom::Widgets
                 0,
                 0,
                 width,
-                std::max(sceneHeight, parent->height())
+                std::max(sceneHeight, this->parent->height())
             );
         }
     }
@@ -414,7 +422,7 @@ namespace Bloom::Widgets
 
     void ByteItemGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event) {
         if (event->scenePos().x() <= ByteAddressContainer::WIDTH) {
-            auto* menu = new QMenu(this->getParent());
+            auto* menu = new QMenu(this->parent);
             menu->setObjectName("byte-item-address-container-context-menu");
 
             auto* addressTypeMenu = new QMenu("Address Type", menu);

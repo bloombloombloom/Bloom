@@ -9,7 +9,6 @@ namespace Bloom::Widgets
         Targets::TargetMemoryAddress address,
         std::optional<Targets::TargetStackPointer>& currentStackPointer,
         ByteItem** hoveredByteItem,
-        AnnotationItem** hoveredAnnotationItem,
         std::set<ByteItem*>& highlightedByteItems,
         const HexViewerWidgetSettings& settings
     )
@@ -18,7 +17,6 @@ namespace Bloom::Widgets
         , address(address)
         , currentStackPointer(currentStackPointer)
         , hoveredByteItem(hoveredByteItem)
-        , hoveredAnnotationItem(hoveredAnnotationItem)
         , highlightedByteItems(highlightedByteItems)
         , settings(settings)
     {

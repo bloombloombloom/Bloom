@@ -74,6 +74,15 @@ namespace Bloom::Widgets
         this->loadingHexViewerLabel = this->container->findChild<Label*>("loading-hex-viewer-label");
         this->byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
 
+        this->byteItemGraphicsView = new ByteItemContainerGraphicsView(
+            this->targetMemoryDescriptor,
+            this->focusedMemoryRegions,
+            this->excludedMemoryRegions,
+            this->settings,
+            this->hoveredAddressLabel,
+            this->byteItemGraphicsViewContainer
+        );
+
         this->setHoveredRowAndColumnHighlightingEnabled(this->settings.highlightHoveredRowAndCol);
         this->setFocusedMemoryHighlightingEnabled(this->settings.highlightFocusedMemory);
         this->setAnnotationsEnabled(this->settings.displayAnnotations);
@@ -158,11 +167,9 @@ namespace Bloom::Widgets
     }
 
     void HexViewerWidget::init() {
-        this->byteItemGraphicsView = new ByteItemContainerGraphicsView(this->byteItemGraphicsViewContainer);
-
         QObject::connect(
             this->byteItemGraphicsView,
-            &ByteItemContainerGraphicsView::ready,
+            &ByteItemContainerGraphicsView::sceneReady,
             this,
             [this] {
                 this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
@@ -174,13 +181,7 @@ namespace Bloom::Widgets
             }
         );
 
-        this->byteItemGraphicsView->initScene(
-            this->targetMemoryDescriptor,
-            this->focusedMemoryRegions,
-            this->excludedMemoryRegions,
-            this->settings,
-            this->hoveredAddressLabel
-        );
+        this->byteItemGraphicsView->initScene();
     }
 
     void HexViewerWidget::updateValues(const Targets::TargetMemoryBuffer& buffer) {

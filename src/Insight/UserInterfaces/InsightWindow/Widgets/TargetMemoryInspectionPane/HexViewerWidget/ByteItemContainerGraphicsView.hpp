@@ -18,15 +18,16 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        ByteItemContainerGraphicsView(QWidget* parent);
-
-        void initScene(
+        ByteItemContainerGraphicsView(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             HexViewerWidgetSettings& settings,
-            Label* hoveredAddressLabel
+            Label* hoveredAddressLabel,
+            QWidget* parent
         );
+
+        void initScene();
 
         [[nodiscard]] ByteItemGraphicsScene* getScene() const {
             return this->scene;
@@ -35,7 +36,7 @@ namespace Bloom::Widgets
         void scrollToByteItemAtAddress(Targets::TargetMemoryAddress address);
 
     signals:
-        void ready();
+        void sceneReady();
 
     protected:
         bool event(QEvent* event) override;
