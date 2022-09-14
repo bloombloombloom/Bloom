@@ -105,7 +105,7 @@ namespace Bloom::Widgets
         ByteAddressContainer* byteAddressContainer = nullptr;
 
         std::set<ByteItem*> highlightedByteItems;
-        std::set<ByteItem*> selectedByteItems;
+        std::map<Targets::TargetMemoryAddress, ByteItem*> selectedByteItemsByAddress;
 
         QGraphicsRectItem* rubberBandRectItem = nullptr;
         std::optional<QPointF> rubberBandInitPoint = std::nullopt;

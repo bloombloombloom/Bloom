@@ -673,13 +673,13 @@ namespace Bloom::Widgets
 
     void ByteItemGraphicsScene::selectByteItem(ByteItem* byteItem) {
         byteItem->selected = true;
-        this->selectedByteItems.insert(byteItem);
+        this->selectedByteItemsByAddress.insert(std::pair(byteItem->address, byteItem));
         byteItem->update();
     }
 
     void ByteItemGraphicsScene::deselectByteItem(ByteItem* byteItem) {
         byteItem->selected = false;
-        this->selectedByteItems.erase(byteItem);
+        this->selectedByteItemsByAddress.erase(byteItem->address);
         byteItem->update();
     }
 
@@ -693,12 +693,12 @@ namespace Bloom::Widgets
     }
 
     void ByteItemGraphicsScene::clearByteItemSelection() {
-        for (auto* byteItem : this->selectedByteItems) {
+        for (const auto& [address, byteItem] : this->selectedByteItemsByAddress) {
             byteItem->selected = false;
             byteItem->update();
         }
 
-        this->selectedByteItems.clear();
+        this->selectedByteItemsByAddress.clear();
     }
 
     void ByteItemGraphicsScene::selectAllByteItems() {
