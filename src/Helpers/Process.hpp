@@ -28,7 +28,7 @@ namespace Bloom
          * @param processId
          * @return
          */
-        static bool isProcessManagedByClion(::pid_t processId);
+        static bool isManagedByClion(::pid_t processId);
 
     private:
         static std::optional<::proc_t*> getProcessInfo(::pid_t processId);

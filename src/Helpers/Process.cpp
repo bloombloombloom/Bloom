@@ -13,7 +13,7 @@ namespace Bloom
         return getppid();
     }
 
-    bool Process::isProcessManagedByClion(::pid_t processId) {
+    bool Process::isManagedByClion(::pid_t processId) {
         static auto cachedResult = std::optional<bool>();
 
         if (cachedResult.has_value()) {
