@@ -38,12 +38,6 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             return;
         }
 
-        if (packetString[0] == 'D') {
-            // Detach packet - there's not really anything we need to do here, so just respond with an OK
-            debugSession.connection.writePacket(OkResponsePacket());
-            return;
-        }
-
         if (packetString.find("vMustReplyEmpty") == 0) {
             Logger::debug("Handling vMustReplyEmpty");
             debugSession.connection.writePacket(EmptyResponsePacket());

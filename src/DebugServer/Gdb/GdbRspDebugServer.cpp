@@ -31,9 +31,11 @@
 #include "CommandPackets/BloomVersion.hpp"
 #include "CommandPackets/BloomVersionMachine.hpp"
 #include "CommandPackets/GenerateSvd.hpp"
+#include "CommandPackets/Detach.hpp"
 
 // Response packets
 #include "ResponsePackets/TargetStopped.hpp"
+#include "src/Helpers/Process.hpp"
 
 namespace Bloom::DebugServer::Gdb
 {
@@ -122,6 +124,12 @@ namespace Bloom::DebugServer::Gdb
         this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
             std::bind(&GdbRspDebugServer::onTargetExecutionStopped, this, std::placeholders::_1)
         );
+
+        if (Process::isProcessManagedByClion(Process::getParentProcessId())) {
+            Logger::warning(
+                "Bloom's process is being managed by CLion - Bloom will automatically shutdown upon detaching from GDB."
+            );
+        }
     }
 
     void GdbRspDebugServer::close() {
@@ -250,6 +258,10 @@ namespace Bloom::DebugServer::Gdb
         if (rawPacket.size() == 5 && rawPacket[1] == 0x03) {
             // Interrupt request
             return std::make_unique<CommandPackets::InterruptExecution>(rawPacket);
+        }
+
+        if (rawPacket[1] == 'D') {
+            return std::make_unique<CommandPackets::Detach>(rawPacket);
         }
 
         const auto rawPacketString = std::string(rawPacket.begin(), rawPacket.end());
