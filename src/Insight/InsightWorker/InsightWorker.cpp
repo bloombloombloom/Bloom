@@ -17,7 +17,7 @@ namespace Bloom
         QObject::connect(insightSignals, &InsightSignals::taskQueued, this, &InsightWorker::executeTasks);
         QObject::connect(insightSignals, &InsightSignals::taskProcessed, this, &InsightWorker::executeTasks);
 
-        Logger::debug("InsightWorker" + std::to_string(this->id) + " thread ready");
+        Logger::debug("InsightWorker" + std::to_string(this->id) + " ready");
         emit this->ready();
     }
 

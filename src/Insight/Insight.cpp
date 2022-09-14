@@ -198,7 +198,7 @@ namespace Bloom
                 });
             }
 
-            Logger::debug("Starting InsightWorker" + std::to_string(insightWorker->id) + " thread");
+            Logger::debug("Starting InsightWorker" + std::to_string(insightWorker->id));
             workerThread->start();
         }
 

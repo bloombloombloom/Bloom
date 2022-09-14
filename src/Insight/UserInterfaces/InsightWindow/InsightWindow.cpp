@@ -492,7 +492,7 @@ namespace Bloom
 
         if (this->selectedVariant == nullptr) {
             /*
-             * Given that we haven't been able to select a variant at this point, we will just fallback to the first
+             * Given that we haven't been able to select a variant at this point, we will just fall back to the first
              * one that is available.
              */
             this->selectVariant(&(this->supportedVariantsByName.begin()->second));
