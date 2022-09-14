@@ -157,23 +157,15 @@ namespace Bloom::DebugServer::Gdb
                  * service it.
                  */
                 if (!this->targetControllerConsole.isTargetControllerInService()) {
-                    // The TargetController is suspended - allow it some time to wake up
+                    // The TargetController is suspended - attempt to wake it up
+                    try {
+                        this->targetControllerConsole.resumeTargetController();
 
-                    /*
-                     * At first, it may seem like there is a possibility that we may miss the
-                     * TargetControllerStateChanged event here. But this is nothing to worry about because
-                     * this->eventListener is already listening for TargetControllerStateChanged events, so if an event
-                     * does fire in between the call to isTargetControllerInService() (above) and waitForEvent() (below),
-                     * then waitForEvent() will return immediately with the event.
-                     */
-                    const auto targetControllerStateChangedEvent = this->eventListener.waitForEvent<
-                        Events::TargetControllerStateChanged
-                    >(std::chrono::milliseconds(10000));
+                    } catch (Bloom::Exceptions::Exception& exception) {
+                        Logger::error("Failed to wake up TargetController - " + exception.getMessage());
+                    }
 
-                    if (
-                        !targetControllerStateChangedEvent.has_value()
-                        || targetControllerStateChangedEvent->get()->state != TargetControllerState::ACTIVE
-                    ) {
+                    if (!this->targetControllerConsole.isTargetControllerInService()) {
                         this->activeDebugSession.reset();
                         throw DebugSessionAborted("TargetController not in service");
                     }

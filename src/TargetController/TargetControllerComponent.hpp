@@ -21,6 +21,8 @@
 // Commands
 #include "Commands/Command.hpp"
 #include "Commands/GetState.hpp"
+#include "Commands/Resume.hpp"
+#include "Commands/Suspend.hpp"
 #include "Commands/GetTargetDescriptor.hpp"
 #include "Commands/GetTargetState.hpp"
 #include "Commands/StopTargetExecution.hpp"
@@ -335,6 +337,8 @@ namespace Bloom::TargetController
 
         // Command handlers
         std::unique_ptr<Responses::State> handleGetState(Commands::GetState& command);
+        std::unique_ptr<Responses::Response> handleSuspend(Commands::Suspend& command);
+        std::unique_ptr<Responses::Response> handleResume(Commands::Resume& command);
         std::unique_ptr<Responses::TargetDescriptor> handleGetTargetDescriptor(Commands::GetTargetDescriptor& command);
         std::unique_ptr<Responses::TargetState> handleGetTargetState(Commands::GetTargetState& command);
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);

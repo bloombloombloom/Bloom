@@ -50,6 +50,16 @@ namespace Bloom::TargetController
         bool isTargetControllerInService() noexcept;
 
         /**
+         * Resumes the TargetController if it's suspended. Otherwise, this function does nothing.
+         */
+        void resumeTargetController();
+
+        /**
+         * Suspends the TargetController if it's active. Otherwise, this function does nothing.
+         */
+        void suspendTargetController();
+
+        /**
          * Requests the TargetDescriptor from the TargetController
          *
          * @return

@@ -24,6 +24,8 @@ namespace Bloom::TargetController
 
     using Commands::Command;
     using Commands::GetState;
+    using Commands::Resume;
+    using Commands::Suspend;
     using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
     using Commands::StopTargetExecution;
@@ -170,6 +172,14 @@ namespace Bloom::TargetController
         // Register command handlers
         this->registerCommandHandler<GetState>(
             std::bind(&TargetControllerComponent::handleGetState, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<Resume>(
+            std::bind(&TargetControllerComponent::handleResume, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<Suspend>(
+            std::bind(&TargetControllerComponent::handleSuspend, this, std::placeholders::_1)
         );
 
         this->registerCommandHandler<GetTargetDescriptor>(
@@ -763,6 +773,22 @@ namespace Bloom::TargetController
 
     std::unique_ptr<Responses::State> TargetControllerComponent::handleGetState(GetState& command) {
         return std::make_unique<Responses::State>(this->state);
+    }
+
+    std::unique_ptr<Responses::Response> TargetControllerComponent::handleResume(Resume& command) {
+        if (this->state != TargetControllerState::ACTIVE) {
+            this->resume();
+        }
+
+        return std::make_unique<Response>();
+    }
+
+    std::unique_ptr<Responses::Response> TargetControllerComponent::handleSuspend(Suspend& command) {
+        if (this->state != TargetControllerState::SUSPENDED) {
+            this->suspend();
+        }
+
+        return std::make_unique<Response>();
     }
 
     std::unique_ptr<Responses::TargetDescriptor> TargetControllerComponent::handleGetTargetDescriptor(

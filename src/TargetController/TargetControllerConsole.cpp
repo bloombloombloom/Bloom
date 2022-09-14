@@ -2,6 +2,8 @@
 
 // Commands
 #include "Commands/GetState.hpp"
+#include "Commands/Suspend.hpp"
+#include "Commands/Resume.hpp"
 #include "Commands/GetTargetDescriptor.hpp"
 #include "Commands/GetTargetState.hpp"
 #include "Commands/StopTargetExecution.hpp"
@@ -25,6 +27,8 @@
 namespace Bloom::TargetController
 {
     using Commands::GetState;
+    using Commands::Suspend;
+    using Commands::Resume;
     using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
     using Commands::StopTargetExecution;
@@ -79,6 +83,22 @@ namespace Bloom::TargetController
         } catch (...) {
             return false;
         }
+    }
+
+    void TargetControllerConsole::resumeTargetController() {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<Resume>(),
+            this->defaultTimeout
+        );
+        return;
+    }
+
+    void TargetControllerConsole::suspendTargetController() {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<Suspend>(),
+            this->defaultTimeout
+        );
+        return;
     }
 
     TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
