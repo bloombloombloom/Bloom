@@ -97,7 +97,7 @@ namespace Bloom
          * ended. If not enabled, the TargetController will remain active and in control of the debug tool, preventing
          * the user from running any other application that needs access to the debug tool.
          */
-        bool releasePostDebugSession = true;
+        bool releasePostDebugSession = false;
 
         /**
          * For extracting any debug tool specific configuration.
