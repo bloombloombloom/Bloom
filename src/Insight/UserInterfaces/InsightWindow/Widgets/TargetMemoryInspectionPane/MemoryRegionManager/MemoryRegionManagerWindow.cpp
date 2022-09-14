@@ -323,7 +323,7 @@ namespace Bloom::Widgets
                 auto* errorDialogue = new ErrorDialogue(
                     "Invalid Memory Region",
                     "Invalid memory region \"" + focusedRegionItem->getRegionNameInputValue() + "\""
-                        + "<br/><br/>- " + validationFailures.join("<br/>- "),
+                        + "\n\n- " + validationFailures.join("\n- "),
                     this
                 );
                 errorDialogue->show();
