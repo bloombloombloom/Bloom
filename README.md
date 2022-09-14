@@ -80,6 +80,11 @@ the `yaml-cpp-0.7.0` tag, as there is an issue with the CMake configuration prov
 in link errors when building Bloom. In other words, use version 0.7.0 or later if you're installing yaml-cpp via a
 package, but if you're building from source, use the latest source from the `master` branch of the yaml-cpp repository.
 
+#### libprocps
+We use libprocps to access procfs. See [/src/Helpers/Process.cpp](./src/Helpers/Process.cpp) for more.
+
+`sudo apt-get install libprocps-dev`
+
 #### PHP version 8 or later, with the xml extension
 Some of Bloom's build scripts are written in PHP.
 
