@@ -110,6 +110,13 @@ namespace Bloom::Widgets
         QGraphicsRectItem* rubberBandRectItem = nullptr;
         std::optional<QPointF> rubberBandInitPoint = std::nullopt;
 
+        // Context menu actions
+        QAction* selectAllByteItemsAction = new QAction("Select All", this);
+        QAction* deselectByteItemsAction = new QAction("Deselect All", this);
+        QAction* copyAbsoluteAddressAction = new QAction("Copy Absolute Addresses", this);
+        QAction* copyRelativeAddressAction = new QAction("Copy Relative Addresses", this);
+        QAction* copyHexValuesAction = new QAction("Copy Hexadecimal Values", this);
+        QAction* copyDecimalValuesAction = new QAction("Copy Decimal Values", this);
 
         // Address label container context menu actions
         QAction* displayRelativeAddressAction = new QAction("Relative", this);
@@ -140,5 +147,8 @@ namespace Bloom::Widgets
         void clearByteItemSelection();
         void selectAllByteItems();
         void setAddressType(AddressType type);
+        void copyAddressesToClipboard(AddressType type);
+        void copyHexValuesToClipboard();
+        void copyDecimalValuesToClipboard();
     };
 }

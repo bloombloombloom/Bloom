@@ -2,6 +2,9 @@
 
 #include <cmath>
 #include <QMenu>
+#include <QApplication>
+#include <QClipboard>
+#include <QByteArray>
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/InsightSignals.hpp"
@@ -62,6 +65,53 @@ namespace Bloom::Widgets
                 this->setAddressType(AddressType::ABSOLUTE);
             }
         );
+
+        QObject::connect(
+            this->selectAllByteItemsAction,
+            &QAction::triggered,
+            this,
+            &ByteItemGraphicsScene::selectAllByteItems
+        );
+
+        QObject::connect(
+            this->deselectByteItemsAction,
+            &QAction::triggered,
+            this,
+            &ByteItemGraphicsScene::clearByteItemSelection
+        );
+
+        QObject::connect(
+            this->copyAbsoluteAddressAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                this->copyAddressesToClipboard(AddressType::ABSOLUTE);
+            }
+        );
+
+        QObject::connect(
+            this->copyRelativeAddressAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                this->copyAddressesToClipboard(AddressType::RELATIVE);
+            }
+        );
+
+        QObject::connect(
+            this->copyHexValuesAction,
+            &QAction::triggered,
+            this,
+            &ByteItemGraphicsScene::copyHexValuesToClipboard
+        );
+
+        QObject::connect(
+            this->copyDecimalValuesAction,
+            &QAction::triggered,
+            this,
+            &ByteItemGraphicsScene::copyDecimalValuesToClipboard
+        );
+
         this->setSceneRect(0, 0, this->getSceneWidth(), 0);
     }
 
@@ -433,6 +483,26 @@ namespace Bloom::Widgets
             menu->exec(event->screenPos());
             return;
         }
+
+        const auto itemsSelected = !this->selectedByteItemsByAddress.empty();
+
+        auto* menu = new QMenu(this->parent);
+        menu->addAction(this->selectAllByteItemsAction);
+        menu->addAction(this->deselectByteItemsAction);
+        menu->addSeparator();
+
+        auto* copyMenu = new QMenu("Copy Selected", menu);
+        copyMenu->addAction(this->copyAbsoluteAddressAction);
+        copyMenu->addAction(this->copyRelativeAddressAction);
+        copyMenu->addSeparator();
+        copyMenu->addAction(this->copyHexValuesAction);
+        copyMenu->addAction(this->copyDecimalValuesAction);
+
+        copyMenu->setEnabled(itemsSelected);
+        this->deselectByteItemsAction->setEnabled(itemsSelected);
+
+        menu->addMenu(copyMenu);
+        menu->exec(event->screenPos());
     }
 
     void ByteItemGraphicsScene::updateAnnotationValues(const Targets::TargetMemoryBuffer& buffer) {
@@ -714,5 +784,47 @@ namespace Bloom::Widgets
         this->displayAbsoluteAddressAction->setChecked(this->settings.addressLabelType == AddressType::ABSOLUTE);
 
         this->byteAddressContainer->invalidateChildItemCaches();
+    }
+
+    void ByteItemGraphicsScene::copyAddressesToClipboard(AddressType type) {
+        if (this->selectedByteItemsByAddress.empty()) {
+            return;
+        }
+
+        auto data = QString();
+
+        for (const auto& [address, byteItem] : this->selectedByteItemsByAddress) {
+            data.append((type == AddressType::ABSOLUTE ? byteItem->addressHex : byteItem->relativeAddressHex) + "\n");
+        }
+
+        QApplication::clipboard()->setText(std::move(data));
+    }
+
+    void ByteItemGraphicsScene::copyHexValuesToClipboard() {
+        if (this->selectedByteItemsByAddress.empty()) {
+            return;
+        }
+
+        auto data = QString();
+
+        for (const auto& [address, byteItem] : this->selectedByteItemsByAddress) {
+            data.append("0x" + byteItem->hexValue + "\n");
+        }
+
+        QApplication::clipboard()->setText(std::move(data));
+    }
+
+    void ByteItemGraphicsScene::copyDecimalValuesToClipboard() {
+        if (this->selectedByteItemsByAddress.empty()) {
+            return;
+        }
+
+        auto data = QString();
+
+        for (const auto& [address, byteItem] : this->selectedByteItemsByAddress) {
+            data.append(QString::number(byteItem->value, 10) + "\n");
+        }
+
+        QApplication::clipboard()->setText(std::move(data));
     }
 }

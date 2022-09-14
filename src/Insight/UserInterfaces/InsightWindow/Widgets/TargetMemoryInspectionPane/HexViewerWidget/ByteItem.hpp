@@ -28,9 +28,11 @@ namespace Bloom::Widgets
 
         std::size_t byteIndex;
         Targets::TargetMemoryAddress address = 0x00;
-
         QString addressHex;
         QString relativeAddressHex;
+
+        unsigned char value = 0x00;
+        QString hexValue;
 
         std::size_t currentRowIndex = 0;
         std::size_t currentColumnIndex = 0;
@@ -62,12 +64,9 @@ namespace Bloom::Widgets
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     private:
-        unsigned char value = 0x00;
         bool valueInitialised = false;
 
         const HexViewerWidgetSettings& settings;
-
-        QString hexValue;
         std::optional<QString> asciiValue;
 
         ByteItem** hoveredByteItem;
