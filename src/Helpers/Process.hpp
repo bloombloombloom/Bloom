@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <memory>
 #include <proc/readproc.h>
 
 namespace Bloom
@@ -25,12 +26,16 @@ namespace Bloom
         /**
          * Returns true if the given process is managed by CLion.
          *
-         * @param processId
+         * @param parentProcessId
+         *  If not provided, this function will perform the check against the current process.
+         *
          * @return
          */
-        static bool isManagedByClion(::pid_t processId);
+        static bool isManagedByClion(std::optional<::pid_t> parentProcessId = std::nullopt);
+
 
     private:
-        static std::optional<::proc_t*> getProcessInfo(::pid_t processId);
+        using ProcT = std::unique_ptr<::proc_t, decltype(&::freeproc)>;
+        static ProcT getProcessInfo(::pid_t processId);
     };
 }

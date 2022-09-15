@@ -2,6 +2,7 @@
 
 #include <unistd.h>
 #include <string>
+#include <map>
 
 namespace Bloom
 {
@@ -13,47 +14,50 @@ namespace Bloom
         return getppid();
     }
 
-    bool Process::isManagedByClion(::pid_t processId) {
-        static auto cachedResult = std::optional<bool>();
+    bool Process::isManagedByClion(std::optional<::pid_t> parentProcessId) {
+        if (!parentProcessId.has_value()) {
+            parentProcessId = Process::getParentProcessId();
+        }
 
-        if (cachedResult.has_value()) {
-            return cachedResult.value();
+        static auto cachedResultsByProcessId = std::map<::pid_t, bool>();
+
+        if (cachedResultsByProcessId.contains(*parentProcessId)) {
+            return cachedResultsByProcessId.at(*parentProcessId);
         }
 
         // Walk the process tree until we find CLion
+        auto processId = *parentProcessId;
         while (processId != 0) {
             const auto processInfo = Process::getProcessInfo(processId);
 
-            if (!processInfo.has_value()) {
+            if (!processInfo) {
                 break;
             }
 
-            auto* processInfoPtr = processInfo.value();
-
-            const auto commandLine = std::string(processInfoPtr->cmd);
+            const auto commandLine = std::string(processInfo->cmd);
             if (commandLine.find("clion.sh") != std::string::npos) {
-                freeproc(processInfoPtr);
-                cachedResult = true;
+                cachedResultsByProcessId[*parentProcessId] = true;
                 return true;
             }
 
-            processId = processInfoPtr->ppid;
-            freeproc(processInfoPtr);
+            processId = processInfo->ppid;
         }
 
-        cachedResult = true;
+        cachedResultsByProcessId[*parentProcessId] = false;
         return false;
     }
 
-    std::optional<::proc_t*> Process::getProcessInfo(::pid_t processId) {
-        auto* proc = ::openproc(PROC_FILLSTAT | PROC_FILLARG | PROC_PID, &processId);
-        auto* processInfo = ::readproc(proc, NULL);
+    Process::ProcT Process::getProcessInfo(::pid_t processId) {
+        auto proc = std::unique_ptr<::PROCTAB, decltype(&::closeproc)>(
+            ::openproc(PROC_FILLSTAT | PROC_FILLARG | PROC_PID, &processId),
+            ::closeproc
+        );
+        auto processInfo = ProcT(::readproc(proc.get(), NULL), ::freeproc);
 
         if (processInfo == NULL) {
-            return std::nullopt;
+            return ProcT(nullptr, ::freeproc);
         }
 
-        closeproc(proc);
         return processInfo;
     }
 }

@@ -7,6 +7,7 @@
 
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"
+#include "src/Helpers/Process.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 
@@ -509,7 +510,7 @@ namespace Bloom
     }
 
     void Application::onDebugSessionFinished(const Events::DebugSessionFinished& event) {
-        if (this->environmentConfig->shutdownPostDebugSession) {
+        if (this->environmentConfig->shutdownPostDebugSession || Process::isManagedByClion()) {
             this->shutdown();
         }
     }

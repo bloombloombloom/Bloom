@@ -24,7 +24,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling Detach packet");
 
         try {
-            if (Process::isManagedByClion(Process::getParentProcessId())) {
+            if (Process::isManagedByClion()) {
                 targetControllerConsole.suspendTargetController();
             }
 

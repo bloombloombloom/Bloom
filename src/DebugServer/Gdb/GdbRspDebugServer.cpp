@@ -125,7 +125,7 @@ namespace Bloom::DebugServer::Gdb
             std::bind(&GdbRspDebugServer::onTargetExecutionStopped, this, std::placeholders::_1)
         );
 
-        if (Process::isManagedByClion(Process::getParentProcessId())) {
+        if (Process::isManagedByClion()) {
             Logger::warning(
                 "Bloom's process is being managed by CLion - Bloom will automatically shutdown upon detaching from GDB."
             );
