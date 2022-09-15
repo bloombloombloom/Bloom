@@ -219,9 +219,9 @@ namespace Bloom
             auto* workerThread = workerPair.second;
 
             if (workerThread != nullptr && workerThread->isRunning()) {
-                Logger::debug("Stopping InsightWorker" + std::to_string(workerId) + " thread");
+                Logger::debug("Stopping InsightWorker" + std::to_string(workerId));
                 workerThread->quit();
-                Logger::debug("Waiting for InsightWorker" + std::to_string(workerId) + " thread to stop");
+                Logger::debug("Waiting for InsightWorker" + std::to_string(workerId) + " to stop");
                 workerThread->wait();
             }
         }
