@@ -9,7 +9,7 @@ namespace Bloom::DebugServer::Gdb
         : DebugServerConfig(debugServerConfig)
     {
         if (debugServerConfig.debugServerNode["ipAddress"]) {
-            if (!YamlUtilities::isType<std::string>(debugServerConfig.debugServerNode["ipAddress"])) {
+            if (!YamlUtilities::isCastable<std::string>(debugServerConfig.debugServerNode["ipAddress"])) {
                 Logger::error(
                     "Invalid GDB debug server config parameter ('ipAddress') provided - must be a string. The "
                     "parameter will be ignored."
@@ -20,7 +20,7 @@ namespace Bloom::DebugServer::Gdb
         }
 
         if (debugServerConfig.debugServerNode["port"]) {
-            if (YamlUtilities::isType<std::uint16_t>(debugServerConfig.debugServerNode["port"])) {
+            if (YamlUtilities::isCastable<std::uint16_t>(debugServerConfig.debugServerNode["port"])) {
                 this->listeningPortNumber = debugServerConfig.debugServerNode["port"].as<std::uint16_t>();
 
             } else {

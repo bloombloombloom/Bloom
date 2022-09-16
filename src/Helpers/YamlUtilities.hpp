@@ -8,7 +8,7 @@ namespace Bloom
     {
     public:
         template <typename Type>
-        static bool isType(const YAML::Node& node) {
+        static bool isCastable(const YAML::Node& node) {
             try {
                 node.as<Type>();
                 return true;
