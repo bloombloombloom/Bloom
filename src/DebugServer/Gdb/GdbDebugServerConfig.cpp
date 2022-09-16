@@ -20,9 +20,15 @@ namespace Bloom::DebugServer::Gdb
         }
 
         if (debugServerConfig.debugServerNode["port"]) {
-            this->listeningPortNumber = static_cast<std::uint16_t>(
-                debugServerConfig.debugServerNode["port"].as<int>()
-            );
+            if (YamlUtilities::isType<std::uint16_t>(debugServerConfig.debugServerNode["port"])) {
+                this->listeningPortNumber = debugServerConfig.debugServerNode["port"].as<std::uint16_t>();
+
+            } else {
+                Logger::error(
+                    "Invalid GDB debug server config parameter ('port') provided - value must be castable to a 16-bit "
+                    "unsigned integer. The parameter will be ignored."
+                );
+            }
         }
     }
 }
