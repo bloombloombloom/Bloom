@@ -80,7 +80,8 @@ namespace Bloom::DebugServer
     }
 
     void DebugServerComponent::shutdown() {
-        if (this->getThreadState() == ThreadState::STOPPED
+        if (
+            this->getThreadState() == ThreadState::STOPPED
             || this->getThreadState() == ThreadState::SHUTDOWN_INITIATED
         ) {
             return;
@@ -88,7 +89,11 @@ namespace Bloom::DebugServer
 
         this->setThreadState(ThreadState::SHUTDOWN_INITIATED);
         Logger::info("Shutting down DebugServer");
-        this->server->close();
+
+        if (this->server) {
+            this->server->close();
+        }
+
         this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
 
         this->eventListener->setInterruptEventNotifier(nullptr);
