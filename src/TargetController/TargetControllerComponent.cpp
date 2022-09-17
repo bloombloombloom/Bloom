@@ -712,7 +712,7 @@ namespace Bloom::TargetController
 
             if (newTargetState == TargetState::RUNNING) {
                 Logger::debug("Target state changed - RUNNING");
-                EventManager::triggerEvent(std::make_shared<TargetExecutionResumed>());
+                EventManager::triggerEvent(std::make_shared<TargetExecutionResumed>(false));
             }
         }
     }
@@ -827,7 +827,7 @@ namespace Bloom::TargetController
             this->lastTargetState = TargetState::RUNNING;
         }
 
-        EventManager::triggerEvent(std::make_shared<Events::TargetExecutionResumed>());
+        EventManager::triggerEvent(std::make_shared<Events::TargetExecutionResumed>(false));
 
         return std::make_unique<Response>();
     }
@@ -928,7 +928,7 @@ namespace Bloom::TargetController
 
         this->target->step();
         this->lastTargetState = TargetState::RUNNING;
-        EventManager::triggerEvent(std::make_shared<Events::TargetExecutionResumed>());
+        EventManager::triggerEvent(std::make_shared<Events::TargetExecutionResumed>(true));
 
         return std::make_unique<Response>();
     }

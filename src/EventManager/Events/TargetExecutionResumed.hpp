@@ -12,7 +12,11 @@ namespace Bloom::Events
         static constexpr EventType type = EventType::TARGET_EXECUTION_RESUMED;
         static inline const std::string name = "TargetExecutionResumed";
 
-        TargetExecutionResumed() = default;
+        bool stepping = false;
+
+        explicit TargetExecutionResumed(bool stepping)
+            : stepping(stepping)
+        {};
 
         [[nodiscard]] EventType getType() const override {
             return TargetExecutionResumed::type;

@@ -2,6 +2,7 @@
 
 #include <QTimer>
 #include <QFontDatabase>
+#include <chrono>
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Logger/Logger.hpp"
@@ -275,10 +276,35 @@ namespace Bloom
         }
 
         this->lastTargetState = TargetState::STOPPED;
+
+        if (this->targetStepping) {
+            if (this->targetResumeTimer == nullptr) {
+                this->targetResumeTimer = new QTimer(this);
+                this->targetResumeTimer->setSingleShot(true);
+
+                this->targetResumeTimer->callOnTimeout(this, [this] {
+                    if (this->lastTargetState != TargetState::STOPPED) {
+                        return;
+                    }
+
+                    emit this->insightSignals->targetStateUpdated(TargetState::STOPPED);
+                });
+            }
+
+            this->targetResumeTimer->start(750);
+            return;
+        }
+
+        if (this->targetResumeTimer != nullptr && this->targetResumeTimer->isActive()) {
+            this->targetResumeTimer->stop();
+        }
+
         emit this->insightSignals->targetStateUpdated(TargetState::STOPPED);
     }
 
     void Insight::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
+        this->targetStepping = event.stepping;
+
         if (this->lastTargetState != TargetState::RUNNING) {
             this->lastTargetState = TargetState::RUNNING;
             emit this->insightSignals->targetStateUpdated(TargetState::RUNNING);

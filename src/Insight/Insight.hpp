@@ -6,6 +6,7 @@
 #include <map>
 #include <utility>
 #include <QThread>
+#include <QTimer>
 
 #include "src/Helpers/Thread.hpp"
 #include "src/Helpers/Paths.hpp"
@@ -90,7 +91,11 @@ namespace Bloom
         );
 
         TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole();
+
         Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
+        bool targetStepping = false;
+        QTimer* targetResumeTimer = nullptr;
+
         InsightSignals* insightSignals = InsightSignals::instance();
 
         void startup();
