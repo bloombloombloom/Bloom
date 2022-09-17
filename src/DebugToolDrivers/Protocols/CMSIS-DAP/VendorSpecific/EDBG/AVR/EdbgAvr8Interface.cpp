@@ -1469,32 +1469,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     ) {
         std::uint16_t alignTo = 1;
 
-        // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
-        switch (memoryType) {
-            case Avr8MemoryType::FLASH_PAGE: {
-                alignTo = (this->configVariant == Avr8ConfigVariant::UPDI)
-                    ? 2
-                    : this->targetParameters.flashPageSize.value();
-                break;
-            }
-            case Avr8MemoryType::SPM: {
-                // Memory access via the SPM type must be word aligned.
-                alignTo = 2;
-            }
-            case Avr8MemoryType::APPL_FLASH:
-            case Avr8MemoryType::BOOT_FLASH: {
-                if (this->configVariant == Avr8ConfigVariant::UPDI) {
-                    // For UPDI sessions, memory access via the APPL_FLASH must be word aligned.
-                    alignTo = 2;
-
-                } else {
-                    alignTo = this->targetParameters.flashPageSize.value();
-                }
-                break;
-            }
-            default: {
-                break;
-            }
+        if (
+            memoryType == Avr8MemoryType::FLASH_PAGE
+            || memoryType == Avr8MemoryType::SPM
+            || memoryType == Avr8MemoryType::APPL_FLASH
+            || memoryType == Avr8MemoryType::BOOT_FLASH
+        ) {
+            alignTo = this->targetParameters.flashPageSize.value();
         }
 
         if (this->maximumMemoryAccessSizePerRequest.has_value() && alignTo > this->maximumMemoryAccessSizePerRequest) {
@@ -1518,32 +1499,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     ) {
         std::uint16_t alignTo = 1;
 
-        // We don't have to align to the page size in all cases. We may only need to align to the word size (2 bytes).
-        switch (memoryType) {
-            case Avr8MemoryType::FLASH_PAGE: {
-                alignTo = (this->configVariant == Avr8ConfigVariant::UPDI)
-                          ? 2
-                          : this->targetParameters.flashPageSize.value();
-                break;
-            }
-            case Avr8MemoryType::SPM: {
-                // Memory access via the SPM type must be word aligned.
-                alignTo = 2;
-            }
-            case Avr8MemoryType::APPL_FLASH:
-            case Avr8MemoryType::BOOT_FLASH: {
-                if (this->configVariant == Avr8ConfigVariant::UPDI) {
-                    // For UPDI sessions, memory access via the APPL_FLASH must be word aligned.
-                    alignTo = 2;
-
-                } else {
-                    alignTo = this->targetParameters.flashPageSize.value();
-                }
-                break;
-            }
-            default: {
-                break;
-            }
+        if (
+            memoryType == Avr8MemoryType::FLASH_PAGE
+            || memoryType == Avr8MemoryType::SPM
+            || memoryType == Avr8MemoryType::APPL_FLASH
+            || memoryType == Avr8MemoryType::BOOT_FLASH
+        ) {
+            alignTo = this->targetParameters.flashPageSize.value();
         }
 
         if ((bytes % alignTo) != 0) {
@@ -1718,8 +1680,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
                 for (float i = 1; i <= totalReadsRequired; i++) {
                     auto bytesToRead = static_cast<TargetMemorySize>(
-                        (bytes - output.size()) > (singlePacketSize * 2) ? (singlePacketSize * 2)
-                        : bytes - output.size()
+                        (bytes - output.size()) > (singlePacketSize * 2)
+                            ? (singlePacketSize * 2) : bytes - output.size()
                     );
                     auto data = this->readMemory(
                         type,
