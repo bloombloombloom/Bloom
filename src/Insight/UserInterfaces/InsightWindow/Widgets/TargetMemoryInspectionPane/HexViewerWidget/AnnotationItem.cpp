@@ -52,6 +52,7 @@ namespace Bloom::Widgets
 
         auto font = painter->font();
         font.setPixelSize(this->getLabelFontSize());
+        font.setItalic(false);
         painter->setFont(font);
 
         const auto isEnabled = this->isEnabled();
