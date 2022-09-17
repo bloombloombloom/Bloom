@@ -1,10 +1,12 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 
 #include "TargetDescriptor.hpp"
 #include "Connection.hpp"
 #include "Feature.hpp"
+#include "ProgrammingSession.hpp"
 
 namespace Bloom::DebugServer::Gdb
 {
@@ -32,6 +34,21 @@ namespace Bloom::DebugServer::Gdb
          * client.
          */
         bool waitingForBreak = false;
+
+        /**
+         * When the user attempts to program the target via GDB's 'load' command, GDB will send a number of
+         * FlashWrite (vFlashWrite) packets to Bloom. We group the data in these packets and flush it all at once, upon
+         * receiving a FlashDone (vFlashDone) packet.
+         *
+         * The grouped data is held in a ProgrammingSession object, against the active debug session. Once the data has
+         * been flushed, the ProgrammingSession object is destroyed.
+         *
+         * See the ProgrammingSession struct and GDB RSP documentation for more.
+         *
+         * This member holds the current (if any) ProgrammingSession object. It should only be populated during
+         * programming.
+         */
+        std::optional<ProgrammingSession> programmingSession = std::nullopt;
 
         DebugSession(
             Connection&& connection,

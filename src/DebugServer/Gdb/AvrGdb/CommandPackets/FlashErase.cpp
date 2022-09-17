@@ -52,6 +52,17 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::debug("Handling FlashErase packet");
 
         try {
+            const auto flashPageSize = debugSession.gdbTargetDescriptor.targetDescriptor.memoryDescriptorsByType.at(
+                Targets::TargetMemoryType::FLASH
+            ).pageSize.value();
+
+            if ((this->bytes % flashPageSize) != 0) {
+                throw Exception(
+                    "Invalid erase size (" + std::to_string(this->bytes) + " bytes) provided by GDB - must be a "
+                    "multiple of the target's flash page size (" + std::to_string(flashPageSize) + " bytes)"
+                );
+            }
+
             targetControllerConsole.enableProgrammingMode();
 
             targetControllerConsole.writeMemory(
@@ -64,6 +75,15 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
         } catch (const Exception& exception) {
             Logger::error("Failed to erase flash memory - " + exception.getMessage());
+            debugSession.programmingSession.reset();
+
+            try {
+                targetControllerConsole.disableProgrammingMode();
+
+            } catch (const Exception& exception) {
+                Logger::error("Failed to disable programming mode - " + exception.getMessage());
+            }
+
             debugSession.connection.writePacket(ErrorResponsePacket());
         }
     }

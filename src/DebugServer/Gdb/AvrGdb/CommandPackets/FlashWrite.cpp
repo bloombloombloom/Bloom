@@ -52,18 +52,51 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::debug("Handling FlashWrite packet");
 
         try {
-            targetControllerConsole.enableProgrammingMode();
+            if (this->buffer.empty()) {
+                throw Exception("Received empty buffer from GDB");
+            }
 
-            targetControllerConsole.writeMemory(
-                Targets::TargetMemoryType::FLASH,
-                this->startAddress,
-                this->buffer
-            );
+            if (!debugSession.programmingSession.has_value()) {
+                debugSession.programmingSession = ProgrammingSession(this->startAddress, this->buffer);
+
+            } else {
+                auto& programmingSession = debugSession.programmingSession.value();
+                const auto currentEndAddress = programmingSession.startAddress + programmingSession.buffer.size() - 1;
+                const auto expectedStartAddress = (currentEndAddress + 1);
+
+                if (this->startAddress < expectedStartAddress) {
+                    throw Exception("Invalid start address from GDB - the buffer would overlap a previous buffer");
+                }
+
+                if (this->startAddress > expectedStartAddress) {
+                    // There is a gap in the buffer sent by GDB. Fill it with 0xFF
+                    programmingSession.buffer.insert(
+                        programmingSession.buffer.end(),
+                        this->startAddress - expectedStartAddress,
+                        0xFF
+                    );
+                }
+
+                programmingSession.buffer.insert(
+                    programmingSession.buffer.end(),
+                    this->buffer.begin(),
+                    this->buffer.end()
+                );
+            }
 
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {
-            Logger::error("Failed to write to flash memory - " + exception.getMessage());
+            Logger::error("Failed to handle FlashWrite packet - " + exception.getMessage());
+            debugSession.programmingSession.reset();
+
+            try {
+                targetControllerConsole.disableProgrammingMode();
+
+            } catch (const Exception& exception) {
+                Logger::error("Failed to disable programming mode - " + exception.getMessage());
+            }
+
             debugSession.connection.writePacket(ErrorResponsePacket());
         }
     }
