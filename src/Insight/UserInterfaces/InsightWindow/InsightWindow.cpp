@@ -333,6 +333,16 @@ namespace Bloom
         }
 
         if (
+            variant.package != TargetPackage::DIP
+            && variant.package != TargetPackage::SOIC
+            && variant.package != TargetPackage::SSOP
+            && variant.package != TargetPackage::QFP
+            && variant.package != TargetPackage::QFN
+        ) {
+            return false;
+        }
+
+        if (
             variant.package == TargetPackage::DIP
             || variant.package == TargetPackage::SOIC
             || variant.package == TargetPackage::SSOP
