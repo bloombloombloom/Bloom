@@ -38,6 +38,9 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             }
 
             targetControllerConsole.disableProgrammingMode();
+            Logger::debug("Resetting target");
+            targetControllerConsole.resetTarget();
+            Logger::info("Target reset");
 
             debugSession.connection.writePacket(OkResponsePacket());
 
