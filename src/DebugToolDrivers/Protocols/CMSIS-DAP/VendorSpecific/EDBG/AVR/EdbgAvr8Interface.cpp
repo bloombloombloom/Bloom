@@ -772,6 +772,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::enableProgrammingMode() {
+        if (this->programmingModeEnabled) {
+            return;
+        }
+
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
             EnterProgrammingMode()
         );
@@ -784,6 +788,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::disableProgrammingMode() {
+        if (!this->programmingModeEnabled) {
+            return;
+        }
+
         auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
             LeaveProgrammingMode()
         );

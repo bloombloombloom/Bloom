@@ -25,6 +25,9 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         try {
             if (debugSession.programmingSession.has_value()) {
                 const auto& programmingSession = debugSession.programmingSession.value();
+                Logger::info(
+                    "Flushing " + std::to_string(programmingSession.buffer.size()) + " bytes to target's program memory"
+                );
 
                 targetControllerConsole.enableProgrammingMode();
 
