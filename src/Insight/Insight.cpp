@@ -2,7 +2,6 @@
 
 #include <QTimer>
 #include <QFontDatabase>
-#include <chrono>
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Logger/Logger.hpp"
