@@ -14,8 +14,20 @@ namespace Bloom
     void InsightWorker::startup() {
         auto* insightSignals = InsightSignals::instance();
 
-        QObject::connect(insightSignals, &InsightSignals::taskQueued, this, &InsightWorker::executeTasks);
-        QObject::connect(insightSignals, &InsightSignals::taskProcessed, this, &InsightWorker::executeTasks);
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::taskQueued,
+            this,
+            &InsightWorker::executeTasks,
+            Qt::ConnectionType::QueuedConnection
+        );
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::taskProcessed,
+            this,
+            &InsightWorker::executeTasks,
+            Qt::ConnectionType::QueuedConnection
+        );
 
         Logger::debug("InsightWorker" + std::to_string(this->id) + " ready");
         emit this->ready();
