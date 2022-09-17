@@ -343,24 +343,26 @@ namespace Bloom
         }
 
         if (
-            variant.package == TargetPackage::DIP
-            || variant.package == TargetPackage::SOIC
-            || variant.package == TargetPackage::SSOP
+            (
+                variant.package == TargetPackage::DIP
+                || variant.package == TargetPackage::SOIC
+                || variant.package == TargetPackage::SSOP
+            )
+            && pinCount % 2 != 0
         ) {
             // All DIP, SOIC and SSOP variants must have a pin count that is a multiple of two
-            if (pinCount % 2 != 0) {
-                return false;
-            }
+            return false;
         }
 
-        if (variant.package == TargetPackage::QFP || variant.package == TargetPackage::QFN) {
+        if (
+            (variant.package == TargetPackage::QFP || variant.package == TargetPackage::QFN)
+            && (pinCount % 4 != 0 || pinCount <= 4)
+        ) {
             /*
              * All QFP and QFN variants must have a pin count that is a multiple of four. And there must be
              * more than one pin per side.
              */
-            if (pinCount % 4 != 0 || pinCount <= 4) {
-                return false;
-            }
+            return false;
         }
 
         return true;
