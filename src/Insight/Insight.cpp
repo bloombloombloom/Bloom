@@ -2,6 +2,12 @@
 
 #include <QTimer>
 #include <QFontDatabase>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
+#include <QUrl>
+#include <QUrlQuery>
+#include <QJsonDocument>
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Logger/Logger.hpp"
@@ -9,7 +15,6 @@
 
 #include "src/Application.hpp"
 
-#include "InsightWorker/Tasks/QueryLatestVersionNumber.hpp"
 #include "InsightWorker/Tasks/GetTargetState.hpp"
 #include "InsightWorker/Tasks/GetTargetDescriptor.hpp"
 
@@ -191,16 +196,11 @@ namespace Bloom
 
             this->insightWorkersById[insightWorker->id] = std::pair(insightWorker, workerThread);
 
-            // TODO: Remove this hack. Find a better way to trigger the latest version check.
-            if (i == 0) {
-                QObject::connect(insightWorker, &InsightWorker::ready, this, [this] {
-                    this->checkBloomVersion();
-                });
-            }
-
             Logger::debug("Starting InsightWorker" + std::to_string(insightWorker->id));
             workerThread->start();
         }
+
+        this->checkBloomVersion();
 
         this->mainWindow->init(this->targetControllerConsole.getTargetDescriptor());
         this->mainWindow->show();
@@ -231,17 +231,23 @@ namespace Bloom
     }
 
     void Insight::checkBloomVersion() {
-        auto currentVersionNumber = Application::VERSION;
+        const auto currentVersionNumber = Application::VERSION;
 
-        auto* versionQueryTask = new QueryLatestVersionNumber(
-            currentVersionNumber
-        );
+        auto* networkAccessManager = new QNetworkAccessManager(this);
+        auto queryVersionEndpointUrl = QUrl(QString::fromStdString(Paths::homeDomainName() + "/latest-version"));
+        queryVersionEndpointUrl.setScheme("http");
+        queryVersionEndpointUrl.setQuery(QUrlQuery({
+            {"currentVersionNumber", QString::fromStdString(currentVersionNumber.toString())}
+        }));
 
         QObject::connect(
-            versionQueryTask,
-            &QueryLatestVersionNumber::latestVersionNumberRetrieved,
+            networkAccessManager,
+            &QNetworkAccessManager::finished,
             this,
-            [this, currentVersionNumber] (const VersionNumber& latestVersionNumber) {
+            [this, currentVersionNumber] (QNetworkReply* response) {
+                const auto jsonResponseObject = QJsonDocument::fromJson(response->readAll()).object();
+                const auto latestVersionNumber = VersionNumber(jsonResponseObject.value("latestVersionNumber").toString());
+
                 if (latestVersionNumber > currentVersionNumber) {
                     Logger::warning(
                         "Bloom v" + latestVersionNumber.toString()
@@ -251,7 +257,7 @@ namespace Bloom
             }
         );
 
-        InsightWorker::queueTask(versionQueryTask);
+        networkAccessManager->get(QNetworkRequest(queryVersionEndpointUrl));
     }
 
     void Insight::onInsightWindowActivated() {
