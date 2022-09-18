@@ -400,7 +400,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
            {"updi", PhysicalInterface::UPDI},
            {"debugwire", PhysicalInterface::DEBUG_WIRE},
-           {"jtag", PhysicalInterface::DEBUG_WIRE},
+           {"jtag", PhysicalInterface::JTAG},
            {"pdi", PhysicalInterface::PDI},
            {"isp", PhysicalInterface::ISP},
         });
