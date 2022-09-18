@@ -150,8 +150,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                     || registerDescriptor.name->empty()
                     || !registerDescriptor.groupName.has_value()
                     || (
-                        registerDescriptor.type != Targets::TargetRegisterType::GENERAL_PURPOSE_REGISTER
-                        && registerDescriptor.type != Targets::TargetRegisterType::OTHER
+                        registerDescriptor.type != Targets::TargetRegisterType::OTHER
                         && registerDescriptor.type != Targets::TargetRegisterType::PORT_REGISTER
                     )
                 ) {
