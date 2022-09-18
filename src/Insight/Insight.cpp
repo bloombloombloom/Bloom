@@ -290,7 +290,7 @@ namespace Bloom
                 });
             }
 
-            this->targetResumeTimer->start(750);
+            this->targetResumeTimer->start(1500);
             return;
         }
 
