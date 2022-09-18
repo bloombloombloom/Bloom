@@ -27,8 +27,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         this->physicalInterface = Avr8TargetConfig::debugPhysicalInterfacesByConfigName.at(physicalInterfaceName);
 
+        // The 'manageDwenFuseBit' param used to be 'updateDwenFuseBit' - we still support the old, for now.
         if (targetNode["updateDwenFuseBit"]) {
-            this->updateDwenFuseBit = targetNode["updateDwenFuseBit"].as<bool>();
+            this->manageDwenFuseBit = targetNode["updateDwenFuseBit"].as<bool>();
+        }
+
+        if (targetNode["manageDwenFuseBit"]) {
+            this->manageDwenFuseBit = targetNode["manageDwenFuseBit"].as<bool>();
         }
 
         if (targetNode["cycleTargetPowerPostDwenUpdate"]) {

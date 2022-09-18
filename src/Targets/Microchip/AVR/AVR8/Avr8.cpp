@@ -92,7 +92,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         if (
-            this->targetConfig->updateDwenFuseBit && this->avrIspInterface == nullptr
+            this->targetConfig->manageDwenFuseBit && this->avrIspInterface == nullptr
             && this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
         ) {
             Logger::warning(
@@ -157,7 +157,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             this->avr8DebugInterface->activate();
 
         } catch (const Exceptions::DebugWirePhysicalInterfaceError& debugWireException) {
-            if (!this->targetConfig->updateDwenFuseBit) {
+            if (!this->targetConfig->manageDwenFuseBit) {
                 throw TargetOperationFailure(
                     "Failed to activate debugWire physical interface - check target connection and DWEN fuse "
                         "bit. Bloom can manage the DWEN fuse bit automatically. For instructions on enabling this "

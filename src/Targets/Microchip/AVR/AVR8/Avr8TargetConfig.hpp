@@ -43,12 +43,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         bool disableDebugWireOnDeactivate = false;
 
         /**
-         * The updateDwenFuseBit flag determines if Bloom should manage the DWEN fuse bit, for debugWire sessions.
+         * The manageDwenFuseBit flag determines if Bloom should manage the DWEN fuse bit, for debugWire sessions.
          *
          * This parameter is optional, and the function is disabled by default. Users must explicitly enable it in
          * their target configuration.
          */
-        bool updateDwenFuseBit = false;
+        bool manageDwenFuseBit = false;
 
         /**
          * For debug tools that provide target power management functions (such as some evaluation boards), Bloom can
