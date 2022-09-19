@@ -15,6 +15,7 @@ namespace Bloom::Widgets
     enum class PanelWidgetType: int
     {
         LEFT,
+        RIGHT,
         BOTTOM,
     };
     Q_ENUM_NS(PanelWidgetType)
@@ -71,9 +72,10 @@ namespace Bloom::Widgets
         int maximumResize = 500;
 
         PanelWidgetType panelType = PanelWidgetType::LEFT;
+
         QCursor resizeCursor = Qt::SplitHCursor;
-        bool resizingActive = false;
-        int resizingOffset = 0;
+        std::optional<QPoint> initialResizePoint = std::nullopt;
+        int initialResizeSize = 0;
 
         bool event(QEvent* event) override;
         void mousePressEvent(QMouseEvent* event) override;
