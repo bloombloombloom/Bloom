@@ -50,10 +50,7 @@ namespace Bloom::Widgets
         auto lineColor = this->getLineColor();
         auto labelFontColor = this->getLabelFontColor();
 
-        auto font = painter->font();
-        font.setPixelSize(this->getLabelFontSize());
-        font.setItalic(false);
-        painter->setFont(font);
+        painter->setFont(this->getLabelFont());
 
         const auto isEnabled = this->isEnabled();
 

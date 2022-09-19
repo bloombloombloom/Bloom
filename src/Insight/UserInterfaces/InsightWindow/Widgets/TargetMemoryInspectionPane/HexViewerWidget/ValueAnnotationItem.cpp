@@ -26,10 +26,6 @@ namespace Bloom::Widgets
     }
 
     void ValueAnnotationItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-        auto font = painter->font();
-        font.setItalic(true);
-        painter->setFont(font);
-
         AnnotationItem::paint(painter, option, widget);
 
         if (this->size > 1) {

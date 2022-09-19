@@ -24,8 +24,16 @@ namespace Bloom::Widgets
             return QColor(0x94, 0x6F, 0x30);
         }
 
-        [[nodiscard]] int getLabelFontSize() const override {
-            return 11;
+        [[nodiscard]] const QFont& getLabelFont() const override {
+            static auto labelFont = std::optional<QFont>();
+
+            if (!labelFont.has_value()) {
+                labelFont = QFont("'Ubuntu', sans-serif");
+                labelFont->setPixelSize(11);
+                labelFont->setItalic(true);
+            }
+
+            return labelFont.value();
         }
 
     private:

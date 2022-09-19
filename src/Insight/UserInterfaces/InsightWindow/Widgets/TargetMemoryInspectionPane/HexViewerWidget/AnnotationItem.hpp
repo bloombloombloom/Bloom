@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QGraphicsItem>
+#include <QFont>
 #include <cstdint>
 
 #include "src/Targets/TargetMemory.hpp"
@@ -60,8 +61,15 @@ namespace Bloom::Widgets
             return QColor(0x68, 0x68, 0x68);
         }
 
-        [[nodiscard]] virtual int getLabelFontSize() const {
-            return 12;
+        [[nodiscard]] virtual const QFont& getLabelFont() const {
+            static auto labelFont = std::optional<QFont>();
+
+            if (!labelFont.has_value()) {
+                labelFont = QFont("'Ubuntu', sans-serif");
+                labelFont->setPixelSize(12);
+            }
+
+            return labelFont.value();
         }
     };
 }
