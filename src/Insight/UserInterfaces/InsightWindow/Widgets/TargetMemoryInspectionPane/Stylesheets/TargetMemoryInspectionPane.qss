@@ -1,0 +1,210 @@
+/* Target Memory Inspection Pane */
+#target-memory-inspection-pane,
+#target-memory-inspection-pane #container {
+    background-color: #373835;
+}
+
+#target-memory-inspection-pane #title-bar {
+    background-color: #383F43;
+    border-bottom: 1px solid #2F2F2D;
+}
+
+#target-memory-inspection-pane #title {
+    color: #afb1b3;
+}
+
+#target-memory-inspection-pane #top-bar {
+    border-bottom: 1px solid #41423f;
+}
+
+#target-memory-inspection-pane #bottom-bar {
+    border-top: 1px solid #41423f;
+}
+
+#target-memory-inspection-pane #lh-side-bar {
+    border-right: 1px solid #41423f;
+}
+
+#target-memory-inspection-pane #rh-side-bar {
+    border-left: 1px solid #41423f;
+}
+
+#target-memory-inspection-pane #right-panel {
+    border-left: 1px solid #41423f;
+    background-color: transparent;
+}
+
+#target-memory-inspection-pane #top-bar QToolButton,
+#target-memory-inspection-pane #bottom-bar QToolButton,
+#target-memory-inspection-pane #lh-side-bar QToolButton,
+#target-memory-inspection-pane #rh-side-bar QToolButton {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    qproperty-buttonWidth: 24;
+    qproperty-buttonHeight: 20;
+}
+
+#target-memory-inspection-pane #top-bar QToolButton:hover,
+#target-memory-inspection-pane #bottom-bar QToolButton:hover,
+#target-memory-inspection-pane #lh-side-bar QToolButton:hover,
+#target-memory-inspection-pane #rh-side-bar QToolButton:hover {
+    background-color: #454541;
+    border: none;
+}
+
+#target-memory-inspection-pane #top-bar #manage-memory-regions-btn {
+    qproperty-buttonWidth: 26;
+    qproperty-buttonHeight: 21;
+}
+
+#target-memory-inspection-pane #top-bar #separator,
+#target-memory-inspection-pane #bottom-bar #separator {
+    background-color: transparent;
+    border-right: 1px solid #41423f;
+    padding: 0;
+    min-width: 1px;
+    max-width: 1px;
+}
+
+#target-memory-inspection-pane #memory-capacity-label {
+    color: #8a8a8d;
+}
+
+#target-memory-inspection-pane #stale-data-label QLabel {
+    margin-top: 1px;
+    color: #9a9a9d;
+}
+
+#target-memory-inspection-pane #stale-data-label #icon {
+    margin-top: 2px;
+}
+
+#hex-viewer-container #tool-bar,
+#hex-viewer-container #search-bar {
+    border-bottom: 1px solid #41423f;
+}
+
+#hex-viewer-container #bottom-bar {
+    border-top: 1px solid #41423f;
+}
+
+#hex-viewer-container #bottom-bar QLabel {
+    font-size: 13px;
+    color: rgba(175, 177, 179, 0.72);
+}
+
+#hex-viewer-container #bottom-bar QLabel:disabled {
+    color: rgba(175, 177, 179, 0.3);
+}
+
+#hex-viewer-container #tool-bar QToolButton {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    qproperty-buttonWidth: 24;
+    qproperty-buttonHeight: 20;
+}
+
+#hex-viewer-container #tool-bar QToolButton:hover {
+    background-color: #41413b;
+    border: none;
+    padding: 0;
+}
+
+#hex-viewer-container #tool-bar QToolButton:checked {
+    background-color: #43433d;
+    border: none;
+}
+
+#hex-viewer-container #tool-bar QToolButton:checked:disabled {
+    background-color: #3d3d39;
+    border: none;
+}
+
+#hex-viewer-container #tool-bar #separator {
+    background-color: transparent;
+    border-right: 1px solid #41423f;
+    padding: 0;
+    min-width: 1px;
+    max-width: 1px;
+}
+
+#hex-viewer-container #tool-bar #highlight-stack-memory-btn,
+#hex-viewer-container #tool-bar #highlight-focused-memory-btn,
+#hex-viewer-container #tool-bar #highlight-hovered-rows-columns-btn,
+#hex-viewer-container #tool-bar #display-annotations-btn,
+#hex-viewer-container #tool-bar #display-ascii-btn {
+    qproperty-buttonWidth: 25;
+    qproperty-buttonHeight: 21;
+}
+
+#hex-viewer-container #tool-bar #go-to-address-input {
+    min-width: 100px;
+    max-width: 100px;
+    min-height: 15px;
+    max-height: 15px;
+    border: none;
+    background-color: transparent;
+    font-size: 13px;
+    color: #848486;
+}
+
+#hex-viewer-container #tool-bar #go-to-address-input:focus {
+    /*background-color: #2f312e;*/
+    color: #afb1b3;
+}
+
+#hex-viewer-container #tool-bar #go-to-address-input:disabled {
+    color: #686767;
+}
+
+#hex-viewer-container QScrollArea,
+#hex-viewer-container #graphics-view-container,
+#hex-viewer-container #graphics-view-container #graphics-view {
+    background-color: #323330;
+    border: none;
+    font-size: 11px;
+}
+
+#hex-viewer-container #graphics-view-container {
+    background-color: #50504b;
+    border: none;
+}
+
+#hex-viewer-container #graphics-view-container #address-container {
+    background-color: #353633;
+    border-right: 1px solid #41423f;
+}
+
+#hex-viewer-container #graphics-view-container #address-container QLabel {
+    background-color: transparent;
+    font-size: 5px;
+    color: rgba(175, 177, 179, 0.72);
+}
+
+#hex-viewer-container #graphics-view-container #address-container QLabel:disabled {
+    color: rgba(175, 177, 179, 0.3);
+}
+
+#hex-viewer-container #loading-hex-viewer-label {
+    color: #838386;
+    font-size: 14px;
+}
+
+#hex-viewer-container QScrollBar:vertical {
+    background-color: transparent;
+    width: 12px;
+    margin: 1px 3px 1px 0px;
+}
+
+#hex-viewer-container #byte-item-address-container-context-menu.QMenu,
+#hex-viewer-container #byte-item-address-container-context-menu QMenu {
+    min-width: 0;
+}
+
+#hex-viewer-container #byte-item-address-container-context-menu.QMenu::item,
+#hex-viewer-container #byte-item-address-container-context-menu QMenu::item {
+    padding-left: 10px;
+    min-width: 150px;
+}

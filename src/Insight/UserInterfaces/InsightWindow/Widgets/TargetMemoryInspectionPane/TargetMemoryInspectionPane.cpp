@@ -44,18 +44,29 @@ namespace Bloom::Widgets
         this->setWindowTitle("Memory Inspection - " + memoryName);
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-        auto memoryInspectionPaneUiFile = QFile(
+        auto uiFile = QFile(
             QString::fromStdString(Paths::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/UiFiles/TargetMemoryInspectionPane.ui"
             )
         );
 
-        if (!memoryInspectionPaneUiFile.open(QFile::ReadOnly)) {
+        auto stylesheetFile = QFile(
+            QString::fromStdString(Paths::compiledResourcesPath()
+                + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Stylesheets/TargetMemoryInspectionPane.qss"
+            )
+        );
+
+        if (!uiFile.open(QFile::ReadOnly)) {
             throw Exception("Failed to open MemoryInspectionPane UI file");
         }
 
+        if (!stylesheetFile.open(QFile::ReadOnly)) {
+            throw Exception("Failed to open MemoryInspectionPane stylesheet file");
+        }
+
         auto uiLoader = UiLoader(this);
-        this->container = uiLoader.load(&memoryInspectionPaneUiFile, this);
+        this->container = uiLoader.load(&uiFile, this);
+        this->container->setStyleSheet(stylesheetFile.readAll());
         this->container->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         this->titleBar = this->container->findChild<QWidget*>("title-bar");
@@ -349,7 +360,7 @@ namespace Bloom::Widgets
 
     void TargetMemoryInspectionPane::resizeEvent(QResizeEvent* event) {
         const auto size = this->size();
-        this->container->setFixedSize(size.width() - 1, size.height());
+        this->container->setFixedSize(size.width(), size.height());
 
         PaneWidget::resizeEvent(event);
     }
