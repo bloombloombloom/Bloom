@@ -262,6 +262,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         } catch (const Exception& exception) {
             throw Exception("Failed to reset AVR8 target - missing stopped event.");
         }
+
+        /*
+         * Issuing another command immediately after reset sometimes results in an 'illegal target state' error from
+         * the EDBG debug tool. Even though we waited for the break event.
+         *
+         * All we can really do here is introduce a small delay, to ensure that we're not issuing commands too quickly
+         * after reset.
+         */
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 
     void EdbgAvr8Interface::activate() {
