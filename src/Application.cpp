@@ -4,6 +4,8 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <unistd.h>
+#include <yaml-cpp/yaml.h>
+#include <yaml-cpp/exceptions.h>
 
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"
@@ -75,7 +77,7 @@ namespace Bloom
             }
 
         } catch (const InvalidConfig& exception) {
-            Logger::error(exception.getMessage());
+            Logger::error("Invalid project configuration (bloom.yaml) - " + exception.getMessage());
 
         } catch (const Exception& exception) {
             Logger::error(exception.getMessage());
@@ -263,10 +265,15 @@ namespace Bloom
             );
         }
 
-        const auto configNode = YAML::Load(configFile.readAll().toStdString());
-        configFile.close();
+        try {
+            const auto configNode = YAML::Load(configFile.readAll().toStdString());
+            configFile.close();
 
-        this->projectConfig = ProjectConfig(configNode);
+            this->projectConfig = ProjectConfig(configNode);
+
+        } catch (const YAML::Exception& exception) {
+            throw InvalidConfig(exception.msg);
+        }
 
         // Validate the selected environment
         if (!this->projectConfig->environments.contains(this->selectedEnvironmentName)) {
