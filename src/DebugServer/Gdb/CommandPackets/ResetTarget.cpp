@@ -23,7 +23,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling ResetTarget packet");
 
         try {
+            Logger::warning("Resetting target");
             targetControllerConsole.resetTarget();
+            Logger::info("Target reset complete");
 
             debugSession.connection.writePacket(ResponsePacket(Packet::toHex(
                 "Target reset complete - use the 'continue' command to begin execution.\n"

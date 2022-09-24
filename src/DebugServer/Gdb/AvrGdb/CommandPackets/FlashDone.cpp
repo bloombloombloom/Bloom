@@ -43,9 +43,9 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             Logger::warning("Program memory updated");
             targetControllerConsole.disableProgrammingMode();
 
-            Logger::info("Resetting target");
+            Logger::warning("Resetting target");
             targetControllerConsole.resetTarget();
-            Logger::warning("Target reset complete");
+            Logger::info("Target reset complete");
 
             debugSession.connection.writePacket(OkResponsePacket());
 
