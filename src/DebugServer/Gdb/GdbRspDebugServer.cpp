@@ -106,12 +106,12 @@ namespace Bloom::DebugServer::Gdb
 
         this->epollInstance.addEntry(
             this->serverSocketFileDescriptor.value(),
-            static_cast<std::uint16_t>(EpollEvent::READ_READY)
+            static_cast<std::uint16_t>(::EPOLL_EVENTS::EPOLLIN)
         );
 
         this->epollInstance.addEntry(
             this->interruptEventNotifier.getFileDescriptor(),
-            static_cast<std::uint16_t>(EpollEvent::READ_READY)
+            static_cast<std::uint16_t>(::EPOLL_EVENTS::EPOLLIN)
         );
 
         Logger::info("GDB RSP address: " + this->debugServerConfig.listeningAddress);

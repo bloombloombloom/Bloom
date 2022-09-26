@@ -32,7 +32,7 @@ namespace Bloom::DebugServer::Gdb
 
         this->epollInstance.addEntry(
             this->socketFileDescriptor.value(),
-            static_cast<std::uint16_t>(EpollEvent::READ_READY)
+            static_cast<std::uint16_t>(::EPOLL_EVENTS::EPOLLIN)
         );
         this->enableReadInterrupts();
     }
@@ -264,7 +264,7 @@ namespace Bloom::DebugServer::Gdb
     void Connection::enableReadInterrupts() {
         this->epollInstance.addEntry(
             this->interruptEventNotifier.getFileDescriptor(),
-            static_cast<std::uint16_t>(EpollEvent::READ_READY)
+            static_cast<std::uint16_t>(::EPOLL_EVENTS::EPOLLIN)
         );
 
         this->readInterruptEnabled = true;

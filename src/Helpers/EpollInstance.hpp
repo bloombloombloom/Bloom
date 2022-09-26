@@ -7,14 +7,8 @@
 
 namespace Bloom
 {
-    enum class EpollEvent: std::uint16_t
-    {
-        READ_READY = EPOLL_EVENTS::EPOLLIN,
-        WRITE_READY = EPOLL_EVENTS::EPOLLOUT,
-    };
-
     /**
-     * The EpollInstance class is an RAII wrapper for a single Linux epoll instance.
+     * RAII wrapper for an epoll instance.
      *
      * See https://man7.org/linux/man-pages/man7/epoll.7.html for more on the Linux epoll API.
      */

@@ -7,9 +7,7 @@
 namespace Bloom
 {
     /**
-     * The EventFdNotifier class is an RAII wrapper for a Linux eventfd object.
-     *
-     * It uses an eventfd object to implement the NotifierInterface.
+     * RAII wrapper for a Linux eventfd object, used to implement the NotifierInterface.
      */
     class EventFdNotifier: public NotifierInterface
     {
