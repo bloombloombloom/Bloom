@@ -98,7 +98,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
             this->sendCommand(cmsisDapCommand);
             auto response = this->getResponse<typename CommandType::ExpectedResponseType>();
 
-            if (response.id != cmsisDapCommand.commandId) {
+            if (response.id != cmsisDapCommand.id) {
                 throw Exceptions::DeviceCommunicationFailure("Unexpected response to CMSIS-DAP command.");
             }
 

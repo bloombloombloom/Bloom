@@ -50,7 +50,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          */
         using ExpectedResponseType = Response;
 
-        unsigned char commandId;
+        unsigned char id;
         std::vector<unsigned char> data;
 
         explicit Command(unsigned char commandId);
