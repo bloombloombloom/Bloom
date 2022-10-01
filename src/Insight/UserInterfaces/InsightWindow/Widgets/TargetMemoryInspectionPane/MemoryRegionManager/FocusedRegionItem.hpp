@@ -11,7 +11,9 @@ namespace Bloom::Widgets
         MemoryRegionDataType dataType = MemoryRegionDataType::UNKNOWN;
 
         DataTypeOption(const QString& text, MemoryRegionDataType dataType)
-        : text(text), dataType(dataType) {};
+            : text(text)
+            , dataType(dataType)
+        {};
     };
 
     struct EndiannessOption
@@ -20,7 +22,9 @@ namespace Bloom::Widgets
         Targets::TargetMemoryEndianness endianness = Targets::TargetMemoryEndianness::LITTLE;
 
         EndiannessOption(const QString& text, Targets::TargetMemoryEndianness endianness)
-            : text(text), endianness(endianness) {};
+            : text(text)
+            , endianness(endianness)
+        {};
     };
 
     class FocusedRegionItem: public RegionItem

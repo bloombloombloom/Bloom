@@ -4,7 +4,7 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::HouseKeeping
 {
-    enum class ResponseId : unsigned char
+    enum class ResponseId: unsigned char
     {
         OK = 0x80,
         LIST = 0x81,

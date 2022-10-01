@@ -6,7 +6,7 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping
 {
-    enum class ParameterContext : unsigned char
+    enum class ParameterContext: unsigned char
     {
         CONFIG = 0x00,
         ANALOG = 0x01,
