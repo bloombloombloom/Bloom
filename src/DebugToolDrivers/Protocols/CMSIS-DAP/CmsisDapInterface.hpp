@@ -21,14 +21,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
     class CmsisDapInterface
     {
     public:
-        explicit CmsisDapInterface() = default;
+        explicit CmsisDapInterface(Usb::HidInterface&& usbHidInterface);
+
         virtual ~CmsisDapInterface() = default;
 
-        CmsisDapInterface(const CmsisDapInterface& other) = default;
-        CmsisDapInterface(CmsisDapInterface&& other) = default;
-
-        CmsisDapInterface& operator = (const CmsisDapInterface& other) = default;
-        CmsisDapInterface& operator = (CmsisDapInterface&& other) = default;
+        CmsisDapInterface(const CmsisDapInterface& other) = delete;
+        CmsisDapInterface(CmsisDapInterface&& other) = delete;
+        CmsisDapInterface& operator = (const CmsisDapInterface& other) = delete;
+        CmsisDapInterface& operator = (CmsisDapInterface&& other) = delete;
 
         Usb::HidInterface& getUsbHidInterface() {
             return this->usbHidInterface;
@@ -65,7 +65,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
                 "CMSIS Response type must be derived from the Response class."
             );
 
-            const auto rawResponse = this->getUsbHidInterface().read(15000);
+            const auto rawResponse = this->getUsbHidInterface().read(std::chrono::milliseconds(15000));
 
             if (rawResponse.empty()) {
                 throw Exceptions::DeviceCommunicationFailure("Empty CMSIS-DAP response received");
@@ -113,7 +113,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
          * amongst devices, so we'll need to be able to preActivationConfigure the CMSISDAPInterface from a
          * higher level. For an example, see the constructor of the AtmelIce device class.
          */
-        Usb::HidInterface usbHidInterface = Usb::HidInterface();
+        Usb::HidInterface usbHidInterface;
 
         /**
          * Some CMSIS-DAP debug tools fail to operate properly when we send commands too quickly. Even if we've

@@ -35,15 +35,11 @@ namespace Bloom::DebugToolDrivers
         static const std::uint16_t USB_VENDOR_ID = 1003;
         static const std::uint16_t USB_PRODUCT_ID = 8517;
 
-        XplainedMini(): UsbDevice(XplainedMini::USB_VENDOR_ID, XplainedMini::USB_PRODUCT_ID) {}
+        XplainedMini();
 
         void init() override;
 
         void close() override;
-
-        Protocols::CmsisDap::Edbg::EdbgInterface& getEdbgInterface()  {
-            return this->edbgInterface;
-        }
 
         DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* getTargetPowerManagementInterface() override {
             return this->targetPowerManagementInterface.get();
@@ -59,7 +55,7 @@ namespace Bloom::DebugToolDrivers
 
         std::string getName() override {
             return "Xplained Mini";
-        };
+        }
 
         /**
          * Retrieves the device serial number via the Discovery Protocol.
@@ -79,7 +75,7 @@ namespace Bloom::DebugToolDrivers
         void endSession();
 
     private:
-        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
+        std::unique_ptr<Protocols::CmsisDap::Edbg::EdbgInterface> edbgInterface = nullptr;
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
         std::unique_ptr<

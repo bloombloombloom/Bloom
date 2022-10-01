@@ -10,36 +10,25 @@
 
 namespace Bloom::Usb
 {
+    using LibusbContextType = std::unique_ptr<::libusb_context, decltype(&::libusb_exit)>;
+    using LibusbDeviceType = std::unique_ptr<::libusb_device, decltype(&::libusb_unref_device)>;
+    using LibusbDeviceHandleType = std::unique_ptr<::libusb_device_handle, decltype(&::libusb_close)>;
+
     class UsbDevice
     {
     public:
-        UsbDevice(std::uint16_t vendorId, std::uint16_t productId): vendorId(vendorId), productId(productId) {};
+        std::uint16_t vendorId;
+        std::uint16_t productId;
 
-        virtual ~UsbDevice() = default;
+        UsbDevice(std::uint16_t vendorId, std::uint16_t productId);
 
-        UsbDevice(const UsbDevice& other) = default;
+        UsbDevice(const UsbDevice& other) = delete;
+        UsbDevice& operator = (const UsbDevice& other) = delete;
+
         UsbDevice(UsbDevice&& other) = default;
-
-        UsbDevice& operator = (const UsbDevice& other) = default;
         UsbDevice& operator = (UsbDevice&& other) = default;
 
         void init();
-
-        [[nodiscard]] libusb_device* getLibUsbDevice() const {
-            return this->libUsbDevice;
-        }
-
-        void setLibUsbDevice(libusb_device* libUsbDevice) {
-            this->libUsbDevice = libUsbDevice;
-        }
-
-        [[nodiscard]] std::uint16_t getVendorId() const {
-            return this->vendorId;
-        }
-
-        [[nodiscard]] std::uint16_t getProductId() const {
-            return this->productId;
-        }
 
         /**
          * Selects a specific configuration on the device, using the configuration index.
@@ -48,16 +37,17 @@ namespace Bloom::Usb
          */
         virtual void setConfiguration(int configIndex);
 
-    protected:
-        libusb_context* libUsbContext = nullptr;
-        libusb_device* libUsbDevice = nullptr;
-        libusb_device_handle* libUsbDeviceHandle = nullptr;
-        std::uint16_t vendorId;
-        std::uint16_t productId;
+        virtual ~UsbDevice();
 
-        std::vector<libusb_device*> findMatchingDevices(
-            std::optional<std::uint16_t> vendorId = std::nullopt, std::optional<std::uint16_t> productId = std::nullopt
-        );
+    protected:
+        static inline LibusbContextType libusbContext = LibusbContextType(nullptr, ::libusb_exit);
+
+        LibusbDeviceType libusbDevice = LibusbDeviceType(nullptr, ::libusb_unref_device);
+        LibusbDeviceHandleType libusbDeviceHandle = LibusbDeviceHandleType(nullptr, ::libusb_close);
+
+        std::vector<LibusbDeviceType> findMatchingDevices(std::uint16_t vendorId, std::uint16_t productId);
+
+        void detachKernelDriverFromInterface(std::uint8_t interfaceNumber);
 
         void close();
     };

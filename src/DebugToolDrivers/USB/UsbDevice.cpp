@@ -1,5 +1,7 @@
 #include "UsbDevice.hpp"
 
+#include <libusb-1.0/libusb.h>
+
 #include "src/Logger/Logger.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
@@ -7,103 +9,134 @@ namespace Bloom::Usb
 {
     using namespace Bloom::Exceptions;
 
+    UsbDevice::UsbDevice(std::uint16_t vendorId, std::uint16_t productId)
+        : vendorId(vendorId)
+        , productId(productId)
+    {
+        if (!UsbDevice::libusbContext) {
+            ::libusb_context* libusbContext = nullptr;
+            ::libusb_init(&libusbContext);
+            UsbDevice::libusbContext.reset(libusbContext);
+        }
+    }
+
     void UsbDevice::init() {
-        libusb_init(&this->libUsbContext);
-//        libusb_set_option(this->libUsbContext, LIBUSB_OPTION_LOG_LEVEL, LIBUSB_LOG_LEVEL_NONE);
-        auto devices = this->findMatchingDevices();
+//        ::libusb_set_option(this->libusbContext, LIBUSB_OPTION_LOG_LEVEL, LIBUSB_LOG_LEVEL_NONE);
+        auto devices = this->findMatchingDevices(this->vendorId, this->productId);
 
         if (devices.empty()) {
-            throw DeviceInitializationFailure("Failed to find USB device with matching vendor & product ID.");
+            throw DeviceInitializationFailure(
+                "Failed to find USB device with matching vendor and product ID. Please examine the debug tool's USB "
+                "connection, as well as the selected environment's debug tool configuration in bloom.yaml"
+            );
         }
 
         if (devices.size() > 1) {
-            // TODO: implement support for multiple devices (maybe via serial number?)
+            // TODO: implement support for multiple devices via serial number matching?
             throw DeviceInitializationFailure(
-                "Numerous devices of matching vendor & product ID found.\n"
+                "Numerous devices of matching vendor and product ID found.\n"
                 "Please ensure that only one debug tool is connected and then try again."
             );
         }
 
         // For now, just use the first device found.
-        auto* device = devices.front();
-        this->setLibUsbDevice(device);
+        this->libusbDevice.swap(devices.front());
+        ::libusb_device_handle* deviceHandle = nullptr;
 
-        const int libUsbStatusCode = libusb_open(libUsbDevice, &this->libUsbDeviceHandle);
+        const int libusbStatusCode = ::libusb_open(this->libusbDevice.get(), &deviceHandle);
 
-        // Obtain a device handle from libusb
-        if (libUsbStatusCode < 0) {
+        if (libusbStatusCode < 0) {
+            // Failed to a device handle from libusb
             throw DeviceInitializationFailure(
-                "Failed to open USB device - error code " + std::to_string(libUsbStatusCode) + " returned."
+                "Failed to open USB device - error code " + std::to_string(libusbStatusCode) + " returned."
             );
         }
+
+        this->libusbDeviceHandle.reset(deviceHandle);
     }
 
     void UsbDevice::setConfiguration(int configIndex) {
-        libusb_config_descriptor* configDescriptor = {};
-        int libUsbStatusCode = libusb_get_config_descriptor(this->libUsbDevice, 0, &configDescriptor);
+        ::libusb_config_descriptor* configDescriptor = {};
+        int libusbStatusCode = ::libusb_get_config_descriptor(this->libusbDevice.get(), 0, &configDescriptor);
 
-        if (libUsbStatusCode < 0) {
+        if (libusbStatusCode < 0) {
             throw DeviceInitializationFailure(
-                "Failed to obtain USB configuration descriptor - error code " + std::to_string(libUsbStatusCode)
+                "Failed to obtain USB configuration descriptor - error code " + std::to_string(libusbStatusCode)
                     + " returned."
             );
         }
 
-        libUsbStatusCode = libusb_set_configuration(this->libUsbDeviceHandle, configDescriptor->bConfigurationValue);
-        if (libUsbStatusCode < 0) {
+        libusbStatusCode = ::libusb_set_configuration(
+            this->libusbDeviceHandle.get(),
+            configDescriptor->bConfigurationValue
+        );
+
+        if (libusbStatusCode < 0) {
             throw DeviceInitializationFailure(
-                "Failed to set USB configuration - error code " + std::to_string(libUsbStatusCode) + " returned."
+                "Failed to set USB configuration - error code " + std::to_string(libusbStatusCode) + " returned."
             );
         }
 
-        libusb_free_config_descriptor(configDescriptor);
+        ::libusb_free_config_descriptor(configDescriptor);
     }
 
-    std::vector<libusb_device*> UsbDevice::findMatchingDevices(
-        std::optional<std::uint16_t> vendorId, std::optional<std::uint16_t> productId
+    std::vector<LibusbDeviceType> UsbDevice::findMatchingDevices(
+        std::uint16_t vendorId, std::uint16_t productId
     ) {
-        auto* libUsbContext = this->libUsbContext;
-        libusb_device** devices = nullptr;
-        libusb_device* device;
-        std::vector<libusb_device*> matchedDevices;
+        ::libusb_device** devices = nullptr;
+        ::libusb_device* device;
+        std::vector<LibusbDeviceType> matchedDevices;
 
-        auto vendorIdToMatch = vendorId.value_or(this->vendorId);
-        auto productIdToMatch = productId.value_or(this->productId);
-
-        ssize_t libUsbStatusCode = libusb_get_device_list(libUsbContext, &devices);
-        if (libUsbStatusCode < 0) {
+        auto libusbStatusCode = ::libusb_get_device_list(UsbDevice::libusbContext.get(), &devices);
+        if (libusbStatusCode < 0) {
             throw DeviceInitializationFailure(
-                "Failed to retrieve USB devices - return code: '" + std::to_string(libUsbStatusCode) + "'"
+                "Failed to retrieve USB devices - return code: '" + std::to_string(libusbStatusCode) + "'"
             );
         }
 
         ssize_t i = 0;
         while ((device = devices[i++]) != nullptr) {
-            struct libusb_device_descriptor desc = {};
+            auto libusbDevice = LibusbDeviceType(device, ::libusb_unref_device);
+            struct ::libusb_device_descriptor desc = {};
 
-            if ((libUsbStatusCode = libusb_get_device_descriptor(device, &desc)) < 0) {
+            if ((libusbStatusCode = ::libusb_get_device_descriptor(device, &desc)) < 0) {
                 Logger::warning("Failed to retrieve USB device descriptor - return code: '"
-                    + std::to_string(libUsbStatusCode) + "'");
+                    + std::to_string(libusbStatusCode) + "'");
                 continue;
             }
 
-            if (desc.idVendor == vendorIdToMatch && desc.idProduct == productIdToMatch) {
-                matchedDevices.push_back(device);
+            if (desc.idVendor != vendorId || desc.idProduct != productId) {
+                continue;
             }
+
+            matchedDevices.emplace_back(std::move(libusbDevice));
         }
 
-        libusb_free_device_list(devices, 1);
+        ::libusb_free_device_list(devices, 0);
         return matchedDevices;
     }
 
-    void UsbDevice::close() {
-        if (this->libUsbDeviceHandle != nullptr) {
-            libusb_close(this->libUsbDeviceHandle);
-            this->libUsbDeviceHandle = nullptr;
-        }
+    void UsbDevice::detachKernelDriverFromInterface(std::uint8_t interfaceNumber) {
+        const auto libusbStatusCode = ::libusb_kernel_driver_active(this->libusbDeviceHandle.get(), interfaceNumber);
 
-        if (this->libUsbContext != nullptr) {
-            libusb_exit(this->libUsbContext);
+        if (libusbStatusCode == 1) {
+            // A kernel driver is active on this interface. Attempt to detach it
+            if (::libusb_detach_kernel_driver(this->libusbDeviceHandle.get(), interfaceNumber) != 0) {
+                throw DeviceInitializationFailure("Failed to detach kernel driver from interface " +
+                    std::to_string(interfaceNumber) + "\n");
+            }
+
+        } else if (libusbStatusCode != 0) {
+            throw DeviceInitializationFailure("Failed to check for active kernel driver on USB interface.");
         }
+    }
+
+    void UsbDevice::close() {
+        this->libusbDeviceHandle.reset();
+        this->libusbDevice.reset();
+    }
+
+    UsbDevice::~UsbDevice() {
+        this->close();
     }
 }

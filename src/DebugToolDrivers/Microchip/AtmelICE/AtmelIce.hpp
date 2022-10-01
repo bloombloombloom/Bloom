@@ -45,15 +45,11 @@ namespace Bloom::DebugToolDrivers
         static const std::uint16_t USB_VENDOR_ID = 1003;
         static const std::uint16_t USB_PRODUCT_ID = 8513;
 
-        AtmelIce(): UsbDevice(AtmelIce::USB_VENDOR_ID, AtmelIce::USB_PRODUCT_ID) {}
+        AtmelIce();
 
         void init() override;
 
         void close() override;
-
-        Protocols::CmsisDap::Edbg::EdbgInterface& getEdbgInterface()  {
-            return this->edbgInterface;
-        }
 
         TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() override {
             return this->edbgAvr8Interface.get();
@@ -65,7 +61,7 @@ namespace Bloom::DebugToolDrivers
 
         std::string getName() override {
             return "Atmel-ICE";
-        };
+        }
 
         /**
          * Retrieves the device serial number via the Discovery Protocol.
@@ -93,7 +89,7 @@ namespace Bloom::DebugToolDrivers
          * Any non-EDBG CMSIS-DAP commands for the Atmel-ICE can be sent through the EdbgInterface (as the
          * EdbgInterface extends the CmsisDapInterface).
          */
-        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
+        std::unique_ptr<Protocols::CmsisDap::Edbg::EdbgInterface> edbgInterface = nullptr;
 
         /**
          * The Atmel-ICE employs the EDBG AVR8 Generic protocol, for debugging AVR8 targets. This protocol is

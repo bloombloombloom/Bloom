@@ -12,8 +12,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
     using Protocols::CmsisDap::Edbg::Avr::CommandFrames::EdbgControl::GetParameter;
     using Protocols::CmsisDap::Edbg::Avr::CommandFrames::EdbgControl::SetParameter;
 
+    EdbgTargetPowerManagementInterface::EdbgTargetPowerManagementInterface(EdbgInterface* edbgInterface)
+        : edbgInterface(edbgInterface)
+    {}
+
     void EdbgTargetPowerManagementInterface::enableTargetPower() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetParameter(EdbgParameters::CONTROL_TARGET_POWER, 0x01)
         );
 
@@ -23,7 +27,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
     }
 
     void EdbgTargetPowerManagementInterface::disableTargetPower() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetParameter(EdbgParameters::CONTROL_TARGET_POWER, 0x00)
         );
 

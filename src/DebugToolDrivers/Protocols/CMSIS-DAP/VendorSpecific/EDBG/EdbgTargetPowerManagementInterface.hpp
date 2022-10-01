@@ -10,8 +10,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
     class EdbgTargetPowerManagementInterface: public TargetInterfaces::TargetPowerManagementInterface
     {
     public:
-        explicit EdbgTargetPowerManagementInterface(EdbgInterface& edbgInterface)
-        : edbgInterface(edbgInterface) {};
+        explicit EdbgTargetPowerManagementInterface(EdbgInterface* edbgInterface);
 
         /**
          * Issues a Set Parameter command to the EDBG tool, to enable the target power.
@@ -24,6 +23,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
         void disableTargetPower() override;
 
     private:
-        EdbgInterface& edbgInterface;
+        EdbgInterface* edbgInterface;
     };
 }

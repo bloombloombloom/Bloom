@@ -21,15 +21,11 @@ namespace Bloom::DebugToolDrivers
         static const std::uint16_t USB_VENDOR_ID = 1003;
         static const std::uint16_t USB_PRODUCT_ID = 8512;
 
-        JtagIce3(): UsbDevice(JtagIce3::USB_VENDOR_ID, JtagIce3::USB_PRODUCT_ID) {}
+        JtagIce3();
 
         void init() override;
 
         void close() override;
-
-        Protocols::CmsisDap::Edbg::EdbgInterface& getEdbgInterface()  {
-            return this->edbgInterface;
-        }
 
         TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() override {
             return this->edbgAvr8Interface.get();
@@ -41,7 +37,7 @@ namespace Bloom::DebugToolDrivers
 
         std::string getName() override {
             return "JTAGICE3";
-        };
+        }
 
         /**
          * Retrieves the device serial number via the Discovery Protocol.
@@ -61,7 +57,7 @@ namespace Bloom::DebugToolDrivers
         void endSession();
 
     private:
-        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
+        std::unique_ptr<Protocols::CmsisDap::Edbg::EdbgInterface> edbgInterface = nullptr;
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
 

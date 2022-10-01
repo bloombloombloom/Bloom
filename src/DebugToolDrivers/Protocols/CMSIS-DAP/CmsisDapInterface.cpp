@@ -8,6 +8,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
 {
     using namespace Bloom::Exceptions;
 
+    CmsisDapInterface::CmsisDapInterface(Usb::HidInterface&& usbHidInterface)
+        : usbHidInterface(std::move(usbHidInterface))
+    {}
+
     void CmsisDapInterface::sendCommand(const Command& cmsisDapCommand) {
         if (this->msSendCommandDelay.count() > 0) {
             using namespace std::chrono;

@@ -35,15 +35,11 @@ namespace Bloom::DebugToolDrivers
         static const std::uint16_t USB_VENDOR_ID = 1003;
         static const std::uint16_t USB_PRODUCT_ID = 8565;
 
-        CuriosityNano(): UsbDevice(CuriosityNano::USB_VENDOR_ID, CuriosityNano::USB_PRODUCT_ID) {}
+        CuriosityNano();
 
         void init() override;
 
         void close() override;
-
-        Protocols::CmsisDap::Edbg::EdbgInterface& getEdbgInterface()  {
-            return this->edbgInterface;
-        }
 
         DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* getTargetPowerManagementInterface() override {
             return this->targetPowerManagementInterface.get();
@@ -59,7 +55,7 @@ namespace Bloom::DebugToolDrivers
 
         std::string getName() override {
             return "Curiosity Nano";
-        };
+        }
 
         /**
          * Retrieves the device serial number via the Discovery Protocol.
@@ -79,7 +75,7 @@ namespace Bloom::DebugToolDrivers
         void endSession();
 
     private:
-        Protocols::CmsisDap::Edbg::EdbgInterface edbgInterface = Protocols::CmsisDap::Edbg::EdbgInterface();
+        std::unique_ptr<Protocols::CmsisDap::Edbg::EdbgInterface> edbgInterface = nullptr;
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
         std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
         std::unique_ptr<

@@ -22,7 +22,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
     class EdbgInterface: public CmsisDapInterface
     {
     public:
-        explicit EdbgInterface() = default;
+        explicit EdbgInterface(Usb::HidInterface&& usbHidInterface);
 
         /**
          * Send an AvrCommandFrame to the debug tool and wait for a response.

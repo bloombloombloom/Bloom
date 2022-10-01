@@ -82,7 +82,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using Bloom::Targets::TargetRegisterType;
     using Bloom::Targets::TargetRegisters;
 
-    EdbgAvr8Interface::EdbgAvr8Interface(EdbgInterface& edbgInterface)
+    EdbgAvr8Interface::EdbgAvr8Interface(EdbgInterface* edbgInterface)
         : edbgInterface(edbgInterface)
     {}
 
@@ -195,7 +195,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::stop() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Stop()
         );
 
@@ -210,7 +210,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::run() {
         this->clearEvents();
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Run()
         );
 
@@ -223,7 +223,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::runTo(TargetProgramCounter address) {
         this->clearEvents();
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             RunTo(address)
         );
 
@@ -235,7 +235,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::step() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Step()
         );
 
@@ -247,7 +247,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::reset() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Reset()
         );
 
@@ -335,7 +335,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->stop();
         }
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             GetProgramCounter()
         );
 
@@ -355,7 +355,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * The program counter will be given in byte address form, but the EDBG tool will be expecting it in word
          * address (16-bit) form. This is why we divide it by 2.
          */
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetProgramCounter(programCounter / 2)
         );
 
@@ -390,7 +390,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return TargetSignature(signatureMemory[0], signatureMemory[1], signatureMemory[2]);
         }
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             GetDeviceId()
         );
 
@@ -402,7 +402,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setBreakpoint(TargetMemoryAddress address) {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetSoftwareBreakpoints({address})
         );
 
@@ -412,7 +412,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::clearBreakpoint(TargetMemoryAddress address) {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ClearSoftwareBreakpoints({address})
         );
 
@@ -422,7 +422,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::clearAllBreakpoints() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ClearAllSoftwareBreakpoints()
         );
 
@@ -750,7 +750,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw Exception("AVR8 erase command not supported for debugWire config variant.");
         }
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EraseMemory(
                 section.has_value()
                     ? section == ProgramMemorySection::BOOT
@@ -785,7 +785,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return;
         }
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EnterProgrammingMode()
         );
 
@@ -801,7 +801,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return;
         }
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             LeaveProgrammingMode()
         );
 
@@ -909,7 +909,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetParameter(parameter, value)
         );
 
@@ -919,7 +919,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     std::vector<unsigned char> EdbgAvr8Interface::getParameter(const Avr8EdbgParameter& parameter, std::uint8_t size) {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             GetParameter(parameter, size)
         );
 
@@ -1371,7 +1371,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ActivatePhysical(applyExternalReset)
         );
 
@@ -1390,7 +1390,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::deactivatePhysical() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             DeactivatePhysical()
         );
 
@@ -1410,7 +1410,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * value of the breakAfterAttach flag. So we still expect a stop event to be received shortly after issuing
          * the attach command.
          */
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Attach(
                 this->configVariant != Avr8ConfigVariant::MEGAJTAG
             )
@@ -1434,7 +1434,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::detach() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Detach()
         );
 
@@ -1684,7 +1684,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
              * that isn't actually the memory data (like the command ID, version bytes, etc). I could have sought the
              * actual value but who has the time. It won't exceed 20 bytes. Bite me.
              */
-            auto singlePacketSize = static_cast<std::uint32_t>(this->edbgInterface.getUsbHidInputReportSize() - 20);
+            auto singlePacketSize = static_cast<std::uint32_t>(this->edbgInterface->getUsbHidInputReportSize() - 20);
             auto totalResponsePackets = std::ceil(static_cast<float>(bytes) / static_cast<float>(singlePacketSize));
             auto totalReadsRequired = std::ceil(static_cast<float>(totalResponsePackets) / 2);
 
@@ -1713,7 +1713,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ReadMemory(
                 type,
                 startAddress,
@@ -1780,7 +1780,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             WriteMemory(
                 type,
                 startAddress,
@@ -1811,7 +1811,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::disableDebugWire() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             DisableDebugWire()
         );
 

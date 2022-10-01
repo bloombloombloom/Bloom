@@ -26,12 +26,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     using Exceptions::TargetOperationFailure;
 
+    EdbgAvrIspInterface::EdbgAvrIspInterface(EdbgInterface* edbgInterface)
+        : edbgInterface(edbgInterface)
+    {}
+
     void EdbgAvrIspInterface::setIspParameters(const Targets::Microchip::Avr::IspParameters& ispParameters) {
         this->ispParameters = ispParameters;
     }
 
     void EdbgAvrIspInterface::activate() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EnterProgrammingMode(
                 this->ispParameters.programModeTimeout,
                 this->ispParameters.programModeStabilizationDelay,
@@ -52,7 +56,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvrIspInterface::deactivate() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             LeaveProgrammingMode(
                 this->ispParameters.programModePreDelay,
                 this->ispParameters.programModePostDelay
@@ -74,7 +78,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     Fuse EdbgAvrIspInterface::readFuse(FuseType fuseType) {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ReadFuse(fuseType, this->ispParameters.readFusePollIndex)
         );
 
@@ -93,7 +97,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     unsigned char EdbgAvrIspInterface::readLockBitByte() {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ReadLock(this->ispParameters.readLockPollIndex)
         );
 
@@ -112,7 +116,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvrIspInterface::programFuse(Targets::Microchip::Avr::Fuse fuse) {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ProgramFuse(fuse.type, fuse.value)
         );
 
@@ -125,7 +129,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     unsigned char EdbgAvrIspInterface::readSignatureByte(std::uint8_t signatureByteAddress) {
-        auto response = this->edbgInterface.sendAvrCommandFrameAndWaitForResponseFrame(
+        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ReadSignature(signatureByteAddress, this->ispParameters.readSignaturePollIndex)
         );
 

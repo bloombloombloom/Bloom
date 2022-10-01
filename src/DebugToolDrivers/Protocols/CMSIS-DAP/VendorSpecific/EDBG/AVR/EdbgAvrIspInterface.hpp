@@ -22,9 +22,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class EdbgAvrIspInterface: public TargetInterfaces::Microchip::Avr::AvrIspInterface
     {
     public:
-        explicit EdbgAvrIspInterface(EdbgInterface& edbgInterface)
-            : edbgInterface(edbgInterface)
-        {};
+        explicit EdbgAvrIspInterface(EdbgInterface* edbgInterface);
 
         /**
          * The EdbgAvrIspInterface doesn't actually require any config from the user, at this point in time. So this
@@ -89,7 +87,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * Every EDBG based debug tool that utilises this implementation must provide access to its EDBG interface.
          */
-        EdbgInterface& edbgInterface;
+        EdbgInterface* edbgInterface;
 
         Targets::Microchip::Avr::IspParameters ispParameters;
 
