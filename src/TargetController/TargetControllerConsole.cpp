@@ -67,7 +67,7 @@ namespace Bloom::TargetController
 
     using Targets::TargetPinDescriptor;
     using Targets::TargetPinState;
-    using Targets::TargetPinStateMappingType;
+    using Targets::TargetPinStateMapping;
 
     TargetControllerState TargetControllerConsole::getTargetControllerState() {
         return this->commandManager.sendCommandAndWaitForResponse(
@@ -218,7 +218,7 @@ namespace Bloom::TargetController
         );
     }
 
-    TargetPinStateMappingType TargetControllerConsole::getPinStates(int variantId) {
+    TargetPinStateMapping TargetControllerConsole::getPinStates(int variantId) {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetPinStates>(variantId),
             this->defaultTimeout

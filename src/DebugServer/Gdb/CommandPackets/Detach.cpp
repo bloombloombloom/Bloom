@@ -16,7 +16,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    Detach::Detach(const RawPacketType& rawPacket)
+    Detach::Detach(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {}
 

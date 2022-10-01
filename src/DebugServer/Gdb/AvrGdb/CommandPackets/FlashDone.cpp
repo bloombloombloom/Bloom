@@ -15,7 +15,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Bloom::Exceptions;
 
-    FlashDone::FlashDone(const RawPacketType& rawPacket)
+    FlashDone::FlashDone(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {}
 

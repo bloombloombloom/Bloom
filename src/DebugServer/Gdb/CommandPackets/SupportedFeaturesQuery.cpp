@@ -21,7 +21,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using Bloom::Exceptions::Exception;
     using Gdb::Exceptions::ClientNotSupported;
 
-    SupportedFeaturesQuery::SupportedFeaturesQuery(const RawPacketType& rawPacket)
+    SupportedFeaturesQuery::SupportedFeaturesQuery(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
         /*

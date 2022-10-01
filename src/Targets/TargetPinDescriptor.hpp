@@ -57,9 +57,9 @@ namespace Bloom::Targets
         std::optional<IoDirection> ioDirection;
     };
 
-    using TargetPinStateMappingType = std::map<int, Bloom::Targets::TargetPinState>;
+    using TargetPinStateMapping = std::map<int, Bloom::Targets::TargetPinState>;
 }
 
 Q_DECLARE_METATYPE(Bloom::Targets::TargetPinDescriptor)
 Q_DECLARE_METATYPE(Bloom::Targets::TargetPinState)
-Q_DECLARE_METATYPE(Bloom::Targets::TargetPinStateMappingType)
+Q_DECLARE_METATYPE(Bloom::Targets::TargetPinStateMapping)

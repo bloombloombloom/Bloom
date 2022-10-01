@@ -32,7 +32,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          */
         Targets::TargetMemorySize bytes = 0;
 
-        explicit ReadMemory(const RawPacketType& rawPacket, const Gdb::TargetDescriptor& gdbTargetDescriptor);
+        explicit ReadMemory(const RawPacket& rawPacket, const Gdb::TargetDescriptor& gdbTargetDescriptor);
 
         void handle(
             DebugSession& debugSession,

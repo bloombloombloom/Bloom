@@ -161,7 +161,7 @@ namespace Bloom::DebugServer::Gdb
          * @param rawPacket
          * @return
          */
-        virtual std::unique_ptr<CommandPackets::CommandPacket> resolveCommandPacket(const RawPacketType& rawPacket);
+        virtual std::unique_ptr<CommandPackets::CommandPacket> resolveCommandPacket(const RawPacket& rawPacket);
 
         /**
          * Should return a set of GDB features supported by the GDB server. Each supported feature may come with an

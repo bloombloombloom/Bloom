@@ -71,7 +71,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
         InsightWorker::queueTask(refreshTask);
     }
 
-    void TargetPackageWidget::updatePinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber) {
+    void TargetPackageWidget::updatePinStates(const Targets::TargetPinStateMapping& pinStatesByNumber) {
         for (auto& pinWidget : this->pinWidgets) {
             auto pinNumber = pinWidget->getPinNumber();
             if (pinStatesByNumber.contains(pinNumber)) {

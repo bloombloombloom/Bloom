@@ -13,7 +13,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    StepExecution::StepExecution(const RawPacketType& rawPacket)
+    StepExecution::StepExecution(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
         if (this->data.size() > 1) {

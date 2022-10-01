@@ -24,13 +24,13 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
         this->loadRegisterMappings();
     }
 
-    std::optional<GdbRegisterNumberType> TargetDescriptor::getRegisterNumberFromTargetRegisterDescriptor(
+    std::optional<GdbRegisterNumber> TargetDescriptor::getRegisterNumberFromTargetRegisterDescriptor(
         const Targets::TargetRegisterDescriptor& registerDescriptor
     ) const {
         return this->targetRegisterDescriptorsByGdbNumber.valueAt(registerDescriptor);
     }
 
-    const RegisterDescriptor& TargetDescriptor::getRegisterDescriptorFromNumber(GdbRegisterNumberType number) const {
+    const RegisterDescriptor& TargetDescriptor::getRegisterDescriptorFromNumber(GdbRegisterNumber number) const {
         if (this->registerDescriptorsByGdbNumber.contains(number)) {
             return this->registerDescriptorsByGdbNumber.at(number);
         }
@@ -40,7 +40,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
     }
 
     const TargetRegisterDescriptor& TargetDescriptor::getTargetRegisterDescriptorFromNumber(
-        GdbRegisterNumberType number
+        GdbRegisterNumber number
     ) const {
         if (this->targetRegisterDescriptorsByGdbNumber.contains(number)) {
             return this->targetRegisterDescriptorsByGdbNumber.at(number);
@@ -50,7 +50,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
             + ") not mapped to any target register descriptor.");
     }
 
-    const std::vector<GdbRegisterNumberType>& TargetDescriptor::getRegisterNumbers() const {
+    const std::vector<GdbRegisterNumber>& TargetDescriptor::getRegisterNumbers() const {
         return this->registerNumbers;
     }
 
@@ -98,7 +98,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
         );
 
         // General purpose registers
-        GdbRegisterNumberType regNumber = 0;
+        GdbRegisterNumber regNumber = 0;
         for (const auto& descriptor : gpRegisterDescriptors) {
             this->registerDescriptorsByGdbNumber.insert(std::pair(
                 regNumber,

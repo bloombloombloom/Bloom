@@ -32,7 +32,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          */
         Targets::TargetMemoryBuffer buffer;
 
-        explicit WriteMemory(const RawPacketType& rawPacket, const Gdb::TargetDescriptor& gdbTargetDescriptor);
+        explicit WriteMemory(const RawPacket& rawPacket, const Gdb::TargetDescriptor& gdbTargetDescriptor);
 
         void handle(
             DebugSession& debugSession,

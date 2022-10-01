@@ -23,7 +23,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          */
         std::uint32_t length = 0;
 
-        explicit ReadMemoryMap(const RawPacketType& rawPacket);
+        explicit ReadMemoryMap(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

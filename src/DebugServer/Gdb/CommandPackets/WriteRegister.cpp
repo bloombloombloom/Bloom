@@ -22,7 +22,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    WriteRegister::WriteRegister(const RawPacketType& rawPacket)
+    WriteRegister::WriteRegister(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
         // The P packet updates a single register

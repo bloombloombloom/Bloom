@@ -171,7 +171,7 @@ namespace Bloom::TargetController
          *
          * @param variantId
          */
-        Targets::TargetPinStateMappingType getPinStates(int variantId);
+        Targets::TargetPinStateMapping getPinStates(int variantId);
 
         /**
          * Updates the pin state on the target, for a specific pin.

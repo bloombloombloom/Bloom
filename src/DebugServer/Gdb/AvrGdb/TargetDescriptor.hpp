@@ -9,8 +9,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
     class TargetDescriptor: public DebugServer::Gdb::TargetDescriptor
     {
     public:
-        BiMap<GdbRegisterNumberType, RegisterDescriptor> registerDescriptorsByGdbNumber = {};
-        BiMap<GdbRegisterNumberType, Targets::TargetRegisterDescriptor> targetRegisterDescriptorsByGdbNumber = {};
+        BiMap<GdbRegisterNumber, RegisterDescriptor> registerDescriptorsByGdbNumber = {};
+        BiMap<GdbRegisterNumber, Targets::TargetRegisterDescriptor> targetRegisterDescriptorsByGdbNumber = {};
 
         explicit TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor);
 
@@ -21,7 +21,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
          * @param registerDescriptor
          * @return
          */
-        std::optional<GdbRegisterNumberType> getRegisterNumberFromTargetRegisterDescriptor(
+        std::optional<GdbRegisterNumber> getRegisterNumberFromTargetRegisterDescriptor(
             const Targets::TargetRegisterDescriptor& registerDescriptor
         ) const override;
 
@@ -31,7 +31,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
          * @param number
          * @return
          */
-        const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumberType number) const override;
+        const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumber number) const override;
 
         /**
          * Should retrieve the mapped target register descriptor for a given GDB register number.
@@ -40,13 +40,13 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
          * @return
          */
         const Targets::TargetRegisterDescriptor& getTargetRegisterDescriptorFromNumber(
-            GdbRegisterNumberType number
+            GdbRegisterNumber number
         ) const override;
 
-        const std::vector<GdbRegisterNumberType>& getRegisterNumbers() const override;
+        const std::vector<GdbRegisterNumber>& getRegisterNumbers() const override;
 
     private:
-        std::vector<GdbRegisterNumberType> registerNumbers = std::vector<GdbRegisterNumberType>(35);
+        std::vector<GdbRegisterNumber> registerNumbers = std::vector<GdbRegisterNumber>(35);
 
         /**
          * For AVR targets, avr-gdb defines 35 registers in total:

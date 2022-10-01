@@ -35,7 +35,7 @@ namespace Bloom
 
 
     private:
-        using ProcT = std::unique_ptr<::proc_t, decltype(&::freeproc)>;
-        static ProcT getProcessInfo(::pid_t processId);
+        using Proc = std::unique_ptr<::proc_t, decltype(&::freeproc)>;
+        static Proc getProcessInfo(::pid_t processId);
     };
 }

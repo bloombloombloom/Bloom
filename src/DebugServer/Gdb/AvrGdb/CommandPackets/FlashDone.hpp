@@ -16,7 +16,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     class FlashDone: public Gdb::CommandPackets::CommandPacket
     {
     public:
-        explicit FlashDone(const RawPacketType& rawPacket);
+        explicit FlashDone(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

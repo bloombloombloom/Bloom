@@ -26,7 +26,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
         std::optional<Targets::TargetProgramCounter> fromProgramCounter;
 
-        explicit ContinueExecution(const RawPacketType& rawPacket);
+        explicit ContinueExecution(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

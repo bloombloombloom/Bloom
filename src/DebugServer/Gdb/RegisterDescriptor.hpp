@@ -5,7 +5,7 @@
 
 namespace Bloom::DebugServer::Gdb
 {
-    using GdbRegisterNumberType = int;
+    using GdbRegisterNumber = int;
 
     /*
      * GDB defines a set of registers for each target architecture.
@@ -14,12 +14,15 @@ namespace Bloom::DebugServer::Gdb
      */
     struct RegisterDescriptor
     {
-        GdbRegisterNumberType number;
+        GdbRegisterNumber number;
         std::uint16_t size;
         std::string name;
 
-        RegisterDescriptor(GdbRegisterNumberType number, std::uint16_t size, const std::string& name)
-        : number(number), size(size), name(name) {};
+        RegisterDescriptor(GdbRegisterNumber number, std::uint16_t size, const std::string& name)
+            : number(number)
+            , size(size)
+            , name(name)
+        {};
 
         bool operator == (const RegisterDescriptor& other) const {
             return this->number == other.number;

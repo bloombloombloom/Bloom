@@ -23,9 +23,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          * If the register number is not supplied (as is the case with "g" packets), the server is expected to respond
          * with values for all registers.
          */
-        std::optional<GdbRegisterNumberType> registerNumber;
+        std::optional<GdbRegisterNumber> registerNumber;
 
-        explicit ReadRegisters(const RawPacketType& rawPacket);
+        explicit ReadRegisters(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

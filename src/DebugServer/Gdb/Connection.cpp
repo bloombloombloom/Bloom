@@ -51,8 +51,8 @@ namespace Bloom::DebugServer::Gdb
         return std::string(ipAddress.data());
     }
 
-    std::vector<RawPacketType> Connection::readRawPackets() {
-        std::vector<RawPacketType> output;
+    std::vector<RawPacket> Connection::readRawPackets() {
+        std::vector<RawPacket> output;
 
         const auto bytes = this->read();
 
@@ -71,7 +71,7 @@ namespace Bloom::DebugServer::Gdb
 
             } else if (byte == '$') {
                 // Beginning of packet
-                RawPacketType rawPacket;
+                RawPacket rawPacket;
                 rawPacket.push_back('$');
 
                 auto packetIndex = byteIndex;

@@ -17,7 +17,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         int registerNumber = 0;
         std::vector<unsigned char> registerValue;
 
-        explicit WriteRegister(const RawPacketType& rawPacket);
+        explicit WriteRegister(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

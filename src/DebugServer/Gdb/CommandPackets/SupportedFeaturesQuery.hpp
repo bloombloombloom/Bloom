@@ -22,7 +22,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     class SupportedFeaturesQuery: public CommandPacket
     {
     public:
-        explicit SupportedFeaturesQuery(const RawPacketType& rawPacket);
+        explicit SupportedFeaturesQuery(const RawPacket& rawPacket);
 
         [[nodiscard]] bool isFeatureSupported(const Feature& feature) const {
             return this->supportedFeatures.find(feature) != this->supportedFeatures.end();

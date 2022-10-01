@@ -41,7 +41,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
-        virtual void updatePinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber);
+        virtual void updatePinStates(const Targets::TargetPinStateMapping& pinStatesByNumber);
         void onTargetStateChanged(Targets::TargetState newState);
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();

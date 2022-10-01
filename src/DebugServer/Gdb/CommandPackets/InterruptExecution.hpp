@@ -15,7 +15,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     class InterruptExecution: public CommandPacket
     {
     public:
-        explicit InterruptExecution(const RawPacketType& rawPacket): CommandPacket(rawPacket) {}
+        explicit InterruptExecution(const RawPacket& rawPacket): CommandPacket(rawPacket) {}
 
         void handle(
             DebugSession& debugSession,

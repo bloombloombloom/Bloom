@@ -28,7 +28,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
         Targets::TargetMemoryAddress address = 0;
 
-        explicit RemoveBreakpoint(const RawPacketType& rawPacket);
+        explicit RemoveBreakpoint(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

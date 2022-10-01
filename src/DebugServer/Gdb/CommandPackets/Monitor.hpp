@@ -17,7 +17,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          */
         std::string command;
 
-        explicit Monitor(const RawPacketType& rawPacket);
+        explicit Monitor(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

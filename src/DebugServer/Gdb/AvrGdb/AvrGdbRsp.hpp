@@ -29,7 +29,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
         }
 
         std::unique_ptr<Gdb::CommandPackets::CommandPacket> resolveCommandPacket(
-            const RawPacketType& rawPacket
+            const RawPacket& rawPacket
         ) override;
 
         std::set<std::pair<Feature, std::optional<std::string>>> getSupportedFeatures() override ;

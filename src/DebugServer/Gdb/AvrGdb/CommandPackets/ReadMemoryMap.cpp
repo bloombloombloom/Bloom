@@ -12,7 +12,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
     using Exceptions::Exception;
 
-    ReadMemoryMap::ReadMemoryMap(const RawPacketType& rawPacket)
+    ReadMemoryMap::ReadMemoryMap(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
         if (this->data.size() < 26) {

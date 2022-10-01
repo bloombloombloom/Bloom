@@ -22,7 +22,7 @@ namespace Bloom
         };
 
     signals:
-        void targetPinStatesRetrieved(Bloom::Targets::TargetPinStateMappingType pinStatesByNumber);
+        void targetPinStatesRetrieved(Bloom::Targets::TargetPinStateMapping pinStatesByNumber);
 
     protected:
         void run(TargetController::TargetControllerConsole& targetControllerConsole) override;

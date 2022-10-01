@@ -80,12 +80,12 @@ namespace Bloom::Usb
         ::libusb_free_config_descriptor(configDescriptor);
     }
 
-    std::vector<LibusbDeviceType> UsbDevice::findMatchingDevices(
+    std::vector<LibusbDevice> UsbDevice::findMatchingDevices(
         std::uint16_t vendorId, std::uint16_t productId
     ) {
         ::libusb_device** devices = nullptr;
         ::libusb_device* device;
-        std::vector<LibusbDeviceType> matchedDevices;
+        std::vector<LibusbDevice> matchedDevices;
 
         auto libusbStatusCode = ::libusb_get_device_list(UsbDevice::libusbContext.get(), &devices);
         if (libusbStatusCode < 0) {
@@ -96,7 +96,7 @@ namespace Bloom::Usb
 
         ssize_t i = 0;
         while ((device = devices[i++]) != nullptr) {
-            auto libusbDevice = LibusbDeviceType(device, ::libusb_unref_device);
+            auto libusbDevice = LibusbDevice(device, ::libusb_unref_device);
             struct ::libusb_device_descriptor desc = {};
 
             if ((libusbStatusCode = ::libusb_get_device_descriptor(device, &desc)) < 0) {

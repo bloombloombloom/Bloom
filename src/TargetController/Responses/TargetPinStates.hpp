@@ -11,9 +11,9 @@ namespace Bloom::TargetController::Responses
     public:
         static constexpr ResponseType type = ResponseType::TARGET_PIN_STATES;
 
-        Targets::TargetPinStateMappingType pinStatesByNumber;
+        Targets::TargetPinStateMapping pinStatesByNumber;
 
-        explicit TargetPinStates(const Targets::TargetPinStateMappingType& pinStatesByNumber)
+        explicit TargetPinStates(const Targets::TargetPinStateMapping& pinStatesByNumber)
             : pinStatesByNumber(pinStatesByNumber)
         {}
 

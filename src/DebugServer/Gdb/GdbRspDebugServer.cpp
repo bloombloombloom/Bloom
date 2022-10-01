@@ -254,7 +254,7 @@ namespace Bloom::DebugServer::Gdb
         return this->resolveCommandPacket(rawPackets.back());
     }
 
-    std::unique_ptr<CommandPacket> GdbRspDebugServer::resolveCommandPacket(const RawPacketType& rawPacket) {
+    std::unique_ptr<CommandPacket> GdbRspDebugServer::resolveCommandPacket(const RawPacket& rawPacket) {
         if (rawPacket.size() == 5 && rawPacket[1] == 0x03) {
             // Interrupt request
             return std::make_unique<CommandPackets::InterruptExecution>(rawPacket);

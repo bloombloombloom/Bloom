@@ -68,9 +68,9 @@ namespace Bloom::Usb
         std::string getHidDevicePath();
 
     private:
-        using HidDeviceType = std::unique_ptr<::hid_device, decltype(&::hid_close)>;
+        using HidDevice = std::unique_ptr<::hid_device, decltype(&::hid_close)>;
 
-        HidDeviceType hidDevice = HidDeviceType(nullptr, ::hid_close);
+        HidDevice hidDevice = HidDevice(nullptr, ::hid_close);
 
         /**
          * All HID reports have a fixed report length. This means that every packet we send or receive to/from an HID

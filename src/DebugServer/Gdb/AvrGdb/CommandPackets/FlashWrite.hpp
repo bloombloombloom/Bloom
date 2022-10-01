@@ -20,7 +20,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         std::uint32_t startAddress = 0;
         Targets::TargetMemoryBuffer buffer;
 
-        explicit FlashWrite(const RawPacketType& rawPacket);
+        explicit FlashWrite(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

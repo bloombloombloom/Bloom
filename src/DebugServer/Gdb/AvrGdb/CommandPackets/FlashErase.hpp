@@ -20,7 +20,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         std::uint32_t startAddress = 0;
         std::uint32_t bytes = 0;
 
-        explicit FlashErase(const RawPacketType& rawPacket);
+        explicit FlashErase(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

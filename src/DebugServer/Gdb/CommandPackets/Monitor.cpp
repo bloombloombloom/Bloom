@@ -10,7 +10,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using ResponsePackets::EmptyResponsePacket;
 
-    Monitor::Monitor(const RawPacketType& rawPacket)
+    Monitor::Monitor(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
         if (this->data.size() > 6) {

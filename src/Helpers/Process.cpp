@@ -47,15 +47,15 @@ namespace Bloom
         return false;
     }
 
-    Process::ProcT Process::getProcessInfo(::pid_t processId) {
+    Process::Proc Process::getProcessInfo(::pid_t processId) {
         auto proc = std::unique_ptr<::PROCTAB, decltype(&::closeproc)>(
             ::openproc(PROC_FILLSTAT | PROC_FILLARG | PROC_PID, &processId),
             ::closeproc
         );
-        auto processInfo = ProcT(::readproc(proc.get(), NULL), ::freeproc);
+        auto processInfo = Proc(::readproc(proc.get(), NULL), ::freeproc);
 
         if (processInfo == NULL) {
-            return ProcT(nullptr, ::freeproc);
+            return Proc(nullptr, ::freeproc);
         }
 
         return processInfo;

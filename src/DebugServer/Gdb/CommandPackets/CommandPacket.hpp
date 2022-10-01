@@ -36,7 +36,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     class CommandPacket: public Packet
     {
     public:
-        explicit CommandPacket(const RawPacketType& rawPacket): Packet(rawPacket) {}
+        explicit CommandPacket(const RawPacket& rawPacket): Packet(rawPacket) {}
 
         /**
          * Should handle the command for the current active debug session.

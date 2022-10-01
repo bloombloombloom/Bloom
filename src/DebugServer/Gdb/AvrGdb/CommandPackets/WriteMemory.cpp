@@ -15,7 +15,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Bloom::Exceptions;
 
-    WriteMemory::WriteMemory(const RawPacketType& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
+    WriteMemory::WriteMemory(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
         : CommandPacket(rawPacket)
     {
         if (this->data.size() < 4) {

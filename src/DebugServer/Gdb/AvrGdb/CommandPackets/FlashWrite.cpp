@@ -17,7 +17,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Bloom::Exceptions;
 
-    FlashWrite::FlashWrite(const RawPacketType& rawPacket)
+    FlashWrite::FlashWrite(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
         if (this->data.size() < 15) {

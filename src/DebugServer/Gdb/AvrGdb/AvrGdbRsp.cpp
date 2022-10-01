@@ -32,7 +32,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
     }
 
     std::unique_ptr<Gdb::CommandPackets::CommandPacket> AvrGdbRsp::resolveCommandPacket(
-        const RawPacketType& rawPacket
+        const RawPacket& rawPacket
     ) {
         using AvrGdb::CommandPackets::ReadMemory;
         using AvrGdb::CommandPackets::WriteMemory;

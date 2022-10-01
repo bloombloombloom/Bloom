@@ -59,7 +59,7 @@ namespace Bloom::DebugServer::Gdb
          * @param registerDescriptor
          * @return
          */
-        virtual std::optional<GdbRegisterNumberType> getRegisterNumberFromTargetRegisterDescriptor(
+        virtual std::optional<GdbRegisterNumber> getRegisterNumberFromTargetRegisterDescriptor(
             const Targets::TargetRegisterDescriptor& registerDescriptor
         ) const = 0;
 
@@ -69,7 +69,7 @@ namespace Bloom::DebugServer::Gdb
          * @param number
          * @return
          */
-        virtual const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumberType number) const = 0;
+        virtual const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumber number) const = 0;
 
         /**
          * Should retrieve the mapped target register descriptor for a given GDB register number.
@@ -78,7 +78,7 @@ namespace Bloom::DebugServer::Gdb
          * @return
          */
         virtual const Targets::TargetRegisterDescriptor& getTargetRegisterDescriptorFromNumber(
-            GdbRegisterNumberType number
+            GdbRegisterNumber number
         ) const = 0;
 
         /**
@@ -86,7 +86,7 @@ namespace Bloom::DebugServer::Gdb
          *
          * @return
          */
-        virtual const std::vector<GdbRegisterNumberType>& getRegisterNumbers() const = 0;
+        virtual const std::vector<GdbRegisterNumber>& getRegisterNumbers() const = 0;
 
     private:
         BiMap<Targets::TargetMemoryType, std::uint32_t> memoryOffsetsByType;

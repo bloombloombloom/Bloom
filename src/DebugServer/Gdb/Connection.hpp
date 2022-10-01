@@ -57,7 +57,7 @@ namespace Bloom::DebugServer::Gdb
          *
          * @return
          */
-        std::vector<RawPacketType> readRawPackets();
+        std::vector<RawPacket> readRawPackets();
 
         /**
          * Sends a response packet to the client.

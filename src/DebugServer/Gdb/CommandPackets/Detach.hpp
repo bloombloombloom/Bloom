@@ -7,7 +7,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     class Detach: public CommandPacket
     {
     public:
-        explicit Detach(const RawPacketType& rawPacket);
+        explicit Detach(const RawPacket& rawPacket);
 
         void handle(
             DebugSession& debugSession,

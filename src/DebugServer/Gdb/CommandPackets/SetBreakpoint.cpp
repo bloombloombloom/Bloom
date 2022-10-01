@@ -21,7 +21,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    SetBreakpoint::SetBreakpoint(const RawPacketType& rawPacket)
+    SetBreakpoint::SetBreakpoint(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
         if (this->data.size() < 6) {
