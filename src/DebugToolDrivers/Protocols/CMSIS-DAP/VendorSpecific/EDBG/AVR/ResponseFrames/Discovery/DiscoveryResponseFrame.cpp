@@ -6,25 +6,25 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
 {
     using namespace Bloom::Exceptions;
 
-    ResponseId DiscoveryResponseFrame::getResponseId() {
-        const auto& payload = this->getPayload();
-
-        if (payload.empty()) {
+    DiscoveryResponseFrame::DiscoveryResponseFrame(const std::vector<AvrResponse>& avrResponses)
+        : AvrResponseFrame(avrResponses)
+    {
+        if (this->payload.empty()) {
             throw Exception("Response ID missing from DISCOVERY response frame payload.");
         }
 
-        return static_cast<ResponseId>(payload[0]);
+        this->id = static_cast<ResponseId>(payload[0]);
     }
 
-    std::vector<unsigned char> DiscoveryResponseFrame::getPayloadData() {
-        const auto& payload = this->getPayload();
+    std::vector<unsigned char> DiscoveryResponseFrame::getPayloadData() const {
+        if (this->payload.size() <= 2) {
+            return {};
+        }
 
         // DISCOVERY payloads include two bytes before the data (response ID and version byte).
-        auto data = std::vector<unsigned char>(
-            payload.begin() + 2,
-            payload.end()
+        return std::vector<unsigned char>(
+            this->payload.begin() + 2,
+            this->payload.end()
         );
-
-        return data;
     }
 }

@@ -9,7 +9,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class GetParameter: public EdbgControlCommandFrame<std::array<unsigned char, 5>>
     {
     public:
-        explicit GetParameter(const EdbgParameter& parameter) {
+        GetParameter(const EdbgParameter& parameter)
+            : EdbgControlCommandFrame()
+        {
             /*
              * The EDBG Get Parameter command consists of 5 bytes:
              *

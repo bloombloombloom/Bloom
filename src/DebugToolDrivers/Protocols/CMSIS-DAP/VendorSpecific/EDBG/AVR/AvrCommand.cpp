@@ -2,22 +2,26 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    std::vector<unsigned char> AvrCommand::getData() const {
-        std::vector<unsigned char> data;
-        auto commandPacket = this->getCommandPacket();
-        std::size_t commandPacketSize = commandPacket.size();
-        data.reserve(3 + commandPacketSize);
+    AvrCommand::AvrCommand(
+        std::size_t fragmentCount,
+        std::size_t fragmentNumber,
+        const std::vector<unsigned char>& commandPacket
+    )
+        : Command(0x80)
+    {
+        const auto commandPacketSize = commandPacket.size();
+        this->data.reserve(commandPacketSize + 3);
+
         // FragmentInfo byte
-        data.emplace_back(static_cast<unsigned char>((this->getFragmentNumber() << 4) | this->getFragmentCount()));
+        this->data.emplace_back(static_cast<unsigned char>((fragmentNumber << 4) | fragmentCount));
 
         // Size byte
-        data.emplace_back(static_cast<unsigned char>(commandPacketSize >> 8));
-        data.emplace_back(static_cast<unsigned char>(commandPacketSize & 0xFF));
+        this->data.emplace_back(static_cast<unsigned char>(commandPacketSize >> 8));
+        this->data.emplace_back(static_cast<unsigned char>(commandPacketSize & 0xFF));
 
         if (commandPacketSize > 0) {
-            data.insert(data.begin() + 3, commandPacket.begin(), commandPacket.end());
+            // Packet data
+            this->data.insert(this->data.begin() + 3, commandPacket.begin(), commandPacket.end());
         }
-
-        return data;
     }
 }

@@ -12,7 +12,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class StartSession: public HouseKeepingCommandFrame<std::array<unsigned char, 2>>
     {
     public:
-        StartSession() {
+        StartSession()
+            : HouseKeepingCommandFrame()
+        {
             /*
              * The payload for the Start Session command consists of two bytes. A command ID byte (0x10) and a
              * version byte (0x00).

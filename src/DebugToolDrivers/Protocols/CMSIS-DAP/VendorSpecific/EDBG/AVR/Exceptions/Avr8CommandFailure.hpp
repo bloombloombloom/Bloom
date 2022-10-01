@@ -3,7 +3,7 @@
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVR8Generic/Avr8GenericResponseFrame.hpp"
 
-namespace Bloom::Exceptions
+namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     enum class Avr8CommandFailureCode: std::uint8_t
     {
@@ -55,7 +55,8 @@ namespace Bloom::Exceptions
         UNKNOWN_COMMAND = 0x91,
         UNKNOWN_ERROR = 0xFF,
     };
-    class Avr8CommandFailure: public TargetOperationFailure
+
+    class Avr8CommandFailure: public Bloom::Exceptions::TargetOperationFailure
     {
     public:
         std::optional<Avr8CommandFailureCode> code;
@@ -70,15 +71,15 @@ namespace Bloom::Exceptions
 
         explicit Avr8CommandFailure(
             const std::string& message,
-            DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic::Avr8GenericResponseFrame& responseFrame
+            const ResponseFrames::Avr8Generic::Avr8GenericResponseFrame& responseFrame
         ): TargetOperationFailure(message) {
             this->message = message;
 
-            auto responsePayload = responseFrame.getPayload();
-            if (responsePayload.size() == 3
-                && this->failureCodeToDescription.contains(static_cast<Avr8CommandFailureCode>(responsePayload[2]))
+            if (
+                responseFrame.payload.size() == 3
+                && this->failureCodeToDescription.contains(static_cast<Avr8CommandFailureCode>(responseFrame.payload[2]))
             ) {
-                this->code = static_cast<Avr8CommandFailureCode>(responsePayload[2]);
+                this->code = static_cast<Avr8CommandFailureCode>(responseFrame.payload[2]);
                 this->message += " - Failure reason: " + this->failureCodeToDescription.at(*(this->code));
             }
         }

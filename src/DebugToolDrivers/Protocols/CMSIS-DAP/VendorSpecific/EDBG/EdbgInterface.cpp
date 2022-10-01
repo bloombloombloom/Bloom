@@ -33,11 +33,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
     std::optional<Protocols::CmsisDap::Edbg::Avr::AvrEvent> EdbgInterface::requestAvrEvent() {
         auto avrEventResponse = this->sendCommandAndWaitForResponse(Avr::AvrEventCommand());
 
-        if (avrEventResponse.getResponseId() != 0x82) {
+        if (avrEventResponse.id != 0x82) {
             throw DeviceCommunicationFailure("Unexpected response to AvrEventCommand from device");
         }
 
-        return avrEventResponse.getEventDataSize() > 0 ? std::optional(avrEventResponse) : std::nullopt;
+        return !avrEventResponse.eventData.empty() ? std::optional(avrEventResponse) : std::nullopt;
     }
 
     std::vector<Protocols::CmsisDap::Edbg::Avr::AvrResponse> EdbgInterface::requestAvrResponses() {
@@ -48,25 +48,25 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 
         auto avrResponse = this->sendCommandAndWaitForResponse(responseCommand);
         responses.push_back(avrResponse);
-        const auto fragmentCount = avrResponse.getFragmentCount();
+        const auto fragmentCount = avrResponse.fragmentCount;
 
         while (responses.size() < fragmentCount) {
             // There are more response packets
             auto avrResponse = this->sendCommandAndWaitForResponse(responseCommand);
 
-            if (avrResponse.getFragmentCount() != fragmentCount) {
+            if (avrResponse.fragmentCount != fragmentCount) {
                 throw DeviceCommunicationFailure(
                     "Failed to fetch AvrResponse objects - invalid fragment count returned."
                 );
             }
 
-            if (avrResponse.getFragmentCount() == 0 && avrResponse.getFragmentNumber() == 0) {
+            if (avrResponse.fragmentCount == 0 && avrResponse.fragmentNumber == 0) {
                 throw DeviceCommunicationFailure(
                     "Failed to fetch AvrResponse objects - unexpected empty response"
                 );
             }
 
-            if (avrResponse.getFragmentNumber() == 0) {
+            if (avrResponse.fragmentNumber == 0) {
                 // End of response data ( &this packet can be ignored)
                 break;
             }

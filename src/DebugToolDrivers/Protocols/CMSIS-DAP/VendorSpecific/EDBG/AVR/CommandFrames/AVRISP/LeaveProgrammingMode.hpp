@@ -12,7 +12,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         LeaveProgrammingMode(
             std::uint8_t preDelay,
             std::uint8_t postDelay
-        ) {
+        )
+            : AvrIspCommandFrame()
+        {
             /*
              * The leave programming mode command consists of 3 bytes:
              *

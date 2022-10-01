@@ -14,7 +14,17 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class AvrResponseFrame
     {
     public:
-        explicit AvrResponseFrame() = default;
+        /**
+         * Incrementing from 0x00
+         */
+        std::uint16_t sequenceId = 0;
+
+        /**
+         * Destination sub-protocol handler ID
+         */
+        ProtocolHandlerId protocolHandlerId = ProtocolHandlerId::AVR8_GENERIC;
+
+        std::vector<unsigned char> payload;
 
         explicit AvrResponseFrame(const std::vector<AvrResponse>& avrResponses) {
             this->initFromAvrResponses(avrResponses);
@@ -37,54 +47,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         void initFromAvrResponses(const std::vector<AvrResponse>& avrResponses);
 
-        [[nodiscard]] std::uint16_t getSequenceId() const {
-            return this->sequenceID;
-        }
-
-        [[nodiscard]] ProtocolHandlerId getProtocolHandlerId() const {
-            return this->protocolHandlerID;
-        }
-
-        std::vector<unsigned char>& getPayload() {
-            return this->payload;
-        }
-
-        [[nodiscard]] virtual std::vector<unsigned char> getPayloadData() {
-            return this->payload;
-        }
-
-    protected:
-        virtual void initFromRawFrame(const std::vector<unsigned char>& rawFrame);
-
-        void setSequenceId(std::uint16_t sequenceId) {
-            this->sequenceID = sequenceId;
-        }
-
-        void setProtocolHandlerId(ProtocolHandlerId protocolHandlerId) {
-            this->protocolHandlerID = protocolHandlerId;
-        }
-
-        void setProtocolHandlerId(unsigned char protocolHandlerId) {
-            this->protocolHandlerID = static_cast<ProtocolHandlerId>(protocolHandlerId);
-        }
-
-        void setPayload(const std::vector<unsigned char>& payload) {
-            this->payload = payload;
-        }
-
     private:
-        unsigned char SOF = 0x0E;
-
-        /**
-         * Incrementing from 0x00
-         */
-        std::uint16_t sequenceID = 1;
-
-        /**
-         * Destination sub-protocol handler ID
-         */
-        ProtocolHandlerId protocolHandlerID = ProtocolHandlerId::AVR8_GENERIC;
-
-        std::vector<unsigned char> payload;
+        virtual void initFromRawFrame(const std::vector<unsigned char>& rawFrame);
     };
 }

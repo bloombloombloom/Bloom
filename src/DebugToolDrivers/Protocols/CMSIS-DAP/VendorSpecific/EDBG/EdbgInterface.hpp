@@ -38,8 +38,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
         Protocols::CmsisDap::Response sendAvrCommandFrameAndWaitForResponse(
             const Protocols::CmsisDap::Edbg::Avr::AvrCommandFrame<PayloadContainerType>& avrCommandFrame
         ) {
-            // An AVR command frame can be split into multiple CMSIS-DAP commands. Each command
-            // containing a fragment of the AvrCommandFrame.
+            /*
+             * An AVR command frame can be split into multiple CMSIS-DAP commands. Each command containing a fragment
+             * of the AvrCommandFrame.
+             */
             return this->sendAvrCommandsAndWaitForResponse(avrCommandFrame.generateAvrCommands(
                 this->getUsbHidInputReportSize() - 4 // Minus 4 to accommodate AVR command bytes
             ));
@@ -61,19 +63,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
                 "AVR Command must specify a valid response frame type, derived from AvrResponseFrame."
             );
 
-            auto response = this->sendAvrCommandFrameAndWaitForResponse(avrCommandFrame);
+            const auto response = this->sendAvrCommandFrameAndWaitForResponse(avrCommandFrame);
 
-            if (response.getData()[0] != 0x01) {
+            if (response.data[0] != 0x01) {
                 // The last response packet should always acknowledge receipt of the AvrCommandFrame
                 throw Exceptions::DeviceCommunicationFailure(
                     "Failed to send AvrCommandFrame to device - device did not acknowledge receipt."
                 );
             }
 
-            auto responses = this->requestAvrResponses();
-            auto responseFrame = typename CommandFrameType::ExpectedResponseFrameType();
-            responseFrame.initFromAvrResponses(responses);
-            return responseFrame;
+            return typename CommandFrameType::ExpectedResponseFrameType(this->requestAvrResponses());
         }
 
         virtual std::optional<Protocols::CmsisDap::Edbg::Avr::AvrEvent> requestAvrEvent();

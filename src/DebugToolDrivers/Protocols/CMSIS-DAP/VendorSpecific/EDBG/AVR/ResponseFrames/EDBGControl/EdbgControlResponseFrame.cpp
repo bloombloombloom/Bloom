@@ -6,27 +6,28 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
 {
     using namespace Bloom::Exceptions;
 
-    EdbgControlResponseId EdbgControlResponseFrame::getResponseId() {
-        const auto& payload = this->getPayload();
-        if (payload.empty()) {
+    EdbgControlResponseFrame::EdbgControlResponseFrame(const std::vector<AvrResponse>& avrResponses)
+        : AvrResponseFrame(avrResponses)
+    {
+        if (this->payload.empty()) {
             throw Exception("Response ID missing from EDBG Control response frame payload.");
         }
 
-        return static_cast<EdbgControlResponseId>(payload[0]);
+        this->id = static_cast<EdbgControlResponseId>(this->payload[0]);
     }
 
     std::vector<unsigned char> EdbgControlResponseFrame::getPayloadData() {
-        const auto& payload = this->getPayload();
+        if (this->payload.size() <= 3) {
+            return {};
+        }
 
         /*
          * EDBG Control data payloads include two bytes before the data (response ID and version byte) as well as an
          * additional byte after the data, known as the 'status code'.
          */
-        auto data = std::vector<unsigned char>(
-            payload.begin() + 2,
-            payload.end() - 1
+        return std::vector<unsigned char>(
+            this->payload.begin() + 2,
+            this->payload.end() - 1
         );
-
-        return data;
     }
 }

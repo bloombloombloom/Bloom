@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class DisableDebugWire: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {
     public:
-        DisableDebugWire() {
+        DisableDebugWire()
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The disable debugWire command consists of 2 bytes:
              * 1. Command ID (0x17)

@@ -2,10 +2,13 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
 {
+    Command::Command(unsigned char commandId)
+        : commandId(commandId)
+    {}
+
     Command::operator std::vector<unsigned char>() const {
-        auto rawCommand = std::vector<unsigned char>(1, this->getCommandId());
-        auto commandData = this->getData();
-        rawCommand.insert(rawCommand.end(), commandData.begin(), commandData.end());
+        auto rawCommand = std::vector<unsigned char>(1, this->commandId);
+        rawCommand.insert(rawCommand.end(), this->data.begin(), this->data.end());
 
         return rawCommand;
     }

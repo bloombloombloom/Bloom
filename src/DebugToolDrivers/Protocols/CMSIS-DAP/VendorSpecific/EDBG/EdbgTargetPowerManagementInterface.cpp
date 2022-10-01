@@ -17,21 +17,21 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
     {}
 
     void EdbgTargetPowerManagementInterface::enableTargetPower() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetParameter(EdbgParameters::CONTROL_TARGET_POWER, 0x01)
         );
 
-        if (response.getResponseId() == EdbgControlResponseId::FAILED) {
+        if (responseFrame.id == EdbgControlResponseId::FAILED) {
             throw Exception("Failed to enable target power via EDBG Control protocol");
         }
     }
 
     void EdbgTargetPowerManagementInterface::disableTargetPower() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetParameter(EdbgParameters::CONTROL_TARGET_POWER, 0x00)
         );
 
-        if (response.getResponseId() == EdbgControlResponseId::FAILED) {
+        if (responseFrame.id == EdbgControlResponseId::FAILED) {
             throw Exception("Failed to disable target power via EDBG Control protocol");
         }
     }

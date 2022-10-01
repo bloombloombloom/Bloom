@@ -9,7 +9,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class RunTo: public Avr8GenericCommandFrame<std::array<unsigned char, 6>>
     {
     public:
-        explicit RunTo(const std::uint32_t& address) {
+        explicit RunTo(const std::uint32_t& address)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The run-to command consists of 6 bytes:
              *

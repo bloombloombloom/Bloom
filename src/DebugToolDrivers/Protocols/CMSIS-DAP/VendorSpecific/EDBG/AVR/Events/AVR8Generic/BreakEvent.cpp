@@ -8,10 +8,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     using Bloom::Targets::TargetBreakCause;
 
-    BreakEvent::BreakEvent(const AvrEvent& event): AvrEvent(event) {
-        const auto& data = this->getEventData();
-
-        if (data.size() < 8) {
+    BreakEvent::BreakEvent(const AvrEvent& event)
+        : AvrEvent(event)
+    {
+        if (this->eventData.size() < 8) {
             /*
              * All BreakEvent packets must consist of at least 8 bytes:
              * 1 byte for event ID
@@ -24,10 +24,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         // Program counter consists of 4 bytes
         this->programCounter = static_cast<std::uint32_t>(
-            (data[4] << 24) | (data[3] << 16) | (data[2] << 8) | data[1]
+            (this->eventData[4] << 24) | (this->eventData[3] << 16) | (this->eventData[2] << 8) | this->eventData[1]
         ) * 2;
 
         // Break cause is 1 byte, where 0x01 is 'program breakpoint' and 0x00 'unspecified'
-        this->breakCause = data[7] == 0x01 ? TargetBreakCause::BREAKPOINT : TargetBreakCause::UNKNOWN;
+        this->breakCause = this->eventData[7] == 0x01 ? TargetBreakCause::BREAKPOINT : TargetBreakCause::UNKNOWN;
     }
 }

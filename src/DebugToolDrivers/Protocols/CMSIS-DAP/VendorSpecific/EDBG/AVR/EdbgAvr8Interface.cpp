@@ -195,12 +195,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::stop() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Stop()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Stop target command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Stop target command failed", responseFrame);
         }
 
         if (this->getTargetState() == TargetState::RUNNING) {
@@ -210,12 +210,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::run() {
         this->clearEvents();
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Run()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Run command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Run command failed", responseFrame);
         }
 
         this->targetState = TargetState::RUNNING;
@@ -223,36 +223,36 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::runTo(TargetProgramCounter address) {
         this->clearEvents();
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             RunTo(address)
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Run-to command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Run-to command failed", responseFrame);
         }
 
         this->targetState = TargetState::RUNNING;
     }
 
     void EdbgAvr8Interface::step() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Step()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Step target command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Step target command failed", responseFrame);
         }
 
         this->targetState = TargetState::RUNNING;
     }
 
     void EdbgAvr8Interface::reset() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Reset()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Reset target command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Reset target command failed", responseFrame);
         }
 
         try {
@@ -335,15 +335,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->stop();
         }
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             GetProgramCounter()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Get program counter command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Get program counter command failed", responseFrame);
         }
 
-        return response.extractProgramCounter();
+        return responseFrame.extractProgramCounter();
     }
 
     void EdbgAvr8Interface::setProgramCounter(TargetProgramCounter programCounter) {
@@ -355,12 +355,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * The program counter will be given in byte address form, but the EDBG tool will be expecting it in word
          * address (16-bit) form. This is why we divide it by 2.
          */
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetProgramCounter(programCounter / 2)
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Set program counter command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Set program counter command failed", responseFrame);
         }
     }
 
@@ -390,44 +390,44 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return TargetSignature(signatureMemory[0], signatureMemory[1], signatureMemory[2]);
         }
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             GetDeviceId()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Get device ID command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Get device ID command failed", responseFrame);
         }
 
-        return response.extractSignature(this->targetConfig->physicalInterface);
+        return responseFrame.extractSignature(this->targetConfig->physicalInterface);
     }
 
     void EdbgAvr8Interface::setBreakpoint(TargetMemoryAddress address) {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetSoftwareBreakpoints({address})
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Set software breakpoint command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Set software breakpoint command failed", responseFrame);
         }
     }
 
     void EdbgAvr8Interface::clearBreakpoint(TargetMemoryAddress address) {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ClearSoftwareBreakpoints({address})
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Clear software breakpoint command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Clear software breakpoint command failed", responseFrame);
         }
     }
 
     void EdbgAvr8Interface::clearAllBreakpoints() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ClearAllSoftwareBreakpoints()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Clear all software breakpoints command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Clear all software breakpoints command failed", responseFrame);
         }
     }
 
@@ -750,7 +750,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw Exception("AVR8 erase command not supported for debugWire config variant.");
         }
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EraseMemory(
                 section.has_value()
                     ? section == ProgramMemorySection::BOOT
@@ -760,8 +760,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             )
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 erase memory command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 erase memory command failed", responseFrame);
         }
     }
 
@@ -785,12 +785,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return;
         }
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EnterProgrammingMode()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("Failed to enter programming mode on EDBG debug tool", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("Failed to enter programming mode on EDBG debug tool", responseFrame);
         }
 
         this->programmingModeEnabled = true;
@@ -801,12 +801,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return;
         }
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             LeaveProgrammingMode()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("Failed to leave programming mode on EDBG debug tool", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("Failed to leave programming mode on EDBG debug tool", responseFrame);
         }
 
         this->programmingModeEnabled = false;
@@ -909,25 +909,25 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetParameter(parameter, value)
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("Failed to set parameter on device!", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("Failed to set parameter on device!", responseFrame);
         }
     }
 
     std::vector<unsigned char> EdbgAvr8Interface::getParameter(const Avr8EdbgParameter& parameter, std::uint8_t size) {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             GetParameter(parameter, size)
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("Failed to get parameter from device!", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("Failed to get parameter from device!", responseFrame);
         }
 
-        return response.getPayloadData();
+        return responseFrame.getPayloadData();
     }
 
     void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
@@ -1371,11 +1371,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ActivatePhysical(applyExternalReset)
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
             if (!applyExternalReset) {
                 // Try again with external reset applied
                 Logger::debug("Failed to activate physical interface on AVR8 target "
@@ -1383,19 +1383,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 return this->activatePhysical(true);
             }
 
-            throw Avr8CommandFailure("AVR8 Activate physical interface command failed", response);
+            throw Avr8CommandFailure("AVR8 Activate physical interface command failed", responseFrame);
         }
 
         this->physicalInterfaceActivated = true;
     }
 
     void EdbgAvr8Interface::deactivatePhysical() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             DeactivatePhysical()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Deactivate physical interface command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Deactivate physical interface command failed", responseFrame);
         }
 
         this->physicalInterfaceActivated = false;
@@ -1410,14 +1410,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * value of the breakAfterAttach flag. So we still expect a stop event to be received shortly after issuing
          * the attach command.
          */
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Attach(
                 this->configVariant != Avr8ConfigVariant::MEGAJTAG
             )
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Attach command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Attach command failed", responseFrame);
         }
 
         this->targetAttached = true;
@@ -1434,25 +1434,25 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::detach() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Detach()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Detach command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Detach command failed", responseFrame);
         }
 
         this->targetAttached = false;
     }
 
     std::unique_ptr<AvrEvent> EdbgAvr8Interface::getAvrEvent() {
-        auto event = this->edbgInterface.requestAvrEvent();
+        auto event = this->edbgInterface->requestAvrEvent();
 
         if (!event.has_value()) {
             return nullptr;
         }
 
-        switch (event->getEventId()) {
+        switch (event->eventId.value()) {
             case AvrEventId::AVR8_BREAK_EVENT: {
                 // Break event
                 return std::make_unique<BreakEvent>(event.value());
@@ -1713,7 +1713,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ReadMemory(
                 type,
                 startAddress,
@@ -1722,11 +1722,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             )
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Read memory command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Read memory command failed", responseFrame);
         }
 
-        return response.getMemoryBuffer();
+        return responseFrame.getMemoryBuffer();
     }
 
     void EdbgAvr8Interface::writeMemory(
@@ -1780,7 +1780,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             WriteMemory(
                 type,
                 startAddress,
@@ -1788,15 +1788,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             )
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Write memory command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Write memory command failed", responseFrame);
         }
     }
 
     void EdbgAvr8Interface::refreshTargetState() {
         const auto avrEvent = this->getAvrEvent();
 
-        if (avrEvent != nullptr && avrEvent->getEventId() == AvrEventId::AVR8_BREAK_EVENT) {
+        if (avrEvent != nullptr && avrEvent->eventId == AvrEventId::AVR8_BREAK_EVENT) {
             auto* breakEvent = dynamic_cast<BreakEvent*>(avrEvent.get());
 
             if (breakEvent == nullptr) {
@@ -1811,12 +1811,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::disableDebugWire() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             DisableDebugWire()
         );
 
-        if (response.getResponseId() == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure("AVR8 Disable debugWire command failed", response);
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Disable debugWire command failed", responseFrame);
         }
     }
 

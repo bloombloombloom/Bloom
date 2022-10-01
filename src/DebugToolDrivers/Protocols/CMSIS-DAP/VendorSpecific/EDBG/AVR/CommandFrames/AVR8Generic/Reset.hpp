@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class Reset: public Avr8GenericCommandFrame<std::array<unsigned char, 3>>
     {
     public:
-        explicit Reset(bool stopAtMainAddress = false) {
+        explicit Reset(bool stopAtMainAddress = false)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The reset command consists of 3 bytes:
              * 1. Command ID (0x30)

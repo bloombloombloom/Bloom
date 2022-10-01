@@ -20,6 +20,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrResponse.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AvrResponseFrame.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVR8Generic/Avr8GenericResponseFrame.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVR8Generic/GetDeviceId.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/Discovery/DiscoveryResponseFrame.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/HouseKeeping/HouseKeepingResponseFrame.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVRISP/AvrIspResponseFrame.cpp

@@ -10,7 +10,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class SetSoftwareBreakpoints: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {
     public:
-        explicit SetSoftwareBreakpoints(const std::vector<std::uint32_t>& addresses) {
+        explicit SetSoftwareBreakpoints(const std::vector<std::uint32_t>& addresses)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The set software breakpoint command consists of 2 bytes + 4*n bytes, where n is the number
              * of breakpoints to set:

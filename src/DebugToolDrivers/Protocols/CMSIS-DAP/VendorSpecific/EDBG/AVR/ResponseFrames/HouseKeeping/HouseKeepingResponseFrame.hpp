@@ -10,15 +10,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
         LIST = 0x81,
         DATA = 0x84,
         FAILED = 0xA0,
-        FAILED_WITH_DATA = 0xA1
+        FAILED_WITH_DATA = 0xA1,
     };
 
     class HouseKeepingResponseFrame: public AvrResponseFrame
     {
     public:
-        HouseKeepingResponseFrame() = default;
-        explicit HouseKeepingResponseFrame(const std::vector<AvrResponse>& avrResponses): AvrResponseFrame(avrResponses) {}
+        ResponseId id;
 
-        ResponseId getResponseId();
+        explicit HouseKeepingResponseFrame(const std::vector<AvrResponse>& avrResponses);
     };
 }

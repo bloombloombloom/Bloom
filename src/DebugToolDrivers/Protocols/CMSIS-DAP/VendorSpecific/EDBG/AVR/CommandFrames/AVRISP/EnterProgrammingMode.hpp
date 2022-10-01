@@ -17,7 +17,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             std::uint8_t byteDelay,
             std::uint8_t pollValue,
             std::uint8_t pollIndex
-        ) {
+        )
+            : AvrIspCommandFrame()
+        {
             /*
              * The enter programming mode command consists of 12 bytes:
              *

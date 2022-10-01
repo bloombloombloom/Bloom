@@ -6,39 +6,38 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     using namespace Bloom::Exceptions;
 
-    AvrEvent::AvrEvent(const std::vector<unsigned char>& rawResponse): Response(rawResponse) {
-        if (this->getResponseId() != 0x82) {
+    AvrEvent::AvrEvent(const std::vector<unsigned char>& rawResponse)
+        : Response(rawResponse)
+    {
+        if (this->id != 0x82) {
             throw Exception("Failed to construct AvrEvent object - invalid response ID.");
         }
 
-        const auto& responseData = this->getData();
-
-        if (responseData.size() < 2) {
-            // All AVR_EVT responses should consist of at least two bytes (excluding the AVR_EVT ID)
-            throw Exception("Failed to construct AvrEvent object - AVR_EVT response "
-                "returned no additional data.");
+        if (this->data.size() < 7) {
+            throw Exception("Failed to construct AvrEvent object - unexpected size of AVR_EVT response.");
         }
 
         // Response size is two bytes, MSB
-        auto responsePacketSize = static_cast<std::size_t>((responseData[0] << 8) | responseData[1]);
+        const auto responsePacketSize = static_cast<std::size_t>((this->data[0] << 8) | this->data[1]);
 
-        if (responseData.size() < 2) {
-            // All AVR_EVT responses should consist of at least two bytes (excluding the AVR_EVT ID)
-            throw Exception("Failed to construct AvrEvent object - AVR_EVT response "
-                "contained invalid event data size.");
+        if (responsePacketSize == 0) {
+            // No event available
+            return;
+        }
+
+        if (this->data.size() < responsePacketSize + 7) {
+            throw Exception("Failed to construct AvrEvent object - invalid size of AVR_EVT response packet.");
         }
 
         /*
-         * Ignore the SOF, protocol version, handler id and sequence ID (which all make up 5 bytes in total, 7 if we
-         * include the two size bytes)
+         * Ignore the SOF, protocol version, handler ID, sequence ID and size bytes (which all make up 7 bytes
+         * in total).
          */
         this->eventData = std::vector<unsigned char>(
-            responseData.begin() + 7,
-            responseData.begin() + 7 + static_cast<std::int64_t>(responsePacketSize)
+            this->data.begin() + 7,
+            this->data.begin() + 7 + static_cast<std::int64_t>(responsePacketSize)
         );
 
-        if (!this->eventData.empty()) {
-            this->eventId = this->eventData[0];
-        }
+        this->eventId = static_cast<AvrEventId>(this->eventData[0]);
     }
 }

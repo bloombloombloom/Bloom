@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class Stop: public Avr8GenericCommandFrame<std::array<unsigned char, 3>>
     {
     public:
-        explicit Stop(bool stopImmediately = true) {
+        explicit Stop(bool stopImmediately = true)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The stop command consists of 3 bytes:
              * 1. Command ID (0x31)

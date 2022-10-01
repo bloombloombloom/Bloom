@@ -10,7 +10,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         using ExpectedResponseFrameType = ResponseFrames::Avr8Generic::GetDeviceId;
 
-        GetDeviceId() {
+        GetDeviceId()
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The get device ID command consists of 2 bytes:
              * 1. Command ID (0x12)

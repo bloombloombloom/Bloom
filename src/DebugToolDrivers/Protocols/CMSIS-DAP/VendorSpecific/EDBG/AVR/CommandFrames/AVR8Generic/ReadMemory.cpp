@@ -10,7 +10,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         std::uint32_t address,
         std::uint32_t bytes,
         const std::set<std::uint32_t>& excludedAddresses
-    ) {
+    )
+        : Avr8GenericCommandFrame()
+    {
         /*
          * The read memory command consists of 11 + (bytes / 8) bytes:
          * 1. Command ID (0x21 for the general read memory command, 0x22 for reading with a mask)

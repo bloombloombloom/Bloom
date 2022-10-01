@@ -6,36 +6,36 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     using namespace Bloom::Exceptions;
 
-    AvrResponse::AvrResponse(const std::vector<unsigned char>& rawResponse): Response(rawResponse) {
-        if (this->getResponseId() != 0x81) {
+    AvrResponse::AvrResponse(const std::vector<unsigned char>& rawResponse)
+        : Response(rawResponse)
+    {
+        if (this->id != 0x81) {
             throw Exception("Failed to construct AvrResponse object - invalid response ID.");
         }
 
-        const auto& responseData = this->getData();
-
-        if (responseData.empty()) {
+        if (this->data.empty()) {
             // All AVR responses should contain at least one byte (the fragment info byte)
-            throw Exception("Failed to construct AvrResponse object - AVR_RSP response "
-                "returned no additional data");
+            throw Exception("Failed to construct AvrResponse object - malformed AVR_RSP data");
         }
 
-        if (responseData[0] == 0x00) {
+        if (this->data[0] == 0x00) {
             // This AVR Response contains no data (the device had no data to send), so we can stop here.
             return;
         }
 
-        this->setFragmentCount(static_cast<std::uint8_t>(responseData[0] & 0x0FU));
-        this->setFragmentNumber(static_cast<std::uint8_t>(responseData[0] >> 4));
+        this->fragmentCount = static_cast<std::uint8_t>(this->data[0] & 0x0FU);
+        this->fragmentNumber = static_cast<std::uint8_t>(this->data[0] >> 4);
 
         // Response size is two bytes, MSB
-        const auto responsePacketSize = static_cast<std::size_t>((responseData[1] << 8U) + responseData[2]);
-        std::vector<unsigned char> responsePacket;
-        responsePacket.resize(responsePacketSize);
+        const auto responsePacketSize = static_cast<std::uint16_t>((this->data[1] << 8U) + this->data[2]);
 
-        for (std::size_t i = 0; i < responsePacketSize; i++) {
-            responsePacket[i] = responseData[i + 3];
+        if (responsePacketSize > 0) {
+            // Packet data
+            this->responsePacket.insert(
+                this->responsePacket.begin(),
+                this->data.begin() + 3,
+                this->data.begin() + 3 + responsePacketSize
+            );
         }
-
-        this->setResponsePacket(responsePacket);
     }
 }

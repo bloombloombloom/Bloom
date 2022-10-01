@@ -10,7 +10,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class SetParameter: public EdbgControlCommandFrame<std::array<unsigned char, 6>>
     {
     public:
-        explicit SetParameter(const EdbgParameter& parameter, unsigned char value) {
+        SetParameter(const EdbgParameter& parameter, unsigned char value)
+            : EdbgControlCommandFrame()
+        {
             assert(parameter.size == 1);
 
             /*

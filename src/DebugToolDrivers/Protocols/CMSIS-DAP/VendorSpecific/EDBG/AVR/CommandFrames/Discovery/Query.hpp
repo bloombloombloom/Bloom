@@ -22,7 +22,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class Query: public DiscoveryCommandFrame<std::array<unsigned char, 3>>
     {
     public:
-        explicit Query(QueryContext context) {
+        explicit Query(QueryContext context)
+            : DiscoveryCommandFrame()
+        {
             /*
              * The payload for the Query command consists of three bytes. A command ID (0x00), version (0x00) and a
              * query context.

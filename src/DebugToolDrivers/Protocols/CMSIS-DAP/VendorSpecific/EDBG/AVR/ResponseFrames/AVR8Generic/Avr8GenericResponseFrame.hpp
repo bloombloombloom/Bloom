@@ -1,21 +1,17 @@
 #pragma once
 
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AvrResponseFrame.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Avr8Generic.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
 {
     class Avr8GenericResponseFrame: public AvrResponseFrame
     {
     public:
-        Avr8GenericResponseFrame() = default;
-        explicit Avr8GenericResponseFrame(const std::vector<AvrResponse>& avrResponses)
-        : AvrResponseFrame(avrResponses) {}
+        Avr8ResponseId id;
 
-        [[nodiscard]] unsigned char getResponseId();
+        explicit Avr8GenericResponseFrame(const std::vector<AvrResponse>& avrResponses);
 
-        /**
-         * See parent method.
-         */
-        [[nodiscard]] std::vector<unsigned char> getPayloadData() override;
+        [[nodiscard]] std::vector<unsigned char> getPayloadData() const;
     };
 }

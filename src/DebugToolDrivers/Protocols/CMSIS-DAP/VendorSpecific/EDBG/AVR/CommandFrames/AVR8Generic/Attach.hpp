@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class Attach: public Avr8GenericCommandFrame<std::array<unsigned char, 3>>
     {
     public:
-        explicit Attach(bool breakAfterAttach) {
+        explicit Attach(bool breakAfterAttach)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The attach command consists of 3 bytes:
              * 1. Command ID (0x13)

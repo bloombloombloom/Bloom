@@ -15,7 +15,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         ReadSignature(
             std::uint8_t signatureByteAddress,
             std::uint8_t returnAddress
-        ) {
+        )
+            : AvrIspCommandFrame()
+        {
             using Targets::Microchip::Avr::FuseType;
 
             /*

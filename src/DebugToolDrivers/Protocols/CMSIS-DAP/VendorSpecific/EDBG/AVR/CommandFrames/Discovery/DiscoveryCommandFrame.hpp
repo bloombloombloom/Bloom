@@ -11,6 +11,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         using ExpectedResponseFrameType = ResponseFrames::Discovery::DiscoveryResponseFrame;
 
-        DiscoveryCommandFrame(): AvrCommandFrame<PayloadContainerType>(ProtocolHandlerId::DISCOVERY) {}
+        DiscoveryCommandFrame()
+            : AvrCommandFrame<PayloadContainerType>(ProtocolHandlerId::DISCOVERY)
+        {}
     };
 }

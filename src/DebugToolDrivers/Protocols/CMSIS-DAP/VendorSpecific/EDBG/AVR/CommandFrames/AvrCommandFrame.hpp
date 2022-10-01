@@ -15,7 +15,7 @@
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    static inline std::atomic<std::uint16_t> LAST_SEQUENCE_ID = 0;
+    static inline std::atomic<std::uint16_t> lastSequenceId = 0;
 
     template <class PayloadContainerType = std::vector<unsigned char>>
     class AvrCommandFrame
@@ -76,15 +76,22 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         using ExpectedResponseFrameType = AvrResponseFrame;
 
-        explicit AvrCommandFrame(ProtocolHandlerId protocolHandlerId): protocolHandlerId(protocolHandlerId) {
-            if (LAST_SEQUENCE_ID < std::numeric_limits<decltype(LAST_SEQUENCE_ID)>::max()) {
-                this->sequenceId = ++(LAST_SEQUENCE_ID);
+        /**
+         * Incrementing from 0
+         */
+        std::uint16_t sequenceId = 0;
 
-            } else {
-                this->sequenceId = 0;
-                LAST_SEQUENCE_ID = 0;
-            }
-        };
+        /**
+         * Destination sub-protocol handler ID
+         */
+        ProtocolHandlerId protocolHandlerId = ProtocolHandlerId::DISCOVERY;
+
+        PayloadContainerType payload;
+
+        explicit AvrCommandFrame(ProtocolHandlerId protocolHandlerId)
+            : sequenceId(++lastSequenceId)
+            , protocolHandlerId(protocolHandlerId)
+        {};
 
         virtual ~AvrCommandFrame() = default;
 
@@ -93,10 +100,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         AvrCommandFrame& operator = (const AvrCommandFrame& other) = default;
         AvrCommandFrame& operator = (AvrCommandFrame&& other) noexcept = default;
-
-        [[nodiscard]] virtual const PayloadContainerType& getPayload() const {
-            return this->payload;
-        };
 
         /**
          * Converts the command frame into a container of unsigned char - a raw buffer to include in an AVR
@@ -109,7 +112,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         [[nodiscard]] auto getRawCommandFrame() const {
             auto rawCommand = std::vector<unsigned char>(5 + this->payload.size());
 
-            rawCommand[0] = 0x0E; // Start of frame
+            rawCommand[0] = 0x0E; // Start of frame (SOF) byte
             rawCommand[1] = 0x00; // Protocol version
 
             rawCommand[2] = static_cast<unsigned char>(this->sequenceId);
@@ -169,18 +172,5 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
             return avrCommands;
         }
-
-    protected:
-        /**
-         * Incrementing from 0
-         */
-        std::uint16_t sequenceId = 0;
-
-        /**
-         * Destination sub-protocol handler ID
-         */
-        ProtocolHandlerId protocolHandlerId = ProtocolHandlerId::DISCOVERY;
-
-        PayloadContainerType payload;
     };
 }

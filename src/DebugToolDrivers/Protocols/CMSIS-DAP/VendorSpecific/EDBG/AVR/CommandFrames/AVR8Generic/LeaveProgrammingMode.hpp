@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class LeaveProgrammingMode: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {
     public:
-        LeaveProgrammingMode() {
+        LeaveProgrammingMode()
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The leave programming mode command consists of 2 bytes:
              * 1. Command ID (0x16)

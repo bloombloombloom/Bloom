@@ -14,7 +14,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         ReadFuse(
             Targets::Microchip::Avr::FuseType fuseType,
             std::uint8_t returnAddress
-        ) {
+        )
+            : AvrIspCommandFrame()
+        {
             using Targets::Microchip::Avr::FuseType;
 
             /*

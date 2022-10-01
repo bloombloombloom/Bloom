@@ -11,7 +11,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class ProgramFuse: public AvrIspCommandFrame<std::array<unsigned char, 5>>
     {
     public:
-        ProgramFuse(Targets::Microchip::Avr::FuseType fuseType, unsigned char value) {
+        ProgramFuse(Targets::Microchip::Avr::FuseType fuseType, unsigned char value)
+            : AvrIspCommandFrame()
+        {
             using Targets::Microchip::Avr::FuseType;
 
             /*

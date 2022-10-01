@@ -10,7 +10,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class WriteMemory: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {
     public:
-        WriteMemory(const Avr8MemoryType& type, std::uint32_t address, const Targets::TargetMemoryBuffer& buffer) {
+        WriteMemory(const Avr8MemoryType& type, std::uint32_t address, const Targets::TargetMemoryBuffer& buffer)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The write memory command consists of 12 bytes + the buffer size:
              * 1. Command ID (0x23)

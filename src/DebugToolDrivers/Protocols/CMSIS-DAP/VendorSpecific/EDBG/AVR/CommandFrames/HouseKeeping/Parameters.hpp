@@ -16,11 +16,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     struct Parameter
     {
         ParameterContext context;
-        unsigned char id = 0x00;
-        std::uint8_t size = 0x00;
+        unsigned char id;
+        std::uint8_t size;
 
         constexpr Parameter(ParameterContext context, unsigned char id, std::uint8_t size)
-        : context(context), id(id), size(size) {};
+            : context(context)
+            , id(id)
+            , size(size)
+        {};
     };
 
     struct Parameters

@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class SetParameter: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {
     public:
-        SetParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
+        SetParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The set param command consists of value.size() + 5 bytes. The first five bytes consist of:
              * 1. Command ID (0x01)

@@ -10,20 +10,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class BreakEvent: public AvrEvent
     {
     public:
+        std::uint32_t programCounter;
+        Targets::TargetBreakCause breakCause;
+
         explicit BreakEvent(const AvrEvent& event);
-
-        [[nodiscard]] std::uint32_t getProgramCounter() const {
-            return this->programCounter;
-        }
-
-        [[nodiscard]] Targets::TargetBreakCause getBreakCause() const {
-            return this->breakCause;
-        }
-
-    private:
-        std::uint32_t programCounter = 0;
-        Targets::TargetBreakCause breakCause = Targets::TargetBreakCause::UNKNOWN;
-
-        void init(const AvrEvent& event);
     };
 }

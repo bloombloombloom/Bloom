@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class ClearAllSoftwareBreakpoints: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {
     public:
-        ClearAllSoftwareBreakpoints() {
+        ClearAllSoftwareBreakpoints()
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The clear all software breakpoints command consists of 2 bytes:
              * 1. Command ID (0x45)

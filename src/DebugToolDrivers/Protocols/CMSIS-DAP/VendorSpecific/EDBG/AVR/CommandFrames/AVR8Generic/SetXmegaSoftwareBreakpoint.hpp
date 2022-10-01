@@ -9,7 +9,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class SetXmegaSoftwareBreakpoint: public Avr8GenericCommandFrame<std::array<unsigned char, 15>>
     {
     public:
-        explicit SetXmegaSoftwareBreakpoint(std::uint32_t address) {
+        explicit SetXmegaSoftwareBreakpoint(std::uint32_t address)
+            : Avr8GenericCommandFrame()
+        {
             this->payload = {
                 0x42,
                 0x00,

@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class Step: public Avr8GenericCommandFrame<std::array<unsigned char, 4>>
     {
     public:
-        Step() {
+        Step()
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The step command consists of 4 bytes:
              * 1. Command ID (0x34)

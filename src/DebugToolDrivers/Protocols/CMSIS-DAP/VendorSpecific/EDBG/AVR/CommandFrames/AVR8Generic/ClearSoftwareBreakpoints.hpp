@@ -10,7 +10,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class ClearSoftwareBreakpoints: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {
     public:
-        explicit ClearSoftwareBreakpoints(const std::vector<std::uint32_t>& addresses) {
+        explicit ClearSoftwareBreakpoints(const std::vector<std::uint32_t>& addresses)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The clear software breakpoints command consists of 2 bytes + 4*n bytes, where n is the number
              * of breakpoints to clear:

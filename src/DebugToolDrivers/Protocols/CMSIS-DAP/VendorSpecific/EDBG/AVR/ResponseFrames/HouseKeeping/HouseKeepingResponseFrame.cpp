@@ -6,13 +6,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
 {
     using namespace Bloom::Exceptions;
 
-    ResponseId HouseKeepingResponseFrame::getResponseId() {
-        const auto& payload = this->getPayload();
-
-        if (payload.empty()) {
+    HouseKeepingResponseFrame::HouseKeepingResponseFrame(const std::vector<AvrResponse>& avrResponses)
+        : AvrResponseFrame(avrResponses)
+    {
+        if (this->payload.empty()) {
             throw Exception("Response ID missing from HOUSEKEEPING response frame payload.");
         }
 
-        return static_cast<ResponseId>(payload[0]);
+        this->id = static_cast<ResponseId>(this->payload[0]);
     }
 }

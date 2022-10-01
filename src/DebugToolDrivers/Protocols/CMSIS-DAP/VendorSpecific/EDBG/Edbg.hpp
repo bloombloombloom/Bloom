@@ -16,13 +16,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 
     struct EdbgParameter
     {
-        unsigned char context = 0x00;
-        unsigned char id = 0x00;
-        std::uint8_t size = 0;
+        unsigned char context;
+        unsigned char id;
+        std::uint8_t size;
 
-        constexpr EdbgParameter() = default;
         constexpr EdbgParameter(unsigned char context, unsigned char id, std::uint8_t size)
-            : context(context), id(id), size(size) {};
+            : context(context)
+            , id(id)
+            , size(size)
+        {};
     };
 
     struct EdbgParameters

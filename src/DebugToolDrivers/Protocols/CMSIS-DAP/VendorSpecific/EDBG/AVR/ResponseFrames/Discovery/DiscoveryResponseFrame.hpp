@@ -11,7 +11,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     {
         /*
          * According to the protocol docs, response ID 0x81 is for a LIST response, but this doesn't seem to be
-         * well defined. So just going to use a generic name.
+         * well-defined. So just going to use a generic name.
          */
         OK = 0x81,
         FAILED = 0xA0,
@@ -20,14 +20,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     class DiscoveryResponseFrame: public AvrResponseFrame
     {
     public:
-        DiscoveryResponseFrame() = default;
-        explicit DiscoveryResponseFrame(const std::vector<AvrResponse>& avrResponses): AvrResponseFrame(avrResponses) {}
+        ResponseId id;
 
-        ResponseId getResponseId();
+        explicit DiscoveryResponseFrame(const std::vector<AvrResponse>& avrResponses);
 
-        /**
-         * See parent method.
-         */
-        std::vector<unsigned char> getPayloadData() override;
+        std::vector<unsigned char> getPayloadData() const;
     };
 }

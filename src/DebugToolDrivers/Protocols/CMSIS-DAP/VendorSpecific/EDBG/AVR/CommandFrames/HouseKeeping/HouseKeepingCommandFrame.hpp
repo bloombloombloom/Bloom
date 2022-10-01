@@ -11,6 +11,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         using ExpectedResponseFrameType = ResponseFrames::HouseKeeping::HouseKeepingResponseFrame;
 
-        HouseKeepingCommandFrame(): AvrCommandFrame<PayloadContainerType>(ProtocolHandlerId::HOUSE_KEEPING) {}
+        HouseKeepingCommandFrame()
+            : AvrCommandFrame<PayloadContainerType>(ProtocolHandlerId::HOUSE_KEEPING)
+        {}
     };
 }

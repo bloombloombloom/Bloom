@@ -9,7 +9,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class GetParameter: public Avr8GenericCommandFrame<std::array<unsigned char, 5>>
     {
     public:
-        GetParameter(const Avr8EdbgParameter& parameter, std::uint8_t size) {
+        GetParameter(const Avr8EdbgParameter& parameter, std::uint8_t size)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The get param command consists of 5 bytes:
              * 1. Command ID (0x02)

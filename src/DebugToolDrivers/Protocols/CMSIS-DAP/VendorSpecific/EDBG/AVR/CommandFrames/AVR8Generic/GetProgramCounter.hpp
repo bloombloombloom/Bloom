@@ -10,7 +10,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         using ExpectedResponseFrameType = ResponseFrames::Avr8Generic::GetProgramCounter;
 
-        GetProgramCounter() {
+        GetProgramCounter()
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The PC Read command consists of 2 bytes:
              * 1. Command ID (0x35)

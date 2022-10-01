@@ -9,7 +9,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class EraseMemory: public Avr8GenericCommandFrame<std::array<unsigned char, 7>>
     {
     public:
-        EraseMemory(Avr8EraseMemoryMode mode) {
+        EraseMemory(Avr8EraseMemoryMode mode)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The erase memory command consists of 7 bytes:
              * 1. Command ID (0x20)

@@ -51,17 +51,17 @@ namespace Bloom::DebugToolDrivers
         using namespace CommandFrames::Discovery;
         using ResponseFrames::Discovery::ResponseId;
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Query(QueryContext::SERIAL_NUMBER)
         );
 
-        if (response.getResponseId() != ResponseId::OK) {
+        if (responseFrame.id != ResponseId::OK) {
             throw DeviceInitializationFailure(
                 "Failed to fetch serial number from device - invalid Discovery Protocol response ID."
             );
         }
 
-        const auto data = response.getPayloadData();
+        const auto data = responseFrame.getPayloadData();
         return std::string(data.begin(), data.end());
     }
 
@@ -69,11 +69,11 @@ namespace Bloom::DebugToolDrivers
         using namespace CommandFrames::HouseKeeping;
         using ResponseFrames::HouseKeeping::ResponseId;
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             StartSession()
         );
 
-        if (response.getResponseId() == ResponseId::FAILED) {
+        if (responseFrame.id == ResponseId::FAILED) {
             // Failed response returned!
             throw DeviceInitializationFailure("Failed to start session with MPLAB PICkit 4!");
         }
@@ -85,11 +85,11 @@ namespace Bloom::DebugToolDrivers
         using namespace CommandFrames::HouseKeeping;
         using ResponseFrames::HouseKeeping::ResponseId;
 
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EndSession()
         );
 
-        if (response.getResponseId() == ResponseId::FAILED) {
+        if (responseFrame.id == ResponseId::FAILED) {
             // Failed response returned!
             throw DeviceFailure("Failed to end session with MPLAB PICkit 4!");
         }

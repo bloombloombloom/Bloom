@@ -14,12 +14,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     class EdbgControlResponseFrame: public AvrResponseFrame
     {
     public:
-        EdbgControlResponseFrame() = default;
-        explicit EdbgControlResponseFrame(const std::vector<AvrResponse>& avrResponses)
-        : AvrResponseFrame(avrResponses) {}
+        EdbgControlResponseId id;
 
-        [[nodiscard]] EdbgControlResponseId getResponseId();
+        explicit EdbgControlResponseFrame(const std::vector<AvrResponse>& avrResponses);
 
-        [[nodiscard]] std::vector<unsigned char> getPayloadData() override;
+        [[nodiscard]] std::vector<unsigned char> getPayloadData();
     };
 }

@@ -28,8 +28,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     public:
         using ExpectedResponseType = AvrResponse;
 
-        AvrResponseCommand() {
-            this->setCommandId(0x81);
-        }
+        AvrResponseCommand()
+            : Command(0x81)
+        {}
     };
 }

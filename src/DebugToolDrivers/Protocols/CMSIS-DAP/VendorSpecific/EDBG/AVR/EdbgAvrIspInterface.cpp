@@ -35,7 +35,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvrIspInterface::activate() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EnterProgrammingMode(
                 this->ispParameters.programModeTimeout,
                 this->ispParameters.programModeStabilizationDelay,
@@ -47,7 +47,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             )
         );
 
-        if (response.getStatusCode() != StatusCode::OK) {
+        if (responseFrame.statusCode != StatusCode::OK) {
             throw TargetOperationFailure(
                 "Failed to enable programming mode via the ISP interface - check target's SPI connection "
                     "and/or its SPIEN fuse bit."
@@ -56,14 +56,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvrIspInterface::deactivate() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             LeaveProgrammingMode(
                 this->ispParameters.programModePreDelay,
                 this->ispParameters.programModePostDelay
             )
         );
 
-        if (response.getStatusCode() != StatusCode::OK) {
+        if (responseFrame.statusCode != StatusCode::OK) {
             throw TargetOperationFailure("Failed to disable programming mode via the ISP interface.");
         }
     }
@@ -78,50 +78,47 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     Fuse EdbgAvrIspInterface::readFuse(FuseType fuseType) {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ReadFuse(fuseType, this->ispParameters.readFusePollIndex)
         );
 
-        const auto& payload = response.getPayload();
         if (
-            response.getStatusCode() != StatusCode::OK
-            || payload.size() < 4
-            || static_cast<StatusCode>(payload[3]) != StatusCode::OK
+            responseFrame.statusCode != StatusCode::OK
+            || responseFrame.payload.size() < 4
+            || static_cast<StatusCode>(responseFrame.payload[3]) != StatusCode::OK
         ) {
             throw TargetOperationFailure(
                 "Failed to read fuse via ISP - response frame status code/size indicates a failure."
             );
         }
 
-        return Fuse(fuseType, payload[2]);
+        return Fuse(fuseType, responseFrame.payload[2]);
     }
 
     unsigned char EdbgAvrIspInterface::readLockBitByte() {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ReadLock(this->ispParameters.readLockPollIndex)
         );
 
-        const auto& payload = response.getPayload();
         if (
-            response.getStatusCode() != StatusCode::OK
-            || payload.size() < 4
-            || static_cast<StatusCode>(payload[3]) != StatusCode::OK
+            responseFrame.statusCode != StatusCode::OK
+            || responseFrame.payload.size() < 4
+            || static_cast<StatusCode>(responseFrame.payload[3]) != StatusCode::OK
         ) {
             throw TargetOperationFailure(
                 "Failed to read lock bit byte via ISP - response frame status code/size indicates a failure."
             );
         }
 
-        return payload[2];
+        return responseFrame.payload[2];
     }
 
     void EdbgAvrIspInterface::programFuse(Targets::Microchip::Avr::Fuse fuse) {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ProgramFuse(fuse.type, fuse.value)
         );
 
-        const auto& payload = response.getPayload();
-        if (response.getStatusCode() != StatusCode::OK || payload.size() < 2) {
+        if (responseFrame.statusCode != StatusCode::OK || responseFrame.payload.size() < 2) {
             throw TargetOperationFailure(
                 "Failed to program fuse via ISP - response frame status code/size indicates a failure."
             );
@@ -129,16 +126,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     unsigned char EdbgAvrIspInterface::readSignatureByte(std::uint8_t signatureByteAddress) {
-        auto response = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ReadSignature(signatureByteAddress, this->ispParameters.readSignaturePollIndex)
         );
 
-        const auto& payload = response.getPayload();
-
         if (
-            response.getStatusCode() != StatusCode::OK
-            || payload.size() < 4
-            || static_cast<StatusCode>(payload[3]) != StatusCode::OK
+            responseFrame.statusCode != StatusCode::OK
+            || responseFrame.payload.size() < 4
+            || static_cast<StatusCode>(responseFrame.payload[3]) != StatusCode::OK
         ) {
             throw TargetOperationFailure(
                 "Failed to read signature byte (address: " + std::to_string(signatureByteAddress)
@@ -146,6 +141,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             );
         }
 
-        return payload[2];
+        return responseFrame.payload[2];
     }
 }

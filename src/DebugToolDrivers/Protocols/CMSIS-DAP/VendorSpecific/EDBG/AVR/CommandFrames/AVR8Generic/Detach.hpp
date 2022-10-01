@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class Detach: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {
     public:
-        Detach() {
+        Detach()
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The detach command consists of 2 bytes:
              * 1. Command ID (0x14)

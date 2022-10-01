@@ -13,24 +13,22 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     class GetProgramCounter: public Avr8GenericResponseFrame
     {
     public:
-        GetProgramCounter() = default;
         explicit GetProgramCounter(const std::vector<AvrResponse>& avrResponses)
             : Avr8GenericResponseFrame(avrResponses)
         {}
 
-        Targets::TargetProgramCounter extractProgramCounter() {
+        Targets::TargetProgramCounter extractProgramCounter() const {
             /*
              * The payload for the PC Read command should always consist of six bytes. Thr first two being the
              * command ID and version, the other four being the PC. The four PC bytes are little-endian.
              */
-            auto& payload = this->getPayload();
-            if (payload.size() != 6) {
+            if (this->payload.size() != 6) {
                 throw Exceptions::Exception("Failed to extract PC from payload of PC read command response "
                     "frame - unexpected payload size.");
             }
 
             return static_cast<Targets::TargetProgramCounter>(
-                payload[5] << 24 | payload[4] << 16 | payload[3] << 8 | payload[2]
+                this->payload[5] << 24 | this->payload[4] << 16 | this->payload[3] << 8 | this->payload[2]
             ) * 2;
         }
     };

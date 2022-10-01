@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class DeactivatePhysical: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {
     public:
-        DeactivatePhysical() {
+        DeactivatePhysical()
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The deactivate physical command consists of 2 bytes:
              * 1. Command ID (0x11)

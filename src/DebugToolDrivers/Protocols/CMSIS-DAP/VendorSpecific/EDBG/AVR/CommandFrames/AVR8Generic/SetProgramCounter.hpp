@@ -9,7 +9,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class SetProgramCounter: public Avr8GenericCommandFrame<std::array<unsigned char, 6>>
     {
     public:
-        explicit SetProgramCounter(std::uint32_t programCounter) {
+        explicit SetProgramCounter(std::uint32_t programCounter)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The PC write command consists of 6 bytes:
              * 1. Command ID (0x36)

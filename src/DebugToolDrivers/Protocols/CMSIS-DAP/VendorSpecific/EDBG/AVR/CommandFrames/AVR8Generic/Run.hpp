@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class Run: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {
     public:
-        Run() {
+        Run()
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The run command consists of 2 bytes:
              * 1. Command ID (0x32)

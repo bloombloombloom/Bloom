@@ -11,6 +11,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     public:
         using ExpectedResponseFrameType = ResponseFrames::EdbgControl::EdbgControlResponseFrame;
 
-        EdbgControlCommandFrame(): AvrCommandFrame<PayloadContainerType>(ProtocolHandlerId::EDBG_CONTROL) {}
+        EdbgControlCommandFrame()
+            : AvrCommandFrame<PayloadContainerType>(ProtocolHandlerId::EDBG_CONTROL)
+        {}
     };
 }

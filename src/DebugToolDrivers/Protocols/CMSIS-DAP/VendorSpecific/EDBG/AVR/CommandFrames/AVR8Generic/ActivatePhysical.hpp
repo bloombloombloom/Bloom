@@ -7,7 +7,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class ActivatePhysical: public Avr8GenericCommandFrame<std::array<unsigned char, 3>>
     {
     public:
-        explicit ActivatePhysical(bool reset) {
+        explicit ActivatePhysical(bool reset)
+            : Avr8GenericCommandFrame()
+        {
             /*
              * The activate physical command consists of 3 bytes:
              * 1. Command ID (0x10)

@@ -14,15 +14,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
     class AvrIspResponseFrame: public AvrResponseFrame
     {
     public:
-        AvrIspResponseFrame() = default;
-        explicit AvrIspResponseFrame(const std::vector<AvrResponse>& avrResponses)
-        : AvrResponseFrame(avrResponses) {}
+        StatusCode statusCode;
 
-        /**
-         * Extracts the status code from the response frame payload.
-         *
-         * @return
-         */
-        [[nodiscard]] StatusCode getStatusCode();
+        explicit AvrIspResponseFrame(const std::vector<AvrResponse>& avrResponses);
     };
 }

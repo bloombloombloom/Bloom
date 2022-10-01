@@ -9,7 +9,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class ReadLock: public AvrIspCommandFrame<std::array<unsigned char, 6>>
     {
     public:
-        explicit ReadLock(std::uint8_t returnAddress) {
+        explicit ReadLock(std::uint8_t returnAddress)
+            : AvrIspCommandFrame()
+        {
             /*
              * The read lock command consists of 6 bytes:
              *

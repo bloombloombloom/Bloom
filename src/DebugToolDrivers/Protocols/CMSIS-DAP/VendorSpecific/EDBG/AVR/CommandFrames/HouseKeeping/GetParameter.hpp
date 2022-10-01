@@ -10,7 +10,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
     class GetParameter: public HouseKeepingCommandFrame<std::array<unsigned char, 5>>
     {
     public:
-        explicit GetParameter(const Parameter& parameter, std::uint8_t size) {
+        GetParameter(const Parameter& parameter, std::uint8_t size)
+            : HouseKeepingCommandFrame()
+        {
             /*
              * The get param command consists of 5 bytes:
              * 1. Command ID (0x02)
