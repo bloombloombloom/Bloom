@@ -1,90 +1,31 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
-#include <memory>
+#include <string>
 
-#include "src/DebugToolDrivers/DebugTool.hpp"
-#include "src/DebugToolDrivers/USB/UsbDevice.hpp"
-#include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
+#include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
 namespace Bloom::DebugToolDrivers
 {
     /**
-     * The Power Debugger device is very similar to the Atmel-ICE. It implements the CMSIS-DAP layer as well
-     * as an Atmel Data Gateway Interface (DGI).
+     * The Power Debugger device is very similar to the Atmel-ICE. It is an EDBG device.
      *
-     * Communication:
-     *  Uses the same EDBG protocol as described in the AtmelIce driver. See the AtmelIce debug tool class for more.
-     *
-     * USB Setup:
+     * USB:
      *  Vendor ID: 0x03eb (1003)
      *  Product ID: 0x2141 (8513)
      */
-    class PowerDebugger: public DebugTool, public Usb::UsbDevice
+    class PowerDebugger: public EdbgDevice
     {
     public:
-        static const std::uint16_t USB_VENDOR_ID = 1003;
-        static const std::uint16_t USB_PRODUCT_ID = 8516;
+        static const inline std::uint16_t USB_VENDOR_ID = 0x03eb;
+        static const inline std::uint16_t USB_PRODUCT_ID = 0x2141;
+        static const inline std::uint8_t USB_CONFIGURATION_INDEX = 0;
+        static const inline std::uint8_t CMSIS_HID_INTERFACE_NUMBER = 0;
 
         PowerDebugger();
-
-        void init() override;
-
-        void close() override;
-
-        TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() override {
-            return this->edbgAvr8Interface.get();
-        }
-
-        TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface() override {
-            return this->edbgAvrIspInterface.get();
-        }
 
         std::string getName() override {
             return "Power Debugger";
         }
-
-        /**
-         * Retrieves the device serial number via the Discovery Protocol.
-         *
-         * @return
-         */
-        std::string getSerialNumber() override;
-
-        /**
-         * Starts a session with the EDBG-based tool using the housekeeping protocol.
-         */
-        void startSession();
-
-        /**
-         * Ends the active session with the debug tool.
-         */
-        void endSession();
-
-    private:
-        /**
-         * The EDBG interface implements additional functionality via vendor specific CMSIS-DAP commands.
-         * In other words, all EDBG commands are just CMSIS-DAP vendor commands that allow the debug tool
-         * to support additional functionality, like AVR programming and debugging.
-         *
-         * Any non-EDBG CMSIS-DAP commands for the Power Debugger can be sent through the EDBGInterface (as the
-         * EdbgInterface extends the CmsisDapInterface).
-         */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::EdbgInterface> edbgInterface = nullptr;
-
-        /**
-         * The Power Debugger employs the EDBG AVR8Generic protocol for interfacing with AVR8 targets.
-         */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface;
-
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
-
-        bool sessionStarted = false;
     };
 }

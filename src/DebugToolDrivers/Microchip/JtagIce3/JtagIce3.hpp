@@ -1,66 +1,31 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
-#include <memory>
+#include <string>
 
-#include "src/DebugToolDrivers/DebugTool.hpp"
-#include "src/DebugToolDrivers/USB/UsbDevice.hpp"
-#include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
+#include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
 namespace Bloom::DebugToolDrivers
 {
-    class JtagIce3: public DebugTool, public Usb::UsbDevice
+    /**
+     * The JTAGICE3, from firmware version 3.x+, is an EDBG device.
+     *
+     * USB:
+     *  Vendor ID: 0x03eb (1003)
+     *  Product ID: 0x2140 (8512)
+     */
+    class JtagIce3: public EdbgDevice
     {
     public:
-        static const std::uint16_t USB_VENDOR_ID = 1003;
-        static const std::uint16_t USB_PRODUCT_ID = 8512;
+        static const inline std::uint16_t USB_VENDOR_ID = 0x03eb;
+        static const inline std::uint16_t USB_PRODUCT_ID = 0x2140;
+        static const inline std::uint8_t USB_CONFIGURATION_INDEX = 0;
+        static const inline std::uint8_t CMSIS_HID_INTERFACE_NUMBER = 0;
 
         JtagIce3();
-
-        void init() override;
-
-        void close() override;
-
-        TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() override {
-            return this->edbgAvr8Interface.get();
-        }
-
-        TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface() override {
-            return this->edbgAvrIspInterface.get();
-        }
 
         std::string getName() override {
             return "JTAGICE3";
         }
-
-        /**
-         * Retrieves the device serial number via the Discovery Protocol.
-         *
-         * @return
-         */
-        std::string getSerialNumber() override;
-
-        /**
-         * Starts a session with the EDBG-based tool using the housekeeping protocol.
-         */
-        void startSession();
-
-        /**
-         * Ends the active session with the debug tool.
-         */
-        void endSession();
-
-    private:
-        std::unique_ptr<Protocols::CmsisDap::Edbg::EdbgInterface> edbgInterface = nullptr;
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
-
-        bool sessionStarted = false;
     };
 }

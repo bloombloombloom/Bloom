@@ -3,6 +3,7 @@ target_sources(
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/USB/UsbDevice.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/USB/HID/HidInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/EdbgDevice.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AtmelICE/AtmelIce.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/PowerDebugger/PowerDebugger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/MplabSnap/MplabSnap.cpp

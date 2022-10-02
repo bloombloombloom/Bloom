@@ -1,108 +1,31 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
-#include <memory>
+#include <string>
 
-#include "src/DebugToolDrivers/DebugTool.hpp"
-#include "src/DebugToolDrivers/USB/UsbDevice.hpp"
-#include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
+#include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
 namespace Bloom::DebugToolDrivers
 {
     /**
-     * The Atmel-ICE device is an EDBG (Embedded Debugger) device. It implements the CMSIS-DAP layer as well
-     * as an Atmel Data Gateway Interface (DGI).
+     * The Atmel-ICE device is an EDBG (Embedded Debugger) device.
      *
-     * Communication:
-     *  Using the Atmel-ICE device for AVR debugging/programming requires the AVR communication protocol, which
-     *  is a sub-protocol of the CMSIS-DAP (AVR communication protocol commands are wrapped in CMSIS-DAP vendor
-     *  commands). AVR communication protocol commands contain AVR frames, in which commands for numerous
-     *  sub-protocols are enveloped.
-     *
-     *  So to summarise, issuing an AVR command to the EDBG device, involves:
-     *  Actual command data -> AVR sub-protocol -> AVR Frames -> CMSIS-DAP Vendor commands -> EDBG Device
-     *
-     *  For more information on protocols and sub-protocols employed by Microchip EDBG devices, see
-     *  the 'Embedded Debugger-Based Tools Protocols User's Guide' document by Microchip.
-     *  @link http://ww1.microchip.com/downloads/en/DeviceDoc/50002630A.pdf
-     *
-     * USB Setup:
+     * USB:
      *  Vendor ID: 0x03eb (1003)
      *  Product ID: 0x2141 (8513)
-     *
-     *  The Atmel-ICE consists of two USB interfaces. One HID interface for CMSIS-DAP and one vendor specific
-     *  interface for the DGI. We only work with the CMSIS-DAP interface, for now.
      */
-    class AtmelIce: public DebugTool, public Usb::UsbDevice
+    class AtmelIce: public EdbgDevice
     {
     public:
-        static const std::uint16_t USB_VENDOR_ID = 1003;
-        static const std::uint16_t USB_PRODUCT_ID = 8513;
+        static const inline std::uint16_t USB_VENDOR_ID = 0x03eb;
+        static const inline std::uint16_t USB_PRODUCT_ID = 0x2141;
+        static const inline std::uint8_t USB_CONFIGURATION_INDEX = 0;
+        static const inline std::uint8_t CMSIS_HID_INTERFACE_NUMBER = 0;
 
         AtmelIce();
-
-        void init() override;
-
-        void close() override;
-
-        TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() override {
-            return this->edbgAvr8Interface.get();
-        }
-
-        TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface() override {
-            return this->edbgAvrIspInterface.get();
-        }
 
         std::string getName() override {
             return "Atmel-ICE";
         }
-
-        /**
-         * Retrieves the device serial number via the Discovery Protocol.
-         *
-         * @return
-         */
-        std::string getSerialNumber() override;
-
-        /**
-         * Starts a session with the EDBG-based tool using the housekeeping protocol.
-         */
-        void startSession();
-
-        /**
-         * Ends the active session with the debug tool.
-         */
-        void endSession();
-
-    private:
-        /**
-         * The EDBG interface implements additional functionality via vendor specific CMSIS-DAP commands.
-         * In other words, all EDBG commands are just CMSIS-DAP vendor commands that allow the debug tool
-         * to support additional functionality, like AVR programming and debugging.
-         *
-         * Any non-EDBG CMSIS-DAP commands for the Atmel-ICE can be sent through the EdbgInterface (as the
-         * EdbgInterface extends the CmsisDapInterface).
-         */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::EdbgInterface> edbgInterface = nullptr;
-
-        /**
-         * The Atmel-ICE employs the EDBG AVR8 Generic protocol, for debugging AVR8 targets. This protocol is
-         * implemented in EdbgAvr8Interface. See the EdbgAvr8Interface class for more information.
-         */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
-
-        /**
-         * The Atmel-ICE employs the EDBG AVRISP protocol, for interfacing with AVR targets via the ISP interface.
-         * See the EdbgAvrIspInterface class for the protocol implementation.
-         */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
-
-        bool sessionStarted = false;
     };
 }
