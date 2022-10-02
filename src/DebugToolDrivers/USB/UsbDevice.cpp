@@ -87,9 +87,7 @@ namespace Bloom::Usb
         }
     }
 
-    std::vector<LibusbDevice> UsbDevice::findMatchingDevices(
-        std::uint16_t vendorId, std::uint16_t productId
-    ) {
+    std::vector<LibusbDevice> UsbDevice::findMatchingDevices(std::uint16_t vendorId, std::uint16_t productId) {
         ::libusb_device** devices = nullptr;
         ::libusb_device* device;
         std::vector<LibusbDevice> matchedDevices;
