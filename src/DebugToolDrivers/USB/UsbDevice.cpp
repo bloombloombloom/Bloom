@@ -56,11 +56,11 @@ namespace Bloom::Usb
     }
 
     void UsbDevice::setConfiguration(std::uint8_t configurationIndex) {
-        ::libusb_config_descriptor* configDescriptor = {};
+        ::libusb_config_descriptor* configDescriptorPtr = {};
         auto libusbStatusCode = ::libusb_get_config_descriptor(
             this->libusbDevice.get(),
             configurationIndex,
-            &configDescriptor
+            &configDescriptorPtr
         );
 
         if (libusbStatusCode < 0) {
@@ -69,6 +69,11 @@ namespace Bloom::Usb
                     + " returned."
             );
         }
+
+        const auto configDescriptor = std::unique_ptr<::libusb_config_descriptor, decltype(&::libusb_free_config_descriptor)>(
+            configDescriptorPtr,
+            ::libusb_free_config_descriptor
+        );
 
         libusbStatusCode = ::libusb_set_configuration(
             this->libusbDeviceHandle.get(),
@@ -80,8 +85,6 @@ namespace Bloom::Usb
                 "Failed to set USB configuration - error code " + std::to_string(libusbStatusCode) + " returned."
             );
         }
-
-        ::libusb_free_config_descriptor(configDescriptor);
     }
 
     std::vector<LibusbDevice> UsbDevice::findMatchingDevices(
