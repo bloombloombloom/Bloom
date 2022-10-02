@@ -55,9 +55,13 @@ namespace Bloom::Usb
         this->libusbDeviceHandle.reset(deviceHandle);
     }
 
-    void UsbDevice::setConfiguration(int configIndex) {
+    void UsbDevice::setConfiguration(std::uint8_t configurationIndex) {
         ::libusb_config_descriptor* configDescriptor = {};
-        int libusbStatusCode = ::libusb_get_config_descriptor(this->libusbDevice.get(), 0, &configDescriptor);
+        auto libusbStatusCode = ::libusb_get_config_descriptor(
+            this->libusbDevice.get(),
+            configurationIndex,
+            &configDescriptor
+        );
 
         if (libusbStatusCode < 0) {
             throw DeviceInitializationFailure(

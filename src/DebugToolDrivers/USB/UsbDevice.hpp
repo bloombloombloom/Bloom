@@ -33,9 +33,9 @@ namespace Bloom::Usb
         /**
          * Selects a specific configuration on the device, using the configuration index.
          *
-         * @param configIndex
+         * @param configurationIndex
          */
-        virtual void setConfiguration(int configIndex);
+        virtual void setConfiguration(std::uint8_t configurationIndex);
 
         virtual ~UsbDevice();
 
