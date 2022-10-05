@@ -87,10 +87,6 @@ namespace Bloom
         return EXIT_SUCCESS;
     }
 
-    bool Application::isRunningAsRoot() {
-        return geteuid() == 0;
-    }
-
     std::map<std::string, std::function<int()>> Application::getCommandHandlersByCommandName() {
         return std::map<std::string, std::function<int()>> {
             {

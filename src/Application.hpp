@@ -44,13 +44,6 @@ namespace Bloom
          */
         int run();
 
-        /**
-         * Checks if the current effective user running Bloom has root privileges.
-         *
-         * @return
-         */
-        static bool isRunningAsRoot();
-
     private:
         std::vector<std::string> arguments;
 

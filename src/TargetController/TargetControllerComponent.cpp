@@ -5,8 +5,10 @@
 #include <typeindex>
 #include <algorithm>
 
-#include "src/Application.hpp"
+#include "Responses/Error.hpp"
+
 #include "src/Helpers/Paths.hpp"
+#include "src/Helpers/Process.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/TargetController/Exceptions/DeviceFailure.hpp"
@@ -446,7 +448,7 @@ namespace Bloom::TargetController
             Logger::warning("Bloom udev rules missing - attempting installation");
 
             // We can only install them if we're running as root
-            if (!Application::isRunningAsRoot()) {
+            if (!Process::isRunningAsRoot()) {
                 Logger::error("Bloom udev rules missing - cannot install udev rules without root privileges.\n"
                     "Running Bloom once with root privileges will allow it to automatically install the udev rules. "
                     "Alternatively, instructions on manually installing the udev rules can be found "
