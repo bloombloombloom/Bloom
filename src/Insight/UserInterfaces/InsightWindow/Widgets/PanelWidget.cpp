@@ -69,7 +69,7 @@ namespace Bloom::Widgets
     }
 
     void PanelWidget::updateVisibility() {
-        const auto paneWidgets = this->findChildren<PaneWidget*>();
+        const auto paneWidgets = this->findChildren<PaneWidget*>(QString(), Qt::FindDirectChildrenOnly);
 
         auto visible = false;
         for (const auto& paneWidget : paneWidgets) {
