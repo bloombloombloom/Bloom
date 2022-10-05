@@ -18,6 +18,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     const AVR8_FAMILY_DD = 'DD';
     const AVR8_FAMILY_OTHER = 'OTHER';
 
+    const AVR8_PHYSICAL_INTERFACE_ISP = 'ISP';
     const AVR8_PHYSICAL_INTERFACE_JTAG = 'JTAG';
     const AVR8_PHYSICAL_INTERFACE_PDI = 'PDI';
     const AVR8_PHYSICAL_INTERFACE_UPDI = 'UPDI';
@@ -25,7 +26,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
     public ?Signature $signature = null;
     public ?string $family = null;
-    public array $debugPhysicalInterface = [];
+    public array $physicalInterfaces = [];
+    public array $debugPhysicalInterfaces = [];
 
     // Target params
     public ?int $bootSectionStartAddress = null;
@@ -125,19 +127,27 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
+        if (isset($this->physicalInterfacesByName['isp'])) {
+            $this->physicalInterfaces[] = self::AVR8_PHYSICAL_INTERFACE_ISP;
+        }
+
         if (isset($this->physicalInterfacesByName['debugwire'])) {
-            $this->debugPhysicalInterface[] = self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE;
+            $this->debugPhysicalInterfaces[] = self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE;
+            $this->physicalInterfaces[] = self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE;
         }
 
         if (isset($this->physicalInterfacesByName['updi'])) {
-            $this->debugPhysicalInterface[] = self::AVR8_PHYSICAL_INTERFACE_UPDI;
+            $this->debugPhysicalInterfaces[] = self::AVR8_PHYSICAL_INTERFACE_UPDI;
+            $this->physicalInterfaces[] = self::AVR8_PHYSICAL_INTERFACE_UPDI;
 
         } else if (isset($this->physicalInterfacesByName['pdi'])) {
-            $this->debugPhysicalInterface[] = self::AVR8_PHYSICAL_INTERFACE_PDI;
+            $this->debugPhysicalInterfaces[] = self::AVR8_PHYSICAL_INTERFACE_PDI;
+            $this->physicalInterfaces[] = self::AVR8_PHYSICAL_INTERFACE_PDI;
         }
 
         if (isset($this->physicalInterfacesByName['jtag'])) {
-            $this->debugPhysicalInterface[] = self::AVR8_PHYSICAL_INTERFACE_JTAG;
+            $this->debugPhysicalInterfaces[] = self::AVR8_PHYSICAL_INTERFACE_JTAG;
+            $this->physicalInterfaces[] = self::AVR8_PHYSICAL_INTERFACE_JTAG;
         }
 
         $signaturePropertyGroup = $this->propertyGroupsByName['signatures'] ?? null;
@@ -490,7 +500,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
-        if (in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterface)) {
+        if (in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterfaces)) {
             if (isset($this->peripheralModulesByName['nvmctrl'])) {
                 $nvmModule = $this->peripheralModulesByName['nvmctrl'];
 
@@ -558,7 +568,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = "Missing or incomplete AVR signature.";
         }
 
-        if (is_null($this->debugPhysicalInterface)) {
+        if (is_null($this->debugPhysicalInterfaces)) {
             $failures[] = 'Target does not support any known AVR8 debug interface - the TDF will need to be deleted.'
                 . ' Aborting validation.';
             return $failures;
@@ -568,7 +578,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'Unknown AVR8 family';
         }
 
-        if (in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $this->debugPhysicalInterface)) {
+        if (in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $this->debugPhysicalInterfaces)) {
             if (!isset($this->physicalInterfacesByName['isp'])) {
                 $failures[] = 'Missing ISP interface for debugWire target.';
             }
@@ -678,9 +688,9 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'Missing eeprom page size.';
         }
 
-        if (in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $this->debugPhysicalInterface)
+        if (in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $this->debugPhysicalInterfaces)
             || (
-                in_array(self::AVR8_PHYSICAL_INTERFACE_JTAG, $this->debugPhysicalInterface)
+                in_array(self::AVR8_PHYSICAL_INTERFACE_JTAG, $this->debugPhysicalInterfaces)
                 && $this->family == self::AVR8_FAMILY_MEGA
             )
         ) {
@@ -701,7 +711,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
-        if (in_array(self::AVR8_PHYSICAL_INTERFACE_PDI, $this->debugPhysicalInterface)) {
+        if (in_array(self::AVR8_PHYSICAL_INTERFACE_PDI, $this->debugPhysicalInterfaces)) {
             if (is_null($this->appSectionPdiOffset)) {
                 $failures[] = 'Missing app section PDI offset.';
             }
@@ -739,7 +749,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
-        if (in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterface)) {
+        if (in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterfaces)) {
             if (is_null($this->nvmModuleBaseAddress)) {
                 $failures[] = 'Missing NVM base address.';
             }
