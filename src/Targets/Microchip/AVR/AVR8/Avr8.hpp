@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <queue>
 #include <utility>
+#include <optional>
 
 #include "src/Targets/Microchip/AVR/Target.hpp"
 #include "src/DebugToolDrivers/DebugTool.hpp"

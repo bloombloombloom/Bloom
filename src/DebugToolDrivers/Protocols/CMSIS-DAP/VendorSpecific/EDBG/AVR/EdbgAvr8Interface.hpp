@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <chrono>
 #include <thread>
+#include <optional>
 #include <cassert>
 
 #include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"

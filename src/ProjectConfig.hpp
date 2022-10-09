@@ -3,6 +3,7 @@
 #include <memory>
 #include <map>
 #include <string>
+#include <optional>
 #include <yaml-cpp/yaml.h>
 
 namespace Bloom

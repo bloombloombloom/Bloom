@@ -3,6 +3,7 @@
 #include <memory>
 #include <map>
 #include <string>
+#include <optional>
 #include <functional>
 #include <QtCore/QtCore>
 #include <thread>

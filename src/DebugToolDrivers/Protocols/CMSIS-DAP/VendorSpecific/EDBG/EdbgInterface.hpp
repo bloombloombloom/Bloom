@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.hpp"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <set>
+#include <optional>
 
 #include "src/Targets/TargetDescription/TargetDescriptionFile.hpp"
 

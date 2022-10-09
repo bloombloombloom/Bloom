@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "ResponsePacket.hpp"
 
 #include "src/DebugServer/Gdb/Signal.hpp"

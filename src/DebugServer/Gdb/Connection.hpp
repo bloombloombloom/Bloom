@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 #include <cstdint>
 #include <utility>
+#include <optional>
 #include <vector>
 #include <queue>
 #include <array>

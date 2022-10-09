@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVR8Generic/Avr8GenericResponseFrame.hpp"
 

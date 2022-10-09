@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iomanip>
+#include <optional>
 
 #include "src/Targets/Target.hpp"
 

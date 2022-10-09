@@ -2,6 +2,7 @@
 
 #include <set>
 #include <utility>
+#include <optional>
 
 #include "ResponsePacket.hpp"
 
