@@ -176,10 +176,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         /**
          * Updates the debugWire enable (DWEN) fuse bit on the AVR target.
          *
-         * @param setFuse
-         *  True to set the fuse, false to clear it.
+         * @param enable
+         *  True to enable the fuse, false to disable it.
          */
-        void writeDwenFuseBit(bool setFuse);
+        void updateDwenFuseBit(bool enable);
 
         /**
          * Resolves the program memory section from a program memory address.

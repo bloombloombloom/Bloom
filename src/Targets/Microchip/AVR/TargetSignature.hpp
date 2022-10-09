@@ -28,10 +28,15 @@ namespace Bloom::Targets::Microchip::Avr
         unsigned char byteTwo = 0x00;
 
         TargetSignature() = default;
-        TargetSignature(unsigned char byteZero, unsigned char byteOne, unsigned char byteTwo) :
-        byteZero(byteZero), byteOne(byteOne), byteTwo(byteTwo) {};
+        TargetSignature(unsigned char byteZero, unsigned char byteOne, unsigned char byteTwo)
+            : byteZero(byteZero)
+            , byteOne(byteOne)
+            , byteTwo(byteTwo)
+        {};
+
         explicit TargetSignature(const std::string& hex) {
-            auto signature = static_cast<std::uint32_t>(std::stoul(hex, nullptr, 16));
+            const auto signature = static_cast<std::uint32_t>(std::stoul(hex, nullptr, 16));
+
             this->byteZero = static_cast<unsigned char>(signature >> 16);
             this->byteOne = static_cast<unsigned char>(signature >> 8);
             this->byteTwo = static_cast<unsigned char>(signature);
@@ -48,9 +53,10 @@ namespace Bloom::Targets::Microchip::Avr
         }
 
         bool operator == (const TargetSignature& signature) const {
-            return signature.byteZero == this->byteZero
-            && signature.byteOne == this->byteOne
-            && signature.byteTwo == this->byteTwo;
+            return
+                signature.byteZero == this->byteZero
+                && signature.byteOne == this->byteOne
+                && signature.byteTwo == this->byteTwo;
         }
 
         bool operator != (const TargetSignature& signature) const {

@@ -120,8 +120,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * file (which it would, if the user specified the exact target name in their project config - see
          * Avr8::getId() and TargetControllerComponent::getSupportedTargets() for more).
          */
-        auto targetSignature = this->avr8DebugInterface->getDeviceId();
-        auto tdSignature = this->targetDescriptionFile->getTargetSignature();
+        const auto targetSignature = this->avr8DebugInterface->getDeviceId();
+        const auto tdSignature = this->targetDescriptionFile->getTargetSignature();
 
         if (targetSignature != tdSignature) {
             throw Exception(
@@ -149,7 +149,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         this->avr8DebugInterface->init();
 
-        if (this->targetDescriptionFile.has_value()) {
+        if (this->targetParameters.has_value()) {
             this->avr8DebugInterface->setTargetParameters(this->targetParameters.value());
         }
 
@@ -157,6 +157,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             this->avr8DebugInterface->activate();
 
         } catch (const Exceptions::DebugWirePhysicalInterfaceError& debugWireException) {
+            // We failed to activate the debugWire physical interface. DWEN fuse bit may need updating.
+
             if (!this->targetConfig->manageDwenFuseBit) {
                 throw TargetOperationFailure(
                     "Failed to activate debugWire physical interface - check target connection and DWEN fuse "
@@ -170,7 +172,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                     "Failed to activate the debugWire physical interface - attempting to access target via "
                         "the ISP interface, for DWEN fuse bit inspection."
                 );
-                this->writeDwenFuseBit(true);
+                this->updateDwenFuseBit(true);
 
                 // If the debug tool provides a TargetPowerManagementInterface, attempt to cycle the target power
                 if (
@@ -763,7 +765,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         return this->id.value();
     }
 
-    void Avr8::writeDwenFuseBit(bool setFuse) {
+    void Avr8::updateDwenFuseBit(bool enable) {
         if (this->avrIspInterface == nullptr) {
             throw Exception(
                 "Debug tool or driver does not provide access to an ISP interface - please confirm that the "
@@ -892,7 +894,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
             Logger::info("Current SPIEN fuse bit value confirmed");
 
-            if (static_cast<bool>(dwenFuseByte & dwenFuseBitsDescriptor->bitMask) == !setFuse) {
+            if (static_cast<bool>(dwenFuseByte & dwenFuseBitsDescriptor->bitMask) == !enable) {
                 /*
                  * The DWEN fuse appears to already be set to the desired value. This may be a result of incorrect data
                  * in the TDF, but we're not taking any chances.
@@ -922,7 +924,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
             const auto newFuse = Fuse(
                 dwenFuseBitsDescriptor->fuseType,
-                (setFuse) ? static_cast<unsigned char>(dwenFuseByte & ~(dwenFuseBitsDescriptor->bitMask))
+                (enable) ? static_cast<unsigned char>(dwenFuseByte & ~(dwenFuseBitsDescriptor->bitMask))
                     : static_cast<unsigned char>(dwenFuseByte | dwenFuseBitsDescriptor->bitMask)
             );
 
