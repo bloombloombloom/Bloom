@@ -13,7 +13,7 @@ namespace Bloom::TargetController::Commands
         using SuccessResponseType = Responses::TargetRegistersRead;
 
         static constexpr CommandType type = CommandType::READ_TARGET_REGISTERS;
-        static inline const std::string name = "ReadTargetRegisters";
+        static const inline std::string name = "ReadTargetRegisters";
 
         Targets::TargetRegisterDescriptors descriptors;
 

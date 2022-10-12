@@ -12,7 +12,7 @@ namespace Bloom::TargetController::Commands
         using SuccessResponseType = Responses::TargetProgramCounter;
 
         static constexpr CommandType type = CommandType::GET_TARGET_PROGRAM_COUNTER;
-        static inline const std::string name = "GetTargetProgramCounter";
+        static const inline std::string name = "GetTargetProgramCounter";
 
         [[nodiscard]] CommandType getType() const override {
             return GetTargetProgramCounter::type;

@@ -12,7 +12,7 @@ namespace Bloom::TargetController::Commands
         using SuccessResponseType = Responses::TargetStackPointer;
 
         static constexpr CommandType type = CommandType::GET_TARGET_STACK_POINTER;
-        static inline const std::string name = "GetTargetStackPointer";
+        static const inline std::string name = "GetTargetStackPointer";
 
         [[nodiscard]] CommandType getType() const override {
             return GetTargetStackPointer::type;

@@ -13,7 +13,7 @@ namespace Bloom::Events
         explicit InsightThreadStateChanged(ThreadState state): state(state) {};
 
         static constexpr EventType type = EventType::INSIGHT_THREAD_STATE_CHANGED;
-        static inline const std::string name = "InsightThreadStateChanged";
+        static const inline std::string name = "InsightThreadStateChanged";
 
         [[nodiscard]] EventType getType() const override {
             return InsightThreadStateChanged::type;

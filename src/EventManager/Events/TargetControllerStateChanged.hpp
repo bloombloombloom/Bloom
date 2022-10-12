@@ -11,7 +11,7 @@ namespace Bloom::Events
     {
     public:
         static constexpr EventType type = EventType::TARGET_CONTROLLER_STATE_CHANGED;
-        static inline const std::string name = "TargetControllerStateChanged";
+        static const inline std::string name = "TargetControllerStateChanged";
 
         TargetController::TargetControllerState state;
         explicit TargetControllerStateChanged(TargetController::TargetControllerState state)

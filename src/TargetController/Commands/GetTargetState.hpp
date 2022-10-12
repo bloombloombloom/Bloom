@@ -11,7 +11,7 @@ namespace Bloom::TargetController::Commands
         using SuccessResponseType = Responses::TargetState;
 
         static constexpr CommandType type = CommandType::GET_TARGET_STATE;
-        static inline const std::string name = "GetTargetState";
+        static const inline std::string name = "GetTargetState";
 
         [[nodiscard]] CommandType getType() const override {
             return GetTargetState::type;

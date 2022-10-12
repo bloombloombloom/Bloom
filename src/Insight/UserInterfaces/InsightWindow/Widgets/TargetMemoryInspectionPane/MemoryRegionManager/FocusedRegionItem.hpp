@@ -52,7 +52,7 @@ namespace Bloom::Widgets
         QComboBox* dataTypeInput = nullptr;
         QComboBox* endiannessInput = nullptr;
 
-        static inline const std::map<QString, DataTypeOption> dataTypeOptionsByName = std::map<
+        static const inline std::map<QString, DataTypeOption> dataTypeOptionsByName = std::map<
             QString, DataTypeOption
         >({
               {"other", DataTypeOption("Other", MemoryRegionDataType::UNKNOWN)},
@@ -61,7 +61,7 @@ namespace Bloom::Widgets
               {"ascii", DataTypeOption("ASCII String", MemoryRegionDataType::ASCII_STRING)},
         });
 
-        static inline const std::map<QString, EndiannessOption> endiannessOptionsByName = std::map<
+        static const inline std::map<QString, EndiannessOption> endiannessOptionsByName = std::map<
             QString, EndiannessOption
         >({
               {"little", EndiannessOption("Little-endian", Targets::TargetMemoryEndianness::LITTLE)},

@@ -10,7 +10,7 @@ namespace Bloom::Events
     {
     public:
         static constexpr EventType type = EventType::TARGET_EXECUTION_RESUMED;
-        static inline const std::string name = "TargetExecutionResumed";
+        static const inline std::string name = "TargetExecutionResumed";
 
         bool stepping = false;
 

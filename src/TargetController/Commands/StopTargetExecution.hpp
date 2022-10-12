@@ -8,7 +8,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::STOP_TARGET_EXECUTION;
-        static inline const std::string name = "StopTargetExecution";
+        static const inline std::string name = "StopTargetExecution";
 
         [[nodiscard]] CommandType getType() const override {
             return StopTargetExecution::type;

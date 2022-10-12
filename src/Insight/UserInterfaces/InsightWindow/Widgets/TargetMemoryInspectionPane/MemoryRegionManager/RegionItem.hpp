@@ -83,7 +83,7 @@ namespace Bloom::Widgets
         Label* addressRangeLabel = new Label(this);
         Label* timeLabel = new Label(this);
 
-        static inline const std::map<QString, AddressRangeTypeOption> addressRangeTypeOptionsByName = std::map<
+        static const inline std::map<QString, AddressRangeTypeOption> addressRangeTypeOptionsByName = std::map<
             QString, AddressRangeTypeOption
         >({
             {"absolute", AddressRangeTypeOption("Absolute", AddressType::ABSOLUTE)},

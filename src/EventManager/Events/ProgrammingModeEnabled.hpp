@@ -10,7 +10,7 @@ namespace Bloom::Events
     {
     public:
         static constexpr EventType type = EventType::PROGRAMMING_MODE_ENABLED;
-        static inline const std::string name = "ProgrammingModeEnabled";
+        static const inline std::string name = "ProgrammingModeEnabled";
 
         [[nodiscard]] EventType getType() const override {
             return ProgrammingModeEnabled::type;

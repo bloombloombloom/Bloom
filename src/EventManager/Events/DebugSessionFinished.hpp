@@ -10,7 +10,7 @@ namespace Bloom::Events
     {
     public:
         static constexpr EventType type = EventType::DEBUG_SESSION_FINISHED;
-        static inline const std::string name = "DebugSessionFinished";
+        static const inline std::string name = "DebugSessionFinished";
 
         [[nodiscard]] EventType getType() const override {
             return DebugSessionFinished::type;

@@ -11,7 +11,7 @@ namespace Bloom::Events
     {
     public:
         static constexpr EventType type = EventType::REGISTERS_WRITTEN_TO_TARGET;
-        static inline const std::string name = "RegistersWrittenToTarget";
+        static const inline std::string name = "RegistersWrittenToTarget";
 
         Targets::TargetRegisters registers;
 

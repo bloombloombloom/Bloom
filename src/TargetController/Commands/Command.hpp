@@ -21,7 +21,7 @@ namespace Bloom::TargetController::Commands
         CommandIdType id = ++(Command::lastCommandId);
 
         static constexpr CommandType type = CommandType::GENERIC;
-        static inline const std::string name = "GenericCommand";
+        static const inline std::string name = "GenericCommand";
 
         Command() = default;
         virtual ~Command() = default;

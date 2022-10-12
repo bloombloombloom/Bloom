@@ -10,7 +10,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::SET_TARGET_PIN_STATE;
-        static inline const std::string name = "SetTargetPinState";
+        static const inline std::string name = "SetTargetPinState";
 
         Targets::TargetPinDescriptor pinDescriptor;
         Targets::TargetPinState pinState;

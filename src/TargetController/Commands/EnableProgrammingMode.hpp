@@ -8,7 +8,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::ENABLE_PROGRAMMING_MODE;
-        static inline const std::string name = "EnableProgrammingMode";
+        static const inline std::string name = "EnableProgrammingMode";
 
         EnableProgrammingMode() = default;
 

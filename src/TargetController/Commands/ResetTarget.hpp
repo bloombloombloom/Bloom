@@ -8,7 +8,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::RESET_TARGET;
-        static inline const std::string name = "ResetTarget";
+        static const inline std::string name = "ResetTarget";
 
         [[nodiscard]] CommandType getType() const override {
             return ResetTarget::type;

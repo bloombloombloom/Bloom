@@ -12,7 +12,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::STEP_TARGET_EXECUTION;
-        static inline const std::string name = "StepTargetExecution";
+        static const inline std::string name = "StepTargetExecution";
 
         std::optional<Targets::TargetProgramCounter> fromProgramCounter;
 

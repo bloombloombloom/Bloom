@@ -10,7 +10,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::WRITE_TARGET_REGISTERS;
-        static inline const std::string name = "WriteTargetRegisters";
+        static const inline std::string name = "WriteTargetRegisters";
 
         Targets::TargetRegisters registers;
 

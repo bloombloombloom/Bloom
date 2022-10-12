@@ -10,7 +10,7 @@ namespace Bloom::Events
     {
     public:
         static constexpr EventType type = EventType::SHUTDOWN_APPLICATION;
-        static inline const std::string name = "ShutdownApplicationEvent";
+        static const inline std::string name = "ShutdownApplicationEvent";
 
         [[nodiscard]] EventType getType() const override {
             return ShutdownApplication::type;

@@ -16,7 +16,7 @@ namespace Bloom::TargetController::Commands
         using SuccessResponseType = Responses::TargetMemoryRead;
 
         static constexpr CommandType type = CommandType::READ_TARGET_MEMORY;
-        static inline const std::string name = "ReadTargetMemory";
+        static const inline std::string name = "ReadTargetMemory";
 
         Targets::TargetMemoryType memoryType;
         Targets::TargetMemoryAddress startAddress;

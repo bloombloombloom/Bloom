@@ -8,7 +8,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::RESUME;
-        static inline const std::string name = "Resume";
+        static const inline std::string name = "Resume";
 
         [[nodiscard]] CommandType getType() const override {
             return Resume::type;

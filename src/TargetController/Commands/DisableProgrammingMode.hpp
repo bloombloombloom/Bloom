@@ -8,7 +8,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::DISABLE_PROGRAMMING_MODE;
-        static inline const std::string name = "DisableProgrammingMode";
+        static const inline std::string name = "DisableProgrammingMode";
 
         DisableProgrammingMode() = default;
 

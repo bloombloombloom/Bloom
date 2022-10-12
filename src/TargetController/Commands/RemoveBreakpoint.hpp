@@ -10,7 +10,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::REMOVE_BREAKPOINT;
-        static inline const std::string name = "RemoveBreakpoint";
+        static const inline std::string name = "RemoveBreakpoint";
 
         Targets::TargetBreakpoint breakpoint;
 

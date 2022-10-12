@@ -12,7 +12,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::SET_TARGET_PROGRAM_COUNTER;
-        static inline const std::string name = "SetTargetProgramCounter";
+        static const inline std::string name = "SetTargetProgramCounter";
 
         Targets::TargetProgramCounter address = 0;
 

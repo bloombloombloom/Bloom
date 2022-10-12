@@ -11,7 +11,7 @@ namespace Bloom::TargetController::Commands
     {
     public:
         static constexpr CommandType type = CommandType::WRITE_TARGET_MEMORY;
-        static inline const std::string name = "WriteTargetMemory";
+        static const inline std::string name = "WriteTargetMemory";
 
         Targets::TargetMemoryType memoryType;
         Targets::TargetMemoryAddress startAddress;

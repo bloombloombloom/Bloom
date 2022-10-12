@@ -14,7 +14,7 @@ namespace Bloom::Events
     {
     public:
         static constexpr EventType type = EventType::TARGET_EXECUTION_STOPPED;
-        static inline const std::string name = "TargetExecutionStopped";
+        static const inline std::string name = "TargetExecutionStopped";
 
         Targets::TargetProgramCounter programCounter;
         Targets::TargetBreakCause breakCause;

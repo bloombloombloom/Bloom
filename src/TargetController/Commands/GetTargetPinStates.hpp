@@ -12,7 +12,7 @@ namespace Bloom::TargetController::Commands
         using SuccessResponseType = Responses::TargetPinStates;
 
         static constexpr CommandType type = CommandType::GET_TARGET_PIN_STATES;
-        static inline const std::string name = "GetTargetPinStates";
+        static const inline std::string name = "GetTargetPinStates";
 
         int variantId = 0;
 
