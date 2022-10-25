@@ -37,6 +37,12 @@ namespace Bloom::DebugServer::Gdb
             return this->memoryOffsetsByType.valueAt(memoryType).value_or(0);
         }
 
+        /**
+         * Helper method to extract the target memory type (Flash, RAM, etc) from a GDB memory address.
+         *
+         * @param address
+         * @return
+         */
         Targets::TargetMemoryType getMemoryTypeFromGdbAddress(std::uint32_t address) const {
             // Start with the largest offset until we find a match
             for (
@@ -89,7 +95,19 @@ namespace Bloom::DebugServer::Gdb
         virtual const std::vector<GdbRegisterNumber>& getRegisterNumbers() const = 0;
 
     private:
+        /**
+         * When GDB sends us a memory address, the memory type (Flash, RAM, EEPROM, etc) is embedded within. This is
+         * done by ORing the address with some constant. For example, for AVR targets, RAM addresses are ORed with
+         * 0x00800000. Flash addresses are left unchanged. EEPROM addressing is not supported in GDB (for AVR targets).
+         *
+         * memoryOffsetsByType is a mapping of memory types to these known constants (which we're calling offsets).
+         * Because these offsets vary by target, the mapping lives here, in the GDB target descriptor.
+         */
         BiMap<Targets::TargetMemoryType, std::uint32_t> memoryOffsetsByType;
+
+        /**
+         * Sorted set of the known memory offsets (see memoryOffsetsByType).
+         */
         std::set<std::uint32_t> memoryOffsets;
     };
 }

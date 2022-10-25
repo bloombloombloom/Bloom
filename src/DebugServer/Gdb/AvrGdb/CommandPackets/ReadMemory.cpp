@@ -22,7 +22,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             throw Exception("Invalid packet length");
         }
 
-        auto packetString = QString::fromLocal8Bit(
+        const auto packetString = QString::fromLocal8Bit(
             reinterpret_cast<const char*>(this->data.data() + 1),
             static_cast<int>(this->data.size() - 1)
         );
@@ -31,7 +31,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          * The read memory ('m') packet consists of two segments, an address and a number of bytes to read.
          * These are separated by a comma character.
          */
-        auto packetSegments = packetString.split(",");
+        const auto packetSegments = packetString.split(",");
 
         if (packetSegments.size() != 2) {
             throw Exception(
@@ -46,6 +46,10 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             throw Exception("Failed to parse start address from read memory packet data");
         }
 
+        /*
+         * Extract the memory type from the memory address (see Gdb::TargetDescriptor::memoryOffsetsByType for more on
+         * this).
+         */
         this->memoryType = gdbTargetDescriptor.getMemoryTypeFromGdbAddress(gdbStartAddress);
         this->startAddress = gdbStartAddress & ~(gdbTargetDescriptor.getMemoryOffset(this->memoryType));
 
@@ -67,9 +71,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             }
 
             if (this->bytes == 0) {
-                debugSession.connection.writePacket(
-                    ResponsePacket(std::vector<unsigned char>())
-                );
+                debugSession.connection.writePacket(ResponsePacket(std::vector<unsigned char>()));
                 return;
             }
 
@@ -112,6 +114,12 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 return;
             }
 
+            /*
+             * GDB may request more bytes than what's available (even though we give it a memory map?!) - ensure that
+             * we don't try to read any more than what's available.
+             *
+             * We fill the out-of-bounds bytes with 0x00, below.
+             */
             const auto bytesToRead = (this->startAddress <= memoryDescriptor.addressRange.endAddress)
                 ? std::min(this->bytes, (memoryDescriptor.addressRange.endAddress - this->startAddress) + 1)
                 : 0;
@@ -127,7 +135,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             }
 
             if (bytesToRead < this->bytes) {
-                // GDB requested some out-of-bounds memory - fill the inaccessible bytes with 0s
+                // GDB requested some out-of-bounds memory - fill the inaccessible bytes with 0x00
                 memoryBuffer.insert(memoryBuffer.end(), (this->bytes - bytesToRead), 0x00);
             }
 

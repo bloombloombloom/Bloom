@@ -22,7 +22,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             throw Exception("Invalid packet length");
         }
 
-        auto packetString = QString::fromLocal8Bit(
+        const auto packetString = QString::fromLocal8Bit(
             reinterpret_cast<const char*>(this->data.data() + 1),
             static_cast<int>(this->data.size() - 1)
         );
@@ -31,7 +31,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          * The write memory ('M') packet consists of three segments, an address, a length and a buffer.
          * The address and length are separated by a comma character, and the buffer proceeds a colon character.
          */
-        auto packetSegments = packetString.split(",");
+        const auto packetSegments = packetString.split(",");
         if (packetSegments.size() != 2) {
             throw Exception(
                 "Unexpected number of segments in packet data: " + std::to_string(packetSegments.size())
@@ -48,7 +48,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         this->memoryType = gdbTargetDescriptor.getMemoryTypeFromGdbAddress(gdbStartAddress);
         this->startAddress = gdbStartAddress & ~(gdbTargetDescriptor.getMemoryOffset(this->memoryType));
 
-        auto lengthAndBufferSegments = packetSegments.at(1).split(":");
+        const auto lengthAndBufferSegments = packetSegments.at(1).split(":");
         if (lengthAndBufferSegments.size() != 2) {
             throw Exception(
                 "Unexpected number of segments in packet data: "
@@ -56,7 +56,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             );
         }
 
-        auto bufferSize = lengthAndBufferSegments.at(0).toUInt(&conversionStatus, 16);
+        const auto bufferSize = lengthAndBufferSegments.at(0).toUInt(&conversionStatus, 16);
         if (!conversionStatus) {
             throw Exception("Failed to parse write length from write memory packet data");
         }
