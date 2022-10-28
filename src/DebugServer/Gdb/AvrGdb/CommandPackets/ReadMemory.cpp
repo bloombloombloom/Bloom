@@ -108,7 +108,8 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                  * GDB with an error response.
                  */
                 Logger::debug(
-                    "GDB requested access to memory which is outside the target's memory range - returning error response"
+                    "GDB requested access to memory which is outside the target's memory range - returning error "
+                    "response"
                 );
                 debugSession.connection.writePacket(ErrorResponsePacket());
                 return;
@@ -139,9 +140,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 memoryBuffer.insert(memoryBuffer.end(), (this->bytes - bytesToRead), 0x00);
             }
 
-            debugSession.connection.writePacket(
-                ResponsePacket(Packet::toHex(memoryBuffer))
-            );
+            debugSession.connection.writePacket(ResponsePacket(Packet::toHex(memoryBuffer)));
 
         } catch (const Exception& exception) {
             Logger::error("Failed to read memory from target - " + exception.getMessage());

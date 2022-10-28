@@ -78,6 +78,21 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 throw Exception("Target does not support the requested memory type.");
             }
 
+            if (this->memoryType == Targets::TargetMemoryType::FLASH) {
+                /*
+                 * This shouldn't happen - GDB should send the FlashWrite (vFlashWrite) packet to write to the target's
+                 * program memory.
+                 *
+                 * A number of actions have to be taken before we can write to the target's program memory - this is
+                 * all covered in the FlashWrite and FlashDone command classes. I don't want to cover it again in here,
+                 * so just respond with an error and request that this issue be reported.
+                 */
+                throw Exception(
+                    "GDB attempted to write to program memory via an \"M\" packet - this is not supported. Please "
+                    "report this issue to Bloom developers with the full debug log."
+                );
+            }
+
             if (this->buffer.size() == 0) {
                 debugSession.connection.writePacket(OkResponsePacket());
                 return;
