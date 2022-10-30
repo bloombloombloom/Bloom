@@ -47,12 +47,12 @@ namespace Bloom
         /**
          * Returns true if the given process is managed by CLion.
          *
-         * @param parentProcessId
+         * @param processId
          *  If not provided, this function will perform the check against the current process.
          *
          * @return
          */
-        static bool isManagedByClion(std::optional<::pid_t> parentProcessId = std::nullopt);
+        static bool isManagedByClion(std::optional<::pid_t> processId = std::nullopt);
 
     private:
         using Proc = std::unique_ptr<::proc_t, decltype(&::freeproc)>;

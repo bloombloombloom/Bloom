@@ -36,36 +36,39 @@ namespace Bloom
         return Process::getEffectiveUserId(processId) == 0;
     }
 
-    bool Process::isManagedByClion(std::optional<::pid_t> parentProcessId) {
-        if (!parentProcessId.has_value()) {
-            parentProcessId = Process::getParentProcessId();
+    bool Process::isManagedByClion(std::optional<::pid_t> processId) {
+        if (!processId.has_value()) {
+            processId = Process::getProcessId();
         }
 
         static auto cachedResultsByProcessId = std::map<::pid_t, bool>();
 
-        if (cachedResultsByProcessId.contains(*parentProcessId)) {
-            return cachedResultsByProcessId.at(*parentProcessId);
+        if (cachedResultsByProcessId.contains(*processId)) {
+            return cachedResultsByProcessId.at(*processId);
         }
 
-        // Walk the process tree until we find CLion
-        auto processId = *parentProcessId;
-        while (processId != 0) {
-            const auto processInfo = Process::getProcessInfo(processId);
+        // Start with the parent process and walk the tree until we find CLion
+        const auto processInfo = Process::getProcessInfo(*processId);
 
-            if (!processInfo) {
-                break;
-            }
+        if (!processInfo) {
+            cachedResultsByProcessId[*processId] = false;
+            return false;
+        }
 
+        auto pid = processInfo->ppid;
+
+        while (const auto processInfo = Process::getProcessInfo(pid)) {
             const auto commandLine = std::string(processInfo->cmd);
+
             if (commandLine.find("clion.sh") != std::string::npos) {
-                cachedResultsByProcessId[*parentProcessId] = true;
+                cachedResultsByProcessId[*processId] = true;
                 return true;
             }
 
-            processId = processInfo->ppid;
+            pid = processInfo->ppid;
         }
 
-        cachedResultsByProcessId[*parentProcessId] = false;
+        cachedResultsByProcessId[*processId] = false;
         return false;
     }
 
