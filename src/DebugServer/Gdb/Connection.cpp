@@ -175,10 +175,12 @@ namespace Bloom::DebugServer::Gdb
     }
 
     std::vector<unsigned char> Connection::read(
-        size_t bytes,
+        std::optional<std::size_t> bytes,
         bool interruptible,
         std::optional<std::chrono::milliseconds> timeout
     ) {
+        assert(!bytes.has_value() || *bytes <= Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE);
+
         auto output = std::vector<unsigned char>();
         constexpr size_t bufferSize = 1024;
         std::array<unsigned char, bufferSize> buffer = {};
@@ -209,7 +211,7 @@ namespace Bloom::DebugServer::Gdb
             throw DebugServerInterrupted();
         }
 
-        size_t bytesToRead = (bytes > bufferSize || bytes == 0) ? bufferSize : bytes;
+        size_t bytesToRead = (!bytes.has_value() || bytes > bufferSize) ? bufferSize : *bytes;
         while (
             bytesToRead > 0
             && (bytesRead = ::read(this->socketFileDescriptor.value(), buffer.data(), bytesToRead)) > 0
@@ -221,7 +223,19 @@ namespace Bloom::DebugServer::Gdb
                 break;
             }
 
-            bytesToRead = ((bytes - output.size()) > bufferSize || bytes == 0) ? bufferSize : (bytes - output.size());
+            if (output.size() >= Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE) {
+                /*
+                 * We're receiving far too much data from GDB - something is definitely not right here.
+                 * This could be an attempted DoS attack.
+                 *
+                 * Assume the worst and throw an exception. The connection will be killed as a result.
+                 */
+                throw ClientCommunicationError("GDB client attempted to send too much data");
+            }
+
+            bytesToRead = (!bytes.has_value() || (*bytes - output.size()) > bufferSize)
+                ? bufferSize
+                : (*bytes - output.size());
         }
 
         if (output.empty()) {

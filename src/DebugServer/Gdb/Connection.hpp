@@ -24,6 +24,13 @@ namespace Bloom::DebugServer::Gdb
     class Connection
     {
     public:
+        /*
+         * GDB should never attempt to send more than this in a single instance.
+         *
+         * In the event that it does, we assume the worst and kill the connection.
+         */
+        static constexpr auto ABSOLUTE_MAXIMUM_PACKET_READ_SIZE = 5120;
+
         explicit Connection(int serverSocketFileDescriptor, EventFdNotifier& interruptEventNotifier);
 
         Connection() = delete;
@@ -67,15 +74,10 @@ namespace Bloom::DebugServer::Gdb
          */
         void writePacket(const ResponsePackets::ResponsePacket& packet);
 
-        [[nodiscard]] int getMaxPacketSize() const {
-            return this->maxPacketSize;
-        }
-
     private:
         std::optional<int> socketFileDescriptor;
 
         struct sockaddr_in socketAddress = {};
-        int maxPacketSize = 1024;
 
         /**
          * The interruptEventNotifier (instance of EventFdNotifier) allows us to interrupt blocking I/O calls on this
@@ -123,7 +125,7 @@ namespace Bloom::DebugServer::Gdb
          * @return
          */
         std::vector<unsigned char> read(
-            std::size_t bytes = 0,
+            std::optional<std::size_t> bytes = std::nullopt,
             bool interruptible = true,
             std::optional<std::chrono::milliseconds> timeout = std::nullopt
         );

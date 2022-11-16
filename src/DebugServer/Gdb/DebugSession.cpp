@@ -1,6 +1,5 @@
 #include "DebugSession.hpp"
 
-#include "src/Logger/Logger.hpp"
 #include "src/EventManager/EventManager.hpp"
 
 namespace Bloom::DebugServer::Gdb
@@ -15,7 +14,7 @@ namespace Bloom::DebugServer::Gdb
         , gdbTargetDescriptor(targetDescriptor)
     {
         this->supportedFeatures.insert({
-            Feature::PACKET_SIZE, std::to_string(this->connection.getMaxPacketSize())
+            Feature::PACKET_SIZE, std::to_string(Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE)
         });
 
         EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
