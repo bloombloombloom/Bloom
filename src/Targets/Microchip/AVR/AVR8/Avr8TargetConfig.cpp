@@ -6,7 +6,9 @@
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
-    Avr8TargetConfig::Avr8TargetConfig(const TargetConfig& targetConfig): TargetConfig(targetConfig) {
+    Avr8TargetConfig::Avr8TargetConfig(const TargetConfig& targetConfig)
+        : TargetConfig(targetConfig)
+    {
         using Bloom::Exceptions::InvalidConfig;
 
         const auto& targetNode = targetConfig.targetNode;

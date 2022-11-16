@@ -30,17 +30,17 @@ namespace Bloom::DebugToolDrivers
     void EdbgDevice::init() {
         UsbDevice::init();
 
-        auto usbHidInterface = Usb::HidInterface(this->cmsisHidInterfaceNumber, this->vendorId, this->productId);
+        auto cmsisHidInterface = Usb::HidInterface(this->cmsisHidInterfaceNumber, this->vendorId, this->productId);
 
-        this->detachKernelDriverFromInterface(usbHidInterface.interfaceNumber);
+        this->detachKernelDriverFromInterface(cmsisHidInterface.interfaceNumber);
 
         if (this->configurationIndex.has_value()) {
             this->setConfiguration(this->configurationIndex.value());
         }
 
-        usbHidInterface.init();
+        cmsisHidInterface.init();
 
-        this->edbgInterface = std::make_unique<EdbgInterface>(std::move(usbHidInterface));
+        this->edbgInterface = std::make_unique<EdbgInterface>(std::move(cmsisHidInterface));
 
         /*
          * The EDBG/CMSIS-DAP interface doesn't operate properly when sending commands too quickly.

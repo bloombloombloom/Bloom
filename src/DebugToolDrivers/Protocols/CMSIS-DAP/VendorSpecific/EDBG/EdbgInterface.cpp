@@ -8,8 +8,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
 {
     using namespace Bloom::Exceptions;
 
-    EdbgInterface::EdbgInterface(Usb::HidInterface&& usbHidInterface)
-        : CmsisDapInterface(std::move(usbHidInterface))
+    EdbgInterface::EdbgInterface(Usb::HidInterface&& cmsisHidInterface)
+        : CmsisDapInterface(std::move(cmsisHidInterface))
     {}
 
     Protocols::CmsisDap::Response EdbgInterface::sendAvrCommandsAndWaitForResponse(

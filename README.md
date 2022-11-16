@@ -34,9 +34,10 @@ dedicated thread. See the [TargetController documentation](./src/TargetControlle
 src/TargetController/ for more.
 
 ##### DebugServer
-The DebugServer exposes an interface to the connected target, for third-party programs such as IDEs. Currently, Bloom
-only supports one server - the AVR GDB RSP server. With this server, any IDE with GDB RSP support can interface with
-Bloom and thus the connected AVR target. The DebugServer runs on a dedicated thread. See the
+The DebugServer exposes an interface to the connected target, for third-party programs such as GDB and IDEs (GDB
+front-ends). Currently, Bloom only supports one server - the AVR GDB RSP server. With this server, any AVR compatible
+GDB binary (or any IDE with GDB RSP support) can interface with Bloom and thus the connected AVR target. The
+DebugServer runs on a dedicated thread. See the
 [DebugServer documentation](./src/DebugServer/README.md) and source code in src/DebugServer/ for more.
 
 ##### Insight
