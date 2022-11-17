@@ -9,7 +9,7 @@
 #include "Exceptions/ClientDisconnected.hpp"
 #include "Exceptions/ClientNotSupported.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"
-#include "Exceptions/DebugSessionAborted.hpp"
+#include "Exceptions/DebugSessionInitialisationFailure.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
@@ -175,7 +175,7 @@ namespace Bloom::DebugServer::Gdb
 
                     if (!this->targetControllerConsole.isTargetControllerInService()) {
                         this->activeDebugSession.reset();
-                        throw DebugSessionAborted("TargetController not in service");
+                        throw DebugSessionInitialisationFailure("TargetController not in service");
                     }
                 }
 
@@ -209,8 +209,8 @@ namespace Bloom::DebugServer::Gdb
             this->activeDebugSession.reset();
             return;
 
-        } catch (const DebugSessionAborted& exception) {
-            Logger::warning("GDB debug session aborted - " + exception.getMessage());
+        } catch (const DebugSessionInitialisationFailure& exception) {
+            Logger::warning("GDB debug session initialisation failure - " + exception.getMessage());
             this->activeDebugSession.reset();
             return;
 
