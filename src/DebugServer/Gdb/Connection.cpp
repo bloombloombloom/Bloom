@@ -233,7 +233,7 @@ namespace Bloom::DebugServer::Gdb
                 throw ClientCommunicationError("GDB client attempted to send too much data");
             }
 
-            bytesToRead = (!bytes.has_value() || (*bytes - output.size()) > bufferSize)
+            bytesToRead = !bytes.has_value() || (*bytes - output.size()) > bufferSize
                 ? bufferSize
                 : (*bytes - output.size());
         }
