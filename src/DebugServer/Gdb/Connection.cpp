@@ -4,11 +4,11 @@
 #include <unistd.h>
 #include <cerrno>
 #include <fcntl.h>
+#include <algorithm>
 
 #include "Exceptions/ClientDisconnected.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"
 #include "src/Exceptions/Exception.hpp"
-#include "src/Exceptions/DebugServerInterrupted.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -142,8 +142,9 @@ namespace Bloom::DebugServer::Gdb
 
         do {
             if (attempts > 10) {
-                throw ClientCommunicationError("Failed to write GDB response packet - client failed to "
-                    "acknowledge receipt - retry limit reached");
+                throw ClientCommunicationError(
+                    "Failed to write GDB response packet - client failed to acknowledge receipt - retry limit reached"
+                );
             }
 
             this->write(rawPacket);
@@ -179,12 +180,7 @@ namespace Bloom::DebugServer::Gdb
         bool interruptible,
         std::optional<std::chrono::milliseconds> timeout
     ) {
-        assert(!bytes.has_value() || *bytes <= Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE);
-
         auto output = std::vector<unsigned char>();
-        constexpr size_t bufferSize = 1024;
-        std::array<unsigned char, bufferSize> buffer = {};
-        ssize_t bytesRead = 0;
 
         if (this->readInterruptEnabled != interruptible) {
             if (interruptible) {
@@ -208,39 +204,31 @@ namespace Bloom::DebugServer::Gdb
         if (eventFileDescriptor.value() == this->interruptEventNotifier.getFileDescriptor()) {
             // Interrupted
             this->interruptEventNotifier.clear();
-            throw DebugServerInterrupted();
+            return output;
         }
 
-        size_t bytesToRead = (!bytes.has_value() || bytes > bufferSize) ? bufferSize : *bytes;
-        while (
-            bytesToRead > 0
-            && (bytesRead = ::read(this->socketFileDescriptor.value(), buffer.data(), bytesToRead)) > 0
-        ) {
-            output.insert(output.end(), buffer.begin(), buffer.begin() + bytesRead);
+        const auto bytesToRead = bytes.value_or(Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE);
+        output.resize(bytesToRead, 0x00);
 
-            if (bytesRead < bytesToRead) {
-                // No more data available
-                break;
-            }
+        const auto bytesRead = ::read(
+            this->socketFileDescriptor.value(),
+            output.data(),
+            bytesToRead
+        );
 
-            if (output.size() >= Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE) {
-                /*
-                 * We're receiving far too much data from GDB - something is definitely not right here.
-                 * This could be an attempted DoS attack.
-                 *
-                 * Assume the worst and throw an exception. The connection will be killed as a result.
-                 */
-                throw ClientCommunicationError("GDB client attempted to send too much data");
-            }
-
-            bytesToRead = !bytes.has_value() || (*bytes - output.size()) > bufferSize
-                ? bufferSize
-                : (*bytes - output.size());
+        if (bytesRead < 0) {
+            throw ClientCommunicationError(
+                "Failed to read data from GDB client - error code: " + std::to_string(errno)
+            );
         }
 
-        if (output.empty()) {
-            // EOF means the client has disconnected
+        if (bytesRead == 0) {
+            // Client has disconnected
             throw ClientDisconnected();
+        }
+
+        if (bytesRead != output.size()) {
+            output.resize(static_cast<unsigned long>(std::max(ssize_t{0}, bytesRead)));
         }
 
         return output;
@@ -263,9 +251,10 @@ namespace Bloom::DebugServer::Gdb
                 throw ClientDisconnected();
             }
 
-            throw ClientCommunicationError("Failed to write " + std::to_string(buffer.size())
-                + " bytes to GDP client socket - error no: "
-                + std::to_string(errno));
+            throw ClientCommunicationError(
+                "Failed to write " + std::to_string(buffer.size()) + " bytes to GDP client socket - error no: "
+                    + std::to_string(errno)
+            );
         }
     }
 
