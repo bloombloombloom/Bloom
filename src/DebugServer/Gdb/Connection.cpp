@@ -122,15 +122,18 @@ namespace Bloom::DebugServer::Gdb
                         rawPacket.push_back(byte);
                     }
 
-                    if (validPacket) {
-                        // Acknowledge receipt
-                        this->write({'+'});
-
-                        Logger::debug("Read GDB packet: " + std::string(rawPacket.begin(), rawPacket.end()));
-
-                        output.emplace_back(std::move(rawPacket));
-                        byteIndex = packetIndex;
+                    if (!validPacket) {
+                        Logger::warning("GDB client sent invalid packet data - ignoring");
+                        continue;
                     }
+
+                    Logger::debug("Read GDB packet: " + std::string(rawPacket.begin(), rawPacket.end()));
+
+                    // Acknowledge receipt
+                    this->write({'+'});
+
+                    output.emplace_back(std::move(rawPacket));
+                    byteIndex = packetIndex;
                 }
             }
 
