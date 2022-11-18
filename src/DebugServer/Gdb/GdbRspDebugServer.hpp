@@ -134,10 +134,8 @@ namespace Bloom::DebugServer::Gdb
 
         /**
          * Waits for a GDB client to connect on the listening socket.
-         *
-         * This function may return an std::nullopt, if the waiting was interrupted by some other event.
          */
-        std::optional<Connection> waitForConnection();
+        Connection waitForConnection();
 
         /**
          * Waits for a command packet from the connected GDB client.

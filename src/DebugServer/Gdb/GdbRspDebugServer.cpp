@@ -10,10 +10,10 @@
 #include "Exceptions/ClientNotSupported.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"
 #include "Exceptions/DebugSessionInitialisationFailure.hpp"
+#include "Exceptions/DebugServerInterrupted.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
-#include "src/Exceptions/DebugServerInterrupted.hpp"
 
 // Command packets
 #include "CommandPackets/CommandPacket.hpp"
@@ -147,15 +147,10 @@ namespace Bloom::DebugServer::Gdb
 
                 auto connection = this->waitForConnection();
 
-                if (!connection.has_value()) {
-                    // Likely an interrupt - return control to DebugServerComponent::run() so it can process any events
-                    return;
-                }
-
-                Logger::info("Accepted GDP RSP connection from " + connection->getIpAddress());
+                Logger::info("Accepted GDP RSP connection from " + connection.getIpAddress());
 
                 this->activeDebugSession.emplace(
-                    std::move(connection.value()),
+                    std::move(connection),
                     this->getSupportedFeatures(),
                     this->getGdbTargetDescriptor()
                 );
@@ -185,12 +180,9 @@ namespace Bloom::DebugServer::Gdb
 
             auto commandPacket = this->waitForCommandPacket();
 
-            if (commandPacket == nullptr) {
-                // Likely an interrupt
-                return;
+            if (commandPacket) {
+                commandPacket->handle(this->activeDebugSession.value(), this->targetControllerConsole);
             }
-
-            commandPacket->handle(this->activeDebugSession.value(), this->targetControllerConsole);
 
         } catch (const ClientDisconnected&) {
             Logger::info("GDB RSP client disconnected");
@@ -215,13 +207,13 @@ namespace Bloom::DebugServer::Gdb
             return;
 
         } catch (const DebugServerInterrupted&) {
-            // Server was interrupted
+            // Server was interrupted by an event
             Logger::debug("GDB RSP interrupted");
             return;
         }
     }
 
-    std::optional<Connection> GdbRspDebugServer::waitForConnection() {
+    Connection GdbRspDebugServer::waitForConnection() {
         if (::listen(this->serverSocketFileDescriptor.value(), 3) != 0) {
             throw Exception("Failed to listen on server socket");
         }
@@ -233,10 +225,10 @@ namespace Bloom::DebugServer::Gdb
             || eventFileDescriptor.value() == this->interruptEventNotifier.getFileDescriptor()
         ) {
             this->interruptEventNotifier.clear();
-            return std::nullopt;
+            throw DebugServerInterrupted();
         }
 
-        return std::make_optional<Connection>(
+        return Connection(
             this->serverSocketFileDescriptor.value(),
             this->interruptEventNotifier
         );
@@ -245,12 +237,11 @@ namespace Bloom::DebugServer::Gdb
     std::unique_ptr<CommandPacket> GdbRspDebugServer::waitForCommandPacket() {
         const auto rawPackets = this->activeDebugSession->connection.readRawPackets();
 
-        if (rawPackets.empty()) {
-            // The wait was interrupted
-            return nullptr;
+        if (rawPackets.size() > 1) {
+            // We only process the last packet - any others will probably be duplicates from an impatient client.
+            Logger::warning("Multiple packets received from GDB - only the most recent will be processed");
         }
 
-        // We only process the last packet - any others will probably be duplicates from an impatient client.
         return this->resolveCommandPacket(rawPackets.back());
     }
 

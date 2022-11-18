@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "Exceptions/ClientDisconnected.hpp"
+#include "Exceptions/DebugServerInterrupted.hpp"
 #include "Exceptions/ClientCommunicationError.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 
 #include "src/Logger/Logger.hpp"
@@ -54,81 +56,85 @@ namespace Bloom::DebugServer::Gdb
     std::vector<RawPacket> Connection::readRawPackets() {
         std::vector<RawPacket> output;
 
-        const auto bytes = this->read();
+        do {
+            const auto bytes = this->read();
 
-        std::size_t bufferSize = bytes.size();
-        for (std::size_t byteIndex = 0; byteIndex < bufferSize; byteIndex++) {
-            auto byte = bytes[byteIndex];
+            std::size_t bufferSize = bytes.size();
+            for (std::size_t byteIndex = 0; byteIndex < bufferSize; byteIndex++) {
+                auto byte = bytes[byteIndex];
 
-            if (byte == 0x03) {
-                /*
-                 * This is an interrupt packet - it doesn't carry any of the usual packet frame bytes, so we'll just
-                 * add them here, in order to keep things consistent.
-                 *
-                 * Because we're effectively faking the packet frame, we can use any value for the checksum.
-                 */
-                output.push_back({'$', byte, '#', 'F', 'F'});
+                if (byte == 0x03) {
+                    /*
+                     * This is an interrupt packet - it doesn't carry any of the usual packet frame bytes, so we'll
+                     * just add them here, in order to keep things consistent.
+                     *
+                     * Because we're effectively faking the packet frame, we can use any value for the checksum.
+                     */
+                    output.push_back({'$', byte, '#', 'F', 'F'});
+                    continue;
+                }
 
-            } else if (byte == '$') {
-                // Beginning of packet
-                RawPacket rawPacket;
-                rawPacket.push_back('$');
+                if (byte == '$') {
+                    // Beginning of packet
+                    RawPacket rawPacket;
+                    rawPacket.push_back('$');
 
-                auto packetIndex = byteIndex;
-                bool validPacket = false;
-                bool isByteEscaped = false;
+                    auto packetIndex = byteIndex;
+                    bool validPacket = false;
+                    bool isByteEscaped = false;
 
-                for (packetIndex++; packetIndex < bufferSize; packetIndex++) {
-                    byte = bytes[packetIndex];
+                    for (packetIndex++; packetIndex < bufferSize; packetIndex++) {
+                        byte = bytes[packetIndex];
 
-                    if (byte == '}' && !isByteEscaped) {
-                        isByteEscaped = true;
-                        continue;
-                    }
-
-                    if (!isByteEscaped) {
-                        if (byte == '$') {
-                            // Unexpected end of packet
-                            validPacket = false;
-                            break;
+                        if (byte == '}' && !isByteEscaped) {
+                            isByteEscaped = true;
+                            continue;
                         }
 
-                        if (byte == '#') {
-                            // End of packet data
-                            if ((bufferSize - 1) < (packetIndex + 2)) {
-                                // There should be at least two more bytes in the buffer, for the checksum.
+                        if (!isByteEscaped) {
+                            if (byte == '$') {
+                                // Unexpected end of packet
                                 break;
                             }
 
-                            rawPacket.push_back(byte);
+                            if (byte == '#') {
+                                // End of packet data
+                                if ((bufferSize - 1) < (packetIndex + 2)) {
+                                    // There should be at least two more bytes in the buffer, for the checksum.
+                                    break;
+                                }
 
-                            // Add the checksum bytes and break the loop
-                            rawPacket.push_back(bytes[++packetIndex]);
-                            rawPacket.push_back(bytes[++packetIndex]);
-                            validPacket = true;
-                            break;
+                                rawPacket.push_back(byte);
+
+                                // Add the checksum bytes and break the loop
+                                rawPacket.push_back(bytes[++packetIndex]);
+                                rawPacket.push_back(bytes[++packetIndex]);
+                                validPacket = true;
+                                break;
+                            }
+
+                        } else {
+                            // Escaped bytes are XOR'd with a 0x20 mask.
+                            byte ^= 0x20;
+                            isByteEscaped = false;
                         }
 
-                    } else {
-                        // Escaped bytes are XOR'd with a 0x20 mask.
-                        byte ^= 0x20;
-                        isByteEscaped = false;
+                        rawPacket.push_back(byte);
                     }
 
-                    rawPacket.push_back(byte);
-                }
+                    if (validPacket) {
+                        // Acknowledge receipt
+                        this->write({'+'});
 
-                if (validPacket) {
-                    // Acknowledge receipt
-                    this->write({'+'});
+                        Logger::debug("Read GDB packet: " + std::string(rawPacket.begin(), rawPacket.end()));
 
-                    Logger::debug("Read GDB packet: " + std::string(rawPacket.begin(), rawPacket.end()));
-
-                    output.emplace_back(std::move(rawPacket));
-                    byteIndex = packetIndex;
+                        output.emplace_back(std::move(rawPacket));
+                        byteIndex = packetIndex;
+                    }
                 }
             }
-        }
+
+        } while (output.empty());
 
         return output;
     }
@@ -204,7 +210,7 @@ namespace Bloom::DebugServer::Gdb
         if (eventFileDescriptor.value() == this->interruptEventNotifier.getFileDescriptor()) {
             // Interrupted
             this->interruptEventNotifier.clear();
-            return output;
+            throw DebugServerInterrupted();
         }
 
         const auto bytesToRead = bytes.value_or(Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE);
