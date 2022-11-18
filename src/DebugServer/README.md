@@ -19,7 +19,7 @@ For more on this, see `DebugServerComponent::startup()` and `DebugServerComponen
 
 #### Servicing events
 
-During star tup, the DebugServer will register event handlers for certain events. Once control of the DebugServer thread
+During start up, the DebugServer will register event handlers for certain events. Once control of the DebugServer thread
 has been handed over to the selected server implementation, the server must ensure that any incoming events are 
 processed ASAP. How this is done is implementation-defined. A reference to the DebugServer's event listener 
 (`DebugServerComponent::eventListener`) can be passed to the server if need be (see 
