@@ -26,71 +26,66 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         const TargetSignature& targetSignature,
         std::optional<std::string> targetName
     ) {
-        auto targetSignatureHex = targetSignature.toHex();
-        auto mapping = TargetDescriptionFile::getTargetDescriptionMapping();
-        auto qTargetSignatureHex = QString::fromStdString(targetSignatureHex).toLower();
+        const auto targetSignatureHex = targetSignature.toHex();
+        const auto mapping = TargetDescriptionFile::getTargetDescriptionMapping();
+        const auto descriptionFiles = mapping.find(QString::fromStdString(targetSignatureHex).toLower())->toArray();
 
-        if (mapping.contains(qTargetSignatureHex)) {
-            // We have a match for the target signature.
-            auto descriptionFilesJsonArray = mapping.find(qTargetSignatureHex).value().toArray();
-            auto matchingDescriptionFiles = std::vector<QJsonValue>();
-            std::copy_if(
-                descriptionFilesJsonArray.begin(),
-                descriptionFilesJsonArray.end(),
-                std::back_inserter(matchingDescriptionFiles),
-                [&targetName] (const QJsonValue& value) {
-                    auto pdTargetName = value.toObject().find("targetName")->toString().toLower().toStdString();
-                    return !targetName.has_value() || (targetName.has_value() && targetName.value() == pdTargetName);
+        if (descriptionFiles.empty()) {
+            throw Exception(
+                "Failed to resolve target description file for target \"" + targetSignatureHex
+                    + "\" - unknown target signature."
+            );
+        }
+
+        if (descriptionFiles.size() > 1 && !targetName.has_value()) {
+            /*
+             * There are numerous target description files mapped to this target signature and we don't have a target
+             * name to filter by. There's really not much we can do at this point, so we'll just instruct the user to
+             * provide a specific target name.
+             */
+            auto targetNames = QStringList();
+            std::transform(
+                descriptionFiles.begin(),
+                descriptionFiles.end(),
+                std::back_inserter(targetNames),
+                [] (const QJsonValue& descriptionFile) {
+                    return QString(
+                        "\"" + descriptionFile.toObject().find("targetName")->toString().toLower() + "\""
+                    );
                 }
             );
 
-            if (targetName.has_value() && matchingDescriptionFiles.empty()) {
-                throw Exception("Failed to resolve target description file for target \"" + targetName.value()
-                    + "\" - target signature \"" + targetSignatureHex + "\" does not belong to target with name \"" +
-                    targetName.value() + "\". Please review your bloom.yaml configuration.");
-            }
-
-            if (matchingDescriptionFiles.size() == 1) {
-                // Attempt to load the XML target description file
-                auto descriptionFilePath = QString::fromStdString(Paths::applicationDirPath()) + "/"
-                    + matchingDescriptionFiles.front().toObject().find("targetDescriptionFilePath")->toString();
-
-                Logger::debug("Loading AVR8 target description file: " + descriptionFilePath.toStdString());
-                Targets::TargetDescription::TargetDescriptionFile::init(descriptionFilePath);
-
-            } else if (matchingDescriptionFiles.size() > 1) {
-                /*
-                 * There are numerous target description files mapped to this target signature. There's really not
-                 * much we can do at this point, so we'll just instruct the user to use a more specific target name.
-                 */
-                QStringList targetNames;
-                std::transform(
-                    matchingDescriptionFiles.begin(),
-                    matchingDescriptionFiles.end(),
-                    std::back_inserter(targetNames),
-                    [] (const QJsonValue& descriptionFile) {
-                        return QString(
-                            "\"" + descriptionFile.toObject().find("targetName")->toString().toLower() + "\""
-                        );
-                    }
-                );
-
-                throw Exception("Failed to resolve target description file for target \""
-                    + targetSignatureHex + "\" - ambiguous signature.\nThe signature is mapped to numerous targets: "
-                    + targetNames.join(", ").toStdString() + ".\n\nPlease update the target name in your Bloom " +
-                    "configuration to one of the above."
-                );
-
-            } else {
-                throw Exception("Failed to resolve target description file for target \""
-                    + targetSignatureHex + "\" - invalid AVR8 target description mapping."
-                );
-            }
-
-        } else {
-            throw Exception("Failed to resolve target description file for target \""
-                + targetSignatureHex + "\" - unknown target signature.");
+            throw Exception(
+                "Failed to resolve target description file for target \"" + targetSignatureHex
+                    + "\" - ambiguous signature.\nThe signature is mapped to numerous targets: "
+                    + targetNames.join(", ").toStdString() + ".\n\nPlease update the target name in your Bloom "
+                    + "configuration file, to one of the above."
+            );
         }
+
+        for (const auto& mappingJsonValue : descriptionFiles) {
+            const auto mappingObject = mappingJsonValue.toObject();
+
+            if (
+                targetName.has_value()
+                && *targetName != mappingObject.find("targetName")->toString().toLower().toStdString()
+            ) {
+                continue;
+            }
+
+            const auto descriptionFilePath = QString::fromStdString(Paths::applicationDirPath()) + "/"
+                + mappingObject.find("targetDescriptionFilePath")->toString();
+
+            Logger::debug("Loading AVR8 target description file: " + descriptionFilePath.toStdString());
+            Targets::TargetDescription::TargetDescriptionFile::init(descriptionFilePath);
+            return;
+        }
+
+        throw Exception(
+            "Failed to resolve target description file for target \"" + *targetName
+                + "\" - target signature \"" + targetSignatureHex + "\" does not belong to target with name \""
+                + *targetName + "\". Please review your bloom.yaml configuration."
+        );
     }
 
     void TargetDescriptionFile::init(const QDomDocument& xml) {
@@ -117,34 +112,30 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
     TargetSignature TargetDescriptionFile::getTargetSignature() const {
         const auto& propertyGroups = this->propertyGroupsMappedByName;
-        auto signaturePropertyGroupIt = propertyGroups.find("signatures");
 
+        const auto signaturePropertyGroupIt = propertyGroups.find("signatures");
         if (signaturePropertyGroupIt == propertyGroups.end()) {
             throw TargetDescriptionParsingFailureException("Signature property group not found");
         }
 
-        auto signaturePropertyGroup = signaturePropertyGroupIt->second;
-        const auto& signatureProperties = signaturePropertyGroup.propertiesMappedByName;
+        const auto& signatureProperties = signaturePropertyGroupIt->second.propertiesMappedByName;
         std::optional<unsigned char> signatureByteZero;
         std::optional<unsigned char> signatureByteOne;
         std::optional<unsigned char> signatureByteTwo;
 
-        if (signatureProperties.contains("signature0")) {
-            signatureByteZero = static_cast<unsigned char>(
-                signatureProperties.at("signature0").value.toShort(nullptr, 16)
-            );
+        const auto signatureZeroIt = signatureProperties.find("signature0");
+        if (signatureZeroIt != signatureProperties.end()) {
+            signatureByteZero = static_cast<unsigned char>(signatureZeroIt->second.value.toShort(nullptr, 16));
         }
 
-        if (signatureProperties.contains("signature1")) {
-            signatureByteOne = static_cast<unsigned char>(
-                signatureProperties.at("signature1").value.toShort(nullptr, 16)
-            );
+        const auto signatureOneIt = signatureProperties.find("signature1");
+        if (signatureOneIt != signatureProperties.end()) {
+            signatureByteOne = static_cast<unsigned char>(signatureOneIt->second.value.toShort(nullptr, 16));
         }
 
-        if (signatureProperties.contains("signature2")) {
-            signatureByteTwo = static_cast<unsigned char>(
-                signatureProperties.at("signature2").value.toShort(nullptr, 16)
-            );
+        const auto signatureTwoIt = signatureProperties.find("signature2");
+        if (signatureTwoIt != signatureProperties.end()) {
+            signatureByteTwo = static_cast<unsigned char>(signatureTwoIt->second.value.toShort(nullptr, 16));
         }
 
         if (signatureByteZero.has_value() && signatureByteOne.has_value() && signatureByteTwo.has_value()) {
@@ -157,8 +148,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     Family TargetDescriptionFile::getFamily() const {
-        static auto familyNameToEnums = TargetDescriptionFile::getFamilyNameToEnumMapping();
-        auto familyName = this->deviceElement.attributes().namedItem(
+        static const auto targetFamiliesByName = TargetDescriptionFile::getFamilyNameToEnumMapping();
+
+        const auto familyName = this->deviceElement.attributes().namedItem(
             "family"
         ).nodeValue().toLower().toStdString();
 
@@ -166,11 +158,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             throw Exception("Could not find target family name in target description file.");
         }
 
-        if (!familyNameToEnums.contains(familyName)) {
+        const auto familyIt = targetFamiliesByName.find(familyName);
+
+        if (familyIt == targetFamiliesByName.end()) {
             throw Exception("Unknown family name in target description file.");
         }
 
-        return familyNameToEnums.at(familyName);
+        return familyIt->second;
     }
 
     TargetParameters TargetDescriptionFile::getTargetParameters() const {
@@ -192,25 +186,25 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             }
         }
 
-        auto ramMemorySegment = this->getRamMemorySegment();
+        const auto ramMemorySegment = this->getRamMemorySegment();
         if (ramMemorySegment.has_value()) {
             targetParameters.ramSize = ramMemorySegment->size;
             targetParameters.ramStartAddress = ramMemorySegment->startAddress;
         }
 
-        auto ioMemorySegment = this->getIoMemorySegment();
+        const auto ioMemorySegment = this->getIoMemorySegment();
         if (ioMemorySegment.has_value()) {
             targetParameters.mappedIoSegmentSize = ioMemorySegment->size;
             targetParameters.mappedIoSegmentStartAddress = ioMemorySegment->startAddress;
         }
 
-        auto registerMemorySegment = this->getRegisterMemorySegment();
+        const auto registerMemorySegment = this->getRegisterMemorySegment();
         if (registerMemorySegment.has_value()) {
             targetParameters.gpRegisterSize = registerMemorySegment->size;
             targetParameters.gpRegisterStartAddress = registerMemorySegment->startAddress;
         }
 
-        auto eepromMemorySegment = this->getEepromMemorySegment();
+        const auto eepromMemorySegment = this->getEepromMemorySegment();
         if (eepromMemorySegment.has_value()) {
             targetParameters.eepromSize = eepromMemorySegment->size;
             targetParameters.eepromStartAddress = eepromMemorySegment->startAddress;
@@ -220,7 +214,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             }
         }
 
-        auto firstBootSectionMemorySegment = this->getFirstBootSectionMemorySegment();
+        const auto firstBootSectionMemorySegment = this->getFirstBootSectionMemorySegment();
         if (firstBootSectionMemorySegment.has_value()) {
             targetParameters.bootSectionStartAddress = firstBootSectionMemorySegment->startAddress / 2;
             targetParameters.bootSectionSize = firstBootSectionMemorySegment->size;
@@ -228,33 +222,36 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
         std::uint32_t cpuRegistersOffset = 0;
 
-        if (peripheralModules.contains("cpu")) {
-            auto cpuPeripheralModule = peripheralModules.at("cpu");
+        const auto cpuPeripheralModuleIt = peripheralModules.find("cpu");
+        if (cpuPeripheralModuleIt != peripheralModules.end()) {
+            const auto& cpuPeripheralModule = cpuPeripheralModuleIt->second;
 
-            if (cpuPeripheralModule.instancesMappedByName.contains("cpu")) {
-                auto cpuInstance = cpuPeripheralModule.instancesMappedByName.at("cpu");
+            const auto cpuInstanceIt = cpuPeripheralModule.instancesMappedByName.find("cpu");
+            if (cpuInstanceIt != cpuPeripheralModule.instancesMappedByName.end()) {
+                const auto& cpuInstance = cpuInstanceIt->second;
 
-                if (cpuInstance.registerGroupsMappedByName.contains("cpu")) {
-                    cpuRegistersOffset = cpuInstance.registerGroupsMappedByName.at("cpu").offset.value_or(0);
+                const auto cpuRegisterGroupIt = cpuInstance.registerGroupsMappedByName.find("cpu");
+                if (cpuRegisterGroupIt != cpuInstance.registerGroupsMappedByName.end()) {
+                    cpuRegistersOffset = cpuRegisterGroupIt->second.offset.value_or(0);
                 }
             }
         }
 
-        auto statusRegister = this->getStatusRegister();
+        const auto statusRegister = this->getStatusRegister();
         if (statusRegister.has_value()) {
             targetParameters.statusRegisterStartAddress = cpuRegistersOffset + statusRegister->offset;
             targetParameters.statusRegisterSize = statusRegister->size;
         }
 
-        auto stackPointerRegister = this->getStackPointerRegister();
+        const auto stackPointerRegister = this->getStackPointerRegister();
         if (stackPointerRegister.has_value()) {
             targetParameters.stackPointerRegisterLowAddress = cpuRegistersOffset + stackPointerRegister->offset;
             targetParameters.stackPointerRegisterSize = stackPointerRegister->size;
 
         } else {
             // Sometimes the SP register is split into two register nodes, one for low, the other for high
-            auto stackPointerLowRegister = this->getStackPointerLowRegister();
-            auto stackPointerHighRegister = this->getStackPointerHighRegister();
+            const auto stackPointerLowRegister = this->getStackPointerLowRegister();
+            const auto stackPointerHighRegister = this->getStackPointerHighRegister();
 
             if (stackPointerLowRegister.has_value()) {
                 targetParameters.stackPointerRegisterLowAddress = cpuRegistersOffset
@@ -272,7 +269,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
         const auto& supportedPhysicalInterfaces = this->getSupportedPhysicalInterfaces();
 
-        if (supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)
+        if (
+            supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)
             || supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)
         ) {
             this->loadDebugWireAndJtagTargetParameters(targetParameters);
@@ -406,91 +404,125 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         });
 
         for (const auto& [interfaceName, interface]: this->interfacesByName) {
-            if (interfaceNamesToInterfaces.contains(interfaceName)) {
-                this->supportedPhysicalInterfaces.insert(interfaceNamesToInterfaces.at(interfaceName));
+            const auto interfaceIt = interfaceNamesToInterfaces.find(interfaceName);
+            if (interfaceIt != interfaceNamesToInterfaces.end()) {
+                this->supportedPhysicalInterfaces.insert(interfaceIt->second);
             }
         }
     }
 
     void TargetDescriptionFile::loadPadDescriptors() {
         const auto& modules = this->getModulesMappedByName();
-        const auto portModule = (modules.contains("port")) ? std::optional(modules.find("port")->second)
-            : std::nullopt;
+
+        const auto portModuleIt = modules.find("port");
+        const auto portModule = (portModuleIt != modules.end()) ? std::optional(portModuleIt->second) : std::nullopt;
+
         const auto& peripheralModules = this->getPeripheralModulesMappedByName();
 
-        if (peripheralModules.contains("port")) {
-            auto portPeripheralModule = peripheralModules.find("port")->second;
+        const auto portPeripheralModuleIt = peripheralModules.find("port");
+        if (portPeripheralModuleIt == peripheralModules.end()) {
+            return;
+        }
 
-            for (const auto& [instanceName, instance] : portPeripheralModule.instancesMappedByName) {
-                if (instanceName.find("port") == 0) {
-                    auto portPeripheralRegisterGroup = (portPeripheralModule.registerGroupsMappedByName.contains(instanceName)) ?
-                        std::optional(portPeripheralModule.registerGroupsMappedByName.find(instanceName)->second) :
-                        std::nullopt;
+        const auto& portPeripheralModule = portPeripheralModuleIt->second;
 
-                    for (const auto& signal : instance.instanceSignals) {
-                        if (!signal.index.has_value()) {
+        for (const auto& [instanceName, instance] : portPeripheralModule.instancesMappedByName) {
+            if (instanceName.find("port") != 0) {
+                continue;
+            }
+
+            const auto portPeripheralRegisterGroupIt = portPeripheralModule.registerGroupsMappedByName.find(
+                instanceName
+            );
+
+            const auto portPeripheralRegisterGroup =
+                portPeripheralRegisterGroupIt != portPeripheralModule.registerGroupsMappedByName.end()
+                ? std::optional(portPeripheralRegisterGroupIt->second)
+                : std::nullopt;
+
+            for (const auto& signal : instance.instanceSignals) {
+                if (!signal.index.has_value()) {
+                    continue;
+                }
+
+                auto& padDescriptor = this->padDescriptorsByName.insert(
+                    std::pair(signal.padName, PadDescriptor())
+                ).first->second;
+
+                padDescriptor.name = signal.padName;
+                padDescriptor.gpioPinNumber = signal.index.value();
+
+                if (!portModule.has_value()) {
+                    continue;
+                }
+
+                const auto instanceRegisterGroupIt = portModule->registerGroupsMappedByName.find(instanceName);
+                if (instanceRegisterGroupIt != portModule->registerGroupsMappedByName.end()) {
+                    // We have register information for this port
+                    const auto& registerGroup = instanceRegisterGroupIt->second;
+
+                    for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
+                        if (registerName.find("port") == 0) {
+                            // This is the data register for the port
+                            padDescriptor.gpioPortAddress = portRegister.offset;
                             continue;
                         }
 
-                        auto padDescriptor = PadDescriptor();
-                        padDescriptor.name = signal.padName;
-                        padDescriptor.gpioPinNumber = signal.index.value();
-
-                        if (portModule.has_value() && portModule->registerGroupsMappedByName.contains(instanceName)) {
-                            // We have register information for this port
-                            auto registerGroup = portModule->registerGroupsMappedByName.find(instanceName)->second;
-
-                            for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
-                                if (registerName.find("port") == 0) {
-                                    // This is the data register for the port
-                                    padDescriptor.gpioPortAddress = portRegister.offset;
-
-                                } else if (registerName.find("pin") == 0) {
-                                    // This is the input data register for the port
-                                    padDescriptor.gpioPortInputAddress = portRegister.offset;
-
-                                } else if (registerName.find("ddr") == 0) {
-                                    // This is the data direction register for the port
-                                    padDescriptor.gpioDdrAddress = portRegister.offset;
-                                }
-                            }
-
-                        } else if (portModule.has_value() && portModule->registerGroupsMappedByName.contains("port")) {
-                            // We have generic register information for all ports on the target
-                            auto registerGroup = portModule->registerGroupsMappedByName.find("port")->second;
-
-                            for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
-                                if (registerName == "out") {
-                                    // Include the port register offset
-                                    padDescriptor.gpioPortAddress = (
-                                        portPeripheralRegisterGroup.has_value()
-                                        && portPeripheralRegisterGroup->offset.has_value()
-                                    )
-                                        ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
-                                        : 0 + portRegister.offset;
-
-
-                                } else if (registerName == "dir") {
-                                    padDescriptor.gpioDdrAddress = (
-                                        portPeripheralRegisterGroup.has_value()
-                                            && portPeripheralRegisterGroup->offset.has_value()
-                                    )
-                                        ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
-                                        : 0 + portRegister.offset;
-
-                                } else if (registerName == "in") {
-                                    padDescriptor.gpioPortInputAddress = (
-                                        portPeripheralRegisterGroup.has_value()
-                                            && portPeripheralRegisterGroup->offset.has_value()
-                                    )
-                                        ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
-                                        : 0 + portRegister.offset;
-                                }
-                            }
+                        if (registerName.find("pin") == 0) {
+                            // This is the input data register for the port
+                            padDescriptor.gpioPortInputAddress = portRegister.offset;
+                            continue;
                         }
 
-                        this->padDescriptorsByName.insert(std::pair(padDescriptor.name, padDescriptor));
+                        if (registerName.find("ddr") == 0) {
+                            // This is the data direction register for the port
+                            padDescriptor.gpioDdrAddress = portRegister.offset;
+                            continue;
+                        }
                     }
+
+                    continue;
+                }
+
+                const auto portRegisterGroupIt = portModule->registerGroupsMappedByName.find("port");
+                if (portRegisterGroupIt != portModule->registerGroupsMappedByName.end()) {
+                    // We have generic register information for all ports on the target
+                    const auto& registerGroup = portRegisterGroupIt->second;
+
+                    for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
+                        if (registerName == "out") {
+                            // Include the port register offset
+                            padDescriptor.gpioPortAddress = (
+                                portPeripheralRegisterGroup.has_value()
+                                && portPeripheralRegisterGroup->offset.has_value()
+                            )
+                                ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
+                                : 0 + portRegister.offset;
+                            continue;
+                        }
+
+                        if (registerName == "dir") {
+                            padDescriptor.gpioDdrAddress = (
+                                portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()
+                            )
+                                ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
+                                : 0 + portRegister.offset;
+                            continue;
+                        }
+
+                        if (registerName == "in") {
+                            padDescriptor.gpioPortInputAddress = (
+                                portPeripheralRegisterGroup.has_value()
+                                    && portPeripheralRegisterGroup->offset.has_value()
+                            )
+                                ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
+                                : 0 + portRegister.offset;
+                            continue;
+                        }
+                    }
+
+                    continue;
                 }
             }
         }
@@ -527,12 +559,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 targetVariant.package = TargetPackage::SSOP;
             }
 
-            if (!tdPinoutsByName.contains(tdVariant.pinoutName)) {
+            const auto tdPinoutIt = tdPinoutsByName.find(tdVariant.pinoutName);
+            if (tdPinoutIt == tdPinoutsByName.end()) {
                 // Missing pinouts in the target description file
                 continue;
             }
 
-            auto tdPinout = tdPinoutsByName.find(tdVariant.pinoutName)->second;
+            const auto& tdPinout = tdPinoutIt->second;
             for (const auto& tdPin : tdPinout.pins) {
                 auto targetPin = TargetPinDescriptor();
                 targetPin.name = tdPin.pad;
@@ -554,8 +587,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                     targetPin.type = TargetPinType::GND;
                 }
 
-                if (this->padDescriptorsByName.contains(targetPin.padName)) {
-                    const auto& pad = this->padDescriptorsByName.at(targetPin.padName);
+                const auto padIt = this->padDescriptorsByName.find(targetPin.padName);
+                if (padIt != this->padDescriptorsByName.end()) {
+                    const auto& pad = padIt->second;
                     if (pad.gpioPortAddress.has_value() && pad.gpioDdrAddress.has_value()) {
                         targetPin.type = TargetPinType::GPIO;
                     }
@@ -574,9 +608,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
         for (const auto& [moduleName, module] : modulesByName) {
             for (const auto& [registerGroupName, registerGroup] : module.registerGroupsMappedByName) {
-                if (this->peripheralRegisterGroupsMappedByModuleRegisterGroupName.contains(registerGroupName)) {
-                    const auto& peripheralRegisterGroups = this->peripheralRegisterGroupsMappedByModuleRegisterGroupName
-                        .at(registerGroupName);
+                const auto peripheralRegisterGroupsIt = this->peripheralRegisterGroupsMappedByModuleRegisterGroupName.find(
+                    registerGroupName
+                );
+
+                if (peripheralRegisterGroupsIt != this->peripheralRegisterGroupsMappedByModuleRegisterGroupName.end()) {
+                    const auto& peripheralRegisterGroups = peripheralRegisterGroupsIt->second;
+
                     for (const auto& peripheralRegisterGroup : peripheralRegisterGroups) {
                         if (peripheralRegisterGroup.addressSpaceId.value_or("") != "data") {
                             // Currently, we only deal with registers in the data address space.
@@ -627,17 +665,21 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     std::optional<FuseBitsDescriptor> TargetDescriptionFile::getFuseBitsDescriptorByName(
         const std::string& fuseBitName
     ) const {
-        if (!this->modulesMappedByName.contains("fuse")) {
+        const auto fuseModuleIt = this->modulesMappedByName.find("fuse");
+
+        if (fuseModuleIt == this->modulesMappedByName.end()) {
             return std::nullopt;
         }
 
-        const auto& fuseModule = this->modulesMappedByName.at("fuse");
+        const auto& fuseModule = fuseModuleIt->second;
 
-        if (!fuseModule.registerGroupsMappedByName.contains("fuse")) {
+        const auto fuseRegisterGroupIt = fuseModule.registerGroupsMappedByName.find("fuse");
+
+        if (fuseRegisterGroupIt == fuseModule.registerGroupsMappedByName.end()) {
             return std::nullopt;
         }
 
-        const auto& fuseRegisterGroup = fuseModule.registerGroupsMappedByName.at("fuse");
+        const auto& fuseRegisterGroup = fuseRegisterGroupIt->second;
 
         static const auto fuseTypesByName = std::map<std::string, FuseType>({
             {"low", FuseType::LOW},
@@ -646,15 +688,18 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         });
 
         for (const auto&[fuseTypeName, fuse] : fuseRegisterGroup.registersMappedByName) {
-            if (!fuseTypesByName.contains(fuseTypeName)) {
+            const auto fuseTypeIt = fuseTypesByName.find(fuseTypeName);
+            if (fuseTypeIt == fuseTypesByName.end()) {
                 // Unknown fuse type name
                 continue;
             }
 
-            if (fuse.bitFieldsMappedByName.contains(fuseBitName)) {
+            const auto fuseBitFieldIt = fuse.bitFieldsMappedByName.find(fuseBitName);
+
+            if (fuseBitFieldIt != fuse.bitFieldsMappedByName.end()) {
                 return FuseBitsDescriptor(
-                    fuseTypesByName.at(fuseTypeName),
-                    fuse.bitFieldsMappedByName.at(fuseBitName).mask
+                    fuseTypeIt->second,
+                    fuseBitFieldIt->second.mask
                 );
             }
         }
@@ -663,8 +708,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<AddressSpace> TargetDescriptionFile::getProgramMemoryAddressSpace() const {
-        if (this->addressSpacesMappedById.contains("prog")) {
-            return this->addressSpacesMappedById.at("prog");
+        const auto programAddressSpaceIt = this->addressSpacesMappedById.find("prog");
+
+        if (programAddressSpaceIt != this->addressSpacesMappedById.end()) {
+            return programAddressSpaceIt->second;
         }
 
         return std::nullopt;
@@ -719,15 +766,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getIoMemorySegment() const {
-        const auto& addressMapping = this->addressSpacesMappedById;
+        const auto dataAddressMappingIt = this->addressSpacesMappedById.find("data");
 
-        if (addressMapping.contains("data")) {
-            const auto& dataAddressSpace = addressMapping.at("data");
-            const auto& dataMemorySegments = dataAddressSpace.memorySegmentsByTypeAndName;
+        if (dataAddressMappingIt != this->addressSpacesMappedById.end()) {
+            const auto& dataAddressSpace = dataAddressMappingIt->second;
+            const auto ioMemorySegmentsIt = dataAddressSpace.memorySegmentsByTypeAndName.find(MemorySegmentType::IO);
 
-            if (dataMemorySegments.contains(MemorySegmentType::IO)) {
-                const auto& ramMemorySegments = dataMemorySegments.at(MemorySegmentType::IO);
-                auto ramMemorySegmentIt = ramMemorySegments.begin();
+            if (ioMemorySegmentsIt != dataAddressSpace.memorySegmentsByTypeAndName.end()) {
+                const auto& ramMemorySegments = ioMemorySegmentsIt->second;
+                const auto ramMemorySegmentIt = ramMemorySegments.begin();
 
                 if (ramMemorySegmentIt != ramMemorySegments.end()) {
                     return ramMemorySegmentIt->second;
@@ -762,23 +809,36 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getEepromMemorySegment() const {
-        const auto& addressMapping = this->addressSpacesMappedById;
+        const auto eepromAddressSpaceIt = this->addressSpacesMappedById.find("eeprom");
 
-        if (addressMapping.contains("eeprom")) {
-            const auto& eepromAddressSpace = addressMapping.at("eeprom");
-            const auto& eepromAddressSpaceSegments = eepromAddressSpace.memorySegmentsByTypeAndName;
+        if (eepromAddressSpaceIt != this->addressSpacesMappedById.end()) {
+            const auto& eepromAddressSpace = eepromAddressSpaceIt->second;
+            const auto eepromSegmentsIt = eepromAddressSpace.memorySegmentsByTypeAndName.find(
+                MemorySegmentType::EEPROM
+            );
 
-            if (eepromAddressSpaceSegments.contains(MemorySegmentType::EEPROM)) {
-                return eepromAddressSpaceSegments.at(MemorySegmentType::EEPROM).begin()->second;
+            if (
+                eepromSegmentsIt != eepromAddressSpace.memorySegmentsByTypeAndName.end()
+                && !eepromSegmentsIt->second.empty()
+            ) {
+                return eepromSegmentsIt->second.begin()->second;
             }
 
         } else {
             // The EEPROM memory segment may be part of the data address space
-            if (addressMapping.contains("data")) {
-                auto dataAddressSpace = addressMapping.at("data");
+            const auto dataAddressSpaceIt = this->addressSpacesMappedById.find("data");
 
-                if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::EEPROM)) {
-                    return dataAddressSpace.memorySegmentsByTypeAndName.at(MemorySegmentType::EEPROM).begin()->second;
+            if (dataAddressSpaceIt != this->addressSpacesMappedById.end()) {
+                const auto& dataAddressSpace = dataAddressSpaceIt->second;
+                const auto eepromSegmentsIt = dataAddressSpace.memorySegmentsByTypeAndName.find(
+                    MemorySegmentType::EEPROM
+                );
+
+                if (
+                    eepromSegmentsIt != dataAddressSpace.memorySegmentsByTypeAndName.end()
+                    && !eepromSegmentsIt->second.empty()
+                ) {
+                    return eepromSegmentsIt->second.begin()->second;
                 }
             }
         }
@@ -787,21 +847,25 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getFirstBootSectionMemorySegment() const {
-        const auto& addressMapping = this->addressSpacesMappedById;
-        auto programAddressSpaceIt = addressMapping.find("prog");
+        const auto programAddressSpaceIt = this->addressSpacesMappedById.find("prog");
 
-        if (programAddressSpaceIt != addressMapping.end()) {
+        if (programAddressSpaceIt != this->addressSpacesMappedById.end()) {
             const auto& programAddressSpace = programAddressSpaceIt->second;
             const auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
 
-            if (programMemorySegments.find(MemorySegmentType::FLASH) != programMemorySegments.end()) {
-                const auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
+            const auto flashMemorySegmentsit = programMemorySegments.find(MemorySegmentType::FLASH);
 
-                if (flashMemorySegments.contains("boot_section_1")) {
-                    return flashMemorySegments.at("boot_section_1");
+            if (flashMemorySegmentsit != programMemorySegments.end()) {
+                const auto& flashMemorySegments = flashMemorySegmentsit->second;
 
-                } else if (flashMemorySegments.contains("boot_section")) {
-                    return flashMemorySegments.at("boot_section");
+                auto bootSectionSegmentIt = flashMemorySegments.find("boot_section_1");
+                if (bootSectionSegmentIt != flashMemorySegments.end()) {
+                    return bootSectionSegmentIt->second;
+                }
+
+                bootSectionSegmentIt = flashMemorySegments.find("boot_section");
+                if (bootSectionSegmentIt != flashMemorySegments.end()) {
+                    return bootSectionSegmentIt->second;
                 }
             }
         }
@@ -810,26 +874,35 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getSignatureMemorySegment() const {
-        if (this->addressSpacesMappedById.contains("signatures")) {
-            const auto& signaturesAddressSpace = this->addressSpacesMappedById.at("signatures");
+        const auto signatureAddressSpaceIt = this->addressSpacesMappedById.find("signatures");
+        if (signatureAddressSpaceIt != this->addressSpacesMappedById.end()) {
+            const auto& signaturesAddressSpace = signatureAddressSpaceIt->second;
             const auto& signaturesAddressSpaceSegments = signaturesAddressSpace.memorySegmentsByTypeAndName;
+            const auto signatureMemorySegmentsIt = signaturesAddressSpaceSegments.find(MemorySegmentType::SIGNATURES);
 
-            if (signaturesAddressSpaceSegments.contains(MemorySegmentType::SIGNATURES)) {
-                return signaturesAddressSpaceSegments.at(MemorySegmentType::SIGNATURES).begin()->second;
+            if (
+                signatureMemorySegmentsIt != signaturesAddressSpaceSegments.end()
+                && !signatureMemorySegmentsIt->second.empty()
+            ) {
+                return signatureMemorySegmentsIt->second.begin()->second;
             }
 
         } else {
             // The signatures memory segment may be part of the data address space
-            if (this->addressSpacesMappedById.contains("data")) {
-                auto dataAddressSpace = this->addressSpacesMappedById.at("data");
+            const auto dataAddressSpaceIt = this->addressSpacesMappedById.find("data");
 
-                if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::SIGNATURES)) {
-                    const auto& signatureSegmentsByName = dataAddressSpace.memorySegmentsByTypeAndName.at(
-                        MemorySegmentType::SIGNATURES
-                    );
+            if (dataAddressSpaceIt != this->addressSpacesMappedById.end()) {
+                const auto& dataAddressSpace = dataAddressSpaceIt->second;
+                const auto signatureSegmentsIt = dataAddressSpace.memorySegmentsByTypeAndName.find(
+                    MemorySegmentType::SIGNATURES
+                );
 
-                    if (signatureSegmentsByName.contains("signatures")) {
-                        return signatureSegmentsByName.at("signatures");
+                if (signatureSegmentsIt != dataAddressSpace.memorySegmentsByTypeAndName.end()) {
+                    const auto& signatureSegmentsByName = signatureSegmentsIt->second;
+                    const auto signatureSegmentIt = signatureSegmentsByName.find("signatures");
+
+                    if (signatureSegmentIt != signatureSegmentsByName.end()) {
+                        return signatureSegmentIt->second;
                     }
                 }
             }
@@ -839,13 +912,20 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getFuseMemorySegment() const {
-        if (this->addressSpacesMappedById.contains("data")) {
-            auto dataAddressSpace = this->addressSpacesMappedById.at("data");
+        const auto dataAddressSpaceIt = this->addressSpacesMappedById.find("data");
 
-            if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::FUSES)) {
-                return dataAddressSpace.memorySegmentsByTypeAndName.at(
-                    MemorySegmentType::FUSES
-                ).begin()->second;
+        if (dataAddressSpaceIt != this->addressSpacesMappedById.end()) {
+            const auto& dataAddressSpace = dataAddressSpaceIt->second;
+
+            const auto fuseMemorySegmentsIt = dataAddressSpace.memorySegmentsByTypeAndName.find(
+                MemorySegmentType::FUSES
+            );
+
+            if (
+                fuseMemorySegmentsIt != dataAddressSpace.memorySegmentsByTypeAndName.end()
+                && !fuseMemorySegmentsIt->second.empty()
+            ) {
+                return fuseMemorySegmentsIt->second.begin()->second;
             }
         }
 
@@ -853,13 +933,20 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<MemorySegment> TargetDescriptionFile::getLockbitsMemorySegment() const {
-        if (this->addressSpacesMappedById.contains("data")) {
-            auto dataAddressSpace = this->addressSpacesMappedById.at("data");
+        const auto dataAddressSpaceIt = this->addressSpacesMappedById.find("data");
 
-            if (dataAddressSpace.memorySegmentsByTypeAndName.contains(MemorySegmentType::LOCKBITS)) {
-                return dataAddressSpace.memorySegmentsByTypeAndName.at(
-                    MemorySegmentType::LOCKBITS
-                ).begin()->second;
+        if (dataAddressSpaceIt != this->addressSpacesMappedById.end()) {
+            const auto& dataAddressSpace = dataAddressSpaceIt->second;
+
+            const auto lockbitsMemorySegmentsIt = dataAddressSpace.memorySegmentsByTypeAndName.find(
+                MemorySegmentType::LOCKBITS
+            );
+
+            if (
+                lockbitsMemorySegmentsIt != dataAddressSpace.memorySegmentsByTypeAndName.end()
+                && !lockbitsMemorySegmentsIt->second.empty()
+            ) {
+                return lockbitsMemorySegmentsIt->second.begin()->second;
             }
         }
 
@@ -868,10 +955,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
     std::optional<RegisterGroup> TargetDescriptionFile::getCpuRegisterGroup() const {
         const auto& modulesByName = this->modulesMappedByName;
+        const auto cpuModuleIt = modulesByName.find("cpu");
 
-        if (modulesByName.find("cpu") != modulesByName.end()) {
-            auto cpuModule = modulesByName.find("cpu")->second;
-            auto cpuRegisterGroupIt = cpuModule.registerGroupsMappedByName.find("cpu");
+        if (cpuModuleIt != modulesByName.end()) {
+            const auto& cpuModule = cpuModuleIt->second;
+            const auto cpuRegisterGroupIt = cpuModule.registerGroupsMappedByName.find("cpu");
 
             if (cpuRegisterGroupIt != cpuModule.registerGroupsMappedByName.end()) {
                 return cpuRegisterGroupIt->second;
@@ -882,10 +970,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<RegisterGroup> TargetDescriptionFile::getBootLoadRegisterGroup() const {
-        const auto& modulesByName = this->modulesMappedByName;
+        const auto bootLoadModuleIt = this->modulesMappedByName.find("boot_load");
 
-        if (modulesByName.contains("boot_load")) {
-            const auto& bootLoadModule = modulesByName.at("boot_load");
+        if (bootLoadModuleIt != this->modulesMappedByName.end()) {
+            const auto& bootLoadModule = bootLoadModuleIt->second;
             auto bootLoadRegisterGroupIt = bootLoadModule.registerGroupsMappedByName.find("boot_load");
 
             if (bootLoadRegisterGroupIt != bootLoadModule.registerGroupsMappedByName.end()) {
@@ -973,20 +1061,29 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         if (cpuRegisterGroup.has_value()) {
             const auto& cpuRegisters = cpuRegisterGroup->registersMappedByName;
 
-            if (cpuRegisters.contains("osccal")) {
-                return cpuRegisters.at("osccal");
+            auto osccalRegisterIt = cpuRegisters.find("osccal");
+            if (osccalRegisterIt != cpuRegisters.end()) {
+                return osccalRegisterIt->second;
+            }
 
-            } else if (cpuRegisters.contains("osccal0")) {
-                return cpuRegisters.at("osccal0");
+            osccalRegisterIt = cpuRegisters.find("osccal0");
+            if (osccalRegisterIt != cpuRegisters.end()) {
+                return osccalRegisterIt->second;
+            }
 
-            } else if (cpuRegisters.contains("osccal1")) {
-                return cpuRegisters.at("osccal1");
+            osccalRegisterIt = cpuRegisters.find("osccal1");
+            if (osccalRegisterIt != cpuRegisters.end()) {
+                return osccalRegisterIt->second;
+            }
 
-            } else if (cpuRegisters.contains("fosccal")) {
-                return cpuRegisters.at("fosccal");
+            osccalRegisterIt = cpuRegisters.find("fosccal");
+            if (osccalRegisterIt != cpuRegisters.end()) {
+                return osccalRegisterIt->second;
+            }
 
-            } else if (cpuRegisters.contains("sosccala")) {
-                return cpuRegisters.at("sosccala");
+            osccalRegisterIt = cpuRegisters.find("sosccala");
+            if (osccalRegisterIt != cpuRegisters.end()) {
+                return osccalRegisterIt->second;
             }
         }
 
@@ -994,18 +1091,23 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<Register> TargetDescriptionFile::getSpmcsRegister() const {
-        auto cpuRegisterGroup = this->getCpuRegisterGroup();
+        const auto cpuRegisterGroup = this->getCpuRegisterGroup();
 
-        if (cpuRegisterGroup.has_value() && cpuRegisterGroup->registersMappedByName.contains("spmcsr")) {
-            return cpuRegisterGroup->registersMappedByName.at("spmcsr");
+        if (cpuRegisterGroup.has_value()) {
+            const auto spmcsRegisterIt = cpuRegisterGroup->registersMappedByName.find("spmcsr");
 
-        } else {
-            auto bootLoadRegisterGroup = this->getBootLoadRegisterGroup();
+            if (spmcsRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
+                return spmcsRegisterIt->second;
+            }
+        }
 
-            if (bootLoadRegisterGroup.has_value()
-                && bootLoadRegisterGroup->registersMappedByName.contains("spmcsr")
-            ) {
-                return bootLoadRegisterGroup->registersMappedByName.at("spmcsr");
+        const auto bootLoadRegisterGroup = this->getBootLoadRegisterGroup();
+
+        if (bootLoadRegisterGroup.has_value()) {
+            const auto spmcsRegisterIt = bootLoadRegisterGroup->registersMappedByName.find("spmcsr");
+
+            if (spmcsRegisterIt != bootLoadRegisterGroup->registersMappedByName.end()) {
+                return spmcsRegisterIt->second;
             }
         }
 
@@ -1013,16 +1115,23 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     std::optional<Register> TargetDescriptionFile::getSpmcRegister() const {
-        auto bootLoadRegisterGroup = this->getBootLoadRegisterGroup();
+        const auto cpuRegisterGroup = this->getCpuRegisterGroup();
 
-        if (bootLoadRegisterGroup.has_value() && bootLoadRegisterGroup->registersMappedByName.contains("spmcr")) {
-            return bootLoadRegisterGroup->registersMappedByName.at("spmcr");
+        if (cpuRegisterGroup.has_value()) {
+            const auto spmcRegisterIt = cpuRegisterGroup->registersMappedByName.find("spmcr");
 
-        } else {
-            auto cpuRegisterGroup = this->getCpuRegisterGroup();
+            if (spmcRegisterIt != cpuRegisterGroup->registersMappedByName.end()) {
+                return spmcRegisterIt->second;
+            }
+        }
 
-            if (cpuRegisterGroup.has_value() && cpuRegisterGroup->registersMappedByName.contains("spmcr")) {
-                return cpuRegisterGroup->registersMappedByName.at("spmcr");
+        const auto bootLoadRegisterGroup = this->getBootLoadRegisterGroup();
+
+        if (bootLoadRegisterGroup.has_value()) {
+            const auto spmcRegisterIt = bootLoadRegisterGroup->registersMappedByName.find("spmcr");
+
+            if (spmcRegisterIt != bootLoadRegisterGroup->registersMappedByName.end()) {
+                return spmcRegisterIt->second;
             }
         }
 
@@ -1104,44 +1213,45 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         const auto& propertyGroups = this->getPropertyGroupsMappedByName();
 
         // OCD attributes can be found in property groups
-        if (propertyGroups.contains("ocd")) {
-            const auto& ocdProperties = propertyGroups.at("ocd").propertiesMappedByName;
+        const auto ocdPropertyGroupIt = propertyGroups.find("ocd");
+        if (ocdPropertyGroupIt != propertyGroups.end()) {
+            const auto& ocdProperties = ocdPropertyGroupIt->second.propertiesMappedByName;
 
-            if (ocdProperties.find("ocd_revision") != ocdProperties.end()) {
-                targetParameters.ocdRevision = ocdProperties.find("ocd_revision")
-                    ->second.value.toUShort(nullptr, 10);
+            const auto ocdRevisionPropertyIt = ocdProperties.find("ocd_revision");
+            if (ocdRevisionPropertyIt != ocdProperties.end()) {
+                targetParameters.ocdRevision = ocdRevisionPropertyIt->second.value.toUShort(nullptr, 10);
             }
 
-            if (ocdProperties.find("ocd_datareg") != ocdProperties.end()) {
-                targetParameters.ocdDataRegister = ocdProperties.find("ocd_datareg")
-                    ->second.value.toUShort(nullptr, 16);
+            const auto ocdDataRegPropertyIt = ocdProperties.find("ocd_datareg");
+            if (ocdDataRegPropertyIt != ocdProperties.end()) {
+                targetParameters.ocdDataRegister = ocdDataRegPropertyIt->second.value.toUShort(nullptr, 16);
             }
         }
 
-        auto spmcsRegister = this->getSpmcsRegister();
+        const auto spmcsRegister = this->getSpmcsRegister();
         if (spmcsRegister.has_value()) {
             targetParameters.spmcRegisterStartAddress = spmcsRegister->offset;
 
         } else {
-            auto spmcRegister = this->getSpmcRegister();
+            const auto spmcRegister = this->getSpmcRegister();
             if (spmcRegister.has_value()) {
                 targetParameters.spmcRegisterStartAddress = spmcRegister->offset;
             }
         }
 
-        auto osccalRegister = this->getOscillatorCalibrationRegister();
+        const auto osccalRegister = this->getOscillatorCalibrationRegister();
         if (osccalRegister.has_value()) {
             targetParameters.osccalAddress = osccalRegister->offset;
         }
 
-        auto eepromAddressRegister = this->getEepromAddressRegister();
+        const auto eepromAddressRegister = this->getEepromAddressRegister();
         if (eepromAddressRegister.has_value()) {
             targetParameters.eepromAddressRegisterLow = eepromAddressRegister->offset;
             targetParameters.eepromAddressRegisterHigh = (eepromAddressRegister->size == 2)
                 ? eepromAddressRegister->offset + 1 : eepromAddressRegister->offset;
 
         } else {
-            auto eepromAddressLowRegister = this->getEepromAddressLowRegister();
+            const auto eepromAddressLowRegister = this->getEepromAddressLowRegister();
             if (eepromAddressLowRegister.has_value()) {
                 targetParameters.eepromAddressRegisterLow = eepromAddressLowRegister->offset;
                 auto eepromAddressHighRegister = this->getEepromAddressHighRegister();
@@ -1155,12 +1265,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             }
         }
 
-        auto eepromDataRegister = this->getEepromDataRegister();
+        const auto eepromDataRegister = this->getEepromDataRegister();
         if (eepromDataRegister.has_value()) {
             targetParameters.eepromDataRegisterAddress = eepromDataRegister->offset;
         }
 
-        auto eepromControlRegister = this->getEepromControlRegister();
+        const auto eepromControlRegister = this->getEepromControlRegister();
         if (eepromControlRegister.has_value()) {
             targetParameters.eepromControlRegisterAddress = eepromControlRegister->offset;
         }
@@ -1170,70 +1280,79 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         const auto& peripheralModules = this->getPeripheralModulesMappedByName();
         const auto& propertyGroups = this->getPropertyGroupsMappedByName();
 
-        if (propertyGroups.contains("pdi_interface")) {
-            const auto& pdiInterfaceProperties = propertyGroups.at("pdi_interface").propertiesMappedByName;
+        const auto pdiPropertyGroupIt = propertyGroups.find("pdi_interface");
+        if (pdiPropertyGroupIt == propertyGroups.end()) {
+            return;
+        }
 
-            if (pdiInterfaceProperties.contains("app_section_offset")) {
-                targetParameters.appSectionPdiOffset = pdiInterfaceProperties
-                    .at("app_section_offset").value.toUInt(nullptr, 16);
-            }
+        const auto& pdiInterfaceProperties = pdiPropertyGroupIt->second.propertiesMappedByName;
 
-            if (pdiInterfaceProperties.contains("boot_section_offset")) {
-                targetParameters.bootSectionPdiOffset = pdiInterfaceProperties
-                    .at("boot_section_offset").value.toUInt(nullptr, 16);
-            }
+        const auto appOffsetPropertyIt = pdiInterfaceProperties.find("app_section_offset");
+        if (appOffsetPropertyIt != pdiInterfaceProperties.end()) {
+            targetParameters.appSectionPdiOffset = appOffsetPropertyIt->second.value.toUInt(nullptr, 16);
+        }
 
-            if (pdiInterfaceProperties.contains("datamem_offset")) {
-                targetParameters.ramPdiOffset = pdiInterfaceProperties
-                    .at("datamem_offset").value.toUInt(nullptr, 16);
-            }
+        const auto bootOffsetPropertyIt = pdiInterfaceProperties.find("boot_section_offset");
+        if (bootOffsetPropertyIt != pdiInterfaceProperties.end()) {
+            targetParameters.bootSectionPdiOffset = bootOffsetPropertyIt->second.value.toUInt(nullptr, 16);
+        }
 
-            if (pdiInterfaceProperties.contains("eeprom_offset")) {
-                targetParameters.eepromPdiOffset = pdiInterfaceProperties
-                    .at("eeprom_offset").value.toUInt(nullptr, 16);
-            }
+        const auto dataOffsetPropertyIt = pdiInterfaceProperties.find("datamem_offset");
+        if (dataOffsetPropertyIt != pdiInterfaceProperties.end()) {
+            targetParameters.ramPdiOffset = dataOffsetPropertyIt->second.value.toUInt(nullptr, 16);
+        }
 
-            if (pdiInterfaceProperties.contains("user_signatures_offset")) {
-                targetParameters.userSignaturesPdiOffset = pdiInterfaceProperties
-                    .at("user_signatures_offset").value.toUInt(nullptr, 16);
-            }
+        const auto eepromOffsetPropertyIt = pdiInterfaceProperties.find("eeprom_offset");
+        if (eepromOffsetPropertyIt != pdiInterfaceProperties.end()) {
+            targetParameters.eepromPdiOffset = eepromOffsetPropertyIt->second.value.toUInt(nullptr, 16);
+        }
 
-            if (pdiInterfaceProperties.contains("prod_signatures_offset")) {
-                targetParameters.productSignaturesPdiOffset = pdiInterfaceProperties
-                    .at("prod_signatures_offset").value.toUInt(nullptr, 16);
-            }
+        const auto userSigOffsetPropertyIt = pdiInterfaceProperties.find("user_signatures_offset");
+        if (userSigOffsetPropertyIt != pdiInterfaceProperties.end()) {
+            targetParameters.userSignaturesPdiOffset = userSigOffsetPropertyIt->second.value.toUInt(nullptr, 16);
+        }
 
-            if (pdiInterfaceProperties.contains("fuse_registers_offset")) {
-                targetParameters.fuseRegistersPdiOffset = pdiInterfaceProperties
-                    .at("fuse_registers_offset").value.toUInt(nullptr, 16);
-            }
+        const auto prodSigOffsetPropertyIt = pdiInterfaceProperties.find("prod_signatures_offset");
+        if (prodSigOffsetPropertyIt != pdiInterfaceProperties.end()) {
+            targetParameters.productSignaturesPdiOffset = prodSigOffsetPropertyIt->second.value.toUInt(nullptr, 16);
+        }
 
-            if (pdiInterfaceProperties.contains("lock_registers_offset")) {
-                targetParameters.lockRegistersPdiOffset = pdiInterfaceProperties
-                    .at("lock_registers_offset").value.toUInt(nullptr, 16);
-            }
+        const auto fuseRegOffsetPropertyIt = pdiInterfaceProperties.find("fuse_registers_offset");
+        if (fuseRegOffsetPropertyIt != pdiInterfaceProperties.end()) {
+            targetParameters.fuseRegistersPdiOffset = fuseRegOffsetPropertyIt->second.value.toUInt(nullptr, 16);
+        }
 
-            if (peripheralModules.contains("nvm")) {
-                const auto& nvmModule = peripheralModules.at("nvm");
+        const auto lockRegOffsetPropertyIt = pdiInterfaceProperties.find("lock_registers_offset");
+        if (lockRegOffsetPropertyIt != pdiInterfaceProperties.end()) {
+            targetParameters.lockRegistersPdiOffset = lockRegOffsetPropertyIt->second.value.toUInt(nullptr, 16);
+        }
 
-                if (nvmModule.instancesMappedByName.contains("nvm")) {
-                    const auto& nvmInstance = nvmModule.instancesMappedByName.at("nvm");
+        const auto nvmPeripheralModuleIt = peripheralModules.find("nvm");
+        if (nvmPeripheralModuleIt != peripheralModules.end()) {
+            const auto& nvmModule = nvmPeripheralModuleIt->second;
 
-                    if (nvmInstance.registerGroupsMappedByName.contains("nvm")) {
-                        targetParameters.nvmModuleBaseAddress = nvmInstance.registerGroupsMappedByName.at("nvm").offset;
-                    }
+            const auto nvmInstanceIt = nvmModule.instancesMappedByName.find("nvm");
+            if (nvmInstanceIt != nvmModule.instancesMappedByName.end()) {
+                const auto& nvmInstance = nvmInstanceIt->second;
+
+                const auto nvmRegisterGroupIt = nvmInstance.registerGroupsMappedByName.find("nvm");
+                if (nvmRegisterGroupIt != nvmInstance.registerGroupsMappedByName.end()) {
+                    targetParameters.nvmModuleBaseAddress = nvmRegisterGroupIt->second.offset;
                 }
             }
+        }
 
-            if (peripheralModules.contains("mcu")) {
-                const auto& mcuModule = peripheralModules.at("mcu");
+        const auto mcuPeripheralModuleIt = peripheralModules.find("mcu");
+        if (mcuPeripheralModuleIt != peripheralModules.end()) {
+            const auto& mcuModule = mcuPeripheralModuleIt->second;
 
-                if (mcuModule.instancesMappedByName.contains("mcu")) {
-                    const auto& mcuInstance = mcuModule.instancesMappedByName.at("mcu");
+            const auto mcuInstanceIt = mcuModule.instancesMappedByName.find("mcu");
+            if (mcuInstanceIt != mcuModule.instancesMappedByName.end()) {
+                const auto& mcuInstance = mcuInstanceIt->second;
 
-                    if (mcuInstance.registerGroupsMappedByName.contains("mcu")) {
-                        targetParameters.mcuModuleBaseAddress = mcuInstance.registerGroupsMappedByName.at("mcu").offset;
-                    }
+                const auto mcuRegisterGroupIt = mcuInstance.registerGroupsMappedByName.find("mcu");
+                if (mcuRegisterGroupIt != mcuInstance.registerGroupsMappedByName.end()) {
+                    targetParameters.mcuModuleBaseAddress = mcuRegisterGroupIt->second.offset;
                 }
             }
         }
@@ -1242,49 +1361,54 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     void TargetDescriptionFile::loadUpdiTargetParameters(TargetParameters& targetParameters) const {
         const auto& propertyGroups = this->getPropertyGroupsMappedByName();
         const auto& peripheralModules = this->getPeripheralModulesMappedByName();
-        auto modulesByName = this->getModulesMappedByName();
+        const auto& modulesByName = this->getModulesMappedByName();
 
-        if (peripheralModules.contains("nvmctrl")) {
-            const auto& nvmCtrlModule = peripheralModules.at("nvmctrl");
+        const auto nvmCtrlPeripheralModuleIt = peripheralModules.find("nvmctrl");
+        if (nvmCtrlPeripheralModuleIt != peripheralModules.end()) {
+            const auto& nvmCtrlModule = nvmCtrlPeripheralModuleIt->second;
 
-            if (nvmCtrlModule.instancesMappedByName.contains("nvmctrl")) {
-                const auto& nvmCtrlInstance = nvmCtrlModule.instancesMappedByName.at("nvmctrl");
+            const auto nvmCtrlInstanceIt = nvmCtrlModule.instancesMappedByName.find("nvmctrl");
+            if (nvmCtrlInstanceIt != nvmCtrlModule.instancesMappedByName.end()) {
+                const auto& nvmCtrlInstance = nvmCtrlInstanceIt->second;
 
-                if (nvmCtrlInstance.registerGroupsMappedByName.contains("nvmctrl")) {
-                    targetParameters.nvmModuleBaseAddress = nvmCtrlInstance.registerGroupsMappedByName.at(
-                        "nvmctrl"
-                    ).offset;
+                const auto nvmCtrlRegisterGroupIt = nvmCtrlInstance.registerGroupsMappedByName.find("nvmctrl");
+                if (nvmCtrlRegisterGroupIt != nvmCtrlInstance.registerGroupsMappedByName.end()) {
+                    targetParameters.nvmModuleBaseAddress = nvmCtrlRegisterGroupIt->second.offset;
                 }
             }
         }
 
-        if (propertyGroups.contains("updi_interface")) {
-            const auto& updiInterfaceProperties = propertyGroups.at("updi_interface").propertiesMappedByName;
+        const auto updiPropertyGroupIt = propertyGroups.find("updi_interface");
+        if (updiPropertyGroupIt != propertyGroups.end()) {
+            const auto& updiInterfaceProperties = updiPropertyGroupIt->second.propertiesMappedByName;
 
-            if (updiInterfaceProperties.contains("ocd_base_addr")) {
-                targetParameters.ocdModuleAddress = updiInterfaceProperties
-                    .at("ocd_base_addr").value.toUShort(nullptr, 16);
+            const auto ocdBaseAddressPropertyIt = updiInterfaceProperties.find("ocd_base_addr");
+            if (ocdBaseAddressPropertyIt != updiInterfaceProperties.end()) {
+                targetParameters.ocdModuleAddress = ocdBaseAddressPropertyIt->second.value.toUShort(nullptr, 16);
             }
 
-            if (updiInterfaceProperties.contains("progmem_offset")) {
-                targetParameters.programMemoryUpdiStartAddress = updiInterfaceProperties
-                    .at("progmem_offset").value.toUInt(nullptr, 16);
+            const auto progMemOffsetPropertyIt = updiInterfaceProperties.find("progmem_offset");
+            if (progMemOffsetPropertyIt != updiInterfaceProperties.end()) {
+                targetParameters.programMemoryUpdiStartAddress = progMemOffsetPropertyIt->second.value.toUInt(
+                    nullptr,
+                    16
+                );
             }
         }
 
-        auto signatureMemorySegment = this->getSignatureMemorySegment();
+        const auto signatureMemorySegment = this->getSignatureMemorySegment();
         if (signatureMemorySegment.has_value()) {
             targetParameters.signatureSegmentStartAddress = signatureMemorySegment->startAddress;
             targetParameters.signatureSegmentSize = signatureMemorySegment->size;
         }
 
-        auto fuseMemorySegment = this->getFuseMemorySegment();
+        const auto fuseMemorySegment = this->getFuseMemorySegment();
         if (fuseMemorySegment.has_value()) {
             targetParameters.fuseSegmentStartAddress = fuseMemorySegment->startAddress;
             targetParameters.fuseSegmentSize = fuseMemorySegment->size;
         }
 
-        auto lockbitsMemorySegment = this->getLockbitsMemorySegment();
+        const auto lockbitsMemorySegment = this->getLockbitsMemorySegment();
         if (lockbitsMemorySegment.has_value()) {
             targetParameters.lockbitsSegmentStartAddress = lockbitsMemorySegment->startAddress;
         }

@@ -176,9 +176,12 @@ namespace Bloom::Widgets
     }
 
     AddressType RegionItem::getSelectedAddressInputType() const {
-        auto selectedAddressTypeOptionName = this->addressTypeInput->currentData().toString();
-        if (RegionItem::addressRangeTypeOptionsByName.contains(selectedAddressTypeOptionName)) {
-            return RegionItem::addressRangeTypeOptionsByName.at(selectedAddressTypeOptionName).addressType;
+        const auto selectedAddressTypeIt = RegionItem::addressRangeTypeOptionsByName.find(
+            this->addressTypeInput->currentData().toString()
+        );
+
+        if (selectedAddressTypeIt != RegionItem::addressRangeTypeOptionsByName.end()) {
+            return selectedAddressTypeIt->second.addressType;
         }
 
         return AddressType::ABSOLUTE;

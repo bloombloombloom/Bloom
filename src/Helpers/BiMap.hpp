@@ -37,11 +37,22 @@ namespace Bloom
             return this->flippedMap.find(key) != this->flippedMap.end();
         }
 
+        auto find(const TypeA& key) const {
+            const auto valueIt = this->map.find(key);
+            return valueIt != this->map.end() ? std::optional(valueIt) : std::nullopt;
+        }
+
+        auto find(const TypeB& key) const {
+            const auto valueIt = this->flippedMap.find(key);
+            return valueIt != this->flippedMap.end() ? std::optional(valueIt) : std::nullopt;
+        }
+
         std::optional<TypeB> valueAt(const TypeA& key) const {
             std::optional<TypeB> output;
 
-            if (this->contains(key)) {
-                output = this->map.find(key)->second;
+            const auto valueIt = this->map.find(key);
+            if (valueIt != this->map.end()) {
+                output = valueIt->second;
             }
 
             return output;
@@ -50,8 +61,9 @@ namespace Bloom
         std::optional<TypeA> valueAt(const TypeB& key) const {
             std::optional<TypeA> output;
 
-            if (this->contains(key)) {
-                output = this->flippedMap.find(key)->second;
+            const auto valueIt = this->flippedMap.find(key);
+            if (valueIt != this->flippedMap.end()) {
+                output = valueIt->second;
             }
 
             return output;

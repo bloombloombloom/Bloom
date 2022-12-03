@@ -395,7 +395,8 @@ namespace Bloom::Widgets
         };
 
         for (const auto& focusedRegion : this->settings.focusedMemoryRegions) {
-            if (!this->targetMemoryDescriptor.addressRange.contains(focusedRegion.addressRange)
+            if (
+                !this->targetMemoryDescriptor.addressRange.contains(focusedRegion.addressRange)
                 || regionIntersects(focusedRegion)
             ) {
                 continue;
@@ -405,7 +406,8 @@ namespace Bloom::Widgets
         }
 
         for (const auto& excludedRegion : this->settings.excludedMemoryRegions) {
-            if (!this->targetMemoryDescriptor.addressRange.contains(excludedRegion.addressRange)
+            if (
+                !this->targetMemoryDescriptor.addressRange.contains(excludedRegion.addressRange)
                 || regionIntersects(excludedRegion)
             ) {
                 continue;

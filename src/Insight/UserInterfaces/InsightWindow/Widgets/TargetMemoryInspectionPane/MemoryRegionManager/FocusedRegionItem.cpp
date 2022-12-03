@@ -42,22 +42,24 @@ namespace Bloom::Widgets
             this->endAddressInput->text().toUInt(nullptr, 16)
         );
         this->memoryRegion.addressRangeInputType = this->getSelectedAddressInputType();
-        this->memoryRegion.addressRange =
-            this->memoryRegion.addressRangeInputType == AddressType::RELATIVE ?
-                this->convertRelativeToAbsoluteAddressRange(inputAddressRange) : inputAddressRange;
+        this->memoryRegion.addressRange = this->memoryRegion.addressRangeInputType == AddressType::RELATIVE
+            ? this->convertRelativeToAbsoluteAddressRange(inputAddressRange)
+            : inputAddressRange;
 
-        auto selectedDataTypeOptionName = this->dataTypeInput->currentData().toString();
-        if (FocusedRegionItem::dataTypeOptionsByName.contains(selectedDataTypeOptionName)) {
-            this->memoryRegion.dataType = FocusedRegionItem::dataTypeOptionsByName.at(
-                selectedDataTypeOptionName
-            ).dataType;
+        const auto selectedDataTypeIt = FocusedRegionItem::dataTypeOptionsByName.find(
+            this->dataTypeInput->currentData().toString()
+        );
+
+        if (selectedDataTypeIt != FocusedRegionItem::dataTypeOptionsByName.end()) {
+            this->memoryRegion.dataType = selectedDataTypeIt->second.dataType;
         }
 
-        auto selectedEndiannessOptionName = this->endiannessInput->currentData().toString();
-        if (FocusedRegionItem::endiannessOptionsByName.contains(selectedEndiannessOptionName)) {
-            this->memoryRegion.endianness = FocusedRegionItem::endiannessOptionsByName.at(
-                selectedEndiannessOptionName
-            ).endianness;
+        const auto selectedEndiannessIt = FocusedRegionItem::endiannessOptionsByName.find(
+            this->endiannessInput->currentData().toString()
+        );
+
+        if (selectedEndiannessIt != FocusedRegionItem::endiannessOptionsByName.end()) {
+            this->memoryRegion.endianness = selectedEndiannessIt->second.endianness;
         }
     }
 

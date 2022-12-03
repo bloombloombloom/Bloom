@@ -480,35 +480,41 @@ namespace Bloom
             return;
         }
 
-        std::optional<QString> previouslySelectedVariantName = (this->previouslySelectedVariant.has_value()) ?
-            std::optional(QString::fromStdString(this->previouslySelectedVariant->name).toLower())
+        std::optional<QString> previouslySelectedVariantName = (this->previouslySelectedVariant.has_value())
+            ? std::optional(QString::fromStdString(this->previouslySelectedVariant->name).toLower())
             : std::nullopt;
 
-        if (
-            previouslySelectedVariantName.has_value()
-            && this->supportedVariantsByName.contains(previouslySelectedVariantName.value())
-        ) {
-            this->selectVariant(&(this->supportedVariantsByName.at(previouslySelectedVariantName.value())));
+        if (previouslySelectedVariantName.has_value()) {
+            const auto previouslySelectedVariantIt = this->supportedVariantsByName.find(*previouslySelectedVariantName);
 
-        } else if (this->targetConfig.variantName.has_value()) {
-            auto selectedVariantName = QString::fromStdString(this->targetConfig.variantName.value());
-            if (this->supportedVariantsByName.contains(selectedVariantName)) {
-                // The user has specified a valid variant name in their config file, so use that as the default
-                this->selectVariant(&(this->supportedVariantsByName.at(selectedVariantName)));
-
-            } else {
-                Logger::error("Invalid target variant name \"" + this->targetConfig.variantName.value()
-                    + "\" - no such variant with the given name was found.");
+            if (previouslySelectedVariantIt != this->supportedVariantsByName.end()) {
+                this->selectVariant(&(previouslySelectedVariantIt->second));
+                return;
             }
         }
 
-        if (this->selectedVariant == nullptr) {
-            /*
-             * Given that we haven't been able to select a variant at this point, we will just fall back to the first
-             * one that is available.
-             */
-            this->selectVariant(&(this->supportedVariantsByName.begin()->second));
+        if (this->targetConfig.variantName.has_value()) {
+            const auto variantIt = this->supportedVariantsByName.find(
+                QString::fromStdString(*this->targetConfig.variantName)
+            );
+
+            if (variantIt != this->supportedVariantsByName.end()) {
+                // The user has specified a valid variant name in their config file, so use that as the default
+                this->selectVariant(&(variantIt->second));
+
+            } else {
+                Logger::error(
+                    "Invalid target variant name \"" + this->targetConfig.variantName.value()
+                        + "\" - no such variant with the given name was found."
+                );
+            }
         }
+
+        /*
+         * Given that we haven't been able to select a variant at this point, we will just fall back to the first
+         * one that is available.
+         */
+        this->selectVariant(&(this->supportedVariantsByName.begin()->second));
     }
 
     void InsightWindow::selectVariant(const TargetVariant* variant) {
@@ -598,19 +604,22 @@ namespace Bloom
 
         // Target memory inspection panes
         auto* bottomPanelLayout = this->bottomPanel->layout();
-        if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::RAM)) {
+
+        // We only support inspection of RAM and EEPROM, for now.
+        const auto ramDescriptorIt = this->targetDescriptor.memoryDescriptorsByType.find(TargetMemoryType::RAM);
+        const auto eepromDescriptorIt = this->targetDescriptor.memoryDescriptorsByType.find(TargetMemoryType::EEPROM);
+
+        if (ramDescriptorIt != this->targetDescriptor.memoryDescriptorsByType.end()) {
             if (!this->insightProjectSettings.ramInspectionPaneState.has_value()) {
                 this->insightProjectSettings.ramInspectionPaneState = PaneState(false, true, std::nullopt);
             }
-
-            auto& ramDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::RAM);
 
             if (!memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::RAM)) {
                 memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::RAM] = TargetMemoryInspectionPaneSettings();
             }
 
             this->ramInspectionPane = new TargetMemoryInspectionPane(
-                ramDescriptor,
+                ramDescriptorIt->second,
                 memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::RAM],
                 *(this->insightProjectSettings.ramInspectionPaneState),
                 this->bottomPanel
@@ -641,19 +650,17 @@ namespace Bloom
             this->onRamInspectionPaneStateChanged();
         }
 
-        if (this->targetDescriptor.memoryDescriptorsByType.contains(TargetMemoryType::EEPROM)) {
+        if (eepromDescriptorIt != this->targetDescriptor.memoryDescriptorsByType.end()) {
             if (!this->insightProjectSettings.eepromInspectionPaneState.has_value()) {
                 this->insightProjectSettings.eepromInspectionPaneState = PaneState(false, true, std::nullopt);
             }
-
-            auto& eepromDescriptor = this->targetDescriptor.memoryDescriptorsByType.at(TargetMemoryType::EEPROM);
 
             if (!memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::EEPROM)) {
                 memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::EEPROM] = TargetMemoryInspectionPaneSettings();
             }
 
             this->eepromInspectionPane = new TargetMemoryInspectionPane(
-                eepromDescriptor,
+                eepromDescriptorIt->second,
                 memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::EEPROM],
                 *(this->insightProjectSettings.eepromInspectionPaneState),
                 this->bottomPanel

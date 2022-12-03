@@ -18,8 +18,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         const auto physicalInterfaceName = String::asciiToLower(targetNode["physicalInterface"].as<std::string>());
+        const auto physicalInterfaceIt = Avr8TargetConfig::debugPhysicalInterfacesByConfigName.find(
+            physicalInterfaceName
+        );
 
-        if (!Avr8TargetConfig::debugPhysicalInterfacesByConfigName.contains(physicalInterfaceName)) {
+        if (physicalInterfaceIt == Avr8TargetConfig::debugPhysicalInterfacesByConfigName.end()) {
             throw InvalidConfig(
                 "Invalid physical interface provided (\"" + physicalInterfaceName + "\") for AVR8 target. "
                 "See " + Paths::homeDomainName() + "/docs/configuration/avr8-physical-interfaces for valid physical "
@@ -27,7 +30,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             );
         }
 
-        this->physicalInterface = Avr8TargetConfig::debugPhysicalInterfacesByConfigName.at(physicalInterfaceName);
+        this->physicalInterface = physicalInterfaceIt->second;
 
         // The 'manageDwenFuseBit' param used to be 'updateDwenFuseBit' - we still support the old, for now.
         if (targetNode["updateDwenFuseBit"]) {

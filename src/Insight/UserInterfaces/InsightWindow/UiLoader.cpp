@@ -94,9 +94,11 @@ namespace Bloom
     }
 
     QWidget* UiLoader::createWidget(const QString& className, QWidget* parent, const QString& name) {
-        if (this->customWidgetConstructorsByWidgetName.contains(className)) {
+        const auto widgetContructorIt = this->customWidgetConstructorsByWidgetName.find(className);
+
+        if (widgetContructorIt != this->customWidgetConstructorsByWidgetName.end()) {
             // This is a custom widget - call the mapped constructor
-            return this->customWidgetConstructorsByWidgetName.at(className)(parent, name);
+            return widgetContructorIt->second(parent, name);
         }
 
         return QUiLoader::createWidget(className, parent, name);

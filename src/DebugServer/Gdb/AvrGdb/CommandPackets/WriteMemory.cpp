@@ -73,8 +73,9 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
         try {
             const auto& memoryDescriptorsByType = debugSession.gdbTargetDescriptor.targetDescriptor.memoryDescriptorsByType;
+            const auto memoryDescriptorIt = memoryDescriptorsByType.find(this->memoryType);
 
-            if (!memoryDescriptorsByType.contains(this->memoryType)) {
+            if (memoryDescriptorIt == memoryDescriptorsByType.end()) {
                 throw Exception("Target does not support the requested memory type.");
             }
 
@@ -98,7 +99,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 return;
             }
 
-            const auto& memoryDescriptor = memoryDescriptorsByType.at(this->memoryType);
+            const auto& memoryDescriptor = memoryDescriptorIt->second;
 
             /*
              * In AVR targets, RAM is mapped to many registers and peripherals - we don't want to block GDB from

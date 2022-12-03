@@ -42,9 +42,10 @@ namespace Bloom
         }
 
         static auto cachedResultsByProcessId = std::map<::pid_t, bool>();
+        const auto cachedResultIt = cachedResultsByProcessId.find(*processId);
 
-        if (cachedResultsByProcessId.contains(*processId)) {
-            return cachedResultsByProcessId.at(*processId);
+        if (cachedResultIt != cachedResultsByProcessId.end()) {
+            return cachedResultIt->second;
         }
 
         // Start with the parent process and walk the tree until we find CLion

@@ -19,9 +19,10 @@ namespace Bloom
                 if (::sigwait(&signalSet, &signalNumber) == 0) {
                     Logger::debug("SIGNAL " + std::to_string(signalNumber) + " received");
 
-                    if (this->handlersBySignalNum.contains(signalNumber)) {
+                    const auto handlerIt = this->handlersBySignalNum.find(signalNumber);
+                    if (handlerIt != this->handlersBySignalNum.end()) {
                         // We have a registered handler for this signal.
-                        this->handlersBySignalNum.at(signalNumber)();
+                        handlerIt->second();
                     }
                 }
             }

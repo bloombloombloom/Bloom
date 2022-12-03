@@ -454,12 +454,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     }
 
     std::map<int, TargetPinState> Avr8::getPinStates(int variantId) {
-        if (!this->targetVariantsById.contains(variantId)) {
+        const auto targetVariantIt = this->targetVariantsById.find(variantId);
+
+        if (targetVariantIt == this->targetVariantsById.end()) {
             throw Exception("Invalid target variant ID");
         }
 
         std::map<int, TargetPinState> output;
-        auto& variant = this->targetVariantsById.at(variantId);
+        const auto& variant = targetVariantIt->second;
 
         /*
          * To prevent the number of memory reads we perform here, we cache the data and map it by start address.
@@ -471,24 +473,28 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * will be considered when the need for it becomes apparent.
          */
         std::map<std::uint16_t, TargetMemoryBuffer> cachedMemoryByStartAddress;
-        auto readMemoryBitset = [this, &cachedMemoryByStartAddress] (std::uint16_t startAddress) {
-            if (!cachedMemoryByStartAddress.contains(startAddress)) {
-                cachedMemoryByStartAddress.insert(
+        const auto readMemoryBitset = [this, &cachedMemoryByStartAddress] (std::uint16_t startAddress) {
+            auto cachedByteIt = cachedMemoryByStartAddress.find(startAddress);
+
+            if (cachedByteIt == cachedMemoryByStartAddress.end()) {
+                cachedByteIt = cachedMemoryByStartAddress.insert(
                     std::pair(
                         startAddress,
                         this->readMemory(TargetMemoryType::RAM, startAddress, 1)
                     )
-                );
+                ).first;
             }
 
             return std::bitset<std::numeric_limits<unsigned char>::digits>(
-                cachedMemoryByStartAddress.at(startAddress).at(0)
+                cachedByteIt->second.at(0)
             );
         };
 
         for (const auto& [pinNumber, pinDescriptor] : variant.pinDescriptorsByNumber) {
-            if (this->padDescriptorsByName.contains(pinDescriptor.padName)) {
-                auto& pad = this->padDescriptorsByName.at(pinDescriptor.padName);
+            const auto padIt = this->padDescriptorsByName.find(pinDescriptor.padName);
+
+            if (padIt != this->padDescriptorsByName.end()) {
+                const auto& pad = padIt->second;
 
                 if (!pad.gpioPinNumber.has_value()) {
                     continue;
@@ -526,12 +532,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     }
 
     void Avr8::setPinState(const TargetPinDescriptor& pinDescriptor, const TargetPinState& state) {
-        auto variantId = pinDescriptor.variantId;
-        if (!this->targetVariantsById.contains(variantId)) {
+        const auto targetVariantIt = this->targetVariantsById.find(pinDescriptor.variantId);
+
+        if (targetVariantIt == this->targetVariantsById.end()) {
             throw Exception("Invalid target variant ID");
         }
 
-        if (!this->padDescriptorsByName.contains(pinDescriptor.padName)) {
+        const auto padDescriptorIt = this->padDescriptorsByName.find(pinDescriptor.padName);
+
+        if (padDescriptorIt == this->padDescriptorsByName.end()) {
             throw Exception("Unknown pad");
         }
 
@@ -539,8 +548,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             throw Exception("Missing IO direction state");
         }
 
-        const auto& variant = this->targetVariantsById.at(variantId);
-        const auto& padDescriptor = this->padDescriptorsByName.at(pinDescriptor.padName);
+        const auto& variant = targetVariantIt->second;
+        const auto& padDescriptor = padDescriptorIt->second;
         auto ioState = state.ioState;
 
         if (state.ioDirection == TargetPinState::IoDirection::INPUT) {

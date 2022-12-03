@@ -28,8 +28,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     {
     public:
         explicit Avr8() = default;
-        Avr8(std::string name, const TargetSignature& signature): name(std::move(name)) {
-            this->id = signature;
+        Avr8(std::string name, const TargetSignature& signature)
+            : name(std::move(name))
+            , Target(signature)
+        {
             this->initFromTargetDescriptionFile();
         };
 

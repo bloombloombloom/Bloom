@@ -243,10 +243,10 @@ namespace Bloom::Widgets
             const auto& descriptor = targetRegister.descriptor;
 
             for (const auto& registerGroupWidget : this->registerGroupWidgets) {
-                if (registerGroupWidget->registerWidgetsMappedByDescriptor.contains(descriptor)) {
-                    registerGroupWidget->registerWidgetsMappedByDescriptor.at(
-                        descriptor
-                    )->setRegisterValue(targetRegister);
+                const auto registerWidgetit = registerGroupWidget->registerWidgetsMappedByDescriptor.find(descriptor);
+
+                if (registerWidgetit != registerGroupWidget->registerWidgetsMappedByDescriptor.end()) {
+                    registerWidgetit->second->setRegisterValue(targetRegister);
                     break;
                 }
             }

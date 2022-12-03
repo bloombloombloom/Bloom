@@ -312,8 +312,9 @@ namespace Bloom::Widgets
     }
 
     QPointF ByteItemGraphicsScene::getByteItemPositionByAddress(std::uint32_t address) {
-        if (this->byteItemsByAddress.contains(address)) {
-            return this->byteItemsByAddress.at(address)->pos();
+        const auto byteItemIt = this->byteItemsByAddress.find(address);
+        if (byteItemIt != this->byteItemsByAddress.end()) {
+            return byteItemIt->second->pos();
         }
 
         return QPointF();
@@ -623,12 +624,13 @@ namespace Bloom::Widgets
         }
 
         for (auto* annotationItem : this->annotationItems) {
-            if (!this->byteItemsByAddress.contains(annotationItem->startAddress)) {
+            const auto firstByteItemIt = this->byteItemsByAddress.find(annotationItem->startAddress);
+            if (firstByteItemIt == this->byteItemsByAddress.end()) {
                 annotationItem->hide();
                 continue;
             }
 
-            const auto firstByteItemPosition = this->byteItemsByAddress.at(annotationItem->startAddress)->pos();
+            const auto firstByteItemPosition = firstByteItemIt->second->pos();
 
             if (annotationItem->position == AnnotationItemPosition::TOP) {
                 annotationItem->setPos(
@@ -646,7 +648,6 @@ namespace Bloom::Widgets
     }
 
     void ByteItemGraphicsScene::onTargetStateChanged(Targets::TargetState newState) {
-        using Targets::TargetState;
         this->targetState = newState;
     }
 

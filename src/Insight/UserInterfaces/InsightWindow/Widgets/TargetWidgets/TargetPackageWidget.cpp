@@ -73,9 +73,10 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
     void TargetPackageWidget::updatePinStates(const Targets::TargetPinStateMapping& pinStatesByNumber) {
         for (auto& pinWidget : this->pinWidgets) {
-            auto pinNumber = pinWidget->getPinNumber();
-            if (pinStatesByNumber.contains(pinNumber)) {
-                pinWidget->updatePinState(pinStatesByNumber.at(pinNumber));
+            const auto pinStateIt = pinStatesByNumber.find(pinWidget->getPinNumber());
+
+            if (pinStateIt != pinStatesByNumber.end()) {
+                pinWidget->updatePinState(pinStateIt->second);
             }
         }
 

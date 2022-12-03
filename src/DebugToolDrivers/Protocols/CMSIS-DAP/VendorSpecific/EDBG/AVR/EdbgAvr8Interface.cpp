@@ -477,14 +477,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             const auto startAddress = descriptor.startAddress.value();
             const auto endAddress = startAddress + (descriptor.size - 1);
 
-            if (!addressRangeByType.contains(descriptor.type)) {
-                auto addressRange = AddressRange();
-                addressRange.first = startAddress;
-                addressRange.second = endAddress;
-                addressRangeByType[descriptor.type] = addressRange;
+            const auto addressRangeit = addressRangeByType.find(descriptor.type);
+
+            if (addressRangeit == addressRangeByType.end()) {
+                addressRangeByType[descriptor.type] = AddressRange(startAddress, endAddress);
 
             } else {
-                auto& addressRange = addressRangeByType[descriptor.type];
+                auto& addressRange = addressRangeit->second;
 
                 if (startAddress < addressRange.first) {
                     addressRange.first = startAddress;
@@ -869,14 +868,17 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     std::optional<Avr8ConfigVariant> EdbgAvr8Interface::resolveConfigVariant() {
         if (this->family.has_value()) {
-            auto configVariantsByFamily = EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface();
+            const auto configVariantsByFamily = EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface();
+            const auto configVariantsByPhysicalInterfaceIt = configVariantsByFamily.find(*(this->family));
 
-            if (configVariantsByFamily.contains(this->family.value())) {
-                auto configVariantsByPhysicalInterface = configVariantsByFamily
-                    .at(this->family.value());
+            if (configVariantsByPhysicalInterfaceIt != configVariantsByFamily.end()) {
+                const auto& configVariantsByPhysicalInterface = configVariantsByPhysicalInterfaceIt->second;
+                const auto configVariantIt = configVariantsByPhysicalInterface.find(
+                    this->targetConfig->physicalInterface
+                );
 
-                if (configVariantsByPhysicalInterface.contains(this->targetConfig->physicalInterface)) {
-                    return configVariantsByPhysicalInterface.at(this->targetConfig->physicalInterface);
+                if (configVariantIt != configVariantsByPhysicalInterface.end()) {
+                    return configVariantIt->second;
                 }
             }
 
@@ -894,14 +896,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
              * variant. Users are required to specify the exact target name in their config, when using the JTAG
              * physical interface. That way, this->family will be set by the time resolveConfigVariant() is called.
              */
-            static std::map<PhysicalInterface, Avr8ConfigVariant> physicalInterfacesToConfigVariants = {
+            static const std::map<PhysicalInterface, Avr8ConfigVariant> physicalInterfacesToConfigVariants = {
                 {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
                 {PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
                 {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
             };
+            const auto configVariantIt = physicalInterfacesToConfigVariants.find(this->targetConfig->physicalInterface);
 
-            if (physicalInterfacesToConfigVariants.contains(this->targetConfig->physicalInterface)) {
-                return physicalInterfacesToConfigVariants.at(this->targetConfig->physicalInterface);
+            if (configVariantIt != physicalInterfacesToConfigVariants.end()) {
+                return configVariantIt->second;
             }
         }
 

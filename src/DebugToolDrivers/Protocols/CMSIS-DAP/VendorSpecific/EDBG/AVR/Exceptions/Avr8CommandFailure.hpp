@@ -74,20 +74,28 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         explicit Avr8CommandFailure(
             const std::string& message,
             const ResponseFrames::Avr8Generic::Avr8GenericResponseFrame& responseFrame
-        ): TargetOperationFailure(message) {
+        )
+            : TargetOperationFailure(message)
+        {
             this->message = message;
 
-            if (
-                responseFrame.payload.size() == 3
-                && this->failureCodeToDescription.contains(static_cast<Avr8CommandFailureCode>(responseFrame.payload[2]))
-            ) {
-                this->code = static_cast<Avr8CommandFailureCode>(responseFrame.payload[2]);
-                this->message += " - Failure reason: " + this->failureCodeToDescription.at(*(this->code));
+            if (responseFrame.payload.size() == 3) {
+                /*
+                 * The response includes a failure code - lookup the corresponding description and append it to the
+                 * exception message.
+                 */
+                const auto failureCode = static_cast<Avr8CommandFailureCode>(responseFrame.payload[2]);
+                const auto failureCodeDescriptionIt = this->failureCodeToDescription.find(failureCode);
+
+                if (failureCodeDescriptionIt != this->failureCodeToDescription.end()) {
+                    this->code = failureCode;
+                    this->message += " - Failure reason: " + failureCodeDescriptionIt->second;
+                }
             }
         }
 
     private:
-        static inline auto failureCodeToDescription = std::map<Avr8CommandFailureCode, std::string>({
+        static const inline auto failureCodeToDescription = std::map<Avr8CommandFailureCode, std::string>({
             {Avr8CommandFailureCode::DEBUGWIRE_PHYSICAL_ERROR, "debugWIRE physical error"},
             {Avr8CommandFailureCode::JTAGM_FAILED_TO_INITIALISE, "JTAGM failed to initialise"},
             {Avr8CommandFailureCode::UNKNOWN_JTAG_ERROR, "JTAGM did something strange"},

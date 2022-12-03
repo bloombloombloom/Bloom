@@ -66,13 +66,13 @@ namespace Bloom::DebugServer
         );
 
         static const auto availableServersByName = this->getAvailableServersByName();
-        if (!availableServersByName.contains(this->debugServerConfig.name)) {
-            throw Exceptions::InvalidConfig(
-                "DebugServer \"" + this->debugServerConfig.name + "\" not found."
-            );
+        const auto selectedServerIt = availableServersByName.find(this->debugServerConfig.name);
+
+        if (selectedServerIt == availableServersByName.end()) {
+            throw Exceptions::InvalidConfig("DebugServer \"" + this->debugServerConfig.name + "\" not found.");
         }
 
-        this->server = availableServersByName.at(this->debugServerConfig.name)();
+        this->server = selectedServerIt->second();
         Logger::info("Selected DebugServer: " + this->server->getName());
 
         this->server->init();

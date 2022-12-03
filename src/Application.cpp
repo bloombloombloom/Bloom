@@ -28,10 +28,11 @@ namespace Bloom
             if (this->arguments.size() > 1) {
                 auto& firstArg = this->arguments.at(1);
                 const auto commandHandlersByCommandName = this->getCommandHandlersByCommandName();
+                const auto commandHandlerIt = commandHandlersByCommandName.find(firstArg);
 
-                if (commandHandlersByCommandName.contains(firstArg)) {
+                if (commandHandlerIt != commandHandlersByCommandName.end()) {
                     // User has passed an argument that maps to a command callback - invoke the callback and shutdown
-                    const auto returnValue = commandHandlersByCommandName.at(firstArg)();
+                    const auto returnValue = commandHandlerIt->second();
 
                     this->shutdown();
                     return returnValue;
@@ -272,13 +273,14 @@ namespace Bloom
         }
 
         // Validate the selected environment
-        if (!this->projectConfig->environments.contains(this->selectedEnvironmentName)) {
+        const auto selectedEnvironmentIt = this->projectConfig->environments.find(this->selectedEnvironmentName);
+        if (selectedEnvironmentIt == this->projectConfig->environments.end()) {
             throw InvalidConfig(
                 "Environment (\"" + this->selectedEnvironmentName + "\") not found in configuration."
             );
         }
 
-        this->environmentConfig = this->projectConfig->environments.at(this->selectedEnvironmentName);
+        this->environmentConfig = selectedEnvironmentIt->second;
 
         if (this->environmentConfig->insightConfig.has_value()) {
             this->insightConfig = this->environmentConfig->insightConfig.value();

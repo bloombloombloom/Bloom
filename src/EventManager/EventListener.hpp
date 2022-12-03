@@ -75,13 +75,13 @@ namespace Bloom
          */
         template<class EventType>
         void registerEventType() {
-            auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
+            const auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
             this->registeredEventTypes.getValue().insert(EventType::type);
         }
 
         template<class EventType>
         void deRegisterEventType() {
-            auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
+            const auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
             this->registeredEventTypes.getValue().erase(EventType::type);
         }
 
@@ -117,7 +117,7 @@ namespace Bloom
                 }
             ;
 
-            auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
+            const auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
             auto& mapping = this->eventTypeToCallbacksMapping.getValue();
 
             mapping[EventType::type].push_back(parentCallback);
@@ -137,7 +137,7 @@ namespace Bloom
             );
 
             {
-                auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
+                const auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
                 auto& mapping = this->eventTypeToCallbacksMapping.getValue();
 
                 if (mapping.contains(EventType::type)) {
@@ -150,7 +150,7 @@ namespace Bloom
                 this->registeredEventTypes.getValue().erase(EventType::type);
             }
 
-            auto queueLock = this->eventQueueByEventType.acquireLock();
+            const auto queueLock = this->eventQueueByEventType.acquireLock();
             auto& eventQueueByType = this->eventQueueByEventType.getValue();
 
             if (eventQueueByType.contains(EventType::type)) {

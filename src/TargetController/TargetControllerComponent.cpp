@@ -355,12 +355,12 @@ namespace Bloom::TargetController
 
         for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); mapIt++) {
             // Each target signature maps to an array of targets, as numerous targets can possess the same signature.
-            auto targets = mapIt.value().toArray();
+            const auto targets = mapIt.value().toArray();
 
             for (auto targetIt = targets.begin(); targetIt != targets.end(); targetIt++) {
-                auto targetName = targetIt->toObject().find("targetName").value().toString()
+                const auto targetName = targetIt->toObject().find("targetName").value().toString()
                     .toLower().toStdString();
-                auto targetSignatureHex = mapIt.key().toLower().toStdString();
+                const auto targetSignatureHex = mapIt.key().toLower().toStdString();
 
                 if (!mapping.contains(targetName)) {
                     mapping.insert({
@@ -395,7 +395,9 @@ namespace Bloom::TargetController
             const auto commandType = command->getType();
 
             try {
-                if (!this->commandHandlersByCommandType.contains(commandType)) {
+                const auto commandHandlerIt = this->commandHandlersByCommandType.find(commandType);
+
+                if (commandHandlerIt == this->commandHandlersByCommandType.end()) {
                     throw Exception("No handler registered for this command.");
                 }
 
@@ -415,10 +417,7 @@ namespace Bloom::TargetController
                     }
                 }
 
-                this->registerCommandResponse(
-                    commandId,
-                    this->commandHandlersByCommandType.at(commandType)(*(command.get()))
-                );
+                this->registerCommandResponse(commandId, commandHandlerIt->second(*(command.get())));
 
             } catch (const Exception& exception) {
                 this->registerCommandResponse(
@@ -543,23 +542,26 @@ namespace Bloom::TargetController
         auto debugToolName = this->environmentConfig.debugToolConfig.name;
         auto targetName = this->environmentConfig.targetConfig.name;
 
-        static auto supportedDebugTools = this->getSupportedDebugTools();
-        static auto supportedTargets = this->getSupportedTargets();
+        static const auto supportedDebugTools = this->getSupportedDebugTools();
+        static const auto supportedTargets = this->getSupportedTargets();
 
-        if (!supportedDebugTools.contains(debugToolName)) {
+        const auto debugToolIt = supportedDebugTools.find(debugToolName);
+        const auto targetIt = supportedTargets.find(targetName);
+
+        if (debugToolIt == supportedDebugTools.end()) {
             throw Exceptions::InvalidConfig(
                 "Debug tool name (\"" + debugToolName + "\") not recognised. Please check your configuration!"
             );
         }
 
-        if (!supportedTargets.contains(targetName)) {
+        if (targetIt == supportedTargets.end()) {
             throw Exceptions::InvalidConfig(
                 "Target name (\"" + targetName + "\") not recognised. Please check your configuration!"
             );
         }
 
         // Initiate debug tool and target
-        this->debugTool = supportedDebugTools.at(debugToolName)();
+        this->debugTool = debugToolIt->second();
 
         Logger::info("Connecting to debug tool");
         this->debugTool->init();
@@ -568,7 +570,7 @@ namespace Bloom::TargetController
         Logger::info("Debug tool name: " + this->debugTool->getName());
         Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
 
-        this->target = supportedTargets.at(targetName)();
+        this->target = targetIt->second();
 
         if (!this->target->isDebugToolSupported(this->debugTool.get())) {
             throw Exceptions::InvalidConfig(
@@ -634,16 +636,17 @@ namespace Bloom::TargetController
                 auto startAddress = registerDescriptor.startAddress.value_or(0);
                 auto endAddress = startAddress + (registerDescriptor.size - 1);
 
-                if (!this->registerAddressRangeByMemoryType.contains(registerDescriptor.memoryType)) {
-                    auto addressRange = TargetMemoryAddressRange();
-                    addressRange.startAddress = startAddress;
-                    addressRange.endAddress = endAddress;
+                const auto registerAddressRangeIt = this->registerAddressRangeByMemoryType.find(
+                    registerDescriptor.memoryType
+                );
+
+                if (registerAddressRangeIt == this->registerAddressRangeByMemoryType.end()) {
                     this->registerAddressRangeByMemoryType.insert(
-                        std::pair(registerDescriptor.memoryType, addressRange)
+                        std::pair(registerDescriptor.memoryType, TargetMemoryAddressRange(startAddress, endAddress))
                     );
 
                 } else {
-                    auto& addressRange = this->registerAddressRangeByMemoryType.at(registerDescriptor.memoryType);
+                    auto& addressRange = registerAddressRangeIt->second;
 
                     if (startAddress < addressRange.startAddress) {
                         addressRange.startAddress = startAddress;
@@ -666,24 +669,28 @@ namespace Bloom::TargetController
     ) {
         auto output = TargetRegisterDescriptors();
 
-        if (this->registerAddressRangeByMemoryType.contains(memoryType)
-            && this->registerDescriptorsByMemoryType.contains(memoryType)
+        const auto registerAddressRangeIt = this->registerAddressRangeByMemoryType.find(memoryType);
+        const auto registerDescriptorsIt = this->registerDescriptorsByMemoryType.find(memoryType);
+
+        if (
+            registerAddressRangeIt != this->registerAddressRangeByMemoryType.end()
+            && registerDescriptorsIt != this->registerDescriptorsByMemoryType.end()
         ) {
-            auto& registersAddressRange = this->registerAddressRangeByMemoryType.at(memoryType);
+            const auto& registersAddressRange = registerAddressRangeIt->second;
 
             if (
                 (startAddress <= registersAddressRange.startAddress && endAddress >= registersAddressRange.startAddress)
                 || (startAddress <= registersAddressRange.endAddress && endAddress >= registersAddressRange.startAddress)
             ) {
-                auto& registerDescriptors = this->registerDescriptorsByMemoryType.at(memoryType);
+                const auto& registerDescriptors = this->registerDescriptorsByMemoryType.at(memoryType);
 
                 for (const auto& registerDescriptor : registerDescriptors) {
                     if (!registerDescriptor.startAddress.has_value() || registerDescriptor.size < 1) {
                         continue;
                     }
 
-                    auto registerStartAddress = registerDescriptor.startAddress.value();
-                    auto registerEndAddress = registerStartAddress + registerDescriptor.size;
+                    const auto registerStartAddress = registerDescriptor.startAddress.value();
+                    const auto registerEndAddress = registerStartAddress + registerDescriptor.size;
 
                     if (
                         (startAddress <= registerStartAddress && endAddress >= registerStartAddress)
