@@ -34,14 +34,28 @@ $avrTdfs = TargetDescriptionFiles\Factory::loadAvr8Tdfs();
 
 print "Processing " . count($avrTdfs) . " AVR8 TDFs...\n\n";
 
+$processedTargetIds = [];
+
 foreach ($avrTdfs as $avrTdf) {
     print "Processing AVR8 TDF for target " . $avrTdf->targetName . "\n";
 
+    $strippedTargetName = str_replace([' '] , '_', $avrTdf->targetName);
+    $id = strtolower($strippedTargetName);
+
+    if (in_array($id, $processedTargetIds)) {
+        print "\033[31m" . PHP_EOL;
+        print "FATAL ERROR: duplicate AVR8 target ID detected: " . $id . PHP_EOL . PHP_EOL
+            . "TDF Path: " . realpath($avrTdf->filePath);
+        print "\033[0m" . PHP_EOL;
+        exit(1);
+    }
+
     if (!empty(($validationFailures = $avrTdf->validate()))) {
-        print "\033[31m\n";
-        print "FATAL ERROR: AVR8 TDF failed validation - failure reasons:\n"
-            . implode("\n", $validationFailures) . "\n\nTDF Path: " . realpath($avrTdf->filePath);
-        print "\033[0m\n\n";
+        print "\033[31m" . PHP_EOL;
+        print "FATAL ERROR: AVR8 TDF failed validation - failure reasons:" . PHP_EOL
+            . implode(PHP_EOL, $validationFailures) . PHP_EOL . PHP_EOL . "TDF Path: "
+            . realpath($avrTdf->filePath);
+        print "\033[0m" . PHP_EOL;
         exit(1);
     }
 
@@ -64,7 +78,6 @@ foreach ($avrTdfs as $avrTdf) {
         mkdir($destinationFilePath, 0700, true);
     }
 
-    $strippedTargetName = str_replace([' '] , '_', $avrTdf->targetName);
     $destinationFilePath .= "/" . strtoupper($strippedTargetName) . ".xml";
     $relativeDestinationFilePath .= "/" . strtoupper($strippedTargetName) . ".xml";
 
@@ -79,6 +92,8 @@ foreach ($avrTdfs as $avrTdf) {
         'targetName' => $strippedTargetName,
         'targetDescriptionFilePath' => $relativeDestinationFilePath,
     ];
+
+    $processedTargetIds[] = $id;
 }
 
 if (file_put_contents(AVR_TDF_MAPPING_FILE_PATH, json_encode($tdfMapping, JSON_PRETTY_PRINT)) === false) {
