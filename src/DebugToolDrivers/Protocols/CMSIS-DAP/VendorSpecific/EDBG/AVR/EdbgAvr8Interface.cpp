@@ -734,7 +734,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 break;
             }
             case TargetMemoryType::EEPROM: {
-                avr8MemoryType = Avr8MemoryType::EEPROM;
+                avr8MemoryType =
+                    this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
+                        ? Avr8MemoryType::EEPROM_ATOMIC
+                        : Avr8MemoryType::EEPROM;
             }
             default: {
                 break;
@@ -1239,6 +1242,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw DeviceInitializationFailure("Missing required parameter: SIGNATURE BASE ADDRESS");
         }
 
+        if (!this->targetParameters.eepromPageSize.has_value()) {
+            throw DeviceInitializationFailure("Missing required parameter: UPDI_EEPROM_PAGE_SIZE");
+        }
+
         if (this->targetParameters.programMemoryUpdiStartAddress.has_value()) {
             /*
              * The program memory base address field for UPDI sessions (DEVICE_UPDI_PROGMEM_BASE_ADDR) seems to be
@@ -1537,6 +1544,30 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return bytes;
     }
 
+    std::optional<Targets::TargetMemorySize> EdbgAvr8Interface::maximumMemoryAccessSize(Avr8MemoryType memoryType) {
+        if (
+            memoryType == Avr8MemoryType::FLASH_PAGE
+            || memoryType == Avr8MemoryType::APPL_FLASH
+            || memoryType == Avr8MemoryType::BOOT_FLASH
+            || (memoryType == Avr8MemoryType::SPM && this->configVariant == Avr8ConfigVariant::MEGAJTAG)
+        ) {
+            // These flash memory types require single page access.
+            return this->targetParameters.flashPageSize.value();
+        }
+
+        if (memoryType == Avr8MemoryType::EEPROM_ATOMIC) {
+            // This EEPROM memory type requires single page access.
+            return this->targetParameters.eepromPageSize.value();
+        }
+
+        if (this->maximumMemoryAccessSizePerRequest.has_value()) {
+            // There is a memory access size limit for this entire EdbgAvr8Interface instance
+            return this->maximumMemoryAccessSizePerRequest;
+        }
+
+        return std::nullopt;
+    }
+
     TargetMemoryBuffer EdbgAvr8Interface::readMemory(
         Avr8MemoryType type,
         TargetMemoryAddress startAddress,
@@ -1611,48 +1642,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        if (
-            type == Avr8MemoryType::FLASH_PAGE
-            || type == Avr8MemoryType::APPL_FLASH
-            || type == Avr8MemoryType::BOOT_FLASH
-            || (type == Avr8MemoryType::SPM && this->configVariant == Avr8ConfigVariant::MEGAJTAG)
-        ) {
-            // With the FLASH_PAGE, APPL_FLASH, BOOT_FLASH and SPM memory types, we can only read one page at a time.
-            const auto pageSize = this->targetParameters.flashPageSize.value();
-
-            if (bytes > pageSize) {
-                // bytes should always be a multiple of pageSize (given the code above)
-                assert(bytes % pageSize == 0);
-                int pagesRequired = static_cast<int>(bytes / pageSize);
-                auto memoryBuffer = Targets::TargetMemoryBuffer();
-
-                for (auto i = 0; i < pagesRequired; i++) {
-                    auto pageBuffer = this->readMemory(
-                        type,
-                        startAddress + static_cast<TargetMemoryAddress>(pageSize * i),
-                        pageSize
-                    );
-                    std::move(pageBuffer.begin(), pageBuffer.end(), std::back_inserter(memoryBuffer));
-                }
-
-                return memoryBuffer;
-            }
-        }
-
-        /*
-         * Enforce a maximum memory access request size.
-         *
-         * See the comment for EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest() for more on this.
-         */
-        if (this->maximumMemoryAccessSizePerRequest.has_value() && bytes > this->maximumMemoryAccessSizePerRequest) {
-            auto maximumRequestSize = this->maximumMemoryAccessSizePerRequest.value();
-            auto totalReadsRequired = std::ceil(static_cast<float>(bytes) / static_cast<float>(maximumRequestSize));
+        const auto maximumReadSize = this->maximumMemoryAccessSize(type);
+        if (maximumReadSize.has_value() && bytes > *maximumReadSize) {
             auto output = Targets::TargetMemoryBuffer();
             output.reserve(bytes);
 
-            for (float i = 1; i <= totalReadsRequired; i++) {
-                const auto bytesToRead = static_cast<TargetMemorySize>(
-                    (bytes - output.size()) > maximumRequestSize ? maximumRequestSize : bytes - output.size()
+            while (output.size() < bytes) {
+                const auto bytesToRead = std::min(
+                    static_cast<TargetMemorySize>(bytes - output.size()),
+                    *maximumReadSize
                 );
 
                 auto data = this->readMemory(
@@ -1661,7 +1659,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     bytesToRead,
                     excludedAddresses
                 );
-                output.insert(output.end(), data.begin(), data.end());
+                std::move(data.begin(), data.end(), std::back_inserter(output));
             }
 
             return output;
@@ -1754,33 +1752,29 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        if (
-            type == Avr8MemoryType::FLASH_PAGE
-            || type == Avr8MemoryType::APPL_FLASH
-            || type == Avr8MemoryType::BOOT_FLASH
-        ) {
-            // With the FLASH_PAGE, APPL_FLASH and BOOT_FLASH memory types, we can only write one page at a time.
-            const auto pageSize = this->targetParameters.flashPageSize.value();
+        const auto maximumWriteSize = this->maximumMemoryAccessSize(type);
+        if (maximumWriteSize.has_value() && buffer.size() > *maximumWriteSize) {
+            auto bytesWritten = TargetMemorySize(0);
 
-            if (bytes > pageSize) {
-                assert(bytes % pageSize == 0);
-                int pagesRequired = static_cast<int>(bytes / pageSize);
+            while (bytesWritten < buffer.size()) {
+                const auto chunkSize = std::min(
+                    static_cast<TargetMemorySize>(buffer.size() - bytesWritten),
+                    *maximumWriteSize
+                );
 
-                for (auto i = 0; i < pagesRequired; i++) {
-                    const auto offset = static_cast<std::uint32_t>(pageSize * i);
-                    auto pageBuffer = TargetMemoryBuffer();
-                    pageBuffer.reserve(pageSize);
-                    std::move(
-                        buffer.begin() + offset,
-                        buffer.begin() + offset + pageSize,
-                        std::back_inserter(pageBuffer)
-                    );
+                this->writeMemory(
+                    type,
+                    startAddress + bytesWritten,
+                    TargetMemoryBuffer(
+                        buffer.begin() + bytesWritten,
+                        buffer.begin() + bytesWritten + chunkSize
+                    )
+                );
 
-                    this->writeMemory(type, startAddress + offset, pageBuffer);
-                }
-
-                return;
+                bytesWritten += chunkSize;
             }
+
+            return;
         }
 
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(

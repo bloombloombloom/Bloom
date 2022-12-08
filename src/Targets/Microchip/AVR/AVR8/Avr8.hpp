@@ -176,6 +176,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         TargetSignature getId() override;
 
         /**
+         * Writes to FLASH memory (with any necessary erasing).
+         *
+         * @param startAddress
+         * @param buffer
+         */
+        void writeFlashMemory(TargetMemoryAddress startAddress, const TargetMemoryBuffer& buffer);
+
+        /**
          * Updates the debugWire enable (DWEN) fuse bit on the AVR target.
          *
          * @param enable

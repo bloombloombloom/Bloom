@@ -506,6 +506,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         Targets::TargetMemorySize alignMemoryBytes(Avr8MemoryType memoryType, Targets::TargetMemorySize bytes);
 
         /**
+         * Checks if a maximum memory access size is imposed for a given Avr8MemoryType.
+         *
+         * @param memoryType
+         *  The imposed maximum size, or std::nullopt if a maximum isn't required.
+         *
+         * @return
+         */
+        std::optional<Targets::TargetMemorySize> maximumMemoryAccessSize(Avr8MemoryType memoryType);
+
+        /**
          * Reads memory on the target.
          *
          * This method will handle any alignment requirements for the selected memory type.
