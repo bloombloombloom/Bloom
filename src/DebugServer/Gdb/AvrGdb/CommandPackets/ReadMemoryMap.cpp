@@ -80,7 +80,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          * We include register and EEPROM memory in our RAM section. This allows GDB to access registers and EEPROM
          * data via memory read/write packets.
          *
-         * Like SRAM, GDB applies an offset to EEPROM addresses. We account for that offset in our ramSize.
+         * Like SRAM, GDB applies an offset to EEPROM addresses. We account for that offset in our ramSectionSize.
          *
          * The SRAM and EEPROM offsets allow for a maximum of 65KB of SRAM. But that must also accommodate the
          * register addresses, which can vary in size.

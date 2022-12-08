@@ -938,7 +938,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
         if (this->targetParameters.flashPageSize.has_value()) {
-            Logger::debug("Setting DEVICE_FLASH_PAGE_SIZE AVR8 parameter");
+            Logger::debug("Setting FLASH_PAGE_SIZE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_FLASH_PAGE_SIZE,
                 this->targetParameters.flashPageSize.value()
@@ -946,7 +946,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.flashSize.has_value()) {
-            Logger::debug("Setting DEVICE_FLASH_SIZE AVR8 parameter");
+            Logger::debug("Setting FLASH_SIZE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_FLASH_SIZE,
                 this->targetParameters.flashSize.value()
@@ -954,7 +954,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.flashStartAddress.has_value()) {
-            Logger::debug("Setting DEVICE_FLASH_BASE AVR8 parameter");
+            Logger::debug("Setting FLASH_BASE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_FLASH_BASE,
                 this->targetParameters.flashStartAddress.value()
@@ -962,7 +962,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.ramStartAddress.has_value()) {
-            Logger::debug("Setting DEVICE_SRAM_START AVR8 parameter");
+            Logger::debug("Setting SRAM_START AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_SRAM_START,
                 this->targetParameters.ramStartAddress.value()
@@ -970,7 +970,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.eepromSize.has_value()) {
-            Logger::debug("Setting DEVICE_EEPROM_SIZE AVR8 parameter");
+            Logger::debug("Setting EEPROM_SIZE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_EEPROM_SIZE,
                 this->targetParameters.eepromSize.value()
@@ -978,7 +978,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.eepromPageSize.has_value()) {
-            Logger::debug("Setting DEVICE_EEPROM_PAGE_SIZE AVR8 parameter");
+            Logger::debug("Setting EEPROM_PAGE_SIZE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_EEPROM_PAGE_SIZE,
                 this->targetParameters.eepromPageSize.value()
@@ -986,7 +986,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.ocdRevision.has_value()) {
-            Logger::debug("Setting DEVICE_OCD_REVISION AVR8 parameter");
+            Logger::debug("Setting OCD_REVISION AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_OCD_REVISION,
                 this->targetParameters.ocdRevision.value()
@@ -994,7 +994,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.ocdDataRegister.has_value()) {
-            Logger::debug("Setting DEVICE_OCD_DATA_REGISTER AVR8 parameter");
+            Logger::debug("Setting OCD_DATA_REGISTER AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_OCD_DATA_REGISTER,
                 this->targetParameters.ocdDataRegister.value()
@@ -1002,7 +1002,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.spmcRegisterStartAddress.has_value()) {
-            Logger::debug("Setting DEVICE_SPMCR_REGISTER AVR8 parameter");
+            Logger::debug("Setting SPMCR_REGISTER AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_SPMCR_REGISTER,
                 this->targetParameters.spmcRegisterStartAddress.value()
@@ -1010,7 +1010,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.bootSectionStartAddress.has_value()) {
-            Logger::debug("Setting DEVICE_BOOT_START_ADDR AVR8 parameter");
+            Logger::debug("Setting BOOT_START_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_BOOT_START_ADDR,
                 this->targetParameters.bootSectionStartAddress.value()
@@ -1035,7 +1035,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         auto mappedIoStartAddress = this->targetParameters.mappedIoSegmentStartAddress.value_or(0);
 
         if (this->targetParameters.osccalAddress.has_value()) {
-            Logger::debug("Setting DEVICE_OSCCAL_ADDR AVR8 parameter");
+            Logger::debug("Setting OSCCAL_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_OSCCAL_ADDR,
                 static_cast<std::uint8_t>(
@@ -1045,7 +1045,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.eepromAddressRegisterLow.has_value()) {
-            Logger::debug("Setting DEVICE_EEARL_ADDR AVR8 parameter");
+            Logger::debug("Setting EEARL_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_EEARL_ADDR,
                 static_cast<std::uint8_t>(
@@ -1055,7 +1055,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.eepromAddressRegisterHigh.has_value()) {
-            Logger::debug("Setting DEVICE_EEARH_ADDR AVR8 parameter");
+            Logger::debug("Setting EEARH_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_EEARH_ADDR,
                 static_cast<std::uint8_t>(
@@ -1065,7 +1065,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.eepromControlRegisterAddress.has_value()) {
-            Logger::debug("Setting DEVICE_EECR_ADDR AVR8 parameter");
+            Logger::debug("Setting EECR_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_EECR_ADDR,
                 static_cast<std::uint8_t>(
@@ -1075,7 +1075,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.eepromDataRegisterAddress.has_value()) {
-            Logger::debug("Setting DEVICE_EEDR_ADDR AVR8 parameter");
+            Logger::debug("Setting EEDR_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_EEDR_ADDR,
                 static_cast<std::uint8_t>(
@@ -1260,13 +1260,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
              * for more).
              */
             const auto programMemBaseAddress = this->targetParameters.programMemoryUpdiStartAddress.value();
-            Logger::debug("Setting DEVICE_UPDI_PROGMEM_BASE_ADDR AVR8 parameter");
+            Logger::debug("Setting UPDI_PROGMEM_BASE_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_PROGMEM_BASE_ADDR,
                 static_cast<std::uint16_t>(programMemBaseAddress)
             );
 
-            Logger::debug("Setting DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB AVR8 parameter");
+            Logger::debug("Setting UPDI_PROGMEM_BASE_ADDR_MSB AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB,
                 static_cast<std::uint8_t>(programMemBaseAddress >> 16)
@@ -1280,13 +1280,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
              * The same applies here, for the flash page size field (DEVICE_UPDI_FLASH_PAGE_SIZE).
              */
             auto flashPageSize = this->targetParameters.flashPageSize.value();
-            Logger::debug("Setting DEVICE_UPDI_FLASH_PAGE_SIZE AVR8 parameter");
+            Logger::debug("Setting UPDI_FLASH_PAGE_SIZE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_FLASH_PAGE_SIZE,
                 static_cast<std::uint8_t>(flashPageSize)
             );
 
-            Logger::debug("Setting DEVICE_UPDI_FLASH_PAGE_SIZE_MSB AVR8 parameter");
+            Logger::debug("Setting UPDI_FLASH_PAGE_SIZE_MSB AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_FLASH_PAGE_SIZE_MSB,
                 static_cast<std::uint8_t>(flashPageSize >> 8)
@@ -1294,7 +1294,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.eepromPageSize.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_EEPROM_PAGE_SIZE AVR8 parameter");
+            Logger::debug("Setting UPDI_EEPROM_PAGE_SIZE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_EEPROM_PAGE_SIZE,
                 this->targetParameters.eepromPageSize.value()
@@ -1302,7 +1302,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.nvmModuleBaseAddress.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_NVMCTRL_ADDR AVR8 parameter");
+            Logger::debug("Setting UPDI_NVMCTRL_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_NVMCTRL_ADDR,
                 this->targetParameters.nvmModuleBaseAddress.value()
@@ -1310,7 +1310,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.ocdModuleAddress.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_OCD_ADDR AVR8 parameter");
+            Logger::debug("Setting UPDI_OCD_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_OCD_ADDR,
                 this->targetParameters.ocdModuleAddress.value()
@@ -1318,7 +1318,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.flashSize.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_FLASH_SIZE AVR8 parameter");
+            Logger::debug("Setting UPDI_FLASH_SIZE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_FLASH_SIZE,
                 this->targetParameters.flashSize.value()
@@ -1326,7 +1326,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.eepromSize.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_EEPROM_SIZE AVR8 parameter");
+            Logger::debug("Setting UPDI_EEPROM_SIZE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_EEPROM_SIZE,
                 this->targetParameters.eepromSize.value()
@@ -1334,7 +1334,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.eepromStartAddress.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_EEPROM_BASE_ADDR AVR8 parameter");
+            Logger::debug("Setting UPDI_EEPROM_BASE_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_EEPROM_BASE_ADDR,
                 this->targetParameters.eepromStartAddress.value()
@@ -1342,7 +1342,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.signatureSegmentStartAddress.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_SIG_BASE_ADDR AVR8 parameter");
+            Logger::debug("Setting UPDI_SIG_BASE_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_SIG_BASE_ADDR,
                 this->targetParameters.signatureSegmentStartAddress.value()
@@ -1350,7 +1350,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.fuseSegmentStartAddress.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_FUSE_BASE_ADDR AVR8 parameter");
+            Logger::debug("Setting UPDI_FUSE_BASE_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_FUSE_BASE_ADDR,
                 this->targetParameters.fuseSegmentStartAddress.value()
@@ -1358,7 +1358,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.fuseSegmentSize.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_FUSE_SIZE AVR8 parameter");
+            Logger::debug("Setting UPDI_FUSE_SIZE AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_FUSE_SIZE,
                 this->targetParameters.fuseSegmentSize.value()
@@ -1366,7 +1366,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         if (this->targetParameters.lockbitsSegmentStartAddress.has_value()) {
-            Logger::debug("Setting DEVICE_UPDI_LOCK_BASE_ADDR AVR8 parameter");
+            Logger::debug("Setting UPDI_LOCK_BASE_ADDR AVR8 device parameter");
             this->setParameter(
                 Avr8EdbgParameters::DEVICE_UPDI_LOCK_BASE_ADDR,
                 this->targetParameters.lockbitsSegmentStartAddress.value()
@@ -1685,9 +1685,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
              * that isn't actually the memory data (like the command ID, version bytes, etc). I could have sought the
              * actual value but who has the time. It won't exceed 20 bytes. Bite me.
              */
-            auto singlePacketSize = static_cast<std::uint32_t>(this->edbgInterface->getUsbHidInputReportSize() - 20);
-            auto totalResponsePackets = std::ceil(static_cast<float>(bytes) / static_cast<float>(singlePacketSize));
-            auto totalReadsRequired = std::ceil(static_cast<float>(totalResponsePackets) / 2);
+            const auto singlePacketSize = static_cast<std::uint32_t>(this->edbgInterface->getUsbHidInputReportSize() - 20);
+            const auto totalResponsePackets = std::ceil(static_cast<float>(bytes) / static_cast<float>(singlePacketSize));
+            const auto totalReadsRequired = std::ceil(static_cast<float>(totalResponsePackets) / 2);
 
             if (totalResponsePackets > 2) {
                 /*
@@ -1697,7 +1697,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 auto output = TargetMemoryBuffer();
 
                 for (float i = 1; i <= totalReadsRequired; i++) {
-                    auto bytesToRead = static_cast<TargetMemorySize>(
+                    const auto bytesToRead = static_cast<TargetMemorySize>(
                         (bytes - output.size()) > (singlePacketSize * 2)
                             ? (singlePacketSize * 2) : bytes - output.size()
                     );
@@ -1707,7 +1707,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                         bytesToRead,
                         excludedAddresses
                     );
-                    output.insert(output.end(), data.begin(), data.end());
+                    std::move(data.begin(), data.end(), std::back_inserter(output));
                 }
 
                 return output;

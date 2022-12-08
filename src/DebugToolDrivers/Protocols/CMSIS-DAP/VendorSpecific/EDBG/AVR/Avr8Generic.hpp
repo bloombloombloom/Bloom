@@ -13,7 +13,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         constexpr Avr8EdbgParameter() = default;
         constexpr Avr8EdbgParameter(unsigned char context, unsigned char id)
-            : context(context), id(id) {};
+            : context(context)
+            , id(id)
+        {};
     };
 
     struct Avr8EdbgParameters
@@ -129,7 +131,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         EEPROM = 0x22,
 
         /**
-         * The EEPROM_ATOMIC memory type can be used to write to EEPROM memory with automatic pag erasing.
+         * The EEPROM_ATOMIC memory type can be used to write to EEPROM memory with automatic page erasing.
          *
          * It's only available for XMEGA and UPDI config variants.
          *
@@ -152,7 +154,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * The APPL_FLASH memory type can be used to read/write to the application section of the flash memory on the
          * target.
          *
-         * Only available with the XMEGA (PDI) and UPDI (PDI_1W) config variants.
+         * Only available with the XMEGA and UPDI config variants.
          *
          * When in debugging mode, only read access is permitted. Programming mode will need to be enabled before
          * any attempts of writing data.

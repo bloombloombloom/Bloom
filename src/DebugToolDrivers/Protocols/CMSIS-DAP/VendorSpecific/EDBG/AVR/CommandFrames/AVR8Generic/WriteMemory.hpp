@@ -14,7 +14,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             : Avr8GenericCommandFrame()
         {
             /*
-             * The write memory command consists of 12 bytes + the buffer size:
+             * The "Write memory" command consists of 12 bytes + the buffer size:
              * 1. Command ID (0x23)
              * 2. Version (0x00)
              * 3. Memory type (Avr8MemoryType)
@@ -32,7 +32,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             this->payload[5] = static_cast<unsigned char>(address >> 16);
             this->payload[6] = static_cast<unsigned char>(address >> 24);
 
-            auto bytesToWrite = static_cast<std::uint32_t>(buffer.size());
+            const auto bytesToWrite = static_cast<std::uint32_t>(buffer.size());
             this->payload[7] = static_cast<unsigned char>(bytesToWrite);
             this->payload[8] = static_cast<unsigned char>(bytesToWrite >> 8);
             this->payload[9] = static_cast<unsigned char>(bytesToWrite >> 16);

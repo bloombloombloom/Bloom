@@ -13,7 +13,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
             : Avr8GenericCommandFrame()
         {
             /*
-             * The erase memory command consists of 7 bytes:
+             * The "Erase memory" command consists of 7 bytes:
              * 1. Command ID (0x20)
              * 2. Version (0x00)
              * 3. Erase mode (see Avr8EraseMemoryMode enum)
