@@ -59,22 +59,43 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         const auto& ramDescriptor = memoryDescriptorsByType.at(TargetMemoryType::RAM);
         const auto& flashDescriptor = memoryDescriptorsByType.at(TargetMemoryType::FLASH);
 
+        const auto eepromDescriptorIt = memoryDescriptorsByType.find(TargetMemoryType::EEPROM);
+        const auto eepromDescriptor = eepromDescriptorIt != memoryDescriptorsByType.end()
+            ? std::optional(eepromDescriptorIt->second)
+            : std::nullopt;
+
         const auto ramGdbOffset = debugSession.gdbTargetDescriptor.getMemoryOffset(
             Targets::TargetMemoryType::RAM
+        );
+
+        const auto eepromGdbOffset = debugSession.gdbTargetDescriptor.getMemoryOffset(
+            Targets::TargetMemoryType::EEPROM
         );
 
         const auto flashGdbOffset = debugSession.gdbTargetDescriptor.getMemoryOffset(
             Targets::TargetMemoryType::FLASH
         );
 
-        // We include the start address in ramSize to account for AVR registers in the data address space.
-        const auto ramSize = ramDescriptor.size() + ramDescriptor.addressRange.startAddress;
+        /*
+         * We include register and EEPROM memory in our RAM section. This allows GDB to access registers and EEPROM
+         * data via memory read/write packets.
+         *
+         * Like SRAM, GDB applies an offset to EEPROM addresses. We account for that offset in our ramSize.
+         *
+         * The SRAM and EEPROM offsets allow for a maximum of 65KB of SRAM. But that must also accommodate the
+         * register addresses, which can vary in size.
+         *
+         * As of writing this (Dec 2022), there are no 8-bit AVR targets on sale today, with 65KB+ of SRAM.
+         */
+        const auto eepromEndAddress = eepromGdbOffset + (eepromDescriptor.has_value() ? eepromDescriptor->size() : 0);
+        const auto ramSectionSize = eepromEndAddress - ramGdbOffset;
+
         const auto flashSize = flashDescriptor.size();
         const auto flashPageSize = flashDescriptor.pageSize.value();
 
         const auto memoryMap =
             std::string("<memory-map>")
-                + "<memory type=\"ram\" start=\"" + std::to_string(ramGdbOffset) + "\" length=\"" + std::to_string(ramSize) + "\"/>"
+                + "<memory type=\"ram\" start=\"" + std::to_string(ramGdbOffset) + "\" length=\"" + std::to_string(ramSectionSize) + "\"/>"
                 + "<memory type=\"flash\" start=\"" + std::to_string(flashGdbOffset) + "\" length=\"" + std::to_string(flashSize) + "\">"
                     + "<property name=\"blocksize\">" + std::to_string(flashPageSize) + "</property>"
                 + "</memory>"

@@ -18,6 +18,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
             {
                 {Targets::TargetMemoryType::FLASH, 0},
                 {Targets::TargetMemoryType::RAM, 0x00800000U},
+                {Targets::TargetMemoryType::EEPROM, 0x00810000U},
             }
         )
     {
