@@ -9,5 +9,7 @@ namespace Bloom::DebugToolDrivers
             XplainedPro::CMSIS_HID_INTERFACE_NUMBER,
             true
         )
-    {}
+    {
+        this->edbgAvr8Interface->setMaximumMemoryAccessSizePerRequest(256);
+    }
 }
