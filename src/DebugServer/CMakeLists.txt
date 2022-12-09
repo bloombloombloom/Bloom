@@ -36,3 +36,14 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashWrite.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashDone.cpp
 )
+
+# DebugServer resources
+qt_add_resources(
+    Bloom
+    "DebugServerResources"
+    PREFIX
+        "/compiled/src/DebugServer"
+    FILES
+        # GDB RSP Server
+        "./Gdb/Resources/GdbHelpMonitorInfo.txt"
+)

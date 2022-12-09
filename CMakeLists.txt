@@ -74,7 +74,6 @@ qt_add_resources(
     FILES
         "./resources/bloom.template.yaml"
         "./resources/help.txt"
-        "./resources/gdbHelpMonitorInfo.txt"
 )
 
 add_subdirectory(src)
