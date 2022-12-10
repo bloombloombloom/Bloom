@@ -179,7 +179,7 @@ namespace Bloom::DebugServer::Gdb
                 this->targetControllerConsole.resetTarget();
             }
 
-            auto commandPacket = this->waitForCommandPacket();
+            const auto commandPacket = this->waitForCommandPacket();
 
             if (commandPacket) {
                 commandPacket->handle(this->activeDebugSession.value(), this->targetControllerConsole);

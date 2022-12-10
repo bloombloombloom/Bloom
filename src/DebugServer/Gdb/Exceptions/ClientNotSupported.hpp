@@ -13,13 +13,13 @@ namespace Bloom::DebugServer::Gdb::Exceptions
     class ClientNotSupported: public Bloom::Exceptions::Exception
     {
     public:
-        explicit ClientNotSupported(const std::string& message): Bloom::Exceptions::Exception(message) {
-            this->message = message;
-        }
+        explicit ClientNotSupported(const std::string& message)
+            : Bloom::Exceptions::Exception(message)
+        {}
 
-        explicit ClientNotSupported(const char* message): Bloom::Exceptions::Exception(message) {
-            this->message = std::string(message);
-        }
+        explicit ClientNotSupported(const char* message)
+            : Bloom::Exceptions::Exception(message)
+        {}
 
         explicit ClientNotSupported() = default;
     };

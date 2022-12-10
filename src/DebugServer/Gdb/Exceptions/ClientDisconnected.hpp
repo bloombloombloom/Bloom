@@ -14,14 +14,6 @@ namespace Bloom::DebugServer::Gdb::Exceptions
     class ClientDisconnected: public Bloom::Exceptions::Exception
     {
     public:
-        explicit ClientDisconnected(const std::string& message): Bloom::Exceptions::Exception(message) {
-            this->message = message;
-        }
-
-        explicit ClientDisconnected(const char* message): Bloom::Exceptions::Exception(message) {
-            this->message = std::string(message);
-        }
-
         explicit ClientDisconnected() = default;
     };
 }
