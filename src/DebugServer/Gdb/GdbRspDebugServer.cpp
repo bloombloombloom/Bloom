@@ -32,6 +32,7 @@
 #include "CommandPackets/BloomVersionMachine.hpp"
 #include "CommandPackets/GenerateSvd.hpp"
 #include "CommandPackets/Detach.hpp"
+#include "CommandPackets/EepromFill.hpp"
 
 // Response packets
 #include "ResponsePackets/TargetStopped.hpp"
@@ -312,6 +313,10 @@ namespace Bloom::DebugServer::Gdb
 
                 if (monitorCommand->command.find("svd") == 0) {
                     return std::make_unique<CommandPackets::GenerateSvd>(std::move(*(monitorCommand.release())));
+                }
+
+                if (monitorCommand->command.find("eeprom fill") == 0) {
+                    return std::make_unique<CommandPackets::EepromFill>(std::move(*(monitorCommand.release())));
                 }
 
                 return monitorCommand;
