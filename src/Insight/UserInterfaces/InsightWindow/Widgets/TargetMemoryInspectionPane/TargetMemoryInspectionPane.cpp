@@ -447,10 +447,16 @@ namespace Bloom::Widgets
                 this->refreshButton->setDisabled(false);
             }
 
-        } else if (newState == TargetState::RUNNING) {
+            return;
+        }
+
+        if (newState == TargetState::RUNNING) {
             this->hexViewerWidget->setDisabled(true);
             this->refreshButton->setDisabled(true);
-            this->setStaleData(this->data.has_value());
+
+            if (this->data.has_value()) {
+                this->setStaleData(true);
+            }
         }
     }
 
@@ -504,13 +510,18 @@ namespace Bloom::Widgets
     }
 
     void TargetMemoryInspectionPane::onTargetReset() {
-        this->setStaleData(this->data.has_value());
+        if (this->data.has_value()) {
+            this->setStaleData(true);
+        }
     }
 
     void TargetMemoryInspectionPane::onProgrammingModeEnabled() {
         this->hexViewerWidget->setDisabled(true);
         this->refreshButton->setDisabled(true);
-        this->setStaleData(this->data.has_value());
+
+        if (this->data.has_value()) {
+            this->setStaleData(true);
+        }
     }
 
     void TargetMemoryInspectionPane::onProgrammingModeDisabled() {
@@ -521,10 +532,10 @@ namespace Bloom::Widgets
 
     void TargetMemoryInspectionPane::onTargetMemoryWritten(
         TargetMemoryType memoryType,
-        TargetMemoryAddressRange addressRange
+        TargetMemoryAddressRange
     ) {
-        if (memoryType == this->targetMemoryDescriptor.type) {
-            this->setStaleData(this->data.has_value());
+        if (memoryType == this->targetMemoryDescriptor.type && this->data.has_value()) {
+            this->setStaleData(true);
         }
     }
 
