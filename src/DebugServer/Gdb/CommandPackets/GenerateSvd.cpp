@@ -23,7 +23,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     GenerateSvd::GenerateSvd(Monitor&& monitorPacket)
         : Monitor(std::move(monitorPacket))
-        , sendOutput(this->command.find("--out") != std::string::npos)
+        , sendOutput(this->commandOptions.contains("out"))
     {}
 
     void GenerateSvd::handle(DebugSession& debugSession, TargetControllerConsole&) {

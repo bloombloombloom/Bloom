@@ -8,6 +8,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/GdbDebugServerConfig.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/Connection.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/DebugSession.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/ResponsePackets/SupportedFeaturesResponse.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/CommandPacket.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/SupportedFeaturesQuery.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ReadRegisters.cpp
@@ -24,7 +25,6 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/BloomVersionMachine.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/GenerateSvd.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/Detach.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/ResponsePackets/SupportedFeaturesResponse.cpp
 
         # AVR GDB RSP Server
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/AvrGdbRsp.cpp
