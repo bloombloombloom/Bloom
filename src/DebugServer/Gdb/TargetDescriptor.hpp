@@ -50,7 +50,7 @@ namespace Bloom::DebugServer::Gdb
                 memoryOffsetIt != this->memoryOffsets.rend();
                 ++memoryOffsetIt
             ) {
-                if ((address & *memoryOffsetIt) != 0U) {
+                if ((address & *memoryOffsetIt) == *memoryOffsetIt) {
                     return this->memoryOffsetsByType.at(*memoryOffsetIt);
                 }
             }
