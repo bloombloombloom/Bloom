@@ -20,6 +20,7 @@ namespace Bloom::Widgets
 
     using Bloom::Targets::TargetMemoryDescriptor;
     using Bloom::Targets::TargetMemoryType;
+    using Bloom::Targets::TargetMemoryAddressRange;
 
     TargetMemoryInspectionPane::TargetMemoryInspectionPane(
         const TargetMemoryDescriptor& targetMemoryDescriptor,
@@ -211,6 +212,13 @@ namespace Bloom::Widgets
             &InsightSignals::programmingModeDisabled,
             this,
             &TargetMemoryInspectionPane::onProgrammingModeDisabled
+        );
+
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::targetMemoryWritten,
+            this,
+            &TargetMemoryInspectionPane::onTargetMemoryWritten
         );
 
         // Restore the state
@@ -509,6 +517,15 @@ namespace Bloom::Widgets
         const auto disabled = this->targetState != Targets::TargetState::STOPPED;
         this->hexViewerWidget->setDisabled(disabled);
         this->refreshButton->setDisabled(disabled);
+    }
+
+    void TargetMemoryInspectionPane::onTargetMemoryWritten(
+        TargetMemoryType memoryType,
+        TargetMemoryAddressRange addressRange
+    ) {
+        if (memoryType == this->targetMemoryDescriptor.type) {
+            this->setStaleData(this->data.has_value());
+        }
     }
 
     void TargetMemoryInspectionPane::setStaleData(bool staleData) {

@@ -80,6 +80,10 @@ namespace Bloom::Widgets
         void onTargetReset();
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();
+        void onTargetMemoryWritten(
+            Bloom::Targets::TargetMemoryType memoryType,
+            Targets::TargetMemoryAddressRange addressRange
+        );
         void setStaleData(bool staleData);
     };
 }

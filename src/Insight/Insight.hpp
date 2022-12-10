@@ -123,6 +123,7 @@ namespace Bloom
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
         void onTargetResetEvent(const Events::TargetReset& event);
         void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
+        void onTargetMemoryWrittenEvent(const Events::MemoryWrittenToTarget& event);
         void onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event);
         void onProgrammingModeEnabledEvent(const Events::ProgrammingModeEnabled& event);
         void onProgrammingModeDisabledEvent(const Events::ProgrammingModeDisabled& event);

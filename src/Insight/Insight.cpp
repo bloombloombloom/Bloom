@@ -90,6 +90,10 @@ namespace Bloom
             std::bind(&Insight::onTargetRegistersWrittenEvent, this, std::placeholders::_1)
         );
 
+        this->eventListener.registerCallbackForEventType<Events::MemoryWrittenToTarget>(
+            std::bind(&Insight::onTargetMemoryWrittenEvent, this, std::placeholders::_1)
+        );
+
         this->eventListener.registerCallbackForEventType<Events::ProgrammingModeEnabled>(
             std::bind(&Insight::onProgrammingModeEnabledEvent, this, std::placeholders::_1)
         );
@@ -336,6 +340,13 @@ namespace Bloom
 
     void Insight::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event) {
         emit this->insightSignals->targetRegistersWritten(event.registers, event.createdTimestamp);
+    }
+
+    void Insight::onTargetMemoryWrittenEvent(const Events::MemoryWrittenToTarget& event) {
+        emit this->insightSignals->targetMemoryWritten(
+            event.memoryType,
+            Targets::TargetMemoryAddressRange(event.startAddress, event.startAddress + (event.size - 1))
+        );
     }
 
     void Insight::onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event) {
