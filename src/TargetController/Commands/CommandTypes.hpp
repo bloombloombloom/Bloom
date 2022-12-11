@@ -18,6 +18,7 @@ namespace Bloom::TargetController::Commands
         WRITE_TARGET_REGISTERS,
         READ_TARGET_MEMORY,
         WRITE_TARGET_MEMORY,
+        ERASE_TARGET_MEMORY,
         GET_TARGET_STATE,
         STEP_TARGET_EXECUTION,
         SET_BREAKPOINT,

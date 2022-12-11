@@ -37,6 +37,7 @@ namespace Bloom::TargetController
     using Commands::WriteTargetRegisters;
     using Commands::ReadTargetMemory;
     using Commands::WriteTargetMemory;
+    using Commands::EraseTargetMemory;
     using Commands::StepTargetExecution;
     using Commands::SetBreakpoint;
     using Commands::RemoveBreakpoint;
@@ -218,6 +219,10 @@ namespace Bloom::TargetController
 
         this->registerCommandHandler<WriteTargetMemory>(
             std::bind(&TargetControllerComponent::handleWriteTargetMemory, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<EraseTargetMemory>(
+            std::bind(&TargetControllerComponent::handleEraseTargetMemory, this, std::placeholders::_1)
         );
 
         this->registerCommandHandler<StepTargetExecution>(
@@ -926,6 +931,21 @@ namespace Bloom::TargetController
                 EventManager::triggerEvent(registersWrittenEvent);
             }
         }
+
+        return std::make_unique<Response>();
+    }
+
+    std::unique_ptr<Response> TargetControllerComponent::handleEraseTargetMemory(EraseTargetMemory& command) {
+        const auto& targetDescriptor = this->getTargetDescriptor();
+
+        if (
+            command.memoryType == this->getTargetDescriptor().programMemoryType
+            && !this->target->programmingModeEnabled()
+        ) {
+            throw Exception("Cannot erase program memory - programming mode not enabled.");
+        }
+
+        this->target->eraseMemory(command.memoryType);
 
         return std::make_unique<Response>();
     }

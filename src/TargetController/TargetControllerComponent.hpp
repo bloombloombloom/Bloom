@@ -32,6 +32,7 @@
 #include "Commands/WriteTargetRegisters.hpp"
 #include "Commands/ReadTargetMemory.hpp"
 #include "Commands/WriteTargetMemory.hpp"
+#include "Commands/EraseTargetMemory.hpp"
 #include "Commands/StepTargetExecution.hpp"
 #include "Commands/SetBreakpoint.hpp"
 #include "Commands/RemoveBreakpoint.hpp"
@@ -350,6 +351,7 @@ namespace Bloom::TargetController
         std::unique_ptr<Responses::Response> handleWriteTargetRegisters(Commands::WriteTargetRegisters& command);
         std::unique_ptr<Responses::TargetMemoryRead> handleReadTargetMemory(Commands::ReadTargetMemory& command);
         std::unique_ptr<Responses::Response> handleWriteTargetMemory(Commands::WriteTargetMemory& command);
+        std::unique_ptr<Responses::Response> handleEraseTargetMemory(Commands::EraseTargetMemory& command);
         std::unique_ptr<Responses::Response> handleStepTargetExecution(Commands::StepTargetExecution& command);
         std::unique_ptr<Responses::Response> handleSetBreakpoint(Commands::SetBreakpoint& command);
         std::unique_ptr<Responses::Response> handleRemoveBreakpoint(Commands::RemoveBreakpoint& command);

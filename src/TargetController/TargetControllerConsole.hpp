@@ -139,6 +139,13 @@ namespace Bloom::TargetController
         );
 
         /**
+         * Requests the TargetController to erase the given target memory type.
+         *
+         * @param memoryType
+         */
+        void eraseMemory(Targets::TargetMemoryType memoryType);
+
+        /**
          * Requests the TargetController to set a breakpoint on the target.
          *
          * @param breakpoint

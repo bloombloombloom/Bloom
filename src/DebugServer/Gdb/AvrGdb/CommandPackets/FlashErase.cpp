@@ -27,7 +27,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
          * The flash erase ('vFlashErase') packet consists of two segments, an address and a length, separated by a
          * comma.
          */
-        auto packetSegments = packetString.split(",");
+        const auto packetSegments = packetString.split(",");
         if (packetSegments.size() != 2) {
             throw Exception(
                 "Unexpected number of segments in packet data: " + std::to_string(packetSegments.size())
@@ -52,24 +52,12 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::debug("Handling FlashErase packet");
 
         try {
-            const auto flashPageSize = debugSession.gdbTargetDescriptor.targetDescriptor.memoryDescriptorsByType.at(
-                Targets::TargetMemoryType::FLASH
-            ).pageSize.value();
-
-            if ((this->bytes % flashPageSize) != 0) {
-                throw Exception(
-                    "Invalid erase size (" + std::to_string(this->bytes) + " bytes) provided by GDB - must be a "
-                    "multiple of the target's flash page size (" + std::to_string(flashPageSize) + " bytes)"
-                );
-            }
-
             targetControllerConsole.enableProgrammingMode();
 
-            targetControllerConsole.writeMemory(
-                Targets::TargetMemoryType::FLASH,
-                this->startAddress,
-                Targets::TargetMemoryBuffer(this->bytes, 0xFF)
-            );
+            Logger::warning("Erasing entire chip, in preparation for programming");
+
+            // We don't erase a specific address range - we just erase the entire program memory.
+            targetControllerConsole.eraseMemory(Targets::TargetMemoryType::FLASH);
 
             debugSession.connection.writePacket(OkResponsePacket());
 

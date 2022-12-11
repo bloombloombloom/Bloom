@@ -13,6 +13,7 @@
 #include "Commands/WriteTargetRegisters.hpp"
 #include "Commands/ReadTargetMemory.hpp"
 #include "Commands/WriteTargetMemory.hpp"
+#include "Commands/EraseTargetMemory.hpp"
 #include "Commands/StepTargetExecution.hpp"
 #include "Commands/SetBreakpoint.hpp"
 #include "Commands/RemoveBreakpoint.hpp"
@@ -38,6 +39,7 @@ namespace Bloom::TargetController
     using Commands::WriteTargetRegisters;
     using Commands::ReadTargetMemory;
     using Commands::WriteTargetMemory;
+    using Commands::EraseTargetMemory;
     using Commands::StepTargetExecution;
     using Commands::SetBreakpoint;
     using Commands::RemoveBreakpoint;
@@ -186,6 +188,13 @@ namespace Bloom::TargetController
     ) {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<WriteTargetMemory>(memoryType, startAddress, buffer),
+            this->defaultTimeout
+        );
+    }
+
+    void TargetControllerConsole::eraseMemory(Targets::TargetMemoryType memoryType) {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<EraseTargetMemory>(memoryType),
             this->defaultTimeout
         );
     }
