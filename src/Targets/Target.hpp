@@ -258,7 +258,18 @@ namespace Bloom::Targets
          * @param startAddress
          * @param buffer
          */
-        virtual void writeMemory(TargetMemoryType memoryType, TargetMemoryAddress startAddress, const TargetMemoryBuffer& buffer) = 0;
+        virtual void writeMemory(
+            TargetMemoryType memoryType,
+            TargetMemoryAddress startAddress,
+            const TargetMemoryBuffer& buffer
+        ) = 0;
+
+        /**
+         * Should erase the entire address range of a given memory type.
+         *
+         * @param memoryType
+         */
+        virtual void eraseMemory(TargetMemoryType memoryType) = 0;
 
         /**
          * Should return the current state of the target.

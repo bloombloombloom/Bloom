@@ -111,6 +111,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             TargetMemoryAddress startAddress,
             const TargetMemoryBuffer& buffer
         ) override;
+        void eraseMemory(TargetMemoryType memoryType) override;
 
         TargetState getState() override;
 

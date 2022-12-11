@@ -374,6 +374,29 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         this->avr8DebugInterface->writeMemory(memoryType, startAddress, buffer);
     }
 
+    void Avr8::eraseMemory(TargetMemoryType memoryType) {
+        if (memoryType == TargetMemoryType::FLASH) {
+            return this->avr8DebugInterface->eraseProgramMemory();
+        }
+
+        /*
+         * Debug tools do not have to support the erasing of RAM or EEPROM memory. We just implement this as a
+         * write operation.
+         */
+        this->writeMemory(
+            memoryType,
+            memoryType == TargetMemoryType::RAM
+                ? this->targetParameters->ramStartAddress.value()
+                : this->targetParameters->eepromStartAddress.value(),
+            TargetMemoryBuffer(
+                memoryType == TargetMemoryType::RAM
+                    ? this->targetParameters->ramSize.value()
+                    : this->targetParameters->eepromSize.value(),
+                0xFF
+            )
+        );
+    }
+
     TargetState Avr8::getState() {
         return this->avr8DebugInterface->getTargetState();
     }
