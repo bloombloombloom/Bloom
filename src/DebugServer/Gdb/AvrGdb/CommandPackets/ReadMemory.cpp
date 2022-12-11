@@ -78,6 +78,11 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
             const auto& memoryDescriptor = memoryDescriptorIt->second;
 
+            if (this->memoryType == Targets::TargetMemoryType::EEPROM) {
+                // GDB sends EEPROM addresses in relative form - we convert them to absolute form, here.
+                this->startAddress = memoryDescriptor.addressRange.startAddress + this->startAddress;
+            }
+
             /*
              * In AVR targets, RAM is mapped to many registers and peripherals - we don't want to block GDB from
              * accessing them.
