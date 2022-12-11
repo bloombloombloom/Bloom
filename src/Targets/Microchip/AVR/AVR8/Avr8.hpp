@@ -14,7 +14,6 @@
 #include "Family.hpp"
 #include "TargetParameters.hpp"
 #include "PadDescriptor.hpp"
-#include "ProgrammingSession.hpp"
 #include "ProgramMemorySection.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
@@ -152,7 +151,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
 
-        std::optional<ProgrammingSession> programmingSession;
+        bool progModeEnabled = false;
 
         /**
          * Initiates the AVR8 instance from data extracted from the TDF.

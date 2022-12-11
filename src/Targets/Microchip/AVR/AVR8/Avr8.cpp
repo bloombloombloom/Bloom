@@ -592,16 +592,16 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
     void Avr8::enableProgrammingMode() {
         this->avr8DebugInterface->enableProgrammingMode();
-        this->programmingSession = ProgrammingSession();
+        this->progModeEnabled = true;
     }
 
     void Avr8::disableProgrammingMode() {
         this->avr8DebugInterface->disableProgrammingMode();
-        this->programmingSession = std::nullopt;
+        this->progModeEnabled = false;
     }
 
     bool Avr8::programmingModeEnabled() {
-        return this->programmingSession.has_value();
+        return this->progModeEnabled;
     }
 
     void Avr8::initFromTargetDescriptionFile() {
