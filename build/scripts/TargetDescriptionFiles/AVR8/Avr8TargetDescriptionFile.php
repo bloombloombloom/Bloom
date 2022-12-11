@@ -688,6 +688,17 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'Missing eeprom size.';
         }
 
+        if ($this->eepromSize < 64) {
+            /*
+             * All AVR8 targets supported by Bloom have at least 64 bytes of EEPROM. This is assumed in some areas of
+             * Bloom's code.
+             *
+             * The purpose of this check is to remind me to address those areas of Bloom's code before adding support
+             * for an AVR8 target with no EEPROM.
+             */
+            $failures[] = 'Unexpected eeprom size.';
+        }
+
         if (is_null($this->eepromPageSize)) {
             $failures[] = 'Missing eeprom page size.';
         }
