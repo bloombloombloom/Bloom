@@ -1,7 +1,6 @@
 <?php
 namespace Bloom\BuildScripts\TargetDescriptionFiles\Avr8;
 
-use Bloom\BuildScripts\TargetDescriptionFiles\PhysicalInterface;
 use Bloom\BuildScripts\TargetDescriptionFiles\TargetDescriptionFile;
 
 require_once __DIR__ . "/../TargetDescriptionFile.php";

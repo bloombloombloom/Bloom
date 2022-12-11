@@ -124,7 +124,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         SRAM = 0x20,
 
         /**
-         * The EEPROM memory type can be used to read & write to EEPROM memory on the target.
+         * The EEPROM memory type can be used to read and write to EEPROM memory on the target.
          *
          * It's available with all of the config variants, in debugging mode.
          */

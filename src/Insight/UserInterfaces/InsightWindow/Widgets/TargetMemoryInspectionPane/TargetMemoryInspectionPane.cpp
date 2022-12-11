@@ -446,8 +446,6 @@ namespace Bloom::Widgets
                 this->hexViewerWidget->setDisabled(false);
                 this->refreshButton->setDisabled(false);
             }
-
-            return;
         }
 
         if (newState == TargetState::RUNNING) {
