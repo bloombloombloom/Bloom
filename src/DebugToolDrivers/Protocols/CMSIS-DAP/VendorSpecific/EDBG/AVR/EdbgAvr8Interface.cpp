@@ -1794,7 +1794,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw Avr8CommandFailure("AVR8 Read memory command failed", responseFrame);
         }
 
-        return responseFrame.getMemoryBuffer();
+        const auto data = responseFrame.getMemoryBuffer();
+
+        if (data.size() != bytes) {
+            throw Avr8CommandFailure("Unexpected number of bytes returned from EDBG debug tool");
+        }
+
+        return data;
     }
 
     void EdbgAvr8Interface::writeMemory(
