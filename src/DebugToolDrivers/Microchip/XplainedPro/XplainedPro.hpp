@@ -26,5 +26,7 @@ namespace Bloom::DebugToolDrivers
         std::string getName() override {
             return "Xplained Pro";
         }
+
+        void init() override;
     };
 }
