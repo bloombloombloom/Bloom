@@ -749,22 +749,70 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::eraseProgramMemory(std::optional<Avr8Bit::ProgramMemorySection> section) {
         if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
-            throw Exception("AVR8 erase command not supported for debugWire config variant.");
+            // The EDBG erase command does not work on debugWire targets - we'll just write to the memory instead
+            return this->writeMemory(
+                TargetMemoryType::FLASH,
+                this->targetParameters.flashStartAddress.value(),
+                TargetMemoryBuffer(this->targetParameters.flashSize.value(), 0xFF)
+            );
         }
 
+        if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+            // For PDI (XMEGA) targets, we can erase flash memory without erasing EEPROM
+
+            if (!section.has_value() || *section == Avr8Bit::ProgramMemorySection::BOOT) {
+                const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+                    EraseMemory(Avr8EraseMemoryMode::BOOT_SECTION)
+                );
+
+                if (responseFrame.id == Avr8ResponseId::FAILED) {
+                    throw Avr8CommandFailure("AVR8 erase memory command (for BOOT section) failed", responseFrame);
+                }
+            }
+
+            if (!section.has_value() || *section == Avr8Bit::ProgramMemorySection::APPLICATION) {
+                const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+                    EraseMemory(Avr8EraseMemoryMode::APPLICATION_SECTION)
+                );
+
+                if (responseFrame.id == Avr8ResponseId::FAILED) {
+                    throw Avr8CommandFailure(
+                        "AVR8 erase memory command (for APPLICATION section) failed",
+                        responseFrame
+                    );
+                }
+            }
+
+            return;
+        }
+
+        /*
+         * For JTAG and UPDI targets, the erase command can only erase the entire chip (including EEPROM). This
+         * violates the Avr8DebugInterface contract - as this member function should only ever erase program memory.
+         *
+         * All we can do here is take a copy of EEPROM and restore it after the erase operation.
+         */
+        Logger::debug("Capturing EEPROM data, in preparation for chip erase");
+        auto eepromSnapshot = this->readMemory(
+            TargetMemoryType::EEPROM,
+            this->targetParameters.eepromStartAddress.value(),
+            this->targetParameters.eepromSize.value()
+        );
+
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            EraseMemory(
-                section.has_value()
-                    ? section == ProgramMemorySection::BOOT
-                        ? Avr8EraseMemoryMode::BOOT_SECTION
-                        : Avr8EraseMemoryMode::APPLICATION_SECTION
-                    : Avr8EraseMemoryMode::CHIP
-            )
+            EraseMemory(Avr8EraseMemoryMode::CHIP)
         );
 
         if (responseFrame.id == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 erase memory command failed", responseFrame);
         }
+
+        Logger::debug("Restoring EEPROM data");
+        this->writeMemory(
+            TargetMemoryType::EEPROM,
+            this->targetParameters.eepromStartAddress.value(),
+            std::move(eepromSnapshot)
+        );
     }
 
     TargetState EdbgAvr8Interface::getTargetState() {
