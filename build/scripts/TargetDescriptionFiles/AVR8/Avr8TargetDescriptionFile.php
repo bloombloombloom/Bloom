@@ -40,6 +40,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $ramSize = null;
     public ?int $eepromSize = null;
     public ?int $eepromPageSize = null;
+    public ?int $eepromStartAddress = null;
     public ?int $eepromAddressRegisterHigh = null;
     public ?int $eepromAddressRegisterLow = null;
     public ?int $eepromDataRegisterAddress = null;
@@ -297,16 +298,19 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             if (isset($dataAddressSpace->memorySegmentsByTypeAndName['eeprom']['eeprom'])) {
                 $eepromMemorySegment = $dataAddressSpace->memorySegmentsByTypeAndName['eeprom']['eeprom'];
+                $this->eepromStartAddress = $eepromMemorySegment->startAddress;
                 $this->eepromSize = $eepromMemorySegment->size;
                 $this->eepromPageSize = $eepromMemorySegment->pageSize;
             }
         }
 
-        if ((is_null($this->eepromSize) || is_null($this->eepromPageSize))
+        if (
+            (is_null($this->eepromSize) || is_null($this->eepromPageSize) || is_null($this->eepromStartAddress))
             && isset($this->addressSpacesById['eeprom'])
         ) {
             $eepromAddressSpace = $this->addressSpacesById['eeprom'];
             $eepromMemorySegments = $eepromAddressSpace->memorySegmentsByTypeAndName['eeprom'] ?? null;
+            $this->eepromStartAddress = $eepromAddressSpace->startAddress;
 
             if (!empty($eepromMemorySegments)) {
                 $eepromMemorySegment = reset($eepromMemorySegments);
@@ -686,6 +690,10 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
         if (is_null($this->eepromPageSize)) {
             $failures[] = 'Missing eeprom page size.';
+        }
+
+        if (is_null($this->eepromStartAddress)) {
+            $failures[] = 'Missing eeprom start address.';
         }
 
         if (in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $this->debugPhysicalInterfaces)
