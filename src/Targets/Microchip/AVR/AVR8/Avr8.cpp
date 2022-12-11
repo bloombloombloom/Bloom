@@ -367,8 +367,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     }
 
     void Avr8::writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
-        if (memoryType == TargetMemoryType::FLASH) {
-            return this->writeFlashMemory(startAddress, buffer);
+        if (memoryType == TargetMemoryType::FLASH && !this->programmingModeEnabled()) {
+            throw Exception("Attempted FLASH memory write with no active programming session.");
         }
 
         this->avr8DebugInterface->writeMemory(memoryType, startAddress, buffer);
@@ -752,73 +752,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         return this->id.value();
-    }
-
-    void Avr8::writeFlashMemory(TargetMemoryAddress startAddress, const TargetMemoryBuffer& buffer) {
-        if (!this->programmingSession.has_value()) {
-            throw Exception("Attempted FLASH memory write with no active programming session.");
-        }
-
-        if (this->targetConfig->physicalInterface == PhysicalInterface::PDI) {
-            /*
-             * For PDI targets, we can erase specific sections (APPLICATION and BOOTLOADER sections) of program memory.
-             *
-             * We'll only erase the section if we intend to write to it.
-             */
-            const auto startSection = this->getProgramMemorySectionFromAddress(startAddress);
-            const auto endSection = this->getProgramMemorySectionFromAddress(
-                static_cast<std::uint32_t>(startAddress + buffer.size() - 1)
-            );
-
-            if (startSection != endSection) {
-                /*
-                 * TODO:
-                 *   Get rid of this. Was placed here because I didn't have enough time to implement and test the
-                 *   writing to multiple sections in a single instance.
-                 */
-                throw Exception(
-                    "Requested program memory write spans more than one section (APPLICATION and BOOT) - aborting"
-                );
-            }
-
-            if (
-                !this->programmingSession->applicationSectionErased
-                && (
-                    startSection == ProgramMemorySection::APPLICATION
-                    || endSection == ProgramMemorySection::APPLICATION
-                )
-            ) {
-                Logger::warning("Erasing program memory APPLICATION section, in preparation for programming");
-                this->avr8DebugInterface->eraseProgramMemory(ProgramMemorySection::APPLICATION);
-                this->programmingSession->applicationSectionErased = true;
-            }
-
-            if (
-                !this->programmingSession->bootSectionErased
-                && (
-                    startSection == ProgramMemorySection::BOOT
-                    || endSection == ProgramMemorySection::BOOT
-                )
-            ) {
-                Logger::warning("Erasing program memory BOOT section, in preparation for programming");
-                this->avr8DebugInterface->eraseProgramMemory(ProgramMemorySection::BOOT);
-                this->programmingSession->bootSectionErased = true;
-            }
-
-            this->programmingSession->chipErased = true;
-        }
-
-        // debugWire targets do not need to be erased - this is done automatically when writing to FLASH.
-        if (
-            this->targetConfig->physicalInterface != PhysicalInterface::DEBUG_WIRE
-            && !this->programmingSession->chipErased
-        ) {
-            Logger::warning("Erasing entire chip, in preparation for programming");
-            this->avr8DebugInterface->eraseProgramMemory();
-            this->programmingSession->chipErased = true;
-        }
-
-        return this->avr8DebugInterface->writeMemory(TargetMemoryType::FLASH, startAddress, buffer);
     }
 
     void Avr8::updateDwenFuseBit(bool enable) {
