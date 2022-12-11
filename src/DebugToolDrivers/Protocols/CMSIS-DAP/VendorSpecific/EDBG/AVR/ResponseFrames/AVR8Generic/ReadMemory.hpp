@@ -12,9 +12,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrame
             : Avr8GenericResponseFrame(avrResponses)
         {}
 
-        Targets::TargetMemoryBuffer getMemoryBuffer() const {
+        Targets::TargetMemoryBuffer getMemoryData() const {
             /*
-             * AVR8 data payloads are typically in little endian form, but this does not apply the data returned
+             * AVR8 data payloads are typically in little endian form, but this does not apply to the data returned
              * from the READ MEMORY commands.
              */
             return std::vector<unsigned char>(

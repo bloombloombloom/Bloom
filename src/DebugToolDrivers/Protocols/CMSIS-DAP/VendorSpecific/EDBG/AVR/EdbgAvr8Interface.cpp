@@ -1546,20 +1546,22 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     ) {
         std::uint16_t alignTo = 1;
 
-        if (
-            memoryType == Avr8MemoryType::FLASH_PAGE
-            || memoryType == Avr8MemoryType::SPM
-            || memoryType == Avr8MemoryType::APPL_FLASH
-            || memoryType == Avr8MemoryType::BOOT_FLASH
-        ) {
-            alignTo = this->targetParameters.flashPageSize.value();
-        }
-
-        if (
-            memoryType == Avr8MemoryType::EEPROM_ATOMIC
-            || memoryType == Avr8MemoryType::EEPROM_PAGE
-        ) {
-            alignTo = this->targetParameters.eepromPageSize.value();
+        switch (memoryType) {
+            case Avr8MemoryType::FLASH_PAGE:
+            case Avr8MemoryType::SPM:
+            case Avr8MemoryType::APPL_FLASH:
+            case Avr8MemoryType::BOOT_FLASH: {
+                alignTo = this->targetParameters.flashPageSize.value();
+                break;
+            }
+            case Avr8MemoryType::EEPROM_ATOMIC:
+            case Avr8MemoryType::EEPROM_PAGE: {
+                alignTo = this->targetParameters.eepromPageSize.value();
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         if (this->maximumMemoryAccessSizePerRequest.has_value() && alignTo > this->maximumMemoryAccessSizePerRequest) {
@@ -1583,20 +1585,22 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     ) {
         std::uint16_t alignTo = 1;
 
-        if (
-            memoryType == Avr8MemoryType::FLASH_PAGE
-            || memoryType == Avr8MemoryType::SPM
-            || memoryType == Avr8MemoryType::APPL_FLASH
-            || memoryType == Avr8MemoryType::BOOT_FLASH
-        ) {
-            alignTo = this->targetParameters.flashPageSize.value();
-        }
-
-        if (
-            memoryType == Avr8MemoryType::EEPROM_ATOMIC
-            || memoryType == Avr8MemoryType::EEPROM_PAGE
-        ) {
-            alignTo = this->targetParameters.eepromPageSize.value();
+        switch (memoryType) {
+            case Avr8MemoryType::FLASH_PAGE:
+            case Avr8MemoryType::SPM:
+            case Avr8MemoryType::APPL_FLASH:
+            case Avr8MemoryType::BOOT_FLASH: {
+                alignTo = this->targetParameters.flashPageSize.value();
+                break;
+            }
+            case Avr8MemoryType::EEPROM_ATOMIC:
+            case Avr8MemoryType::EEPROM_PAGE: {
+                alignTo = this->targetParameters.eepromPageSize.value();
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
         if ((bytes % alignTo) != 0) {
@@ -1794,7 +1798,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw Avr8CommandFailure("AVR8 Read memory command failed", responseFrame);
         }
 
-        const auto data = responseFrame.getMemoryBuffer();
+        const auto data = responseFrame.getMemoryData();
 
         if (data.size() != bytes) {
             throw Avr8CommandFailure("Unexpected number of bytes returned from EDBG debug tool");

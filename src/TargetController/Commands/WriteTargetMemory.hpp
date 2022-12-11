@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Command.hpp"
-#include "src/TargetController/Responses/TargetMemoryRead.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
 
