@@ -624,10 +624,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         TargetMemorySize bytes,
         const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
     ) {
-        if (
-            this->programmingModeEnabled
-            && (memoryType == TargetMemoryType::RAM || memoryType == TargetMemoryType::EEPROM)
-        ) {
+        if (this->programmingModeEnabled && memoryType == TargetMemoryType::RAM) {
             throw Exception("Cannot access RAM or EEPROM when programming mode is enabled");
         }
 
@@ -666,7 +663,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 break;
             }
             case TargetMemoryType::EEPROM: {
-                avr8MemoryType = Avr8MemoryType::EEPROM;
+                // For JTAG targets, we must use the EEPROM_PAGE memory type when in programming mode.
+                avr8MemoryType = (this->configVariant == Avr8ConfigVariant::MEGAJTAG && this->programmingModeEnabled)
+                    ? Avr8MemoryType::EEPROM_PAGE
+                    : Avr8MemoryType::EEPROM;
             }
             default: {
                 break;
@@ -1535,6 +1535,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             || memoryType == Avr8MemoryType::SPM
             || memoryType == Avr8MemoryType::APPL_FLASH
             || memoryType == Avr8MemoryType::BOOT_FLASH
+            || memoryType == Avr8MemoryType::EEPROM_ATOMIC
+            || memoryType == Avr8MemoryType::EEPROM_PAGE
         ;
     }
 
@@ -1551,6 +1553,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             || memoryType == Avr8MemoryType::BOOT_FLASH
         ) {
             alignTo = this->targetParameters.flashPageSize.value();
+        }
+
+        if (
+            memoryType == Avr8MemoryType::EEPROM_ATOMIC
+            || memoryType == Avr8MemoryType::EEPROM_PAGE
+        ) {
+            alignTo = this->targetParameters.eepromPageSize.value();
         }
 
         if (this->maximumMemoryAccessSizePerRequest.has_value() && alignTo > this->maximumMemoryAccessSizePerRequest) {
@@ -1583,6 +1592,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             alignTo = this->targetParameters.flashPageSize.value();
         }
 
+        if (
+            memoryType == Avr8MemoryType::EEPROM_ATOMIC
+            || memoryType == Avr8MemoryType::EEPROM_PAGE
+        ) {
+            alignTo = this->targetParameters.eepromPageSize.value();
+        }
+
         if ((bytes % alignTo) != 0) {
             return static_cast<TargetMemorySize>(std::ceil(
                 static_cast<float>(bytes) / static_cast<float>(alignTo)
@@ -1603,8 +1619,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return this->targetParameters.flashPageSize.value();
         }
 
-        if (memoryType == Avr8MemoryType::EEPROM_ATOMIC) {
-            // This EEPROM memory type requires single page access.
+        if (
+            memoryType == Avr8MemoryType::EEPROM_ATOMIC
+            || memoryType == Avr8MemoryType::EEPROM_PAGE
+        ) {
+            // These EEPROM memory types requires single page access.
             return this->targetParameters.eepromPageSize.value();
         }
 

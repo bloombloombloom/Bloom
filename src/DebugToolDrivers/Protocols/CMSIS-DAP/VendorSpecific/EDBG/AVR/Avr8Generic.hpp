@@ -140,6 +140,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         EEPROM_ATOMIC = 0xC4,
 
         /**
+         * The EEPROM_PAGE memory type can be used to read and write to EEPROM whilst the target is in
+         * programming mode.
+         */
+        EEPROM_PAGE = 0xB1,
+
+        /**
          * The FLASH_PAGE memory type can be used to read and write full flash pages on the target.
          *
          * Only available with the JTAG and debugWire config variants.
