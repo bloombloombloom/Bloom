@@ -1809,7 +1809,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             const auto alignedBytes = this->alignMemoryBytes(type, bytes + (startAddress - alignedStartAddress));
 
             if (alignedStartAddress != startAddress || alignedBytes != bytes) {
-                auto alignedBuffer = this->readMemory(type, alignedStartAddress, alignedBytes);
+                /*
+                 * We can't just forward the memory type to readMemory(), because some memory types (such as
+                 * EEPROM_ATOMIC) can only be used for writing.
+                 *
+                 * This nasty hack will have to do for now.
+                 */
+                const auto readMemoryType = type == Avr8MemoryType::EEPROM_ATOMIC ? Avr8MemoryType::EEPROM : type;
+
+                auto alignedBuffer = this->readMemory(readMemoryType, alignedStartAddress, alignedBytes);
                 assert(alignedBuffer.size() >= buffer.size());
 
                 const auto offset = alignedBuffer.begin() + (startAddress - alignedStartAddress);
