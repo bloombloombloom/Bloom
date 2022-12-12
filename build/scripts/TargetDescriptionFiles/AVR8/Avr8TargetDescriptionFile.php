@@ -54,8 +54,10 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $osccalAddress = null;
 
     // XMega/PDI specific target params
-    public ?int $appSectionPdiOffset = null;
+    public ?int $appSectionStartAddress = null;
+    public ?int $appSectionSize = null;
     public ?int $bootSectionSize = null;
+    public ?int $appSectionPdiOffset = null;
     public ?int $bootSectionPdiOffset = null;
     public ?int $eepromPdiOffset = null;
     public ?int $ramPdiOffset = null;
@@ -265,11 +267,17 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $this->flashStartAddress = $progAddressSpace->startAddress;
 
             $firstFlashMemorySegment = reset($progAddressSpace->memorySegmentsByTypeAndName['flash']);
+            $appFlashMemorySegment = $progAddressSpace->memorySegmentsByTypeAndName['flash']['app_section'] ?? null;
             $bootSectionMemorySegment = $progAddressSpace->memorySegmentsByTypeAndName['flash']['boot_section_1']
                 ?? $progAddressSpace->memorySegmentsByTypeAndName['flash']['boot_section'] ?? null;
 
             if (!empty($firstFlashMemorySegment)) {
                 $this->flashPageSize = $firstFlashMemorySegment->pageSize;
+            }
+
+            if (!empty($appFlashMemorySegment)) {
+                $this->appSectionStartAddress = $appFlashMemorySegment->startAddress;
+                $this->appSectionSize = $appFlashMemorySegment->size;
             }
 
             if (!empty($bootSectionMemorySegment)) {
@@ -764,6 +772,14 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             if (is_null($this->mcuModuleBaseAddress)) {
                 $failures[] = 'Missing MCU module base address.';
+            }
+
+            if (is_null($this->appSectionStartAddress)) {
+                $failures[] = 'Missing APP section start address';
+            }
+
+            if (is_null($this->appSectionSize)) {
+                $failures[] = 'Missing APP section size';
             }
         }
 
