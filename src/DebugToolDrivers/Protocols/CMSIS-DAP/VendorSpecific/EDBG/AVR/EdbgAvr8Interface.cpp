@@ -657,6 +657,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                         startAddress -= bootSectionStartAddress;
 
                     } else {
+                        /*
+                         * When using the APPL_FLASH memory type, the address should be relative to the start of the
+                         * application section.
+                         */
+                        startAddress -= this->targetParameters.appSectionStartAddress.value();
                         avr8MemoryType = Avr8MemoryType::APPL_FLASH;
                     }
                 }
@@ -667,6 +672,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 avr8MemoryType = (this->configVariant == Avr8ConfigVariant::MEGAJTAG && this->programmingModeEnabled)
                     ? Avr8MemoryType::EEPROM_PAGE
                     : Avr8MemoryType::EEPROM;
+
+                if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+                    // EEPROM addresses should be in relative form, for XMEGA (PDI) targets
+                    startAddress -= this->targetParameters.eepromStartAddress.value();
+                }
             }
             default: {
                 break;
@@ -728,6 +738,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                         startAddress -= bootSectionStartAddress;
 
                     } else {
+                        /*
+                         * When using the APPL_FLASH memory type, the address should be relative to the start of the
+                         * application section.
+                         */
+                        startAddress -= this->targetParameters.appSectionStartAddress.value();
                         avr8MemoryType = Avr8MemoryType::APPL_FLASH;
                     }
                 }
@@ -738,6 +753,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
                         ? Avr8MemoryType::EEPROM_ATOMIC
                         : Avr8MemoryType::EEPROM;
+
+                if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+                    // EEPROM addresses should be in relative form, for XMEGA (PDI) targets
+                    startAddress -= this->targetParameters.eepromStartAddress.value();
+                }
             }
             default: {
                 break;
