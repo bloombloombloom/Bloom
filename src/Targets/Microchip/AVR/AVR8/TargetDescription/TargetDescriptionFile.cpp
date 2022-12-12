@@ -724,18 +724,25 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     ) const {
         const auto& programMemorySegments = programAddressSpace.memorySegmentsByTypeAndName;
 
-        if (programMemorySegments.find(MemorySegmentType::FLASH) != programMemorySegments.end()) {
-            const auto& flashMemorySegments = programMemorySegments.find(MemorySegmentType::FLASH)->second;
+        const auto flashMemorySegmentsIt = programMemorySegments.find(MemorySegmentType::FLASH);
+        if (flashMemorySegmentsIt != programMemorySegments.end()) {
+            const auto& flashMemorySegments = flashMemorySegmentsIt->second;
 
             /*
              * In AVR8 TDFs, flash application memory segments are typically named "APP_SECTION", "PROGMEM" or
              * "FLASH".
              */
-            auto flashSegmentIt = flashMemorySegments.find("app_section") != flashMemorySegments.end() ?
-                flashMemorySegments.find("app_section")
-                : flashMemorySegments.find("progmem") != flashMemorySegments.end()
-                ? flashMemorySegments.find("progmem") : flashMemorySegments.find("flash");
+            const auto appSectionSegmentIt = flashMemorySegments.find("app_section");
+            if (appSectionSegmentIt != flashMemorySegments.end()) {
+                return appSectionSegmentIt->second;
+            }
 
+            const auto programMemSegmentIt = flashMemorySegments.find("progmem");
+            if (programMemSegmentIt != flashMemorySegments.end()) {
+                return programMemSegmentIt->second;
+            }
+
+            const auto flashSegmentIt = flashMemorySegments.find("flash");
             if (flashSegmentIt != flashMemorySegments.end()) {
                 return flashSegmentIt->second;
             }
