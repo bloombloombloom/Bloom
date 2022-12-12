@@ -44,6 +44,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         // XMega/PDI/UPDI specific target params
         std::optional<std::uint32_t> appSectionPdiOffset;
+        std::optional<std::uint32_t> appSectionStartAddress;
+        std::optional<std::uint32_t> appSectionSize;
         std::optional<std::uint16_t> bootSectionSize;
         std::optional<std::uint32_t> bootSectionPdiOffset;
         std::optional<std::uint32_t> eepromPdiOffset;

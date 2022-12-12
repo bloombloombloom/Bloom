@@ -181,8 +181,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
             const auto appMemorySegment = this->getFlashApplicationMemorySegment(programMemoryAddressSpace.value());
 
-            if (appMemorySegment.has_value() && appMemorySegment->pageSize.has_value()) {
-                targetParameters.flashPageSize = appMemorySegment->pageSize.value();
+            if (appMemorySegment.has_value()) {
+                targetParameters.appSectionStartAddress = appMemorySegment->startAddress;
+                targetParameters.appSectionSize = appMemorySegment->size;
+                targetParameters.flashPageSize = appMemorySegment->pageSize;
             }
         }
 

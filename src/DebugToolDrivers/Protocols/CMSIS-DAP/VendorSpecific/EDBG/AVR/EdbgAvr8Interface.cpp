@@ -1142,12 +1142,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw DeviceInitializationFailure("Missing required parameter: BOOT_BASE_ADDR");
         }
 
-        if (!this->targetParameters.bootSectionSize.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: BOOT_BYTES");
+        if (!this->targetParameters.appSectionSize.has_value()) {
+            throw DeviceInitializationFailure("Missing required parameter: APPLICATION_BYTES");
         }
 
-        if (!this->targetParameters.flashSize.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: APPLICATION_BYTES");
+        if (!this->targetParameters.bootSectionSize.has_value()) {
+            throw DeviceInitializationFailure("Missing required parameter: BOOT_BYTES");
         }
 
         if (!this->targetParameters.eepromPdiOffset.has_value()) {
@@ -1245,7 +1245,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         Logger::debug("Setting APPLICATION_BYTES AVR8 parameter");
         this->setParameter(
             Avr8EdbgParameters::DEVICE_XMEGA_APPLICATION_BYTES,
-            this->targetParameters.flashSize.value()
+            this->targetParameters.appSectionSize.value()
         );
 
         Logger::debug("Setting BOOT_BYTES AVR8 parameter");
