@@ -1761,6 +1761,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             && type != Avr8MemoryType::SPM
             && type != Avr8MemoryType::APPL_FLASH
             && type != Avr8MemoryType::BOOT_FLASH
+            && type != Avr8MemoryType::EEPROM_PAGE
         ) {
             /*
              * EDBG AVR8 debug tools behave in a really weird way when responding with more than two packets
