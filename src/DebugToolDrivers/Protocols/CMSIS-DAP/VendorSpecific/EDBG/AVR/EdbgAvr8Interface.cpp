@@ -1571,6 +1571,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             case Avr8MemoryType::SPM:
             case Avr8MemoryType::APPL_FLASH:
             case Avr8MemoryType::BOOT_FLASH: {
+                /*
+                 * Although the EDBG documentation claims any number of bytes can be accessed via the FLASH_PAGE mem
+                 * type, when using the UPDI config variant, this isn't strictly true.
+                 *
+                 * When writing to flash on UPDI targets, we MUST page align the write operations. And we cannot word
+                 * align them - we've tried only word aligning them - the debug tool reports a "Too many or too few
+                 * bytes" error.
+                 */
                 alignTo = this->targetParameters.flashPageSize.value();
                 break;
             }
@@ -1610,6 +1618,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             case Avr8MemoryType::SPM:
             case Avr8MemoryType::APPL_FLASH:
             case Avr8MemoryType::BOOT_FLASH: {
+                // See comment in EdbgAvr8Interface::alignMemoryAddress()
                 alignTo = this->targetParameters.flashPageSize.value();
                 break;
             }
@@ -1779,7 +1788,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
              */
             const auto singlePacketSize = static_cast<std::uint32_t>(this->edbgInterface->getUsbHidInputReportSize() - 20);
             const auto totalResponsePackets = std::ceil(static_cast<float>(bytes) / static_cast<float>(singlePacketSize));
-            const auto totalReadsRequired = std::ceil(static_cast<float>(totalResponsePackets) / 2);
+            const auto totalReadsRequired = static_cast<std::uint16_t>(std::ceil(static_cast<float>(totalResponsePackets) / 2));
 
             if (totalResponsePackets > 2) {
                 /*
@@ -1788,7 +1797,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                  */
                 auto output = TargetMemoryBuffer();
 
-                for (float i = 1; i <= totalReadsRequired; i++) {
+                for (auto i = 1; i <= totalReadsRequired; i++) {
                     const auto bytesToRead = static_cast<TargetMemorySize>(
                         (bytes - output.size()) > (singlePacketSize * 2)
                             ? (singlePacketSize * 2) : bytes - output.size()

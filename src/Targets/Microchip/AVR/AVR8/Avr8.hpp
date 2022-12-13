@@ -186,6 +186,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         /**
          * Resolves the program memory section from a program memory address.
          *
+         * Currently unused, but will be needed soon.
+         *
          * @param address
          * @return
          */
