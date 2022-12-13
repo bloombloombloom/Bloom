@@ -29,7 +29,7 @@ namespace Bloom::DebugServer::Gdb
          *
          * In the event that it does, we assume the worst and kill the connection.
          */
-        static constexpr auto ABSOLUTE_MAXIMUM_PACKET_READ_SIZE = 5120;
+        static constexpr auto ABSOLUTE_MAXIMUM_PACKET_READ_SIZE = 2097000; // 2MiB
 
         explicit Connection(int serverSocketFileDescriptor, EventFdNotifier& interruptEventNotifier);
 
