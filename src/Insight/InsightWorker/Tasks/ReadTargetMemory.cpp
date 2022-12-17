@@ -1,21 +1,37 @@
 #include "ReadTargetMemory.hpp"
 
 #include <cmath>
+#include <algorithm>
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Exceptions/Exception.hpp"
 
 namespace Bloom
 {
     using TargetController::TargetControllerConsole;
 
     void ReadTargetMemory::run(TargetControllerConsole& targetControllerConsole) {
+        using Targets::TargetMemorySize;
+
+        const auto& targetDescriptor = targetControllerConsole.getTargetDescriptor();
+        const auto memoryDescriptorIt = targetDescriptor.memoryDescriptorsByType.find(this->memoryType);
+
+        if (memoryDescriptorIt == targetDescriptor.memoryDescriptorsByType.end()) {
+            throw Exceptions::Exception("Invalid memory type");
+        }
+
+        const auto& memoryDescriptor = memoryDescriptorIt->second;
+
         /*
          * To prevent locking up the TargetController for too long, we split the read into numerous reads.
          *
          * This allows the TargetController to service other commands in-between reads, reducing the likelihood of
          * command timeouts when we're reading lots of data.
          */
-        constexpr auto readSize = 256;
+        const auto readSize = std::max(
+            TargetMemorySize(256),
+            memoryDescriptor.pageSize.value_or(TargetMemorySize(0))
+        );
         const auto readsRequired = static_cast<std::uint32_t>(
             std::ceil(static_cast<float>(this->size) / static_cast<float>(readSize))
         );

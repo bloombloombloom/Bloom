@@ -65,12 +65,12 @@ namespace Bloom::Targets
     {
         TargetMemoryType type;
         TargetMemoryAddressRange addressRange;
-        std::optional<std::uint32_t> pageSize;
+        std::optional<TargetMemorySize> pageSize;
 
         TargetMemoryDescriptor(
             TargetMemoryType type,
             TargetMemoryAddressRange addressRange,
-            std::optional<std::uint32_t> pageSize = std::nullopt
+            std::optional<TargetMemorySize> pageSize = std::nullopt
         )
             : type(type)
             , addressRange(addressRange)
