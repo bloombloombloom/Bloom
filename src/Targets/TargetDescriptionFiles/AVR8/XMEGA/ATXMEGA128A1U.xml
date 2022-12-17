@@ -24,8 +24,9 @@
                 <memory-segment start="0x0000" size="0x001000" type="io" rw="RW" exec="0" name="IO"/>
                 <memory-segment start="0x1000" size="0x000800" type="eeprom" rw="RW" exec="0" name="MAPPED_EEPROM"/>
                 <memory-segment start="0x2000" size="0x002000" type="ram" rw="RW" exec="0" name="INTERNAL_SRAM"/>
-                <memory-segment start="0x4000" size="0xFFBFFF" type="ram" rw="RW" exec="0" name="EXTERNAL_SRAM"
-                                external="true"/>
+                <!-- We don't support external SRAM (for now) -->
+<!--                <memory-segment start="0x4000" size="0xFFBFFF" type="ram" rw="RW" exec="0" name="EXTERNAL_SRAM"-->
+<!--                                external="true"/>-->
             </address-space>
             <address-space name="eeprom" id="eeprom" start="0x00000" size="0x0800">
                 <memory-segment start="0x00000" size="0x0800" type="eeprom" rw="RW" exec="0" name="EEPROM"
