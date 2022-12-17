@@ -1592,12 +1592,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
-        if (this->maximumMemoryAccessSizePerRequest.has_value() && alignTo > this->maximumMemoryAccessSizePerRequest) {
-            throw Exception(
-                "Cannot align memory address - alignment size exceeds the maximum memory access size per request."
-            );
-        }
-
         if ((address % alignTo) != 0) {
             return static_cast<TargetMemoryAddress>(std::floor(
                 static_cast<float>(address) / static_cast<float>(alignTo)

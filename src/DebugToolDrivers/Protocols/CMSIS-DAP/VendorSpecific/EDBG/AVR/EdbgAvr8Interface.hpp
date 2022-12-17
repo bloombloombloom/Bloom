@@ -57,13 +57,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * memory command that exceeds 256 bytes in the size of the read request, despite the fact that the HID report
          * size is 512 bytes. The debug tool doesn't report any error, it just returns incorrect data.
          *
-         * To address this, debug tool drivers can set a hard limit on the number of bytes this EdbgAvr8Interface instance
+         * To address this, debug tool drivers can set a soft limit on the number of bytes this EdbgAvr8Interface instance
          * will attempt to access in a single request, using the EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest()
-         * function.
+         * member function.
          *
          * This limit will be enforced in all forms of memory access on the AVR8 target, including register access.
-         *
-         * @TODO: Enforce the limit on memory writes.
+         * However, it will *NOT* be enforced for memory types that require page alignment, where the page size is
+         * greater than the set limit. In these cases, the limit will effectively be ignored. I've tested this on
+         * the ATXMEGAA1U-XPRO Xplained Pro debug tool, where the flash page size is 512 bytes (but the limit is set to
+         * 256 bytes), and flash memory access works fine. This makes me suspect that this issue may be specific to the
+         * ATMEGA4809-XPRO Xplained Pro debug tool.
          *
          * @param maximumSize
          */
