@@ -64,7 +64,7 @@ namespace Bloom::TargetController
          *
          * @return
          */
-        Targets::TargetDescriptor getTargetDescriptor();
+        const Targets::TargetDescriptor& getTargetDescriptor();
 
         /**
          * Fetches the current target state.

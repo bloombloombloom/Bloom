@@ -634,7 +634,7 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerComponent::loadRegisterDescriptors() {
-        auto& targetDescriptor = this->getTargetDescriptor();
+        const auto& targetDescriptor = this->getTargetDescriptor();
 
         for (const auto& [registerType, registerDescriptors] : targetDescriptor.registerDescriptorsByType) {
             for (const auto& registerDescriptor : registerDescriptors) {
@@ -753,12 +753,12 @@ namespace Bloom::TargetController
         EventManager::triggerEvent(std::make_shared<Events::ProgrammingModeDisabled>());
     }
 
-    Targets::TargetDescriptor& TargetControllerComponent::getTargetDescriptor() {
+    const Targets::TargetDescriptor& TargetControllerComponent::getTargetDescriptor() {
         if (!this->cachedTargetDescriptor.has_value()) {
-            this->cachedTargetDescriptor = this->target->getDescriptor();
+            this->cachedTargetDescriptor.emplace(this->target->getDescriptor());
         }
 
-        return this->cachedTargetDescriptor.value();
+        return *this->cachedTargetDescriptor;
     }
 
     void TargetControllerComponent::onShutdownTargetControllerEvent(const Events::ShutdownTargetController&) {

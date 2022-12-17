@@ -103,7 +103,7 @@ namespace Bloom::TargetController
         return;
     }
 
-    TargetDescriptor TargetControllerConsole::getTargetDescriptor() {
+    const TargetDescriptor& TargetControllerConsole::getTargetDescriptor() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetDescriptor>(),
             this->defaultTimeout

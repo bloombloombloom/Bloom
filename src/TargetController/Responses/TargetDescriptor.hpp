@@ -13,7 +13,7 @@ namespace Bloom::TargetController::Responses
     public:
         static constexpr ResponseType type = ResponseType::TARGET_DESCRIPTOR;
 
-        Targets::TargetDescriptor targetDescriptor;
+        const Targets::TargetDescriptor& targetDescriptor;
 
         explicit TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
             : targetDescriptor(targetDescriptor)

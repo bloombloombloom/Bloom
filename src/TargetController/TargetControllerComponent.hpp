@@ -144,7 +144,7 @@ namespace Bloom::TargetController
         /**
          * Obtaining a TargetDescriptor for the connected target can be quite expensive. We cache it here.
          */
-        std::optional<Targets::TargetDescriptor> cachedTargetDescriptor;
+        std::optional<const Targets::TargetDescriptor> cachedTargetDescriptor;
 
         /**
          * Target register descriptors mapped by the memory type on which the register is stored.
@@ -313,7 +313,7 @@ namespace Bloom::TargetController
          *
          * @return
          */
-        Targets::TargetDescriptor& getTargetDescriptor();
+        const Targets::TargetDescriptor& getTargetDescriptor();
 
         /**
          * Invokes a shutdown.
