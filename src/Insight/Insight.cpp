@@ -354,8 +354,10 @@ namespace Bloom
 
         if (event.state == TargetControllerState::SUSPENDED) {
             emit this->insightSignals->targetControllerSuspended();
+            return;
+        }
 
-        } else if (event.state == TargetControllerState::ACTIVE) {
+        if (event.state == TargetControllerState::ACTIVE) {
             auto* getTargetDescriptorTask = new GetTargetDescriptor();
 
             QObject::connect(

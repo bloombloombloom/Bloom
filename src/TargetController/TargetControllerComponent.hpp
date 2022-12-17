@@ -165,12 +165,15 @@ namespace Bloom::TargetController
          */
         template<class CommandType>
         void registerCommandHandler(std::function<std::unique_ptr<Responses::Response>(CommandType&)> callback) {
-            auto parentCallback = [callback] (Commands::Command& command) {
-                // Downcast the command to the expected type
-                return callback(dynamic_cast<CommandType&>(command));
-            };
-
-            this->commandHandlersByCommandType.insert(std::pair(CommandType::type, parentCallback));
+            this->commandHandlersByCommandType.insert(
+                std::pair(
+                    CommandType::type,
+                    [callback] (Commands::Command& command) {
+                        // Downcast the command to the expected type
+                        return callback(dynamic_cast<CommandType&>(command));
+                    }
+                )
+            );
         }
 
         /**
