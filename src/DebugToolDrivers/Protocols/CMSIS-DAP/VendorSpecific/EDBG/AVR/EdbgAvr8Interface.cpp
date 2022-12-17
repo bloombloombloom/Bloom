@@ -124,20 +124,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->configVariant = configVariant.value();
         }
 
-        if (
-            this->configVariant != Avr8ConfigVariant::XMEGA
-            && this->configVariant != Avr8ConfigVariant::UPDI
-            && config.flashPageSize.has_value() && this->maximumMemoryAccessSizePerRequest.has_value()
-            && config.flashPageSize > this->maximumMemoryAccessSizePerRequest
-        ) {
-            throw DeviceInitializationFailure("Flash page size for target ("
-                + std::to_string(config.flashPageSize.value())
-                + " bytes) exceeds maximum memory access size for EdbgAvr8Interface ("
-                + std::to_string(this->maximumMemoryAccessSizePerRequest.value())
-                + " bytes)."
-            );
-        }
-
         switch (this->configVariant) {
             case Avr8ConfigVariant::DEBUG_WIRE:
             case Avr8ConfigVariant::MEGAJTAG: {
