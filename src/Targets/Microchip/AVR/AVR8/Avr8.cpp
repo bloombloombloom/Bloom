@@ -376,6 +376,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
     void Avr8::eraseMemory(TargetMemoryType memoryType) {
         if (memoryType == TargetMemoryType::FLASH) {
+            if (this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE) {
+                // debugWire targets do not need to be erased
+                return;
+            }
+
             return this->avr8DebugInterface->eraseProgramMemory();
         }
 
