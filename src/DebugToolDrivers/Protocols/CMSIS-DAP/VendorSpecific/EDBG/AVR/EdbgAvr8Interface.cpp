@@ -735,14 +735,28 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 break;
             }
             case TargetMemoryType::EEPROM: {
-                avr8MemoryType =
-                    this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
-                        ? Avr8MemoryType::EEPROM_ATOMIC
-                        : Avr8MemoryType::EEPROM;
+                switch (this->configVariant) {
+                    case Avr8ConfigVariant::UPDI:
+                    case Avr8ConfigVariant::XMEGA: {
+                        avr8MemoryType = Avr8MemoryType::EEPROM_ATOMIC;
 
-                if (this->configVariant == Avr8ConfigVariant::XMEGA) {
-                    // EEPROM addresses should be in relative form, for XMEGA (PDI) targets
-                    startAddress -= this->targetParameters.eepromStartAddress.value();
+                        if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+                            // EEPROM addresses should be in relative form, for XMEGA (PDI) targets
+                            startAddress -= this->targetParameters.eepromStartAddress.value();
+                        }
+
+                        break;
+                    }
+                    case Avr8ConfigVariant::MEGAJTAG: {
+                        avr8MemoryType = this->programmingModeEnabled
+                            ? Avr8MemoryType::EEPROM_PAGE
+                            : Avr8MemoryType::EEPROM;
+                        break;
+                    }
+                    default: {
+                        avr8MemoryType = Avr8MemoryType::EEPROM;
+                        break;
+                    }
                 }
             }
             default: {
