@@ -2,6 +2,7 @@
 
 #include <QVBoxLayout>
 #include <QToolButton>
+#include <QLocale>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/InsightSignals.hpp"
@@ -77,7 +78,7 @@ namespace Bloom::Widgets
         this->attachPaneButton = this->container->findChild<SvgToolButton*>("attach-pane-btn");
 
         auto* memoryCapacityLabel = this->container->findChild<Label*>("memory-capacity-label");
-        memoryCapacityLabel->setText(QString::number(this->targetMemoryDescriptor.size()) + " Bytes");
+        memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->targetMemoryDescriptor.size()) + " Bytes");
 
         this->staleDataLabelContainer = this->container->findChild<QWidget*>("stale-data-label");
 
