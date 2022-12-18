@@ -7,7 +7,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
 {
     ReadMemory::ReadMemory(
         const Avr8MemoryType& type,
-        std::uint32_t address,
+        std::uint32_t startAddress,
         std::uint32_t bytes,
         const std::set<std::uint32_t>& excludedAddresses
     )
@@ -26,24 +26,24 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
         this->payload[0] = excludedAddresses.empty() ? 0x21 : 0x22;
         this->payload[1] = 0x00;
         this->payload[2] = static_cast<unsigned char>(type);
-        this->payload[3] = static_cast<unsigned char>(address);
-        this->payload[4] = static_cast<unsigned char>(address >> 8);
-        this->payload[5] = static_cast<unsigned char>(address >> 16);
-        this->payload[6] = static_cast<unsigned char>(address >> 24);
+        this->payload[3] = static_cast<unsigned char>(startAddress);
+        this->payload[4] = static_cast<unsigned char>(startAddress >> 8);
+        this->payload[5] = static_cast<unsigned char>(startAddress >> 16);
+        this->payload[6] = static_cast<unsigned char>(startAddress >> 24);
         this->payload[7] = static_cast<unsigned char>(bytes);
         this->payload[8] = static_cast<unsigned char>(bytes >> 8);
         this->payload[9] = static_cast<unsigned char>(bytes >> 16);
         this->payload[10] = static_cast<unsigned char>(bytes >> 24);
 
         if (!excludedAddresses.empty()) {
-            const auto endAddress = address + (bytes - 1);
+            const auto endAddress = startAddress + (bytes - 1);
 
             constexpr auto byteBitSize = std::numeric_limits<unsigned char>::digits;
             auto byteBitset = std::bitset<byteBitSize>();
             byteBitset.reset();
 
-            for (std::uint32_t address = address; address <= endAddress; address++) {
-                auto addressIndex = address - address;
+            for (std::uint32_t address = startAddress; address <= endAddress; address++) {
+                auto addressIndex = address - startAddress;
                 auto bitIndex = static_cast<std::size_t>(
                     addressIndex - (std::floor(addressIndex / byteBitSize) * byteBitSize)
                 );
