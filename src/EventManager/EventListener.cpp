@@ -59,8 +59,12 @@ namespace Bloom
         Logger::debug("Dispatching event " + event->getName() + " (" + std::to_string(event->id) + ").");
 
         // Dispatch the event to all registered handlers
-        const auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
-        const auto& callbacks = this->eventTypeToCallbacksMapping.getValue().find(event->getType())->second;
+        auto callbacks = std::vector<std::function<void(const Events::Event&)>>();
+
+        {
+            const auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
+            callbacks = this->eventTypeToCallbacksMapping.getValue().find(event->getType())->second;
+        }
 
         for (auto& callback : callbacks) {
             callback(*(event.get()));
