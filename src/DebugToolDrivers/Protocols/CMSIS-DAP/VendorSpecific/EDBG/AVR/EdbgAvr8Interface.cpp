@@ -1659,7 +1659,18 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return this->maximumMemoryAccessSizePerRequest;
         }
 
-        return std::nullopt;
+        /*
+         * EDBG AVR8 debug tools behave in a really weird way when receiving or responding with more than two packets
+         * for a single memory access command. The data they read/write in this case appears to be wrong.
+         *
+         * To address this, we make sure we only issue memory access commands that will result in no more than two
+         * packets being sent to and from the debug tool.
+         *
+         * The -30 is to accommodate for the bytes in the command that are not part of the main payload of the command.
+         */
+        return static_cast<Targets::TargetMemorySize>(
+            (this->edbgInterface->getUsbHidInputReportSize() - 30) * 2
+        );
     }
 
     TargetMemoryBuffer EdbgAvr8Interface::readMemory(
@@ -1757,56 +1768,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
 
             return output;
-        }
-
-        if (
-            type != Avr8MemoryType::FLASH_PAGE
-            && type != Avr8MemoryType::SPM
-            && type != Avr8MemoryType::APPL_FLASH
-            && type != Avr8MemoryType::BOOT_FLASH
-            && type != Avr8MemoryType::EEPROM_PAGE
-        ) {
-            /*
-             * EDBG AVR8 debug tools behave in a really weird way when responding with more than two packets
-             * for a single read (non-flash) memory command. The data they return in this case appears to be of little
-             * use.
-             *
-             * To address this, we make sure we only issue read memory commands that will result in no more than two
-             * response packets. For calls that require more than this, we simply split them into numerous calls.
-             */
-
-            /*
-             * The subtraction of 20 bytes here is just to account for any other bytes included in the response
-             * that isn't actually the memory data (like the command ID, version bytes, etc). I could have sought the
-             * actual value but who has the time. It won't exceed 20 bytes. Bite me.
-             */
-            const auto singlePacketSize = static_cast<std::uint32_t>(this->edbgInterface->getUsbHidInputReportSize() - 20);
-            const auto totalResponsePackets = std::ceil(static_cast<float>(bytes) / static_cast<float>(singlePacketSize));
-            const auto totalReadsRequired = static_cast<std::uint16_t>(std::ceil(static_cast<float>(totalResponsePackets) / 2));
-
-            if (totalResponsePackets > 2) {
-                /*
-                 * This call to readMemory() will result in more than two response packets, so split it into multiple
-                 * calls that will result in no more than two response packets per call.
-                 */
-                auto output = TargetMemoryBuffer();
-
-                for (auto i = 1; i <= totalReadsRequired; i++) {
-                    const auto bytesToRead = static_cast<TargetMemorySize>(
-                        (bytes - output.size()) > (singlePacketSize * 2)
-                            ? (singlePacketSize * 2) : bytes - output.size()
-                    );
-                    auto data = this->readMemory(
-                        type,
-                        static_cast<TargetMemoryAddress>(startAddress + output.size()),
-                        bytesToRead,
-                        excludedAddresses
-                    );
-                    std::move(data.begin(), data.end(), std::back_inserter(output));
-                }
-
-                return output;
-            }
         }
 
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
