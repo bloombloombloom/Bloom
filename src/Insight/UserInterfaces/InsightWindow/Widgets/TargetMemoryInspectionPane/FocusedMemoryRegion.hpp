@@ -20,9 +20,12 @@ namespace Bloom
         MemoryRegionDataType dataType = MemoryRegionDataType::UNKNOWN;
         Targets::TargetMemoryEndianness endianness = Targets::TargetMemoryEndianness::LITTLE;
 
-        explicit FocusedMemoryRegion(
+        FocusedMemoryRegion(
             const QString& name,
+            Targets::TargetMemoryType memoryType,
             const Targets::TargetMemoryAddressRange& addressRange
-        ): MemoryRegion(name, MemoryRegionType::FOCUSED, addressRange) {};
+        );
+
+        FocusedMemoryRegion(const QJsonObject& jsonObject);
     };
 }

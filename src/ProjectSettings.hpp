@@ -42,18 +42,6 @@ namespace Bloom
             {Targets::TargetMemoryType::EEPROM, "eeprom"},
         };
 
-        static const inline BiMap<MemoryRegionDataType, QString> regionDataTypesByName = {
-            {MemoryRegionDataType::UNKNOWN, "other"},
-            {MemoryRegionDataType::UNSIGNED_INTEGER, "unsigned_int"},
-            {MemoryRegionDataType::SIGNED_INTEGER, "signed_int"},
-            {MemoryRegionDataType::ASCII_STRING, "ascii_string"},
-        };
-
-        static const inline BiMap<Targets::TargetMemoryEndianness, QString> regionEndiannessByName = {
-            {Targets::TargetMemoryEndianness::LITTLE, "little"},
-            {Targets::TargetMemoryEndianness::BIG, "big"},
-        };
-
         static const inline BiMap<AddressType, QString> addressTypesByName = {
             {AddressType::ABSOLUTE, "absolute"},
             {AddressType::RELATIVE, "relative"},

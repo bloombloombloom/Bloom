@@ -2,6 +2,10 @@
 
 #include <QJsonArray>
 
+#include "src/Helpers/EnumToStringMappings.hpp"
+#include "src/Logger/Logger.hpp"
+#include "src/Exceptions/Exception.hpp"
+
 namespace Bloom
 {
     ProjectSettings::ProjectSettings(const QJsonObject& jsonObject) {
@@ -67,12 +71,12 @@ namespace Bloom
                 const auto settingsObj = settingsIt.value().toObject();
                 const auto memoryTypeName = settingsIt.key();
 
-                if (!InsightProjectSettings::memoryTypesByName.contains(memoryTypeName)) {
+                if (!EnumToStringMappings::targetMemoryTypes.contains(memoryTypeName)) {
                     continue;
                 }
 
                 this->memoryInspectionPaneSettingsByMemoryType.insert(std::pair(
-                    InsightProjectSettings::memoryTypesByName.at(memoryTypeName),
+                    EnumToStringMappings::targetMemoryTypes.at(memoryTypeName),
                     this->memoryInspectionPaneSettingsFromJson(settingsObj)
                 ));
             }
@@ -92,13 +96,13 @@ namespace Bloom
         auto memoryInspectionPaneSettingsObj = QJsonObject();
 
         for (const auto& [memoryType, inspectionPaneSettings] : this->memoryInspectionPaneSettingsByMemoryType) {
-            if (!InsightProjectSettings::memoryTypesByName.contains(memoryType)) {
+            if (!EnumToStringMappings::targetMemoryTypes.contains(memoryType)) {
                 // This is just a precaution - all known memory types should be in the mapping.
                 continue;
             }
 
             memoryInspectionPaneSettingsObj.insert(
-                InsightProjectSettings::memoryTypesByName.at(memoryType),
+                EnumToStringMappings::targetMemoryTypes.at(memoryType),
                 this->memoryInspectionPaneSettingsToJson(inspectionPaneSettings)
             );
         }
@@ -146,6 +150,8 @@ namespace Bloom
     Widgets::TargetMemoryInspectionPaneSettings InsightProjectSettings::memoryInspectionPaneSettingsFromJson(
         const QJsonObject& jsonObject
     ) const {
+        using Exceptions::Exception;
+
         auto inspectionPaneSettings = Widgets::TargetMemoryInspectionPaneSettings();
 
         if (jsonObject.contains("refreshOnTargetStop")) {
@@ -193,105 +199,34 @@ namespace Bloom
         }
 
         if (jsonObject.contains("focusedRegions")) {
-            const auto focusedRegions = jsonObject.find("focusedRegions")->toArray();
+            for (const auto& regionValue : jsonObject.find("focusedRegions")->toArray()) {
+                try {
+                    inspectionPaneSettings.focusedMemoryRegions.push_back(
+                        FocusedMemoryRegion(regionValue.toObject())
+                    );
 
-            for (const auto& regionValue : focusedRegions) {
-                const auto regionObj = regionValue.toObject();
-
-                if (!regionObj.contains("name")
-                    || !regionObj.contains("addressRange")
-                    || !regionObj.contains("addressInputType")
-                    || !regionObj.contains("createdTimestamp")
-                    || !regionObj.contains("dataType")
-                ) {
-                    continue;
+                } catch (Exception exception) {
+                    Logger::warning(
+                        "Failed to parse focused memory region from project settings file - "
+                            + exception.getMessage() + " - region will be ignored."
+                    );
                 }
-
-                const auto addressRangeObj = regionObj.find("addressRange")->toObject();
-                if (!addressRangeObj.contains("startAddress")
-                    || !addressRangeObj.contains("endAddress")
-                ) {
-                    continue;
-                }
-
-                auto region = FocusedMemoryRegion(
-                    regionObj.find("name")->toString(),
-                    {
-                        static_cast<std::uint32_t>(addressRangeObj.find("startAddress")->toInteger()),
-                        static_cast<std::uint32_t>(addressRangeObj.find("endAddress")->toInteger()),
-                    }
-                );
-
-                region.createdDate.setSecsSinceEpoch(regionObj.find("createdTimestamp")->toInteger());
-
-                const auto addressInputType = InsightProjectSettings::addressTypesByName.valueAt(
-                    regionObj.find("addressInputType")->toString()
-                );
-
-                if (addressInputType.has_value()) {
-                    region.addressRangeInputType = addressInputType.value();
-                }
-
-                const auto dataType = InsightProjectSettings::regionDataTypesByName.valueAt(
-                    regionObj.find("dataType")->toString()
-                );
-
-                if (dataType.has_value()) {
-                    region.dataType = dataType.value();
-                }
-
-                const auto endianness = InsightProjectSettings::regionEndiannessByName.valueAt(
-                    regionObj.find("endianness")->toString()
-                );
-
-                if (endianness.has_value()) {
-                    region.endianness = endianness.value();
-                }
-
-                inspectionPaneSettings.focusedMemoryRegions.emplace_back(region);
             }
         }
 
         if (jsonObject.contains("excludedRegions")) {
-            const auto excludedRegions = jsonObject.find("excludedRegions")->toArray();
+            for (const auto& regionValue : jsonObject.find("excludedRegions")->toArray()) {
+                try {
+                    inspectionPaneSettings.excludedMemoryRegions.emplace_back(
+                        ExcludedMemoryRegion(regionValue.toObject())
+                    );
 
-            for (const auto& regionValue : excludedRegions) {
-                const auto regionObj = regionValue.toObject();
-
-                if (!regionObj.contains("name")
-                    || !regionObj.contains("addressRange")
-                    || !regionObj.contains("addressInputType")
-                    || !regionObj.contains("createdTimestamp")
-                ) {
-                    continue;
+                } catch (Exception exception) {
+                    Logger::warning(
+                        "Failed to parse excluded memory region from project settings file - "
+                            + exception.getMessage() + " - region will be ignored."
+                    );
                 }
-
-                const auto addressRangeObj = regionObj.find("addressRange")->toObject();
-                if (!addressRangeObj.contains("startAddress")
-                    || !addressRangeObj.contains("endAddress")
-                ) {
-                    continue;
-                }
-
-                auto region = ExcludedMemoryRegion(
-                    regionObj.find("name")->toString(),
-                    {
-                        static_cast<std::uint32_t>(addressRangeObj.find("startAddress")->toInteger()),
-                        static_cast<std::uint32_t>(addressRangeObj.find("endAddress")->toInteger()),
-                    }
-                );
-
-                region.createdDate.setSecsSinceEpoch(regionObj.find("createdTimestamp")->toInteger());
-
-                const auto addressInputType = InsightProjectSettings::addressTypesByName.valueAt(
-                    regionObj.find("addressInputType")->toString()
-                );
-
-                if (addressInputType.has_value()) {
-                    region.addressRangeInputType = addressInputType.value();
-                }
-
-                inspectionPaneSettings.excludedMemoryRegions.emplace_back(region);
             }
         }
 
@@ -340,8 +275,6 @@ namespace Bloom
     QJsonObject InsightProjectSettings::memoryInspectionPaneSettingsToJson(
         const Widgets::TargetMemoryInspectionPaneSettings& inspectionPaneSettings
     ) const {
-        const auto& regionDataTypesByName = InsightProjectSettings::regionDataTypesByName;
-        const auto& regionEndiannessByName = InsightProjectSettings::regionEndiannessByName;
         const auto& addressTypesByName = InsightProjectSettings::addressTypesByName;
 
         auto settingsObj = QJsonObject({
@@ -361,49 +294,12 @@ namespace Bloom
 
         auto focusedRegions = QJsonArray();
         for (const auto& focusedRegion : inspectionPaneSettings.focusedMemoryRegions) {
-            if (!regionDataTypesByName.contains(focusedRegion.dataType)
-                || !regionEndiannessByName.contains(focusedRegion.endianness)
-                || !addressTypesByName.contains(focusedRegion.addressRangeInputType)
-            ) {
-                continue;
-            }
-
-            const auto addressRangeObj = QJsonObject({
-                {"startAddress", static_cast<qint64>(focusedRegion.addressRange.startAddress)},
-                {"endAddress", static_cast<qint64>(focusedRegion.addressRange.endAddress)},
-            });
-
-            auto regionObj = QJsonObject({
-                {"name", focusedRegion.name},
-                {"addressRange", addressRangeObj},
-                {"createdTimestamp", focusedRegion.createdDate.toSecsSinceEpoch()},
-                {"addressInputType", addressTypesByName.at(focusedRegion.addressRangeInputType)},
-                {"dataType", regionDataTypesByName.at(focusedRegion.dataType)},
-                {"endianness", regionEndiannessByName.at(focusedRegion.endianness)},
-            });
-
-            focusedRegions.push_back(regionObj);
+            focusedRegions.push_back(focusedRegion.toJson());
         }
 
         auto excludedRegions = QJsonArray();
         for (const auto& excludedRegion : inspectionPaneSettings.excludedMemoryRegions) {
-            if (!addressTypesByName.contains(excludedRegion.addressRangeInputType)) {
-                continue;
-            }
-
-            const auto addressRangeObj = QJsonObject({
-                {"startAddress", static_cast<qint64>(excludedRegion.addressRange.startAddress)},
-                {"endAddress", static_cast<qint64>(excludedRegion.addressRange.endAddress)},
-            });
-
-            auto regionObj = QJsonObject({
-                {"name", excludedRegion.name},
-                {"addressRange", addressRangeObj},
-                {"createdTimestamp", excludedRegion.createdDate.toSecsSinceEpoch()},
-                {"addressInputType", addressTypesByName.at(excludedRegion.addressRangeInputType)},
-            });
-
-            excludedRegions.push_back(regionObj);
+            excludedRegions.push_back(excludedRegion.toJson());
         }
 
         settingsObj.insert("focusedRegions", focusedRegions);

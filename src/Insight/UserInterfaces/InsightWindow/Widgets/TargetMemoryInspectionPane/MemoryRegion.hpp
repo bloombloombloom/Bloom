@@ -3,10 +3,12 @@
 #include <cstdint>
 #include <atomic>
 #include <QString>
+#include <QJsonObject>
 #include <utility>
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Helpers/DateTime.hpp"
+#include "src/Helpers/BiMap.hpp"
 #include "AddressType.hpp"
 
 namespace Bloom
@@ -28,6 +30,7 @@ namespace Bloom
     public:
         QString name;
         QDateTime createdDate = DateTime::currentDateTime();
+        Targets::TargetMemoryType memoryType;
         MemoryRegionType type;
 
         /**
@@ -50,10 +53,15 @@ namespace Bloom
         Targets::TargetMemoryAddressRange addressRange;
 
         MemoryRegion(
-            QString name,
+            const QString& name,
+            Targets::TargetMemoryType memoryType,
             MemoryRegionType type,
             const Targets::TargetMemoryAddressRange& addressRange
-        ): name(std::move(name)), type(type), addressRange(addressRange) {};
+        );
+
+        MemoryRegion(const QJsonObject& jsonObject);
+
+        virtual QJsonObject toJson() const;
 
         virtual ~MemoryRegion() = default;
 
@@ -66,5 +74,16 @@ namespace Bloom
         [[nodiscard]] bool intersectsWith(const MemoryRegion& other) const {
             return this->addressRange.intersectsWith(other.addressRange);
         }
+
+    private:
+        static const inline BiMap<MemoryRegionType, QString> memoryRegionTypesByName = {
+            {MemoryRegionType::EXCLUDED, "excluded"},
+            {MemoryRegionType::FOCUSED, "focused"},
+        };
+
+        static const inline BiMap<AddressType, QString> addressTypesByName = {
+            {AddressType::ABSOLUTE, "absolute"},
+            {AddressType::RELATIVE, "relative"},
+        };
     };
 }

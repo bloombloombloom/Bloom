@@ -249,6 +249,7 @@ namespace Bloom::Widgets
 
         auto* region = this->addFocusedRegion(FocusedMemoryRegion(
             "Untitled Region",
+            this->memoryDescriptor.type,
             TargetMemoryAddressRange(
                 this->memoryDescriptor.addressRange.startAddress,
                 this->memoryDescriptor.addressRange.startAddress + 10
@@ -263,6 +264,7 @@ namespace Bloom::Widgets
 
         auto* region = this->addExcludedRegion(ExcludedMemoryRegion(
             "Untitled Region",
+            this->memoryDescriptor.type,
             TargetMemoryAddressRange(
                 this->memoryDescriptor.addressRange.startAddress,
                 this->memoryDescriptor.addressRange.startAddress + 10

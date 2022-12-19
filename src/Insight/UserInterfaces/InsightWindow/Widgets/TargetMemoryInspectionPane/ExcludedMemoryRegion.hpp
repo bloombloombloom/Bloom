@@ -7,9 +7,12 @@ namespace Bloom
     class ExcludedMemoryRegion: public MemoryRegion
     {
     public:
-        explicit ExcludedMemoryRegion(
+        ExcludedMemoryRegion(
             const QString& name,
+            Targets::TargetMemoryType memoryType,
             const Targets::TargetMemoryAddressRange& addressRange
-        ): MemoryRegion(name, MemoryRegionType::EXCLUDED, addressRange) {};
+        );
+
+        ExcludedMemoryRegion(const QJsonObject& jsonObject);
     };
 }
