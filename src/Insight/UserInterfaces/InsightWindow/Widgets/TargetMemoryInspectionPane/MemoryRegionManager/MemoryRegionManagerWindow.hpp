@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QWidget>
-#include <QPushButton>
 #include <set>
 #include <vector>
 #include <QShowEvent>
@@ -17,6 +16,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PushButton.hpp"
 #include "RegionItem.hpp"
 #include "FocusedRegionItem.hpp"
 #include "ExcludedRegionItem.hpp"
@@ -51,9 +51,9 @@ namespace Bloom::Widgets
         QWidget* container = nullptr;
         QWidget* regionSelector = nullptr;
 
-        QPushButton* applyButton = nullptr;
-        QPushButton* helpButton = nullptr;
-        QPushButton* closeButton = nullptr;
+        PushButton* applyButton = nullptr;
+        PushButton* helpButton = nullptr;
+        PushButton* closeButton = nullptr;
 
         SvgToolButton* addRegionButton = nullptr;
         QAction* addFocusedRegionMenuAction = nullptr;

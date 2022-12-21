@@ -77,9 +77,9 @@ namespace Bloom::Widgets
 
         this->stackedFormLayout = this->container->findChild<QStackedLayout*>("stacked-form-layout");
 
-        this->applyButton = this->container->findChild<QPushButton*>("apply-btn");
-        this->helpButton = this->container->findChild<QPushButton*>("help-btn");
-        this->closeButton = this->container->findChild<QPushButton*>("close-btn");
+        this->applyButton = this->container->findChild<PushButton*>("apply-btn");
+        this->helpButton = this->container->findChild<PushButton*>("help-btn");
+        this->closeButton = this->container->findChild<PushButton*>("close-btn");
 
         regionSelectorToolBar->setContentsMargins(0, 0, 0, 0);
         this->regionItemScrollArea->setContentsMargins(0, 0, 0, 0);

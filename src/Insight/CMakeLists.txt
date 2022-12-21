@@ -18,6 +18,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/SvgToolButton.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ClickableWidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ExpandingHeightScrollAreaWidget.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PushButton.cpp
 
         # Insight worker tasks
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/InsightWorkerTask.cpp

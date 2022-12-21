@@ -28,11 +28,6 @@
     max-width: 500px;
 }
 
-#apply-btn {
-    background-color: #353C41;
-    border: 1px solid #454C52;
-}
-
 /* BitsetWidget */
 #bitset-widget {
     font-size: 12px;

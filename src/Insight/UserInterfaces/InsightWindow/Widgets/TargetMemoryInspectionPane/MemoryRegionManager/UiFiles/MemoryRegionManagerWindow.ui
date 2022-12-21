@@ -200,7 +200,7 @@
                             </spacer>
                         </item>
                         <item>
-                            <widget class="QPushButton" name="help-btn">
+                            <widget class="PushButton" name="help-btn">
                                 <property name="text">
                                     <string>Help</string>
                                 </property>
@@ -214,14 +214,17 @@
                             </spacer>
                         </item>
                         <item>
-                            <widget class="QPushButton" name="close-btn">
+                            <widget class="PushButton" name="close-btn">
                                 <property name="text">
                                     <string>Close</string>
                                 </property>
                             </widget>
                         </item>
                         <item>
-                            <widget class="QPushButton" name="apply-btn">
+                            <widget class="PushButton" name="apply-btn">
+                                <property name="styleName">
+                                    <string>primary</string>
+                                </property>
                                 <property name="text">
                                     <string>OK</string>
                                 </property>

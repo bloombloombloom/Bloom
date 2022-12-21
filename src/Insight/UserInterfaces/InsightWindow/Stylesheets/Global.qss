@@ -199,3 +199,8 @@ Bloom--Widgets--SvgToolButton QMenu::item {
     padding-left: 10px;
     min-width: 250px;
 }
+
+Bloom--Widgets--PushButton[styleName="primary"] {
+    background-color: #353C41;
+    border: 1px solid #454C52;
+}

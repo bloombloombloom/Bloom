@@ -7,6 +7,7 @@
 #include "Widgets/RotatableLabel.hpp"
 #include "Widgets/LabeledSeparator.hpp"
 #include "Widgets/TextInput.hpp"
+#include "Widgets/PushButton.hpp"
 #include "Widgets/SvgWidget.hpp"
 #include "Widgets/SvgToolButton.hpp"
 #include "Widgets/ExpandingHeightScrollAreaWidget.hpp"
@@ -49,6 +50,15 @@ namespace Bloom
                 "TextInput",
                 [this] (QWidget* parent, const QString& name) {
                     auto* widget = new TextInput(parent);
+                    widget->setObjectName(name);
+                    widget->setStyleSheet(parent->styleSheet());
+                    return widget;
+                }
+            },
+            {
+                "PushButton",
+                [this] (QWidget* parent, const QString& name) {
+                    auto* widget = new PushButton(parent);
                     widget->setObjectName(name);
                     widget->setStyleSheet(parent->styleSheet());
                     return widget;

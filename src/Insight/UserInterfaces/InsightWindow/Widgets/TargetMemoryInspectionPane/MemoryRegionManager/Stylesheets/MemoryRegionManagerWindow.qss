@@ -130,8 +130,3 @@
     border-top: 1px solid #2F2F2D;
     min-height: 50px;
 }
-
-#apply-btn {
-    background-color: #353C41;
-    border: 1px solid #454C52;
-}

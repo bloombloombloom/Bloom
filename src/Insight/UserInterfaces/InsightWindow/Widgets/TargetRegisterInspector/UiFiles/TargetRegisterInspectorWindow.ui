@@ -330,7 +330,7 @@
                                                             <number>15</number>
                                                         </property>
                                                         <item alignment="Qt::AlignCenter">
-                                                            <widget class="QPushButton" name="refresh-value-btn">
+                                                            <widget class="PushButton" name="refresh-value-btn">
                                                                 <property name="text">
                                                                     <string>Refresh Value</string>
                                                                 </property>
@@ -344,7 +344,10 @@
                                                             </spacer>
                                                         </item>
                                                         <item alignment="Qt::AlignCenter">
-                                                            <widget class="QPushButton" name="apply-btn">
+                                                            <widget class="PushButton" name="apply-btn">
+                                                                <property name="styleName">
+                                                                    <string>primary</string>
+                                                                </property>
                                                                 <property name="text">
                                                                     <string>Write Value</string>
                                                                 </property>
@@ -414,7 +417,7 @@
                             </spacer>
                         </item>
                         <item alignment="Qt::AlignRight">
-                            <widget class="QPushButton" name="help-btn">
+                            <widget class="PushButton" name="help-btn">
                                 <property name="text">
                                     <string>Help</string>
                                 </property>
@@ -428,7 +431,7 @@
                             </spacer>
                         </item>
                         <item alignment="Qt::AlignRight">
-                            <widget class="QPushButton" name="close-btn">
+                            <widget class="PushButton" name="close-btn">
                                 <property name="text">
                                     <string>Close</string>
                                 </property>

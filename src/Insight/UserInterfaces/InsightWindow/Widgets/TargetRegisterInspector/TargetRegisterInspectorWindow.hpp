@@ -2,7 +2,6 @@
 
 #include <QWidget>
 #include <QLineEdit>
-#include <QPushButton>
 #include <set>
 #include <QSize>
 #include <QString>
@@ -14,6 +13,7 @@
 #include "src/Targets/TargetState.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PushButton.hpp"
 #include "BitsetWidget/BitsetWidget.hpp"
 #include "RegisterHistoryWidget/RegisterHistoryWidget.hpp"
 
@@ -54,10 +54,10 @@ namespace Bloom::Widgets
         QWidget* registerValueBitsetWidgetContainer = nullptr;
         std::vector<BitsetWidget*> bitsetWidgets;
 
-        QPushButton* refreshValueButton = nullptr;
-        QPushButton* applyButton = nullptr;
-        QPushButton* helpButton = nullptr;
-        QPushButton* closeButton = nullptr;
+        PushButton* refreshValueButton = nullptr;
+        PushButton* applyButton = nullptr;
+        PushButton* helpButton = nullptr;
+        PushButton* closeButton = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 

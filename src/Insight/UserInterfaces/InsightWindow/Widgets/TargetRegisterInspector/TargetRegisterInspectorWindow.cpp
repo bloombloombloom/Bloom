@@ -81,10 +81,10 @@ namespace Bloom::Widgets
         this->registerValueBitsetWidgetContainer = this->registerValueContainer->findChild<QWidget*>(
             "register-value-bitset-widget-container"
         );
-        this->refreshValueButton = this->container->findChild<QPushButton*>("refresh-value-btn");
-        this->applyButton = this->container->findChild<QPushButton*>("apply-btn");
-        this->helpButton = this->container->findChild<QPushButton*>("help-btn");
-        this->closeButton = this->container->findChild<QPushButton*>("close-btn");
+        this->refreshValueButton = this->container->findChild<PushButton*>("refresh-value-btn");
+        this->applyButton = this->container->findChild<PushButton*>("apply-btn");
+        this->helpButton = this->container->findChild<PushButton*>("help-btn");
+        this->closeButton = this->container->findChild<PushButton*>("close-btn");
 
         this->registerHistoryWidget = new RegisterHistoryWidget(
             this->registerDescriptor,
