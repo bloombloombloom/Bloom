@@ -1,8 +1,9 @@
 #pragma once
 
 #include <QGraphicsItem>
-#include <QFont>
 #include <cstdint>
+#include <optional>
+#include <QFont>
 
 #include "src/Targets/TargetMemory.hpp"
 

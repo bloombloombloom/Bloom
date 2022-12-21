@@ -2,6 +2,7 @@
 
 #include <QFrame>
 #include <QSize>
+#include <optional>
 #include <QEvent>
 #include <QMouseEvent>
 #include <QEnterEvent>

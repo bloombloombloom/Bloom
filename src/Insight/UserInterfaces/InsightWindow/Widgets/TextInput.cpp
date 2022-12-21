@@ -5,7 +5,9 @@
 
 namespace Bloom::Widgets
 {
-    TextInput::TextInput(QWidget* parent): QLineEdit(parent) {}
+    TextInput::TextInput(QWidget* parent)
+        : QLineEdit(parent)
+    {}
 
     void TextInput::contextMenuEvent(QContextMenuEvent* event) {
         if (QMenu* menu = this->createStandardContextMenu()) {

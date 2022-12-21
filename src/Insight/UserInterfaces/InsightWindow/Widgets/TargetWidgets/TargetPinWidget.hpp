@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <utility>
+#include <optional>
 
 #include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"

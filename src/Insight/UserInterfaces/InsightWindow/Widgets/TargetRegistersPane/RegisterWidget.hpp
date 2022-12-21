@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <unordered_set>
+#include <optional>
 #include <QHBoxLayout>
 #include <QAction>
 #include <QSize>

@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 #include <map>
+#include <optional>
 
 #include "TargetPinWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"

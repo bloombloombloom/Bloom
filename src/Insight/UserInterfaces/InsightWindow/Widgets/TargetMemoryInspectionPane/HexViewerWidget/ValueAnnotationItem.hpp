@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QWidget>
 #include <QStyleOptionGraphicsItem>
+#include <optional>
 
 #include "AnnotationItem.hpp"
 
