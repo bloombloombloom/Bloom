@@ -236,16 +236,20 @@
                                 <property name="margin">
                                     <number>0</number>
                                 </property>
-                                <item>
-                                    <spacer name="vertical-spacer">
-                                        <property name="sizeHint">
-                                            <size>
-                                                <height>3</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                </item>
                                 <!-- Button items here -->
+                                <item alignment="Qt::AlignRight">
+                                    <widget class="SvgToolButton" name="manage-memory-snapshots-btn">
+                                        <property name="checkable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="svgFilePath">
+                                            <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/manage-snapshots-icon.svg</string>
+                                        </property>
+                                        <property name="toolTip">
+                                            <string>Manage Memory Snapshots</string>
+                                        </property>
+                                    </widget>
+                                </item>
                                 <item>
                                     <spacer name="vertical-spacer">
                                         <property name="orientation">

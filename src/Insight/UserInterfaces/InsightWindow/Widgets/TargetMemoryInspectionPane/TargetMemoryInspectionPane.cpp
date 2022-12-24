@@ -14,6 +14,7 @@
 
 #include "src/Helpers/Paths.hpp"
 #include "src/Exceptions/Exception.hpp"
+#include "src/Logger/Logger.hpp"
 
 namespace Bloom::Widgets
 {
@@ -78,8 +79,9 @@ namespace Bloom::Widgets
         // Quick sanity check to ensure the validity of persisted settings.
         this->sanitiseSettings();
 
-        auto* containerLayout = this->container->findChild<QHBoxLayout*>("container-sub-layout");
+        this->subContainerLayout = this->container->findChild<QHBoxLayout*>("container-sub-layout");
         this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
+        this->manageMemorySnapshotsButton = this->container->findChild<SvgToolButton*>("manage-memory-snapshots-btn");
 
         this->refreshButton = this->container->findChild<SvgToolButton*>("refresh-memory-btn");
         this->refreshOnTargetStopAction = this->refreshButton->findChild<QAction*>("refresh-target-stopped");
@@ -102,7 +104,7 @@ namespace Bloom::Widgets
         );
         this->hexViewerWidget->setDisabled(true);
 
-        containerLayout->insertWidget(1, this->hexViewerWidget);
+        this->subContainerLayout->insertWidget(1, this->hexViewerWidget);
 
         QObject::connect(
             this->hexViewerWidget,
@@ -116,6 +118,21 @@ namespace Bloom::Widgets
         );
 
         this->hexViewerWidget->init();
+
+        this->rightPanel = new PanelWidget(PanelWidgetType::RIGHT, this->settings.rightPanelState, this);
+        this->rightPanel->setObjectName("right-panel");
+        this->rightPanel->setMinimumResize(200);
+        this->rightPanel->setHandleSize(5);
+        this->subContainerLayout->insertWidget(2, this->rightPanel);
+
+        this->snapshotManager = new SnapshotManager(
+            this->targetMemoryDescriptor,
+            this->data,
+            this->staleData,
+            this->settings.snapshotManagerState,
+            this->rightPanel
+        );
+        this->rightPanel->layout()->addWidget(this->snapshotManager);
 
         this->setRefreshOnTargetStopEnabled(this->settings.refreshOnTargetStop);
         this->setRefreshOnActivationEnabled(this->settings.refreshOnActivation);
@@ -153,6 +170,31 @@ namespace Bloom::Widgets
             &QToolButton::clicked,
             this,
             &TargetMemoryInspectionPane::openMemoryRegionManagerWindow
+        );
+
+        QObject::connect(
+            this->manageMemorySnapshotsButton,
+            &QToolButton::clicked,
+            this,
+            &TargetMemoryInspectionPane::toggleMemorySnapshotManagerPane
+        );
+
+        QObject::connect(
+            this->snapshotManager,
+            &PaneWidget::paneActivated,
+            this,
+            [this] {
+                this->manageMemorySnapshotsButton->setChecked(true);
+            }
+        );
+
+        QObject::connect(
+            this->snapshotManager,
+            &PaneWidget::paneDeactivated,
+            this,
+            [this] {
+                this->manageMemorySnapshotsButton->setChecked(false);
+            }
         );
 
         QObject::connect(
@@ -247,6 +289,8 @@ namespace Bloom::Widgets
         } else {
             this->deactivate();
         }
+
+        this->snapshotManager->deactivate();
     }
 
     void TargetMemoryInspectionPane::refreshMemoryValues(std::optional<std::function<void(void)>> callback) {
@@ -361,6 +405,8 @@ namespace Bloom::Widgets
     void TargetMemoryInspectionPane::resizeEvent(QResizeEvent* event) {
         const auto size = this->size();
         this->container->setFixedSize(size.width(), size.height());
+
+        this->rightPanel->setMaximumResize(static_cast<int>(size.width() * 0.4));
 
         PaneWidget::resizeEvent(event);
     }
@@ -486,6 +532,8 @@ namespace Bloom::Widgets
         this->data = data;
         this->hexViewerWidget->updateValues(this->data.value());
         this->setStaleData(false);
+
+        this->snapshotManager->createSnapshotWindow->refreshForm();
     }
 
     void TargetMemoryInspectionPane::openMemoryRegionManagerWindow() {
@@ -513,6 +561,15 @@ namespace Bloom::Widgets
         } else {
             this->memoryRegionManagerWindow->activateWindow();
         }
+    }
+
+    void TargetMemoryInspectionPane::toggleMemorySnapshotManagerPane() {
+        if (!this->snapshotManager->state.activated) {
+            this->snapshotManager->activate();
+            return;
+        }
+
+        this->snapshotManager->deactivate();
     }
 
     void TargetMemoryInspectionPane::onMemoryRegionsChange() {
@@ -546,6 +603,7 @@ namespace Bloom::Widgets
     ) {
         if (memoryType == this->targetMemoryDescriptor.type && this->data.has_value()) {
             this->setStaleData(true);
+            this->snapshotManager->createSnapshotWindow->refreshForm();
         }
     }
 

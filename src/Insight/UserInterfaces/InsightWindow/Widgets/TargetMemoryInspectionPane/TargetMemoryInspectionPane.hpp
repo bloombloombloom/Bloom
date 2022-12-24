@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QWidget>
-#include <QResizeEvent>
+#include <optional>
 #include <vector>
+#include <QResizeEvent>
+#include <QHBoxLayout>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 
@@ -15,6 +17,7 @@
 
 #include "HexViewerWidget/HexViewerWidget.hpp"
 #include "MemoryRegionManager/MemoryRegionManagerWindow.hpp"
+#include "SnapshotManager/SnapshotManager.hpp"
 
 #include "TargetMemoryInspectionPaneSettings.hpp"
 
@@ -50,9 +53,11 @@ namespace Bloom::Widgets
         std::optional<Targets::TargetMemoryBuffer> data;
 
         QWidget* container = nullptr;
+        QHBoxLayout* subContainerLayout = nullptr;
 
         QWidget* titleBar = nullptr;
         SvgToolButton* manageMemoryRegionsButton = nullptr;
+        SvgToolButton* manageMemorySnapshotsButton = nullptr;
 
         SvgToolButton* refreshButton = nullptr;
         QAction* refreshOnTargetStopAction = nullptr;
@@ -61,6 +66,9 @@ namespace Bloom::Widgets
         SvgToolButton* detachPaneButton = nullptr;
         SvgToolButton* attachPaneButton = nullptr;
         HexViewerWidget* hexViewerWidget = nullptr;
+
+        PanelWidget* rightPanel = nullptr;
+        SnapshotManager* snapshotManager = nullptr;
 
         QWidget* staleDataLabelContainer = nullptr;
 
@@ -76,6 +84,7 @@ namespace Bloom::Widgets
         void setRefreshOnActivationEnabled(bool enabled);
         void onMemoryRead(const Targets::TargetMemoryBuffer& data);
         void openMemoryRegionManagerWindow();
+        void toggleMemorySnapshotManagerPane();
         void onMemoryRegionsChange();
         void onTargetReset();
         void onProgrammingModeEnabled();

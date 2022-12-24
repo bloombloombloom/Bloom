@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include <QDateTime>
+#include <QDate>
 
 namespace Bloom
 {
@@ -21,6 +22,16 @@ namespace Bloom
         static QDateTime currentDateTime() {
             const auto lock = std::unique_lock(DateTime::systemClockMutex);
             return QDateTime::currentDateTime();
+        }
+
+        /**
+         * This function calls QDateTime::currentDateTime(). See comment for DateTime::currentDateTime().
+         *
+         * @return
+         */
+        static QDate currentDate() {
+            const auto lock = std::unique_lock(DateTime::systemClockMutex);
+            return QDateTime::currentDateTime().date();
         }
 
         /**

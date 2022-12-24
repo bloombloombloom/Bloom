@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <widget class="QWidget" name="container">
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding"/>
+        </property>
+        <layout class="QVBoxLayout">
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <property name="margin">
+                <number>0</number>
+            </property>
+            <item>
+                <widget class="QWidget" name="title-bar">
+                    <property name="minimumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="maximumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+                    </property>
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>5</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="Label" name="snapshot-title-label">
+                                <property name="text">
+                                    <string>Memory Snapshots</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item alignment="Qt::AlignLeft">
+                            <spacer name="horizontal-spacer">
+                                <property name="orientation">
+                                    <enum>Qt::Horizontal</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QWidget" name="tool-bar">
+                    <property name="minimumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="maximumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+                    </property>
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>5</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="create-snapshot-btn">
+                                <property name="checkable">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/Images/new-snapshot-icon.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Create Snapshot</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item alignment="Qt::AlignLeft">
+                            <spacer name="horizontal-spacer">
+                                <property name="orientation">
+                                    <enum>Qt::Horizontal</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QScrollArea" name="snapshot-item-scroll-area">
+                    <property name="widgetResizable"><bool>true</bool></property>
+                    <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAsNeeded</enum></property>
+                    <property name="sizeAdjustPolicy"><enum>QAbstractScrollArea::AdjustToContents</enum></property>
+                    <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                    </property>
+                    <widget class="QWidget" name="item-container">
+                        <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                        </property>
+                        <layout class="QVBoxLayout" name="item-container-layout">
+                            <property name="spacing">
+                                <number>0</number>
+                            </property>
+                            <property name="margin">
+                                <number>0</number>
+                            </property>
+                            <property name="sizeConstraint">
+                                <enum>QLayout::SetMinAndMaxSize</enum>
+                            </property>
+                        </layout>
+                    </widget>
+                </widget>
+            </item>
+
+        </layout>
+    </widget>
+</ui>

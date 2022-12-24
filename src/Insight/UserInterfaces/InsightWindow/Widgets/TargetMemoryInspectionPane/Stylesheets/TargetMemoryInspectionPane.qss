@@ -208,3 +208,83 @@
     padding-left: 10px;
     min-width: 150px;
 }
+
+/* Snapshot Manager */
+#target-memory-inspection-pane #rh-side-bar #manage-memory-snapshots-btn {
+    border-bottom: 1px solid #41423f;
+    qproperty-buttonWidth: 31;
+    qproperty-buttonHeight: 28;
+}
+
+#target-memory-inspection-pane #rh-side-bar #manage-memory-snapshots-btn:hover {
+    background-color: #2F2F2D;
+}
+
+#target-memory-inspection-pane #rh-side-bar #manage-memory-snapshots-btn:checked {
+    background-color: #2F2F2D;
+}
+
+#snapshot-manager #container {
+    background-color: #373835;
+    border-left: 1px solid #41423f;
+}
+
+#snapshot-manager #title-bar {
+    background-color: transparent;
+    border-bottom: 1px solid #41423f;
+}
+
+#snapshot-manager #title-bar #snapshot-title-label {
+    color: #8a8a8d;
+}
+
+#snapshot-manager #tool-bar {
+    border-bottom: 1px solid #41423f;
+}
+
+#snapshot-manager #tool-bar QToolButton {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    qproperty-buttonWidth: 20;
+    qproperty-buttonHeight: 18;
+}
+
+#snapshot-manager #snapshot-item-scroll-area {
+    border: none;
+}
+
+#snapshot-manager #snapshot-item {
+    border: none;
+    border-bottom: 1px solid #41423f;
+    background-color: transparent;
+}
+
+#snapshot-manager #snapshot-item:hover {
+    border-left: none;
+    background-color: rgba(142, 139, 131, 0.1);
+}
+
+#snapshot-manager #snapshot-item[selected=true] {
+    background-color: #355A80;
+}
+
+#snapshot-manager #snapshot-item #name-label {
+    font-size: 14px
+}
+
+#snapshot-manager #snapshot-item #program-counter-label,
+#snapshot-manager #snapshot-item #created-date-label {
+    font-size: 13px;
+    color: #8a8a8d;
+}
+
+/* Create Snapshot Window */
+#create-snapshot-window #stale-data-warning QLabel {
+    margin-top: 1px;
+    color: #9a9a9d;
+}
+
+#create-snapshot-window #stale-data-warning #icon {
+    margin-top: 1px;
+}

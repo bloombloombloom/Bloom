@@ -201,6 +201,22 @@ Bloom--Widgets--SvgToolButton QMenu::item {
 }
 
 Bloom--Widgets--PushButton[styleName="primary"] {
-    background-color: #353C41;
-    border: 1px solid #454C52;
+    background-color: rgba(53, 60, 65, 1);
+    border: 1px solid rgba(69, 76, 82, 1);
+}
+
+Bloom--Widgets--PushButton[styleName="primary"]:disabled {
+    background-color: rgba(53, 60, 65, 0.25);
+    border: 1px solid rgba(69, 76, 82, 0.5);
+
+}
+
+QCheckBox::indicator:checked {
+    margin-top: 2px;
+    image: url(":/compiled/src/Insight/UserInterfaces/InsightWindow/Images/checked-action-icon.svg");
+}
+
+QCheckBox::indicator:unchecked {
+    margin-top: 2px;
+    image: url(":/compiled/src/Insight/UserInterfaces/InsightWindow/Images/unchecked-action-icon.svg");
 }

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <widget class="QWidget" name="container">
+        <layout class="QVBoxLayout">
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <property name="margin">
+                <number>0</number>
+            </property>
+            <item>
+                <widget class="QWidget" name="form-container">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding"/>
+                    </property>
+                    <layout class="QVBoxLayout">
+                        <property name="spacing">
+                            <number>10</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <layout class="QHBoxLayout" name="name-row">
+                                <item alignment="Qt::AlignVCenter">
+                                    <widget class="Label" name="name-label">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                                        </property>
+                                        <property name="minimumWidth">
+                                            <number>100</number>
+                                        </property>
+                                        <property name="text">
+                                            <string>Name:</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item alignment="Qt::AlignVCenter">
+                                    <widget class="TextInput" name="name-input">
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="description-row">
+                                <item alignment="Qt::AlignTop">
+                                    <widget class="Label" name="register-details-description-label">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                                        </property>
+                                        <property name="minimumWidth">
+                                            <number>100</number>
+                                        </property>
+                                        <property name="text">
+                                            <string>Description:</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QPlainTextEdit" name="description-input">
+                                        <property name="maximumHeight">
+                                            <number>100</number>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <spacer name="vertical-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <height>10</height>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="include-focus-regions-row">
+                                <item alignment="Qt::AlignLeft">
+                                    <widget class="QCheckBox" name="include-focus-regions-input">
+                                        <property name="text">
+                                            <string>Include focused regions</string>
+                                        </property>
+                                        <property name="toolTip">
+                                            <string>Captures any focused regions currently defined in the memory inspection pane.</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="horizontal-spacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Horizontal</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="capture-directly-from-target-row">
+                                <item alignment="Qt::AlignLeft">
+                                    <widget class="QCheckBox" name="capture-directly-from-target-input">
+                                        <property name="text">
+                                            <string>Capture directly from target</string>
+                                        </property>
+                                        <property name="toolTip">
+                                            <string>Captures the memory directly from the target, as opposed to what's currently loaded in the memory inspection pane.</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="horizontal-spacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Horizontal</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <widget class="QWidget" name="stale-data-warning">
+                                <layout class="QHBoxLayout">
+                                    <property name="spacing">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="margin">
+                                        <number>0</number>
+                                    </property>
+                                    <item>
+                                        <spacer name="horizontal-spacer">
+                                            <property name="orientation">
+                                                <enum>Qt::Horizontal</enum>
+                                            </property>
+                                        </spacer>
+                                    </item>
+                                    <item>
+                                        <widget class="SvgWidget" name="icon">
+                                            <property name="containerHeight">
+                                                <number>15</number>
+                                            </property>
+                                            <property name="containerWidth">
+                                                <number>14</number>
+                                            </property>
+                                            <property name="svgFilePath">
+                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/stale-data-icon.svg</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item>
+                                        <widget class="Label">
+                                            <property name="text">
+                                                <string>Captured data may be stale</string>
+                                            </property>
+                                            <property name="toolTip">
+                                                <string>Use the 'Capture directly from target' option to avoid capturing stale data.</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                        <item>
+                            <spacer name="vertical-spacer">
+                                <property name="orientation">
+                                    <enum>Qt::Vertical</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QWidget" name="actions">
+                    <property name="minimumHeight">
+                        <number>25</number>
+                    </property>
+                    <property name="maximumHeight">
+                        <number>25</number>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+                    </property>
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>15</number>
+                        </property>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="orientation">
+                                    <enum>Qt::Horizontal</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="PushButton" name="close-btn">
+                                <property name="text">
+                                    <string>Cancel</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="PushButton" name="capture-btn">
+                                <property name="styleName">
+                                    <string>primary</string>
+                                </property>
+                                <property name="text">
+                                    <string>Capture</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+</ui>
