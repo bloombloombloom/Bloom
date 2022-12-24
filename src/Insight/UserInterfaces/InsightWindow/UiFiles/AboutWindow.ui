@@ -35,8 +35,16 @@
                 </item>
                 <item alignment="Qt::AlignHCenter">
                     <widget class="Label" name="author-label">
+                        <property name="textFormat">
+                            <enum>Qt::TextFormat::RichText</enum>
+                        </property>
                         <property name="text">
-                            <string>Nav Mohammed</string>
+                            <string><![CDATA[
+                            <span>Nav Mohammed (<a style="color: #3F86A0;" href="https://bloom.oscillate.io/social/mastodon">@nav</a>)</span>
+                            ]]></string>
+                        </property>
+                        <property name="openExternalLinks">
+                            <bool>true</bool>
                         </property>
                     </widget>
                 </item>
