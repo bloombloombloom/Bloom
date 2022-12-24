@@ -38,7 +38,7 @@ namespace Bloom
 
         Targets::TargetMemoryBuffer data;
 
-        for (auto i = 0; i < readsRequired; i++) {
+        for (std::uint32_t i = 0; i < readsRequired; i++) {
             auto dataSegment = targetControllerConsole.readMemory(
                 this->memoryType,
                 this->startAddress + static_cast<Targets::TargetMemoryAddress>(readSize * i),
