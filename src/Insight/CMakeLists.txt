@@ -32,6 +32,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/GetTargetState.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/GetTargetDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ConstructHexViewerByteItems.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/CaptureMemorySnapshot.cpp
 
         # Error dialogue window
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.cpp
