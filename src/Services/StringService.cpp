@@ -1,13 +1,13 @@
-#include "String.hpp"
+#include "StringService.hpp"
 
 #include <algorithm>
 #include <cctype>
 #include <sstream>
 #include <iomanip>
 
-namespace Bloom
+namespace Bloom::Services
 {
-    std::string String::asciiToLower(std::string str) {
+    std::string StringService::asciiToLower(std::string str) {
         std::transform(str.begin(), str.end(), str.begin(), [] (unsigned char character) {
             return std::tolower(character);
         });
@@ -15,7 +15,7 @@ namespace Bloom
         return str;
     }
 
-    std::string String::asciiToUpper(std::string str) {
+    std::string StringService::asciiToUpper(std::string str) {
         std::transform(str.begin(), str.end(), str.begin(), [] (unsigned char character) {
             return std::toupper(character);
         });
@@ -23,7 +23,7 @@ namespace Bloom
         return str;
     }
 
-    bool String::isAscii(const std::string& str) {
+    bool StringService::isAscii(const std::string& str) {
         return !std::any_of(str.begin(), str.end(), [] (unsigned char character) {
             return character > 127;
         });

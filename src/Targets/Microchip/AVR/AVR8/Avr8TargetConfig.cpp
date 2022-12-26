@@ -1,7 +1,8 @@
 #include "Avr8TargetConfig.hpp"
 
-#include "src/Helpers/String.hpp"
 #include "src/Services/PathService.hpp"
+#include "src/Services/StringService.hpp"
+
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
@@ -17,7 +18,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             throw InvalidConfig("Missing physical interface config parameter for AVR8 target.");
         }
 
-        const auto physicalInterfaceName = String::asciiToLower(targetNode["physicalInterface"].as<std::string>());
+        const auto physicalInterfaceName = Services::StringService::asciiToLower(targetNode["physicalInterface"].as<std::string>());
         const auto physicalInterfaceIt = Avr8TargetConfig::debugPhysicalInterfacesByConfigName.find(
             physicalInterfaceName
         );

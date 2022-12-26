@@ -1,11 +1,13 @@
 #include "ProjectConfig.hpp"
 
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace Bloom
 {
+    using Services::StringService;
+
     ProjectConfig::ProjectConfig(const YAML::Node& configNode) {
         if (!configNode["environments"]) {
             throw Exceptions::InvalidConfig(
@@ -28,7 +30,7 @@ namespace Bloom
             try {
                 environmentName = environmentIt->first.as<std::string>();
 
-                if (!String::isAscii(environmentName.value())) {
+                if (!StringService::isAscii(environmentName.value())) {
                     throw Exceptions::InvalidConfig(
                         "Environment name ('" + environmentName.value() + "') is not in ASCII form."
                     );
@@ -132,10 +134,10 @@ namespace Bloom
             throw Exceptions::InvalidConfig("No target name found.");
         }
 
-        this->name = String::asciiToLower(targetNode["name"].as<std::string>());
+        this->name = StringService::asciiToLower(targetNode["name"].as<std::string>());
 
         if (targetNode["variantName"]) {
-            this->variantName = String::asciiToLower(targetNode["variantName"].as<std::string>());
+            this->variantName = StringService::asciiToLower(targetNode["variantName"].as<std::string>());
         }
 
         this->targetNode = targetNode;
@@ -146,7 +148,7 @@ namespace Bloom
             throw Exceptions::InvalidConfig("No debug tool name found.");
         }
 
-        this->name = String::asciiToLower(debugToolNode["name"].as<std::string>());
+        this->name = StringService::asciiToLower(debugToolNode["name"].as<std::string>());
 
         if (debugToolNode["releasePostDebugSession"]) {
             this->releasePostDebugSession = debugToolNode["releasePostDebugSession"].as<bool>(
@@ -162,7 +164,7 @@ namespace Bloom
             throw Exceptions::InvalidConfig("No debug server name found.");
         }
 
-        this->name = String::asciiToLower(debugServerNode["name"].as<std::string>());
+        this->name = StringService::asciiToLower(debugServerNode["name"].as<std::string>());
         this->debugServerNode = debugServerNode;
     }
 }

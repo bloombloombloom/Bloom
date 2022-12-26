@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-namespace Bloom
+namespace Bloom::Services
 {
-    class String
+    class StringService
     {
     public:
         static std::string asciiToLower(std::string str);
