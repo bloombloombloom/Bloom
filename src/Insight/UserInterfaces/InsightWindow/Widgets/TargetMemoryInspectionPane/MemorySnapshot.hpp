@@ -8,7 +8,7 @@
 #include <QJsonObject>
 
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Helpers/DateTime.hpp"
+#include "src/Services/DateTimeService.hpp"
 
 #include "FocusedMemoryRegion.hpp"
 #include "ExcludedMemoryRegion.hpp"
@@ -24,7 +24,7 @@ namespace Bloom
         Targets::TargetMemoryType memoryType;
         Targets::TargetMemoryBuffer data;
         Targets::TargetProgramCounter programCounter;
-        QDateTime createdDate = DateTime::currentDateTime();
+        QDateTime createdDate = Services::DateTimeService::currentDateTime();
 
         std::vector<FocusedMemoryRegion> focusedRegions;
         std::vector<ExcludedMemoryRegion> excludedRegions;

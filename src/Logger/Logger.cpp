@@ -19,7 +19,9 @@ namespace Bloom
     }
 
     void Logger::log(const LogEntry& logEntry) {
-        static auto timezoneAbbreviation = DateTime::getTimeZoneAbbreviation(logEntry.timestamp).toStdString();
+        static auto timezoneAbbreviation = Services::DateTimeService::getTimeZoneAbbreviation(
+            logEntry.timestamp
+        ).toStdString();
 
         const auto lock = std::unique_lock(Logger::printMutex);
 

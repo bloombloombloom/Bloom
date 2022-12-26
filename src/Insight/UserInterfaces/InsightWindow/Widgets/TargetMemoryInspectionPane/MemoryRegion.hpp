@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Helpers/DateTime.hpp"
-#include "src/Helpers/BiMap.hpp"
 #include "AddressType.hpp"
+
+#include "src/Services/DateTimeService.hpp"
+
+#include "src/Helpers/BiMap.hpp"
 
 namespace Bloom
 {
@@ -29,7 +31,7 @@ namespace Bloom
     {
     public:
         QString name;
-        QDateTime createdDate = DateTime::currentDateTime();
+        QDateTime createdDate = Services::DateTimeService::currentDateTime();
         Targets::TargetMemoryType memoryType;
         MemoryRegionType type;
 

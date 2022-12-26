@@ -4,13 +4,13 @@
 #include <QDateTime>
 #include <QDate>
 
-namespace Bloom
+namespace Bloom::Services
 {
     /**
      * Some (maybe all) QDateTime static functions are not thread-safe and thus can result in data races.
-     * This trivial helper class wraps some of these functions and employs a mutex to prevent data races.
+     * This trivial service class wraps some of these functions and employs a mutex to prevent data races.
      */
-    class DateTime
+    class DateTimeService
     {
     public:
         /**
@@ -20,7 +20,7 @@ namespace Bloom
          * @return
          */
         static QDateTime currentDateTime() {
-            const auto lock = std::unique_lock(DateTime::systemClockMutex);
+            const auto lock = std::unique_lock(DateTimeService::systemClockMutex);
             return QDateTime::currentDateTime();
         }
 
@@ -30,7 +30,7 @@ namespace Bloom
          * @return
          */
         static QDate currentDate() {
-            const auto lock = std::unique_lock(DateTime::systemClockMutex);
+            const auto lock = std::unique_lock(DateTimeService::systemClockMutex);
             return QDateTime::currentDateTime().date();
         }
 
@@ -43,7 +43,7 @@ namespace Bloom
          * @return
          */
         static QString getTimeZoneAbbreviation(const QDateTime& dateTime) {
-            const auto lock = std::unique_lock(DateTime::systemClockMutex);
+            const auto lock = std::unique_lock(DateTimeService::systemClockMutex);
             return dateTime.timeZoneAbbreviation();
         }
 

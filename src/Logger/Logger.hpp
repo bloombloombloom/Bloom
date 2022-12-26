@@ -6,7 +6,7 @@
 #include <atomic>
 
 #include "src/ProjectConfig.hpp"
-#include "src/Helpers/DateTime.hpp"
+#include "src/Services/DateTimeService.hpp"
 
 namespace Bloom
 {
@@ -26,7 +26,7 @@ namespace Bloom
         std::uint32_t id = ++(LogEntry::lastLogId);
         std::string message;
         LogLevel logLevel;
-        QDateTime timestamp = DateTime::currentDateTime();
+        QDateTime timestamp = Services::DateTimeService::currentDateTime();
         std::string threadName;
 
         LogEntry(std::string message, LogLevel logLevel)

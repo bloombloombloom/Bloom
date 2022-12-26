@@ -6,7 +6,7 @@
 #include <optional>
 #include <cstdint>
 
-#include "src/Helpers/DateTime.hpp"
+#include "src/Services/DateTimeService.hpp"
 
 namespace Bloom::Events
 {
@@ -38,7 +38,7 @@ namespace Bloom::Events
     {
     public:
         int id = ++(Event::lastEventId);
-        QDateTime createdTimestamp = DateTime::currentDateTime();
+        QDateTime createdTimestamp = Services::DateTimeService::currentDateTime();
 
         static constexpr EventType type = EventType::GENERIC;
         static const inline std::string name = "GenericEvent";

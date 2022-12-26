@@ -1,6 +1,6 @@
 #include "MemorySnapshotItem.hpp"
 
-#include "src/Helpers/DateTime.hpp"
+#include "src/Services/DateTimeService.hpp"
 
 namespace Bloom::Widgets
 {
@@ -23,7 +23,7 @@ namespace Bloom::Widgets
 
         this->createdDateLabel->setText(
             memorySnapshot.createdDate.toString(
-                memorySnapshot.createdDate.date() == DateTime::currentDate()
+                memorySnapshot.createdDate.date() == Services::DateTimeService::currentDate()
                     ? "hh:mm"
                     : "dd/MM/yyyy hh:mm"
             )
