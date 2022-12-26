@@ -83,7 +83,7 @@ namespace Bloom
             auto* task = queuedTask.value();
             task->moveToThread(this->thread());
             task->setParent(this);
-            task->execute(this->targetControllerConsole);
+            task->execute(this->targetControllerService);
 
             {
                 const auto taskGroupsLock = InsightWorker::taskGroupsInExecution.acquireLock();

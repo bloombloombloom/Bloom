@@ -1,55 +1,57 @@
-#include "TargetControllerConsole.hpp"
+#include "TargetControllerService.hpp"
 
 // Commands
-#include "Commands/GetState.hpp"
-#include "Commands/Suspend.hpp"
-#include "Commands/Resume.hpp"
-#include "Commands/GetTargetDescriptor.hpp"
-#include "Commands/GetTargetState.hpp"
-#include "Commands/StopTargetExecution.hpp"
-#include "Commands/ResumeTargetExecution.hpp"
-#include "Commands/ResetTarget.hpp"
-#include "Commands/ReadTargetRegisters.hpp"
-#include "Commands/WriteTargetRegisters.hpp"
-#include "Commands/ReadTargetMemory.hpp"
-#include "Commands/WriteTargetMemory.hpp"
-#include "Commands/EraseTargetMemory.hpp"
-#include "Commands/StepTargetExecution.hpp"
-#include "Commands/SetBreakpoint.hpp"
-#include "Commands/RemoveBreakpoint.hpp"
-#include "Commands/SetTargetProgramCounter.hpp"
-#include "Commands/GetTargetPinStates.hpp"
-#include "Commands/SetTargetPinState.hpp"
-#include "Commands/GetTargetStackPointer.hpp"
-#include "Commands/GetTargetProgramCounter.hpp"
-#include "Commands/EnableProgrammingMode.hpp"
-#include "Commands/DisableProgrammingMode.hpp"
+#include "src/TargetController/Commands/GetState.hpp"
+#include "src/TargetController/Commands/Suspend.hpp"
+#include "src/TargetController/Commands/Resume.hpp"
+#include "src/TargetController/Commands/GetTargetDescriptor.hpp"
+#include "src/TargetController/Commands/GetTargetState.hpp"
+#include "src/TargetController/Commands/StopTargetExecution.hpp"
+#include "src/TargetController/Commands/ResumeTargetExecution.hpp"
+#include "src/TargetController/Commands/ResetTarget.hpp"
+#include "src/TargetController/Commands/ReadTargetRegisters.hpp"
+#include "src/TargetController/Commands/WriteTargetRegisters.hpp"
+#include "src/TargetController/Commands/ReadTargetMemory.hpp"
+#include "src/TargetController/Commands/WriteTargetMemory.hpp"
+#include "src/TargetController/Commands/EraseTargetMemory.hpp"
+#include "src/TargetController/Commands/StepTargetExecution.hpp"
+#include "src/TargetController/Commands/SetBreakpoint.hpp"
+#include "src/TargetController/Commands/RemoveBreakpoint.hpp"
+#include "src/TargetController/Commands/SetTargetProgramCounter.hpp"
+#include "src/TargetController/Commands/GetTargetPinStates.hpp"
+#include "src/TargetController/Commands/SetTargetPinState.hpp"
+#include "src/TargetController/Commands/GetTargetStackPointer.hpp"
+#include "src/TargetController/Commands/GetTargetProgramCounter.hpp"
+#include "src/TargetController/Commands/EnableProgrammingMode.hpp"
+#include "src/TargetController/Commands/DisableProgrammingMode.hpp"
 
-namespace Bloom::TargetController
+namespace Bloom::Services
 {
-    using Commands::GetState;
-    using Commands::Suspend;
-    using Commands::Resume;
-    using Commands::GetTargetDescriptor;
-    using Commands::GetTargetState;
-    using Commands::StopTargetExecution;
-    using Commands::ResumeTargetExecution;
-    using Commands::ResetTarget;
-    using Commands::ReadTargetRegisters;
-    using Commands::WriteTargetRegisters;
-    using Commands::ReadTargetMemory;
-    using Commands::WriteTargetMemory;
-    using Commands::EraseTargetMemory;
-    using Commands::StepTargetExecution;
-    using Commands::SetBreakpoint;
-    using Commands::RemoveBreakpoint;
-    using Commands::SetTargetProgramCounter;
-    using Commands::GetTargetPinStates;
-    using Commands::SetTargetPinState;
-    using Commands::GetTargetStackPointer;
-    using Commands::GetTargetProgramCounter;
-    using Commands::EnableProgrammingMode;
-    using Commands::DisableProgrammingMode;
+    using TargetController::Commands::GetState;
+    using TargetController::Commands::Suspend;
+    using TargetController::Commands::Resume;
+    using TargetController::Commands::GetTargetDescriptor;
+    using TargetController::Commands::GetTargetState;
+    using TargetController::Commands::StopTargetExecution;
+    using TargetController::Commands::ResumeTargetExecution;
+    using TargetController::Commands::ResetTarget;
+    using TargetController::Commands::ReadTargetRegisters;
+    using TargetController::Commands::WriteTargetRegisters;
+    using TargetController::Commands::ReadTargetMemory;
+    using TargetController::Commands::WriteTargetMemory;
+    using TargetController::Commands::EraseTargetMemory;
+    using TargetController::Commands::StepTargetExecution;
+    using TargetController::Commands::SetBreakpoint;
+    using TargetController::Commands::RemoveBreakpoint;
+    using TargetController::Commands::SetTargetProgramCounter;
+    using TargetController::Commands::GetTargetPinStates;
+    using TargetController::Commands::SetTargetPinState;
+    using TargetController::Commands::GetTargetStackPointer;
+    using TargetController::Commands::GetTargetProgramCounter;
+    using TargetController::Commands::EnableProgrammingMode;
+    using TargetController::Commands::DisableProgrammingMode;
+
+    using TargetController::TargetControllerState;
 
     using Targets::TargetDescriptor;
     using Targets::TargetState;
@@ -71,14 +73,14 @@ namespace Bloom::TargetController
     using Targets::TargetPinState;
     using Targets::TargetPinStateMapping;
 
-    TargetControllerState TargetControllerConsole::getTargetControllerState() {
+    TargetControllerState TargetControllerService::getTargetControllerState() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetState>(),
             this->defaultTimeout
         )->state;
     }
 
-    bool TargetControllerConsole::isTargetControllerInService() noexcept {
+    bool TargetControllerService::isTargetControllerInService() noexcept {
         try {
             return this->getTargetControllerState() == TargetControllerState::ACTIVE;
 
@@ -87,7 +89,7 @@ namespace Bloom::TargetController
         }
     }
 
-    void TargetControllerConsole::resumeTargetController() {
+    void TargetControllerService::resumeTargetController() {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<Resume>(),
             this->defaultTimeout
@@ -95,7 +97,7 @@ namespace Bloom::TargetController
         return;
     }
 
-    void TargetControllerConsole::suspendTargetController() {
+    void TargetControllerService::suspendTargetController() {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<Suspend>(),
             this->defaultTimeout
@@ -103,28 +105,28 @@ namespace Bloom::TargetController
         return;
     }
 
-    const TargetDescriptor& TargetControllerConsole::getTargetDescriptor() {
+    const TargetDescriptor& TargetControllerService::getTargetDescriptor() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetDescriptor>(),
             this->defaultTimeout
         )->targetDescriptor;
     }
 
-    TargetState TargetControllerConsole::getTargetState() {
+    TargetState TargetControllerService::getTargetState() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetState>(),
             this->defaultTimeout
         )->targetState;
     }
 
-    void TargetControllerConsole::stopTargetExecution() {
+    void TargetControllerService::stopTargetExecution() {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<StopTargetExecution>(),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerConsole::continueTargetExecution(std::optional<TargetProgramCounter> fromAddress) {
+    void TargetControllerService::continueTargetExecution(std::optional<TargetProgramCounter> fromAddress) {
         auto resumeExecutionCommand = std::make_unique<ResumeTargetExecution>();
 
         if (fromAddress.has_value()) {
@@ -137,7 +139,7 @@ namespace Bloom::TargetController
         );
     }
 
-    void TargetControllerConsole::stepTargetExecution(std::optional<TargetProgramCounter> fromAddress) {
+    void TargetControllerService::stepTargetExecution(std::optional<TargetProgramCounter> fromAddress) {
         auto stepExecutionCommand = std::make_unique<StepTargetExecution>();
 
         if (fromAddress.has_value()) {
@@ -150,21 +152,21 @@ namespace Bloom::TargetController
         );
     }
 
-    TargetRegisters TargetControllerConsole::readRegisters(const TargetRegisterDescriptors& descriptors) {
+    TargetRegisters TargetControllerService::readRegisters(const TargetRegisterDescriptors& descriptors) {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ReadTargetRegisters>(descriptors),
             this->defaultTimeout
         )->registers;
     }
 
-    void TargetControllerConsole::writeRegisters(const TargetRegisters& registers) {
+    void TargetControllerService::writeRegisters(const TargetRegisters& registers) {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<WriteTargetRegisters>(registers),
             this->defaultTimeout
         );
     }
 
-    TargetMemoryBuffer TargetControllerConsole::readMemory(
+    TargetMemoryBuffer TargetControllerService::readMemory(
         TargetMemoryType memoryType,
         TargetMemoryAddress startAddress,
         TargetMemorySize bytes,
@@ -181,7 +183,7 @@ namespace Bloom::TargetController
         )->data;
     }
 
-    void TargetControllerConsole::writeMemory(
+    void TargetControllerService::writeMemory(
         TargetMemoryType memoryType,
         TargetMemoryAddress startAddress,
         const TargetMemoryBuffer& buffer
@@ -192,77 +194,77 @@ namespace Bloom::TargetController
         );
     }
 
-    void TargetControllerConsole::eraseMemory(Targets::TargetMemoryType memoryType) {
+    void TargetControllerService::eraseMemory(Targets::TargetMemoryType memoryType) {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<EraseTargetMemory>(memoryType),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerConsole::setBreakpoint(TargetBreakpoint breakpoint) {
+    void TargetControllerService::setBreakpoint(TargetBreakpoint breakpoint) {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetBreakpoint>(breakpoint),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerConsole::removeBreakpoint(TargetBreakpoint breakpoint) {
+    void TargetControllerService::removeBreakpoint(TargetBreakpoint breakpoint) {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<RemoveBreakpoint>(breakpoint),
             this->defaultTimeout
         );
     }
 
-    TargetProgramCounter TargetControllerConsole::getProgramCounter() {
+    TargetProgramCounter TargetControllerService::getProgramCounter() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetProgramCounter>(),
             this->defaultTimeout
         )->programCounter;
     }
 
-    void TargetControllerConsole::setProgramCounter(TargetProgramCounter address) {
+    void TargetControllerService::setProgramCounter(TargetProgramCounter address) {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetTargetProgramCounter>(address),
             this->defaultTimeout
         );
     }
 
-    TargetPinStateMapping TargetControllerConsole::getPinStates(int variantId) {
+    TargetPinStateMapping TargetControllerService::getPinStates(int variantId) {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetPinStates>(variantId),
             this->defaultTimeout
         )->pinStatesByNumber;
     }
 
-    void TargetControllerConsole::setPinState(TargetPinDescriptor pinDescriptor, TargetPinState pinState) {
+    void TargetControllerService::setPinState(TargetPinDescriptor pinDescriptor, TargetPinState pinState) {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetTargetPinState>(pinDescriptor, pinState),
             this->defaultTimeout
         );
     }
 
-    TargetStackPointer TargetControllerConsole::getStackPointer() {
+    TargetStackPointer TargetControllerService::getStackPointer() {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetStackPointer>(),
             this->defaultTimeout
         )->stackPointer;
     }
 
-    void TargetControllerConsole::resetTarget() {
+    void TargetControllerService::resetTarget() {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ResetTarget>(),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerConsole::enableProgrammingMode() {
+    void TargetControllerService::enableProgrammingMode() {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<EnableProgrammingMode>(),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerConsole::disableProgrammingMode() {
+    void TargetControllerService::disableProgrammingMode() {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<DisableProgrammingMode>(),
             this->defaultTimeout

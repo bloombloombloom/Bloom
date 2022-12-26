@@ -4,7 +4,7 @@
 #include <QString>
 
 #include "TaskGroup.hpp"
-#include "src/TargetController/TargetControllerConsole.hpp"
+#include "src/Services/TargetControllerService.hpp"
 
 namespace Bloom
 {
@@ -29,7 +29,7 @@ namespace Bloom
             return TaskGroups();
         };
 
-        void execute(TargetController::TargetControllerConsole& targetControllerConsole);
+        void execute(Services::TargetControllerService& targetControllerService);
 
     signals:
         /**
@@ -56,6 +56,6 @@ namespace Bloom
         void finished();
 
     protected:
-        virtual void run(TargetController::TargetControllerConsole& targetControllerConsole) = 0;
+        virtual void run(Services::TargetControllerService& targetControllerService) = 0;
     };
 }

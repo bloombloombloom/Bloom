@@ -2,9 +2,9 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void SetTargetPinState::run(TargetControllerConsole& targetControllerConsole) {
-        targetControllerConsole.setPinState(this->pinDescriptor, this->pinState);
+    void SetTargetPinState::run(TargetControllerService& targetControllerService) {
+        targetControllerService.setPinState(this->pinDescriptor, this->pinState);
     }
 }

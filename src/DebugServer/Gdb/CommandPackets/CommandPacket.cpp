@@ -13,7 +13,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ResponsePacket;
     using ResponsePackets::OkResponsePacket;
@@ -23,7 +23,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using Exceptions::Exception;
 
-    void CommandPacket::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void CommandPacket::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         const auto packetString = std::string(this->data.begin(), this->data.end());
 
         if (packetString.empty()) {

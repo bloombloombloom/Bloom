@@ -2,9 +2,9 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void ReadTargetRegisters::run(TargetControllerConsole& targetControllerConsole) {
-        emit this->targetRegistersRead(targetControllerConsole.readRegisters(this->descriptors));
+    void ReadTargetRegisters::run(TargetControllerService& targetControllerService) {
+        emit this->targetRegistersRead(targetControllerService.readRegisters(this->descriptors));
     }
 }

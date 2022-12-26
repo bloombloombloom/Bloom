@@ -2,9 +2,9 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void ReadProgramCounter::run(TargetControllerConsole& targetControllerConsole) {
-        emit this->programCounterRead(targetControllerConsole.getProgramCounter());
+    void ReadProgramCounter::run(TargetControllerService& targetControllerService) {
+        emit this->programCounterRead(targetControllerService.getProgramCounter());
     }
 }

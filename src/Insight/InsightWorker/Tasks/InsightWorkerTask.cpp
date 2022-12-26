@@ -4,13 +4,13 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void InsightWorkerTask::execute(TargetControllerConsole& targetControllerConsole) {
+    void InsightWorkerTask::execute(TargetControllerService& targetControllerService) {
         try {
             this->state = InsightWorkerTaskState::STARTED;
             emit this->started();
-            this->run(targetControllerConsole);
+            this->run(targetControllerService);
             this->state = InsightWorkerTaskState::COMPLETED;
             emit this->completed();
 

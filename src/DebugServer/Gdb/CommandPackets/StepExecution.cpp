@@ -7,7 +7,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
 
@@ -23,11 +23,11 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
     }
 
-    void StepExecution::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void StepExecution::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling StepExecution packet");
 
         try {
-            targetControllerConsole.stepTargetExecution(this->fromProgramCounter);
+            targetControllerService.stepTargetExecution(this->fromProgramCounter);
             debugSession.waitingForBreak = true;
 
         } catch (const Exception& exception) {

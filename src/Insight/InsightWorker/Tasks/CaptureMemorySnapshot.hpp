@@ -28,7 +28,7 @@ namespace Bloom
         void memorySnapshotCaptured(MemorySnapshot snapshot);
 
     protected:
-        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
+        void run(Services::TargetControllerService& targetControllerService) override;
 
     private:
         QString name;

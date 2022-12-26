@@ -20,7 +20,7 @@ namespace Bloom
         qRegisterMetaType<std::map<Targets::TargetMemoryAddress, Widgets::ByteItem*>>();
     }
 
-    void ConstructHexViewerByteItems::run(TargetController::TargetControllerConsole&) {
+    void ConstructHexViewerByteItems::run(Services::TargetControllerService&) {
         const auto memorySize = this->memoryDescriptor.size();
         const auto startAddress = this->memoryDescriptor.addressRange.startAddress;
 

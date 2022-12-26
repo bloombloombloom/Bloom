@@ -8,7 +8,7 @@
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::OkResponsePacket;
@@ -19,7 +19,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         : CommandPacket(rawPacket)
     {}
 
-    void FlashDone::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void FlashDone::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling FlashDone packet");
 
         try {
@@ -29,9 +29,9 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                     "Flushing " + std::to_string(programmingSession.buffer.size()) + " bytes to target's program memory"
                 );
 
-                targetControllerConsole.enableProgrammingMode();
+                targetControllerService.enableProgrammingMode();
 
-                targetControllerConsole.writeMemory(
+                targetControllerService.writeMemory(
                     Targets::TargetMemoryType::FLASH,
                     programmingSession.startAddress,
                     std::move(programmingSession.buffer)
@@ -41,10 +41,10 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             }
 
             Logger::warning("Program memory updated");
-            targetControllerConsole.disableProgrammingMode();
+            targetControllerService.disableProgrammingMode();
 
             Logger::warning("Resetting target");
-            targetControllerConsole.resetTarget();
+            targetControllerService.resetTarget();
             Logger::info("Target reset complete");
 
             debugSession.connection.writePacket(OkResponsePacket());
@@ -54,7 +54,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             debugSession.programmingSession.reset();
 
             try {
-                targetControllerConsole.disableProgrammingMode();
+                targetControllerService.disableProgrammingMode();
 
             } catch (const Exception& exception) {
                 Logger::error("Failed to disable programming mode - " + exception.getMessage());

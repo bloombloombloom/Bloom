@@ -14,7 +14,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
@@ -34,7 +34,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         this->fillValue = Targets::TargetMemoryBuffer(fillValueByteArray.begin(), fillValueByteArray.end());
     }
 
-    void EepromFill::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void EepromFill::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling EepromFill packet");
 
         try {
@@ -90,7 +90,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             const auto hexValues = String::toHex(data);
             Logger::debug("Filling EEPROM with values: " + hexValues);
 
-            targetControllerConsole.writeMemory(
+            targetControllerService.writeMemory(
                 Targets::TargetMemoryType::EEPROM,
                 eepromDescriptor.addressRange.startAddress,
                 std::move(data)

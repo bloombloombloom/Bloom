@@ -27,7 +27,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
         DebugServer::Gdb::GdbRspDebugServer::init();
 
         this->gdbTargetDescriptor = TargetDescriptor(
-            this->targetControllerConsole.getTargetDescriptor()
+            this->targetControllerService.getTargetDescriptor()
         );
     }
 

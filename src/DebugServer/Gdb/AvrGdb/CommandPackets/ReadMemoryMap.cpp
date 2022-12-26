@@ -6,7 +6,7 @@
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ResponsePacket;
 
@@ -50,7 +50,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         }
     }
 
-    void ReadMemoryMap::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void ReadMemoryMap::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling ReadMemoryMap packet");
 
         using Targets::TargetMemoryType;

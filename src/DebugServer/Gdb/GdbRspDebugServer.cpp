@@ -160,29 +160,29 @@ namespace Bloom::DebugServer::Gdb
                  * Before proceeding with a new debug session, we must ensure that the TargetController is able to
                  * service it.
                  */
-                if (!this->targetControllerConsole.isTargetControllerInService()) {
+                if (!this->targetControllerService.isTargetControllerInService()) {
                     // The TargetController is suspended - attempt to wake it up
                     try {
-                        this->targetControllerConsole.resumeTargetController();
+                        this->targetControllerService.resumeTargetController();
 
                     } catch (Bloom::Exceptions::Exception& exception) {
                         Logger::error("Failed to wake up TargetController - " + exception.getMessage());
                     }
 
-                    if (!this->targetControllerConsole.isTargetControllerInService()) {
+                    if (!this->targetControllerService.isTargetControllerInService()) {
                         this->activeDebugSession.reset();
                         throw DebugSessionInitialisationFailure("TargetController not in service");
                     }
                 }
 
-                this->targetControllerConsole.stopTargetExecution();
-                this->targetControllerConsole.resetTarget();
+                this->targetControllerService.stopTargetExecution();
+                this->targetControllerService.resetTarget();
             }
 
             const auto commandPacket = this->waitForCommandPacket();
 
             if (commandPacket) {
-                commandPacket->handle(this->activeDebugSession.value(), this->targetControllerConsole);
+                commandPacket->handle(this->activeDebugSession.value(), this->targetControllerService);
             }
 
         } catch (const ClientDisconnected&) {

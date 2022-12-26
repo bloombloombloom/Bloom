@@ -10,7 +10,7 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     CaptureMemorySnapshot::CaptureMemorySnapshot(
         const QString& name,
@@ -28,12 +28,12 @@ namespace Bloom
         , data(data)
     {}
 
-    void CaptureMemorySnapshot::run(TargetControllerConsole& targetControllerConsole) {
+    void CaptureMemorySnapshot::run(TargetControllerService& targetControllerService) {
         using Targets::TargetMemorySize;
 
         Logger::info("Capturing snapshot");
 
-        const auto& targetDescriptor = targetControllerConsole.getTargetDescriptor();
+        const auto& targetDescriptor = targetControllerService.getTargetDescriptor();
         const auto memoryDescriptorIt = targetDescriptor.memoryDescriptorsByType.find(this->memoryType);
 
         if (memoryDescriptorIt == targetDescriptor.memoryDescriptorsByType.end()) {
@@ -58,7 +58,7 @@ namespace Bloom
             );
 
             for (std::uint32_t i = 0; i < readsRequired; i++) {
-                auto dataSegment = targetControllerConsole.readMemory(
+                auto dataSegment = targetControllerService.readMemory(
                     this->memoryType,
                     memoryDescriptor.addressRange.startAddress + static_cast<Targets::TargetMemoryAddress>(readSize * i),
                     (memorySize - this->data->size()) >= readSize
@@ -78,7 +78,7 @@ namespace Bloom
             std::move(this->description),
             this->memoryType,
             std::move(*this->data),
-            targetControllerConsole.getProgramCounter(),
+            targetControllerService.getProgramCounter(),
             std::move(this->focusedRegions),
             std::move(this->excludedRegions)
         );

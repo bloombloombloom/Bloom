@@ -9,17 +9,17 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::TargetStopped;
     using ResponsePackets::ErrorResponsePacket;
     using Exceptions::Exception;
 
-    void InterruptExecution::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void InterruptExecution::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling InterruptExecution packet");
 
         try {
-            targetControllerConsole.stopTargetExecution();
+            targetControllerService.stopTargetExecution();
             debugSession.connection.writePacket(TargetStopped(Signal::INTERRUPTED));
 
         } catch (const Exception& exception) {

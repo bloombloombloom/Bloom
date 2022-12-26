@@ -53,7 +53,7 @@ public:
 
     explicit SetBreakpoint(const RawPacket& rawPacket);
 
-    void handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) override;
+    void handle(DebugSession& debugSession, TargetControllerService& targetControllerService) override;
 };
 ```
 
@@ -67,15 +67,15 @@ Upon receiving a command packet from the GDB client, the command must be handled
 Each command packet class implements a `handle()` member function. This function is called upon receipt of the command
 and is expected to handle the command and deliver any necessary response to the client. Two parameters are passed to the
 `handle()` member function - a reference to the active `DebugSession` object, and a reference to a
-`TargetControllerConsole` object. The `DebugSession` object provides access to the current connection with the GDB
-client, as well as other debug session specific information. The `TargetControllerConsole` object provides an interface
+`TargetControllerService` object. The `DebugSession` object provides access to the current connection with the GDB
+client, as well as other debug session specific information. The `TargetControllerService` object provides an interface
 to the `TargetController`, for any GDB commands that need to interface with the connected target (see the
 [TargetController documentation](../../TargetController/README.md) for more on this).
 
 Handling the `SetBreakpoint` command packet:
 
 ```c++
-void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
     /*
      * I know the breakpoint type (this->type) isn't used in here - this is because the current implementation only
      * supports software breakpoints, so we don't do anything with this->type, for now.
@@ -84,7 +84,7 @@ void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerConsole& 
     Logger::debug("Handling SetBreakpoint packet");
 
     try {
-        targetControllerConsole.setBreakpoint(TargetBreakpoint(this->address));
+        targetControllerServicesetBreakpoint(TargetBreakpoint(this->address));
         debugSession.connection.writePacket(OkResponsePacket());
 
     } catch (const Exception& exception) {

@@ -2,9 +2,9 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void ReadStackPointer::run(TargetControllerConsole& targetControllerConsole) {
-        emit this->stackPointerRead(targetControllerConsole.getStackPointer());
+    void ReadStackPointer::run(TargetControllerService& targetControllerService) {
+        emit this->stackPointerRead(targetControllerService.getStackPointer());
     }
 }

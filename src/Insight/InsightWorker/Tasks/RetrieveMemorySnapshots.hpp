@@ -20,7 +20,7 @@ namespace Bloom
         void memorySnapshotsRetrieved(std::vector<MemorySnapshot> snapshots);
 
     protected:
-        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
+        void run(Services::TargetControllerService& targetControllerService) override;
 
     private:
         Targets::TargetMemoryType memoryType;

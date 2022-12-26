@@ -10,7 +10,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::ResponsePacket;
@@ -21,12 +21,12 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         : Monitor(std::move(monitorPacket))
     {}
 
-    void ResetTarget::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void ResetTarget::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling ResetTarget packet");
 
         try {
             Logger::warning("Resetting target");
-            targetControllerConsole.resetTarget();
+            targetControllerService.resetTarget();
             Logger::info("Target reset complete");
 
             debugSession.connection.writePacket(ResponsePacket(String::toHex(

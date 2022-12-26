@@ -17,7 +17,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
@@ -28,7 +28,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         , sendOutput(this->commandOptions.contains("out"))
     {}
 
-    void GenerateSvd::handle(DebugSession& debugSession, TargetControllerConsole&) {
+    void GenerateSvd::handle(DebugSession& debugSession, TargetControllerService&) {
         Logger::debug("Handling GenerateSvd packet");
 
         try {

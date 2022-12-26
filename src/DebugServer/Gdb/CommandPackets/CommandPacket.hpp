@@ -6,7 +6,7 @@
 #include "src/DebugServer/Gdb/Packet.hpp"
 #include "src/DebugServer/Gdb/DebugSession.hpp"
 
-#include "src/TargetController/TargetControllerConsole.hpp"
+#include "src/Services/TargetControllerService.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
@@ -44,11 +44,11 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          * @param debugSession
          *  The current active debug session.
          *
-         * @param targetControllerConsole
+         * @param TargetControllerService
          */
         virtual void handle(
             DebugSession& debugSession,
-            TargetController::TargetControllerConsole& targetControllerConsole
+            Services::TargetControllerService& targetControllerService
         );
     };
 }

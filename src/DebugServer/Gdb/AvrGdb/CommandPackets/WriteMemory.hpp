@@ -36,7 +36,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 
         void handle(
             DebugSession& debugSession,
-            TargetController::TargetControllerConsole& targetControllerConsole
+            Services::TargetControllerService& targetControllerService
         ) override;
     };
 }

@@ -12,7 +12,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using Targets::TargetBreakpoint;
 
@@ -50,11 +50,11 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
     }
 
-    void RemoveBreakpoint::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void RemoveBreakpoint::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Removing breakpoint at address " + std::to_string(this->address));
 
         try {
-            targetControllerConsole.removeBreakpoint(TargetBreakpoint(this->address));
+            targetControllerService.removeBreakpoint(TargetBreakpoint(this->address));
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {

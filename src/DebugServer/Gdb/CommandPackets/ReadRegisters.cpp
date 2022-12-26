@@ -11,7 +11,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using Targets::TargetRegister;
     using Targets::TargetRegisterDescriptors;
@@ -32,7 +32,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
     }
 
-    void ReadRegisters::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void ReadRegisters::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling ReadRegisters packet");
 
         try {
@@ -52,7 +52,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                 }
             }
 
-            auto registerSet = targetControllerConsole.readRegisters(descriptors);
+            auto registerSet = targetControllerService.readRegisters(descriptors);
 
             /*
              * Sort each register by their respective GDB register number - this will leave us with a collection of

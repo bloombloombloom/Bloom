@@ -13,7 +13,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::SupportedFeaturesResponse;
     using ResponsePackets::ErrorResponsePacket;
@@ -53,7 +53,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
     }
 
-    void SupportedFeaturesQuery::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void SupportedFeaturesQuery::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling QuerySupport packet");
 
         if (!this->isFeatureSupported(Feature::HARDWARE_BREAKPOINTS)

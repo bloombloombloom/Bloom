@@ -15,7 +15,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ResponsePacket;
 
@@ -25,7 +25,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         : Monitor(std::move(monitorPacket))
     {}
 
-    void BloomVersionMachine::handle(DebugSession& debugSession, TargetControllerConsole&) {
+    void BloomVersionMachine::handle(DebugSession& debugSession, TargetControllerService&) {
         Logger::debug("Handling BloomVersionMachine packet");
 
         debugSession.connection.writePacket(ResponsePacket(String::toHex(

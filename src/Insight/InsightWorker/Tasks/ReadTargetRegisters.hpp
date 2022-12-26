@@ -24,7 +24,7 @@ namespace Bloom
         void targetRegistersRead(Targets::TargetRegisters registers);
 
     protected:
-        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
+        void run(Services::TargetControllerService& targetControllerService) override;
 
     private:
         Targets::TargetRegisterDescriptors descriptors;

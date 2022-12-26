@@ -11,7 +11,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using Targets::TargetRegister;
     using Targets::TargetRegisterDescriptors;
@@ -42,7 +42,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         std::reverse(this->registerValue.begin(), this->registerValue.end());
     }
 
-    void WriteRegister::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void WriteRegister::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling WriteRegister packet");
 
         try {
@@ -72,7 +72,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                 }
             }
 
-            targetControllerConsole.writeRegisters({
+            targetControllerService.writeRegisters({
                 TargetRegister(targetRegisterDescriptor, this->registerValue)
             });
 

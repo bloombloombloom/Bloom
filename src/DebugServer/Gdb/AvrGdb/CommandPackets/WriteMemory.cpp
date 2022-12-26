@@ -8,7 +8,7 @@
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::OkResponsePacket;
@@ -68,7 +68,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         }
     }
 
-    void WriteMemory::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void WriteMemory::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling WriteMemory packet");
 
         try {
@@ -123,7 +123,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 );
             }
 
-            targetControllerConsole.writeMemory(
+            targetControllerService.writeMemory(
                 this->memoryType,
                 this->startAddress,
                 this->buffer

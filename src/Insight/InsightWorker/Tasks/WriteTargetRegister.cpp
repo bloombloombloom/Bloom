@@ -2,9 +2,9 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void WriteTargetRegister::run(TargetControllerConsole& targetControllerConsole) {
-        targetControllerConsole.writeRegisters({this->targetRegister});
+    void WriteTargetRegister::run(TargetControllerService& targetControllerService) {
+        targetControllerService.writeRegisters({this->targetRegister});
     }
 }

@@ -4,8 +4,8 @@
 #include <chrono>
 #include <optional>
 
-#include "CommandManager.hpp"
-#include "TargetControllerState.hpp"
+#include "src/TargetController/CommandManager.hpp"
+#include "src/TargetController/TargetControllerState.hpp"
 
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegister.hpp"
@@ -16,15 +16,15 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::TargetController
+namespace Bloom::Services
 {
     /**
-     * The TargetControllerConsole provides an interface to the TargetController.
+     * The TargetControllerService provides an interface to the TargetController.
      */
-    class TargetControllerConsole
+    class TargetControllerService
     {
     public:
-        TargetControllerConsole() = default;
+        TargetControllerService() = default;
 
         void setDefaultTimeout(std::chrono::milliseconds timeout) {
             this->defaultTimeout = timeout;
@@ -39,7 +39,7 @@ namespace Bloom::TargetController
          *
          * @return
          */
-        TargetControllerState getTargetControllerState();
+        TargetController::TargetControllerState getTargetControllerState();
 
         /**
          * Retrieves the TargetController state and checks if it's currently active.
@@ -215,7 +215,7 @@ namespace Bloom::TargetController
         void disableProgrammingMode();
 
     private:
-        CommandManager commandManager = CommandManager();
+        TargetController::CommandManager commandManager = TargetController::CommandManager();
 
         std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(60000);
     };

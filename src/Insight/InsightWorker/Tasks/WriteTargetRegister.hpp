@@ -21,7 +21,7 @@ namespace Bloom
         };
 
     protected:
-        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
+        void run(Services::TargetControllerService& targetControllerService) override;
 
     private:
         Targets::TargetRegister targetRegister;

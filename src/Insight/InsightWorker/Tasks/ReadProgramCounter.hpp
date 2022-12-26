@@ -23,6 +23,6 @@ namespace Bloom
         void programCounterRead(Targets::TargetProgramCounter programCounter);
 
     protected:
-        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
+        void run(Services::TargetControllerService& targetControllerService) override;
     };
 }

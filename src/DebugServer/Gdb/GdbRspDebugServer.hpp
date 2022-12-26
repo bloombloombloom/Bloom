@@ -13,7 +13,7 @@
 #include "src/EventManager/EventListener.hpp"
 #include "src/Helpers/EpollInstance.hpp"
 #include "src/Helpers/EventFdNotifier.hpp"
-#include "src/TargetController/TargetControllerConsole.hpp"
+#include "src/Services/TargetControllerService.hpp"
 
 #include "Connection.hpp"
 #include "TargetDescriptor.hpp"
@@ -114,7 +114,7 @@ namespace Bloom::DebugServer::Gdb
          *
          * See documentation in src/DebugServer/Gdb/README.md for more on how GDB commands are processed.
          */
-        TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole();
+        Services::TargetControllerService targetControllerService = Services::TargetControllerService();
 
         /**
          * Listening socket address

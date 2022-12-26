@@ -12,13 +12,13 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     RetrieveMemorySnapshots::RetrieveMemorySnapshots(Targets::TargetMemoryType memoryType)
         : memoryType(memoryType)
     {}
 
-    void RetrieveMemorySnapshots::run(TargetControllerConsole& targetControllerConsole) {
+    void RetrieveMemorySnapshots::run(TargetControllerService& targetControllerService) {
         emit this->memorySnapshotsRetrieved(this->getSnapshots(this->memoryType));
     }
 

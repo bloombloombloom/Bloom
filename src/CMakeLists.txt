@@ -4,6 +4,9 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Application.cpp
 
+        # Services
+        ${CMAKE_CURRENT_SOURCE_DIR}/Services/TargetControllerService.cpp
+
         # Helpers & other
         ${CMAKE_CURRENT_SOURCE_DIR}/Logger/Logger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/Paths.cpp

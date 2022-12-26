@@ -2,9 +2,9 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void RefreshTargetPinStates::run(TargetControllerConsole& targetControllerConsole) {
-        emit this->targetPinStatesRetrieved(targetControllerConsole.getPinStates(this->variantId));
+    void RefreshTargetPinStates::run(TargetControllerService& targetControllerService) {
+        emit this->targetPinStatesRetrieved(targetControllerService.getPinStates(this->variantId));
     }
 }

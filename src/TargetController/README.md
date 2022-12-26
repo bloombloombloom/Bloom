@@ -18,9 +18,9 @@ All TargetController commands can be found in [src/TargetController/Commands](./
 [`Bloom::TargetController::Responses::Response`](./Responses/Response.hpp) base class.
 
 **NOTE:** Components within Bloom do not typically concern themselves with the TargetController command-response
-mechanism. Instead, they use the `TargetControllerConsole` class, which encapsulates the command-response mechanism and
+mechanism. Instead, they use the `TargetControllerService` class, which encapsulates the command-response mechanism and
 provides a simplified means for interaction with the connected hardware. For more, see
-[The TargetControllerConsole class](#the-targetcontrollerconsole-class) section below.
+[The TargetControllerService class](#the-TargetControllerService-class) section below.
 
 Commands can be sent to the TargetController via the [`Bloom::TargetController::CommandManager`](./CommandManager.hpp)
 class.
@@ -53,26 +53,26 @@ until a timeout has been reached. Because it is a template function, it is able 
 type at compile-time (see the `SuccessResponseType` alias in some command classes). If the TargetController responds
 with an error, or the timeout is reached, `CommandManager::sendCommandAndWaitForResponse()` will throw an exception.
 
-#### The TargetControllerConsole class
+#### The TargetControllerService class
 
-The `TargetControllerConsole` class encapsulates the TargetController's command-response mechanism and provides a
+The `TargetControllerService` class encapsulates the TargetController's command-response mechanism and provides a
 simplified means for other components to interact with the connected hardware. Iterating on the example above, to read
 memory from the target:
 
 ```c++
-auto tcConsole = TargetController::TargetControllerConsole();
+auto tcService = Services::TargetControllerService();
 
-const auto data = tcConsole.readMemory(
+const auto data = tcService.readMemory(
     someMemoryType, // Flash, RAM, EEPROM, etc
     someStartAddress,
     someNumberOfBytes
 );
 ```
 
-The `TargetControllerConsole` class does not require any dependencies at construction. It can be constructed in
+The `TargetControllerService` class does not require any dependencies at construction. It can be constructed in
 different threads and used freely to gain access to the connected hardware, from any component within Bloom.
 
-All components within Bloom should use the `TargetControllerConsole` class to interact with the connected hardware. They
+All components within Bloom should use the `TargetControllerService` class to interact with the connected hardware. They
 **should not** directly issue commands via the `Bloom::TargetController::CommandManager`, unless there is a very good
 reason to do so.
 
@@ -114,7 +114,7 @@ For more on TargetController suspension, see `TargetControllerComponent::suspend
 
 When a component needs to write to the target's program memory, it must enable programming mode on the target. This can
 be done by issuing the `EnableProgrammingMode` command to the TargetController (see
-`TargetControllerConsole::enableProgrammingMode()`). Once programming mode has been enabled, the TargetController will
+`TargetControllerService::enableProgrammingMode()`). Once programming mode has been enabled, the TargetController will
 reject any subsequent commands that involve debug operations (such as `ResumeTargetExecution`, `ReadTargetRegisters`,
 etc), until programming mode has been disabled.
 

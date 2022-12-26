@@ -23,6 +23,6 @@ namespace Bloom
         void stackPointerRead(Targets::TargetStackPointer stackPointer);
 
     protected:
-        void run(TargetController::TargetControllerConsole& targetControllerConsole) override;
+        void run(Services::TargetControllerService& targetControllerService) override;
     };
 }

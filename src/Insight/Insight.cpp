@@ -206,7 +206,7 @@ namespace Bloom
 
         this->checkBloomVersion();
 
-        this->mainWindow->init(this->targetControllerConsole.getTargetDescriptor());
+        this->mainWindow->init(this->targetControllerService.getTargetDescriptor());
         this->mainWindow->show();
     }
 
@@ -322,7 +322,7 @@ namespace Bloom
 
     void Insight::onTargetResetEvent(const Events::TargetReset& event) {
         try {
-            if (this->targetControllerConsole.getTargetState() != TargetState::STOPPED) {
+            if (this->targetControllerService.getTargetState() != TargetState::STOPPED) {
                 return;
             }
 

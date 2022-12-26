@@ -2,9 +2,9 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void GetTargetDescriptor::run(TargetControllerConsole& targetControllerConsole) {
-        emit this->targetDescriptor(targetControllerConsole.getTargetDescriptor());
+    void GetTargetDescriptor::run(TargetControllerService& targetControllerService) {
+        emit this->targetDescriptor(targetControllerService.getTargetDescriptor());
     }
 }

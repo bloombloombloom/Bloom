@@ -10,7 +10,7 @@
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::OkResponsePacket;
@@ -48,7 +48,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         this->buffer = Targets::TargetMemoryBuffer(colonIt + 1, this->data.end());
     }
 
-    void FlashWrite::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void FlashWrite::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling FlashWrite packet");
 
         try {
@@ -91,7 +91,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             debugSession.programmingSession.reset();
 
             try {
-                targetControllerConsole.disableProgrammingMode();
+                targetControllerService.disableProgrammingMode();
 
             } catch (const Exception& exception) {
                 Logger::error("Failed to disable programming mode - " + exception.getMessage());

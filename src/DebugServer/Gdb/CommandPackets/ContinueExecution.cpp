@@ -7,7 +7,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using Exceptions::Exception;
@@ -22,11 +22,11 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
     }
 
-    void ContinueExecution::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void ContinueExecution::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling ContinueExecution packet");
 
         try {
-            targetControllerConsole.continueTargetExecution(this->fromProgramCounter);
+            targetControllerService.continueTargetExecution(this->fromProgramCounter);
             debugSession.waitingForBreak = true;
 
         } catch (const Exception& exception) {

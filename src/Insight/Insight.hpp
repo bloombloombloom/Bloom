@@ -17,7 +17,7 @@
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
 
-#include "src/TargetController/TargetControllerConsole.hpp"
+#include "src/Services/TargetControllerService.hpp"
 #include "src/Targets/TargetState.hpp"
 
 #include "InsightSignals.hpp"
@@ -90,7 +90,7 @@ namespace Bloom
             this->insightProjectSettings
         );
 
-        TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole();
+        Services::TargetControllerService targetControllerService = Services::TargetControllerService();
 
         Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
         bool targetStepping = false;

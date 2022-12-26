@@ -9,7 +9,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::OkResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
@@ -20,12 +20,12 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         : CommandPacket(rawPacket)
     {}
 
-    void Detach::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void Detach::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling Detach packet");
 
         try {
             if (Process::isManagedByClion()) {
-                targetControllerConsole.suspendTargetController();
+                targetControllerService.suspendTargetController();
             }
 
             debugSession.connection.writePacket(OkResponsePacket());

@@ -8,12 +8,12 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void ReadTargetMemory::run(TargetControllerConsole& targetControllerConsole) {
+    void ReadTargetMemory::run(TargetControllerService& targetControllerService) {
         using Targets::TargetMemorySize;
 
-        const auto& targetDescriptor = targetControllerConsole.getTargetDescriptor();
+        const auto& targetDescriptor = targetControllerService.getTargetDescriptor();
         const auto memoryDescriptorIt = targetDescriptor.memoryDescriptorsByType.find(this->memoryType);
 
         if (memoryDescriptorIt == targetDescriptor.memoryDescriptorsByType.end()) {
@@ -39,7 +39,7 @@ namespace Bloom
         Targets::TargetMemoryBuffer data;
 
         for (std::uint32_t i = 0; i < readsRequired; i++) {
-            auto dataSegment = targetControllerConsole.readMemory(
+            auto dataSegment = targetControllerService.readMemory(
                 this->memoryType,
                 this->startAddress + static_cast<Targets::TargetMemoryAddress>(readSize * i),
                 (this->size - data.size()) >= readSize

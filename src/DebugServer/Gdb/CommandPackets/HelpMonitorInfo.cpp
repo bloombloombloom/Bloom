@@ -14,7 +14,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::ResponsePacket;
@@ -25,7 +25,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         : Monitor(std::move(monitorPacket))
     {}
 
-    void HelpMonitorInfo::handle(DebugSession& debugSession, TargetControllerConsole&) {
+    void HelpMonitorInfo::handle(DebugSession& debugSession, TargetControllerService&) {
         Logger::debug("Handling HelpMonitorInfo packet");
 
         try {

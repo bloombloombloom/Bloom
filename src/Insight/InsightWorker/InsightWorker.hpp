@@ -9,7 +9,7 @@
 #include "Tasks/InsightWorkerTask.hpp"
 
 #include "src/Helpers/SyncSafe.hpp"
-#include "src/TargetController/TargetControllerConsole.hpp"
+#include "src/Services/TargetControllerService.hpp"
 
 namespace Bloom
 {
@@ -41,7 +41,7 @@ namespace Bloom
         static inline SyncSafe<std::map<QueuedTaskId, InsightWorkerTask*>> queuedTasksById = {};
         static inline SyncSafe<TaskGroups> taskGroupsInExecution = {};
 
-        TargetController::TargetControllerConsole targetControllerConsole = TargetController::TargetControllerConsole();
+        Services::TargetControllerService targetControllerService = Services::TargetControllerService();
 
         void executeTasks();
     };

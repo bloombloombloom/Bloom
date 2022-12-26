@@ -8,7 +8,7 @@
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::OkResponsePacket;
@@ -48,16 +48,16 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         }
     }
 
-    void FlashErase::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void FlashErase::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling FlashErase packet");
 
         try {
-            targetControllerConsole.enableProgrammingMode();
+            targetControllerService.enableProgrammingMode();
 
             Logger::warning("Erasing entire chip, in preparation for programming");
 
             // We don't erase a specific address range - we just erase the entire program memory.
-            targetControllerConsole.eraseMemory(Targets::TargetMemoryType::FLASH);
+            targetControllerService.eraseMemory(Targets::TargetMemoryType::FLASH);
 
             debugSession.connection.writePacket(OkResponsePacket());
 
@@ -66,7 +66,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             debugSession.programmingSession.reset();
 
             try {
-                targetControllerConsole.disableProgrammingMode();
+                targetControllerService.disableProgrammingMode();
 
             } catch (const Exception& exception) {
                 Logger::error("Failed to disable programming mode - " + exception.getMessage());

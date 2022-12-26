@@ -2,9 +2,9 @@
 
 namespace Bloom
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
-    void GetTargetState::run(TargetControllerConsole& targetControllerConsole) {
-        emit this->targetState(targetControllerConsole.getTargetState());
+    void GetTargetState::run(TargetControllerService& targetControllerService) {
+        emit this->targetState(targetControllerService.getTargetState());
     }
 }

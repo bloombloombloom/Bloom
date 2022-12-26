@@ -10,7 +10,7 @@
 
 namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::ResponsePacket;
@@ -62,7 +62,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         }
     }
 
-    void ReadMemory::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void ReadMemory::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling ReadMemory packet");
 
         try {
@@ -136,7 +136,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             auto memoryBuffer = Targets::TargetMemoryBuffer();
 
             if (bytesToRead > 0) {
-                memoryBuffer = targetControllerConsole.readMemory(
+                memoryBuffer = targetControllerService.readMemory(
                     this->memoryType,
                     this->startAddress,
                     bytesToRead

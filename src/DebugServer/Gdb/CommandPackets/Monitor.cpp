@@ -6,7 +6,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using ResponsePackets::EmptyResponsePacket;
 
@@ -27,7 +27,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         this->commandOptions = this->extractCommandOptions(this->command);
     }
 
-    void Monitor::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void Monitor::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::error("Unknown custom GDB command (\"" + this->command + "\") received.");
         debugSession.connection.writePacket(EmptyResponsePacket());
     }

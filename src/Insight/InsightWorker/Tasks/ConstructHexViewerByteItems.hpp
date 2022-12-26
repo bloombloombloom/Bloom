@@ -37,7 +37,7 @@ namespace Bloom
         void byteItems(std::map<Targets::TargetMemoryAddress, Widgets::ByteItem*> byteItemsByAddress);
 
     protected:
-        void run(TargetController::TargetControllerConsole&) override;
+        void run(Services::TargetControllerService&) override;
 
     private:
         std::map<Targets::TargetMemoryAddress, Widgets::ByteItem*> byteItemsByAddress;

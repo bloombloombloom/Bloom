@@ -12,7 +12,7 @@
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
-    using TargetController::TargetControllerConsole;
+    using Services::TargetControllerService;
 
     using Targets::TargetBreakpoint;
 
@@ -50,11 +50,11 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
     }
 
-    void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerConsole& targetControllerConsole) {
+    void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling SetBreakpoint packet");
 
         try {
-            targetControllerConsole.setBreakpoint(TargetBreakpoint(this->address));
+            targetControllerService.setBreakpoint(TargetBreakpoint(this->address));
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {
