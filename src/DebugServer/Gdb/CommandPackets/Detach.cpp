@@ -3,7 +3,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
-#include "src/Helpers/Process.hpp"
+#include "src/Services/ProcessService.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -24,7 +24,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling Detach packet");
 
         try {
-            if (Process::isManagedByClion()) {
+            if (Services::ProcessService::isManagedByClion()) {
                 targetControllerService.suspendTargetController();
             }
 

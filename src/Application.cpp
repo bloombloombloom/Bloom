@@ -7,9 +7,10 @@
 #include <yaml-cpp/yaml.h>
 #include <yaml-cpp/exceptions.h>
 
+#include "src/Services/ProcessService.hpp"
+
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"
-#include "src/Helpers/Process.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 
@@ -515,7 +516,7 @@ namespace Bloom
     }
 
     void Application::onDebugSessionFinished(const Events::DebugSessionFinished& event) {
-        if (this->environmentConfig->shutdownPostDebugSession || Process::isManagedByClion()) {
+        if (this->environmentConfig->shutdownPostDebugSession || Services::ProcessService::isManagedByClion()) {
             this->shutdown();
         }
     }

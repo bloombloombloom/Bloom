@@ -1,4 +1,4 @@
-#include "Process.hpp"
+#include "ProcessService.hpp"
 
 #include <unistd.h>
 #include <string>
@@ -6,22 +6,22 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom
+namespace Bloom::Services
 {
-    ::pid_t Process::getProcessId() {
+    ::pid_t ProcessService::getProcessId() {
         return getpid();
     }
 
-    ::pid_t Process::getParentProcessId() {
+    ::pid_t ProcessService::getParentProcessId() {
         return getppid();
     }
 
-    ::uid_t Process::getEffectiveUserId(std::optional<::pid_t> processId) {
+    ::uid_t ProcessService::getEffectiveUserId(std::optional<::pid_t> processId) {
         if (!processId.has_value()) {
-            processId = Process::getProcessId();
+            processId = ProcessService::getProcessId();
         }
 
-        const auto processInfo = Process::getProcessInfo(processId.value());
+        const auto processInfo = ProcessService::getProcessInfo(processId.value());
 
         if (!processInfo) {
             throw Exceptions::Exception(
@@ -32,13 +32,13 @@ namespace Bloom
         return static_cast<::uid_t>(processInfo->euid);
     }
 
-    bool Process::isRunningAsRoot(std::optional<::pid_t> processId) {
-        return Process::getEffectiveUserId(processId) == 0;
+    bool ProcessService::isRunningAsRoot(std::optional<::pid_t> processId) {
+        return ProcessService::getEffectiveUserId(processId) == 0;
     }
 
-    bool Process::isManagedByClion(std::optional<::pid_t> processId) {
+    bool ProcessService::isManagedByClion(std::optional<::pid_t> processId) {
         if (!processId.has_value()) {
-            processId = Process::getProcessId();
+            processId = ProcessService::getProcessId();
         }
 
         static auto cachedResultsByProcessId = std::map<::pid_t, bool>();
@@ -49,7 +49,7 @@ namespace Bloom
         }
 
         // Start with the parent process and walk the tree until we find CLion
-        const auto processInfo = Process::getProcessInfo(*processId);
+        const auto processInfo = ProcessService::getProcessInfo(*processId);
 
         if (!processInfo) {
             cachedResultsByProcessId[*processId] = false;
@@ -58,7 +58,7 @@ namespace Bloom
 
         auto pid = processInfo->ppid;
 
-        while (const auto processInfo = Process::getProcessInfo(pid)) {
+        while (const auto processInfo = ProcessService::getProcessInfo(pid)) {
             const auto commandLine = std::string(processInfo->cmd);
 
             if (commandLine.find("clion.sh") != std::string::npos) {
@@ -73,7 +73,7 @@ namespace Bloom
         return false;
     }
 
-    Process::Proc Process::getProcessInfo(::pid_t processId) {
+    ProcessService::Proc ProcessService::getProcessInfo(::pid_t processId) {
         const auto proc = std::unique_ptr<::PROCTAB, decltype(&::closeproc)>(
             ::openproc(PROC_FILLSTAT | PROC_FILLARG | PROC_PID, &processId),
             ::closeproc

@@ -6,6 +6,7 @@ target_sources(
 
         # Services
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/TargetControllerService.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Services/ProcessService.cpp
 
         # Helpers & other
         ${CMAKE_CURRENT_SOURCE_DIR}/Logger/Logger.cpp
@@ -14,7 +15,6 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/EpollInstance.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/EventFdNotifier.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/ConditionVariableNotifier.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/Process.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/VersionNumber.cpp
 
         # Project & application configuration

@@ -5,9 +5,9 @@
 #include <sys/types.h>
 #include <proc/readproc.h>
 
-namespace Bloom
+namespace Bloom::Services
 {
-    class Process
+    class ProcessService
     {
     public:
         /**
