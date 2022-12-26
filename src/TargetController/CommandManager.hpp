@@ -25,7 +25,7 @@ namespace Bloom::TargetController
         auto sendCommandAndWaitForResponse(
             std::unique_ptr<CommandType> command,
             std::chrono::milliseconds timeout
-        ) {
+        ) const {
             using SuccessResponseType = typename CommandType::SuccessResponseType;
 
             const auto commandId = command->id;

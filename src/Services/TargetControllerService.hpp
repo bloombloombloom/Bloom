@@ -39,7 +39,7 @@ namespace Bloom::Services
          *
          * @return
          */
-        TargetController::TargetControllerState getTargetControllerState();
+        TargetController::TargetControllerState getTargetControllerState() const;
 
         /**
          * Retrieves the TargetController state and checks if it's currently active.
@@ -47,50 +47,50 @@ namespace Bloom::Services
          * @return
          *  True if the TargetController is currently in an active state, otherwise false.
          */
-        bool isTargetControllerInService() noexcept;
+        bool isTargetControllerInService() const noexcept;
 
         /**
          * Resumes the TargetController if it's suspended. Otherwise, this function does nothing.
          */
-        void resumeTargetController();
+        void resumeTargetController() const;
 
         /**
          * Suspends the TargetController if it's active. Otherwise, this function does nothing.
          */
-        void suspendTargetController();
+        void suspendTargetController() const;
 
         /**
          * Requests the TargetDescriptor from the TargetController
          *
          * @return
          */
-        const Targets::TargetDescriptor& getTargetDescriptor();
+        const Targets::TargetDescriptor& getTargetDescriptor() const;
 
         /**
          * Fetches the current target state.
          *
          * @return
          */
-        Targets::TargetState getTargetState();
+        Targets::TargetState getTargetState() const;
 
         /**
          * Requests the TargetController to halt execution on the target.
          */
-        void stopTargetExecution();
+        void stopTargetExecution() const;
 
         /**
          * Requests the TargetController to continue execution on the target.
          *
          * @param fromAddress
          */
-        void continueTargetExecution(std::optional<Targets::TargetProgramCounter> fromAddress);
+        void continueTargetExecution(std::optional<Targets::TargetProgramCounter> fromAddress) const;
 
         /**
          * Requests the TargetController to step execution on the target.
          *
          * @param fromAddress
          */
-        void stepTargetExecution(std::optional<Targets::TargetProgramCounter> fromAddress);
+        void stepTargetExecution(std::optional<Targets::TargetProgramCounter> fromAddress) const;
 
         /**
          * Requests the TargetController to read register values from the target.
@@ -100,14 +100,14 @@ namespace Bloom::Services
          *
          * @return
          */
-        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors);
+        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors) const;
 
         /**
          * Requests the TargetController to write register values to the target.
          *
          * @param registers
          */
-        void writeRegisters(const Targets::TargetRegisters& registers);
+        void writeRegisters(const Targets::TargetRegisters& registers) const;
 
         /**
          * Requests the TargetController to read memory from the target.
@@ -123,7 +123,7 @@ namespace Bloom::Services
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
-        );
+        ) const;
 
         /**
          * Requests the TargetController to write memory to the target.
@@ -136,49 +136,49 @@ namespace Bloom::Services
             Targets::TargetMemoryType memoryType,
             Targets::TargetMemoryAddress startAddress,
             const Targets::TargetMemoryBuffer& buffer
-        );
+        ) const;
 
         /**
          * Requests the TargetController to erase the given target memory type.
          *
          * @param memoryType
          */
-        void eraseMemory(Targets::TargetMemoryType memoryType);
+        void eraseMemory(Targets::TargetMemoryType memoryType) const;
 
         /**
          * Requests the TargetController to set a breakpoint on the target.
          *
          * @param breakpoint
          */
-        void setBreakpoint(Targets::TargetBreakpoint breakpoint);
+        void setBreakpoint(Targets::TargetBreakpoint breakpoint) const;
 
         /**
          * Requests the TargetController to remove a breakpoint from the target.
          *
          * @param breakpoint
          */
-        void removeBreakpoint(Targets::TargetBreakpoint breakpoint);
+        void removeBreakpoint(Targets::TargetBreakpoint breakpoint) const;
 
         /**
          * Retrieves the current program counter value from the target.
          *
          * @return
          */
-        Targets::TargetProgramCounter getProgramCounter();
+        Targets::TargetProgramCounter getProgramCounter() const;
 
         /**
          * Sets the target's program counter to the given address.
          *
          * @param address
          */
-        void setProgramCounter(Targets::TargetProgramCounter address);
+        void setProgramCounter(Targets::TargetProgramCounter address) const;
 
         /**
          * Retrieves the pin states for a particular target variant.
          *
          * @param variantId
          */
-        Targets::TargetPinStateMapping getPinStates(int variantId);
+        Targets::TargetPinStateMapping getPinStates(int variantId) const;
 
         /**
          * Updates the pin state on the target, for a specific pin.
@@ -186,19 +186,19 @@ namespace Bloom::Services
          * @param pinDescriptor
          * @param pinState
          */
-        void setPinState(Targets::TargetPinDescriptor pinDescriptor, Targets::TargetPinState pinState);
+        void setPinState(Targets::TargetPinDescriptor pinDescriptor, Targets::TargetPinState pinState) const;
 
         /**
          * Retrieves the current stack pointer value from the target.
          *
          * @return
          */
-        Targets::TargetStackPointer getStackPointer();
+        Targets::TargetStackPointer getStackPointer() const;
 
         /**
          * Triggers a reset on the target. The target will be held in a stopped state.
          */
-        void resetTarget();
+        void resetTarget() const;
 
         /**
          * Enables programming mode on the target.
@@ -207,12 +207,12 @@ namespace Bloom::Services
          * debug operations (such as ResumeTargetExecution, ReadTargetRegisters, etc), until programming mode has
          * been disabled.
          */
-        void enableProgrammingMode();
+        void enableProgrammingMode() const;
 
         /**
          * Disables programming mode on the target.
          */
-        void disableProgrammingMode();
+        void disableProgrammingMode() const;
 
     private:
         TargetController::CommandManager commandManager = TargetController::CommandManager();

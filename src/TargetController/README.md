@@ -60,7 +60,7 @@ simplified means for other components to interact with the connected hardware. I
 memory from the target:
 
 ```c++
-auto tcService = Services::TargetControllerService();
+const auto tcService = Services::TargetControllerService();
 
 const auto data = tcService.readMemory(
     someMemoryType, // Flash, RAM, EEPROM, etc

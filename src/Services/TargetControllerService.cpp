@@ -73,14 +73,14 @@ namespace Bloom::Services
     using Targets::TargetPinState;
     using Targets::TargetPinStateMapping;
 
-    TargetControllerState TargetControllerService::getTargetControllerState() {
+    TargetControllerState TargetControllerService::getTargetControllerState() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetState>(),
             this->defaultTimeout
         )->state;
     }
 
-    bool TargetControllerService::isTargetControllerInService() noexcept {
+    bool TargetControllerService::isTargetControllerInService() const noexcept {
         try {
             return this->getTargetControllerState() == TargetControllerState::ACTIVE;
 
@@ -89,7 +89,7 @@ namespace Bloom::Services
         }
     }
 
-    void TargetControllerService::resumeTargetController() {
+    void TargetControllerService::resumeTargetController() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<Resume>(),
             this->defaultTimeout
@@ -97,7 +97,7 @@ namespace Bloom::Services
         return;
     }
 
-    void TargetControllerService::suspendTargetController() {
+    void TargetControllerService::suspendTargetController() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<Suspend>(),
             this->defaultTimeout
@@ -105,28 +105,28 @@ namespace Bloom::Services
         return;
     }
 
-    const TargetDescriptor& TargetControllerService::getTargetDescriptor() {
+    const TargetDescriptor& TargetControllerService::getTargetDescriptor() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetDescriptor>(),
             this->defaultTimeout
         )->targetDescriptor;
     }
 
-    TargetState TargetControllerService::getTargetState() {
+    TargetState TargetControllerService::getTargetState() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetState>(),
             this->defaultTimeout
         )->targetState;
     }
 
-    void TargetControllerService::stopTargetExecution() {
+    void TargetControllerService::stopTargetExecution() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<StopTargetExecution>(),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerService::continueTargetExecution(std::optional<TargetProgramCounter> fromAddress) {
+    void TargetControllerService::continueTargetExecution(std::optional<TargetProgramCounter> fromAddress) const {
         auto resumeExecutionCommand = std::make_unique<ResumeTargetExecution>();
 
         if (fromAddress.has_value()) {
@@ -139,7 +139,7 @@ namespace Bloom::Services
         );
     }
 
-    void TargetControllerService::stepTargetExecution(std::optional<TargetProgramCounter> fromAddress) {
+    void TargetControllerService::stepTargetExecution(std::optional<TargetProgramCounter> fromAddress) const {
         auto stepExecutionCommand = std::make_unique<StepTargetExecution>();
 
         if (fromAddress.has_value()) {
@@ -152,14 +152,14 @@ namespace Bloom::Services
         );
     }
 
-    TargetRegisters TargetControllerService::readRegisters(const TargetRegisterDescriptors& descriptors) {
+    TargetRegisters TargetControllerService::readRegisters(const TargetRegisterDescriptors& descriptors) const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ReadTargetRegisters>(descriptors),
             this->defaultTimeout
         )->registers;
     }
 
-    void TargetControllerService::writeRegisters(const TargetRegisters& registers) {
+    void TargetControllerService::writeRegisters(const TargetRegisters& registers) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<WriteTargetRegisters>(registers),
             this->defaultTimeout
@@ -171,7 +171,7 @@ namespace Bloom::Services
         TargetMemoryAddress startAddress,
         TargetMemorySize bytes,
         const std::set<TargetMemoryAddressRange>& excludedAddressRanges
-    ) {
+    ) const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ReadTargetMemory>(
                 memoryType,
@@ -187,84 +187,84 @@ namespace Bloom::Services
         TargetMemoryType memoryType,
         TargetMemoryAddress startAddress,
         const TargetMemoryBuffer& buffer
-    ) {
+    ) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<WriteTargetMemory>(memoryType, startAddress, buffer),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerService::eraseMemory(Targets::TargetMemoryType memoryType) {
+    void TargetControllerService::eraseMemory(Targets::TargetMemoryType memoryType) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<EraseTargetMemory>(memoryType),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerService::setBreakpoint(TargetBreakpoint breakpoint) {
+    void TargetControllerService::setBreakpoint(TargetBreakpoint breakpoint) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetBreakpoint>(breakpoint),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerService::removeBreakpoint(TargetBreakpoint breakpoint) {
+    void TargetControllerService::removeBreakpoint(TargetBreakpoint breakpoint) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<RemoveBreakpoint>(breakpoint),
             this->defaultTimeout
         );
     }
 
-    TargetProgramCounter TargetControllerService::getProgramCounter() {
+    TargetProgramCounter TargetControllerService::getProgramCounter() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetProgramCounter>(),
             this->defaultTimeout
         )->programCounter;
     }
 
-    void TargetControllerService::setProgramCounter(TargetProgramCounter address) {
+    void TargetControllerService::setProgramCounter(TargetProgramCounter address) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetTargetProgramCounter>(address),
             this->defaultTimeout
         );
     }
 
-    TargetPinStateMapping TargetControllerService::getPinStates(int variantId) {
+    TargetPinStateMapping TargetControllerService::getPinStates(int variantId) const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetPinStates>(variantId),
             this->defaultTimeout
         )->pinStatesByNumber;
     }
 
-    void TargetControllerService::setPinState(TargetPinDescriptor pinDescriptor, TargetPinState pinState) {
+    void TargetControllerService::setPinState(TargetPinDescriptor pinDescriptor, TargetPinState pinState) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetTargetPinState>(pinDescriptor, pinState),
             this->defaultTimeout
         );
     }
 
-    TargetStackPointer TargetControllerService::getStackPointer() {
+    TargetStackPointer TargetControllerService::getStackPointer() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetStackPointer>(),
             this->defaultTimeout
         )->stackPointer;
     }
 
-    void TargetControllerService::resetTarget() {
+    void TargetControllerService::resetTarget() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ResetTarget>(),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerService::enableProgrammingMode() {
+    void TargetControllerService::enableProgrammingMode() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<EnableProgrammingMode>(),
             this->defaultTimeout
         );
     }
 
-    void TargetControllerService::disableProgrammingMode() {
+    void TargetControllerService::disableProgrammingMode() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<DisableProgrammingMode>(),
             this->defaultTimeout

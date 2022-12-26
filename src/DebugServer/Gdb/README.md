@@ -84,7 +84,7 @@ void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerService& 
     Logger::debug("Handling SetBreakpoint packet");
 
     try {
-        targetControllerServicesetBreakpoint(TargetBreakpoint(this->address));
+        targetControllerService.setBreakpoint(TargetBreakpoint(this->address));
         debugSession.connection.writePacket(OkResponsePacket());
 
     } catch (const Exception& exception) {
