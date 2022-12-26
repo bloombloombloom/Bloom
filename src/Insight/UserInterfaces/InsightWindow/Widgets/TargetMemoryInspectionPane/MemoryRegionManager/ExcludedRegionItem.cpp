@@ -2,7 +2,7 @@
 
 #include <QFile>
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 
@@ -16,7 +16,7 @@ namespace Bloom::Widgets
         : memoryRegion(region), RegionItem(region, memoryDescriptor, parent)
     {
         auto formUiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                     + "/MemoryRegionManager/UiFiles/ExcludedMemoryRegionForm.ui"
             )

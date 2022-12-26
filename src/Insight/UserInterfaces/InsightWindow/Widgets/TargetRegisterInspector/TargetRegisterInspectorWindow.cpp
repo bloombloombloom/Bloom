@@ -10,7 +10,7 @@
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/ReadTargetRegisters.hpp"
@@ -40,14 +40,14 @@ namespace Bloom::Widgets
         this->setWindowTitle("Inspect Register");
 
         auto windowUiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/"
                   "TargetRegisterInspectorWindow.ui"
             )
         );
 
         auto windowStylesheet = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/"
                   "TargetRegisterInspectorWindow.qss"
             )
@@ -378,7 +378,7 @@ namespace Bloom::Widgets
 
     void TargetRegisterInspectorWindow::openHelpPage() {
         QDesktopServices::openUrl(
-            QUrl(QString::fromStdString(Paths::homeDomainName() + "/docs/register-inspection"))
+            QUrl(QString::fromStdString(Services::PathService::homeDomainName() + "/docs/register-inspection"))
         );
     }
 }

@@ -4,7 +4,7 @@
 #include <QFile>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::Widgets
@@ -23,13 +23,13 @@ namespace Bloom::Widgets
         this->setWindowTitle(windowTitle);
 
         auto dialogueUiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui"
             )
         );
 
         auto dialogueStylesheet = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss"
             )
         );

@@ -5,7 +5,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 #include "src/Exceptions/Exception.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Application.hpp"
 
 namespace Bloom
@@ -14,12 +14,12 @@ namespace Bloom
 
     AboutWindow::AboutWindow(QWidget* parent): QObject(parent) {
         auto aboutWindowUiFile = QFile(QString::fromStdString(
-                Paths::compiledResourcesPath()
+                Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/UiFiles/AboutWindow.ui"
             )
         );
         auto aboutWindowStylesheet = QFile(QString::fromStdString(
-                Paths::compiledResourcesPath()
+                Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Stylesheets/AboutWindow.qss"
             )
         );

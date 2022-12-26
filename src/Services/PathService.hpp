@@ -3,9 +3,9 @@
 #include <string>
 #include <filesystem>
 
-namespace Bloom
+namespace Bloom::Services
 {
-    class Paths
+    class PathService
     {
     public:
         /**
@@ -21,7 +21,7 @@ namespace Bloom
          * @return
          */
         static std::string resourcesDirPath() {
-            return Paths::applicationDirPath() + "/../resources/";
+            return PathService::applicationDirPath() + "/../resources/";
         }
 
         /**
@@ -39,7 +39,7 @@ namespace Bloom
          * @return
          */
         static std::string projectConfigPath() {
-            return Paths::projectDirPath() + "/bloom.yaml";
+            return PathService::projectDirPath() + "/bloom.yaml";
         }
 
         /**
@@ -48,7 +48,7 @@ namespace Bloom
          * @return
          */
         static std::string projectSettingsDirPath() {
-            return Paths::projectDirPath() + "/.bloom";
+            return PathService::projectDirPath() + "/.bloom";
         }
 
         /**
@@ -57,7 +57,7 @@ namespace Bloom
          * @return
          */
         static std::string projectSettingsPath() {
-            return Paths::projectSettingsDirPath() + "/settings.json";
+            return PathService::projectSettingsDirPath() + "/settings.json";
         }
 
         /**

@@ -12,7 +12,7 @@
 #include "src/Insight/InsightWorker/Tasks/ReadTargetMemory.hpp"
 #include "src/Insight/InsightWorker/Tasks/ReadStackPointer.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -46,13 +46,13 @@ namespace Bloom::Widgets
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         auto uiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/UiFiles/TargetMemoryInspectionPane.ui"
             )
         );
 
         auto stylesheetFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Stylesheets/TargetMemoryInspectionPane.qss"
             )
         );

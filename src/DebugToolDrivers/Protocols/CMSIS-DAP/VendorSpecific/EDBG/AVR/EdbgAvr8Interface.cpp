@@ -3,9 +3,9 @@
 #include <thread>
 #include <cmath>
 
-#include "src/Logger/Logger.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Helpers/String.hpp"
+#include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
@@ -272,7 +272,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     throw DebugWirePhysicalInterfaceError(
                         "Failed to activate the debugWire physical interface - check target connection. "
                         "If the target was recently programmed via ISP, try cycling the target power. See "
-                        + Paths::homeDomainName() + "/docs/debugging-avr-debugwire for more information."
+                        + Services::PathService::homeDomainName() + "/docs/debugging-avr-debugwire for more information."
                     );
                 }
 

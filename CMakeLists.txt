@@ -36,13 +36,13 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     # a lot easier, as it removes the need to recompile for each tweak.
     # CAUTION: Although convenient, this does add a limitation; the debug build can only be run on the same machine
     # that compiled it. Or a machine that has the Bloom source located in the same place.
-    # See Paths::compiledResourcesPath() for more.
+    # See Services::PathService::compiledResourcesPath() for more.
     add_compile_definitions(BLOOM_COMPILED_RESOURCES_PATH_OVERRIDE="${CMAKE_CURRENT_SOURCE_DIR}")
 
     # BLOOM_HOME_DOMAIN_NAME_OVERRIDE can be used to override the domain name used in URLs to the Bloom website.
     # I (Nav) use this in debug builds, so I can test local changes that involve the Bloom website as well as Bloom
     # itself. Other users can comment out this override if they don't have a copy of the Bloom website running on their
-    # local machine. See Paths::homeDomainName() for more.
+    # local machine. See Services::PathService::homeDomainName() for more.
     add_compile_definitions(BLOOM_HOME_DOMAIN_NAME_OVERRIDE="http://bloom.local")
 
     # CMAKE_BUILD_RPATH needs to point to the local Qt installation, to use Gammaray during development.

@@ -1,7 +1,7 @@
 #include "Avr8TargetConfig.hpp"
 
 #include "src/Helpers/String.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
@@ -25,7 +25,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         if (physicalInterfaceIt == Avr8TargetConfig::debugPhysicalInterfacesByConfigName.end()) {
             throw InvalidConfig(
                 "Invalid physical interface provided (\"" + physicalInterfaceName + "\") for AVR8 target. "
-                "See " + Paths::homeDomainName() + "/docs/configuration/avr8-physical-interfaces for valid physical "
+                "See " + Services::PathService::homeDomainName() + "/docs/configuration/avr8-physical-interfaces for valid physical "
                 "interface configuration values."
             );
         }

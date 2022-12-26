@@ -6,7 +6,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Helpers/String.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -35,13 +35,13 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
              */
             auto helpFile = QFile(
                 QString::fromStdString(
-                    Paths::compiledResourcesPath() + "/src/DebugServer/Gdb/Resources/GdbHelpMonitorInfo.txt"
+                    Services::PathService::compiledResourcesPath() + "/src/DebugServer/Gdb/Resources/GdbHelpMonitorInfo.txt"
                 )
             );
 
             if (!helpFile.open(QIODevice::ReadOnly)) {
                 throw Exception(
-                    "Failed to open GDB monitor info help file - please report this issue at " + Paths::homeDomainName()
+                    "Failed to open GDB monitor info help file - please report this issue at " + Services::PathService::homeDomainName()
                         + "/report-issue"
                 );
             }

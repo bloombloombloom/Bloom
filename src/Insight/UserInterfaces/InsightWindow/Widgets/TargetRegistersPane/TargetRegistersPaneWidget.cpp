@@ -9,7 +9,7 @@
 #include "RegisterGroupWidget.hpp"
 #include "RegisterWidget.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/ReadTargetRegisters.hpp"
@@ -34,7 +34,7 @@ namespace Bloom::Widgets
         this->setObjectName("target-registers-side-pane");
 
         auto targetRegistersPaneUiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/"
                   "TargetRegistersSidePane.ui"
             )

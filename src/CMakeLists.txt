@@ -6,11 +6,11 @@ target_sources(
 
         # Services
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/TargetControllerService.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Services/PathService.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/ProcessService.cpp
 
         # Helpers & other
         ${CMAKE_CURRENT_SOURCE_DIR}/Logger/Logger.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/Paths.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/String.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/EpollInstance.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Helpers/EventFdNotifier.cpp

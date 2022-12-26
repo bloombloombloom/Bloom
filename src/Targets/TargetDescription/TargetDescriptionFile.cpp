@@ -5,7 +5,7 @@
 
 #include "Exceptions/TargetDescriptionParsingFailureException.hpp"
 #include "src/Logger/Logger.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 
 namespace Bloom::Targets::TargetDescription
 {
@@ -26,7 +26,7 @@ namespace Bloom::Targets::TargetDescription
         auto xml = QDomDocument();
         if (!xml.setContent(file.readAll())) {
             throw Exception("Failed to parse target description file - please report this error "
-                "to Bloom developers via " + Paths::homeDomainName() + "/report-issue");
+                "to Bloom developers via " + Services::PathService::homeDomainName() + "/report-issue");
         }
 
         this->init(xml);

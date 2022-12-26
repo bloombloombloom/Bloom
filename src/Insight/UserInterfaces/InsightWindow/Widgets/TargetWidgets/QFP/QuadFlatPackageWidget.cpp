@@ -7,7 +7,7 @@
 #include <QFile>
 #include <QLine>
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 
@@ -22,7 +22,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Qfp
         assert((targetVariant.pinDescriptorsByNumber.size() % 4) == 0);
 
         auto stylesheetFile = QFile(QString::fromStdString(
-                Paths::compiledResourcesPath()
+                Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss"
             )
         );

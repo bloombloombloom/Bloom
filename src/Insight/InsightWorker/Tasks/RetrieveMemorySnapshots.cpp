@@ -5,7 +5,7 @@
 #include <QStringList>
 #include <QJsonDocument>
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
@@ -23,7 +23,7 @@ namespace Bloom
     }
 
     std::vector<MemorySnapshot> RetrieveMemorySnapshots::getSnapshots(Targets::TargetMemoryType memoryType) {
-        auto snapshotDir = QDir(QString::fromStdString(Paths::projectSettingsDirPath())
+        auto snapshotDir = QDir(QString::fromStdString(Services::PathService::projectSettingsDirPath())
             + "/memory_snapshots/" + EnumToStringMappings::targetMemoryTypes.at(memoryType));
 
         if (!snapshotDir.exists()) {

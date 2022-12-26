@@ -5,7 +5,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/InsightSignals.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::Widgets
@@ -31,7 +31,7 @@ namespace Bloom::Widgets
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         auto widgetUiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget"
                 + "/UiFiles/HexViewerWidget.ui"
             )

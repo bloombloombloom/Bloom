@@ -7,7 +7,7 @@
 
 #include "src/Application.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Helpers/String.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -32,7 +32,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         debugSession.connection.writePacket(ResponsePacket(String::toHex(
             std::string(
                 "Bloom v" + Application::VERSION.toString() + "\n"
-                    + Paths::homeDomainName() + "\n"
+                    + Services::PathService::homeDomainName() + "\n"
                     + "Nav Mohammed\n"
             )
         )));

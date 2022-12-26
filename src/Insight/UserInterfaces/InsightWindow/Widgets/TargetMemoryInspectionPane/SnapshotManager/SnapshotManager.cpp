@@ -9,7 +9,7 @@
 #include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
@@ -34,7 +34,7 @@ namespace Bloom::Widgets
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         auto widgetUiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/SnapshotManager/UiFiles/SnapshotManager.ui"
             )

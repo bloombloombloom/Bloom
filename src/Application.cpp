@@ -10,7 +10,7 @@
 #include "src/Services/ProcessService.hpp"
 
 #include "src/Logger/Logger.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 
@@ -178,7 +178,7 @@ namespace Bloom
     }
 
     void Application::loadProjectSettings() {
-        const auto projectSettingsPath = Paths::projectSettingsPath();
+        const auto projectSettingsPath = Services::PathService::projectSettingsPath();
         auto jsonSettingsFile = QFile(QString::fromStdString(projectSettingsPath));
 
         if (jsonSettingsFile.exists()) {
@@ -209,12 +209,12 @@ namespace Bloom
             return;
         }
 
-        const auto projectSettingsPath = Paths::projectSettingsPath();
+        const auto projectSettingsPath = Services::PathService::projectSettingsPath();
         auto jsonSettingsFile = QFile(QString::fromStdString(projectSettingsPath));
 
         Logger::debug("Saving project settings to " + projectSettingsPath);
 
-        QDir().mkpath(QString::fromStdString(Paths::projectSettingsDirPath()));
+        QDir().mkpath(QString::fromStdString(Services::PathService::projectSettingsDirPath()));
 
         try {
             const auto jsonDocument = QJsonDocument(this->projectSettings->toJson());
@@ -236,11 +236,11 @@ namespace Bloom
     }
 
     void Application::loadProjectConfiguration() {
-        auto configFile = QFile(QString::fromStdString(Paths::projectConfigPath()));
+        auto configFile = QFile(QString::fromStdString(Services::PathService::projectConfigPath()));
 
         if (!configFile.exists()) {
             // Try looking for the old bloom.json config file
-            configFile.setFileName(QString::fromStdString(Paths::projectDirPath()) + "/bloom.json");
+            configFile.setFileName(QString::fromStdString(Services::PathService::projectDirPath()) + "/bloom.json");
 
             if (configFile.exists()) {
                 Logger::warning(
@@ -252,14 +252,14 @@ namespace Bloom
 
             } else {
                 throw InvalidConfig(
-                    "Bloom configuration file (bloom.yaml) not found. Working directory: " + Paths::projectDirPath()
+                    "Bloom configuration file (bloom.yaml) not found. Working directory: " + Services::PathService::projectDirPath()
                 );
             }
         }
 
         if (!configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             throw InvalidConfig(
-                "Failed to open Bloom configuration file. Working directory: " + Paths::projectDirPath()
+                "Failed to open Bloom configuration file. Working directory: " + Services::PathService::projectDirPath()
             );
         }
 
@@ -312,12 +312,12 @@ namespace Bloom
         Logger::silence();
 
         // The file help.txt is included in Bloom's binary, as a resource. See the root-level CMakeLists.txt for more.
-        auto helpFile = QFile(QString::fromStdString(Paths::compiledResourcesPath() + "/resources/help.txt"));
+        auto helpFile = QFile(QString::fromStdString(Services::PathService::compiledResourcesPath() + "/resources/help.txt"));
 
         if (!helpFile.open(QIODevice::ReadOnly)) {
             // This should never happen - if it does, something has gone very wrong
             throw Exception(
-                "Failed to open help file - please report this issue at " + Paths::homeDomainName()
+                "Failed to open help file - please report this issue at " + Services::PathService::homeDomainName()
                     + "/report-issue"
             );
         }
@@ -336,7 +336,7 @@ namespace Bloom
         std::cout << "DEBUG BUILD - Compilation timestamp: " << __DATE__ << " " << __TIME__ << "\n";
 #endif
 
-        std::cout << Paths::homeDomainName() + "/\n";
+        std::cout << Services::PathService::homeDomainName() + "/\n";
         std::cout << "Nav Mohammed\n";
         return EXIT_SUCCESS;
     }
@@ -357,7 +357,7 @@ namespace Bloom
     }
 
     int Application::initProject() {
-        auto configFile = QFile(QString::fromStdString(Paths::projectConfigPath()));
+        auto configFile = QFile(QString::fromStdString(Services::PathService::projectConfigPath()));
 
         if (configFile.exists()) {
             throw Exception("Bloom configuration file (bloom.yaml) already exists in working directory.");
@@ -370,13 +370,13 @@ namespace Bloom
          * We simply copy the template file into the user's working directory.
          */
         auto templateConfigFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()+ "/resources/bloom.template.yaml")
+            QString::fromStdString(Services::PathService::compiledResourcesPath()+ "/resources/bloom.template.yaml")
         );
 
         if (!templateConfigFile.open(QIODevice::ReadOnly)) {
             throw Exception(
                 "Failed to open template configuration file - please report this issue at "
-                    + Paths::homeDomainName() + "/report-issue"
+                    + Services::PathService::homeDomainName() + "/report-issue"
             );
         }
 

@@ -4,7 +4,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -73,7 +73,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 continue;
             }
 
-            const auto descriptionFilePath = QString::fromStdString(Paths::applicationDirPath()) + "/"
+            const auto descriptionFilePath = QString::fromStdString(Services::PathService::applicationDirPath()) + "/"
                 + mappingObject.find("targetDescriptionFilePath")->toString();
 
             Logger::debug("Loading AVR8 target description file: " + descriptionFilePath.toStdString());
@@ -99,7 +99,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
     QJsonObject TargetDescriptionFile::getTargetDescriptionMapping() {
         auto mappingFile = QFile(
-            QString::fromStdString(Paths::resourcesDirPath() + "/TargetDescriptionFiles/AVR/Mapping.json")
+            QString::fromStdString(Services::PathService::resourcesDirPath() + "/TargetDescriptionFiles/AVR/Mapping.json")
         );
 
         if (!mappingFile.exists()) {

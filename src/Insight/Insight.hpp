@@ -9,7 +9,7 @@
 #include <QTimer>
 
 #include "src/Helpers/Thread.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/ProjectConfig.hpp"
 #include "src/ProjectSettings.hpp"
 

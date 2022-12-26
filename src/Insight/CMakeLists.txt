@@ -85,6 +85,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/MemorySnapshotItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/CreateSnapshotWindow/CreateSnapshotWindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotViewer/SnapshotViewer.cpp
 
         # Memory region manager window
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/MemoryRegionManagerWindow.cpp
@@ -110,6 +111,7 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/UiFiles/HexViewerWidget.ui"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/UiFiles/SnapshotManager.ui"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/CreateSnapshotWindow/UiFiles/CreateSnapshotWindow.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotViewer/UiFiles/SnapshotViewer.ui"
         "./UserInterfaces/InsightWindow/Images/bloom-icon.svg"
         "./UserInterfaces/InsightWindow/Images/RAM.svg"
         "./UserInterfaces/InsightWindow/Images/refresh.svg"

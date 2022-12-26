@@ -6,7 +6,7 @@
 #include <QEvent>
 #include <QFile>
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 
 namespace Bloom::Widgets::InsightTargetWidgets::Dip
 {
@@ -19,7 +19,7 @@ namespace Bloom::Widgets::InsightTargetWidgets::Dip
         : TargetPackageWidget(targetVariant, parent)
     {
         auto stylesheetFile = QFile(QString::fromStdString(
-                Paths::compiledResourcesPath()
+                Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/"
                 "DualInlinePackage.qss"
             )

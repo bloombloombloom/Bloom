@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "src/Logger/Logger.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "Exceptions/DebugWirePhysicalInterfaceError.hpp"
@@ -67,9 +67,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                         + physicalInterfaceNames.at(this->targetConfig->physicalInterface) + "). Target activation "
                         "will likely fail. The target supports the following physical interfaces: \n"
                         + supportedPhysicalInterfaceList + "\n\nFor physical interface configuration values, see "
-                        + Paths::homeDomainName() + "/docs/configuration/avr8-physical-interfaces. \n\nIf this "
+                        + Services::PathService::homeDomainName() + "/docs/configuration/avr8-physical-interfaces. \n\nIf this "
                         "information is incorrect, please report this to Bloom developers via "
-                        + Paths::homeDomainName() + "/report-issue.\n"
+                        + Services::PathService::homeDomainName() + "/report-issue.\n"
                 );
             }
 
@@ -78,7 +78,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 throw InvalidConfig(
                     "The JTAG physical interface cannot be used with an ambiguous target name"
                         " - please specify the exact name of the target in your configuration file. "
-                        "See " + Paths::homeDomainName() + "/docs/supported-targets"
+                        "See " + Services::PathService::homeDomainName() + "/docs/supported-targets"
                 );
             }
 
@@ -86,7 +86,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 throw InvalidConfig(
                     "The UPDI physical interface cannot be used with an ambiguous target name"
                         " - please specify the exact name of the target in your configuration file. "
-                        "See " + Paths::homeDomainName() + "/docs/supported-targets"
+                        "See " + Services::PathService::homeDomainName() + "/docs/supported-targets"
                 );
             }
         }
@@ -163,7 +163,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 throw TargetOperationFailure(
                     "Failed to activate debugWire physical interface - check target connection and DWEN fuse "
                         "bit. Bloom can manage the DWEN fuse bit automatically. For instructions on enabling this "
-                        "function, see " + Paths::homeDomainName() + "/docs/debugging-avr-debugwire"
+                        "function, see " + Services::PathService::homeDomainName() + "/docs/debugging-avr-debugwire"
                 );
             }
 
@@ -763,7 +763,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         if (this->avrIspInterface == nullptr) {
             throw Exception(
                 "Debug tool or driver does not provide access to an ISP interface - please confirm that the "
-                    "debug tool supports ISP and then report this issue via " + Paths::homeDomainName()
+                    "debug tool supports ISP and then report this issue via " + Services::PathService::homeDomainName()
                     + "/report-issue"
             );
         }
@@ -778,7 +778,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         if (!this->supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)) {
             throw Exception(
                 "Target does not support debugWire physical interface - check target configuration or "
-                    "report this issue via " + Paths::homeDomainName() + "/report-issue"
+                    "report this issue via " + Services::PathService::homeDomainName() + "/report-issue"
             );
         }
 
@@ -842,7 +842,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             "Updating the DWEN fuse bit is a potentially dangerous operation. Bloom is provided \"AS IS\", "
                 "without warranty of any kind. You are using Bloom at your own risk. In no event shall the copyright "
                 "owner or contributors be liable for any damage caused as a result of using Bloom. For more details, "
-                "see the Bloom license at " + Paths::homeDomainName() + "/license"
+                "see the Bloom license at " + Services::PathService::homeDomainName() + "/license"
         );
 
         try {
@@ -882,7 +882,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                  */
                 throw Exception(
                     "Invalid SPIEN fuse bit value - suspected inaccuracies in TDF data. Please report this to "
-                        "Bloom developers as a matter of urgency, via " + Paths::homeDomainName() + "/report-issue"
+                        "Bloom developers as a matter of urgency, via " + Services::PathService::homeDomainName() + "/report-issue"
                 );
             }
 

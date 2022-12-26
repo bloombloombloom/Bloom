@@ -5,7 +5,7 @@
 #include <QMenu>
 #include <QStyle>
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 
 #include "src/Insight/InsightSignals.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
@@ -35,7 +35,7 @@ namespace Bloom::Widgets
 
         this->registerIcon->setObjectName("register-icon");
         auto static registerIconPath = QString::fromStdString(
-            Paths::compiledResourcesPath()
+            Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register.svg"
         );
         this->registerIcon->setSvgFilePath(registerIconPath);

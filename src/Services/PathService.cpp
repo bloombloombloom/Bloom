@@ -1,4 +1,4 @@
-#include "Paths.hpp"
+#include "PathService.hpp"
 
 #include <unistd.h>
 #include <array>
@@ -7,9 +7,9 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom
+namespace Bloom::Services
 {
-    std::string Paths::applicationDirPath() {
+    std::string PathService::applicationDirPath() {
         auto pathCharArray = std::array<char, PATH_MAX>();
 
         if (readlink("/proc/self/exe", pathCharArray.data(), PATH_MAX) < 0) {

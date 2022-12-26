@@ -4,7 +4,7 @@
 #include <QDir>
 #include <QJsonDocument>
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -83,7 +83,7 @@ namespace Bloom
             std::move(this->excludedRegions)
         );
 
-        const auto snapshotDirPath = QString::fromStdString(Paths::projectSettingsDirPath())
+        const auto snapshotDirPath = QString::fromStdString(Services::PathService::projectSettingsDirPath())
             + "/memory_snapshots/" + EnumToStringMappings::targetMemoryTypes.at(snapshot.memoryType);
 
         QDir().mkpath(snapshotDirPath);

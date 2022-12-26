@@ -12,7 +12,7 @@
 
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
 
@@ -60,12 +60,12 @@ namespace Bloom
         }
 
         auto mainWindowUiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui"
             )
         );
         auto mainWindowStylesheet = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss"
             )
         );
@@ -86,7 +86,7 @@ namespace Bloom
         mainWindowStylesheet.close();
 
         QApplication::setWindowIcon(QIcon(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Images/bloom-icon.svg"
             )
         ));
@@ -937,7 +937,7 @@ namespace Bloom
     }
 
     void InsightWindow::openReportIssuesUrl() {
-        auto url = QUrl(QString::fromStdString(Paths::homeDomainName() + "/report-issue"));
+        auto url = QUrl(QString::fromStdString(Services::PathService::homeDomainName() + "/report-issue"));
         /*
          * The https://bloom.oscillate.io/report-issue URL just redirects to the Bloom GitHub issue page.
          *
@@ -963,7 +963,7 @@ namespace Bloom
 
     void InsightWindow::openGettingStartedUrl() {
         QDesktopServices::openUrl(
-            QUrl(QString::fromStdString(Paths::homeDomainName() + "/docs/getting-started"))
+            QUrl(QString::fromStdString(Services::PathService::homeDomainName() + "/docs/getting-started"))
         );
     }
 

@@ -443,7 +443,7 @@ namespace Bloom::TargetController
 =======
     void TargetControllerComponent::checkUdevRules() {
         auto bloomRulesPath = std::string("/etc/udev/rules.d/99-bloom.rules");
-        auto latestBloomRulesPath = Paths::resourcesDirPath() + "/UDevRules/99-bloom.rules";
+        auto latestBloomRulesPath = Services::PathService::resourcesDirPath() + "/UDevRules/99-bloom.rules";
 
         if (!std::filesystem::exists(bloomRulesPath)) {
             Logger::warning("Bloom udev rules missing - attempting installation");
@@ -453,7 +453,7 @@ namespace Bloom::TargetController
                 Logger::error("Bloom udev rules missing - cannot install udev rules without root privileges.\n"
                     "Running Bloom once with root privileges will allow it to automatically install the udev rules. "
                     "Alternatively, instructions on manually installing the udev rules can be found "
-                    "here: " + Paths::homeDomainName() + "/docs/getting-started\nBloom may fail to connect to some "
+                    "here: " + Services::PathService::homeDomainName() + "/docs/getting-started\nBloom may fail to connect to some "
                     "debug tools until this is resolved.");
                 return;
             }

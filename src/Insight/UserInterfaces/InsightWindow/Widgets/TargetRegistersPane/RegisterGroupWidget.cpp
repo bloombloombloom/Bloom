@@ -6,7 +6,7 @@
 
 #include "RegisterWidget.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 
 namespace Bloom::Widgets
 {
@@ -31,7 +31,7 @@ namespace Bloom::Widgets
 
         this->arrowIcon->setObjectName("arrow-icon");
         auto static arrowIconPath = QString::fromStdString(
-            Paths::compiledResourcesPath()
+            Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/arrow.svg"
         );
         this->arrowIcon->setSvgFilePath(arrowIconPath);
@@ -40,7 +40,7 @@ namespace Bloom::Widgets
 
         this->registerGroupIcon->setObjectName("register-group-icon");
         auto static registerIconPath = QString::fromStdString(
-            Paths::compiledResourcesPath()
+            Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register-group.svg"
         );
         this->registerGroupIcon->setSvgFilePath(registerIconPath);

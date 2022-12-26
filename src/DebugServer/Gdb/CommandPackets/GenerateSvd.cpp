@@ -9,7 +9,7 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Application.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Helpers/String.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -46,7 +46,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                 return;
             }
 
-            const auto svdOutputFilePath = Paths::projectDirPath() + "/" + targetDescriptor.name + ".svd";
+            const auto svdOutputFilePath = Services::PathService::projectDirPath() + "/" + targetDescriptor.name + ".svd";
             auto outputFile = QFile(QString::fromStdString(svdOutputFilePath));
 
             if (!outputFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
@@ -102,7 +102,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         deviceElement.setAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema-instance");
         deviceElement.setAttribute(
             "xs:noNamespaceSchemaLocation",
-            QString::fromStdString(Paths::homeDomainName() + "/assets/svd-schema.xsd")
+            QString::fromStdString(Services::PathService::homeDomainName() + "/assets/svd-schema.xsd")
         );
 
         deviceElement.appendChild(createElement("vendor", QString::fromStdString(targetDescriptor.vendorName)));

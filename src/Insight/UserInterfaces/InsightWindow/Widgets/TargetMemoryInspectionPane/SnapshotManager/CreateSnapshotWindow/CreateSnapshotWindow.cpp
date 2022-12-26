@@ -8,7 +8,7 @@
 
 #include "src/Insight/InsightSignals.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::Widgets
@@ -32,7 +32,7 @@ namespace Bloom::Widgets
         );
 
         auto windowUiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/SnapshotManager/CreateSnapshotWindow/UiFiles/CreateSnapshotWindow.ui"
             )

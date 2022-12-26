@@ -7,7 +7,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
 
-#include "src/Helpers/Paths.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::Widgets
@@ -33,14 +33,14 @@ namespace Bloom::Widgets
         );
 
         auto windowUiFile = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/MemoryRegionManager/UiFiles/MemoryRegionManagerWindow.ui"
             )
         );
 
         auto windowStylesheet = QFile(
-            QString::fromStdString(Paths::compiledResourcesPath()
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/MemoryRegionManager/Stylesheets/MemoryRegionManagerWindow.qss"
             )
@@ -406,7 +406,7 @@ namespace Bloom::Widgets
 
     void MemoryRegionManagerWindow::openHelpPage() {
         QDesktopServices::openUrl(
-            QUrl(QString::fromStdString(Paths::homeDomainName() + "/docs/manage-memory-regions"))
+            QUrl(QString::fromStdString(Services::PathService::homeDomainName() + "/docs/manage-memory-regions"))
         );
     }
 }
