@@ -24,6 +24,12 @@ namespace Bloom
             const std::optional<Targets::TargetMemoryBuffer>& data
         );
 
+        TaskGroups getTaskGroups() const override {
+            return TaskGroups({
+                TaskGroup::USES_TARGET_CONTROLLER,
+            });
+        };
+
     signals:
         void memorySnapshotCaptured(MemorySnapshot snapshot);
 
