@@ -103,7 +103,7 @@ namespace Bloom::Widgets
             return false;
         }
 
-        if (!this->data.has_value()) {
+        if (!this->data.has_value() && !this->captureDirectlyFromTargetInput->isChecked()) {
             return false;
         }
 
