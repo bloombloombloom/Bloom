@@ -46,6 +46,8 @@ namespace Bloom::Widgets
         this->container->setFixedSize(this->size());
         this->container->setContentsMargins(0, 0, 0, 0);
 
+        auto* containerLayout = this->container->findChild<QVBoxLayout*>("hex-viewer-layout");
+
         this->toolBar = this->container->findChild<QWidget*>("tool-bar");
         this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
 
@@ -72,7 +74,6 @@ namespace Bloom::Widgets
         this->hoveredAddressLabel = this->bottomBar->findChild<Label*>("byte-address-label");
 
         this->loadingHexViewerLabel = this->container->findChild<Label*>("loading-hex-viewer-label");
-        this->byteItemGraphicsViewContainer = this->container->findChild<QWidget*>("graphics-view-container");
 
         this->byteItemGraphicsView = new ByteItemContainerGraphicsView(
             this->targetMemoryDescriptor,
@@ -80,8 +81,10 @@ namespace Bloom::Widgets
             this->excludedMemoryRegions,
             this->settings,
             this->hoveredAddressLabel,
-            this->byteItemGraphicsViewContainer
+            this->container
         );
+
+        containerLayout->insertWidget(2, this->byteItemGraphicsView);
 
         this->setHoveredRowAndColumnHighlightingEnabled(this->settings.highlightHoveredRowAndCol);
         this->setFocusedMemoryHighlightingEnabled(this->settings.highlightFocusedMemory);
@@ -174,8 +177,7 @@ namespace Bloom::Widgets
             [this] {
                 this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
                 this->loadingHexViewerLabel->hide();
-                this->byteItemGraphicsViewContainer->show();
-                this->byteItemGraphicsView->setFixedSize(this->byteItemGraphicsViewContainer->size());
+                this->byteItemGraphicsView->show();
 
                 emit this->ready();
             }
@@ -207,12 +209,10 @@ namespace Bloom::Widgets
             this->width(),
             this->height()
         );
-
-        this->byteItemGraphicsView->setFixedSize(this->byteItemGraphicsViewContainer->size());
     }
 
     void HexViewerWidget::showEvent(QShowEvent* event) {
-        this->byteItemGraphicsView->setFixedSize(this->byteItemGraphicsViewContainer->size());
+        QWidget::showEvent(event);
     }
 
     void HexViewerWidget::onTargetStateChanged(Targets::TargetState newState) {

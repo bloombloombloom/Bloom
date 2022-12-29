@@ -80,8 +80,14 @@
     margin-top: 2px;
 }
 
+#hex-viewer-container {
+    background-color: transparent;
+    border: none;
+}
+
 #hex-viewer-container #tool-bar,
 #hex-viewer-container #search-bar {
+    background-color: transparent;
     border-bottom: 1px solid #41423f;
 }
 
@@ -160,30 +166,24 @@
 }
 
 #hex-viewer-container QScrollArea,
-#hex-viewer-container #graphics-view-container,
-#hex-viewer-container #graphics-view-container #graphics-view {
+#hex-viewer-container #graphics-view {
     background-color: #323330;
     border: none;
     font-size: 11px;
 }
 
-#hex-viewer-container #graphics-view-container {
-    background-color: #50504b;
-    border: none;
-}
-
-#hex-viewer-container #graphics-view-container #address-container {
+#hex-viewer-container #address-container {
     background-color: #353633;
     border-right: 1px solid #41423f;
 }
 
-#hex-viewer-container #graphics-view-container #address-container QLabel {
+#hex-viewer-container #address-container QLabel {
     background-color: transparent;
     font-size: 5px;
     color: rgba(175, 177, 179, 0.72);
 }
 
-#hex-viewer-container #graphics-view-container #address-container QLabel:disabled {
+#hex-viewer-container #address-container QLabel:disabled {
     color: rgba(175, 177, 179, 0.3);
 }
 

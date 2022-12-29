@@ -58,7 +58,6 @@ namespace Bloom::Widgets
         QWidget* bottomBar = nullptr;
 
         Label* loadingHexViewerLabel = nullptr;
-        QWidget* byteItemGraphicsViewContainer = nullptr;
         ByteItemContainerGraphicsView* byteItemGraphicsView = nullptr;
         ByteItemGraphicsScene* byteItemGraphicsScene = nullptr;
         Label* hoveredAddressLabel = nullptr;

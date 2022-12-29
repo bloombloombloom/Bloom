@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
     <widget class="QWidget" name="hex-viewer-container">
-        <layout class="QVBoxLayout">
+        <layout class="QVBoxLayout" name="hex-viewer-layout">
             <property name="spacing">
                 <number>0</number>
             </property>
@@ -191,16 +191,6 @@
                     </property>
                     <property name="text">
                         <string>Loading...</string>
-                    </property>
-                </widget>
-            </item>
-            <item>
-                <widget class="QWidget" name="graphics-view-container">
-                    <property name="sizePolicy">
-                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
-                    </property>
-                    <property name="visible">
-                        <bool>false</bool>
                     </property>
                 </widget>
             </item>
