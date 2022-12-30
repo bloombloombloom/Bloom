@@ -54,10 +54,10 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
         try {
             targetControllerService.enableProgrammingMode();
 
-            Logger::warning("Erasing entire chip, in preparation for programming");
+            Logger::warning("Erasing program memory, in preparation for programming");
 
             // We don't erase a specific address range - we just erase the entire program memory.
-            targetControllerService.eraseMemory(Targets::TargetMemoryType::FLASH);
+            targetControllerService.eraseMemory(debugSession.gdbTargetDescriptor.targetDescriptor.programMemoryType);
 
             debugSession.connection.writePacket(OkResponsePacket());
 
