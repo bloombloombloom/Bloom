@@ -4,6 +4,8 @@
 
 #include "MemoryRegion.hpp"
 
+#include "src/Helpers/BiMap.hpp"
+
 namespace Bloom
 {
     enum class MemoryRegionDataType: std::uint8_t
@@ -27,5 +29,20 @@ namespace Bloom
         );
 
         FocusedMemoryRegion(const QJsonObject& jsonObject);
+
+        QJsonObject toJson() const override;
+
+    private:
+        static const inline BiMap<MemoryRegionDataType, QString> regionDataTypesByName = {
+            {MemoryRegionDataType::UNKNOWN, "other"},
+            {MemoryRegionDataType::UNSIGNED_INTEGER, "unsigned_int"},
+            {MemoryRegionDataType::SIGNED_INTEGER, "signed_int"},
+            {MemoryRegionDataType::ASCII_STRING, "ascii_string"},
+        };
+
+        static const inline BiMap<Targets::TargetMemoryEndianness, QString> regionEndiannessByName = {
+            {Targets::TargetMemoryEndianness::LITTLE, "little"},
+            {Targets::TargetMemoryEndianness::BIG, "big"},
+        };
     };
 }
