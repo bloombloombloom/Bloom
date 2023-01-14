@@ -34,7 +34,7 @@ namespace Bloom
 
     signals:
         void sceneCreated(Widgets::ByteItemGraphicsScene* scene);
-        void byteItems(std::map<Targets::TargetMemoryAddress, Widgets::ByteItem*>& byteItemsByAddress);
+        void byteItems(std::map<Targets::TargetMemoryAddress, Widgets::ByteItem*> byteItemsByAddress);
 
     protected:
         void run(TargetController::TargetControllerConsole&) override;

@@ -128,7 +128,7 @@ namespace Bloom::Widgets
             constructByteItemsTask,
             &ConstructHexViewerByteItems::byteItems,
             this,
-            [this] (std::map<Targets::TargetMemoryAddress, ByteItem*>& byteItemsByAddress) {
+            [this] (std::map<Targets::TargetMemoryAddress, ByteItem*> byteItemsByAddress) {
                 this->byteItemsByAddress = std::move(byteItemsByAddress);
 
                 for (const auto& [address, byteItem] : this->byteItemsByAddress) {

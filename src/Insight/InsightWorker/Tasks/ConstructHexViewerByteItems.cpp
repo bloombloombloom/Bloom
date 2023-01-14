@@ -1,5 +1,7 @@
 #include "ConstructHexViewerByteItems.hpp"
 
+#include <QMetaType>
+
 namespace Bloom
 {
     ConstructHexViewerByteItems::ConstructHexViewerByteItems(
@@ -14,7 +16,9 @@ namespace Bloom
         , hoveredByteItem(hoveredByteItem)
         , highlightedByteItems(highlightedByteItems)
         , settings(settings)
-    {}
+    {
+        qRegisterMetaType<std::map<Targets::TargetMemoryAddress, Widgets::ByteItem*>>();
+    }
 
     void ConstructHexViewerByteItems::run(TargetController::TargetControllerConsole&) {
         const auto memorySize = this->memoryDescriptor.size();
@@ -36,6 +40,6 @@ namespace Bloom
             );
         }
 
-        emit this->byteItems(this->byteItemsByAddress);
+        emit this->byteItems(std::move(this->byteItemsByAddress));
     }
 }
