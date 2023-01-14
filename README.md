@@ -109,6 +109,10 @@ If you already have another version of Qt installed, you may need to temporarily
 sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
 ```
 
+NOTE: When building Bloom in release mode, the binary will load Qt plugins from `[BIN_PATH]/plugins` - these plugins are
+from Qt 6.2.4, but they may not work with later versions of Qt. If you're using a more recent version than 6.2.4, it
+would be best to rename/delete that `plugins` directory, so Bloom falls back to system plugins.
+
 #### Notes on compiling:
 
 - If CMake fails to find the Qt packages, you may need to tell it where to look:
