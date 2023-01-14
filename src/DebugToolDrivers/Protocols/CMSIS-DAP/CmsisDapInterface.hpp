@@ -35,7 +35,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
         }
 
         std::size_t getUsbHidInputReportSize() {
-            return this->usbHidInterface.getInputReportSize();
+            return this->usbHidInterface.inputReportSize;
         }
 
         void setMinimumCommandTimeGap(std::chrono::milliseconds commandTimeGap) {

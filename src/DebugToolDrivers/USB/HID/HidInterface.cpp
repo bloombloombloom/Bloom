@@ -75,18 +75,18 @@ namespace Bloom::Usb
     }
 
     void HidInterface::write(std::vector<unsigned char>&& buffer) {
-        if (buffer.size() > this->getInputReportSize()) {
+        if (buffer.size() > this->inputReportSize) {
             throw DeviceCommunicationFailure(
                 "Cannot send data via HID interface - data exceeds maximum packet size."
             );
         }
 
-        if (buffer.size() < this->getInputReportSize()) {
+        if (buffer.size() < this->inputReportSize) {
             /*
              * Every report we send via the USB HID interface should be of a fixed size.
              * In the event of a report being too small, we just fill the buffer vector with 0.
              */
-            buffer.resize(this->getInputReportSize(), 0);
+            buffer.resize(this->inputReportSize, 0);
         }
 
         int transferred = 0;

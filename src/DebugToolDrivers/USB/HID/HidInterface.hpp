@@ -37,10 +37,6 @@ namespace Bloom::Usb
         HidInterface(HidInterface&& other) = default;
         HidInterface& operator = (HidInterface&& other) = default;
 
-        std::size_t getInputReportSize() const {
-             return this->inputReportSize;
-        }
-
         /**
          * Obtains a hid_device instance and claims the HID interface on the device.
          */
