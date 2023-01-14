@@ -142,5 +142,16 @@ namespace Bloom::DebugToolDrivers
         > targetPowerManagementInterface = nullptr;
 
         bool sessionStarted = false;
+
+        /**
+         * Because EDBG devices require fixed-length reports to be transmitted to/from their HID interface, we must
+         * know the HID report size (as it differs across EDBG devices).
+         *
+         * This member function will obtain the report size from the endpoint descriptor of the IN endpoint, from the
+         * HID interface.
+         *
+         * @return
+         */
+        std::uint16_t getCmsisHidReportSize();
     };
 }

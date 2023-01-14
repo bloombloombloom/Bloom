@@ -56,26 +56,9 @@ namespace Bloom::Usb
     }
 
     void UsbDevice::setConfiguration(std::uint8_t configurationIndex) {
-        ::libusb_config_descriptor* configDescriptorPtr = {};
-        auto libusbStatusCode = ::libusb_get_config_descriptor(
-            this->libusbDevice.get(),
-            configurationIndex,
-            &configDescriptorPtr
-        );
+        const auto configDescriptor = this->getConfigDescriptor(configurationIndex);
 
-        if (libusbStatusCode < 0) {
-            throw DeviceInitializationFailure(
-                "Failed to obtain USB configuration descriptor - error code " + std::to_string(libusbStatusCode)
-                    + " returned."
-            );
-        }
-
-        const auto configDescriptor = std::unique_ptr<::libusb_config_descriptor, decltype(&::libusb_free_config_descriptor)>(
-            configDescriptorPtr,
-            ::libusb_free_config_descriptor
-        );
-
-        libusbStatusCode = ::libusb_set_configuration(
+        const auto libusbStatusCode = ::libusb_set_configuration(
             this->libusbDeviceHandle.get(),
             configDescriptor->bConfigurationValue
         );
@@ -119,6 +102,26 @@ namespace Bloom::Usb
 
         ::libusb_free_device_list(devices, 0);
         return matchedDevices;
+    }
+
+    LibusbConfigDescriptor UsbDevice::getConfigDescriptor(std::optional<std::uint8_t> configurationIndex) {
+        ::libusb_config_descriptor* configDescriptor = {};
+
+        auto libusbStatusCode = configurationIndex.has_value()
+            ? ::libusb_get_config_descriptor(this->libusbDevice.get(), *configurationIndex, &configDescriptor)
+            : ::libusb_get_active_config_descriptor(this->libusbDevice.get(), &configDescriptor);
+
+        if (libusbStatusCode < 0) {
+            throw DeviceInitializationFailure(
+                "Failed to obtain USB configuration descriptor - error code " + std::to_string(libusbStatusCode)
+                    + " returned."
+            );
+        }
+
+        return LibusbConfigDescriptor(
+            configDescriptor,
+            ::libusb_free_config_descriptor
+        );
     }
 
     void UsbDevice::detachKernelDriverFromInterface(std::uint8_t interfaceNumber) {

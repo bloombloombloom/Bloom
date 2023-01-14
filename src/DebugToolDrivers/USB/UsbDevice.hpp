@@ -13,6 +13,7 @@ namespace Bloom::Usb
     using LibusbContext = std::unique_ptr<::libusb_context, decltype(&::libusb_exit)>;
     using LibusbDevice = std::unique_ptr<::libusb_device, decltype(&::libusb_unref_device)>;
     using LibusbDeviceHandle = std::unique_ptr<::libusb_device_handle, decltype(&::libusb_close)>;
+    using LibusbConfigDescriptor = std::unique_ptr<::libusb_config_descriptor, decltype(&::libusb_free_config_descriptor)>;
 
     class UsbDevice
     {
@@ -46,6 +47,8 @@ namespace Bloom::Usb
         LibusbDeviceHandle libusbDeviceHandle = LibusbDeviceHandle(nullptr, ::libusb_close);
 
         std::vector<LibusbDevice> findMatchingDevices(std::uint16_t vendorId, std::uint16_t productId);
+
+        LibusbConfigDescriptor getConfigDescriptor(std::optional<std::uint8_t> configurationIndex = std::nullopt);
 
         void detachKernelDriverFromInterface(std::uint8_t interfaceNumber);
 

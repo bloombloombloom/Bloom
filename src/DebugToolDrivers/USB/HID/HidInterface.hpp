@@ -7,7 +7,8 @@
 #include <optional>
 #include <chrono>
 
-#include "hidapi.hpp"
+#include <hidapi/hidapi.h>
+#include <hidapi/hidapi_libusb.h>
 
 namespace Bloom::Usb
 {
@@ -21,9 +22,11 @@ namespace Bloom::Usb
     {
     public:
         std::uint8_t interfaceNumber = 0;
+        std::uint16_t inputReportSize = 64;
 
         HidInterface(
             std::uint8_t interfaceNumber,
+            std::uint16_t inputReportSize,
             std::uint16_t vendorId,
             std::uint16_t productId
         );
@@ -71,12 +74,6 @@ namespace Bloom::Usb
         using HidDevice = std::unique_ptr<::hid_device, decltype(&::hid_close)>;
 
         HidDevice hidDevice = HidDevice(nullptr, ::hid_close);
-
-        /**
-         * All HID reports have a fixed report length. This means that every packet we send or receive to/from an HID
-         * endpoint must be equal (in size) to the report length.
-         */
-        std::size_t inputReportSize = 64;
 
         std::uint16_t vendorId = 0;
         std::uint16_t productId = 0;

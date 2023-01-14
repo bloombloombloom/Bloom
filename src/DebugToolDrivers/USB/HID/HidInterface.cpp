@@ -9,9 +9,15 @@ namespace Bloom::Usb
 {
     using namespace Bloom::Exceptions;
 
-    HidInterface::HidInterface(std::uint8_t interfaceNumber, std::uint16_t vendorId, std::uint16_t productId)
+    HidInterface::HidInterface(
+        std::uint8_t interfaceNumber,
+        std::uint16_t inputReportSize,
+        std::uint16_t vendorId,
+        std::uint16_t productId
+    )
         : interfaceNumber(interfaceNumber)
         , vendorId(vendorId)
+        , inputReportSize(inputReportSize)
         , productId(productId)
     {}
 
@@ -27,15 +33,6 @@ namespace Bloom::Usb
         }
 
         this->hidDevice.reset(hidDevice);
-
-        if (this->hidDevice->input_ep_max_packet_size < 1) {
-            throw DeviceInitializationFailure(
-                "Invalid max packet size for USB endpoint, on interface "
-                    + std::to_string(this->interfaceNumber)
-            );
-        }
-
-        this->inputReportSize = static_cast<std::size_t>(this->hidDevice->input_ep_max_packet_size);
     }
 
     void HidInterface::close() {

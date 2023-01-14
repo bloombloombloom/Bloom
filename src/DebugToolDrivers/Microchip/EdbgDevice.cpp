@@ -30,13 +30,18 @@ namespace Bloom::DebugToolDrivers
     void EdbgDevice::init() {
         UsbDevice::init();
 
-        auto cmsisHidInterface = Usb::HidInterface(this->cmsisHidInterfaceNumber, this->vendorId, this->productId);
-
-        this->detachKernelDriverFromInterface(cmsisHidInterface.interfaceNumber);
+        this->detachKernelDriverFromInterface(this->cmsisHidInterfaceNumber);
 
         if (this->configurationIndex.has_value()) {
             this->setConfiguration(this->configurationIndex.value());
         }
+
+        auto cmsisHidInterface = Usb::HidInterface(
+            this->cmsisHidInterfaceNumber,
+            this->getCmsisHidReportSize(),
+            this->vendorId,
+            this->productId
+        );
 
         cmsisHidInterface.init();
 
@@ -124,5 +129,34 @@ namespace Bloom::DebugToolDrivers
         }
 
         this->sessionStarted = false;
+    }
+
+    std::uint16_t EdbgDevice::getCmsisHidReportSize() {
+        const auto activeConfigDescriptor = this->getConfigDescriptor();
+
+        for (auto interfaceIndex = 0; interfaceIndex < activeConfigDescriptor->bNumInterfaces; ++interfaceIndex) {
+            const auto* interfaceDescriptor = (activeConfigDescriptor->interface + interfaceIndex)->altsetting;
+
+            if (interfaceDescriptor->bInterfaceNumber != this->cmsisHidInterfaceNumber) {
+                continue;
+            }
+
+            for (auto endpointIndex = 0; endpointIndex < activeConfigDescriptor->bNumInterfaces; ++endpointIndex) {
+                const auto* endpointDescriptor = (interfaceDescriptor->endpoint + endpointIndex);
+
+                if ((endpointDescriptor->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) != LIBUSB_ENDPOINT_IN) {
+                    // Not an IN endpoint
+                    continue;
+                }
+
+                return endpointDescriptor->wMaxPacketSize;
+            }
+        }
+
+        throw DeviceInitializationFailure(
+            "Failed to obtain CMSIS-DAP HID report size via endpoint descriptor - could not find IN endpoint for "
+            "selected configuration value (" + std::to_string(activeConfigDescriptor->bConfigurationValue)
+            + ") and interface number (" + std::to_string(this->cmsisHidInterfaceNumber) + ")"
+        );
     }
 }
