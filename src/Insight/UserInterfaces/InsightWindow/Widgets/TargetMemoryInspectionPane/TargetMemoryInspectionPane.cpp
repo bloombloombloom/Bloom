@@ -437,8 +437,8 @@ namespace Bloom::Widgets
         using Targets::TargetState;
         this->targetState = newState;
 
-        if (newState == TargetState::STOPPED && this->state.activated) {
-            if (this->settings.refreshOnTargetStop || !this->data.has_value()) {
+        if (newState == TargetState::STOPPED) {
+            if (this->state.activated && (this->settings.refreshOnTargetStop || !this->data.has_value())) {
                 this->refreshMemoryValues([this] {
                     this->hexViewerWidget->setDisabled(false);
                 });
