@@ -54,52 +54,35 @@ See source code in src/SignalHandler/ for more.
 ---
 
 ### Building Bloom from source
-To compile Bloom, the following dependencies must be resolved. The accompanying installation commands require support
-for apt-get.
 
-#### CMake version 3.22 or later:
-This can be installed via `sudo apt-get install cmake`, provided the appropriate version is available in your OS package
-repositories. Otherwise, you'll need to download CMake from the official website.
+> Bloom is typically distributed via binary packages, which can be downloaded via the
+> [downloads page](https://bloom.oscillate.io/download). These packages contain a prebuilt binary of Bloom, as well as
+> some of its dependencies (dynamically linked libraries). These dependencies are distributed with Bloom because they
+> work well with it. This is known because countless hours have been spent, testing them, on many Linux distros. If you
+> choose to use a binary package, you can be fairly confident that you won't run into any compatability issues.
+>
+> However, if you choose to build Bloom from source, it will use your system's shared libraries, which may be of a
+> different version to the one that was tested against. You will be more likely to face compatability issues.
+>
+> In an ideal world, using a shared library with a different minor version won't break anything. But this is not always
+> the reality.
 
-#### G++10 or later
-Bloom uses features that are only available in C++20. G++10 is (likely) the minimum version Bloom will compile with.
-Also, build-essential (`sudo apt-get install build-essential`).
+#### Dependencies
 
-#### libusb v1.0 & libhidapi
-`sudo apt-get install libusb-1.0-0-dev libhidapi-dev`
+To compile Bloom, the following dependencies must be resolved.
 
-#### yaml-cpp (version 0.7.0 or later)
-I had to build this from source as I'm on Ubuntu 20.04 LTS, which only hosts version 0.6.2 on the package repository.
-It seems that since Ubuntu 22.04 LTS/Debian 12, there is a package for version 0.7.0 (see
-https://packages.ubuntu.com/source/jammy/yaml-cpp and https://packages.debian.org/bookworm/libyaml-cpp-dev).
-`sudo apt-get install libyaml-cpp-dev` should work if your package repository hosts version 0.7.0 or later. If not, you
-can build the library from source by following the instructions at https://github.com/jbeder/yaml-cpp#readme. Be sure
-to configure the build with `-DYAML_BUILD_SHARED_LIBS=ON`, to build the shared object binaries.
+- CMake version 3.22 or later:
+- G++10 or later
+- libusb v1.0
+- libhidapi
+- yaml-cpp (version 0.7.0 or later)
+- libprocps
+- PHP CLI version 8 or later, with the xml extension (`php8.0-cli`, `php8.0-xml`)
+- Qt Version 6.2.4 or later (see note below)
 
-NOTE: If you build yaml-cpp from source, it's probably best to use the `master` branch. Don't bother checking out to
-the `yaml-cpp-0.7.0` tag, as there is an issue with the CMake configuration provided in that version. This issue results
-in link errors when building Bloom. In other words, use version 0.7.0 or later if you're installing yaml-cpp via a
-package, but if you're building from source, use the latest source from the `master` branch of the yaml-cpp repository.
-
-#### libprocps
-We use libprocps to access procfs. See [/src/Helpers/Process.cpp](./src/Helpers/Process.cpp) for more.
-
-`sudo apt-get install libprocps-dev`
-
-#### PHP version 8 or later, with the xml extension
-Some of Bloom's build scripts are written in PHP.
-
-```
-sudo apt-get install software-properties-common;
-sudo add-apt-repository ppa:ondrej/php;
-sudo apt-get install php8.0-cli php8.0-xml;
-```
-
-#### Qt Version 6.2.4 or later
-It's best to install this via the Qt installer: https://www.qt.io/download
+When installing Qt, it's best to install via the Qt installer: https://www.qt.io/download
 
 You may also need to install mesa-common-dev and libglu1-mesa-dev (Qt dependencies):
-`sudo apt install mesa-common-dev libglu1-mesa-dev`
 
 If you already have another version of Qt installed, you may need to temporarily point qtchooser to the right place
 (unless you can figure out another way to make cmake use the right Qt binaries (specifically, the moc)):
@@ -109,41 +92,28 @@ If you already have another version of Qt installed, you may need to temporarily
 sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
 ```
 
-NOTE: When building Bloom in release mode, the binary will load Qt plugins from `[BIN_PATH]/plugins` - these plugins are
-from Qt 6.2.4, but they may not work with later versions of Qt. If you're using a more recent version than 6.2.4, it
-would be best to rename/delete that `plugins` directory, so Bloom falls back to system plugins.
+### Example build
 
-#### Notes on compiling:
+```shell
+# Build Bloom in [SOME_BUILD_DIR]
+mkdir [SOME_BUILD_DIR];
+cd [SOME_BUILD_DIR];
 
-- If CMake fails to find the Qt packages, you may need to tell it where to look:
-`export CMAKE_PREFIX_PATH=/path/to/Qt-installation/6.2.4/gcc_64/`
-- Use the build directory build/cmake-build-debug, when generating the build system for the debug build as it's already
-  gitingored. (You'll have to create it)
-- Use the build directory build/cmake-build-release, when generating the build system for the release build as it's
-  already gitingored. (You'll have to create it)
-- To generate the build system with cmake (for debug build)
-  ```
-  # For release build, change cmake-build-debug to cmake-build-release and -DCMAKE_BUILD_TYPE=Debug to -DCMAKE_BUILD_TYPE=Release
-  # You may also need to change the path to the compiler
-  # You may also need to supply an absolute path to the source (cmake gets a bit weird about this, sometimes)
-  cd /path/to/Bloom/build/cmake-build-debug/;
-  cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=/usr/bin/g++-10 ../../;
-  ```
-- To build Bloom (debug):
-  ```
-  cd /path/to/Bloom;
-  cmake --build ./build/cmake-build-debug --target Bloom;
-  ```
-- To run the clean target:
-  ```
-  cd /path/to/Bloom;
-  cmake --build ./build/cmake-build-debug --target clean;
-  ```
-- To use Gammaray for GUI debugging, be sure to build Bloom with the debug configuration. Your local installation of
-  Gammaray will likely be incompatible with the distributed Qt binaries, which ld will use if you've built with the
-  release config. Building with the debug config will disable the RPATH and prevent Qt from loading any plugins from
-  the distribution directory. NOTE: Since upgrading to Qt6, Gammaray has not been of much use. It doesn't currently
-  support Qt6, but I've tried building the `work/qt6-support` branch from https://github.com/KDAB/GammaRay and it
-  *kind of* works. It crashes a lot.
+cmake [PATH_TO_BLOOM_SOURCE] -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=[PATH_TO_QT_INSTALLATION]/gcc_64/;
+cmake --build ./;
 
-More documentation to follow.
+# Install Bloom to /opt/bloom
+sudo cmake --install ./;
+
+# OR, install Bloom to [SOME_OTHER_INSTALLATION_DIR]]
+sudo cmake --install ./ --prefix [SOME_OTHER_INSTALLATION_DIR];
+```
+#### Other notes on building from source:
+
+- To specify the compiler path, use `-DCMAKE_CXX_COMPILER=...`:
+  ```
+  cmake [PATH_TO_BLOOM_SOURCE] -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=[PATH_TO_QT_INSTALLATION]/gcc_64/ -DCMAKE_CXX_COMPILER=/usr/bin/g++-10;
+  ```
+- If Qt's shared objects cannot be found when running Bloom, you can either:
+  1. Set `LD_LIBRARY_PATH` before running Bloom: `export LD_LIBRARY_PATH=[PATH_TO_QT_INSTALLATION]/gcc_64/lib;` OR:
+  2. Update Bloom's RUNPATH (with a tool like `patchelf`)
