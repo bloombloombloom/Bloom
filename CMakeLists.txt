@@ -9,8 +9,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(ENABLE_SANITIZERS off)
 
 set(CMAKE_AUTOMOC ON)
-set(AUTOGEN_BUILD_DIR ../build/)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 find_package(yaml-cpp 0.7.0 REQUIRED)
 find_package(Qt6Core REQUIRED)
@@ -22,15 +21,9 @@ find_package(Qt6UiTools REQUIRED)
 find_package(Qt6SvgWidgets REQUIRED)
 find_package(Qt6Network REQUIRED)
 
-# Bloom is distributed with some third-party dependencies (in the form of shared objects). These dependencies are
-# distributed with Bloom for various reasons (licensing, availability in some package managers, etc).
-#
-# The shared objects are located in bin/lib (relative to Bloom's installation directory). For this reason, we instruct
-# the dynamic linker to look for any of Bloom's shared object dependencies in that location first. We do this by
-# including '$ORIGIN/lib' in the RPATH of Bloom's binary executable.
 set(CMAKE_SKIP_BUILD_RPATH false)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
-set(CMAKE_INSTALL_RPATH "\$ORIGIN/lib:/usr/local/lib")
+set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib:/usr/local/lib")
 set(CMAKE_BUILD_RPATH ${CMAKE_INSTALL_RPATH})
 
 add_compile_definitions(BLOOM_VERSION="${CMAKE_PROJECT_VERSION}")
@@ -172,25 +165,7 @@ add_custom_command(
     ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/Avr8TargetDescriptionFiles.php
     COMMAND echo 'Processing AVR target description files.'
     COMMAND
-    php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/Avr8TargetDescriptionFiles.php
-)
-
-# Copy resources/fonts into build/resources/Fonts
-add_custom_command(
-    TARGET Bloom
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts
-    ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/Fonts
-)
-
-# Copy resources/udevrules/99-bloom.rules to build/resources/UDevRules/99-bloom.rules
-add_custom_command(
-    TARGET Bloom
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources/udevrules/99-bloom.rules
-    ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/UDevRules/99-bloom.rules
+    php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/Avr8TargetDescriptionFiles.php ${CMAKE_BINARY_DIR}
 )
 
 include(./cmake/Installing.cmake)

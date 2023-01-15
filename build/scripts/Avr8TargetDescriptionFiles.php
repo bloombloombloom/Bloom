@@ -9,11 +9,17 @@
 
 namespace Bloom\BuildScripts;
 
+$buildPath = $argv[1] ?? null;
+if (empty($buildPath)) {
+    print "Missing build path. Aborting\n";
+    die;
+}
+
 require_once __DIR__ . "/TargetDescriptionFiles/Factory.php";
 
-CONST AVR_TDF_DEST_FILE_PATH = __DIR__ . "/../resources/TargetDescriptionFiles/AVR";
-CONST AVR_TDF_DEST_RELATIVE_FILE_PATH = "../resources/TargetDescriptionFiles/AVR";
-CONST AVR_TDF_MAPPING_FILE_PATH = AVR_TDF_DEST_FILE_PATH . "/Mapping.json";
+define("AVR_TDF_DEST_FILE_PATH", $buildPath . "/resources/TargetDescriptionFiles/AVR");
+define("AVR_TDF_DEST_RELATIVE_FILE_PATH", "../resources/TargetDescriptionFiles/AVR");
+define("AVR_TDF_MAPPING_FILE_PATH", AVR_TDF_DEST_FILE_PATH . "/Mapping.json");
 
 // Empty destination directory
 if (file_exists(AVR_TDF_DEST_FILE_PATH)) {
@@ -43,19 +49,19 @@ foreach ($avrTdfs as $avrTdf) {
     $id = strtolower($strippedTargetName);
 
     if (in_array($id, $processedTargetIds)) {
-        print "\033[31m" . PHP_EOL;
-        print "FATAL ERROR: duplicate AVR8 target ID detected: " . $id . PHP_EOL . PHP_EOL
+        print "\033[31m" . "\n";
+        print "FATAL ERROR: duplicate AVR8 target ID detected: " . $id . "\n\n"
             . "TDF Path: " . realpath($avrTdf->filePath);
-        print "\033[0m" . PHP_EOL;
+        print "\033[0m" . "\n";
         exit(1);
     }
 
     if (!empty(($validationFailures = $avrTdf->validate()))) {
-        print "\033[31m" . PHP_EOL;
-        print "FATAL ERROR: AVR8 TDF failed validation - failure reasons:" . PHP_EOL
-            . implode(PHP_EOL, $validationFailures) . PHP_EOL . PHP_EOL . "TDF Path: "
+        print "\033[31m" . "\n";
+        print "FATAL ERROR: AVR8 TDF failed validation - failure reasons:" . "\n"
+            . implode("\n", $validationFailures) . "\n\n" . "TDF Path: "
             . realpath($avrTdf->filePath);
-        print "\033[0m" . PHP_EOL;
+        print "\033[0m" . "\n";
         exit(1);
     }
 
