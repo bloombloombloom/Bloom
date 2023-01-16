@@ -6,7 +6,7 @@ endif()
 
 install(
     TARGETS Bloom
-    DESTINATION "bin"
+    DESTINATION "./bin"
     PERMISSIONS
         OWNER_EXECUTE OWNER_READ OWNER_WRITE
         GROUP_EXECUTE GROUP_READ
@@ -15,7 +15,7 @@ install(
 
 install(
     DIRECTORY ${CMAKE_BINARY_DIR}/resources
-    DESTINATION "."
+    DESTINATION "./"
     DIRECTORY_PERMISSIONS
         OWNER_EXECUTE OWNER_READ OWNER_WRITE
         GROUP_EXECUTE GROUP_READ
@@ -28,7 +28,7 @@ install(
 
 install(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/distributed/fonts
-    DESTINATION "resources"
+    DESTINATION "./resources"
     DIRECTORY_PERMISSIONS
         OWNER_EXECUTE OWNER_READ OWNER_WRITE
         GROUP_EXECUTE GROUP_READ
