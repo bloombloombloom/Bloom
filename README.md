@@ -74,7 +74,7 @@ To compile Bloom, the following dependencies must be resolved.
 - CMake version 3.22 or later:
 - G++10 or later
 - libusb v1.0
-- libhidapi
+- libhidapi (0.11.2 or later)
 - yaml-cpp (version 0.7.0 or later)
 - libprocps
 - PHP CLI version 8 or later, with the xml extension (`php8.0-cli`, `php8.0-xml`)
@@ -117,3 +117,5 @@ sudo cmake --install ./ --prefix [SOME_OTHER_INSTALLATION_DIR];
 - If Qt's shared objects cannot be found when running Bloom, you can either:
   1. Set `LD_LIBRARY_PATH` before running Bloom: `export LD_LIBRARY_PATH=[PATH_TO_QT_INSTALLATION]/gcc_64/lib;` OR:
   2. Update Bloom's RUNPATH (with a tool like `patchelf`)
+- Once you've installed Bloom, you'll need to create a symlink to Bloom's binary, in `/usr/bin/`, to run `bloom` without
+  having to supply the full path.
