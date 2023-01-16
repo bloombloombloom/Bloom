@@ -27,7 +27,6 @@ cp -R @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/fonts ${BLOOM_INSTALLATION_DI
 echo "Copying distributed binaries...";
 cp -R @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/lib ${BLOOM_INSTALLATION_DIR}/;
 cp -R @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/plugins ${BLOOM_INSTALLATION_DIR}/;
-cp -R @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/platforms ${BLOOM_INSTALLATION_DIR}/;
 
 echo "Copying udev rules...";
 cp -R @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/udevrules/99-bloom.rules ${RELEASE_DIR}/usr/lib/udev/rules.d/;
@@ -36,7 +35,6 @@ echo "Adjusting permissions...";
 chmod u=rwx,g=rx,o=rx -R ${BLOOM_INSTALLATION_DIR}/bin/;
 chmod u=rwx,g=rx,o=rx -R ${BLOOM_INSTALLATION_DIR}/lib/;
 chmod u=rwx,g=rx,o=rx -R ${BLOOM_INSTALLATION_DIR}/plugins/;
-chmod u=rwx,g=rx,o=rx -R ${BLOOM_INSTALLATION_DIR}/platforms/;
 
 chmod u=rwX,g=rX,o=rX -R ${BLOOM_INSTALLATION_DIR}/resources/;
 
