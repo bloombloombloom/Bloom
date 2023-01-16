@@ -1,56 +1,30 @@
-# This file contains the CPack configuration for packaging Bloom. Bloom is currently packaged in Debian, RPM and
-# PKGBUILD packages. Because CPack doesn't support PKGBUILD packages, we have to build those separately. But we still
-# use CMake & CPack configuration to generate our PKGBUILD file. See below for more.
-#
-# To package Bloom, simply run CPack & makepkg from the CMake build directory:
-#
-# $ cd build/cmake-build-release/
-# $ cpack
-# $ makepkg
-#
-# CPack's -G option can be used to specify a particular generator:
-# $ cpack -G DEB
-#
-# If no generator has been specified, CPack will generate packages for all configured generators (see CPACK_GENERATOR
-# below).
-#
-# The makepkg command builds the PKGBUILD package. It uses the generated PKGBUILD file, which is generated from
-# resources/packaging/PKGBUILD.template.in. See the configure_file() invocations below.
-#
-# NOTE: The above commands assume Bloom has been built in 'release' mode, and the install target has been run.
+set(BLOOM_PACKAGE_NAME "Bloom")
+set(BLOOM_PACKAGE_FILE_NAME "Bloom-${CMAKE_PROJECT_VERSION}-Linux")
+set(BLOOM_PACKAGE_DESCRIPTION "Debugger for AVR-based embedded systems")
+set(BLOOM_PACKAGE_CONTACT "Nav Mohammed <support@bloom.oscillate.io>")
+set(BLOOM_PACKAGE_RELEASE_DIR "${CMAKE_BINARY_DIR}/packaging/tmp/release")
+
+string(TOLOWER ${BLOOM_PACKAGE_NAME} BLOOM_PACKAGE_NAME_LOWER)
+
+file(MAKE_DIRECTORY "${BLOOM_PACKAGE_RELEASE_DIR}")
 
 configure_file(
-    "${PROJECT_SOURCE_DIR}/cmake/PackageGeneratorConfig.cmake"
-    "${PROJECT_BINARY_DIR}/PackageGeneratorConfig.cmake"
-)
-
-set(CPACK_GENERATOR "DEB;RPM")
-set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/PackageGeneratorConfig.cmake")
-
-set(CPACK_PACKAGE_NAME "Bloom")
-string(TOLOWER ${CPACK_PACKAGE_NAME} CPACK_PACKAGE_NAME_LOWER)
-
-set(
-    CPACK_PACKAGE_DESCRIPTION_SUMMARY
-    "Debugger for AVR-based embedded systems"
-)
-
-set(CPACK_PACKAGE_CONTACT "Nav Mohammed <support@bloom.oscillate.io>")
-
-set(CPACK_PACKAGE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/bloom")
-
-# Generate the PKGBUILD and bloom.install file in the CMake build directory.
-configure_file(
-    "${PROJECT_SOURCE_DIR}/resources/packaging/PKGBUILD.template.in"
-    "${PROJECT_BINARY_DIR}/PKGBUILD"
+    "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/deb/package-deb.sh.in"
+    "${CMAKE_BINARY_DIR}/packaging/package-deb.sh"
+    FILE_PERMISSIONS
+        OWNER_EXECUTE OWNER_READ OWNER_WRITE
+        GROUP_READ
+        WORLD_READ
     @ONLY
 )
 
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/tmp/deb")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/tmp/rpm")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/tmp/pkgbuild")
+
+# Generate the relevant configuration files for our DEB, RPM and PKGBUILD packages
 configure_file(
-    "${PROJECT_SOURCE_DIR}/resources/packaging/bloom.install.template.in"
-    "${PROJECT_BINARY_DIR}/bloom.install"
+    "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/deb/control.in"
+    "${CMAKE_BINARY_DIR}/packaging/tmp/deb/DEBIAN/control"
     @ONLY
 )
-
-include(CPack)
