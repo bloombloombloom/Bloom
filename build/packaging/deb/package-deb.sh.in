@@ -1,8 +1,9 @@
 #!/bin/bash
 
-RELEASE_DIR=@CMAKE_BINARY_DIR@/packaging/tmp/deb;
+PLAYGROUND_DIR=@CMAKE_BINARY_DIR@/packaging/deb/playground;
+DEBIAN_DIR=${PLAYGROUND_DIR}/DEBIAN
 BLOOM_INSTALLATION_PREFIX=/opt/bloom/
-BLOOM_INSTALLATION_DIR=${RELEASE_DIR}/${BLOOM_INSTALLATION_PREFIX}
+BLOOM_INSTALLATION_DIR=${PLAYGROUND_DIR}/${BLOOM_INSTALLATION_PREFIX}
 BLOOM_PACKAGE_PATH=@CMAKE_BINARY_DIR@/packaging/@BLOOM_PACKAGE_FILE_NAME@.deb
 
 if [ ! -f @CMAKE_BINARY_DIR@/bin/bloom ]; then
@@ -10,26 +11,33 @@ if [ ! -f @CMAKE_BINARY_DIR@/bin/bloom ]; then
     exit 1;
 fi
 
-echo "Preparing release directory...";
+echo "Preparing playground directory...";
+rm -fr ${PLAYGROUND_DIR};
+
+mkdir -p ${PLAYGROUND_DIR};
+mkdir -p ${DEBIAN_DIR};
 mkdir -p ${BLOOM_INSTALLATION_DIR};
 mkdir -p ${BLOOM_INSTALLATION_DIR}/bin;
 
-mkdir -p ${RELEASE_DIR}/usr/lib/udev/rules.d/;
-mkdir -p ${RELEASE_DIR}/usr/bin/;
+mkdir -p ${PLAYGROUND_DIR}/usr/lib/udev/rules.d/;
+mkdir -p ${PLAYGROUND_DIR}/usr/bin/;
+
+echo "Copying Debian control file...";
+cp -a @CMAKE_BINARY_DIR@/packaging/deb/control ${DEBIAN_DIR}/;
 
 echo "Copying Bloom binary...";
-cp @CMAKE_BINARY_DIR@/bin/bloom ${BLOOM_INSTALLATION_DIR}/bin/;
+cp -a @CMAKE_BINARY_DIR@/bin/bloom ${BLOOM_INSTALLATION_DIR}/bin/;
 
 echo "Copying resources...";
-cp -R @CMAKE_BINARY_DIR@/resources ${BLOOM_INSTALLATION_DIR}/;
-cp -R @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/fonts ${BLOOM_INSTALLATION_DIR}/resources/;
+cp -a @CMAKE_BINARY_DIR@/resources ${BLOOM_INSTALLATION_DIR}/;
+cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/fonts ${BLOOM_INSTALLATION_DIR}/resources/;
 
 echo "Copying distributed binaries...";
-cp -R @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/lib ${BLOOM_INSTALLATION_DIR}/;
-cp -R @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/plugins ${BLOOM_INSTALLATION_DIR}/;
+cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/lib ${BLOOM_INSTALLATION_DIR}/;
+cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/plugins ${BLOOM_INSTALLATION_DIR}/;
 
 echo "Copying udev rules...";
-cp -R @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/udevrules/99-bloom.rules ${RELEASE_DIR}/usr/lib/udev/rules.d/;
+cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/udevrules/99-bloom.rules ${PLAYGROUND_DIR}/usr/lib/udev/rules.d/;
 
 echo "Adjusting permissions...";
 chmod u=rwx,g=rx,o=rx -R ${BLOOM_INSTALLATION_DIR}/bin/;
@@ -38,10 +46,10 @@ chmod u=rwx,g=rx,o=rx -R ${BLOOM_INSTALLATION_DIR}/plugins/;
 
 chmod u=rwX,g=rX,o=rX -R ${BLOOM_INSTALLATION_DIR}/resources/;
 
-chmod u=rw,g=r,o=r ${RELEASE_DIR}/usr/lib/udev/rules.d/99-bloom.rules;
+chmod u=rw,g=r,o=r ${PLAYGROUND_DIR}/usr/lib/udev/rules.d/99-bloom.rules;
 
 echo "Creating symbolic link for Bloom binary..."
-ln -s -f ${BLOOM_INSTALLATION_PREFIX}./bin/bloom ${RELEASE_DIR}/usr/bin/;
+ln -s -f ${BLOOM_INSTALLATION_PREFIX}./bin/bloom ${PLAYGROUND_DIR}/usr/bin/;
 
 echo "Building Debian package...";
-dpkg-deb --build ${RELEASE_DIR} ${BLOOM_PACKAGE_PATH};
+dpkg-deb --build ${PLAYGROUND_DIR} ${BLOOM_PACKAGE_PATH};

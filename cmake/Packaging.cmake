@@ -1,18 +1,17 @@
 set(BLOOM_PACKAGE_NAME "Bloom")
-set(BLOOM_PACKAGE_FILE_NAME "Bloom-${CMAKE_PROJECT_VERSION}-Linux")
+set(BLOOM_PACKAGE_FILE_NAME "Bloom-${CMAKE_PROJECT_VERSION}-Linux-x86_64")
 set(BLOOM_PACKAGE_DESCRIPTION "Debugger for AVR-based embedded systems")
 set(BLOOM_PACKAGE_CONTACT "Nav Mohammed <support@bloom.oscillate.io>")
 
 string(TOLOWER ${BLOOM_PACKAGE_NAME} BLOOM_PACKAGE_NAME_LOWER)
-
-file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/tmp/deb")
-file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/tmp/rpm")
-file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/tmp/pkgbuild")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/pkgbuild")
 
 # Generate the DEB control file and packaging script
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/deb")
+
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/deb/control.in"
-    "${CMAKE_BINARY_DIR}/packaging/tmp/deb/DEBIAN/control"
+    "${CMAKE_BINARY_DIR}/packaging/deb/control"
     @ONLY
 )
 
