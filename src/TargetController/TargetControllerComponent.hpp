@@ -235,13 +235,6 @@ namespace Bloom::TargetController
         void registerCommandResponse(Commands::CommandIdType commandId, std::unique_ptr<Responses::Response> response);
 
         /**
-         * Installs Bloom's udev rules on user's machine. Rules are copied from build/Distribution/Resources/UdevRules
-         * to /etc/udev/rules.d/. This method will report an error if Bloom isn't running as root (as root privileges
-         * are required for writing to files in /etc/udev).
-         */
-        static void checkUdevRules();
-
-        /**
          * Exit point - must be called before the TargetController thread is terminated.
          *
          * Handles releasing the hardware among other clean-up related things.

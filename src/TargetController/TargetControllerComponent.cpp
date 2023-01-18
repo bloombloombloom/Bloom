@@ -1,13 +1,11 @@
 #include "TargetControllerComponent.hpp"
 
-#include <thread>
 #include <filesystem>
 #include <typeindex>
 #include <algorithm>
 
 #include "Responses/Error.hpp"
 
-#include "src/Helpers/Paths.hpp"
 #include "src/Helpers/Process.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -168,9 +166,6 @@ namespace Bloom::TargetController
         this->blockAllSignals();
         this->eventListener->setInterruptEventNotifier(&TargetControllerComponent::notifier);
         EventManager::registerListener(this->eventListener);
-
-        // Install Bloom's udev rules if not already installed
-        TargetControllerComponent::checkUdevRules();
 
         // Register command handlers
         this->registerCommandHandler<GetState>(
@@ -442,37 +437,6 @@ namespace Bloom::TargetController
             std::pair(commandId, std::move(response))
         );
         TargetControllerComponent::responsesByCommandIdCv.notify_all();
-    }
-
-    void TargetControllerComponent::checkUdevRules() {
-        auto bloomRulesPath = std::string("/etc/udev/rules.d/99-bloom.rules");
-        auto latestBloomRulesPath = Paths::resourcesDirPath() + "/UDevRules/99-bloom.rules";
-
-        if (!std::filesystem::exists(bloomRulesPath)) {
-            Logger::warning("Bloom udev rules missing - attempting installation");
-
-            // We can only install them if we're running as root
-            if (!Process::isRunningAsRoot()) {
-                Logger::error("Bloom udev rules missing - cannot install udev rules without root privileges.\n"
-                    "Running Bloom once with root privileges will allow it to automatically install the udev rules. "
-                    "Alternatively, instructions on manually installing the udev rules can be found "
-                    "here: " + Paths::homeDomainName() + "/docs/getting-started\nBloom may fail to connect to some "
-                    "debug tools until this is resolved.");
-                return;
-            }
-
-            if (!std::filesystem::exists(latestBloomRulesPath)) {
-                // This shouldn't happen, but it can if someone has been messing with the installation files
-                Logger::error(
-                    "Unable to install Bloom udev rules - \"" + latestBloomRulesPath + "\" does not exist."
-                );
-                return;
-            }
-
-            std::filesystem::copy(latestBloomRulesPath, bloomRulesPath);
-            Logger::warning("Bloom udev rules installed - a reconnect of the debug tool may be required "
-                "before the new udev rules come into effect.");
-        }
     }
 
     void TargetControllerComponent::shutdown() {
