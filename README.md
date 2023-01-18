@@ -119,3 +119,5 @@ sudo cmake --install ./ --prefix [SOME_OTHER_INSTALLATION_DIR];
   2. Update Bloom's RUNPATH (with a tool like `patchelf`)
 - Once you've installed Bloom, you'll need to create a symlink to Bloom's binary, in `/usr/bin/`, to run `bloom` without
   having to supply the full path: `sudo ln -s /opt/bloom/bin/bloom /usr/bin/;`
+- If you're installing on Ubuntu 20.04 or older, you may need to move the installed udev rules, as they're expected
+  to reside in `/lib/udev/rules.d` on those systems. Move them via: `sudo mv /usr/lib/udev/rules.d/99-bloom.rules /lib/udev/rules.d/;`
