@@ -125,46 +125,46 @@ namespace Bloom
 
         // Load Ubuntu fonts
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-B.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-B.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-BI.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-BI.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-C.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-C.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-L.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-L.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-LI.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-LI.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-M.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-M.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-MI.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-MI.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/UbuntuMono-B.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/UbuntuMono-B.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/UbuntuMono-BI.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/UbuntuMono-BI.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/UbuntuMono-R.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/UbuntuMono-R.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/UbuntuMono-RI.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/UbuntuMono-RI.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-R.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-R.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-RI.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-RI.ttf")
         );
         QFontDatabase::addApplicationFont(
-            QString::fromStdString(Paths::resourcesDirPath() + "/Fonts/Ubuntu/Ubuntu-Th.ttf")
+            QString::fromStdString(Paths::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-Th.ttf")
         );
 
         /*
