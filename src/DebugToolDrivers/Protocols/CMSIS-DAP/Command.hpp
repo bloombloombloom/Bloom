@@ -72,11 +72,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
         }
 
         /**
-         * Converts instance of a CMSIS Command to a vector of unsigned char (buffer), for sending
-         * to the debug tool.
+         * Generates the raw CMSIS-DAP command, for sending to the CMSIS-DAP-enabled device.
          *
          * @return
          */
-        explicit virtual operator std::vector<unsigned char>() const;
+        std::vector<unsigned char> rawCommand() const;
     };
 }

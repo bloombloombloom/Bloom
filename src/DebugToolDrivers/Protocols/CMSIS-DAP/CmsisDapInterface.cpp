@@ -25,6 +25,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
             this->lastCommandSentTimeStamp = now;
         }
 
-        this->getUsbHidInterface().write(static_cast<std::vector<unsigned char>>(cmsisDapCommand));
+        this->getUsbHidInterface().write(cmsisDapCommand.rawCommand());
     }
 }
