@@ -43,3 +43,22 @@ configure_file(
     WORLD_READ
     @ONLY
 )
+
+# Generate the PKGBUILD file and packaging script
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/pkgbuild")
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/pkgbuild/PKGBUILD.in"
+    "${CMAKE_BINARY_DIR}/packaging/pkgbuild/PKGBUILD"
+    @ONLY
+)
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/pkgbuild/package-pkgbuild.sh.in"
+    "${CMAKE_BINARY_DIR}/packaging/package-pkgbuild.sh"
+    FILE_PERMISSIONS
+    OWNER_EXECUTE OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+    @ONLY
+)
