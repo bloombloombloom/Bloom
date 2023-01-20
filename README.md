@@ -64,7 +64,7 @@ See source code in src/SignalHandler/ for more.
 > However, if you choose to build Bloom from source, it will use your system's shared libraries, which may be of a
 > different version to the one that was tested against. You will be more likely to face compatability issues.
 >
-> In an ideal world, using a shared library with a different minor version won't break anything. But this is not always
+> In an ideal world, using a shared library with a different minor version won't break anything, but this is not always
 > the reality.
 
 #### Dependencies
