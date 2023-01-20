@@ -71,12 +71,15 @@ See source code in src/SignalHandler/ for more.
 
 To compile Bloom, the following dependencies must be resolved:
 
+The accompanying package names are from the Debian (APT) package repositories - package names will vary across package 
+repositories.
+
 - CMake version 3.22 or later:
 - G++10 or later
-- libusb v1.0
-- libhidapi (0.11.2 or later)
-- yaml-cpp (version 0.7.0 or later)
-- libprocps
+- libusb v1.0 (`libusb-1.0-0-dev`)
+- libhidapi (0.11.2 or later) (`libhidapi-dev`)
+- yaml-cpp (version 0.7.0 or later) (`libyaml-cpp-dev`)
+- libprocps (`libprocps-dev`)
 - PHP CLI version 8 or later, with the xml extension (`php8.0-cli`, `php8.0-xml`)
 - Qt Version 6.2.4 or later (see note below)
 
