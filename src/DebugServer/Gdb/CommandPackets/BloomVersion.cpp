@@ -6,8 +6,11 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
 #include "src/Application.hpp"
+
 #include "src/Helpers/Paths.hpp"
+#include "src/Helpers/String.hpp"
 #include "src/Logger/Logger.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
@@ -26,7 +29,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     void BloomVersion::handle(DebugSession& debugSession, TargetControllerConsole&) {
         Logger::debug("Handling BloomVersion packet");
 
-        debugSession.connection.writePacket(ResponsePacket(Packet::toHex(
+        debugSession.connection.writePacket(ResponsePacket(String::toHex(
             std::string(
                 "Bloom v" + Application::VERSION.toString() + "\n"
                     + Paths::homeDomainName() + "\n"

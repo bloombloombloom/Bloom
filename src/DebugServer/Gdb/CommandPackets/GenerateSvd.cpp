@@ -7,11 +7,13 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
-
 #include "src/Application.hpp"
+
 #include "src/Helpers/Paths.hpp"
-#include "src/Exceptions/Exception.hpp"
+#include "src/Helpers/String.hpp"
 #include "src/Logger/Logger.hpp"
+
+#include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
 {
@@ -40,7 +42,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             );
 
             if (this->sendOutput) {
-                debugSession.connection.writePacket(ResponsePacket(Packet::toHex(svdXml.toString().toStdString())));
+                debugSession.connection.writePacket(ResponsePacket(String::toHex(svdXml.toString().toStdString())));
                 return;
             }
 
@@ -56,7 +58,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             outputFile.write(svdXml.toByteArray());
             outputFile.close();
 
-            debugSession.connection.writePacket(ResponsePacket(Packet::toHex(
+            debugSession.connection.writePacket(ResponsePacket(String::toHex(
                 "SVD output saved to " + svdOutputFilePath + "\n"
             )));
 

@@ -4,7 +4,9 @@
 
 #include "src/Targets/TargetRegister.hpp"
 
+#include "src/Helpers/String.hpp"
 #include "src/Logger/Logger.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
@@ -87,7 +89,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             }
 
             debugSession.connection.writePacket(
-                ResponsePacket(Packet::toHex(registers))
+                ResponsePacket(String::toHex(registers))
             );
 
         } catch (const Exception& exception) {

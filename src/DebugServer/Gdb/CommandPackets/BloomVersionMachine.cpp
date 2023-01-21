@@ -7,7 +7,10 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
 #include "src/Application.hpp"
+
+#include "src/Helpers/String.hpp"
 #include "src/Logger/Logger.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
@@ -25,7 +28,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     void BloomVersionMachine::handle(DebugSession& debugSession, TargetControllerConsole&) {
         Logger::debug("Handling BloomVersionMachine packet");
 
-        debugSession.connection.writePacket(ResponsePacket(Packet::toHex(
+        debugSession.connection.writePacket(ResponsePacket(String::toHex(
             QJsonDocument(QJsonObject({
                 {"version", QString::fromStdString(Application::VERSION.toString())},
                 {"components", QJsonObject({

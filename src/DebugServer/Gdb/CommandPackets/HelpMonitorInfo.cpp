@@ -7,7 +7,9 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
 #include "src/Helpers/Paths.hpp"
+#include "src/Helpers/String.hpp"
 #include "src/Logger/Logger.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::DebugServer::Gdb::CommandPackets
@@ -45,7 +47,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             }
 
             debugSession.connection.writePacket(
-                ResponsePacket(Packet::toHex("\n" + QTextStream(&helpFile).readAll().toUtf8().toStdString() + "\n"))
+                ResponsePacket(String::toHex("\n" + QTextStream(&helpFile).readAll().toUtf8().toStdString() + "\n"))
             );
 
         } catch (const Exception& exception) {
