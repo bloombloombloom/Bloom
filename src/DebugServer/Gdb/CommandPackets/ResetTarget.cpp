@@ -3,7 +3,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -29,7 +29,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             targetControllerService.resetTarget();
             Logger::info("Target reset complete");
 
-            debugSession.connection.writePacket(ResponsePacket(String::toHex(
+            debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
                 "Target reset complete - use the 'continue' command to begin execution.\n"
             )));
 

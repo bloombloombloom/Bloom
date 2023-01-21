@@ -439,40 +439,6 @@ namespace Bloom::TargetController
         TargetControllerComponent::responsesByCommandIdCv.notify_all();
     }
 
-<<<<<<< HEAD
-=======
-    void TargetControllerComponent::checkUdevRules() {
-        auto bloomRulesPath = std::string("/etc/udev/rules.d/99-bloom.rules");
-        auto latestBloomRulesPath = Services::PathService::resourcesDirPath() + "/UDevRules/99-bloom.rules";
-
-        if (!std::filesystem::exists(bloomRulesPath)) {
-            Logger::warning("Bloom udev rules missing - attempting installation");
-
-            // We can only install them if we're running as root
-            if (!Services::ProcessService::isRunningAsRoot()) {
-                Logger::error("Bloom udev rules missing - cannot install udev rules without root privileges.\n"
-                    "Running Bloom once with root privileges will allow it to automatically install the udev rules. "
-                    "Alternatively, instructions on manually installing the udev rules can be found "
-                    "here: " + Services::PathService::homeDomainName() + "/docs/getting-started\nBloom may fail to connect to some "
-                    "debug tools until this is resolved.");
-                return;
-            }
-
-            if (!std::filesystem::exists(latestBloomRulesPath)) {
-                // This shouldn't happen, but it can if someone has been messing with the installation files
-                Logger::error(
-                    "Unable to install Bloom udev rules - \"" + latestBloomRulesPath + "\" does not exist."
-                );
-                return;
-            }
-
-            std::filesystem::copy(latestBloomRulesPath, bloomRulesPath);
-            Logger::warning("Bloom udev rules installed - a reconnect of the debug tool may be required "
-                "before the new udev rules come into effect.");
-        }
-    }
-
->>>>>>> b5402709 (Moved Process helper functions to service class)
     void TargetControllerComponent::shutdown() {
         if (this->getThreadState() == ThreadState::STOPPED) {
             return;

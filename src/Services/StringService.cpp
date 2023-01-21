@@ -29,13 +29,13 @@ namespace Bloom::Services
         });
     }
 
-    std::string String::toHex(unsigned char value) {
+    std::string StringService::toHex(unsigned char value) {
         auto stream = std::stringstream();
         stream << std::hex << std::setfill('0') << std::setw(2) << static_cast<unsigned int>(value);
         return stream.str();
     }
 
-    std::string String::toHex(const std::vector<unsigned char>& data) {
+    std::string StringService::toHex(const std::vector<unsigned char>& data) {
         auto stream = std::stringstream();
         stream << std::hex << std::setfill('0');
 
@@ -46,7 +46,7 @@ namespace Bloom::Services
         return stream.str();
     }
 
-    std::string String::toHex(const std::string& data) {
+    std::string StringService::toHex(const std::string& data) {
         std::stringstream stream;
         stream << std::hex << std::setfill('0');
 

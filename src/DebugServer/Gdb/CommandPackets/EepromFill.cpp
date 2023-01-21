@@ -6,7 +6,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/DebugServer/Gdb/Exceptions/InvalidCommandOption.hpp"
@@ -87,7 +87,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                 );
             }
 
-            const auto hexValues = String::toHex(data);
+            const auto hexValues = Services::StringService::toHex(data);
             Logger::debug("Filling EEPROM with values: " + hexValues);
 
             targetControllerService.writeMemory(
@@ -96,13 +96,15 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                 std::move(data)
             );
 
-            debugSession.connection.writePacket(ResponsePacket(String::toHex(
+            debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
                 "Filled " + std::to_string(eepromSize) + " bytes of EEPROM, with values: " + hexValues + "\n"
             )));
 
         } catch (const InvalidCommandOption& exception) {
             Logger::error(exception.getMessage());
-            debugSession.connection.writePacket(ResponsePacket(String::toHex(exception.getMessage() + "\n")));
+            debugSession.connection.writePacket(
+                ResponsePacket(Services::StringService::toHex(exception.getMessage() + "\n"))
+            );
 
         } catch (const Exception& exception) {
             Logger::error("Failed to fill EEPROM - " + exception.getMessage());

@@ -3,7 +3,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -148,7 +148,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 memoryBuffer.insert(memoryBuffer.end(), (this->bytes - bytesToRead), 0x00);
             }
 
-            debugSession.connection.writePacket(ResponsePacket(String::toHex(memoryBuffer)));
+            debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(memoryBuffer)));
 
         } catch (const Exception& exception) {
             Logger::error("Failed to read memory from target - " + exception.getMessage());

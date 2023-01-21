@@ -10,7 +10,7 @@
 #include "src/Application.hpp"
 
 #include "src/Services/PathService.hpp"
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -42,7 +42,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             );
 
             if (this->sendOutput) {
-                debugSession.connection.writePacket(ResponsePacket(String::toHex(svdXml.toString().toStdString())));
+                debugSession.connection.writePacket(
+                    ResponsePacket(Services::StringService::toHex(svdXml.toString().toStdString()))
+                );
                 return;
             }
 
@@ -58,7 +60,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             outputFile.write(svdXml.toByteArray());
             outputFile.close();
 
-            debugSession.connection.writePacket(ResponsePacket(String::toHex(
+            debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
                 "SVD output saved to " + svdOutputFilePath + "\n"
             )));
 

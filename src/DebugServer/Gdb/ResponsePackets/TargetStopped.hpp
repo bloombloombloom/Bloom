@@ -7,7 +7,7 @@
 #include "src/DebugServer/Gdb/Signal.hpp"
 #include "src/DebugServer/Gdb/StopReason.hpp"
 
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 
 namespace Bloom::DebugServer::Gdb::ResponsePackets
 {
@@ -25,7 +25,7 @@ namespace Bloom::DebugServer::Gdb::ResponsePackets
             : signal(signal)
             , stopReason(stopReason)
         {
-            std::string packetData = "T" + String::toHex(std::vector({static_cast<unsigned char>(this->signal)}));
+            std::string packetData = "T" + Services::StringService::toHex(static_cast<unsigned char>(this->signal));
 
             if (this->stopReason.has_value()) {
                 static const auto stopReasonMapping = getStopReasonToNameMapping();

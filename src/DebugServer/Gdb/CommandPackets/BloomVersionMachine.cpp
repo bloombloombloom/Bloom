@@ -8,7 +8,7 @@
 
 #include "src/Application.hpp"
 
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -28,7 +28,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     void BloomVersionMachine::handle(DebugSession& debugSession, TargetControllerService&) {
         Logger::debug("Handling BloomVersionMachine packet");
 
-        debugSession.connection.writePacket(ResponsePacket(String::toHex(
+        debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
             QJsonDocument(QJsonObject({
                 {"version", QString::fromStdString(Application::VERSION.toString())},
                 {"components", QJsonObject({

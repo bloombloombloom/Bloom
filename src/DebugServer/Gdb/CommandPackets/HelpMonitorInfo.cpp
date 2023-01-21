@@ -7,7 +7,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
 #include "src/Services/PathService.hpp"
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -41,13 +41,15 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
             if (!helpFile.open(QIODevice::ReadOnly)) {
                 throw Exception(
-                    "Failed to open GDB monitor info help file - please report this issue at " + Services::PathService::homeDomainName()
-                        + "/report-issue"
+                    "Failed to open GDB monitor info help file - please report this issue at "
+                        + Services::PathService::homeDomainName() + "/report-issue"
                 );
             }
 
             debugSession.connection.writePacket(
-                ResponsePacket(String::toHex("\n" + QTextStream(&helpFile).readAll().toUtf8().toStdString() + "\n"))
+                ResponsePacket(Services::StringService::toHex(
+                    "\n" + QTextStream(&helpFile).readAll().toUtf8().toStdString() + "\n"
+                ))
             );
 
         } catch (const Exception& exception) {

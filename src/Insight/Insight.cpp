@@ -39,11 +39,7 @@ namespace Bloom
             (
                 QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true),
 #ifndef BLOOM_DEBUG_BUILD
-<<<<<<< HEAD
-                QCoreApplication::addLibraryPath(QString::fromStdString(Paths::applicationDirPath() + "/../plugins")),
-=======
                 QCoreApplication::addLibraryPath(QString::fromStdString(Services::PathService::applicationDirPath() + "/plugins")),
->>>>>>> 0fea8bc1 (Moved Paths helper functions to service class)
 #endif
                 QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
             )

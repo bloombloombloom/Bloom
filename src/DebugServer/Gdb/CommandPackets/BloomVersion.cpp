@@ -8,7 +8,7 @@
 #include "src/Application.hpp"
 
 #include "src/Services/PathService.hpp"
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -29,7 +29,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     void BloomVersion::handle(DebugSession& debugSession, TargetControllerService&) {
         Logger::debug("Handling BloomVersion packet");
 
-        debugSession.connection.writePacket(ResponsePacket(String::toHex(
+        debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
             std::string(
                 "Bloom v" + Application::VERSION.toString() + "\n"
                     + Services::PathService::homeDomainName() + "\n"

@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "src/Services/PathService.hpp"
-#include "src/Helpers/String.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
@@ -984,13 +984,15 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
+        using Services::StringService;
+
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetParameter(parameter, value)
         );
 
         Logger::debug(
-            "Setting AVR8 EDBG parameter (context: 0x" + String::toHex(parameter.context) + ", id: 0x"
-                + String::toHex(parameter.id) + ", value: 0x" + String::toHex(value) + ")"
+            "Setting AVR8 EDBG parameter (context: 0x" + StringService::toHex(parameter.context) + ", id: 0x"
+                + StringService::toHex(parameter.id) + ", value: 0x" + StringService::toHex(value) + ")"
         );
 
         if (responseFrame.id == Avr8ResponseId::FAILED) {
