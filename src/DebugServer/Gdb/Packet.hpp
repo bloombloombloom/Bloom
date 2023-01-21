@@ -32,14 +32,6 @@ namespace Bloom::DebugServer::Gdb
         Packet& operator = (const Packet& other) = default;
         Packet& operator = (Packet&& other) = default;
 
-        [[nodiscard]] virtual std::vector<unsigned char> getData() const {
-            return this->data;
-        }
-
-        void setData(const std::vector<unsigned char>& data) {
-            this->data = data;
-        }
-
         /**
          * Generates a raw packet.
          *
@@ -47,9 +39,8 @@ namespace Bloom::DebugServer::Gdb
          */
         [[nodiscard]] RawPacket toRawPacket() const {
             std::vector<unsigned char> packet = {'$'};
-            auto data = this->getData();
 
-            for (const auto& byte : data) {
+            for (const auto& byte : this->data) {
                 // Escape $ and # characters
                 switch (byte) {
                     case '$':
