@@ -14,8 +14,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
              * The set param command consists of value.size() + 5 bytes. The first five bytes consist of:
              * 1. Command ID (0x01)
              * 2. Version (0x00)
-             * 3. Param context (Avr8Parameter::context)
-             * 4. Param ID (Avr8Parameter::id)
+             * 3. Param context (Avr8EdbgParameter::context)
+             * 4. Param ID (Avr8EdbgParameter::id)
              * 5. Param value length (value.size()) - this is only one byte in size, so its value should
              *    never exceed 255.
              */

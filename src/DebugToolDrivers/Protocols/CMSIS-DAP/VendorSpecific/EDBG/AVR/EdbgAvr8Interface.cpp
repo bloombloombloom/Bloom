@@ -5,6 +5,7 @@
 
 #include "src/Logger/Logger.hpp"
 #include "src/Helpers/Paths.hpp"
+#include "src/Helpers/String.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
@@ -985,6 +986,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetParameter(parameter, value)
+        );
+
+        Logger::debug(
+            "Setting AVR8 EDBG parameter (context: 0x" + String::toHex(parameter.context) + ", id: 0x"
+                + String::toHex(parameter.id) + ", value: 0x" + String::toHex(value) + ")"
         );
 
         if (responseFrame.id == Avr8ResponseId::FAILED) {
