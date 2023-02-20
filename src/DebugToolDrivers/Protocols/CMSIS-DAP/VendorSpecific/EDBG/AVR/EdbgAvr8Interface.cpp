@@ -149,19 +149,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         if (this->configVariant == Avr8ConfigVariant::XMEGA) {
             // Default PDI clock to 4MHz
             // TODO: Make this adjustable via a target config parameter
-            this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(0x0FA0));
+            this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(4000));
         }
 
         if (this->configVariant == Avr8ConfigVariant::UPDI) {
             // Default UPDI clock to 1.8MHz
-            this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(0x0708));
-            this->setParameter(Avr8EdbgParameters::ENABLE_HIGH_VOLTAGE_UPDI, static_cast<std::uint8_t>(0x00));
+            this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(1800));
+            this->setParameter(Avr8EdbgParameters::ENABLE_HIGH_VOLTAGE_UPDI, static_cast<std::uint8_t>(0));
         }
 
         if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
-            // Default clock value for mega debugging is 2KHz
+            // Default clock value for mega debugging is 200KHz
             // TODO: Make this adjustable via a target config parameter
-            this->setParameter(Avr8EdbgParameters::MEGA_DEBUG_CLOCK, static_cast<std::uint16_t>(0x00C8));
+            this->setParameter(Avr8EdbgParameters::MEGA_DEBUG_CLOCK, static_cast<std::uint16_t>(200));
             this->setParameter(Avr8EdbgParameters::JTAG_DAISY_CHAIN_SETTINGS, static_cast<std::uint32_t>(0));
         }
 
