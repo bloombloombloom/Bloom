@@ -56,7 +56,7 @@ add_executable(Bloom)
 target_sources(
     Bloom
     PRIVATE
-        build/resources/TargetDescriptionFiles/AVR/Mapping.json
+        ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/AVR/Mapping.json
 )
 
 qt_add_resources(
@@ -160,7 +160,7 @@ endif()
 # Copy AVR8 TDFs to build directory and construct JSON mapping of AVR8 target signatures to TDF paths.
 add_custom_command(
     OUTPUT
-    ${CMAKE_CURRENT_SOURCE_DIR}/build/resources/TargetDescriptionFiles/AVR/Mapping.json
+    ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/AVR/Mapping.json
     DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/Avr8TargetDescriptionFiles.php
     COMMAND echo 'Processing AVR target description files.'
