@@ -1,6 +1,7 @@
 #include "HexViewerWidget.hpp"
 
 #include <QFile>
+#include <QVBoxLayout>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/InsightSignals.hpp"
@@ -16,6 +17,7 @@ namespace Bloom::Widgets
 
     HexViewerWidget::HexViewerWidget(
         const TargetMemoryDescriptor& targetMemoryDescriptor,
+        const std::optional<Targets::TargetMemoryBuffer>& data,
         HexViewerWidgetSettings& settings,
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
@@ -23,6 +25,7 @@ namespace Bloom::Widgets
     )
         : QWidget(parent)
         , targetMemoryDescriptor(targetMemoryDescriptor)
+        , data(data)
         , settings(settings)
         , focusedMemoryRegions(focusedMemoryRegions)
         , excludedMemoryRegions(excludedMemoryRegions)
@@ -75,8 +78,9 @@ namespace Bloom::Widgets
 
         this->loadingHexViewerLabel = this->container->findChild<Label*>("loading-hex-viewer-label");
 
-        this->byteItemGraphicsView = new ByteItemContainerGraphicsView(
+        this->byteItemGraphicsView = new ItemGraphicsView(
             this->targetMemoryDescriptor,
+            this->data,
             this->focusedMemoryRegions,
             this->excludedMemoryRegions,
             this->settings,
@@ -84,6 +88,7 @@ namespace Bloom::Widgets
             this->container
         );
 
+        this->byteItemGraphicsView->hide();
         containerLayout->insertWidget(2, this->byteItemGraphicsView);
 
         this->setHoveredRowAndColumnHighlightingEnabled(this->settings.highlightHoveredRowAndCol);
@@ -172,7 +177,7 @@ namespace Bloom::Widgets
     void HexViewerWidget::init() {
         QObject::connect(
             this->byteItemGraphicsView,
-            &ByteItemContainerGraphicsView::sceneReady,
+            &ItemGraphicsView::sceneReady,
             this,
             [this] {
                 this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
@@ -186,9 +191,9 @@ namespace Bloom::Widgets
         this->byteItemGraphicsView->initScene();
     }
 
-    void HexViewerWidget::updateValues(const Targets::TargetMemoryBuffer& buffer) {
+    void HexViewerWidget::updateValues() {
         if (this->byteItemGraphicsScene != nullptr) {
-            this->byteItemGraphicsScene->updateValues(buffer);
+            this->byteItemGraphicsScene->refreshValues();
         }
     }
 
@@ -225,7 +230,7 @@ namespace Bloom::Widgets
         this->settings.highlightStackMemory = enabled;
 
         if (this->byteItemGraphicsScene != nullptr) {
-            this->byteItemGraphicsScene->invalidateChildItemCaches();
+            this->byteItemGraphicsScene->update();
         }
     }
 
@@ -234,7 +239,7 @@ namespace Bloom::Widgets
         this->settings.highlightHoveredRowAndCol = enabled;
 
         if (this->byteItemGraphicsScene != nullptr) {
-            this->byteItemGraphicsScene->invalidateChildItemCaches();
+            this->byteItemGraphicsScene->update();
         }
     }
 
@@ -243,7 +248,7 @@ namespace Bloom::Widgets
         this->settings.highlightFocusedMemory = enabled;
 
         if (this->byteItemGraphicsScene != nullptr) {
-            this->byteItemGraphicsScene->invalidateChildItemCaches();
+            this->byteItemGraphicsScene->update();
         }
     }
 
@@ -252,7 +257,7 @@ namespace Bloom::Widgets
         this->settings.displayAnnotations = enabled;
 
         if (this->byteItemGraphicsScene != nullptr) {
-            this->byteItemGraphicsScene->adjustSize(true);
+            this->byteItemGraphicsScene->adjustSize();
         }
     }
 
@@ -261,7 +266,7 @@ namespace Bloom::Widgets
         this->settings.displayAsciiValues = enabled;
 
         if (this->byteItemGraphicsScene != nullptr) {
-            this->byteItemGraphicsScene->invalidateChildItemCaches();
+            this->byteItemGraphicsScene->update();
         }
     }
 
@@ -276,11 +281,11 @@ namespace Bloom::Widgets
         const auto& memoryAddressRange = this->targetMemoryDescriptor.addressRange;
 
         if (addressConversionOk && memoryAddressRange.contains(address) && this->goToAddressInput->hasFocus()) {
-            this->byteItemGraphicsScene->setHighlightedAddresses({address});
+            this->byteItemGraphicsScene->selectByteItems({address});
             this->byteItemGraphicsView->scrollToByteItemAtAddress(address);
             return;
         }
 
-        this->byteItemGraphicsScene->setHighlightedAddresses({});
+        this->byteItemGraphicsScene->selectByteItems({});
     }
 }

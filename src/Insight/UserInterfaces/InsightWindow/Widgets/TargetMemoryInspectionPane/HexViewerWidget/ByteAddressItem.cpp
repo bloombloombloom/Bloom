@@ -1,46 +1,37 @@
 #include "ByteAddressItem.hpp"
 
-#include <QPainter>
-
 namespace Bloom::Widgets
 {
-    ByteAddressItem::ByteAddressItem(
-        std::size_t rowIndex,
-        const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex,
-        const AddressType& addressType,
-        QGraphicsItem* parent
-    )
-        : rowIndex(rowIndex)
-        , byteItemsByRowIndex(byteItemsByRowIndex)
-        , addressType(addressType)
+    ByteAddressItem::ByteAddressItem(const HexViewerSharedState& hexViewerState, QGraphicsItem* parent)
+        : hexViewerState(hexViewerState)
         , QGraphicsItem(parent)
-    {
-        this->setCacheMode(
-            QGraphicsItem::CacheMode::ItemCoordinateCache,
-            QSize(ByteAddressItem::WIDTH, ByteAddressItem::HEIGHT)
-        );
-    }
+    {}
 
     void ByteAddressItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+        static auto fontColor = QColor(0x8F, 0x91, 0x92);
+        static auto font = QFont("'Ubuntu', sans-serif");
+        font.setPixelSize(12);
+
         painter->setRenderHints(
             QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform,
             true
         );
 
-        static const auto widgetRect = this->boundingRect();
-        static auto fontColor = QColor(0x8F, 0x91, 0x92);
-        static auto font = QFont("'Ubuntu', sans-serif");
-        font.setPixelSize(12);
-        fontColor.setAlpha(!this->isEnabled() ? 100 : 255);
+        if (!this->isEnabled()) {
+            painter->setOpacity(0.5);
+        }
 
         painter->setFont(font);
         painter->setPen(fontColor);
         painter->drawText(
-            widgetRect,
+            this->boundingRect(),
             Qt::AlignLeft,
-            this->addressType == AddressType::RELATIVE
-                ? this->byteItemsByRowIndex.at(this->rowIndex)[0]->relativeAddressHex
-                : this->byteItemsByRowIndex.at(this->rowIndex)[0]->addressHex
+            this->hexViewerState.settings.addressLabelType == AddressType::RELATIVE
+                ? "0x" + QString::number(
+                    this->address - this->hexViewerState.memoryDescriptor.addressRange.startAddress,
+                    16
+                ).rightJustified(8, '0').toUpper()
+                : "0x" + QString::number(this->address, 16).rightJustified(8, '0').toUpper()
         );
     }
 }

@@ -3,33 +3,32 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QScrollBar>
-#include <QWidget>
-#include <QToolButton>
-#include <QVBoxLayout>
-#include <map>
-#include <algorithm>
+#include <optional>
+#include <set>
+#include <unordered_map>
+#include <memory>
 #include <vector>
-#include <QSize>
-#include <QString>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
 #include <QGraphicsSceneContextMenuEvent>
 #include <QKeyEvent>
-#include <optional>
 #include <QGraphicsRectItem>
 #include <QPointF>
 #include <QAction>
+#include <QTimer>
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
+#include "GraphicsItem.hpp"
+#include "TopLevelGroupItem.hpp"
+#include "GroupItem.hpp"
 #include "ByteItem.hpp"
 #include "ByteAddressContainer.hpp"
-#include "AnnotationItem.hpp"
-#include "ValueAnnotationItem.hpp"
-#include "HexViewerWidgetSettings.hpp"
+
+#include "HexViewerSharedState.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
@@ -38,13 +37,14 @@
 
 namespace Bloom::Widgets
 {
-    class ByteItemGraphicsScene: public QGraphicsScene
+    class ItemGraphicsScene: public QGraphicsScene
     {
         Q_OBJECT
 
     public:
-        ByteItemGraphicsScene(
+        ItemGraphicsScene(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            const std::optional<Targets::TargetMemoryBuffer>& data,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             HexViewerWidgetSettings& settings,
@@ -53,18 +53,16 @@ namespace Bloom::Widgets
         );
 
         void init();
-        void updateValues(const Targets::TargetMemoryBuffer& buffer);
         void updateStackPointer(Targets::TargetStackPointer stackPointer);
-        void setHighlightedAddresses(const std::set<Targets::TargetMemoryAddress>& highlightedAddresses);
+        void selectByteItems(const std::set<Targets::TargetMemoryAddress>& addresses);
         void refreshRegions();
-        void adjustSize(bool forced = false);
+        void adjustSize();
         void setEnabled(bool enabled);
-        void invalidateChildItemCaches();
+        void refreshValues();
         QPointF getByteItemPositionByAddress(Targets::TargetMemoryAddress address);
 
     signals:
         void ready();
-        void byteWidgetsAdjusted();
 
     protected:
         bool event(QEvent* event) override;
@@ -75,40 +73,39 @@ namespace Bloom::Widgets
         void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
     private:
-        const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
-        std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
-        std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
+        static constexpr auto GRID_SIZE = 100;
 
         bool enabled = true;
 
-        ByteItem* hoveredByteWidget = nullptr;
-        AnnotationItem* hoveredAnnotationItem = nullptr;
+        HexViewerSharedState state;
 
-        std::optional<Targets::TargetStackPointer> currentStackPointer;
+        std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
+        std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 
-        Targets::TargetMemoryBuffer lastValueBuffer;
+        std::unique_ptr<TopLevelGroupItem> topLevelGroup = nullptr;
 
-        std::map<Targets::TargetMemoryAddress, ByteItem*> byteItemsByAddress;
-        std::vector<AnnotationItem*> annotationItems;
-        std::vector<ValueAnnotationItem*> valueAnnotationItems;
-        std::map<std::size_t, std::vector<ByteItem*>> byteItemsByRowIndex;
-        std::map<std::size_t, std::vector<ByteItem*>> byteItemsByColumnIndex;
+        std::vector<HexViewerItem*> flattenedItems;
+        std::vector<decltype(ItemGraphicsScene::flattenedItems)::iterator> gridPoints;
+        std::vector<const ByteItem*> firstByteItemByLine;
 
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+        std::vector<GraphicsItem*> graphicsItems;
 
         const QMargins margins = QMargins(10, 10, 10, 10);
-        HexViewerWidgetSettings& settings;
+
+        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         QGraphicsView* parent = nullptr;
         Label* hoveredAddressLabel = nullptr;
 
         ByteAddressContainer* byteAddressContainer = nullptr;
 
-        std::set<ByteItem*> highlightedByteItems;
-        std::map<Targets::TargetMemoryAddress, ByteItem*> selectedByteItemsByAddress;
+        std::unordered_map<Targets::TargetMemoryAddress, ByteItem*> selectedByteItemsByAddress;
 
         QGraphicsRectItem* rubberBandRectItem = nullptr;
         std::optional<QPointF> rubberBandInitPoint = std::nullopt;
+
+        QGraphicsRectItem* hoverRectX = new QGraphicsRectItem(QRect(0, 0, 0, ByteItem::HEIGHT));
+        QGraphicsRectItem* hoverRectY = new QGraphicsRectItem(QRect(0, 0, ByteItem::WIDTH, 0));
 
         // Context menu actions
         QAction* selectAllByteItemsAction = new QAction("Select All", this);
@@ -122,6 +119,8 @@ namespace Bloom::Widgets
         QAction* displayRelativeAddressAction = new QAction("Relative", this);
         QAction* displayAbsoluteAddressAction = new QAction("Absolute", this);
 
+        QTimer* allocateGraphicsItemsTimer = nullptr;
+
         int getSceneWidth() {
             /*
              * Minus 2 for the QSS margin on the vertical scrollbar (which isn't accounted for during viewport
@@ -132,18 +131,15 @@ namespace Bloom::Widgets
             return std::max(this->parent->viewport()->width(), 400) - 2;
         }
 
-        void updateAnnotationValues(const Targets::TargetMemoryBuffer& buffer);
-        void adjustByteItemPositions();
-        void adjustAnnotationItemPositions();
+        void allocateGraphicsItems();
+        void refreshItemPositionIndices();
         void onTargetStateChanged(Targets::TargetState newState);
-        void onByteWidgetEnter(Bloom::Widgets::ByteItem* widget);
-        void onByteWidgetLeave();
-        void onAnnotationItemEnter(Bloom::Widgets::AnnotationItem* annotationItem);
-        void onAnnotationItemLeave();
+        void onByteItemEnter(ByteItem& byteItem);
+        void onByteItemLeave();
         void clearSelectionRectItem();
-        void selectByteItem(ByteItem* byteItem);
-        void deselectByteItem(ByteItem* byteItem);
-        void toggleByteItemSelection(ByteItem* byteItem);
+        void selectByteItem(ByteItem& byteItem);
+        void deselectByteItem(ByteItem& byteItem);
+        void toggleByteItemSelection(ByteItem& byteItem);
         void clearByteItemSelection();
         void selectAllByteItems();
         void setAddressType(AddressType type);

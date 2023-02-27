@@ -1,25 +1,25 @@
 #pragma once
 
 #include <QGraphicsView>
-#include <QWidget>
 #include <vector>
 #include <QEvent>
 
-#include "src/Targets/TargetMemory.hpp"
-
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
-#include "ByteItemGraphicsScene.hpp"
 #include "HexViewerWidgetSettings.hpp"
+#include "ItemGraphicsScene.hpp"
+
+#include "src/Targets/TargetMemory.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 namespace Bloom::Widgets
 {
-    class ByteItemContainerGraphicsView: public QGraphicsView
+    class ItemGraphicsView: public QGraphicsView
     {
         Q_OBJECT
 
     public:
-        ByteItemContainerGraphicsView(
+        ItemGraphicsView(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            const std::optional<Targets::TargetMemoryBuffer>& data,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             HexViewerWidgetSettings& settings,
@@ -29,7 +29,7 @@ namespace Bloom::Widgets
 
         void initScene();
 
-        [[nodiscard]] ByteItemGraphicsScene* getScene() const {
+        [[nodiscard]] ItemGraphicsScene* getScene() const {
             return this->scene;
         }
 
@@ -43,6 +43,6 @@ namespace Bloom::Widgets
         void resizeEvent(QResizeEvent* event) override;
 
     private:
-        ByteItemGraphicsScene* scene = nullptr;
+        ItemGraphicsScene* scene = nullptr;
     };
 }

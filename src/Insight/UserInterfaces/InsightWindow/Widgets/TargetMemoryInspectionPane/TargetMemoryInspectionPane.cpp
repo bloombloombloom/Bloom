@@ -14,7 +14,6 @@
 
 #include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
-#include "src/Logger/Logger.hpp"
 
 namespace Bloom::Widgets
 {
@@ -97,6 +96,7 @@ namespace Bloom::Widgets
 
         this->hexViewerWidget = new HexViewerWidget(
             this->targetMemoryDescriptor,
+            this->data,
             this->settings.hexViewerWidgetSettings,
             this->settings.focusedMemoryRegions,
             this->settings.excludedMemoryRegions,
@@ -105,17 +105,6 @@ namespace Bloom::Widgets
         this->hexViewerWidget->setDisabled(true);
 
         this->subContainerLayout->insertWidget(1, this->hexViewerWidget);
-
-        QObject::connect(
-            this->hexViewerWidget,
-            &HexViewerWidget::ready,
-            this,
-            [this] {
-                if (this->data.has_value()) {
-                    this->hexViewerWidget->updateValues(this->data.value());
-                }
-            }
-        );
 
         this->hexViewerWidget->init();
 
@@ -530,7 +519,7 @@ namespace Bloom::Widgets
         assert(data.size() == this->targetMemoryDescriptor.size());
 
         this->data = data;
-        this->hexViewerWidget->updateValues(this->data.value());
+        this->hexViewerWidget->updateValues();
         this->setStaleData(false);
 
         this->snapshotManager->createSnapshotWindow->refreshForm();

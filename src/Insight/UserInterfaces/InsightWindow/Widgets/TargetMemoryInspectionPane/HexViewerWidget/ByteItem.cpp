@@ -1,130 +1,104 @@
 #include "ByteItem.hpp"
 
-#include <QPainter>
+#include <QFont>
+#include <QColor>
 
 namespace Bloom::Widgets
 {
-    ByteItem::ByteItem(
-        std::size_t byteIndex,
-        Targets::TargetMemoryAddress address,
-        std::optional<Targets::TargetStackPointer>& currentStackPointer,
-        ByteItem** hoveredByteItem,
-        std::set<ByteItem*>& highlightedByteItems,
-        const HexViewerWidgetSettings& settings
-    )
-        : QGraphicsItem(nullptr)
-        , byteIndex(byteIndex)
-        , address(address)
-        , currentStackPointer(currentStackPointer)
-        , hoveredByteItem(hoveredByteItem)
-        , highlightedByteItems(highlightedByteItems)
-        , settings(settings)
+    ByteItem::ByteItem(Targets::TargetMemoryAddress address)
+        : HexViewerItem(address)
     {
-        static const auto cacheResolution = QSize(ByteItem::WIDTH, ByteItem::HEIGHT);
-
-        this->setCacheMode(
-            QGraphicsItem::CacheMode::ItemCoordinateCache,
-            cacheResolution
-        );
-        this->setAcceptHoverEvents(true);
-
-        this->addressHex = "0x" + QString::number(this->address, 16).rightJustified(
-            8,
-            '0'
-        ).toUpper();
-        this->relativeAddressHex = "0x" + QString::number(this->byteIndex, 16).rightJustified(
-            8,
-            '0'
-        ).toUpper();
-
-        this->setSelected(false);
+        if (ByteItem::standardPixmapsByValue.empty()) {
+            ByteItem::generatePixmapCaches();
+        }
     }
 
-    void ByteItem::setValue(unsigned char value) {
-        this->value = value;
-        this->hexValue = QString::number(this->value, 16).rightJustified(2, '0').toUpper();
-        this->asciiValue = (this->value >= 32 && this->value <= 126)
-            ? std::optional("'" + QString(QChar(this->value)) + "'") : std::nullopt;
+    void ByteItem::paint(
+        QPainter* painter,
+        const HexViewerSharedState* hexViewerState,
+        const QGraphicsItem* graphicsItem
+    ) const {
+        const auto boundingRect = QRect(0, 0, ByteItem::WIDTH, ByteItem::HEIGHT);
 
-        this->valueInitialised = this->excludedMemoryRegion == nullptr;
-        this->update();
-    }
-
-    void ByteItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-        painter->setRenderHints(
-            QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform,
-            true
-        );
-        painter->setPen(Qt::PenStyle::NoPen);
-
-        static const auto widgetRect = this->boundingRect();
-        static const auto font = QFont("'Ubuntu', sans-serif", 8);
-
-        const auto* backgroundColor = this->getBackgroundColor();
-        const auto* textColor = this->getTextColor();
-
-        if (backgroundColor != nullptr) {
-            painter->setBrush(*backgroundColor);
-            painter->drawRect(widgetRect);
+        if (!graphicsItem->isEnabled()) {
+            painter->setOpacity(0.6);
         }
 
-        painter->setFont(font);
-        painter->setPen(*textColor);
+        if (this->excluded || !hexViewerState->data.has_value()) {
+            painter->drawPixmap(boundingRect, ByteItem::missingDataPixmap.value());
+            return;
+        }
 
-        if (this->valueInitialised && this->excludedMemoryRegion == nullptr) {
-            painter->drawText(
-                widgetRect,
-                Qt::AlignCenter,
-                this->settings.displayAsciiValues && this->asciiValue.has_value()
-                    ? this->asciiValue.value()
-                    : this->hexValue
+        const auto byteIndex = this->startAddress - hexViewerState->memoryDescriptor.addressRange.startAddress;
+        const auto value = (*hexViewerState->data)[byteIndex];
+
+        const auto hoveredPrimary = hexViewerState->hoveredByteItem == this;
+
+        if (hexViewerState->settings.displayAsciiValues) {
+            if (this->selected) {
+                painter->drawPixmap(
+                    boundingRect,
+                    ByteItem::selectedAsciiPixmapsByValue[value]
+                );
+                return;
+            }
+
+            if (this->grouped && hexViewerState->settings.highlightFocusedMemory) {
+                painter->drawPixmap(
+                    boundingRect,
+                    ByteItem::groupedAsciiPixmapsByValue[value]
+                );
+                return;
+            }
+
+            if (hoveredPrimary) {
+                painter->drawPixmap(
+                    boundingRect,
+                    ByteItem::hoveredPrimaryAsciiPixmapsByValue[value]
+                );
+                return;
+            }
+
+            painter->drawPixmap(boundingRect, this->standardAsciiPixmapsByValue[value]);
+            return;
+        }
+
+        if (this->selected) {
+            painter->drawPixmap(
+                boundingRect,
+                ByteItem::selectedPixmapsByValue[value]
             );
-
-        } else {
-            static const auto placeholderString = QString("??");
-            painter->drawText(widgetRect, Qt::AlignCenter, placeholderString);
+            return;
         }
+
+        if (this->grouped && hexViewerState->settings.highlightFocusedMemory) {
+            painter->drawPixmap(
+                boundingRect,
+                ByteItem::groupedPixmapsByValue[value]
+            );
+            return;
+        }
+
+        if (hoveredPrimary) {
+            painter->drawPixmap(
+                boundingRect,
+                ByteItem::hoveredPrimaryPixmapsByValue[value]
+            );
+            return;
+        }
+
+        painter->drawPixmap(
+            boundingRect,
+            this->standardPixmapsByValue[value]
+        );
     }
 
-    const QColor* ByteItem::getBackgroundColor() {
-        /*
-         * Due to the sheer number of byte items, painting them can be quite expensive. This function needs to be fast.
-         *
-         * The background colors vary in alpha value, depending on certain states. We create a static object for each
-         * color variant, so that we don't have to make copies or call QColor::setAlpha() for each ByteItem.
-         */
+    void ByteItem::generatePixmapCaches() {
+        static const auto standardBackgroundColor = QColor(0x32, 0x33, 0x30, 255);
         static const auto highlightedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
         static const auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
-        static const auto focusedRegionBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
+        static const auto groupedBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
         static const auto stackMemoryBackgroundColor = QColor(0x67, 0x57, 0x20, 210);
-
-        static const auto disabledHighlightedBackgroundColor = QColor(
-            highlightedBackgroundColor.red(),
-            highlightedBackgroundColor.green(),
-            highlightedBackgroundColor.blue(),
-            100
-        );
-
-        static const auto disabledSelectedBackgroundColor = QColor(
-            selectedBackgroundColor.red(),
-            selectedBackgroundColor.green(),
-            selectedBackgroundColor.blue(),
-            100
-        );
-
-        static const auto disabledFocusedRegionBackgroundColor = QColor(
-            focusedRegionBackgroundColor.red(),
-            focusedRegionBackgroundColor.green(),
-            focusedRegionBackgroundColor.blue(),
-            100
-        );
-
-        static const auto disabledStackMemoryBackgroundColor = QColor(
-            stackMemoryBackgroundColor.red(),
-            stackMemoryBackgroundColor.green(),
-            stackMemoryBackgroundColor.blue(),
-            100
-        );
 
         static const auto hoveredStackMemoryBackgroundColor = QColor(
             stackMemoryBackgroundColor.red(),
@@ -134,109 +108,154 @@ namespace Bloom::Widgets
         );
 
         static const auto hoveredBackgroundColor = QColor(0x8E, 0x8B, 0x83, 70);
-        static const auto hoveredNeighbourBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
+        static const auto hoveredSecondaryBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
 
-        if (this->isEnabled()) {
-            if (this->highlighted) {
-                return &(highlightedBackgroundColor);
+        static const auto standardFontColor = QColor(0xAF, 0xB1, 0xB3);
+        static const auto fadedFontColor = QColor(0xAF, 0xB1, 0xB3, 100);
+        static const auto asciiFontColor = QColor(0xA7, 0x77, 0x26);
+
+        const auto byteItemRect = QRect(0, 0, ByteItem::WIDTH, ByteItem::HEIGHT);
+        const auto byteItemSize = byteItemRect.size();
+
+        auto standardTemplatePixmap = QPixmap(byteItemSize);
+        standardTemplatePixmap.fill(standardBackgroundColor);
+
+        auto highlightedTemplatePixmap = QPixmap(byteItemSize);
+        highlightedTemplatePixmap.fill(highlightedBackgroundColor);
+
+        auto selectedTemplatePixmap = QPixmap(byteItemSize);
+        selectedTemplatePixmap.fill(selectedBackgroundColor);
+
+        auto groupedTemplatePixmap = QPixmap(byteItemSize);
+        groupedTemplatePixmap.fill(groupedBackgroundColor);
+
+        auto stackMemoryTemplatePixmap = QPixmap(byteItemSize);
+        stackMemoryTemplatePixmap.fill(stackMemoryBackgroundColor);
+
+        auto hoveredStackMemoryTemplatePixmap = QPixmap(byteItemSize);
+        hoveredStackMemoryTemplatePixmap.fill(hoveredStackMemoryBackgroundColor);
+
+        auto hoveredPrimaryTemplatePixmap = QPixmap(byteItemSize);
+        hoveredPrimaryTemplatePixmap.fill(hoveredBackgroundColor);
+
+        auto hoveredSecondaryTemplatePixmap = QPixmap(byteItemSize);
+        hoveredSecondaryTemplatePixmap.fill(hoveredSecondaryBackgroundColor);
+
+        static auto font = QFont("'Ubuntu', sans-serif", 8);
+
+        for (std::uint16_t value = 0x00; value <= 0xFF; ++value) {
+            const auto hexValue = QString::number(value, 16).rightJustified(2, '0').toUpper();
+            const auto asciiValue = value >= 32 && value <= 126
+                ? std::optional("'" + QString(QChar(value)) + "'")
+                : std::nullopt;
+
+            {
+                auto standardPixmap = standardTemplatePixmap;
+                auto painter = QPainter(&standardPixmap);
+                painter.setFont(font);
+                painter.setPen(standardFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
+
+                ByteItem::standardPixmapsByValue.emplace_back(std::move(standardPixmap));
             }
 
-            if (this->selected) {
-                return &(selectedBackgroundColor);
+            {
+                auto selectedPixmap = selectedTemplatePixmap;
+                auto painter = QPainter(&selectedPixmap);
+                painter.setFont(font);
+                painter.setPen(standardFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
+
+                ByteItem::selectedPixmapsByValue.emplace_back(std::move(selectedPixmap));
             }
 
-            const auto* hoveredByteItem = *(this->hoveredByteItem);
-            const auto hovered = hoveredByteItem == this;
-            const auto hoveredNeighbour =
-                !hovered
-                && hoveredByteItem != nullptr
-                && this->settings.highlightHoveredRowAndCol
-                && (
-                    hoveredByteItem->currentColumnIndex == this->currentColumnIndex
-                    || hoveredByteItem->currentRowIndex == this->currentRowIndex
-                );
+            {
+                auto groupedPixmap = groupedTemplatePixmap;
+                auto painter = QPainter(&groupedPixmap);
+                painter.setFont(font);
+                painter.setPen(standardFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
 
-            if (
-                this->settings.highlightStackMemory
-                && this->currentStackPointer.has_value()
-                && this->address > this->currentStackPointer
-            ) {
-                return hovered ? &(hoveredStackMemoryBackgroundColor) : &(stackMemoryBackgroundColor);
+                ByteItem::groupedPixmapsByValue.emplace_back(std::move(groupedPixmap));
             }
 
-            if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
-                return &(focusedRegionBackgroundColor);
+            {
+                auto hoveredPrimaryPixmap = hoveredPrimaryTemplatePixmap;
+                auto painter = QPainter(&hoveredPrimaryPixmap);
+                painter.setFont(font);
+                painter.setPen(standardFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
+
+                ByteItem::hoveredPrimaryPixmapsByValue.emplace_back(std::move(hoveredPrimaryPixmap));
             }
 
-            if (hoveredNeighbour) {
-                return &(hoveredNeighbourBackgroundColor);
+            {
+                auto hoveredSecondaryPixmap = hoveredSecondaryTemplatePixmap;
+                auto painter = QPainter(&hoveredSecondaryPixmap);
+                painter.setFont(font);
+                painter.setPen(standardFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
+
+                ByteItem::hoveredSecondaryPixmapsByValue.emplace_back(std::move(hoveredSecondaryPixmap));
             }
 
-            if (hovered) {
-                return &(hoveredBackgroundColor);
+            {
+                auto standardAsciiPixmap = standardTemplatePixmap;
+                auto painter = QPainter(&standardAsciiPixmap);
+                painter.setFont(font);
+                painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
+
+                ByteItem::standardAsciiPixmapsByValue.emplace_back(std::move(standardAsciiPixmap));
             }
 
-        } else {
-            if (this->highlighted) {
-                return &(disabledHighlightedBackgroundColor);
+            {
+                auto selectedAsciiPixmap = selectedTemplatePixmap;
+                auto painter = QPainter(&selectedAsciiPixmap);
+                painter.setFont(font);
+                painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
+
+                ByteItem::selectedAsciiPixmapsByValue.emplace_back(std::move(selectedAsciiPixmap));
             }
 
-            if (this->selected) {
-                return &(disabledSelectedBackgroundColor);
+            {
+                auto groupedAsciiPixmap = groupedTemplatePixmap;
+                auto painter = QPainter(&groupedAsciiPixmap);
+                painter.setFont(font);
+                painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
+
+                ByteItem::groupedAsciiPixmapsByValue.emplace_back(std::move(groupedAsciiPixmap));
             }
 
-            if (
-                this->settings.highlightStackMemory
-                && this->currentStackPointer.has_value()
-                && this->address > this->currentStackPointer
-            ) {
-                return &(disabledStackMemoryBackgroundColor);
+            {
+                auto hoveredPrimaryAsciiPixmap = hoveredPrimaryTemplatePixmap;
+                auto painter = QPainter(&hoveredPrimaryAsciiPixmap);
+                painter.setFont(font);
+                painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
+
+                ByteItem::hoveredPrimaryAsciiPixmapsByValue.emplace_back(std::move(hoveredPrimaryAsciiPixmap));
             }
 
-            if (this->settings.highlightFocusedMemory && this->focusedMemoryRegion != nullptr) {
-                return &(disabledFocusedRegionBackgroundColor);
+            {
+                auto hoveredSecondaryAsciiPixmap = hoveredSecondaryTemplatePixmap;
+                auto painter = QPainter(&hoveredSecondaryAsciiPixmap);
+                painter.setFont(font);
+                painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
+
+                ByteItem::hoveredSecondaryAsciiPixmapsByValue.emplace_back(std::move(hoveredSecondaryAsciiPixmap));
             }
         }
 
-        return nullptr;
-    }
-
-    const QColor* ByteItem::getTextColor() {
-        static const auto standardTextColor = QColor(0xAF, 0xB1, 0xB3);
-        static const auto asciiModeTextColor = QColor(0xA7, 0x77, 0x26);
-
-        static const auto fadedStandardTextColor = QColor(
-            standardTextColor.red(),
-            standardTextColor.green(),
-            standardTextColor.blue(),
-            100
-        );
-
-        static const auto fadedAsciiModeTextColor = QColor(
-            asciiModeTextColor.red(),
-            asciiModeTextColor.green(),
-            asciiModeTextColor.blue(),
-            100
-        );
-
-        const auto displayAsAscii = this->settings.displayAsciiValues && this->asciiValue.has_value();
-
-        if (this->isEnabled() && this->valueInitialised) {
-            if (!displayAsAscii) {
-                if (
-                    this->excludedMemoryRegion != nullptr
-                    || this->settings.displayAsciiValues
-                    || (!this->highlightedByteItems.empty() && !this->highlighted)
-                ) {
-                    return &(fadedStandardTextColor);
-                }
-
-                return &(standardTextColor);
-            }
-
-            return &(asciiModeTextColor);
+        {
+            ByteItem::missingDataPixmap = standardTemplatePixmap;
+            auto painter = QPainter(&ByteItem::missingDataPixmap.value());
+            painter.setFont(font);
+            painter.setPen(standardFontColor);
+            painter.drawText(byteItemRect, Qt::AlignCenter, "??");
         }
-
-        return displayAsAscii ? &(fadedAsciiModeTextColor) : &(fadedStandardTextColor);
     }
 }

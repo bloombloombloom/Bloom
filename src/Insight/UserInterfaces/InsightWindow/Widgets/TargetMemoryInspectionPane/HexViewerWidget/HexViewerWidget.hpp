@@ -13,7 +13,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TextInput.hpp"
 
 #include "HexViewerWidgetSettings.hpp"
-#include "ByteItemContainerGraphicsView.hpp"
+#include "ItemGraphicsView.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
@@ -28,6 +28,7 @@ namespace Bloom::Widgets
     public:
         HexViewerWidget(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            const std::optional<Targets::TargetMemoryBuffer>& data,
             HexViewerWidgetSettings& settings,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
@@ -35,7 +36,7 @@ namespace Bloom::Widgets
         );
 
         void init();
-        void updateValues(const Targets::TargetMemoryBuffer& buffer);
+        void updateValues();
         void refreshRegions();
         void setStackPointer(Targets::TargetStackPointer stackPointer);
 
@@ -48,6 +49,8 @@ namespace Bloom::Widgets
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
+        const std::optional<Targets::TargetMemoryBuffer>& data;
+
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 
@@ -58,8 +61,8 @@ namespace Bloom::Widgets
         QWidget* bottomBar = nullptr;
 
         Label* loadingHexViewerLabel = nullptr;
-        ByteItemContainerGraphicsView* byteItemGraphicsView = nullptr;
-        ByteItemGraphicsScene* byteItemGraphicsScene = nullptr;
+        ItemGraphicsView* byteItemGraphicsView = nullptr;
+        ItemGraphicsScene* byteItemGraphicsScene = nullptr;
         Label* hoveredAddressLabel = nullptr;
 
         SvgToolButton* highlightStackMemoryButton = nullptr;

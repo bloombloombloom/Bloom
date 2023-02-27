@@ -1,15 +1,12 @@
 #pragma once
 
 #include <QGraphicsItem>
-#include <cstdint>
-#include <QPainter>
 #include <QGraphicsScene>
-#include <map>
+#include <QPainter>
 #include <vector>
 
-#include "ByteItem.hpp"
+#include "HexViewerSharedState.hpp"
 #include "ByteAddressItem.hpp"
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/HexViewerWidgetSettings.hpp"
 
 namespace Bloom::Widgets
 {
@@ -18,7 +15,7 @@ namespace Bloom::Widgets
     public:
         static constexpr int WIDTH = 88;
 
-        ByteAddressContainer(const HexViewerWidgetSettings& settings);
+        ByteAddressContainer(const HexViewerSharedState& hexViewerState);
 
         [[nodiscard]] QRectF boundingRect() const override {
             return QRectF(
@@ -29,12 +26,12 @@ namespace Bloom::Widgets
             );
         }
 
-        void adjustAddressLabels(const std::map<std::size_t, std::vector<ByteItem*>>& byteItemsByRowIndex);
+        void adjustAddressLabels(const std::vector<const ByteItem*>& firstByteItemByLine);
         void invalidateChildItemCaches();
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     private:
-        const HexViewerWidgetSettings& settings;
-        std::map<std::size_t, ByteAddressItem*> addressItemsByRowIndex;
+        const HexViewerSharedState& hexViewerState;
+        std::vector<ByteAddressItem*> addressItems;
     };
 }

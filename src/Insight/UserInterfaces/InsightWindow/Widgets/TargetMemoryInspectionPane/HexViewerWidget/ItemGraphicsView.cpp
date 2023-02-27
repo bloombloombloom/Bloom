@@ -1,14 +1,12 @@
-#include "ByteItemContainerGraphicsView.hpp"
-
-#include "src/Insight/InsightWorker/InsightWorker.hpp"
-#include "src/Insight/InsightWorker/Tasks/ConstructHexViewerByteItems.hpp"
+#include "ItemGraphicsView.hpp"
 
 namespace Bloom::Widgets
 {
     using Bloom::Targets::TargetMemoryDescriptor;
 
-    ByteItemContainerGraphicsView::ByteItemContainerGraphicsView(
+    ItemGraphicsView::ItemGraphicsView(
         const TargetMemoryDescriptor& targetMemoryDescriptor,
+        const std::optional<Targets::TargetMemoryBuffer>& data,
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
         HexViewerWidgetSettings& settings,
@@ -26,9 +24,11 @@ namespace Bloom::Widgets
         this->setOptimizationFlag(QGraphicsView::DontSavePainterState, true);
         this->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
         this->setCacheMode(QGraphicsView::CacheBackground);
+        this->setFocusPolicy(Qt::StrongFocus);
 
-        this->scene = new ByteItemGraphicsScene(
+        this->scene = new ItemGraphicsScene(
             targetMemoryDescriptor,
+            data,
             focusedMemoryRegions,
             excludedMemoryRegions,
             settings,
@@ -39,10 +39,10 @@ namespace Bloom::Widgets
         this->setScene(this->scene);
     }
 
-    void ByteItemContainerGraphicsView::initScene() {
+    void ItemGraphicsView::initScene() {
         QObject::connect(
             this->scene,
-            &ByteItemGraphicsScene::ready,
+            &ItemGraphicsScene::ready,
             this,
             [this] {
                 this->scene->setEnabled(this->isEnabled());
@@ -53,13 +53,13 @@ namespace Bloom::Widgets
         this->scene->init();
     }
 
-    void ByteItemContainerGraphicsView::scrollToByteItemAtAddress(Targets::TargetMemoryAddress address) {
+    void ItemGraphicsView::scrollToByteItemAtAddress(Targets::TargetMemoryAddress address) {
         if (this->scene != nullptr) {
             this->centerOn(this->scene->getByteItemPositionByAddress(address));
         }
     }
 
-    bool ByteItemContainerGraphicsView::event(QEvent* event) {
+    bool ItemGraphicsView::event(QEvent* event) {
         const auto eventType = event->type();
         if (eventType == QEvent::Type::EnabledChange && this->scene != nullptr) {
             this->scene->setEnabled(this->isEnabled());
@@ -68,7 +68,7 @@ namespace Bloom::Widgets
         return QGraphicsView::event(event);
     }
 
-    void ByteItemContainerGraphicsView::resizeEvent(QResizeEvent* event) {
+    void ItemGraphicsView::resizeEvent(QResizeEvent* event) {
         QGraphicsView::resizeEvent(event);
 
         if (this->scene != nullptr) {
