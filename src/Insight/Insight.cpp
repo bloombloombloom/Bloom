@@ -322,10 +322,6 @@ namespace Bloom
 
     void Insight::onTargetResetEvent(const Events::TargetReset& event) {
         try {
-            if (this->targetControllerService.getTargetState() != TargetState::STOPPED) {
-                return;
-            }
-
             if (this->lastTargetState != TargetState::STOPPED) {
                 this->lastTargetState = TargetState::STOPPED;
                 emit this->insightSignals->targetStateUpdated(TargetState::STOPPED);
