@@ -887,7 +887,7 @@ namespace Bloom
             this->refreshPinStates();
         }
 
-        if (this->targetRegistersSidePane != nullptr) {
+        if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->state.activated) {
             this->targetRegistersSidePane->refreshRegisterValues();
         }
 
