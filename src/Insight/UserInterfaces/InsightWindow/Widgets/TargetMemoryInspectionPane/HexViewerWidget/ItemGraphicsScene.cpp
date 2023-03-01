@@ -44,6 +44,7 @@ namespace Bloom::Widgets
         this->displayAbsoluteAddressAction->setCheckable(true);
 
         this->setAddressType(this->state.settings.addressLabelType);
+        this->setItemIndexMethod(QGraphicsScene::NoIndex);
 
         QObject::connect(
             InsightSignals::instance(),
@@ -133,7 +134,6 @@ namespace Bloom::Widgets
 
         this->addItem(this->hoverRectX);
         this->addItem(this->hoverRectY);
-        this->setItemIndexMethod(QGraphicsScene::NoIndex);
     }
 
     void ItemGraphicsScene::init() {
@@ -152,9 +152,6 @@ namespace Bloom::Widgets
         );
 
         InsightWorker::queueTask(constructHexViewerTopLevelGroupItem);
-
-        auto* vScrollBar = this->views().first()->verticalScrollBar();
-        vScrollBar->setSingleStep((ByteItem::HEIGHT + (ByteItem::BOTTOM_MARGIN / 2)));
     }
 
     void ItemGraphicsScene::updateStackPointer(std::uint32_t stackPointer) {
@@ -282,13 +279,9 @@ namespace Bloom::Widgets
         auto allocatableGraphicsItemsCount = allocatableGraphicsItems.size();
 
         const auto allocateRangeStartItemIt = this->gridPoints[gridPointIndex];
-        const auto allocateRangeEndItemIt = allocateRangeStartItemIt + std::min(
-            std::distance(allocateRangeStartItemIt, this->flattenedItems.end() - 1),
-            static_cast<long>(allocatableGraphicsItemsCount)
-        );
+        const auto allocateRangeEndItemIt = this->flattenedItems.end();
 
         const auto& firstItem = *allocateRangeStartItemIt;
-        const auto& lastItem = *allocateRangeEndItemIt;
 
         /*
          * Ensure that a graphics item for each parent, grandparent, etc. is allocated for the first item in the
