@@ -20,10 +20,10 @@ namespace Bloom::Widgets
         this->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        this->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+        this->setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
         this->setOptimizationFlag(QGraphicsView::DontSavePainterState, true);
         this->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
-        this->setCacheMode(QGraphicsView::CacheBackground);
+        this->setCacheMode(QGraphicsView::CacheModeFlag::CacheNone);
         this->setFocusPolicy(Qt::StrongFocus);
 
         this->scene = new ItemGraphicsScene(
@@ -74,5 +74,10 @@ namespace Bloom::Widgets
         if (this->scene != nullptr) {
             this->scene->adjustSize();
         }
+    }
+
+    void ItemGraphicsView::scrollContentsBy(int dx, int dy) {
+        this->scene->allocateGraphicsItems();
+        return QGraphicsView::scrollContentsBy(dx, dy);
     }
 }

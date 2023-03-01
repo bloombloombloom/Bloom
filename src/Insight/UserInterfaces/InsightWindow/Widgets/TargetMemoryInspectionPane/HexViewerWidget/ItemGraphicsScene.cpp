@@ -2,9 +2,6 @@
 
 #include <cmath>
 #include <QMenu>
-#include <iterator>
-#include <unordered_set>
-#include <algorithm>
 #include <QApplication>
 #include <QClipboard>
 #include <QByteArray>
@@ -136,15 +133,7 @@ namespace Bloom::Widgets
 
         this->addItem(this->hoverRectX);
         this->addItem(this->hoverRectY);
-
         this->setItemIndexMethod(QGraphicsScene::NoIndex);
-
-        this->allocateGraphicsItemsTimer = new QTimer(this);
-        this->allocateGraphicsItemsTimer->setSingleShot(true);
-        this->allocateGraphicsItemsTimer->setInterval(60);
-        this->allocateGraphicsItemsTimer->callOnTimeout(this, [this] {
-            this->allocateGraphicsItems();
-        });
     }
 
     void ItemGraphicsScene::init() {
@@ -166,15 +155,6 @@ namespace Bloom::Widgets
 
         auto* vScrollBar = this->views().first()->verticalScrollBar();
         vScrollBar->setSingleStep((ByteItem::HEIGHT + (ByteItem::BOTTOM_MARGIN / 2)));
-
-        QObject::connect(
-            vScrollBar,
-            &QScrollBar::valueChanged,
-            this,
-            [this] (int) {
-                this->allocateGraphicsItemsTimer->start();
-            }
-        );
     }
 
     void ItemGraphicsScene::updateStackPointer(std::uint32_t stackPointer) {
@@ -235,7 +215,7 @@ namespace Bloom::Widgets
         const auto itemsRequired = static_cast<std::uint32_t>(
             (availableWidth / (ByteItem::WIDTH + (ByteItem::RIGHT_MARGIN / 2)))
                 * (
-                    (view->viewport()->height() + (40 * ItemGraphicsScene::GRID_SIZE))
+                    (view->viewport()->height() + (4 * ItemGraphicsScene::GRID_SIZE))
                     / (ByteItem::HEIGHT + (ByteItem::BOTTOM_MARGIN / 2))
                 )
         );
@@ -279,6 +259,70 @@ namespace Bloom::Widgets
         }
 
         return QPointF();
+    }
+
+    void ItemGraphicsScene::allocateGraphicsItems() {
+        const auto* view = this->views().first();
+        const auto verticalScrollBarValue = view->verticalScrollBar()->value();
+
+        constexpr auto bufferPointSize = 2;
+        const auto gridPointIndex = static_cast<decltype(this->gridPoints)::size_type>(std::max(
+            static_cast<int>(
+                std::floor(
+                    static_cast<float>(verticalScrollBarValue) / static_cast<float>(ItemGraphicsScene::GRID_SIZE)
+                )
+            ) - 1 - bufferPointSize,
+            0
+        ));
+
+        // Sanity check
+        assert(this->gridPoints.size() > gridPointIndex);
+
+        const auto& allocatableGraphicsItems = this->graphicsItems;
+        auto allocatableGraphicsItemsCount = allocatableGraphicsItems.size();
+
+        const auto allocateRangeStartItemIt = this->gridPoints[gridPointIndex];
+        const auto allocateRangeEndItemIt = allocateRangeStartItemIt + std::min(
+            std::distance(allocateRangeStartItemIt, this->flattenedItems.end() - 1),
+            static_cast<long>(allocatableGraphicsItemsCount)
+        );
+
+        const auto& firstItem = *allocateRangeStartItemIt;
+        const auto& lastItem = *allocateRangeEndItemIt;
+
+        /*
+         * Ensure that a graphics item for each parent, grandparent, etc. is allocated for the first item in the
+         * allocatable range.
+         */
+        auto* parentItem = firstItem->parent;
+
+        while (
+            parentItem != nullptr
+            && parentItem != this->topLevelGroup.get()
+            && allocatableGraphicsItemsCount > 0
+        ) {
+            allocatableGraphicsItems[allocatableGraphicsItemsCount - 1]->setHexViewerItem(parentItem);
+            --allocatableGraphicsItemsCount;
+            parentItem = parentItem->parent;
+        }
+
+        for (auto itemIt = allocateRangeStartItemIt; itemIt != allocateRangeEndItemIt; ++itemIt) {
+            if (allocatableGraphicsItemsCount < 1) {
+                // No more graphics items available to allocate
+                break;
+            }
+
+            allocatableGraphicsItems[allocatableGraphicsItemsCount - 1]->setHexViewerItem(*itemIt);
+            --allocatableGraphicsItemsCount;
+        }
+
+        // If we still have some available graphics items, clear them
+        while (allocatableGraphicsItemsCount > 0) {
+            allocatableGraphicsItems[allocatableGraphicsItemsCount - 1]->setHexViewerItem(nullptr);
+            --allocatableGraphicsItemsCount;
+        }
+
+        this->update();
     }
 
     bool ItemGraphicsScene::event(QEvent* event) {
@@ -432,6 +476,7 @@ namespace Bloom::Widgets
 
     void ItemGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* mouseEvent) {
         this->clearSelectionRectItem();
+        this->update();
     }
 
     void ItemGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
@@ -484,99 +529,6 @@ namespace Bloom::Widgets
 
         menu->addMenu(copyMenu);
         menu->exec(event->screenPos());
-    }
-
-    void ItemGraphicsScene::allocateGraphicsItems() {
-        const auto* view = this->views().first();
-        const auto verticalScrollBarValue = view->verticalScrollBar()->value();
-
-        constexpr auto bufferPointSize = 20;
-        const auto gridPointIndex = static_cast<decltype(this->gridPoints)::size_type>(std::max(
-            static_cast<int>(
-                std::floor(
-                    static_cast<float>(verticalScrollBarValue) / static_cast<float>(ItemGraphicsScene::GRID_SIZE)
-                )
-            ) - 1 - bufferPointSize,
-            0
-        ));
-
-        // Sanity check
-        assert(this->gridPoints.size() > gridPointIndex);
-
-        const auto totalGraphicsItems = this->graphicsItems.size();
-
-        auto allocateRangeStartItemIt = this->gridPoints[gridPointIndex];
-        const auto allocateRangeEndItemIt = allocateRangeStartItemIt + std::min(
-            std::distance(allocateRangeStartItemIt, this->flattenedItems.end() - 1),
-            static_cast<long>(totalGraphicsItems)
-        );
-
-        const auto excessAvailableGraphicItems = static_cast<int>(totalGraphicsItems)
-            - std::distance(allocateRangeStartItemIt, allocateRangeEndItemIt);
-
-        if (excessAvailableGraphicItems > 0) {
-            allocateRangeStartItemIt -= std::min(
-                std::distance(this->flattenedItems.begin(), allocateRangeStartItemIt),
-                excessAvailableGraphicItems
-            );
-        }
-
-        const auto allocateRangeStartAddress = (*allocateRangeStartItemIt)->startAddress;
-        const auto allocateRangeEndAddress = (*allocateRangeEndItemIt)->startAddress;
-
-        auto allocatableGraphicsItems = std::unordered_set<GraphicsItem*>();
-        std::copy_if(
-            this->graphicsItems.begin(),
-            this->graphicsItems.end(),
-            std::inserter(allocatableGraphicsItems, allocatableGraphicsItems.begin()),
-            [&allocateRangeStartAddress, &allocateRangeEndAddress] (const GraphicsItem* graphicsItem) {
-                return
-                    graphicsItem->hexViewerItem == nullptr
-                    || graphicsItem->hexViewerItem->startAddress < allocateRangeStartAddress
-                    || graphicsItem->hexViewerItem->startAddress > allocateRangeEndAddress;
-            }
-        );
-
-        /*
-         * Ensure that a graphics item for each parent, grandparent, etc. is allocated for the first item in the
-         * allocatable range.
-         */
-        const auto& firstItem = *allocateRangeStartItemIt;
-        auto* parentItem = firstItem->parent;
-
-        while (
-            parentItem != nullptr
-            && parentItem != this->topLevelGroup.get()
-            && !allocatableGraphicsItems.empty()
-        ) {
-            if (parentItem->allocatedGraphicsItem == nullptr) {
-                (*allocatableGraphicsItems.begin())->setHexViewerItem(parentItem);
-            }
-
-            allocatableGraphicsItems.erase(parentItem->allocatedGraphicsItem);
-            parentItem = parentItem->parent;
-        }
-
-        for (auto itemIt = allocateRangeStartItemIt; itemIt != allocateRangeEndItemIt; ++itemIt) {
-            if (allocatableGraphicsItems.empty()) {
-                // No more graphics items available to allocate
-                break;
-            }
-
-            auto& item = *itemIt;
-
-            if (item->allocatedGraphicsItem != nullptr) {
-                continue;
-            }
-
-            (*allocatableGraphicsItems.begin())->setHexViewerItem(item);
-            allocatableGraphicsItems.erase(item->allocatedGraphicsItem);
-        }
-
-        // If we still have some available graphics items, clear them
-        for (auto& graphicsItem : allocatableGraphicsItems) {
-            graphicsItem->setHexViewerItem(nullptr);
-        }
     }
 
     void ItemGraphicsScene::refreshItemPositionIndices() {
@@ -675,6 +627,7 @@ namespace Bloom::Widgets
 
         this->hoverRectX->setVisible(false);
         this->hoverRectY->setVisible(false);
+        this->update();
     }
 
     void ItemGraphicsScene::clearSelectionRectItem() {

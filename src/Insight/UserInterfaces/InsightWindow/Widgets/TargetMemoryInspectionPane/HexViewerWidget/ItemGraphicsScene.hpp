@@ -60,6 +60,7 @@ namespace Bloom::Widgets
         void setEnabled(bool enabled);
         void refreshValues();
         QPointF getByteItemPositionByAddress(Targets::TargetMemoryAddress address);
+        void allocateGraphicsItems();
 
     signals:
         void ready();
@@ -119,8 +120,6 @@ namespace Bloom::Widgets
         QAction* displayRelativeAddressAction = new QAction("Relative", this);
         QAction* displayAbsoluteAddressAction = new QAction("Absolute", this);
 
-        QTimer* allocateGraphicsItemsTimer = nullptr;
-
         int getSceneWidth() {
             /*
              * Minus 2 for the QSS margin on the vertical scrollbar (which isn't accounted for during viewport
@@ -131,7 +130,6 @@ namespace Bloom::Widgets
             return std::max(this->parent->viewport()->width(), 400) - 2;
         }
 
-        void allocateGraphicsItems();
         void refreshItemPositionIndices();
         void onTargetStateChanged(Targets::TargetState newState);
         void onByteItemEnter(ByteItem& byteItem);
