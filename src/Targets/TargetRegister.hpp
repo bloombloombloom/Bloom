@@ -68,8 +68,10 @@ namespace Bloom::Targets
         TargetRegisterDescriptor descriptor;
         TargetMemoryBuffer value;
 
-        TargetRegister(TargetRegisterDescriptor descriptor, std::vector<unsigned char> value): value(std::move(value)),
-        descriptor(std::move(descriptor)) {};
+        TargetRegister(TargetRegisterDescriptor descriptor, std::vector<unsigned char> value)
+            : value(std::move(value))
+            , descriptor(std::move(descriptor))
+        {};
 
         [[nodiscard]] std::size_t size() const {
             return this->value.size();

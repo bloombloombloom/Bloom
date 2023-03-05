@@ -612,7 +612,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
     ) {
         if (this->programmingModeEnabled && memoryType == TargetMemoryType::RAM) {
-            throw Exception("Cannot access RAM or EEPROM when programming mode is enabled");
+            throw Exception("Cannot access RAM when programming mode is enabled");
         }
 
         auto avr8MemoryType = Avr8MemoryType::SRAM;
