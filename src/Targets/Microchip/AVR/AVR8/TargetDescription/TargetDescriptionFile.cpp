@@ -150,9 +150,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     Family TargetDescriptionFile::getFamily() const {
         static const auto targetFamiliesByName = TargetDescriptionFile::getFamilyNameToEnumMapping();
 
-        const auto familyName = this->deviceElement.attributes().namedItem(
-            "family"
-        ).nodeValue().toLower().toStdString();
+        const auto& familyName = this->getFamilyName();
 
         if (familyName.empty()) {
             throw Exception("Could not find target family name in target description file.");

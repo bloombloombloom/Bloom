@@ -11,8 +11,12 @@ namespace Bloom::Targets::TargetDescription
 {
     using namespace Bloom::Exceptions;
 
-    std::string TargetDescriptionFile::getTargetName() const {
-        return this->deviceElement.attributes().namedItem("name").nodeValue().toStdString();
+    const std::string& TargetDescriptionFile::getTargetName() const {
+        return this->targetName;
+    }
+
+    const std::string& TargetDescriptionFile::getFamilyName() const {
+        return this->familyName;
     }
 
     void TargetDescriptionFile::init(const QString& xmlFilePath) {
@@ -23,32 +27,31 @@ namespace Bloom::Targets::TargetDescription
         }
 
         file.open(QIODevice::ReadOnly);
-        auto xml = QDomDocument();
-        if (!xml.setContent(file.readAll())) {
+        auto document = QDomDocument();
+        if (!document.setContent(file.readAll())) {
             throw Exception("Failed to parse target description file - please report this error "
                 "to Bloom developers via " + Services::PathService::homeDomainName() + "/report-issue");
         }
 
-        this->init(xml);
+        this->init(document);
     }
 
-    void TargetDescriptionFile::init(const QDomDocument& xml) {
-        this->xml = xml;
-
-        auto device = xml.elementsByTagName("device").item(0).toElement();
+    void TargetDescriptionFile::init(const QDomDocument& document) {
+        const auto device = document.elementsByTagName("device").item(0).toElement();
         if (!device.isElement()) {
             throw TargetDescriptionParsingFailureException("Device element not found.");
         }
 
-        this->deviceElement = device;
+        this->targetName = device.attributes().namedItem("name").nodeValue().toStdString();
+        this->familyName = device.attributes().namedItem("family").nodeValue().toLower().toStdString();
 
-        this->loadAddressSpaces();
-        this->loadPropertyGroups();
-        this->loadModules();
-        this->loadPeripheralModules();
-        this->loadVariants();
-        this->loadPinouts();
-        this->loadInterfaces();
+        this->loadAddressSpaces(document);
+        this->loadPropertyGroups(document);
+        this->loadModules(document);
+        this->loadPeripheralModules(document);
+        this->loadVariants(document);
+        this->loadPinouts(document);
+        this->loadInterfaces(document);
     }
 
     AddressSpace TargetDescriptionFile::generateAddressSpaceFromXml(const QDomElement& xmlElement) {
@@ -280,9 +283,10 @@ namespace Bloom::Targets::TargetDescription
         return bitField;
     }
 
-    void TargetDescriptionFile::loadAddressSpaces() {
+    void TargetDescriptionFile::loadAddressSpaces(const QDomDocument& document) {
+        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
 
-        auto addressSpaceNodes = this->deviceElement.elementsByTagName("address-spaces").item(0).toElement()
+        auto addressSpaceNodes = deviceElement.elementsByTagName("address-spaces").item(0).toElement()
             .elementsByTagName("address-space");
 
         for (int addressSpaceIndex = 0; addressSpaceIndex < addressSpaceNodes.count(); addressSpaceIndex++) {
@@ -301,12 +305,10 @@ namespace Bloom::Targets::TargetDescription
         }
     }
 
-    void TargetDescriptionFile::loadPropertyGroups() {
-        if (!this->deviceElement.isElement()) {
-            throw TargetDescriptionParsingFailureException("Device element not found.");
-        }
+    void TargetDescriptionFile::loadPropertyGroups(const QDomDocument& document) {
+        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
 
-        auto propertyGroupNodes = this->deviceElement.elementsByTagName("property-groups").item(0).toElement()
+        auto propertyGroupNodes = deviceElement.elementsByTagName("property-groups").item(0).toElement()
             .elementsByTagName("property-group");
 
         for (int propertyGroupIndex = 0; propertyGroupIndex < propertyGroupNodes.count(); propertyGroupIndex++) {
@@ -335,8 +337,10 @@ namespace Bloom::Targets::TargetDescription
         }
     }
 
-    void TargetDescriptionFile::loadModules() {
-        auto moduleNodes = this->xml.elementsByTagName("modules").item(0).toElement()
+    void TargetDescriptionFile::loadModules(const QDomDocument& document) {
+        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
+
+        auto moduleNodes = document.elementsByTagName("modules").item(0).toElement()
             .elementsByTagName("module");
 
         for (int moduleIndex = 0; moduleIndex < moduleNodes.count(); moduleIndex++) {
@@ -358,8 +362,10 @@ namespace Bloom::Targets::TargetDescription
         }
     }
 
-    void TargetDescriptionFile::loadPeripheralModules() {
-        auto moduleNodes = this->deviceElement.elementsByTagName("peripherals").item(0).toElement()
+    void TargetDescriptionFile::loadPeripheralModules(const QDomDocument& document) {
+        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
+
+        auto moduleNodes = deviceElement.elementsByTagName("peripherals").item(0).toElement()
             .elementsByTagName("module");
 
         for (int moduleIndex = 0; moduleIndex < moduleNodes.count(); moduleIndex++) {
@@ -432,8 +438,10 @@ namespace Bloom::Targets::TargetDescription
         }
     }
 
-    void TargetDescriptionFile::loadVariants() {
-        auto variantNodes = this->xml.elementsByTagName("variants").item(0).toElement()
+    void TargetDescriptionFile::loadVariants(const QDomDocument& document) {
+        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
+
+        auto variantNodes = document.elementsByTagName("variants").item(0).toElement()
             .elementsByTagName("variant");
 
         for (int variantIndex = 0; variantIndex < variantNodes.count(); variantIndex++) {
@@ -471,8 +479,10 @@ namespace Bloom::Targets::TargetDescription
         }
     }
 
-    void TargetDescriptionFile::loadPinouts() {
-        auto pinoutNodes = this->xml.elementsByTagName("pinouts").item(0).toElement()
+    void TargetDescriptionFile::loadPinouts(const QDomDocument& document) {
+        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
+
+        auto pinoutNodes = document.elementsByTagName("pinouts").item(0).toElement()
             .elementsByTagName("pinout");
 
         for (int pinoutIndex = 0; pinoutIndex < pinoutNodes.count(); pinoutIndex++) {
@@ -524,8 +534,10 @@ namespace Bloom::Targets::TargetDescription
         }
     }
 
-    void TargetDescriptionFile::loadInterfaces() {
-        auto interfaceNodes = this->deviceElement.elementsByTagName("interfaces").item(0).toElement()
+    void TargetDescriptionFile::loadInterfaces(const QDomDocument& document) {
+        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
+
+        auto interfaceNodes = deviceElement.elementsByTagName("interfaces").item(0).toElement()
             .elementsByTagName("interface");
 
         for (int interfaceIndex = 0; interfaceIndex < interfaceNodes.count(); interfaceIndex++) {

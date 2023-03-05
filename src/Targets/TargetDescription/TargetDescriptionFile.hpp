@@ -56,11 +56,18 @@ namespace Bloom::Targets::TargetDescription
         }
 
         /**
-         * Extracts target name.
+         * Returns the target name extracted from the TDF.
          *
          * @return
          */
-        [[nodiscard]] std::string getTargetName() const;
+        [[nodiscard]] const std::string& getTargetName() const;
+
+        /**
+         * Returns the target family name extracted from the TDF.
+         *
+         * @return
+         */
+        [[nodiscard]] const std::string& getFamilyName() const;
 
         /**
          * Returns a mapping of all property groups, with the property group name being the key.
@@ -108,8 +115,8 @@ namespace Bloom::Targets::TargetDescription
         }
 
     protected:
-        QDomDocument xml;
-        QDomElement deviceElement;
+        std::string targetName;
+        std::string familyName;
 
         std::map<std::string, AddressSpace> addressSpacesMappedById;
         std::map<std::string, PropertyGroup> propertyGroupsMappedByName;
@@ -129,7 +136,7 @@ namespace Bloom::Targets::TargetDescription
         TargetDescriptionFile& operator = (const TargetDescriptionFile& other) = default;
         TargetDescriptionFile& operator = (TargetDescriptionFile&& other) = default;
 
-        virtual void init(const QDomDocument& xml);
+        virtual void init(const QDomDocument& document);
         void init(const QString& xmlFilePath);
 
         /**
@@ -175,36 +182,36 @@ namespace Bloom::Targets::TargetDescription
         /**
          * Extracts all address spaces and loads them into this->addressSpacesMappedById.
          */
-        void loadAddressSpaces();
+        void loadAddressSpaces(const QDomDocument& document);
 
         /**
          * Extracts all property groups and loads them into this->propertyGroupsMappedByName.
          */
-        void loadPropertyGroups();
+        void loadPropertyGroups(const QDomDocument& document);
 
         /**
          * Extracts all modules and loads them into this->modulesMappedByName.
          */
-        void loadModules();
+        void loadModules(const QDomDocument& document);
 
         /**
          * Extracts all peripheral modules and loads them into this->peripheralModulesMappedByName.
          */
-        void loadPeripheralModules();
+        void loadPeripheralModules(const QDomDocument& document);
 
         /**
          * Extracts all variants and loads them into this->variants.
          */
-        void loadVariants();
+        void loadVariants(const QDomDocument& document);
 
         /**
          * Extracts all pinouts and loads them into this->pinoutsMappedByName.
          */
-        void loadPinouts();
+        void loadPinouts(const QDomDocument& document);
 
         /**
          * Extracts all interfaces and loads them into this->interfacesByName
          */
-        void loadInterfaces();
+        void loadInterfaces(const QDomDocument& document);
     };
 }
