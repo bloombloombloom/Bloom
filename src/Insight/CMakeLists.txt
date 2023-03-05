@@ -20,6 +20,10 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ExpandingHeightScrollAreaWidget.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PushButton.cpp
 
+        # ListView widget
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ListView/ListView.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ListView/ListScene.cpp
+
         # Insight worker tasks
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/InsightWorkerTask.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ReadTargetRegisters.cpp

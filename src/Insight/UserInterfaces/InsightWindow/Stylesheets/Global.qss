@@ -220,3 +220,8 @@ QCheckBox::indicator:unchecked {
     margin-top: 2px;
     image: url(":/compiled/src/Insight/UserInterfaces/InsightWindow/Images/unchecked-action-icon.svg");
 }
+
+#list-graphics-view {
+    background-color: transparent;
+    border: none;
+}
