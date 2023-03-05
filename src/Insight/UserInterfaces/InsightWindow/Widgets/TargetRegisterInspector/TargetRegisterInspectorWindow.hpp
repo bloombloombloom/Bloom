@@ -27,7 +27,6 @@ namespace Bloom::Widgets
         TargetRegisterInspectorWindow(
             const Targets::TargetRegisterDescriptor& registerDescriptor,
             Targets::TargetState currentTargetState,
-            const std::optional<Targets::TargetMemoryBuffer>& registerValue = std::nullopt,
             QWidget* parent = nullptr
         );
 

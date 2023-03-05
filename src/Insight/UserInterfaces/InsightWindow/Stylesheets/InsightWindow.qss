@@ -202,25 +202,6 @@ QScrollBar::sub-line:vertical {
     border: none;
 }
 
-#target-registers-side-pane #register-group-header[selected=true],
-#target-registers-side-pane #register-item[selected=true] {
-    background-color: #355A80;
-}
-
-#target-registers-side-pane #register-item #value {
-    font-size: 13px;
-    color: #8a8a8d;
-    font-style: italic;
-}
-
-#target-registers-side-pane #register-item[selected=false] #value[changed=true] {
-    color: #547fba;
-}
-
-#target-registers-side-pane #register-item[selected=true] #value[changed=true] {
-    color: #8a8a8d;
-}
-
 /* Bottom menu bar & panels */
 #bottom-menu-bar {
     background-color: transparent;

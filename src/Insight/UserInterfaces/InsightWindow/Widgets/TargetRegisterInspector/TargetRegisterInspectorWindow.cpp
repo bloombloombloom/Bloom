@@ -27,12 +27,11 @@ namespace Bloom::Widgets
     TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
         const Targets::TargetRegisterDescriptor& registerDescriptor,
         TargetState currentTargetState,
-        const std::optional<Targets::TargetMemoryBuffer>& registerValue,
         QWidget* parent
     )
         : QWidget(parent)
         , registerDescriptor(registerDescriptor)
-        , registerValue(registerValue.value_or(Targets::TargetMemoryBuffer(registerDescriptor.size, 0)))
+        , registerValue(Targets::TargetMemoryBuffer(registerDescriptor.size, 0))
     {
         this->setWindowFlag(Qt::Window);
         auto registerName = QString::fromStdString(this->registerDescriptor.name.value()).toUpper();

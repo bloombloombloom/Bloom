@@ -4,22 +4,26 @@
 #include <QLineEdit>
 #include <QScrollArea>
 #include <set>
+#include <unordered_map>
 #include <QSize>
 #include <QString>
 #include <QEvent>
+#include <QAction>
 #include <optional>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
 
-#include "ItemWidget.hpp"
+#include "RegisterItem.hpp"
+#include "RegisterGroupItem.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/TargetRegisterInspectorWindow.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 
 namespace Bloom::Widgets
 {
-    class RegisterGroupWidget;
     class TargetRegistersPaneWidget: public PaneWidget
     {
         Q_OBJECT
@@ -35,9 +39,10 @@ namespace Bloom::Widgets
         void collapseAllRegisterGroups();
         void expandAllRegisterGroups();
 
-        void refreshRegisterValues(std::optional<std::function<void(void)>> callback = std::nullopt);
-
-        void onItemSelectionChange(Bloom::Widgets::ItemWidget* newlySelectedWidget);
+        void refreshRegisterValues(
+            std::optional<Targets::TargetRegisterDescriptor> registerDescriptor = std::nullopt,
+            std::optional<std::function<void(void)>> callback = std::nullopt
+        );
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
@@ -52,18 +57,36 @@ namespace Bloom::Widgets
         SvgToolButton* expandAllButton = nullptr;
 
         QLineEdit* searchInput = nullptr;
-        QScrollArea* itemScrollArea = nullptr;
-        QWidget* itemContainer = nullptr;
+        ListView* registerListView = nullptr;
+        ListScene* registerListScene = nullptr;
 
-        ItemWidget* selectedItemWidget = nullptr;
-
-        std::set<RegisterGroupWidget*> registerGroupWidgets;
-        Targets::TargetRegisterDescriptors renderedDescriptors;
+        Targets::TargetRegisterDescriptors registerDescriptors;
+        std::vector<RegisterGroupItem*> registerGroupItems;
+        std::unordered_map<Targets::TargetRegisterDescriptor, RegisterItem*> registerItemsByDescriptor;
+        std::unordered_map<Targets::TargetRegisterDescriptor, TargetRegisterInspectorWindow*> inspectionWindowsByDescriptor;
+        std::unordered_map<Targets::TargetRegisterDescriptor, Targets::TargetMemoryBuffer> currentRegisterValues;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
+        // Context-menu actions
+        QAction* openInspectionWindowAction = new QAction("Inspect", this);
+        QAction* refreshValueAction = new QAction("Refresh Value", this);
+        QAction* copyNameAction = new QAction("Copy Register Name", this);
+        QAction* copyValueHexAction = new QAction("Copy Hexadecimal Value", this);
+        QAction* copyValueDecimalAction = new QAction("Copy Decimal Value", this);
+        QAction* copyValueBinaryAction = new QAction("Copy Binary Value", this);
+
+        RegisterItem* contextMenuRegisterItem = nullptr;
+
+        void onItemDoubleClicked(ListItem* clickedItem);
+        void onItemContextMenu(ListItem* item, QPoint sourcePosition);
         void onTargetStateChanged(Targets::TargetState newState);
         void onRegistersRead(const Targets::TargetRegisters& registers);
         void clearInlineRegisterValues();
+        void openInspectionWindow(const Targets::TargetRegisterDescriptor& registerDescriptor);
+        void copyRegisterName(const Targets::TargetRegisterDescriptor& registerDescriptor);
+        void copyRegisterValueHex(const Targets::TargetRegisterDescriptor& registerDescriptor);
+        void copyRegisterValueDecimal(const Targets::TargetRegisterDescriptor& registerDescriptor);
+        void copyRegisterValueBinary(const Targets::TargetRegisterDescriptor& registerDescriptor);
     };
 }
