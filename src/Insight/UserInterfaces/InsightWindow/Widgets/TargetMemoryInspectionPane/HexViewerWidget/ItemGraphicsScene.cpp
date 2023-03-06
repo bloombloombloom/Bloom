@@ -330,19 +330,38 @@ namespace Bloom::Widgets
         static const auto rubberBandRectBackgroundColor = QColor(0x3C, 0x59, 0x5C, 0x82);
         static const auto rubberBandRectBorderColor = QColor(0x3C, 0x59, 0x5C, 255);
 
-        if (mouseEvent->button() != Qt::MouseButton::LeftButton) {
-            return;
-        }
-
-        const auto mousePosition = mouseEvent->buttonDownScenePos(Qt::MouseButton::LeftButton);
+        const auto button = mouseEvent->button();
+        const auto mousePosition = mouseEvent->buttonDownScenePos(button);
 
         if (mousePosition.x() <= this->byteAddressContainer->boundingRect().width()) {
             return;
         }
 
         this->update();
+
+        if (button == Qt::MouseButton::RightButton) {
+            ByteItem* clickedByteItem = nullptr;
+            for (const auto& item : this->items(mousePosition)) {
+                auto* clickedGraphicsItem = dynamic_cast<GraphicsItem*>(item);
+
+                if (clickedGraphicsItem == nullptr) {
+                    continue;
+                }
+
+                clickedByteItem = dynamic_cast<ByteItem*>(clickedGraphicsItem->hexViewerItem);
+
+                if (clickedByteItem != nullptr) {
+                    break;
+                }
+            }
+
+            if (clickedByteItem == nullptr || clickedByteItem->selected) {
+                return;
+            }
+        }
+
         const auto modifiers = mouseEvent->modifiers();
-        if ((modifiers & Qt::ShiftModifier) == 0) {
+        if ((modifiers & Qt::ShiftModifier) == 0 && button == Qt::MouseButton::LeftButton) {
             this->clearSelectionRectItem();
 
             this->rubberBandInitPoint = std::move(mousePosition);
