@@ -421,6 +421,7 @@ namespace Bloom::Widgets
         auto hoveredItems = this->items(mousePosition);
 
         if (this->rubberBandRectItem != nullptr && this->rubberBandInitPoint.has_value()) {
+            this->update();
             const auto oldRect = this->rubberBandRectItem->rect();
 
             this->rubberBandRectItem->setRect(
