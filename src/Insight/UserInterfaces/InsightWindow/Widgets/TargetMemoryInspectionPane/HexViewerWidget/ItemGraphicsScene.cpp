@@ -192,6 +192,7 @@ namespace Bloom::Widgets
         this->hoverRectY->setRect(hoverRectY);
 
         this->topLevelGroup->adjustItemPositions(availableWidth);
+        this->refreshItemPositionIndices();
 
         this->setSceneRect(
             0,
@@ -203,8 +204,6 @@ namespace Bloom::Widgets
                 this->parent->height()
             )
         );
-
-        this->refreshItemPositionIndices();
 
         this->byteAddressContainer->adjustAddressLabels(this->firstByteItemByLine);
 
