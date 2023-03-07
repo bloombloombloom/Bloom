@@ -156,7 +156,7 @@ namespace Bloom::Widgets
 
     void ItemGraphicsScene::updateStackPointer(std::uint32_t stackPointer) {
         this->state.currentStackPointer = stackPointer;
-        this->update();
+        this->rebuildItemHierarchy();
     }
 
     void ItemGraphicsScene::selectByteItems(const std::set<std::uint32_t>& addresses) {
@@ -172,11 +172,10 @@ namespace Bloom::Widgets
         this->update();
     }
 
-    void ItemGraphicsScene::refreshRegions() {
+    void ItemGraphicsScene::rebuildItemHierarchy() {
         this->topLevelGroup->rebuildItemHierarchy();
         this->flattenedItems = this->topLevelGroup->flattenedItems();
         this->adjustSize();
-        return;
     }
 
     void ItemGraphicsScene::adjustSize() {

@@ -199,7 +199,7 @@ namespace Bloom::Widgets
 
     void HexViewerWidget::refreshRegions() {
         if (this->byteItemGraphicsScene != nullptr) {
-            this->byteItemGraphicsScene->refreshRegions();
+            this->byteItemGraphicsScene->rebuildItemHierarchy();
         }
     }
 
@@ -230,7 +230,7 @@ namespace Bloom::Widgets
         this->settings.highlightStackMemory = enabled;
 
         if (this->byteItemGraphicsScene != nullptr) {
-            this->byteItemGraphicsScene->update();
+            this->byteItemGraphicsScene->rebuildItemHierarchy();
         }
     }
 

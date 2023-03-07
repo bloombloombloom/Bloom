@@ -55,7 +55,7 @@ namespace Bloom::Widgets
         void init();
         void updateStackPointer(Targets::TargetStackPointer stackPointer);
         void selectByteItems(const std::set<Targets::TargetMemoryAddress>& addresses);
-        void refreshRegions();
+        void rebuildItemHierarchy();
         void adjustSize();
         void setEnabled(bool enabled);
         void refreshValues();

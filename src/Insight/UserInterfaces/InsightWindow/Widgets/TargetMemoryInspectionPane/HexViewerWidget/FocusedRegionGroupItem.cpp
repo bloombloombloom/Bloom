@@ -182,8 +182,8 @@ namespace Bloom::Widgets
     ) const {
         auto labelText = this->focusedMemoryRegion.name;
 
-        static const auto lineColor = QColor(0x4F, 0x4F, 0x4F);
-        static const auto labelFontColor = QColor(0x68, 0x68, 0x68);
+        static constexpr auto lineColor = QColor(0x4F, 0x4F, 0x4F);
+        static constexpr auto labelFontColor = QColor(0x68, 0x68, 0x68);
 
         static auto labelFont = QFont("'Ubuntu', sans-serif");
         labelFont.setPixelSize(12);
