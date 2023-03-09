@@ -25,23 +25,11 @@ namespace Bloom::Widgets
         HexViewerItem* parent = nullptr;
         GraphicsItem* allocatedGraphicsItem = nullptr;
 
-        HexViewerItem(
-            Targets::TargetMemoryAddress startAddress,
-            HexViewerItem* parent = nullptr
-        )
-            : startAddress(startAddress)
-            , parent(parent)
-        {};
+        HexViewerItem(Targets::TargetMemoryAddress startAddress, HexViewerItem* parent = nullptr);
 
-        virtual ~HexViewerItem() = default;
+        virtual ~HexViewerItem();
 
-        QPoint position() const {
-            if (this->parent != nullptr) {
-                return this->parent->position() + this->relativePosition;
-            }
-
-            return this->relativePosition;
-        }
+        QPoint position() const;
 
         virtual QSize size() const = 0;
 

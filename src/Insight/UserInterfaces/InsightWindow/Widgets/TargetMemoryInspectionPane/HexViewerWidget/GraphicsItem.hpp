@@ -20,6 +20,12 @@ namespace Bloom::Widgets
             this->setCacheMode(QGraphicsItem::CacheMode::NoCache);
         }
 
+        ~GraphicsItem() {
+            if (this->hexViewerItem != nullptr) {
+                this->hexViewerItem->allocatedGraphicsItem = nullptr;
+            }
+        }
+
         void setHexViewerItem(HexViewerItem* item) {
             if (this->hexViewerItem != nullptr) {
                 this->hexViewerItem->allocatedGraphicsItem = nullptr;
