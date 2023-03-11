@@ -13,7 +13,7 @@ namespace Bloom::Widgets
         painter.setClipRect(0, 0, containerSize.width(), containerSize.height());
         painter.save();
         painter.setPen(Qt::PenStyle::SolidLine);
-        painter.setPen(QColor(this->isEnabled() ? "#afb1b3" : "#808484"));
+        painter.setPen(QColor(this->isEnabled() ? "#999a9d" : "#808484"));
         painter.translate(std::ceil(containerSize.width() / 2), std::ceil(containerSize.height() / 2));
         painter.rotate(this->angle);
         painter.drawText(

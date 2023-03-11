@@ -233,6 +233,7 @@ QScrollBar::sub-line:vertical {
 
 #bottom-menu-bar #ram-inspection-btn #ram-inspection-btn-label,
 #bottom-menu-bar #eeprom-inspection-btn #eeprom-inspection-btn-label {
+    color: #999a9d;
     margin-left: 5px;
 }
 
