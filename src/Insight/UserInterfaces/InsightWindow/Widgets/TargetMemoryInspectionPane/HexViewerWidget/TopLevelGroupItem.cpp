@@ -35,7 +35,6 @@ namespace Bloom::Widgets
             }
 
             byteItem.parent = this;
-            byteItem.grouped = false;
             this->items.push_back(&byteItem);
         }
 

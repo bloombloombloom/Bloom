@@ -16,6 +16,8 @@ namespace Bloom::Widgets
     class GroupItem: public HexViewerItem
     {
     public:
+        std::vector<HexViewerItem*> items;
+
         ~GroupItem();
 
         QSize size() const override {
@@ -35,7 +37,6 @@ namespace Bloom::Widgets
         }
 
     protected:
-        std::vector<HexViewerItem*> items;
         QSize groupSize = {};
         bool multiLine = false;
 

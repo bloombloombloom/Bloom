@@ -28,6 +28,27 @@ namespace Bloom::Widgets
         }
     }
 
+    FocusedRegionGroupItem::~FocusedRegionGroupItem() {
+        const auto updateChildItems = [] (const decltype(this->items)& items, const auto& updateChildItems) -> void {
+            for (auto& item : items) {
+                auto* byteItem = dynamic_cast<ByteItem*>(item);
+
+                if (byteItem != nullptr) {
+                    byteItem->grouped = false;
+                    continue;
+                }
+
+                auto* groupItem = dynamic_cast<GroupItem*>(item);
+
+                if (groupItem != nullptr) {
+                    updateChildItems(groupItem->items, updateChildItems);
+                }
+            }
+        };
+
+        updateChildItems(this->items, updateChildItems);
+    }
+
     void FocusedRegionGroupItem::refreshValue(const HexViewerSharedState& hexViewerState) {
         if (!hexViewerState.data.has_value()) {
             this->valueLabel = std::nullopt;

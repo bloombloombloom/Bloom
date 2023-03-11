@@ -20,6 +20,8 @@ namespace Bloom::Widgets
             HexViewerItem* parent
         );
 
+        ~FocusedRegionGroupItem();
+
         void refreshValue(const HexViewerSharedState& hexViewerState);
 
         void paint(
