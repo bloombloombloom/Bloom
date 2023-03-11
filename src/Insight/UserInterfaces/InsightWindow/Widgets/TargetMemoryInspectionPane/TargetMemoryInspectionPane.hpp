@@ -5,6 +5,7 @@
 #include <vector>
 #include <QResizeEvent>
 #include <QHBoxLayout>
+#include <QToolButton>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 
@@ -57,7 +58,7 @@ namespace Bloom::Widgets
 
         QWidget* titleBar = nullptr;
         SvgToolButton* manageMemoryRegionsButton = nullptr;
-        SvgToolButton* manageMemorySnapshotsButton = nullptr;
+        QToolButton* manageMemorySnapshotsButton = nullptr;
 
         SvgToolButton* refreshButton = nullptr;
         QAction* refreshOnTargetStopAction = nullptr;

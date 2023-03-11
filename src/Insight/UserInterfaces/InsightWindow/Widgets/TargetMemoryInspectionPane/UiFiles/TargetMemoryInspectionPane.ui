@@ -183,10 +183,10 @@
                     <item alignment="Qt::AlignLeft">
                         <widget class="QWidget" name="lh-side-bar">
                             <property name="minimumWidth">
-                                <number>32</number>
+                                <number>23</number>
                             </property>
                             <property name="maximumWidth">
-                                <number>32</number>
+                                <number>23</number>
                             </property>
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Fixed" vsizetype="Expanding"/>
@@ -221,41 +221,110 @@
                     <item alignment="Qt::AlignLeft">
                         <widget class="QWidget" name="rh-side-bar">
                             <property name="minimumWidth">
-                                <number>32</number>
+                                <number>23</number>
                             </property>
                             <property name="maximumWidth">
-                                <number>32</number>
+                                <number>23</number>
                             </property>
                             <property name="sizePolicy">
                                 <sizepolicy hsizetype="Fixed" vsizetype="Expanding"/>
                             </property>
                             <layout class="QVBoxLayout" name="rh-side-bar-layout">
                                 <property name="spacing">
-                                    <number>3</number>
+                                    <number>0</number>
                                 </property>
                                 <property name="margin">
                                     <number>0</number>
                                 </property>
-                                <!-- Button items here -->
-                                <item alignment="Qt::AlignRight">
-                                    <widget class="SvgToolButton" name="manage-memory-snapshots-btn">
-                                        <property name="checkable">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="svgFilePath">
-                                            <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/manage-snapshots-icon.svg</string>
-                                        </property>
-                                        <property name="toolTip">
-                                            <string>Manage Memory Snapshots</string>
-                                        </property>
-                                    </widget>
-                                </item>
                                 <item>
                                     <spacer name="vertical-spacer">
                                         <property name="orientation">
                                             <enum>Qt::Vertical</enum>
                                         </property>
                                     </spacer>
+                                </item>
+                                <!-- Button items here -->
+                                <item alignment="Qt::AlignRight">
+                                    <widget class="QToolButton" name="manage-memory-snapshots-btn">
+                                        <property name="minimumWidth">
+                                            <number>22</number>
+                                        </property>
+                                        <property name="maximumWidth">
+                                            <number>22</number>
+                                        </property>
+                                        <property name="minimumHeight">
+                                            <number>100</number>
+                                        </property>
+                                        <property name="checkable">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="toolTip">
+                                            <string>Manage Memory Snapshots</string>
+                                        </property>
+
+                                        <layout class="QVBoxLayout">
+                                            <property name="spacing">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="margin">
+                                                <number>0</number>
+                                            </property>
+                                            <item>
+                                                <spacer name="vertical-spacer">
+                                                    <property name="sizeHint">
+                                                        <size>
+                                                            <height>8</height>
+                                                        </size>
+                                                    </property>
+                                                    <property name="sizeType">
+                                                        <enum>QSizePolicy::Fixed</enum>
+                                                    </property>
+                                                </spacer>
+                                            </item>
+                                            <item alignment="Qt::AlignTop">
+                                                <widget class="SvgWidget" name="icon">
+                                                    <property name="containerHeight">
+                                                        <number>15</number>
+                                                    </property>
+                                                    <property name="containerWidth">
+                                                        <number>22</number>
+                                                    </property>
+                                                    <property name="svgFilePath">
+                                                        <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/manage-snapshots-icon.svg</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <spacer name="vertical-spacer">
+                                                    <property name="sizeHint">
+                                                        <size>
+                                                            <height>4</height>
+                                                        </size>
+                                                    </property>
+                                                    <property name="sizeType">
+                                                        <enum>QSizePolicy::Fixed</enum>
+                                                    </property>
+                                                </spacer>
+                                            </item>
+                                            <item alignment="Qt::AlignTop">
+                                                <widget class="RotatableLabel" name="label">
+                                                    <property name="angle">
+                                                        <number>90</number>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>Snapshots</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <spacer name="vertical-spacer">
+                                                    <property name="orientation">
+                                                        <enum>Qt::Vertical</enum>
+                                                    </property>
+                                                </spacer>
+                                            </item>
+                                        </layout>
+                                    </widget>
                                 </item>
                             </layout>
                         </widget>

@@ -35,9 +35,7 @@
 }
 
 #target-memory-inspection-pane #top-bar QToolButton,
-#target-memory-inspection-pane #bottom-bar QToolButton,
-#target-memory-inspection-pane #lh-side-bar QToolButton,
-#target-memory-inspection-pane #rh-side-bar QToolButton {
+#target-memory-inspection-pane #bottom-bar QToolButton {
     background-color: transparent;
     border: none;
     padding: 0;
@@ -211,13 +209,22 @@
 
 /* Snapshot Manager */
 #target-memory-inspection-pane #rh-side-bar #manage-memory-snapshots-btn {
-    border-bottom: 1px solid #41423f;
-    qproperty-buttonWidth: 31;
-    qproperty-buttonHeight: 28;
+    border: none;
+}
+
+#target-memory-inspection-pane #rh-side-bar #manage-memory-snapshots-btn #icon {
+
+}
+
+#target-memory-inspection-pane #rh-side-bar #manage-memory-snapshots-btn #label {
+    qproperty-bottomMargin: 4;
+    color: #999a9d;
+
 }
 
 #target-memory-inspection-pane #rh-side-bar #manage-memory-snapshots-btn:hover {
     background-color: #2F2F2D;
+    border: none;
 }
 
 #target-memory-inspection-pane #rh-side-bar #manage-memory-snapshots-btn:checked {

@@ -80,7 +80,7 @@ namespace Bloom::Widgets
 
         this->subContainerLayout = this->container->findChild<QHBoxLayout*>("container-sub-layout");
         this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
-        this->manageMemorySnapshotsButton = this->container->findChild<SvgToolButton*>("manage-memory-snapshots-btn");
+        this->manageMemorySnapshotsButton = this->container->findChild<QToolButton*>("manage-memory-snapshots-btn");
 
         this->refreshButton = this->container->findChild<SvgToolButton*>("refresh-memory-btn");
         this->refreshOnTargetStopAction = this->refreshButton->findChild<QAction*>("refresh-target-stopped");
@@ -88,6 +88,8 @@ namespace Bloom::Widgets
 
         this->detachPaneButton = this->container->findChild<SvgToolButton*>("detach-pane-btn");
         this->attachPaneButton = this->container->findChild<SvgToolButton*>("attach-pane-btn");
+
+        this->manageMemorySnapshotsButton->layout()->setContentsMargins(0, 0, 0, 0);
 
         auto* memoryCapacityLabel = this->container->findChild<Label*>("memory-capacity-label");
         memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->targetMemoryDescriptor.size()) + " Bytes");

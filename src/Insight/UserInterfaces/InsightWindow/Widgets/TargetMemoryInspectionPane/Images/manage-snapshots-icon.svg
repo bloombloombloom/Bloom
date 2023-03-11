@@ -2,7 +2,7 @@
 <svg
    width="15"
    height="15"
-   viewBox="0 0 3.9687501 3.96875"
+   viewBox="0 0 3.96875 3.96875"
    version="1.1"
    id="svg974"
    sodipodi:docname="manage-snapshots-icon.svg"
@@ -23,11 +23,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="39.687885"
-     inkscape:cx="8.6802307"
-     inkscape:cy="7.5337852"
+     inkscape:zoom="52.309858"
+     inkscape:cx="3.0109048"
+     inkscape:cy="7.5989502"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      units="px"
@@ -37,10 +37,6 @@
      inkscape:window-x="2560"
      inkscape:window-y="34"
      inkscape:window-maximized="1"
-     inkscape:snap-smooth-nodes="true"
-     inkscape:snap-bbox="true"
-     inkscape:snap-bbox-midpoints="true"
-     inkscape:snap-bbox-edge-midpoints="true"
      inkscape:pagecheckerboard="0" />
   <metadata
      id="metadata971">
@@ -54,21 +50,19 @@
     </rdf:RDF>
   </metadata>
   <g
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="Main"
-     style="display:inline">
+     id="layer1">
     <path
-       id="rect6137"
-       style="fill:#838382;fill-opacity:1;stroke:none;stroke-width:1.327;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 1,1 v 13 h 3 v -4 h 7 v 4 h 3 V 1 Z m 2,2 h 9 V 8 H 3 Z"
-       transform="scale(0.26458334)" />
+       id="rect1537"
+       style="fill:#838382;fill-opacity:1;stroke-width:0.202557"
+       d="M 0.52916668,0.52916668 V 3.4395833 H 1.3229167 v -0.79375 h 1.3229166 v 0.79375 h 0.79375 V 0.52916668 Z M 1.0583333,1.0583333 H 2.9104167 V 2.1166666 H 1.0583333 Z" />
     <rect
-       style="fill:#838382;fill-opacity:1;stroke:none;stroke-width:0.568665;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect22557"
-       width="1.3229166"
-       height="0.5291667"
-       x="1.3229166"
+       style="fill:#838382;fill-opacity:1;stroke-width:0.180817"
+       id="rect930"
+       width="0.79374999"
+       height="0.52916664"
+       x="1.5875"
        y="2.9104166" />
   </g>
 </svg>
