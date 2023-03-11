@@ -2,6 +2,8 @@
 
 #include <QGraphicsItem>
 #include <QPainter>
+#include <atomic>
+#include <mutex>
 #include <QPixmap>
 
 #include "HexViewerItem.hpp"
@@ -35,6 +37,9 @@ namespace Bloom::Widgets
         ) const override;
 
     private:
+        static inline std::atomic<bool> pixmapCachesGenerated = false;
+        static inline std::mutex pixmapCacheMutex;
+
         static inline std::vector<QPixmap> standardPixmapsByValue = {};
         static inline std::vector<QPixmap> selectedPixmapsByValue = {};
         static inline std::vector<QPixmap> groupedPixmapsByValue = {};

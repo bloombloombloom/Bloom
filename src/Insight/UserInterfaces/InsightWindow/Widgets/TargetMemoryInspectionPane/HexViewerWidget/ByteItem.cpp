@@ -8,7 +8,7 @@ namespace Bloom::Widgets
     ByteItem::ByteItem(Targets::TargetMemoryAddress address)
         : HexViewerItem(address)
     {
-        if (ByteItem::standardPixmapsByValue.empty()) {
+        if (!ByteItem::pixmapCachesGenerated) {
             ByteItem::generatePixmapCaches();
         }
     }
@@ -94,12 +94,17 @@ namespace Bloom::Widgets
     }
 
     void ByteItem::generatePixmapCaches() {
-        static const auto standardBackgroundColor = QColor(0x32, 0x33, 0x30, 255);
-        static const auto highlightedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
-        static const auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
-        static const auto groupedBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
-        static const auto stackMemoryBackgroundColor = QColor(0x67, 0x57, 0x20, 210);
+        const auto lock = std::unique_lock(ByteItem::pixmapCacheMutex);
 
+        if (ByteItem::pixmapCachesGenerated) {
+            return;
+        }
+
+        static constexpr auto standardBackgroundColor = QColor(0x32, 0x33, 0x30, 255);
+        static constexpr auto highlightedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
+        static constexpr auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
+        static constexpr auto groupedBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
+        static constexpr auto stackMemoryBackgroundColor = QColor(0x44, 0x44, 0x41, 200);
         static const auto hoveredStackMemoryBackgroundColor = QColor(
             stackMemoryBackgroundColor.red(),
             stackMemoryBackgroundColor.green(),
@@ -257,5 +262,7 @@ namespace Bloom::Widgets
             painter.setPen(standardFontColor);
             painter.drawText(byteItemRect, Qt::AlignCenter, "??");
         }
+
+        ByteItem::pixmapCachesGenerated = true;
     }
 }
