@@ -54,8 +54,8 @@ namespace Bloom::Widgets
         this->toolBar = this->container->findChild<QWidget*>("tool-bar");
         this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
 
-        this->highlightStackMemoryButton = this->toolBar->findChild<SvgToolButton*>(
-            "highlight-stack-memory-btn"
+        this->groupStackMemoryButton = this->toolBar->findChild<SvgToolButton*>(
+            "group-stack-memory-btn"
         );
         this->highlightHoveredRowAndColumnButton = this->toolBar->findChild<SvgToolButton*>(
             "highlight-hovered-rows-columns-btn"
@@ -97,21 +97,21 @@ namespace Bloom::Widgets
         this->setDisplayAsciiEnabled(this->settings.displayAsciiValues);
 
         if (this->targetMemoryDescriptor.type == Targets::TargetMemoryType::RAM) {
-            this->highlightStackMemoryButton->show();
-            this->setStackMemoryHighlightingEnabled(this->settings.highlightStackMemory);
+            this->groupStackMemoryButton->show();
+            this->setStackMemoryGroupingEnabled(this->settings.groupStackMemory);
 
             QObject::connect(
-                this->highlightStackMemoryButton,
+                this->groupStackMemoryButton,
                 &QToolButton::clicked,
                 this,
                 [this] {
-                    this->setStackMemoryHighlightingEnabled(!this->settings.highlightStackMemory);
+                    this->setStackMemoryGroupingEnabled(!this->settings.groupStackMemory);
                 }
             );
 
         } else {
-            this->highlightStackMemoryButton->hide();
-            this->setStackMemoryHighlightingEnabled(false);
+            this->groupStackMemoryButton->hide();
+            this->setStackMemoryGroupingEnabled(false);
         }
 
         QObject::connect(
@@ -225,9 +225,9 @@ namespace Bloom::Widgets
         this->targetState = newState;
     }
 
-    void HexViewerWidget::setStackMemoryHighlightingEnabled(bool enabled) {
-        this->highlightStackMemoryButton->setChecked(enabled);
-        this->settings.highlightStackMemory = enabled;
+    void HexViewerWidget::setStackMemoryGroupingEnabled(bool enabled) {
+        this->groupStackMemoryButton->setChecked(enabled);
+        this->settings.groupStackMemory = enabled;
 
         if (this->byteItemGraphicsScene != nullptr) {
             this->byteItemGraphicsScene->rebuildItemHierarchy();

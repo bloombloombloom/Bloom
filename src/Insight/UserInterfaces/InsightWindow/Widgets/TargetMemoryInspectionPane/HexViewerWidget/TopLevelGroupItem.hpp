@@ -3,9 +3,11 @@
 #include <unordered_map>
 #include <vector>
 #include <list>
+#include <optional>
 
 #include "GroupItem.hpp"
 #include "FocusedRegionGroupItem.hpp"
+#include "StackMemoryGroupItem.hpp"
 #include "ByteItem.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
@@ -41,5 +43,6 @@ namespace Bloom::Widgets
         const HexViewerSharedState& hexViewerState;
 
         std::list<FocusedRegionGroupItem> focusedRegionGroupItems;
+        std::optional<StackMemoryGroupItem> stackMemoryGroupItem;
     };
 }

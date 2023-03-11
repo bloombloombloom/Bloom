@@ -24,7 +24,7 @@ namespace Bloom::Widgets
             return this->groupSize;
         }
 
-        void adjustItemPositions(const int maximumWidth, const HexViewerSharedState* hexViewerState);
+        virtual void adjustItemPositions(const int maximumWidth, const HexViewerSharedState* hexViewerState);
 
         [[nodiscard]] std::vector<HexViewerItem*> flattenedItems() const;
 

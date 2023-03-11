@@ -42,7 +42,7 @@
                             </spacer>
                         </item>
                         <item>
-                            <widget class="SvgToolButton" name="highlight-stack-memory-btn">
+                            <widget class="SvgToolButton" name="group-stack-memory-btn">
                                 <!--
                                     This button is hidden by default. Only to be displayed for the RAM inspection pane.
                                 -->
@@ -60,7 +60,7 @@
                                     <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-stack-memory-disabled.svg</string>
                                 </property>
                                 <property name="toolTip">
-                                    <string>Highlight Stack Memory</string>
+                                    <string>Group Stack Memory</string>
                                 </property>
                             </widget>
                         </item>

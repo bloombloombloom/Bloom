@@ -23,6 +23,7 @@ namespace Bloom::Widgets
         bool selected = false;
         bool excluded = false;
         bool grouped = false;
+        bool stackMemory = false;
 
         explicit ByteItem(Targets::TargetMemoryAddress address);
 
@@ -43,13 +44,13 @@ namespace Bloom::Widgets
         static inline std::vector<QPixmap> standardPixmapsByValue = {};
         static inline std::vector<QPixmap> selectedPixmapsByValue = {};
         static inline std::vector<QPixmap> groupedPixmapsByValue = {};
+        static inline std::vector<QPixmap> stackMemoryPixmapsByValue = {};
         static inline std::vector<QPixmap> standardAsciiPixmapsByValue = {};
         static inline std::vector<QPixmap> selectedAsciiPixmapsByValue = {};
         static inline std::vector<QPixmap> groupedAsciiPixmapsByValue = {};
+        static inline std::vector<QPixmap> stackMemoryAsciiPixmapsByValue = {};
         static inline std::vector<QPixmap> hoveredPrimaryPixmapsByValue = {};
-        static inline std::vector<QPixmap> hoveredSecondaryPixmapsByValue = {};
         static inline std::vector<QPixmap> hoveredPrimaryAsciiPixmapsByValue = {};
-        static inline std::vector<QPixmap> hoveredSecondaryAsciiPixmapsByValue = {};
         static inline std::optional<QPixmap> missingDataPixmap = {};
 
         static void generatePixmapCaches();

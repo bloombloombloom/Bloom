@@ -6,7 +6,7 @@ namespace Bloom::Widgets
 {
     struct HexViewerWidgetSettings
     {
-        bool highlightStackMemory = true;
+        bool groupStackMemory = true;
         bool highlightFocusedMemory = true;
         bool highlightHoveredRowAndCol = true;
         bool displayAsciiValues = false;

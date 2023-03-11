@@ -81,6 +81,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/GroupItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/TopLevelGroupItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/FocusedRegionGroupItem.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/StackMemoryGroupItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ByteAddressContainer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ByteAddressItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.cpp

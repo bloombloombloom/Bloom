@@ -65,7 +65,7 @@ namespace Bloom::Widgets
         ItemGraphicsScene* byteItemGraphicsScene = nullptr;
         Label* hoveredAddressLabel = nullptr;
 
-        SvgToolButton* highlightStackMemoryButton = nullptr;
+        SvgToolButton* groupStackMemoryButton = nullptr;
         SvgToolButton* highlightFocusedMemoryButton = nullptr;
         SvgToolButton* highlightHoveredRowAndColumnButton = nullptr;
         SvgToolButton* displayAnnotationsButton = nullptr;
@@ -76,7 +76,7 @@ namespace Bloom::Widgets
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         void onTargetStateChanged(Targets::TargetState newState);
-        void setStackMemoryHighlightingEnabled(bool enabled);
+        void setStackMemoryGroupingEnabled(bool enabled);
         void setHoveredRowAndColumnHighlightingEnabled(bool enabled);
         void setFocusedMemoryHighlightingEnabled(bool enabled);
         void setAnnotationsEnabled(bool enabled);

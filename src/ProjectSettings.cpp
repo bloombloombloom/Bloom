@@ -166,9 +166,9 @@ namespace Bloom
             auto& hexViewerSettings = inspectionPaneSettings.hexViewerWidgetSettings;
             const auto hexViewerSettingsObj = jsonObject.find("hexViewerSettings")->toObject();
 
-            if (hexViewerSettingsObj.contains("highlightStackMemory")) {
-                hexViewerSettings.highlightStackMemory =
-                    hexViewerSettingsObj.value("highlightStackMemory").toBool();
+            if (hexViewerSettingsObj.contains("groupStackMemory")) {
+                hexViewerSettings.groupStackMemory =
+                    hexViewerSettingsObj.value("groupStackMemory").toBool();
             }
 
             if (hexViewerSettingsObj.contains("highlightFocusedMemory")) {
@@ -284,7 +284,7 @@ namespace Bloom
 
         const auto& hexViewerSettings = inspectionPaneSettings.hexViewerWidgetSettings;
         settingsObj.insert("hexViewerSettings", QJsonObject({
-            {"highlightStackMemory", hexViewerSettings.highlightStackMemory},
+            {"groupStackMemory", hexViewerSettings.groupStackMemory},
             {"highlightFocusedMemory", hexViewerSettings.highlightFocusedMemory},
             {"highlightHoveredRowAndCol", hexViewerSettings.highlightHoveredRowAndCol},
             {"displayAsciiValues", hexViewerSettings.displayAsciiValues},
