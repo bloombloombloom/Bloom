@@ -160,6 +160,10 @@ namespace Bloom
         this->targetIdLabel = this->footer->findChild<Label*>("target-id");
         this->variantMenu = this->footer->findChild<QMenu*>("target-variant-menu");
 
+        this->taskIndicator = new TaskIndicator(this);
+        auto* footerLayout = this->footer->findChild<QHBoxLayout*>();
+        footerLayout->insertWidget(2, this->taskIndicator);
+
         const auto windowSize = this->size();
         this->windowContainer->setFixedSize(windowSize);
         this->layoutContainer->setFixedSize(windowSize);

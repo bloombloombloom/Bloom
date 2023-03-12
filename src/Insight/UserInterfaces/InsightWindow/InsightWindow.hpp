@@ -13,15 +13,15 @@
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
-#include "Widgets/PanelWidget.hpp"
-
 #include "Widgets/Label.hpp"
 #include "Widgets/SvgToolButton.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
 #include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
+#include "Widgets/PanelWidget.hpp"
 #include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
 #include "Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPane.hpp"
 #include "Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPaneSettings.hpp"
+#include "Widgets/TaskIndicator/TaskIndicator.hpp"
 #include "AboutWindow.hpp"
 
 namespace Bloom
@@ -103,6 +103,7 @@ namespace Bloom
         QWidget* footer = nullptr;
         Widgets::Label* targetStatusLabel = nullptr;
         Widgets::Label* programCounterValueLabel = nullptr;
+        Widgets::TaskIndicator* taskIndicator = nullptr;
 
         std::map<QString, Targets::TargetVariant> supportedVariantsByName;
         const Targets::TargetVariant* selectedVariant = nullptr;

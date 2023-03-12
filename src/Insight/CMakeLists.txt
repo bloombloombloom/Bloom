@@ -39,6 +39,9 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/CaptureMemorySnapshot.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/RetrieveMemorySnapshots.cpp
 
+        # Task indicator
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TaskIndicator/TaskIndicator.cpp
+
         # Error dialogue window
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.cpp
 

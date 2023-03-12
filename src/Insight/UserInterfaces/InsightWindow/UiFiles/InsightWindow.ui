@@ -387,11 +387,17 @@
                             </item>
                             <item>
                                 <widget class="Label" name="target-program-counter-value">
+                                    <property name="minimumWidth">
+                                        <number>130</number>
+                                    </property>
                                     <property name="text">
                                         <string>-</string>
                                     </property>
                                     <property name="toolTip">
                                         <string>Program Counter Value (byte address)</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <enum>Qt::AlignCenter</enum>
                                     </property>
                                 </widget>
                             </item>
