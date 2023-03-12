@@ -2,10 +2,13 @@
 
 #include <QObject>
 #include <QDateTime>
+#include <QSharedPointer>
 
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
+
+#include "InsightWorker/Tasks/InsightWorkerTask.hpp"
 
 namespace Bloom
 {
@@ -27,8 +30,8 @@ namespace Bloom
         void operator = (const InsightSignals&) = delete;
 
     signals:
-        void taskQueued();
-        void taskProcessed();
+        void taskQueued(QSharedPointer<InsightWorkerTask> task);
+        void taskProcessed(QSharedPointer<InsightWorkerTask> task);
 
         void targetStateUpdated(Bloom::Targets::TargetState newState);
         void targetReset();

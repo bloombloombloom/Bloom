@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+#include <atomic>
 #include <QObject>
 #include <QString>
 
@@ -21,9 +23,11 @@ namespace Bloom
         Q_OBJECT
 
     public:
+        using IdType = std::uint64_t;
+        const InsightWorkerTask::IdType id = ++(InsightWorkerTask::lastId);
         InsightWorkerTaskState state = InsightWorkerTaskState::CREATED;
 
-        InsightWorkerTask(): QObject(nullptr) {};
+        InsightWorkerTask();
 
         virtual TaskGroups getTaskGroups() const {
             return TaskGroups();
@@ -57,5 +61,8 @@ namespace Bloom
 
     protected:
         virtual void run(Services::TargetControllerService& targetControllerService) = 0;
+
+    private:
+        static inline std::atomic<InsightWorkerTask::IdType> lastId = 0;
     };
 }

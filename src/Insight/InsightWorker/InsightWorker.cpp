@@ -34,19 +34,19 @@ namespace Bloom
     }
 
     void InsightWorker::queueTask(InsightWorkerTask* task) {
-        static std::atomic<QueuedTaskId> lastQueuedTaskId = 0;
-        task->moveToThread(nullptr);
+        const auto taskPtr = QSharedPointer<InsightWorkerTask>(task, &QObject::deleteLater);
+        taskPtr->moveToThread(nullptr);
 
         {
             const auto taskQueueLock = InsightWorker::queuedTasksById.acquireLock();
-            InsightWorker::queuedTasksById.getValue().insert(std::pair(++(lastQueuedTaskId), task));
+            InsightWorker::queuedTasksById.getValue().emplace(taskPtr->id, taskPtr);
         }
 
-        emit InsightSignals::instance()->taskQueued();
+        emit InsightSignals::instance()->taskQueued(taskPtr);
     }
 
     void InsightWorker::executeTasks() {
-        static const auto getQueuedTask = [] () -> std::optional<InsightWorkerTask*> {
+        static const auto getQueuedTask = [] () -> std::optional<QSharedPointer<InsightWorkerTask>> {
             const auto taskQueueLock = InsightWorker::queuedTasksById.acquireLock();
             auto& queuedTasks = InsightWorker::queuedTasksById.getValue();
 
@@ -54,7 +54,7 @@ namespace Bloom
                 const auto taskGroupsLock = InsightWorker::taskGroupsInExecution.acquireLock();
                 auto& taskGroupsInExecution = InsightWorker::taskGroupsInExecution.getValue();
 
-                const auto canExecuteTask = [&taskGroupsInExecution] (InsightWorkerTask* task) {
+                const auto canExecuteTask = [&taskGroupsInExecution] (const QSharedPointer<InsightWorkerTask>& task) {
                     for (const auto taskGroup : task->getTaskGroups()) {
                         if (taskGroupsInExecution.contains(taskGroup)) {
                             return false;
@@ -77,10 +77,10 @@ namespace Bloom
             return std::nullopt;
         };
 
-        auto queuedTask = std::optional<InsightWorkerTask*>();
+        auto queuedTask = std::optional<QSharedPointer<InsightWorkerTask>>();
 
         while ((queuedTask = getQueuedTask())) {
-            auto* task = queuedTask.value();
+            auto& task = *queuedTask;
             task->moveToThread(this->thread());
             task->setParent(this);
             task->execute(this->targetControllerService);
@@ -94,8 +94,7 @@ namespace Bloom
                 }
             }
 
-            task->deleteLater();
-            emit InsightSignals::instance()->taskProcessed();
+            emit InsightSignals::instance()->taskProcessed(task);
         }
     }
 }

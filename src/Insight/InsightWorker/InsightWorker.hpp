@@ -5,6 +5,7 @@
 #include <QtCore>
 #include <queue>
 #include <map>
+#include <QSharedPointer>
 
 #include "Tasks/InsightWorkerTask.hpp"
 
@@ -34,11 +35,8 @@ namespace Bloom
         void ready();
 
     private:
-        using QueuedTaskId = std::uint64_t;
-        static_assert(std::atomic<QueuedTaskId>::is_always_lock_free);
-
         static inline std::atomic<std::uint8_t> lastWorkerId = 0;
-        static inline SyncSafe<std::map<QueuedTaskId, InsightWorkerTask*>> queuedTasksById = {};
+        static inline SyncSafe<std::map<InsightWorkerTask::IdType, QSharedPointer<InsightWorkerTask>>> queuedTasksById = {};
         static inline SyncSafe<TaskGroups> taskGroupsInExecution = {};
 
         Services::TargetControllerService targetControllerService = Services::TargetControllerService();

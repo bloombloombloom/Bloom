@@ -6,6 +6,10 @@ namespace Bloom
 {
     using Services::TargetControllerService;
 
+    InsightWorkerTask::InsightWorkerTask()
+        : QObject(nullptr)
+    {}
+
     void InsightWorkerTask::execute(TargetControllerService& targetControllerService) {
         try {
             this->state = InsightWorkerTaskState::STARTED;
