@@ -13,7 +13,7 @@ namespace Bloom::Widgets
         decltype(this->addressItems)::size_type rowIndex = 0;
 
         for (const auto& byteItem : firstByteItemByLine) {
-            auto addressItem = addressItemCount > 0 && rowIndex < addressItemCount - 1
+            auto addressItem = addressItemCount > 0 && rowIndex <= addressItemCount - 1
                 ? this->addressItems[rowIndex]
                 : *(this->addressItems.insert(
                     this->addressItems.end(),
