@@ -33,16 +33,15 @@ namespace Bloom
         emit this->ready();
     }
 
-    void InsightWorker::queueTask(InsightWorkerTask* task) {
-        const auto taskPtr = QSharedPointer<InsightWorkerTask>(task, &QObject::deleteLater);
-        taskPtr->moveToThread(nullptr);
+    void InsightWorker::queueTask(const QSharedPointer<InsightWorkerTask>& task) {
+        task->moveToThread(nullptr);
 
         {
             const auto taskQueueLock = InsightWorker::queuedTasksById.acquireLock();
-            InsightWorker::queuedTasksById.getValue().emplace(taskPtr->id, taskPtr);
+            InsightWorker::queuedTasksById.getValue().emplace(task->id, task);
         }
 
-        emit InsightSignals::instance()->taskQueued(taskPtr);
+        emit InsightSignals::instance()->taskQueued(task);
     }
 
     void InsightWorker::executeTasks() {

@@ -26,22 +26,25 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
     void TargetPinWidget::onWidgetBodyClicked() {
         // Currently, we only allow users to toggle the IO state of output pins
-        if (this->pinState.has_value()
-            && this->pinState.value().ioDirection == TargetPinState::IoDirection::OUTPUT
-        ) {
+        if (this->pinState.has_value() && this->pinState.value().ioDirection == TargetPinState::IoDirection::OUTPUT) {
             this->setDisabled(true);
 
             auto pinState = this->pinState.value();
-            pinState.ioState = (pinState.ioState == TargetPinState::IoState::HIGH) ?
-                TargetPinState::IoState::LOW : TargetPinState::IoState::HIGH;
+            pinState.ioState = (pinState.ioState == TargetPinState::IoState::HIGH)
+                ? TargetPinState::IoState::LOW
+                : TargetPinState::IoState::HIGH;
 
-            auto* setPinStateTask = new SetTargetPinState(this->pinDescriptor, pinState);
-            QObject::connect(setPinStateTask, &InsightWorkerTask::completed, this, [this, pinState] {
+            const auto setPinStateTask = QSharedPointer<SetTargetPinState>(
+                new SetTargetPinState(this->pinDescriptor, pinState),
+                &QObject::deleteLater
+            );
+
+            QObject::connect(setPinStateTask.get(), &InsightWorkerTask::completed, this, [this, pinState] {
                 this->updatePinState(pinState);
                 this->setDisabled(false);
             });
 
-            QObject::connect(setPinStateTask, &InsightWorkerTask::failed, this, [this] {
+            QObject::connect(setPinStateTask.get(), &InsightWorkerTask::failed, this, [this] {
                 this->setDisabled(false);
             });
 

@@ -51,9 +51,13 @@ namespace Bloom::Widgets::InsightTargetWidgets
     }
 
     void TargetPackageWidget::refreshPinStates(std::optional<std::function<void(void)>> callback) {
-        auto* refreshTask = new RefreshTargetPinStates(this->targetVariant.id);
+        const auto refreshTask = QSharedPointer<RefreshTargetPinStates>(
+            new RefreshTargetPinStates(this->targetVariant.id),
+            &QObject::deleteLater
+        );
+
         QObject::connect(
-            refreshTask,
+            refreshTask.get(),
             &RefreshTargetPinStates::targetPinStatesRetrieved,
             this,
             &TargetPackageWidget::updatePinStates
@@ -61,7 +65,7 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
         if (callback.has_value()) {
             QObject::connect(
-                refreshTask,
+                refreshTask.get(),
                 &InsightWorkerTask::completed,
                 this,
                 callback.value()

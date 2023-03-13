@@ -265,9 +265,9 @@ namespace Bloom
     }
 
     void Insight::onInsightWindowActivated() {
-        auto* getTargetStateTask = new GetTargetState();
+        const auto getTargetStateTask = QSharedPointer<GetTargetState>(new GetTargetState(), &QObject::deleteLater);
         QObject::connect(
-            getTargetStateTask,
+            getTargetStateTask.get(),
             &GetTargetState::targetState,
             this,
             [this] (Targets::TargetState targetState) {
@@ -354,10 +354,13 @@ namespace Bloom
         }
 
         if (event.state == TargetControllerState::ACTIVE) {
-            auto* getTargetDescriptorTask = new GetTargetDescriptor();
+            const auto getTargetDescriptorTask = QSharedPointer<GetTargetDescriptor>(
+                new GetTargetDescriptor(),
+                &QObject::deleteLater
+            );
 
             QObject::connect(
-                getTargetDescriptorTask,
+                getTargetDescriptorTask.get(),
                 &GetTargetDescriptor::targetDescriptor,
                 this,
                 [this] (Targets::TargetDescriptor targetDescriptor) {

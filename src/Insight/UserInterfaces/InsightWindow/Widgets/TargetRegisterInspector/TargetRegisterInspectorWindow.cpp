@@ -317,10 +317,13 @@ namespace Bloom::Widgets
 
     void TargetRegisterInspectorWindow::refreshRegisterValue() {
         this->registerValueContainer->setDisabled(true);
-        auto* readTargetRegisterTask = new ReadTargetRegisters({this->registerDescriptor});
+        const auto readTargetRegisterTask = QSharedPointer<ReadTargetRegisters>(
+            new ReadTargetRegisters({this->registerDescriptor}),
+            &QObject::deleteLater
+        );
 
         QObject::connect(
-            readTargetRegisterTask,
+            readTargetRegisterTask.get(),
             &ReadTargetRegisters::targetRegistersRead,
             this,
             [this] (Targets::TargetRegisters targetRegisters) {
@@ -335,7 +338,7 @@ namespace Bloom::Widgets
         );
 
         QObject::connect(
-            readTargetRegisterTask,
+            readTargetRegisterTask.get(),
             &InsightWorkerTask::failed,
             this,
             [this] {
@@ -352,15 +355,18 @@ namespace Bloom::Widgets
             this->registerDescriptor,
             this->registerValue
         );
-        auto* writeRegisterTask = new WriteTargetRegister(targetRegister);
+        const auto writeRegisterTask = QSharedPointer<WriteTargetRegister>(
+            new WriteTargetRegister(targetRegister),
+            &QObject::deleteLater
+        );
 
-        QObject::connect(writeRegisterTask, &InsightWorkerTask::completed, this, [this, targetRegister] {
+        QObject::connect(writeRegisterTask.get(), &InsightWorkerTask::completed, this, [this, targetRegister] {
             this->registerValueContainer->setDisabled(false);
             this->registerHistoryWidget->updateCurrentItemValue(targetRegister.value);
             this->registerHistoryWidget->selectCurrentItem();
         });
 
-        QObject::connect(writeRegisterTask, &InsightWorkerTask::failed, this, [this] (QString errorMessage) {
+        QObject::connect(writeRegisterTask.get(), &InsightWorkerTask::failed, this, [this] (QString errorMessage) {
             this->registerValueContainer->setDisabled(false);
             auto* errorDialogue = new ErrorDialogue(
                 "Error",

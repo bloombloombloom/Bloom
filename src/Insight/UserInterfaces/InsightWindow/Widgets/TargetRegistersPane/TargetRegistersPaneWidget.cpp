@@ -266,14 +266,17 @@ namespace Bloom::Widgets
             return;
         }
 
-        auto* readRegisterTask = new ReadTargetRegisters(
-            registerDescriptor.has_value()
-                ? Targets::TargetRegisterDescriptors({*registerDescriptor})
-                : this->registerDescriptors
+        const auto readRegisterTask = QSharedPointer<ReadTargetRegisters>(
+            new ReadTargetRegisters(
+                registerDescriptor.has_value()
+                    ? Targets::TargetRegisterDescriptors({*registerDescriptor})
+                    : this->registerDescriptors
+            ),
+            &QObject::deleteLater
         );
 
         QObject::connect(
-            readRegisterTask,
+            readRegisterTask.get(),
             &ReadTargetRegisters::targetRegistersRead,
             this,
             &TargetRegistersPaneWidget::onRegistersRead
@@ -281,7 +284,7 @@ namespace Bloom::Widgets
 
         if (callback.has_value()) {
             QObject::connect(
-                readRegisterTask,
+                readRegisterTask.get(),
                 &InsightWorkerTask::completed,
                 this,
                 callback.value()

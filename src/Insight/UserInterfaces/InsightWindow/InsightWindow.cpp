@@ -915,10 +915,13 @@ namespace Bloom
     }
 
     void InsightWindow::refreshProgramCounter(std::optional<std::function<void(void)>> callback) {
-        auto* readProgramCounterTask = new ReadProgramCounter();
+        const auto readProgramCounterTask = QSharedPointer<ReadProgramCounter>(
+            new ReadProgramCounter(),
+            &QObject::deleteLater
+        );
 
         QObject::connect(
-            readProgramCounterTask,
+            readProgramCounterTask.get(),
             &ReadProgramCounter::programCounterRead,
             this,
             [this] (Targets::TargetProgramCounter programCounter) {
@@ -930,7 +933,7 @@ namespace Bloom
 
         if (callback.has_value()) {
             QObject::connect(
-                readProgramCounterTask,
+                readProgramCounterTask.get(),
                 &ReadProgramCounter::finished,
                 this,
                 callback.value()

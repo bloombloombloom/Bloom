@@ -29,7 +29,7 @@ namespace Bloom
 
         InsightWorker() = default;
         void startup();
-        static void queueTask(InsightWorkerTask* task);
+        static void queueTask(const QSharedPointer<InsightWorkerTask>& task);
 
     signals:
         void ready();

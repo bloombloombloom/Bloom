@@ -92,10 +92,13 @@ namespace Bloom::Widgets
             }
         );
 
-        auto* retrieveSnapshotsTask = new RetrieveMemorySnapshots(this->memoryDescriptor.type);
+        const auto retrieveSnapshotsTask = QSharedPointer<RetrieveMemorySnapshots>(
+            new RetrieveMemorySnapshots(this->memoryDescriptor.type),
+            &QObject::deleteLater
+        );
 
         QObject::connect(
-            retrieveSnapshotsTask,
+            retrieveSnapshotsTask.get(),
             &RetrieveMemorySnapshots::memorySnapshotsRetrieved,
             this,
             [this] (std::vector<MemorySnapshot> snapshots) {
@@ -136,17 +139,20 @@ namespace Bloom::Widgets
         bool captureFocusedRegions,
         bool captureDirectlyFromTarget
     ) {
-        auto* captureTask = new CaptureMemorySnapshot(
-            std::move(name),
-            std::move(description),
-            this->memoryDescriptor.type,
-            {},
-            {},
-            captureDirectlyFromTarget ? std::nullopt : this->data
+        const auto captureTask = QSharedPointer<CaptureMemorySnapshot>(
+            new CaptureMemorySnapshot(
+                std::move(name),
+                std::move(description),
+                this->memoryDescriptor.type,
+                {},
+                {},
+                captureDirectlyFromTarget ? std::nullopt : this->data
+            ),
+            &QObject::deleteLater
         );
 
         QObject::connect(
-            captureTask,
+            captureTask.get(),
             &CaptureMemorySnapshot::memorySnapshotCaptured,
             this,
             [this] (MemorySnapshot snapshot) {

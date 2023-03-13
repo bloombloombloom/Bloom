@@ -137,10 +137,13 @@ namespace Bloom::Widgets
     }
 
     void ItemGraphicsScene::init() {
-        auto* constructHexViewerTopLevelGroupItem = new ConstructHexViewerTopLevelGroupItem(this->focusedMemoryRegions, this->state);
+        const auto constructHexViewerTopLevelGroupItem = QSharedPointer<ConstructHexViewerTopLevelGroupItem>(
+            new ConstructHexViewerTopLevelGroupItem(this->focusedMemoryRegions, this->state),
+            &QObject::deleteLater
+        );
 
         QObject::connect(
-            constructHexViewerTopLevelGroupItem,
+            constructHexViewerTopLevelGroupItem.get(),
             &ConstructHexViewerTopLevelGroupItem::topLevelGroupItem,
             this,
             [this] (TopLevelGroupItem* item) {

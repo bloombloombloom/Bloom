@@ -298,15 +298,18 @@ namespace Bloom::Widgets
             }
         );
 
-        auto* readMemoryTask = new ReadTargetMemory(
-            this->targetMemoryDescriptor.type,
-            this->targetMemoryDescriptor.addressRange.startAddress,
-            this->targetMemoryDescriptor.size(),
-            excludedAddressRanges
+        const auto readMemoryTask = QSharedPointer<ReadTargetMemory>(
+            new ReadTargetMemory(
+                this->targetMemoryDescriptor.type,
+                this->targetMemoryDescriptor.addressRange.startAddress,
+                this->targetMemoryDescriptor.size(),
+                excludedAddressRanges
+            ),
+            &QObject::deleteLater
         );
 
         QObject::connect(
-            readMemoryTask,
+            readMemoryTask.get(),
             &ReadTargetMemory::targetMemoryRead,
             this,
             [this, callback] (const Targets::TargetMemoryBuffer& data) {
@@ -314,9 +317,13 @@ namespace Bloom::Widgets
 
                 // Refresh the stack pointer if this is RAM.
                 if (this->targetMemoryDescriptor.type == Targets::TargetMemoryType::RAM) {
-                    auto* readStackPointerTask = new ReadStackPointer();
+                    const auto readStackPointerTask = QSharedPointer<ReadStackPointer>(
+                        new ReadStackPointer(),
+                        &QObject::deleteLater
+                    );
+
                     QObject::connect(
-                        readStackPointerTask,
+                        readStackPointerTask.get(),
                         &ReadStackPointer::stackPointerRead,
                         this,
                         [this] (Targets::TargetStackPointer stackPointer) {
@@ -325,7 +332,7 @@ namespace Bloom::Widgets
                     );
 
                     QObject::connect(
-                        readStackPointerTask,
+                        readStackPointerTask.get(),
                         &InsightWorkerTask::finished,
                         this,
                         [this] {
@@ -339,7 +346,7 @@ namespace Bloom::Widgets
 
                     if (callback.has_value()) {
                         QObject::connect(
-                            readStackPointerTask,
+                            readStackPointerTask.get(),
                             &InsightWorkerTask::completed,
                             this,
                             callback.value()
@@ -354,7 +361,7 @@ namespace Bloom::Widgets
         // If we're refreshing RAM, the UI should only be updated once we've retrieved the current stack pointer.
         if (this->targetMemoryDescriptor.type != Targets::TargetMemoryType::RAM) {
             QObject::connect(
-                readMemoryTask,
+                readMemoryTask.get(),
                 &InsightWorkerTask::finished,
                 this,
                 [this] {
@@ -368,7 +375,7 @@ namespace Bloom::Widgets
 
             if (callback.has_value()) {
                 QObject::connect(
-                    readMemoryTask,
+                    readMemoryTask.get(),
                     &InsightWorkerTask::completed,
                     this,
                     callback.value()
@@ -377,7 +384,7 @@ namespace Bloom::Widgets
 
         } else {
             QObject::connect(
-                readMemoryTask,
+                readMemoryTask.get(),
                 &InsightWorkerTask::failed,
                 this,
                 [this] {
