@@ -409,6 +409,13 @@ namespace Bloom::Widgets
         PaneWidget::resizeEvent(event);
     }
 
+    void TargetMemoryInspectionPane::keyPressEvent(QKeyEvent* event) {
+        if ((event->modifiers() & Qt::ControlModifier) != 0 && event->key() == Qt::Key::Key_R) {
+            this->refreshButton->click();
+            event->accept();
+        }
+    }
+
     void TargetMemoryInspectionPane::postActivate() {
         if (
             (this->settings.refreshOnActivation || !this->data.has_value())

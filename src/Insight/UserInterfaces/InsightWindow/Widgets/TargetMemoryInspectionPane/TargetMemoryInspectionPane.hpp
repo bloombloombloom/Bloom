@@ -6,6 +6,7 @@
 #include <QResizeEvent>
 #include <QHBoxLayout>
 #include <QToolButton>
+#include <QKeyEvent>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 
@@ -42,6 +43,7 @@ namespace Bloom::Widgets
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
+        void keyPressEvent(QKeyEvent* event) override;
 
         void postActivate();
         void postDeactivate();
