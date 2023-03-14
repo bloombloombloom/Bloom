@@ -81,7 +81,6 @@ namespace Bloom
         while ((queuedTask = getQueuedTask())) {
             auto& task = *queuedTask;
             task->moveToThread(this->thread());
-            task->setParent(this);
             task->execute(this->targetControllerService);
 
             {
