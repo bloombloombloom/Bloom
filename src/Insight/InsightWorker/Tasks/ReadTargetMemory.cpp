@@ -49,6 +49,9 @@ namespace Bloom
             );
 
             std::move(dataSegment.begin(), dataSegment.end(), std::back_inserter(data));
+            emit this->progressUpdate(static_cast<int>(
+                (static_cast<float>(i) + 1) / (static_cast<float>(readsRequired) / 100)
+            ));
         }
 
         emit this->targetMemoryRead(data);

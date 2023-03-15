@@ -45,6 +45,19 @@ namespace Bloom
         void started();
 
         /**
+         * Some tasks will emit an InsightWorkerTask::progressUpdate() signal to provide an update on their progress.
+         *
+         * This is used for progress bar widgets.
+         *
+         * NOTE: A task doesn't have to emit this signal. Currently, the time-expensive tasks (like ReadTargetMemory)
+         * emit this signal.
+         *
+         * @param progressPercentage
+         *  The task's current progress.
+         */
+        void progressUpdate(int progressPercentage);
+
+        /**
          * The InsightWorkerTask::completed() signal will be emitted once the task has successfully completed.
          */
         void completed();
