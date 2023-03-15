@@ -25,6 +25,10 @@ namespace Bloom
             , excludedAddressRanges(excludedAddressRanges)
         {}
 
+        QString brief() const override {
+            return "Reading target " + QString(this->memoryType == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM");
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,

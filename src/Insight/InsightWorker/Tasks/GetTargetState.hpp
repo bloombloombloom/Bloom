@@ -13,6 +13,10 @@ namespace Bloom
     public:
         GetTargetState() = default;
 
+        QString brief() const override {
+            return "Obtaining target state";
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,

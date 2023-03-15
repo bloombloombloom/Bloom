@@ -29,6 +29,8 @@ namespace Bloom
 
         InsightWorkerTask();
 
+        virtual QString brief() const = 0;
+
         virtual TaskGroups taskGroups() const {
             return TaskGroups();
         };

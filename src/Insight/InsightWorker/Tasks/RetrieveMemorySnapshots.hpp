@@ -16,6 +16,11 @@ namespace Bloom
     public:
         RetrieveMemorySnapshots(Targets::TargetMemoryType memoryType);
 
+        QString brief() const override {
+            return "Loading saved " + QString(this->memoryType == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
+                + " memory snapshots";
+        }
+
     signals:
         void memorySnapshotsRetrieved(std::vector<MemorySnapshot> snapshots);
 

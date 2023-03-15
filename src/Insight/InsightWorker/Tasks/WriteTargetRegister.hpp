@@ -14,6 +14,10 @@ namespace Bloom
             : targetRegister(targetRegister)
         {}
 
+        QString brief() const override {
+            return "Writing target register";
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,

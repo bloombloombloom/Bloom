@@ -13,6 +13,10 @@ namespace Bloom
     public:
         ReadStackPointer() = default;
 
+        QString brief() const override {
+            return "Reading stack pointer";
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,

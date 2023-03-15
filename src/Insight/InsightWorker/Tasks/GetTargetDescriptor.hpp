@@ -13,6 +13,10 @@ namespace Bloom
     public:
         GetTargetDescriptor() = default;
 
+        QString brief() const override {
+            return "Obtaining target descriptor";
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,

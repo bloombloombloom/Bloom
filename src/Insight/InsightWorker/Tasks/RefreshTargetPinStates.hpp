@@ -15,6 +15,10 @@ namespace Bloom
             : variantId(variantId)
         {}
 
+        QString brief() const override {
+            return "Reading target pin states";
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,

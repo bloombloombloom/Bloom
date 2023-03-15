@@ -20,6 +20,10 @@ namespace Bloom
             const Widgets::HexViewerSharedState& hexViewerState
         );
 
+        QString brief() const override {
+            return "Preparing hex viewer";
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups();
         };

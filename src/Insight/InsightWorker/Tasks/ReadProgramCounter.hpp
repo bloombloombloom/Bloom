@@ -13,6 +13,10 @@ namespace Bloom
     public:
         ReadProgramCounter() = default;
 
+        QString brief() const override {
+            return "Reading program counter";
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,

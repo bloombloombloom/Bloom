@@ -14,6 +14,10 @@ namespace Bloom
             : descriptors(descriptors)
         {}
 
+        QString brief() const override {
+            return "Reading target registers";
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,

@@ -15,6 +15,10 @@ namespace Bloom
             , pinState(pinState)
         {}
 
+        QString brief() const override {
+            return "Updating target pin state";
+        }
+
         TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,
