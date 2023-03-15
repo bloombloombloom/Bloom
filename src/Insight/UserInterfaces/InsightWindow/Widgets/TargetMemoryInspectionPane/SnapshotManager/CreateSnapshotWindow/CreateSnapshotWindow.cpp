@@ -84,6 +84,10 @@ namespace Bloom::Widgets
                 this->refreshForm();
             }
         );
+
+        this->includeFocusedRegionsInput->setChecked(true);
+        this->captureDirectlyFromTargetInput->setChecked(false);
+        this->resetForm();
     }
 
     void CreateSnapshotWindow::refreshForm() {
@@ -93,7 +97,6 @@ namespace Bloom::Widgets
 
     void CreateSnapshotWindow::showEvent(QShowEvent* event) {
         this->move(this->parentWidget()->window()->geometry().center() - this->rect().center());
-        this->resetForm();
         this->refreshForm();
         QWidget::showEvent(event);
     }
@@ -117,8 +120,6 @@ namespace Bloom::Widgets
     void CreateSnapshotWindow::resetForm() {
         this->nameInput->setText("Untitled Snapshot");
         this->descriptionInput->setPlainText("");
-        this->includeFocusedRegionsInput->setChecked(true);
-        this->captureDirectlyFromTargetInput->setChecked(false);
     }
 
     void CreateSnapshotWindow::issueCaptureRequest() {
@@ -136,5 +137,6 @@ namespace Bloom::Widgets
         );
 
         this->close();
+        this->resetForm();
     }
 }
