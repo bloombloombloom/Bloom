@@ -6,7 +6,6 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/RetrieveMemorySnapshots.hpp"
-#include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
 #include "src/Services/PathService.hpp"
@@ -160,6 +159,8 @@ namespace Bloom::Widgets
                 this->sortSnapshotItems();
             }
         );
+
+        emit this->captureTaskCreated(captureTask);
 
         InsightWorker::queueTask(captureTask);
     }

@@ -366,6 +366,9 @@
                                 <property name="toolTip">
                                     <string>Memory Capacity</string>
                                 </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                                </property>
                             </widget>
                         </item>
                         <item>
@@ -385,8 +388,25 @@
                         </item>
                         <item>
                             <spacer name="horizontal-spacer">
-                                <property name="orientation">
-                                    <enum>Qt::Horizontal</enum>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>5</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>15</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
                                 </property>
                             </spacer>
                         </item>
@@ -394,6 +414,9 @@
                             <widget class="QWidget" name="stale-data-label">
                                 <property name="visible">
                                     <bool>false</bool>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                                 </property>
                                 <layout class="QHBoxLayout">
                                     <property name="spacing">

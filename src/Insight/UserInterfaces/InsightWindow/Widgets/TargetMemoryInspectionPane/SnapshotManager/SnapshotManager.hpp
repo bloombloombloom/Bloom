@@ -14,6 +14,8 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 
+#include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
+
 #include "./CreateSnapshotWindow/CreateSnapshotWindow.hpp"
 #include "MemorySnapshotItem.hpp"
 
@@ -34,6 +36,9 @@ namespace Bloom::Widgets
             PaneState& state,
             PanelWidget* parent = nullptr
         );
+
+    signals:
+        void captureTaskCreated(const QSharedPointer<CaptureMemorySnapshot>& task);
 
     protected:
         void resizeEvent(QResizeEvent* event) override;

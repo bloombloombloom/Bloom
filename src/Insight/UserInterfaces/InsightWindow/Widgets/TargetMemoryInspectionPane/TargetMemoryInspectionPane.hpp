@@ -6,6 +6,7 @@
 #include <QResizeEvent>
 #include <QHBoxLayout>
 #include <QToolButton>
+#include <QSpacerItem>
 #include <QKeyEvent>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
@@ -16,6 +17,9 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.hpp"
+
+#include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
 
 #include "HexViewerWidget/HexViewerWidget.hpp"
 #include "MemoryRegionManager/MemoryRegionManagerWindow.hpp"
@@ -59,6 +63,9 @@ namespace Bloom::Widgets
         QHBoxLayout* subContainerLayout = nullptr;
 
         QWidget* titleBar = nullptr;
+        QWidget* bottomBar = nullptr;
+        QHBoxLayout* bottomBarLayout = nullptr;
+
         SvgToolButton* manageMemoryRegionsButton = nullptr;
         QToolButton* manageMemorySnapshotsButton = nullptr;
 
@@ -73,6 +80,8 @@ namespace Bloom::Widgets
         PanelWidget* rightPanel = nullptr;
         SnapshotManager* snapshotManager = nullptr;
 
+        TaskProgressIndicator* taskProgressIndicator = nullptr;
+        QSpacerItem* bottomBarHorizontalSpacer = nullptr;
         QWidget* staleDataLabelContainer = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
@@ -96,6 +105,8 @@ namespace Bloom::Widgets
             Bloom::Targets::TargetMemoryType memoryType,
             Targets::TargetMemoryAddressRange addressRange
         );
+        void onCaptureMemoryTaskCreated(const QSharedPointer<CaptureMemorySnapshot>& task);
+        void setTaskProgressIndicator(const QSharedPointer<InsightWorkerTask>& task);
         void setStaleData(bool staleData);
     };
 }

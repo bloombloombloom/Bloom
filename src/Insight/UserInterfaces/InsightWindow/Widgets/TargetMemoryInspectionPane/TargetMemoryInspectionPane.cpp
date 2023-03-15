@@ -69,16 +69,13 @@ namespace Bloom::Widgets
         this->container->setStyleSheet(stylesheetFile.readAll());
         this->container->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
+        this->subContainerLayout = this->container->findChild<QHBoxLayout*>("container-sub-layout");
+
         this->titleBar = this->container->findChild<QWidget*>("title-bar");
 
-        this->titleBar->layout()->setContentsMargins(7, 0, 7, 0);
-        auto* titleLabel = this->titleBar->findChild<Label*>("title");
-        titleLabel->setText(memoryName);
+        this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
+        this->bottomBarLayout = this->bottomBar->findChild<QHBoxLayout*>();
 
-        // Quick sanity check to ensure the validity of persisted settings.
-        this->sanitiseSettings();
-
-        this->subContainerLayout = this->container->findChild<QHBoxLayout*>("container-sub-layout");
         this->manageMemoryRegionsButton = this->container->findChild<SvgToolButton*>("manage-memory-regions-btn");
         this->manageMemorySnapshotsButton = this->container->findChild<QToolButton*>("manage-memory-snapshots-btn");
 
@@ -91,10 +88,17 @@ namespace Bloom::Widgets
 
         this->manageMemorySnapshotsButton->layout()->setContentsMargins(0, 0, 0, 0);
 
+        this->staleDataLabelContainer = this->container->findChild<QWidget*>("stale-data-label");
+
+        this->titleBar->layout()->setContentsMargins(7, 0, 7, 0);
+        auto* titleLabel = this->titleBar->findChild<Label*>("title");
+        titleLabel->setText(memoryName);
+
         auto* memoryCapacityLabel = this->container->findChild<Label*>("memory-capacity-label");
         memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->targetMemoryDescriptor.size()) + " Bytes");
 
-        this->staleDataLabelContainer = this->container->findChild<QWidget*>("stale-data-label");
+        // Quick sanity check to ensure the validity of persisted settings.
+        this->sanitiseSettings();
 
         this->hexViewerWidget = new HexViewerWidget(
             this->targetMemoryDescriptor,
@@ -127,6 +131,9 @@ namespace Bloom::Widgets
 
         this->setRefreshOnTargetStopEnabled(this->settings.refreshOnTargetStop);
         this->setRefreshOnActivationEnabled(this->settings.refreshOnActivation);
+
+        this->bottomBarHorizontalSpacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+        this->bottomBarLayout->insertItem(5, this->bottomBarHorizontalSpacer);
 
         QObject::connect(
             this,
@@ -186,6 +193,13 @@ namespace Bloom::Widgets
             [this] {
                 this->manageMemorySnapshotsButton->setChecked(false);
             }
+        );
+
+        QObject::connect(
+            this->snapshotManager,
+            &SnapshotManager::captureTaskCreated,
+            this,
+            &TargetMemoryInspectionPane::onCaptureMemoryTaskCreated
         );
 
         QObject::connect(
@@ -397,6 +411,7 @@ namespace Bloom::Widgets
             );
         }
 
+        this->setTaskProgressIndicator(readMemoryTask);
         InsightWorker::queueTask(readMemoryTask);
     }
 
@@ -610,6 +625,36 @@ namespace Bloom::Widgets
             this->setStaleData(true);
             this->snapshotManager->createSnapshotWindow->refreshForm();
         }
+    }
+
+    void TargetMemoryInspectionPane::onCaptureMemoryTaskCreated(const QSharedPointer<CaptureMemorySnapshot>& task) {
+        this->setTaskProgressIndicator(task);
+    }
+
+    void TargetMemoryInspectionPane::setTaskProgressIndicator(const QSharedPointer<InsightWorkerTask>& task) {
+        if (this->taskProgressIndicator != nullptr) {
+            this->bottomBarLayout->removeWidget(this->taskProgressIndicator);
+            this->taskProgressIndicator->deleteLater();
+            this->taskProgressIndicator = nullptr;
+        }
+
+        this->taskProgressIndicator = new TaskProgressIndicator(task, this);
+
+        QObject::connect(
+            this->taskProgressIndicator,
+            &TaskProgressIndicator::taskComplete,
+            this,
+            [this] {
+                this->bottomBarLayout->removeWidget(this->taskProgressIndicator);
+                this->taskProgressIndicator->deleteLater();
+                this->taskProgressIndicator = nullptr;
+
+                this->bottomBarLayout->insertItem(5, this->bottomBarHorizontalSpacer);
+            }
+        );
+
+        this->bottomBarLayout->removeItem(this->bottomBarHorizontalSpacer);
+        this->bottomBarLayout->insertWidget(5, this->taskProgressIndicator);
     }
 
     void TargetMemoryInspectionPane::setStaleData(bool staleData) {
