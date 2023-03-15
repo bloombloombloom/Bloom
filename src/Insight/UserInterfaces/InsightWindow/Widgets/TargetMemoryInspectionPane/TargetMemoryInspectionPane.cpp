@@ -367,6 +367,7 @@ namespace Bloom::Widgets
                         );
                     }
 
+                    this->setTaskProgressIndicator(readStackPointerTask);
                     InsightWorker::queueTask(readStackPointerTask);
                 }
             }
