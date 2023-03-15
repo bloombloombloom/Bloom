@@ -15,7 +15,7 @@ namespace Bloom
             , pinState(pinState)
         {}
 
-        TaskGroups getTaskGroups() const override {
+        TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,
             });

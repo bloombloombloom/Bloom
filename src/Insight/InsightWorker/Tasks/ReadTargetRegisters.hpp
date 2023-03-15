@@ -14,7 +14,7 @@ namespace Bloom
             : descriptors(descriptors)
         {}
 
-        TaskGroups getTaskGroups() const override {
+        TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,
             });

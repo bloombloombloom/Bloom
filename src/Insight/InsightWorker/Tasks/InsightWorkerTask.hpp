@@ -29,7 +29,7 @@ namespace Bloom
 
         InsightWorkerTask();
 
-        virtual TaskGroups getTaskGroups() const {
+        virtual TaskGroups taskGroups() const {
             return TaskGroups();
         };
 

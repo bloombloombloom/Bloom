@@ -54,7 +54,7 @@ namespace Bloom
                 auto& taskGroupsInExecution = InsightWorker::taskGroupsInExecution.getValue();
 
                 const auto canExecuteTask = [&taskGroupsInExecution] (const QSharedPointer<InsightWorkerTask>& task) {
-                    for (const auto taskGroup : task->getTaskGroups()) {
+                    for (const auto taskGroup : task->taskGroups()) {
                         if (taskGroupsInExecution.contains(taskGroup)) {
                             return false;
                         }
@@ -65,7 +65,7 @@ namespace Bloom
 
                 for (auto [queuedTaskId, task] : queuedTasks) {
                     if (canExecuteTask(task)) {
-                        const auto taskGroups = task->getTaskGroups();
+                        const auto taskGroups = task->taskGroups();
                         taskGroupsInExecution.insert(taskGroups.begin(), taskGroups.end());
                         queuedTasks.erase(queuedTaskId);
                         return task;
@@ -87,7 +87,7 @@ namespace Bloom
                 const auto taskGroupsLock = InsightWorker::taskGroupsInExecution.acquireLock();
                 auto& taskGroupsInExecution = InsightWorker::taskGroupsInExecution.getValue();
 
-                for (const auto& taskGroup : task->getTaskGroups()) {
+                for (const auto& taskGroup : task->taskGroups()) {
                     taskGroupsInExecution.erase(taskGroup);
                 }
             }

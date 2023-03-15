@@ -20,7 +20,7 @@ namespace Bloom
             const Widgets::HexViewerSharedState& hexViewerState
         );
 
-        TaskGroups getTaskGroups() const override {
+        TaskGroups taskGroups() const override {
             return TaskGroups();
         };
 

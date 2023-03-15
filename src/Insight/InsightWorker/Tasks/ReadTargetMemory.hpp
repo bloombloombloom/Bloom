@@ -25,7 +25,7 @@ namespace Bloom
             , excludedAddressRanges(excludedAddressRanges)
         {}
 
-        TaskGroups getTaskGroups() const override {
+        TaskGroups taskGroups() const override {
             return TaskGroups({
                 TaskGroup::USES_TARGET_CONTROLLER,
             });
