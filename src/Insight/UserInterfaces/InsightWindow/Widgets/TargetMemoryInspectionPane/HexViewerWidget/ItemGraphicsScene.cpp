@@ -464,6 +464,7 @@ namespace Bloom::Widgets
                     this->selectByteItem(*byteItem);
                 }
             }
+            emit this->selectionChanged(static_cast<Targets::TargetMemorySize>(this->selectedByteItemsByAddress.size()));
         }
 
         for (const auto& item : hoveredItems) {
@@ -649,10 +650,12 @@ namespace Bloom::Widgets
     void ItemGraphicsScene::toggleByteItemSelection(ByteItem& byteItem) {
         if (byteItem.selected) {
             this->deselectByteItem(byteItem);
+            emit this->selectionChanged(static_cast<Targets::TargetMemorySize>(this->selectedByteItemsByAddress.size()));
             return;
         }
 
         this->selectByteItem(byteItem);
+        emit this->selectionChanged(static_cast<Targets::TargetMemorySize>(this->selectedByteItemsByAddress.size()));
     }
 
     void ItemGraphicsScene::clearByteItemSelection() {
@@ -662,6 +665,7 @@ namespace Bloom::Widgets
 
         this->selectedByteItemsByAddress.clear();
         this->update();
+        emit this->selectionChanged(0);
     }
 
     void ItemGraphicsScene::selectAllByteItems() {
@@ -672,6 +676,7 @@ namespace Bloom::Widgets
         }
 
         this->update();
+        emit this->selectionChanged(static_cast<Targets::TargetMemorySize>(this->selectedByteItemsByAddress.size()));
     }
 
     void ItemGraphicsScene::setAddressType(AddressType type) {

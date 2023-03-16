@@ -65,6 +65,7 @@ namespace Bloom::Widgets
         ItemGraphicsView* byteItemGraphicsView = nullptr;
         ItemGraphicsScene* byteItemGraphicsScene = nullptr;
         Label* hoveredAddressLabel = nullptr;
+        Label* selectionCountLabel = nullptr;
 
         SvgToolButton* groupStackMemoryButton = nullptr;
         SvgToolButton* highlightFocusedMemoryButton = nullptr;
@@ -84,5 +85,6 @@ namespace Bloom::Widgets
         void setDisplayAsciiEnabled(bool enabled);
         void onGoToAddressInputChanged();
         void onHoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
+        void onByteSelectionChanged(Targets::TargetMemorySize selectionCount);
     };
 }

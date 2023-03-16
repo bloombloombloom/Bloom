@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QVBoxLayout>
+#include <QLocale>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/InsightSignals.hpp"
@@ -75,6 +76,7 @@ namespace Bloom::Widgets
         this->bottomBar->layout()->setContentsMargins(5, 0, 5, 0);
 
         this->hoveredAddressLabel = this->bottomBar->findChild<Label*>("byte-address-label");
+        this->selectionCountLabel = this->bottomBar->findChild<Label*>("selection-count-label");
 
         this->loadingHexViewerLabel = this->container->findChild<Label*>("loading-hex-viewer-label");
 
@@ -186,6 +188,13 @@ namespace Bloom::Widgets
                     &ItemGraphicsScene::hoveredAddress,
                     this,
                     &HexViewerWidget::onHoveredAddress
+                );
+
+                QObject::connect(
+                    this->byteItemGraphicsScene,
+                    &ItemGraphicsScene::selectionChanged,
+                    this,
+                    &HexViewerWidget::onByteSelectionChanged
                 );
 
                 this->loadingHexViewerLabel->hide();
@@ -316,5 +325,18 @@ namespace Bloom::Widgets
         this->hoveredAddressLabel->setText(
             "Relative address / Absolute address: " + relativeAddressHex + " / " + addressHex
         );
+    }
+
+    void HexViewerWidget::onByteSelectionChanged(Targets::TargetMemorySize selectionCount) {
+        if (selectionCount == 0) {
+            this->selectionCountLabel->hide();
+            return;
+        }
+
+        this->selectionCountLabel->setText(
+            QLocale(QLocale::English).toString(selectionCount) + " " + QString(selectionCount == 1 ? "byte" : "bytes")
+                + " selected"
+        );
+        this->selectionCountLabel->show();
     }
 }

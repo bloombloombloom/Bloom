@@ -64,6 +64,7 @@ namespace Bloom::Widgets
     signals:
         void ready();
         void hoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
+        void selectionChanged(Targets::TargetMemorySize selectionCount);
 
     protected:
         bool event(QEvent* event) override;

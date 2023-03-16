@@ -226,6 +226,13 @@
                                 </property>
                             </spacer>
                         </item>
+                        <item>
+                            <widget class="Label" name="selection-count-label">
+                                <property name="visible">
+                                    <bool>false</bool>
+                                </property>
+                            </widget>
+                        </item>
                     </layout>
                 </widget>
             </item>

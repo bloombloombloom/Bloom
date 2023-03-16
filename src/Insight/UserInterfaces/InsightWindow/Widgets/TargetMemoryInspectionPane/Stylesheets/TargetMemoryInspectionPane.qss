@@ -190,6 +190,14 @@
     font-size: 14px;
 }
 
+#hex-viewer-container #bottom-bar #selection-count-label {
+    border: none;
+    /*border-left: 1px solid red;*/
+    border-left: 1px solid #41423f;
+    padding-left: 4px;
+    min-width: 140px;
+}
+
 #hex-viewer-container QScrollBar:vertical {
     background-color: transparent;
     width: 12px;
