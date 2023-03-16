@@ -4,6 +4,7 @@
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <vector>
+#include <optional>
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"
@@ -82,5 +83,6 @@ namespace Bloom::Widgets
         void setAnnotationsEnabled(bool enabled);
         void setDisplayAsciiEnabled(bool enabled);
         void onGoToAddressInputChanged();
+        void onHoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
     };
 }

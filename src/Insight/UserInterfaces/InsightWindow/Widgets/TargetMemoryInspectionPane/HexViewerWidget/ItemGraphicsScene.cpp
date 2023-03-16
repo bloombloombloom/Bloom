@@ -19,7 +19,6 @@ namespace Bloom::Widgets
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
         HexViewerWidgetSettings& settings,
-        Label* hoveredAddressLabel,
         QGraphicsView* parent
     )
         : state(
@@ -31,7 +30,6 @@ namespace Bloom::Widgets
         )
         , focusedMemoryRegions(focusedMemoryRegions)
         , excludedMemoryRegions(excludedMemoryRegions)
-        , hoveredAddressLabel(hoveredAddressLabel)
         , parent(parent)
         , QGraphicsScene(parent)
     {
@@ -602,21 +600,6 @@ namespace Bloom::Widgets
 
         this->state.hoveredByteItem = &byteItem;
 
-        const auto addressHex = "0x" + QString::number(
-            byteItem.startAddress,
-            16
-        ).rightJustified(8, '0').toUpper();
-
-        const auto relativeAddress = byteItem.startAddress - this->state.memoryDescriptor.addressRange.startAddress;
-        const auto relativeAddressHex = "0x" + QString::number(
-            relativeAddress,
-            16
-        ).rightJustified(8, '0').toUpper();
-
-        this->hoveredAddressLabel->setText(
-            "Relative Address / Absolute Address: " + relativeAddressHex + " / " + addressHex
-        );
-
         if (this->state.settings.highlightHoveredRowAndCol) {
             const auto byteItemScenePos = byteItem.position();
             this->hoverRectX->setPos(0, byteItemScenePos.y());
@@ -630,6 +613,7 @@ namespace Bloom::Widgets
         }
 
         this->update();
+        emit this->hoveredAddress(byteItem.startAddress);
     }
 
     void ItemGraphicsScene::onByteItemLeave() {
@@ -637,11 +621,11 @@ namespace Bloom::Widgets
             this->state.hoveredByteItem = nullptr;
         }
 
-        this->hoveredAddressLabel->setText("Relative Address / Absolute Address:");
-
         this->hoverRectX->setVisible(false);
         this->hoverRectY->setVisible(false);
         this->update();
+
+        emit this->hoveredAddress(std::nullopt);
     }
 
     void ItemGraphicsScene::clearSelectionRectItem() {

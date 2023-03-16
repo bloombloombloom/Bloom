@@ -12,7 +12,6 @@ namespace Bloom::Widgets
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
         HexViewerWidgetSettings& settings,
-        Label* hoveredAddressLabel,
         QWidget* parent
     )
         : QGraphicsView(parent)
@@ -34,7 +33,6 @@ namespace Bloom::Widgets
             focusedMemoryRegions,
             excludedMemoryRegions,
             settings,
-            hoveredAddressLabel,
             this
         );
 

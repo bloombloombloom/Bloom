@@ -84,7 +84,6 @@ namespace Bloom::Widgets
             this->focusedMemoryRegions,
             this->excludedMemoryRegions,
             this->settings,
-            this->hoveredAddressLabel,
             this->container
         );
 
@@ -181,6 +180,14 @@ namespace Bloom::Widgets
             this,
             [this] {
                 this->byteItemGraphicsScene = this->byteItemGraphicsView->getScene();
+
+                QObject::connect(
+                    this->byteItemGraphicsScene,
+                    &ItemGraphicsScene::hoveredAddress,
+                    this,
+                    &HexViewerWidget::onHoveredAddress
+                );
+
                 this->loadingHexViewerLabel->hide();
                 this->byteItemGraphicsView->show();
 
@@ -287,5 +294,27 @@ namespace Bloom::Widgets
         }
 
         this->byteItemGraphicsScene->selectByteItems({});
+    }
+
+    void HexViewerWidget::onHoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address) {
+        if (!address.has_value()) {
+            this->hoveredAddressLabel->setText("Relative address / Absolute address:");
+            return;
+        }
+
+        const auto addressHex = "0x" + QString::number(
+            *address,
+            16
+        ).rightJustified(8, '0').toUpper();
+
+        const auto relativeAddress = *address - this->targetMemoryDescriptor.addressRange.startAddress;
+        const auto relativeAddressHex = "0x" + QString::number(
+            relativeAddress,
+            16
+        ).rightJustified(8, '0').toUpper();
+
+        this->hoveredAddressLabel->setText(
+            "Relative address / Absolute address: " + relativeAddressHex + " / " + addressHex
+        );
     }
 }
