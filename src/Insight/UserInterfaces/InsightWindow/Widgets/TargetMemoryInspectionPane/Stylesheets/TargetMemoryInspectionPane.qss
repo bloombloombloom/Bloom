@@ -170,21 +170,6 @@
     font-size: 11px;
 }
 
-#hex-viewer-container #address-container {
-    background-color: #353633;
-    border-right: 1px solid #41423f;
-}
-
-#hex-viewer-container #address-container QLabel {
-    background-color: transparent;
-    font-size: 5px;
-    color: rgba(175, 177, 179, 0.72);
-}
-
-#hex-viewer-container #address-container QLabel:disabled {
-    color: rgba(175, 177, 179, 0.3);
-}
-
 #hex-viewer-container #loading-hex-viewer-label {
     color: #838386;
     font-size: 14px;

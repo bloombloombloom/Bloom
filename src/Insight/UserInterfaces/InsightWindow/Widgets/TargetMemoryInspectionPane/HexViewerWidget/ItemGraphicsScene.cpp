@@ -672,7 +672,6 @@ namespace Bloom::Widgets
         for (auto& [address, byteItem] : this->topLevelGroup->byteItemsByAddress) {
             byteItem.selected = true;
             this->selectedByteItemsByAddress.insert(std::pair(byteItem.startAddress, &byteItem));
-//            this->selectByteItem(byteItem);
         }
 
         this->update();
