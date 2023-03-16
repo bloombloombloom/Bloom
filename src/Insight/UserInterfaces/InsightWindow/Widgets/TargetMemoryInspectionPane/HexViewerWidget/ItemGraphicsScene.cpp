@@ -325,6 +325,10 @@ namespace Bloom::Widgets
         return QGraphicsScene::event(event);
     }
 
+    void ItemGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* mouseEvent) {
+        this->mousePressEvent(mouseEvent);
+    }
+
     void ItemGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) {
         static const auto rubberBandRectBackgroundColor = QColor(0x3C, 0x59, 0x5C, 0x82);
         static const auto rubberBandRectBorderColor = QColor(0x3C, 0x59, 0x5C, 255);
