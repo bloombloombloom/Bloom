@@ -41,7 +41,7 @@ namespace Bloom::Widgets
             this->state.detachedWindowState = DetachedWindowState(this->size(), this->pos());
         }
 
-        this->setMinimumSize(1100, 600);
+        this->setMinimumSize(700, 600);
         this->state.attached = false;
 
         if (this->state.activated) {
