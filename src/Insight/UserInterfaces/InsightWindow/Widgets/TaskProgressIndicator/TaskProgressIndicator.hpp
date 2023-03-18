@@ -25,11 +25,9 @@ namespace Bloom::Widgets
 
     private:
         QSharedPointer<InsightWorkerTask> task;
-        int taskProgressPercentage = 0;
-        bool taskFailed = false;
 
-        void onTaskProgressUpdate(int progressPercentage);
-        void onTaskFailed();
+        void onTaskProgressUpdate();
+        void onTaskStateChanged();
         void onTaskFinished();
     };
 }

@@ -20,16 +20,23 @@ namespace Bloom::Widgets
 
         QObject::connect(
             this->task.get(),
-            &InsightWorkerTask::progressUpdate,
+            &InsightWorkerTask::started,
             this,
-            &TaskProgressIndicator::onTaskProgressUpdate
+            &TaskProgressIndicator::onTaskStateChanged
+        );
+
+        QObject::connect(
+            this->task.get(),
+            &InsightWorkerTask::finished,
+            this,
+            &TaskProgressIndicator::onTaskStateChanged
         );
 
         QObject::connect(
             this->task.get(),
             &InsightWorkerTask::failed,
             this,
-            &TaskProgressIndicator::onTaskFailed
+            &TaskProgressIndicator::onTaskStateChanged
         );
 
         QObject::connect(
@@ -37,6 +44,13 @@ namespace Bloom::Widgets
             &InsightWorkerTask::finished,
             this,
             &TaskProgressIndicator::onTaskFinished
+        );
+
+        QObject::connect(
+            this->task.get(),
+            &InsightWorkerTask::progressUpdate,
+            this,
+            &TaskProgressIndicator::onTaskProgressUpdate
         );
     }
 
@@ -56,12 +70,20 @@ namespace Bloom::Widgets
         static constexpr auto barHeight = 3;
         const auto barYPosition = size.height() - barHeight - 3;
 
-        const auto percentage = std::max(this->taskProgressPercentage, 2);
+        const auto percentage = std::max(static_cast<int>(this->task->progressPercentage), 2);
+
+        const auto status = QString(
+            this->task->state == InsightWorkerTaskState::FAILED
+                ? " - Failed"
+                : this->task->state == InsightWorkerTaskState::COMPLETED
+                    ? " - Completed"
+                    : ""
+        );
 
         painter.drawText(
             0,
             barYPosition - 5,
-            this->task->brief() + QString(this->taskFailed ? " - Failed" : (percentage == 100 ? " - Completed" : ""))
+            this->task->brief() + status
         );
 
         painter.setPen(Qt::PenStyle::NoPen);
@@ -84,20 +106,15 @@ namespace Bloom::Widgets
         );
     }
 
-    void TaskProgressIndicator::onTaskProgressUpdate(int taskProgressPercentage) {
-        this->taskProgressPercentage = taskProgressPercentage;
+    void TaskProgressIndicator::onTaskProgressUpdate() {
         this->update();
     }
 
-    void TaskProgressIndicator::onTaskFailed() {
-        this->taskFailed = true;
+    void TaskProgressIndicator::onTaskStateChanged() {
         this->update();
     }
 
     void TaskProgressIndicator::onTaskFinished() {
-        this->taskProgressPercentage = 100;
-        this->update();
-
         auto* finishedSignalTimer = new QTimer();
         finishedSignalTimer->setSingleShot(true);
         finishedSignalTimer->setInterval(2500);

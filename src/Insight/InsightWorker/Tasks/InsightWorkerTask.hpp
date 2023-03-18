@@ -18,6 +18,9 @@ namespace Bloom
         COMPLETED,
     };
 
+    static_assert(std::atomic<InsightWorkerTaskState>::is_always_lock_free);
+    static_assert(std::atomic<std::uint8_t>::is_always_lock_free);
+
     class InsightWorkerTask: public QObject
     {
         Q_OBJECT
@@ -25,7 +28,8 @@ namespace Bloom
     public:
         using IdType = std::uint64_t;
         const InsightWorkerTask::IdType id = ++(InsightWorkerTask::lastId);
-        InsightWorkerTaskState state = InsightWorkerTaskState::CREATED;
+        std::atomic<InsightWorkerTaskState> state = InsightWorkerTaskState::CREATED;
+        std::atomic<std::uint8_t> progressPercentage = 0;
 
         InsightWorkerTask();
 
@@ -55,7 +59,7 @@ namespace Bloom
          * @param progressPercentage
          *  The task's current progress.
          */
-        void progressUpdate(int progressPercentage);
+        void progressUpdate(std::uint8_t progressPercentage);
 
         /**
          * The InsightWorkerTask::completed() signal will be emitted once the task has successfully completed.
@@ -76,6 +80,7 @@ namespace Bloom
 
     protected:
         virtual void run(Services::TargetControllerService& targetControllerService) = 0;
+        void setProgressPercentage(std::uint8_t percentage);
 
     private:
         static inline std::atomic<InsightWorkerTask::IdType> lastId = 0;

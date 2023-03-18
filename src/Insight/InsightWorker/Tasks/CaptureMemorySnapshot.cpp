@@ -68,7 +68,7 @@ namespace Bloom
                 );
 
                 std::move(dataSegment.begin(), dataSegment.end(), std::back_inserter(*this->data));
-                emit this->progressUpdate(static_cast<int>(
+                this->setProgressPercentage(static_cast<std::uint8_t>(
                     (static_cast<float>(i) + 1) / (static_cast<float>(readsRequired + 1) / 100)
                 ));
             }

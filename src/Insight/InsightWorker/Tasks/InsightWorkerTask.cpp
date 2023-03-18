@@ -14,8 +14,11 @@ namespace Bloom
         try {
             this->state = InsightWorkerTaskState::STARTED;
             emit this->started();
+
             this->run(targetControllerService);
+
             this->state = InsightWorkerTaskState::COMPLETED;
+            this->setProgressPercentage(100);
             emit this->completed();
 
         } catch (std::exception& exception) {
@@ -25,5 +28,10 @@ namespace Bloom
         }
 
         emit this->finished();
+    }
+
+    void InsightWorkerTask::setProgressPercentage(std::uint8_t percentage) {
+        this->progressPercentage = percentage;
+        emit this->progressUpdate(this->progressPercentage);
     }
 }
