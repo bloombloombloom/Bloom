@@ -42,7 +42,7 @@ namespace Bloom::Widgets
         this->displayAbsoluteAddressAction->setCheckable(true);
 
         this->setAddressType(this->state.settings.addressLabelType);
-        this->setItemIndexMethod(QGraphicsScene::NoIndex);
+        this->setItemIndexMethod(QGraphicsScene::ItemIndexMethod::NoIndex);
 
         QObject::connect(
             InsightSignals::instance(),
@@ -615,9 +615,10 @@ namespace Bloom::Widgets
 
             this->hoverRectX->setVisible(true);
             this->hoverRectY->setVisible(true);
+            this->hoverRectX->update();
+            this->hoverRectY->update();
         }
 
-        this->update();
         emit this->hoveredAddress(byteItem.startAddress);
     }
 
@@ -628,7 +629,8 @@ namespace Bloom::Widgets
 
         this->hoverRectX->setVisible(false);
         this->hoverRectY->setVisible(false);
-        this->update();
+        this->hoverRectX->update();
+        this->hoverRectY->update();
 
         emit this->hoveredAddress(std::nullopt);
     }

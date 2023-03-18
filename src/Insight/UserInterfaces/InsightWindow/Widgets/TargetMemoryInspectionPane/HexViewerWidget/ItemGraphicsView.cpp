@@ -21,7 +21,7 @@ namespace Bloom::Widgets
         this->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        this->setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
+        this->setViewportUpdateMode(QGraphicsView::ViewportUpdateMode::MinimalViewportUpdate);
         this->setOptimizationFlag(QGraphicsView::DontSavePainterState, true);
         this->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
         this->setCacheMode(QGraphicsView::CacheModeFlag::CacheNone);
