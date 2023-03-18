@@ -430,8 +430,8 @@ namespace Bloom::Widgets
             this->rubberBandRectItem->setRect(
                 qMin(mousePosition.x(), this->rubberBandInitPoint->x()),
                 qMin(mousePosition.y(), this->rubberBandInitPoint->y()),
-                qAbs(mousePosition.x() - this->rubberBandInitPoint->x()),
-                qAbs(mousePosition.y() - this->rubberBandInitPoint->y())
+                qMax(static_cast<int>(qAbs(mousePosition.x() - this->rubberBandInitPoint->x())), 1),
+                qMax(static_cast<int>(qAbs(mousePosition.y() - this->rubberBandInitPoint->y())), 1)
             );
 
             if ((mouseEvent->modifiers() & Qt::ControlModifier) == 0) {
