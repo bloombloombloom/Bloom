@@ -128,7 +128,7 @@ namespace Bloom::Widgets
              *
              * See https://bugreports.qt.io/browse/QTBUG-99189 for more on this.
              */
-            return std::max(this->parent->viewport()->width(), 400) - 2;
+            return std::max(this->parent->viewport()->width(), 200) - 2;
         }
 
         void refreshItemPositionIndices();
