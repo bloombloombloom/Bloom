@@ -37,7 +37,7 @@ namespace Bloom::Widgets
                 (groupItem != nullptr && groupItem->positionOnNewLine(maximumWidth))
                 || itemSize.width() > availableWidth
             ) {
-                position.setX(0);
+                position.setX(margins.left());
                 position.setY(height + HexViewerItem::BOTTOM_MARGIN);
                 this->multiLine = true;
                 currentLineItems.clear();
