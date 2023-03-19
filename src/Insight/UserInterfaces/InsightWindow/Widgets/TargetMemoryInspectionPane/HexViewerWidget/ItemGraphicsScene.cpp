@@ -619,11 +619,19 @@ namespace Bloom::Widgets
             this->hoverRectY->update();
         }
 
+        if (byteItem.allocatedGraphicsItem != nullptr) {
+            byteItem.allocatedGraphicsItem->update();
+        }
+
         emit this->hoveredAddress(byteItem.startAddress);
     }
 
     void ItemGraphicsScene::onByteItemLeave() {
         if (this->state.hoveredByteItem != nullptr) {
+            if (this->state.hoveredByteItem->allocatedGraphicsItem != nullptr) {
+                this->state.hoveredByteItem->allocatedGraphicsItem->update();
+            }
+
             this->state.hoveredByteItem = nullptr;
         }
 
