@@ -1,0 +1,10 @@
+#task-window,
+#task-window #container {
+    background-color: #373835;
+    border: none;
+}
+
+#loading-placeholder-label {
+    color: #737375;
+    font-size: 14px;
+}

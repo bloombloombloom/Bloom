@@ -13,6 +13,8 @@ namespace Bloom::Widgets
         this->setObjectName("task-indicator");
         this->setFixedSize(50, 26);
 
+        this->taskWindow = new TaskWindow(this);
+
         auto* insightSignals = InsightSignals::instance();
 
         QObject::connect(
@@ -40,6 +42,11 @@ namespace Bloom::Widgets
     void TaskIndicator::leaveEvent(QEvent* event) {
         this->hovered = false;
         this->update();
+    }
+
+    void TaskIndicator::mousePressEvent(QMouseEvent* event) {
+        this->taskWindow->show();
+        this->taskWindow->activateWindow();
     }
 
     void TaskIndicator::paintEvent(QPaintEvent* event) {

@@ -39,9 +39,13 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/CaptureMemorySnapshot.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/RetrieveMemorySnapshots.cpp
 
-        # Task indicator
+        # Task indicators
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TaskIndicator/TaskIndicator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.cpp
+
+        # Task window
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TaskWindow/TaskWindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TaskWindow/Task.cpp
 
         # Error dialogue window
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.cpp
@@ -154,6 +158,10 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/ascii-view.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/ascii-view-disabled.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/Images/new-snapshot-icon.svg"
+
+        # Task window
+        "./UserInterfaces/InsightWindow/Widgets/TaskWindow/UiFiles/TaskWindow.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TaskWindow/Stylesheets/TaskWindow.qss"
 
         # Target package widgets
         "./UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss"
