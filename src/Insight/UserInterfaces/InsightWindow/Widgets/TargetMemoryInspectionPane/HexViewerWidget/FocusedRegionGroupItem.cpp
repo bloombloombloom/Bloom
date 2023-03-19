@@ -176,11 +176,14 @@ namespace Bloom::Widgets
             const auto byteItemSize = (this->focusedMemoryRegion.addressRange.endAddress
                 - this->focusedMemoryRegion.addressRange.startAddress + 1);
             const auto estimatedWidth = static_cast<int>(
-                byteItemSize * (ByteItem::WIDTH + (ByteItem::RIGHT_MARGIN / 2))
+                byteItemSize * (ByteItem::WIDTH + ByteItem::RIGHT_MARGIN) - ByteItem::RIGHT_MARGIN
             );
 
-            const auto annotationMargin = static_cast<int>(
-                estimatedWidth < minimumWidth ? minimumWidth - estimatedWidth : 0
+            const auto annotationMargin = std::min(
+                static_cast<int>(
+                    estimatedWidth < minimumWidth ? minimumWidth - estimatedWidth : 0
+                ),
+                std::max(maximumWidth - estimatedWidth, 0)
             );
 
             return QMargins(
