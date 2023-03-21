@@ -52,9 +52,9 @@ namespace Bloom::Widgets
         static constexpr auto labelLeftMargin = 5;
 
         static const auto nameLabelFont = QFont("'Ubuntu', sans-serif", 11);
-        static constexpr auto nameLabelFontColor = QColor(0xAF, 0xB1, 0xB3);
+        static constexpr auto primaryFontColor = QColor(0xAF, 0xB1, 0xB3);
         static const auto valueLabelFont = QFont("'Ubuntu', sans-serif", 10, -1, true);
-        static constexpr auto valueLabelFontColor = QColor(0x8A, 0x8A, 0x8D);
+        static constexpr auto secondaryFontColor = QColor(0x8A, 0x8A, 0x8D);
         static constexpr auto highlightedValueLabelFontColor = QColor(0x54, 0x7F, 0xBA);
 
         if (this->selected) {
@@ -67,7 +67,7 @@ namespace Bloom::Widgets
         painter->drawPixmap(itemLeftPadding, itemTopPadding + 4, registerIconPixmap);
 
         painter->setFont(nameLabelFont);
-        painter->setPen(nameLabelFontColor);
+        painter->setPen(primaryFontColor);
 
         const auto fontMetrics = painter->fontMetrics();
 
@@ -84,7 +84,9 @@ namespace Bloom::Widgets
         if (!this->valueText.isEmpty()) {
             painter->setFont(valueLabelFont);
             painter->setPen(
-                this->valueChanged && !this->selected ? highlightedValueLabelFontColor : valueLabelFontColor
+                this->valueChanged && !this->selected
+                    ? highlightedValueLabelFontColor
+                        : !this->selected ? secondaryFontColor : primaryFontColor
             );
 
             const auto fontMetrics = painter->fontMetrics();
