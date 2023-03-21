@@ -26,6 +26,20 @@ namespace Bloom::Widgets
             return;
         }
 
+        virtual bool operator < (const ListItem& rhs) const = 0;
+
+        bool operator > (const ListItem& rhs) const {
+            return rhs < *this;
+        }
+
+        bool operator <= (const ListItem& rhs) const {
+            return !(rhs < *this);
+        }
+
+        bool operator >= (const ListItem& rhs) const {
+            return !(*this < rhs);
+        }
+
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override = 0;
     };
 }

@@ -28,6 +28,9 @@ namespace Bloom::Widgets
         );
 
         void refreshGeometry();
+        void setItems(const std::vector<ListItem*>& items);
+        void addListItem(ListItem* item);
+        void sortItems();
         void setEnabled(bool enabled);
 
     signals:
@@ -42,7 +45,7 @@ namespace Bloom::Widgets
         void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
     private:
-        const std::vector<ListItem*> listItems;
+        std::vector<ListItem*> listItems;
         QGraphicsView* const parent;
         bool enabled = false;
         ListItem* selectedItem = nullptr;

@@ -37,6 +37,11 @@ namespace Bloom::Widgets
 
         void refreshGeometry();
 
+        bool operator < (const ListItem& rhs) const override {
+            const auto& rhsRegisterGroupItem = dynamic_cast<const RegisterGroupItem&>(rhs);
+            return this->groupName < rhsRegisterGroupItem.groupName;
+        }
+
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     private:

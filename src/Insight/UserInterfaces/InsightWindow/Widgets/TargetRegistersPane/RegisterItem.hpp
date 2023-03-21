@@ -29,6 +29,11 @@ namespace Bloom::Widgets
             this->valueText.clear();
         }
 
+        bool operator < (const ListItem& rhs) const override {
+            const auto& rhsRegisterItem = dynamic_cast<const RegisterItem&>(rhs);
+            return this->registerName < rhsRegisterItem.registerName;
+        }
+
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     private:

@@ -12,15 +12,11 @@ namespace Bloom::Widgets
         std::vector<ListItem*> items,
         QGraphicsView* parent
     )
-        : listItems(std::move(items))
-        , parent(parent)
+        : parent(parent)
         , QGraphicsScene(parent)
     {
         this->setItemIndexMethod(QGraphicsScene::NoIndex);
-
-        for (const auto& listItem : this->listItems) {
-            this->addItem(listItem);
-        }
+        this->setItems(std::move(items));
     }
 
     void ListScene::refreshGeometry() {
@@ -46,6 +42,35 @@ namespace Bloom::Widgets
 
         this->setSceneRect(0, 0, viewportWidth, std::max(viewportHeight, startYPosition));
         this->update();
+    }
+
+    void ListScene::setItems(const std::vector<ListItem*>& items) {
+        for (auto& item : this->items()) {
+            this->removeItem(item);
+        }
+
+        this->listItems = items;
+
+        for (const auto& listItem : this->listItems) {
+            this->addItem(listItem);
+        }
+
+        this->sortItems();
+    }
+
+    void ListScene::addListItem(ListItem* item) {
+        this->listItems.push_back(item);
+        this->addItem(item);
+    }
+
+    void ListScene::sortItems() {
+        std::sort(
+            this->listItems.begin(),
+            this->listItems.end(),
+            [] (const ListItem* itemA, const ListItem* itemB) {
+                return *itemA < *itemB;
+            }
+        );
     }
 
     void ListScene::setEnabled(bool enabled) {
