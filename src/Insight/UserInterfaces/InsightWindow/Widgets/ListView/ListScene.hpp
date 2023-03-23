@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 #include <QMargins>
 #include <vector>
+#include <list>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
 #include <QGraphicsSceneContextMenuEvent>
@@ -28,13 +29,14 @@ namespace Bloom::Widgets
         );
 
         void refreshGeometry();
+        void setSelectionLimit(std::uint8_t selectionLimit);
         void setItems(const std::vector<ListItem*>& items);
         void addListItem(ListItem* item);
         void sortItems();
         void setEnabled(bool enabled);
 
     signals:
-        void selectionChanged(ListItem* selectedItem);
+        void selectionChanged(const std::list<ListItem*>& selectedItems);
         void itemClicked(ListItem* item);
         void itemDoubleClicked(ListItem* item);
         void itemContextMenu(ListItem* item, QPoint sourcePosition);
@@ -48,7 +50,8 @@ namespace Bloom::Widgets
         std::vector<ListItem*> listItems;
         QGraphicsView* const parent;
         bool enabled = false;
-        ListItem* selectedItem = nullptr;
+        std::list<ListItem*> selectedItems;
+        std::uint8_t selectionLimit = 1;
 
         QWidget* viewport() const {
             const auto views = this->views();

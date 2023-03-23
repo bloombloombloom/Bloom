@@ -19,6 +19,10 @@ namespace Bloom::Widgets
         this->setItems(std::move(items));
     }
 
+    void ListScene::setSelectionLimit(std::uint8_t selectionLimit) {
+        this->selectionLimit = selectionLimit;
+    }
+
     void ListScene::refreshGeometry() {
         const auto* viewport = this->viewport();
         const auto viewportWidth = viewport != nullptr ? viewport->width() : 0;
@@ -90,10 +94,26 @@ namespace Bloom::Widgets
     void ListScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) {
         const auto button = mouseEvent->button();
 
-        if (this->selectedItem != nullptr) {
-            this->selectedItem->selected = false;
-            this->selectedItem->update();
-            this->selectedItem = nullptr;
+        const auto selectedItemCount = this->selectedItems.size();
+        if (selectedItemCount > 0) {
+            const auto ctrlModifierEnabled = (mouseEvent->modifiers() & Qt::ControlModifier) != 0;
+            if (!ctrlModifierEnabled || selectedItemCount >= this->selectionLimit) {
+                const auto itemsToRemove = ctrlModifierEnabled
+                    ? selectedItemCount - this->selectionLimit + 1
+                    : selectedItemCount;
+
+                auto itemIt = this->selectedItems.begin();
+                while (
+                    itemIt != this->selectedItems.end()
+                    && (selectedItemCount - this->selectedItems.size()) < itemsToRemove
+                ) {
+                    auto& item = *itemIt;
+                    item->selected = false;
+                    item->update();
+
+                    this->selectedItems.erase(itemIt++);
+                }
+            }
         }
 
         const auto mousePosition = mouseEvent->buttonDownScenePos(button);
@@ -108,12 +128,11 @@ namespace Bloom::Widgets
             return;
         }
 
-        this->selectedItem = clickedListItem;
-
+        this->selectedItems.push_back(clickedListItem);
         clickedListItem->selected = true;
         clickedListItem->update();
 
-        emit this->selectionChanged(this->selectedItem);
+        emit this->selectionChanged(this->selectedItems);
         emit this->itemClicked(clickedListItem);
     }
 
