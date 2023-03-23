@@ -53,15 +53,15 @@ namespace Bloom::Widgets
         this->createSnapshotButton = this->toolBar->findChild<SvgToolButton*>("create-snapshot-btn");
         this->deleteSnapshotButton = this->toolBar->findChild<SvgToolButton*>("delete-snapshot-btn");
 
-        this->itemScrollArea = this->container->findChild<QScrollArea*>("snapshot-item-scroll-area");
-        this->itemScrollAreaViewport = this->itemScrollArea->findChild<QWidget*>("item-container");
-        this->itemLayout = this->itemScrollAreaViewport->findChild<QVBoxLayout*>(
-            "item-container-layout"
-        );
+        auto* containerLayout = this->container->findChild<QVBoxLayout*>();
 
-        this->itemScrollArea->setContentsMargins(0, 0, 0, 0);
-        this->itemScrollAreaViewport->setContentsMargins(0, 0, 0, 0);
-        this->itemLayout->setContentsMargins(0, 0, 0, 0);
+        this->snapshotListView = new ListView({}, this);
+        this->snapshotListView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+
+        this->snapshotListScene = this->snapshotListView->listScene();
+        this->snapshotListScene->setSelectionLimit(2);
+
+        containerLayout->addWidget(this->snapshotListView);
 
         this->createSnapshotWindow = new CreateSnapshotWindow(
             this->memoryDescriptor.type,
@@ -112,7 +112,9 @@ namespace Bloom::Widgets
 
                     this->addSnapshot(std::move(snapshot));
                 }
-                this->sortSnapshotItems();
+
+                this->snapshotListScene->sortItems();
+                this->snapshotListScene->refreshGeometry();
             }
         );
 
@@ -156,7 +158,8 @@ namespace Bloom::Widgets
             this,
             [this] (MemorySnapshot snapshot) {
                 this->addSnapshot(std::move(snapshot));
-                this->sortSnapshotItems();
+                this->snapshotListScene->sortItems();
+                this->snapshotListScene->refreshGeometry();
             }
         );
 
@@ -166,40 +169,13 @@ namespace Bloom::Widgets
     }
 
     void SnapshotManager::addSnapshot(MemorySnapshot&& snapshotTmp) {
-        const auto snapshotIt = this->snapshotsById.insert(std::pair(snapshotTmp.id, std::move(snapshotTmp)));
-        const auto& snapshot = snapshotIt.first->second;
+        const auto snapshotIt = this->snapshotsById.emplace(snapshotTmp.id, std::move(snapshotTmp));
+        const auto& snapshot = *snapshotIt;
 
-        auto* snapshotItem = new MemorySnapshotItem(snapshot, this);
-        this->itemLayout->addWidget(snapshotItem);
+        const auto snapshotItemIt = this->snapshotItemsById.emplace(snapshot.id, new MemorySnapshotItem(snapshot));
+        auto& snapshotItem = *snapshotItemIt;
 
-        QObject::connect(
-            snapshotItem,
-            &MemorySnapshotItem::selected,
-            this,
-            &SnapshotManager::onSnapshotItemSelected
-        );
-    }
-
-    void SnapshotManager::sortSnapshotItems() {
-        const auto snapshotItemCompare = [] (MemorySnapshotItem* itemA, MemorySnapshotItem* itemB) {
-            return itemA->memorySnapshot.createdDate > itemB->memorySnapshot.createdDate;
-        };
-
-        auto sortedSnapshotItems = std::set<MemorySnapshotItem*, decltype(snapshotItemCompare)>(snapshotItemCompare);
-
-        QLayoutItem* layoutItem = nullptr;
-        while ((layoutItem = this->itemLayout->takeAt(0)) != nullptr) {
-            auto* snapshotItem = qobject_cast<MemorySnapshotItem*>(layoutItem->widget());
-            if (snapshotItem != nullptr) {
-                sortedSnapshotItems.insert(snapshotItem);
-            }
-
-            delete layoutItem;
-        }
-
-        for (auto* regionItem : sortedSnapshotItems) {
-            this->itemLayout->addWidget(regionItem);
-        }
+        this->snapshotListScene->addListItem(snapshotItem);
     }
 
     void SnapshotManager::onSnapshotItemSelected(MemorySnapshotItem* item) {

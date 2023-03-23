@@ -4,12 +4,12 @@
 #include <optional>
 #include <QResizeEvent>
 #include <QShowEvent>
-#include <QScrollArea>
 #include <QVBoxLayout>
-#include <map>
+#include <QHash>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
@@ -49,7 +49,8 @@ namespace Bloom::Widgets
         const std::optional<Targets::TargetMemoryBuffer>& data;
         const bool& staleData;
 
-        std::map<QString, MemorySnapshot> snapshotsById;
+        QHash<QString, MemorySnapshot> snapshotsById;
+        QHash<QString, MemorySnapshotItem*> snapshotItemsById;
 
         QWidget* container = nullptr;
         QWidget* toolBar = nullptr;
@@ -57,9 +58,8 @@ namespace Bloom::Widgets
         SvgToolButton* createSnapshotButton = nullptr;
         SvgToolButton* deleteSnapshotButton = nullptr;
 
-        QScrollArea* itemScrollArea = nullptr;
-        QWidget* itemScrollAreaViewport = nullptr;
-        QVBoxLayout* itemLayout = nullptr;
+        ListView* snapshotListView = nullptr;
+        ListScene* snapshotListScene = nullptr;
 
         void createSnapshot(
             const QString& name,
@@ -68,7 +68,6 @@ namespace Bloom::Widgets
             bool captureDirectlyFromTarget
         );
         void addSnapshot(MemorySnapshot&& snapshotTmp);
-        void sortSnapshotItems();
         void onSnapshotItemSelected(MemorySnapshotItem* item);
     };
 }

@@ -4,66 +4,93 @@
 
 namespace Bloom::Widgets
 {
-    MemorySnapshotItem::MemorySnapshotItem(
-        const MemorySnapshot& memorySnapshot,
-        QWidget *parent
-    )
+    MemorySnapshotItem::MemorySnapshotItem(const MemorySnapshot& memorySnapshot)
         : memorySnapshot(memorySnapshot)
-        , ClickableWidget(parent)
     {
-        this->setObjectName("snapshot-item");
-        this->setFixedHeight(50);
-        this->layout->setContentsMargins(5, 5, 5, 0);
+        this->size = QSize(0, MemorySnapshotItem::HEIGHT);
 
-        this->nameLabel->setText(memorySnapshot.name);
-        this->nameLabel->setObjectName("name-label");
-
-        this->programCounterLabel->setText("0x" + QString::number(this->memorySnapshot.programCounter, 16).toUpper());
-        this->programCounterLabel->setObjectName("program-counter-label");
-
-        this->createdDateLabel->setText(
-            memorySnapshot.createdDate.toString(
-                memorySnapshot.createdDate.date() == Services::DateTimeService::currentDate()
-                    ? "hh:mm"
-                    : "dd/MM/yyyy hh:mm"
-            )
+        this->nameText = memorySnapshot.name;
+        this->programCounterText = "0x" + QString::number(this->memorySnapshot.programCounter, 16).toUpper();
+        this->createdDateText = memorySnapshot.createdDate.toString(
+            memorySnapshot.createdDate.date() == Services::DateTimeService::currentDate()
+                ? "hh:mm"
+                : "dd/MM/yyyy hh:mm"
         );
-        this->createdDateLabel->setObjectName("created-date-label");
-
-        auto* topLabelLayout = new QHBoxLayout();
-        topLabelLayout->setSpacing(0);
-        topLabelLayout->setContentsMargins(0, 0, 0, 0);
-        topLabelLayout->addWidget(this->nameLabel, 0, Qt::AlignmentFlag::AlignLeft);
-        topLabelLayout->addStretch(1);
-        topLabelLayout->addWidget(this->programCounterLabel, 0, Qt::AlignmentFlag::AlignRight);
-
-        auto* bottomLabelLayout = new QHBoxLayout();
-        bottomLabelLayout->setSpacing(0);
-        bottomLabelLayout->setContentsMargins(0, 0, 0, 0);
-        bottomLabelLayout->addWidget(this->createdDateLabel, 0, Qt::AlignmentFlag::AlignLeft);
-
-        this->layout->setSpacing(5);
-        this->layout->addLayout(topLabelLayout);
-        this->layout->addLayout(bottomLabelLayout);
-        this->layout->addStretch(1);
-
-        auto onClick = [this] {
-            this->setSelected(true);
-        };
-
-        QObject::connect(this, &ClickableWidget::clicked, this, onClick);
-        QObject::connect(this, &ClickableWidget::rightClicked, this, onClick);
-
-        this->setSelected(false);
     }
 
-    void MemorySnapshotItem::setSelected(bool selected) {
-        this->setProperty("selected", selected);
-        this->style()->unpolish(this);
-        this->style()->polish(this);
+    void MemorySnapshotItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+        static constexpr auto margins = QMargins(5, 5, 5, 0);
 
-        if (selected) {
-            emit this->selected(this);
+        static auto font = QFont("'Ubuntu', sans-serif");
+        font.setPixelSize(14);
+        static auto secondaryFont = QFont("'Ubuntu', sans-serif");
+        secondaryFont.setPixelSize(13);
+
+        static constexpr auto fontColor = QColor(0xAF, 0xB1, 0xB3);
+        static constexpr auto secondaryFontColor = QColor(0x8A, 0x8A, 0x8D);
+
+        if (this->selected) {
+            static constexpr auto selectedBackgroundColor = QColor(0x35, 0x5A, 0x80);
+
+            painter->setBrush(selectedBackgroundColor);
+            painter->setPen(Qt::PenStyle::NoPen);
+            painter->drawRect(QRect(QPoint(0, 0), this->size));
         }
+
+        painter->setFont(font);
+        painter->setPen(fontColor);
+
+        const auto fontMetrics = painter->fontMetrics();
+
+        const auto programCounterTextSize = fontMetrics.size(Qt::TextSingleLine, this->programCounterText);
+        const auto createdDateTextSize = fontMetrics.size(Qt::TextSingleLine, this->createdDateText);
+
+        constexpr auto nameTextRightMargin = 10;
+        const auto availableNameTextWidth = this->size.width() - margins.left() - margins.right()
+            - programCounterTextSize.width() - nameTextRightMargin;
+
+        const auto nameText = fontMetrics.elidedText(
+            this->nameText,
+            Qt::TextElideMode::ElideRight,
+            availableNameTextWidth
+        );
+
+        const auto nameTextSize = fontMetrics.size(Qt::TextSingleLine, nameText);
+        const auto nameTextRect = QRect(
+            margins.left(),
+            margins.top(),
+            nameTextSize.width(),
+            nameTextSize.height()
+        );
+
+        painter->drawText(nameTextRect, Qt::AlignLeft, nameText);
+
+        painter->setFont(secondaryFont);
+
+        if (!this->selected) {
+            painter->setPen(secondaryFontColor);
+        }
+
+        const auto programCounterTextRect = QRect(
+            this->size.width() - margins.right() - programCounterTextSize.width(),
+            margins.top(),
+            programCounterTextSize.width(),
+            programCounterTextSize.height()
+        );
+
+        painter->drawText(programCounterTextRect, Qt::AlignLeft, this->programCounterText);
+
+        const auto createdDateTextRect = QRect(
+            margins.left(),
+            nameTextRect.bottom() + 5,
+            createdDateTextSize.width(),
+            createdDateTextSize.height()
+        );
+
+        painter->drawText(createdDateTextRect, Qt::AlignLeft, this->createdDateText);
+
+        static constexpr auto borderColor = QColor(0x41, 0x42, 0x3F);
+        painter->setPen(borderColor);
+        painter->drawLine(0, this->size.height() - 1, this->size.width(), this->size.height() - 1);
     }
 }

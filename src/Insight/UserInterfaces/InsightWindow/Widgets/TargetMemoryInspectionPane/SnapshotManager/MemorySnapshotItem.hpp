@@ -1,40 +1,33 @@
 #pragma once
 
-#include <QVBoxLayout>
-#include <QComboBox>
-#include <map>
 #include <QString>
-#include <QStringList>
 
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.hpp"
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListItem.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
 namespace Bloom::Widgets
 {
-    class MemorySnapshotItem: public ClickableWidget
+    class MemorySnapshotItem: public ListItem
     {
-        Q_OBJECT
-
     public:
         const MemorySnapshot& memorySnapshot;
 
-        MemorySnapshotItem(
-            const MemorySnapshot& memorySnapshot,
-            QWidget *parent
-        );
+        MemorySnapshotItem(const MemorySnapshot& memorySnapshot);
 
-        void setSelected(bool selected);
+        bool operator < (const ListItem& rhs) const override {
+            const auto& rhsSnapshotItem = dynamic_cast<const MemorySnapshotItem&>(rhs);
+            return this->memorySnapshot.createdDate > rhsSnapshotItem.memorySnapshot.createdDate;
+        }
 
-    signals:
-        void selected(MemorySnapshotItem*);
+        void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     private:
-        QVBoxLayout* layout = new QVBoxLayout(this);
-        Label* nameLabel = new Label(this);
-        Label* programCounterLabel = new Label(this);
-        Label* createdDateLabel = new Label(this);
+        static constexpr int HEIGHT = 50;
+
+        QString nameText;
+        QString programCounterText;
+        QString createdDateText;
     };
 }
