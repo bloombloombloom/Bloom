@@ -117,7 +117,7 @@ namespace Bloom::Widgets
         this->rightPanel = new PanelWidget(PanelWidgetType::RIGHT, this->settings.rightPanelState, this);
         this->rightPanel->setObjectName("right-panel");
         this->rightPanel->setMinimumResize(200);
-        this->rightPanel->setHandleSize(5);
+        this->rightPanel->setHandleSize(6);
         this->subContainerLayout->insertWidget(2, this->rightPanel);
 
         this->snapshotManager = new SnapshotManager(

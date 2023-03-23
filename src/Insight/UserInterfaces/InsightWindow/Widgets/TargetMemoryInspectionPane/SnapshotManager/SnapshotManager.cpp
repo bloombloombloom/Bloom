@@ -56,6 +56,7 @@ namespace Bloom::Widgets
         auto* containerLayout = this->container->findChild<QVBoxLayout*>();
 
         this->snapshotListView = new ListView({}, this);
+        this->snapshotListView->viewport()->installEventFilter(parent);
         this->snapshotListView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 
         this->snapshotListScene = this->snapshotListView->listScene();

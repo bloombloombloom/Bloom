@@ -78,6 +78,7 @@ namespace Bloom::Widgets
         std::optional<QPoint> initialResizePoint = std::nullopt;
         int initialResizeSize = 0;
 
+        bool eventFilter(QObject *object, QEvent *event) override;
         bool event(QEvent* event) override;
         void mousePressEvent(QMouseEvent* event) override;
         void mouseReleaseEvent(QMouseEvent* event) override;

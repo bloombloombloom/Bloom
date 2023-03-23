@@ -82,10 +82,31 @@ namespace Bloom::Widgets
         this->setVisible(visible);
     }
 
+    bool PanelWidget::eventFilter(QObject* object, QEvent* event) {
+        const auto eventType = event->type();
+
+        if (event->isSinglePointEvent()) {
+            auto* pointerEvent = dynamic_cast<QSinglePointEvent*>(event);
+
+            if (
+                this->initialResizePoint.has_value()
+                || this->isPositionWithinHandleArea(pointerEvent->position().toPoint())
+            ) {
+                this->event(event);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     bool PanelWidget::event(QEvent* event) {
         if (event->type() == QEvent::Type::HoverMove) {
             auto* hoverEvent = dynamic_cast<QHoverEvent*>(event);
-            if (this->initialResizePoint.has_value() || this->isPositionWithinHandleArea(hoverEvent->position().toPoint())) {
+            if (
+                this->initialResizePoint.has_value()
+                || this->isPositionWithinHandleArea(hoverEvent->position().toPoint())
+            ) {
                 this->setCursor(this->resizeCursor);
 
             } else {
