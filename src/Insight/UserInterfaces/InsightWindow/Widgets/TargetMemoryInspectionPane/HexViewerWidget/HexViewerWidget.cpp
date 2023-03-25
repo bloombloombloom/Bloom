@@ -41,12 +41,24 @@ namespace Bloom::Widgets
             )
         );
 
+        auto stylesheetFile = QFile(
+            QString::fromStdString(Services::PathService::compiledResourcesPath()
+                + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget"
+                + "/Stylesheets/HexViewerWidget.qss"
+            )
+        );
+
         if (!widgetUiFile.open(QFile::ReadOnly)) {
             throw Exception("Failed to open HexViewerWidget UI file");
         }
 
+        if (!stylesheetFile.open(QFile::ReadOnly)) {
+            throw Exception("Failed to open HexViewerWidget stylesheet file");
+        }
+
         auto uiLoader = UiLoader(this);
         this->container = uiLoader.load(&widgetUiFile, this);
+        this->container->setStyleSheet(stylesheetFile.readAll());
         this->container->setFixedSize(this->size());
         this->container->setContentsMargins(0, 0, 0, 0);
 

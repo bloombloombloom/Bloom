@@ -177,6 +177,7 @@ qt_add_resources(
 
         # Hex viewer widget
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/UiFiles/HexViewerWidget.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Stylesheets/HexViewerWidget.qss"
 
         # Memory snapshots
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/UiFiles/SnapshotManager.ui"
