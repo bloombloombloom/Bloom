@@ -99,6 +99,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/MemorySnapshotItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/CreateSnapshotWindow/CreateSnapshotWindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotViewer/SnapshotViewer.cpp
 
         # Memory region manager window
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/MemoryRegionManagerWindow.cpp
@@ -118,13 +119,6 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Stylesheets/Global.qss"
         "./UserInterfaces/InsightWindow/UiFiles/InsightWindow.ui"
         "./UserInterfaces/InsightWindow/Stylesheets/InsightWindow.qss"
-        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui"
-        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/UiFiles/TargetMemoryInspectionPane.ui"
-        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Stylesheets/TargetMemoryInspectionPane.qss"
-        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/UiFiles/HexViewerWidget.ui"
-        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/UiFiles/SnapshotManager.ui"
-        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/CreateSnapshotWindow/UiFiles/CreateSnapshotWindow.ui"
-        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotViewer/UiFiles/SnapshotViewer.ui"
         "./UserInterfaces/InsightWindow/Images/bloom-icon.svg"
         "./UserInterfaces/InsightWindow/Images/RAM.svg"
         "./UserInterfaces/InsightWindow/Images/refresh.svg"
@@ -134,6 +128,18 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Images/attach-pane-icon.svg"
         "./UserInterfaces/InsightWindow/Images/checked-action-icon.svg"
         "./UserInterfaces/InsightWindow/Images/unchecked-action-icon.svg"
+
+        # Task window
+        "./UserInterfaces/InsightWindow/Widgets/TaskWindow/UiFiles/TaskWindow.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TaskWindow/Stylesheets/TaskWindow.qss"
+
+        # Target package widgets
+        "./UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss"
+        "./UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss"
+
+        # Target registers pane
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/collapse-all.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/expand-all.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/arrow.svg"
@@ -142,6 +148,16 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/target-registers-disabled.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/search-registers.svg"
+
+        # Target register inspector window
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/TargetRegisterInspectorWindow.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg"
+
+        # Memory inspection pane
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/UiFiles/TargetMemoryInspectionPane.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Stylesheets/TargetMemoryInspectionPane.qss"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon-disabled.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/manage-focused-regions.svg"
@@ -159,21 +175,14 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/ascii-view-disabled.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/Images/new-snapshot-icon.svg"
 
-        # Task window
-        "./UserInterfaces/InsightWindow/Widgets/TaskWindow/UiFiles/TaskWindow.ui"
-        "./UserInterfaces/InsightWindow/Widgets/TaskWindow/Stylesheets/TaskWindow.qss"
+        # Hex viewer widget
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/UiFiles/HexViewerWidget.ui"
 
-        # Target package widgets
-        "./UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss"
-        "./UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss"
+        # Memory snapshots
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/UiFiles/SnapshotManager.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/CreateSnapshotWindow/UiFiles/CreateSnapshotWindow.ui"
 
-        # Target register inspector window
-        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/TargetRegisterInspectorWindow.ui"
-        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/TargetRegisterInspectorWindow.qss"
-        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget/UiFiles/RegisterHistoryWidget.ui"
-        "./UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Images/icon.svg"
-
-        # Focused memory region manager window
+        # Memory region manager window
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/MemoryRegionManagerWindow.ui"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Stylesheets/MemoryRegionManagerWindow.qss"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/FocusedMemoryRegionForm.ui"
