@@ -20,8 +20,8 @@ namespace Bloom::Widgets
         ItemGraphicsView(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             const std::optional<Targets::TargetMemoryBuffer>& data,
-            std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
-            std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
+            const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+            const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             HexViewerWidgetSettings& settings,
             QWidget* parent
         );

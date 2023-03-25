@@ -31,8 +31,8 @@ namespace Bloom::Widgets
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             const std::optional<Targets::TargetMemoryBuffer>& data,
             HexViewerWidgetSettings& settings,
-            std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
-            std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
+            const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+            const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             QWidget* parent
         );
 
@@ -52,8 +52,8 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
         const std::optional<Targets::TargetMemoryBuffer>& data;
 
-        std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
-        std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
+        const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
+        const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 
         HexViewerWidgetSettings& settings;
 

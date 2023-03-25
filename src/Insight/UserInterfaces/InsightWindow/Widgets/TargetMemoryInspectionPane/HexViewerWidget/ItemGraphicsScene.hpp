@@ -45,8 +45,8 @@ namespace Bloom::Widgets
         ItemGraphicsScene(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             const std::optional<Targets::TargetMemoryBuffer>& data,
-            std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
-            std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
+            const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+            const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             HexViewerWidgetSettings& settings,
             QGraphicsView* parent
         );
@@ -82,8 +82,8 @@ namespace Bloom::Widgets
 
         HexViewerSharedState state;
 
-        std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
-        std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
+        const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
+        const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 
         std::unique_ptr<TopLevelGroupItem> topLevelGroup = nullptr;
 
