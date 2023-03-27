@@ -53,7 +53,27 @@ namespace Bloom
         const auto hexData = QByteArray::fromHex(jsonObject.find("hexData")->toString().toUtf8());
         this->data = Targets::TargetMemoryBuffer(hexData.begin(), hexData.end());
 
-        // TODO: Memory regions
+        if (jsonObject.contains("focusedRegions")) {
+            for (const auto& regionValue : jsonObject.find("focusedRegions")->toArray()) {
+                try {
+                    this->focusedRegions.emplace_back(regionValue.toObject());
+
+                } catch (Exception exception) {
+                    throw Exception("Invalid focused memory region");
+                }
+            }
+        }
+
+        if (jsonObject.contains("excludedRegions")) {
+            for (const auto& regionValue : jsonObject.find("excludedRegions")->toArray()) {
+                try {
+                    this->excludedRegions.emplace_back(regionValue.toObject());
+
+                } catch (Exception exception) {
+                    throw Exception("Invalid excluded memory region");
+                }
+            }
+        }
     }
 
     QJsonObject MemorySnapshot::toJson() const {
@@ -90,6 +110,25 @@ namespace Bloom
 
         if (this->data.size() != memoryDescriptor.size()) {
             return false;
+        }
+
+        const auto& memoryAddressRange = memoryDescriptor.addressRange;
+        for (const auto& focusedRegion : this->focusedRegions) {
+            if (
+                focusedRegion.addressRange.startAddress < memoryAddressRange.startAddress
+                || focusedRegion.addressRange.endAddress > memoryAddressRange.endAddress
+            ) {
+                return false;
+            }
+        }
+
+        for (const auto& excludedRegion : this->excludedRegions) {
+            if (
+                excludedRegion.addressRange.startAddress < memoryAddressRange.startAddress
+                || excludedRegion.addressRange.endAddress > memoryAddressRange.endAddress
+            ) {
+                return false;
+            }
         }
 
         return true;

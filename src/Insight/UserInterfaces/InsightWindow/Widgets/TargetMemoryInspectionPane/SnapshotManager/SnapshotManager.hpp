@@ -13,6 +13,8 @@
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
 
@@ -33,6 +35,8 @@ namespace Bloom::Widgets
             const Targets::TargetMemoryDescriptor& memoryDescriptor,
             const std::optional<Targets::TargetMemoryBuffer>& data,
             const bool& staleData,
+            const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+            const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             PaneState& state,
             PanelWidget* parent = nullptr
         );
@@ -48,6 +52,9 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& memoryDescriptor;
         const std::optional<Targets::TargetMemoryBuffer>& data;
         const bool& staleData;
+
+        const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
+        const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 
         QHash<QString, MemorySnapshot> snapshotsById;
         QHash<QString, MemorySnapshotItem*> snapshotItemsById;

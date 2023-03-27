@@ -124,6 +124,8 @@ namespace Bloom::Widgets
             this->targetMemoryDescriptor,
             this->data,
             this->staleData,
+            this->settings.focusedMemoryRegions,
+            this->settings.excludedMemoryRegions,
             this->settings.snapshotManagerState,
             this->rightPanel
         );

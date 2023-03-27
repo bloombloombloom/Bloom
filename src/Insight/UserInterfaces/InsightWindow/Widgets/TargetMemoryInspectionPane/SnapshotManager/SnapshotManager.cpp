@@ -21,6 +21,8 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& memoryDescriptor,
         const std::optional<Targets::TargetMemoryBuffer>& data,
         const bool& staleData,
+        const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+        const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
         PaneState& state,
         PanelWidget* parent
     )
@@ -28,6 +30,8 @@ namespace Bloom::Widgets
         , memoryDescriptor(memoryDescriptor)
         , data(data)
         , staleData(staleData)
+        , focusedMemoryRegions(focusedMemoryRegions)
+        , excludedMemoryRegions(excludedMemoryRegions)
     {
         this->setObjectName("snapshot-manager");
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -146,8 +150,8 @@ namespace Bloom::Widgets
                 std::move(name),
                 std::move(description),
                 this->memoryDescriptor.type,
-                {},
-                {},
+                captureFocusedRegions ? this->focusedMemoryRegions : std::vector<FocusedMemoryRegion>(),
+                this->excludedMemoryRegions,
                 captureDirectlyFromTarget ? std::nullopt : this->data
             ),
             &QObject::deleteLater
