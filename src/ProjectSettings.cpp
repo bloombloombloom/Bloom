@@ -201,9 +201,7 @@ namespace Bloom
         if (jsonObject.contains("focusedRegions")) {
             for (const auto& regionValue : jsonObject.find("focusedRegions")->toArray()) {
                 try {
-                    inspectionPaneSettings.focusedMemoryRegions.push_back(
-                        FocusedMemoryRegion(regionValue.toObject())
-                    );
+                    inspectionPaneSettings.focusedMemoryRegions.emplace_back(regionValue.toObject());
 
                 } catch (Exception exception) {
                     Logger::warning(
@@ -217,9 +215,7 @@ namespace Bloom
         if (jsonObject.contains("excludedRegions")) {
             for (const auto& regionValue : jsonObject.find("excludedRegions")->toArray()) {
                 try {
-                    inspectionPaneSettings.excludedMemoryRegions.emplace_back(
-                        ExcludedMemoryRegion(regionValue.toObject())
-                    );
+                    inspectionPaneSettings.excludedMemoryRegions.emplace_back(regionValue.toObject());
 
                 } catch (Exception exception) {
                     Logger::warning(
