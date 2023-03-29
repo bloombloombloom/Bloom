@@ -36,7 +36,7 @@ namespace Bloom::Widgets
                 continue;
             }
 
-            listItem->size.setWidth(viewportWidth);
+            listItem->size.setWidth(viewportWidth - this->margins.left() - this->margins.right());
             listItem->setPos(startXPosition, startYPosition);
 
             listItem->onGeometryChanged();
