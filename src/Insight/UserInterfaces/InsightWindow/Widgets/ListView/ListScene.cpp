@@ -128,11 +128,13 @@ namespace Bloom::Widgets
             return;
         }
 
-        this->selectedItems.push_back(clickedListItem);
-        clickedListItem->selected = true;
-        clickedListItem->update();
+        if (this->selectionLimit > 0) {
+            this->selectedItems.push_back(clickedListItem);
+            clickedListItem->selected = true;
+            clickedListItem->update();
+            emit this->selectionChanged(this->selectedItems);
+        }
 
-        emit this->selectionChanged(this->selectedItems);
         emit this->itemClicked(clickedListItem);
     }
 
