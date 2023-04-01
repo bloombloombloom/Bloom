@@ -208,7 +208,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         this->targetState = TargetState::RUNNING;
     }
 
-    void EdbgAvr8Interface::runTo(TargetProgramCounter address) {
+    void EdbgAvr8Interface::runTo(TargetMemoryAddress address) {
         this->clearEvents();
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             RunTo(address)

@@ -81,7 +81,7 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
         /**
          * Continue execution up to a specific byte address.
          */
-        virtual void runTo(Targets::TargetProgramCounter address) = 0;
+        virtual void runTo(Targets::TargetMemoryAddress address) = 0;
 
         /**
          * Step execution on teh AVR8 target.

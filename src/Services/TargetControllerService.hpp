@@ -93,7 +93,7 @@ namespace Bloom::Services
          *
          * @param fromAddress
          */
-        void stepTargetExecution(std::optional<Targets::TargetProgramCounter> fromAddress) const;
+        void stepTargetExecution(std::optional<Targets::TargetMemoryAddress> fromAddress) const;
 
         /**
          * Requests the TargetController to read register values from the target.

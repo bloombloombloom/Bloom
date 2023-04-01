@@ -146,7 +146,7 @@ namespace Bloom::Services
         );
     }
 
-    void TargetControllerService::stepTargetExecution(std::optional<TargetProgramCounter> fromAddress) const {
+    void TargetControllerService::stepTargetExecution(std::optional<TargetMemoryAddress> fromAddress) const {
         auto stepExecutionCommand = std::make_unique<StepTargetExecution>();
 
         if (fromAddress.has_value()) {

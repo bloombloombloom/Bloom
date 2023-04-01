@@ -127,7 +127,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param address
          *  The (byte) address to run to.
          */
-        void runTo(Targets::TargetProgramCounter address) override;
+        void runTo(Targets::TargetMemoryAddress address) override;
 
         /**
          * Issues the "step" command to the debug tool, stepping the execution on the target. The stepping can be
