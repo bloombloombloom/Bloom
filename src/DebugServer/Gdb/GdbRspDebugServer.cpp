@@ -154,7 +154,8 @@ namespace Bloom::DebugServer::Gdb
                 this->activeDebugSession.emplace(
                     std::move(connection),
                     this->getSupportedFeatures(),
-                    this->getGdbTargetDescriptor()
+                    this->getGdbTargetDescriptor(),
+                    this->debugServerConfig
                 );
 
                 /*
@@ -183,6 +184,10 @@ namespace Bloom::DebugServer::Gdb
             const auto commandPacket = this->waitForCommandPacket();
 
             if (commandPacket) {
+                if (this->debugServerConfig.breakpointCachingEnabled && commandPacket->requiresBreakpointFlush()) {
+                    this->flushBreakpointRemovals();
+                }
+
                 commandPacket->handle(this->activeDebugSession.value(), this->targetControllerService);
             }
 
@@ -366,5 +371,29 @@ namespace Bloom::DebugServer::Gdb
             Logger::debug("GDB RSP interrupted");
             return;
         }
+    }
+
+    void GdbRspDebugServer::flushBreakpointRemovals() {
+        Logger::debug(
+            "Removing " + std::to_string(this->activeDebugSession->breakpointAddressesPendingRemoval.size())
+            + " breakpoint(s)"
+        );
+
+        for (const auto& breakpointAddress : this->activeDebugSession->breakpointAddressesPendingRemoval) {
+            try {
+                Logger::debug("Removing breakpoint at address " + std::to_string(breakpointAddress));
+
+                this->targetControllerService.removeBreakpoint(Targets::TargetBreakpoint(breakpointAddress));
+                this->activeDebugSession->breakpointAddresses.erase(breakpointAddress);
+
+            } catch (const Exception& exception) {
+                Logger::error(
+                    "Failed to remove breakpoint at address " + std::to_string(breakpointAddress) + " from target - "
+                    + exception.getMessage()
+                );
+            }
+        }
+
+        this->activeDebugSession->breakpointAddressesPendingRemoval.clear();
     }
 }

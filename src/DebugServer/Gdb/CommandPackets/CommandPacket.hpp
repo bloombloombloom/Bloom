@@ -36,7 +36,13 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     class CommandPacket: public Packet
     {
     public:
-        explicit CommandPacket(const RawPacket& rawPacket): Packet(rawPacket) {}
+        explicit CommandPacket(const RawPacket& rawPacket)
+            : Packet(rawPacket)
+        {}
+
+        virtual bool requiresBreakpointFlush() const {
+            return false;
+        }
 
         /**
          * Should handle the command for the current active debug session.

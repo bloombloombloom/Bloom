@@ -54,7 +54,18 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling SetBreakpoint packet");
 
         try {
-            targetControllerService.setBreakpoint(TargetBreakpoint(this->address));
+            if (
+                !debugSession.serverConfig.breakpointCachingEnabled
+                || !debugSession.breakpointAddresses.contains(this->address)
+            ) {
+                targetControllerService.setBreakpoint(TargetBreakpoint(this->address));
+            }
+
+            if (debugSession.serverConfig.breakpointCachingEnabled) {
+                debugSession.breakpointAddresses.insert(this->address);
+                debugSession.breakpointAddressesPendingRemoval.erase(this->address);
+            }
+
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {

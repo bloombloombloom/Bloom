@@ -197,5 +197,10 @@ namespace Bloom::DebugServer::Gdb
          * a "stop reply" packet to the client once the target execution stops.
          */
         void onTargetExecutionStopped(const Events::TargetExecutionStopped&);
+
+        /**
+         * Actions any pending breakpoint removals.
+         */
+        void flushBreakpointRemovals();
     };
 }

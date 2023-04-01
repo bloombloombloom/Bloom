@@ -30,5 +30,17 @@ namespace Bloom::DebugServer::Gdb
                 );
             }
         }
+
+        if (debugServerConfig.debugServerNode["enableBreakpointCaching"]) {
+            if (YamlUtilities::isCastable<bool>(debugServerConfig.debugServerNode["enableBreakpointCaching"])) {
+                this->breakpointCachingEnabled = debugServerConfig.debugServerNode["enableBreakpointCaching"].as<bool>();
+
+            } else {
+                Logger::error(
+                    "Invalid GDB debug server config parameter ('enableBreakpointCaching') provided - value must be "
+                    "castable to a boolean. The parameter will be ignored."
+                );
+            }
+        }
     }
 }

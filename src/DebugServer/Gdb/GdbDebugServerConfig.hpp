@@ -24,6 +24,19 @@ namespace Bloom::DebugServer::Gdb
          */
         std::string listeningAddress = "127.0.0.1";
 
+        /**
+         * GDB tends to remove all breakpoints when target execution stops, and then installs them again, just before
+         * resuming target execution. This can result in excessive wearing of the target's program memory, as well as
+         * a negative impact on performance.
+         *
+         * When breakpoint caching is enabled, Bloom's GDB server will perform internal bookkeeping of the breakpoints
+         * installed and removed via GDB. Then, just before resuming target execution, it will only apply the necessary
+         * changes to the target, avoiding the excessive wear and IO.
+         *
+         * This param is optional, and is enabled by default.
+         */
+        bool breakpointCachingEnabled = true;
+
         explicit GdbDebugServerConfig(const DebugServerConfig& debugServerConfig);
     };
 }
