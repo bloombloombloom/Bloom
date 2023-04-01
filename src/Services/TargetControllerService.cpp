@@ -126,11 +126,18 @@ namespace Bloom::Services
         );
     }
 
-    void TargetControllerService::continueTargetExecution(std::optional<TargetProgramCounter> fromAddress) const {
+    void TargetControllerService::continueTargetExecution(
+        std::optional<TargetMemoryAddress> fromAddress,
+        std::optional<Targets::TargetMemoryAddress> toAddress
+    ) const {
         auto resumeExecutionCommand = std::make_unique<ResumeTargetExecution>();
 
         if (fromAddress.has_value()) {
-            resumeExecutionCommand->fromProgramCounter = fromAddress.value();
+            resumeExecutionCommand->fromAddress = fromAddress.value();
+        }
+
+        if (toAddress.has_value()) {
+            resumeExecutionCommand->toAddress = toAddress.value();
         }
 
         this->commandManager.sendCommandAndWaitForResponse(

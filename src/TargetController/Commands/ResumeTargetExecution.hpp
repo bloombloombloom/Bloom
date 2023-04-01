@@ -14,11 +14,13 @@ namespace Bloom::TargetController::Commands
         static constexpr CommandType type = CommandType::RESUME_TARGET_EXECUTION;
         static const inline std::string name = "ResumeTargetExecution";
 
-        std::optional<Targets::TargetProgramCounter> fromProgramCounter;
+        std::optional<Targets::TargetMemoryAddress> fromAddress;
+        std::optional<Targets::TargetMemoryAddress> toAddress;
 
         ResumeTargetExecution() = default;
-        explicit ResumeTargetExecution(Targets::TargetProgramCounter fromProgramCounter)
-            : fromProgramCounter(fromProgramCounter)
+        ResumeTargetExecution(Targets::TargetMemoryAddress fromAddress, Targets::TargetMemoryAddress toAddress)
+            : fromAddress(fromAddress)
+            , toAddress(toAddress)
         {};
 
         [[nodiscard]] CommandType getType() const override {

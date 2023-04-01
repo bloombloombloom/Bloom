@@ -15,9 +15,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     ContinueExecution::ContinueExecution(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
-        if (this->data.size() > 1) {
-            this->fromProgramCounter = static_cast<Targets::TargetProgramCounter>(
-                std::stoi(std::string(this->data.begin(), this->data.end()), nullptr, 16)
+        if (this->data.size() > 2) {
+            this->fromAddress = static_cast<Targets::TargetProgramCounter>(
+                std::stoi(std::string(this->data.begin() + 2, this->data.end()), nullptr, 16)
             );
         }
     }
@@ -26,7 +26,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling ContinueExecution packet");
 
         try {
-            targetControllerService.continueTargetExecution(this->fromProgramCounter);
+            targetControllerService.continueTargetExecution(this->fromAddress, std::nullopt);
             debugSession.waitingForBreak = true;
 
         } catch (const Exception& exception) {

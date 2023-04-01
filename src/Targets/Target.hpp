@@ -179,8 +179,10 @@ namespace Bloom::Targets
 
         /**
          * Should resume execution on the target.
+         *
+         * @param toAddress
          */
-        virtual void run() = 0;
+        virtual void run(std::optional<TargetMemoryAddress> toAddress = std::nullopt) = 0;
 
         /**
          * Should halt execution on the target.

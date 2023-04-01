@@ -797,11 +797,11 @@ namespace Bloom::TargetController
         ResumeTargetExecution& command
     ) {
         if (this->target->getState() != TargetState::RUNNING) {
-            if (command.fromProgramCounter.has_value()) {
-                this->target->setProgramCounter(command.fromProgramCounter.value());
+            if (command.fromAddress.has_value()) {
+                this->target->setProgramCounter(*command.fromAddress);
             }
 
-            this->target->run();
+            this->target->run(command.toAddress);
             this->lastTargetState = TargetState::RUNNING;
         }
 

@@ -19,7 +19,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         /**
          * The address from which to begin the step.
          */
-        std::optional<Targets::TargetProgramCounter> fromProgramCounter;
+        std::optional<Targets::TargetMemoryAddress> fromAddress;
 
         explicit StepExecution(const RawPacket& rawPacket);
 

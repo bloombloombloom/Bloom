@@ -16,9 +16,9 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     StepExecution::StepExecution(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
-        if (this->data.size() > 1) {
-            this->fromProgramCounter = static_cast<Targets::TargetProgramCounter>(
-                std::stoi(std::string(this->data.begin(), this->data.end()), nullptr, 16)
+        if (this->data.size() > 2) {
+            this->fromAddress = static_cast<Targets::TargetProgramCounter>(
+                std::stoi(std::string(this->data.begin() + 2, this->data.end()), nullptr, 16)
             );
         }
     }
@@ -27,7 +27,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling StepExecution packet");
 
         try {
-            targetControllerService.stepTargetExecution(this->fromProgramCounter);
+            targetControllerService.stepTargetExecution(this->fromAddress);
             debugSession.waitingForBreak = true;
 
         } catch (const Exception& exception) {

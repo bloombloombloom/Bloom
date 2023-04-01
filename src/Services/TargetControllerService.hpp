@@ -83,7 +83,10 @@ namespace Bloom::Services
          *
          * @param fromAddress
          */
-        void continueTargetExecution(std::optional<Targets::TargetProgramCounter> fromAddress) const;
+        void continueTargetExecution(
+            std::optional<Targets::TargetMemoryAddress> fromAddress,
+            std::optional<Targets::TargetMemoryAddress> toAddress
+        ) const;
 
         /**
          * Requests the TargetController to step execution on the target.

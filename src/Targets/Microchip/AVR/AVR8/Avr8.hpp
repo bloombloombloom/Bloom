@@ -87,7 +87,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         TargetDescriptor getDescriptor() override;
 
-        void run() override;
+        void run(std::optional<TargetMemoryAddress> toAddress = std::nullopt) override;
         void stop() override;
         void step() override;
         void reset() override;

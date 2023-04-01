@@ -276,7 +276,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         return descriptor;
     }
 
-    void Avr8::run() {
+    void Avr8::run(std::optional<TargetMemoryAddress> toAddress) {
+        if (toAddress.has_value()) {
+            return this->avr8DebugInterface->runTo(*toAddress);
+        }
+
         this->avr8DebugInterface->run();
     }
 

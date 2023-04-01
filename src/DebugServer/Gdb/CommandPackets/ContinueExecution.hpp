@@ -24,7 +24,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
          *
          * Although the packet *can* contain this address, it is not required, hence the std::optional type.
          */
-        std::optional<Targets::TargetProgramCounter> fromProgramCounter;
+        std::optional<Targets::TargetMemoryAddress> fromAddress;
 
         explicit ContinueExecution(const RawPacket& rawPacket);
 
