@@ -165,7 +165,7 @@ namespace Bloom::Widgets
         const int maximumWidth
     ) const {
         if (hexViewerState->settings.displayAnnotations) {
-            constexpr auto averageSymbolWidth = 6;
+            constexpr auto averageSymbolWidth = 8;
             const auto nameLabelWidth = static_cast<int>(this->focusedMemoryRegion.name.size() * averageSymbolWidth);
             const auto valueLabelWidth = static_cast<int>(
                 this->valueLabel.has_value() ? this->valueLabel->size() * averageSymbolWidth : 0
