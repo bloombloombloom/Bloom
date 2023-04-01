@@ -59,9 +59,9 @@ namespace Bloom::Services
         auto pid = processInfo->ppid;
 
         while (const auto processInfo = ProcessService::getProcessInfo(pid)) {
-            const auto commandLine = std::string(processInfo->cmd);
+            const auto commandLine = std::string(*(processInfo->cmdline));
 
-            if (commandLine.find("clion.sh") != std::string::npos) {
+            if (commandLine.find("clion") != std::string::npos) {
                 cachedResultsByProcessId[*processId] = true;
                 return true;
             }
