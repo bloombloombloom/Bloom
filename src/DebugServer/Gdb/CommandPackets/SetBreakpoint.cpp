@@ -29,7 +29,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
 
         // Z0 = SW breakpoint, Z1 = HW breakpoint
-        this->type = (this->data[1] == 0) ? BreakpointType::SOFTWARE_BREAKPOINT : (this->data[1] == 1) ?
+        this->type = (this->data[1] == '0') ? BreakpointType::SOFTWARE_BREAKPOINT : (this->data[1] == '1') ?
             BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
 
         auto packetData = QString::fromLocal8Bit(
