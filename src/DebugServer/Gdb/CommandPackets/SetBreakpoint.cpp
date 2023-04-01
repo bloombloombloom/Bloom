@@ -3,6 +3,7 @@
 #include <QtCore/QString>
 
 #include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
+#include "src/DebugServer/Gdb/ResponsePackets/EmptyResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/Targets/TargetBreakpoint.hpp"
@@ -18,6 +19,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
     using ResponsePackets::OkResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
+    using ResponsePackets::EmptyResponsePacket;
 
     using Exceptions::Exception;
 
@@ -54,6 +56,14 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling SetBreakpoint packet");
 
         try {
+            if (this->type == BreakpointType::UNKNOWN) {
+                Logger::debug(
+                    "Rejecting breakpoint at address " + std::to_string(this->address)
+                    + " - unsupported breakpoint type"
+                );
+                debugSession.connection.writePacket(EmptyResponsePacket());
+                return;
+            }
 
             targetControllerService.setBreakpoint(TargetBreakpoint(this->address));
             debugSession.connection.writePacket(OkResponsePacket());
