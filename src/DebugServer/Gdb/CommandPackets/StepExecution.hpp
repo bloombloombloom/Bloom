@@ -23,10 +23,6 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
         explicit StepExecution(const RawPacket& rawPacket);
 
-        bool requiresBreakpointFlush() const override {
-            return false;
-        }
-
         void handle(
             DebugSession& debugSession,
             Services::TargetControllerService& targetControllerService

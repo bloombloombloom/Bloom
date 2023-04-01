@@ -40,10 +40,6 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
             : Packet(rawPacket)
         {}
 
-        virtual bool requiresBreakpointFlush() const {
-            return false;
-        }
-
         /**
          * Should handle the command for the current active debug session.
          *

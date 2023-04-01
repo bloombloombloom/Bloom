@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <optional>
-#include <unordered_set>
 
 #include "TargetDescriptor.hpp"
 #include "GdbDebugServerConfig.hpp"
@@ -37,13 +36,6 @@ namespace Bloom::DebugServer::Gdb
          * The current server configuration.
          */
         const GdbDebugServerConfig& serverConfig;
-
-        /**
-         * Internal bookkeeping of breakpoints managed by GDB. These will both remain empty if the user has disabled
-         * breakpoint caching.
-         */
-        std::unordered_set<Targets::TargetMemoryAddress> breakpointAddresses;
-        std::unordered_set<Targets::TargetMemoryAddress> breakpointAddressesPendingRemoval;
 
         /**
          * When the GDB client is waiting for the target to halt, this is set to true so we know when to notify the

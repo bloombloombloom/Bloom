@@ -29,13 +29,6 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
         this->gdbTargetDescriptor = TargetDescriptor(
             this->targetControllerService.getTargetDescriptor()
         );
-
-        if (!this->debugServerConfig.breakpointCachingEnabled) {
-            Logger::warning(
-                "Breakpoint caching has been disabled - this could result in excessive wear of the AVR target's"
-                " flash memory"
-            );
-        }
     }
 
     std::unique_ptr<Gdb::CommandPackets::CommandPacket> AvrGdbRsp::resolveCommandPacket(

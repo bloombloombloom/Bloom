@@ -54,13 +54,6 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         Logger::debug("Handling RemoveBreakpoint packet");
 
         try {
-            if (debugSession.serverConfig.breakpointCachingEnabled) {
-                debugSession.breakpointAddressesPendingRemoval.insert(this->address);
-                debugSession.connection.writePacket(OkResponsePacket());
-
-                return;
-            }
-
             Logger::debug("Removing breakpoint at address " + std::to_string(this->address));
 
             targetControllerService.removeBreakpoint(TargetBreakpoint(this->address));
