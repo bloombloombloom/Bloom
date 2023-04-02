@@ -19,7 +19,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.hpp"
 
-#include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
+#include "src/Insight/InsightWorker/Tasks/InsightWorkerTask.hpp"
 
 #include "HexViewerWidget/HexViewerWidget.hpp"
 #include "MemoryRegionManager/MemoryRegionManagerWindow.hpp"
@@ -105,7 +105,7 @@ namespace Bloom::Widgets
             Bloom::Targets::TargetMemoryType memoryType,
             Targets::TargetMemoryAddressRange addressRange
         );
-        void onCaptureMemoryTaskCreated(const QSharedPointer<CaptureMemorySnapshot>& task);
+        void onSubtaskCreated(const QSharedPointer<InsightWorkerTask>& task);
         void setTaskProgressIndicator(const QSharedPointer<InsightWorkerTask>& task);
         void setStaleData(bool staleData);
     };

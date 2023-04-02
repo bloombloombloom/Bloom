@@ -168,7 +168,7 @@ namespace Bloom::Widgets
             }
         );
 
-        emit this->captureTaskCreated(captureTask);
+        emit this->insightWorkerTaskCreated(captureTask);
 
         InsightWorker::queueTask(captureTask);
     }

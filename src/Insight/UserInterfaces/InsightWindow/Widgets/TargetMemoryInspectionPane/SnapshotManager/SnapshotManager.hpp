@@ -16,7 +16,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
 
-#include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
+#include "src/Insight/InsightWorker/Tasks/InsightWorkerTask.hpp"
 
 #include "./CreateSnapshotWindow/CreateSnapshotWindow.hpp"
 #include "MemorySnapshotItem.hpp"
@@ -42,7 +42,7 @@ namespace Bloom::Widgets
         );
 
     signals:
-        void captureTaskCreated(const QSharedPointer<CaptureMemorySnapshot>& task);
+        void insightWorkerTaskCreated(const QSharedPointer<InsightWorkerTask>& task);
 
     protected:
         void resizeEvent(QResizeEvent* event) override;

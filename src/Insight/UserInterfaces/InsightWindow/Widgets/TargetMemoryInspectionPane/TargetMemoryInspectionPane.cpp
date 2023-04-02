@@ -199,9 +199,10 @@ namespace Bloom::Widgets
 
         QObject::connect(
             this->snapshotManager,
-            &SnapshotManager::captureTaskCreated,
+            &SnapshotManager::insightWorkerTaskCreated,
             this,
-            &TargetMemoryInspectionPane::onCaptureMemoryTaskCreated
+            &TargetMemoryInspectionPane::onSubtaskCreated
+        );
         );
 
         QObject::connect(
@@ -630,7 +631,7 @@ namespace Bloom::Widgets
         }
     }
 
-    void TargetMemoryInspectionPane::onCaptureMemoryTaskCreated(const QSharedPointer<CaptureMemorySnapshot>& task) {
+    void TargetMemoryInspectionPane::onSubtaskCreated(const QSharedPointer<InsightWorkerTask>& task) {
         this->setTaskProgressIndicator(task);
     }
 
