@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <numeric>
 
 namespace Bloom
 {
@@ -17,36 +18,51 @@ namespace Bloom
          * This allows the TargetController to service other commands in-between reads, reducing the likelihood of
          * command timeouts when we're writing lots of data.
          */
-        const auto blockSize = std::max(
+        const auto maxBlockSize = std::max(
             TargetMemorySize(256),
             memoryDescriptor.pageSize.value_or(TargetMemorySize(0))
         );
-        const auto totalBytes = this->data.size();
 
-        TargetMemorySize bytesWritten = 0;
+        const TargetMemorySize totalBytesToWrite = std::accumulate(
+            this->blocks.begin(),
+            this->blocks.end(),
+            TargetMemorySize{0},
+            [] (TargetMemorySize bytes, const Block& block) {
+                return bytes + block.data.size();
+            }
+        );
 
-        while (bytesWritten < totalBytes) {
-            const auto bytesToWrite = std::min(
-                blockSize,
-                static_cast<decltype(blockSize)>(totalBytes - bytesWritten)
-            );
+        TargetMemorySize totalBytesWritten = 0;
 
-            targetControllerService.writeMemory(
-                this->memoryDescriptor.type,
-                this->startAddress + bytesWritten,
-                Targets::TargetMemoryBuffer(
-                    this->data.begin() + bytesWritten,
-                    this->data.begin() + bytesWritten + bytesToWrite
-                )
-            );
+        for (const auto& block : this->blocks) {
+            const auto totalBytes = block.data.size();
 
-            bytesWritten += bytesToWrite;
+            TargetMemorySize bytesWritten = 0;
 
-            this->setProgressPercentage(static_cast<std::uint8_t>(
-                (static_cast<float>(bytesWritten) + 1) / (static_cast<float>(totalBytes) / 100)
-            ));
+            while (bytesWritten < totalBytes) {
+                const auto bytesToWrite = std::min(
+                    maxBlockSize,
+                    static_cast<decltype(maxBlockSize)>(totalBytes - bytesWritten)
+                );
+
+                targetControllerService.writeMemory(
+                    this->memoryDescriptor.type,
+                    block.startAddress + bytesWritten,
+                    Targets::TargetMemoryBuffer(
+                        block.data.begin() + bytesWritten,
+                        block.data.begin() + bytesWritten + bytesToWrite
+                    )
+                );
+
+                bytesWritten += bytesToWrite;
+                totalBytesWritten += bytesToWrite;
+
+                this->setProgressPercentage(static_cast<std::uint8_t>(
+                    (static_cast<float>(totalBytesWritten) + 1) / (static_cast<float>(totalBytesToWrite) / 100)
+                ));
+            }
         }
 
-        emit this->targetMemoryWritten(bytesWritten);
+        emit this->targetMemoryWritten(totalBytesWritten);
     }
 }
