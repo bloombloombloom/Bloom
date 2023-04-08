@@ -136,7 +136,11 @@ namespace Bloom::Widgets
 
     void ItemGraphicsScene::init() {
         const auto constructHexViewerTopLevelGroupItem = QSharedPointer<ConstructHexViewerTopLevelGroupItem>(
-            new ConstructHexViewerTopLevelGroupItem(this->focusedMemoryRegions, this->state),
+            new ConstructHexViewerTopLevelGroupItem(
+                this->focusedMemoryRegions,
+                this->excludedMemoryRegions,
+                this->state
+            ),
             &QObject::deleteLater
         );
 
@@ -731,8 +735,10 @@ namespace Bloom::Widgets
         auto data = QString();
 
         for (const auto& [address, byteItem] : this->selectedByteItemsByAddress) {
-            const auto byteIndex = byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress;
-            data.append("0x" + QString::number((*this->state.data)[byteIndex], 16).rightJustified(2, '0').toUpper() + "\n");
+            const unsigned char byteValue = byteItem->excluded
+                ? 0x00
+                : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+            data.append("0x" + QString::number(byteValue, 16).rightJustified(2, '0').toUpper() + "\n");
         }
 
         QApplication::clipboard()->setText(std::move(data));
@@ -746,8 +752,10 @@ namespace Bloom::Widgets
         auto data = QString();
 
         for (const auto& [address, byteItem] : this->selectedByteItemsByAddress) {
-            const auto byteIndex = byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress;
-            data.append(QString::number((*this->state.data)[byteIndex], 10) + "\n");
+            const unsigned char byteValue = byteItem->excluded
+                ? 0x00
+                : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+            data.append(QString::number(byteValue, 10) + "\n");
         }
 
         QApplication::clipboard()->setText(std::move(data));

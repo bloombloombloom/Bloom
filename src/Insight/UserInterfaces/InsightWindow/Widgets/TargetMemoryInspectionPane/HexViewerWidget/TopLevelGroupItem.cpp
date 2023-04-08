@@ -4,10 +4,12 @@ namespace Bloom::Widgets
 {
     TopLevelGroupItem::TopLevelGroupItem(
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+        const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
         const HexViewerSharedState& hexViewerState
     )
         : GroupItem(0, nullptr)
         , focusedMemoryRegions(focusedMemoryRegions)
+        , excludedMemoryRegions(excludedMemoryRegions)
         , hexViewerState(hexViewerState)
     {
         const auto memorySize = this->hexViewerState.memoryDescriptor.size();
@@ -64,6 +66,8 @@ namespace Bloom::Widgets
         }
 
         for (auto& [address, byteItem] : this->byteItemsByAddress) {
+            byteItem.excluded = false;
+
             if (byteItem.parent != nullptr && byteItem.parent != this) {
                 // This ByteItem is managed by another group
                 continue;
@@ -71,6 +75,19 @@ namespace Bloom::Widgets
 
             byteItem.parent = this;
             this->items.push_back(&byteItem);
+        }
+
+        for (const auto& excludedRegion : this->excludedMemoryRegions) {
+            const auto& startAddress = excludedRegion.addressRange.startAddress;
+            const auto& endAddress = excludedRegion.addressRange.endAddress;
+
+            // Sanity check
+            assert(byteItemsByAddress.contains(startAddress) && byteItemsByAddress.contains(endAddress));
+
+            for (auto address = startAddress; address <= endAddress; ++address) {
+                auto& byteItem = byteItemsByAddress.at(address);
+                byteItem.excluded = true;
+            }
         }
 
         this->sortItems();

@@ -17,6 +17,7 @@ namespace Bloom
     public:
         ConstructHexViewerTopLevelGroupItem(
             const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+            const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             const Widgets::HexViewerSharedState& hexViewerState
         );
 
@@ -37,5 +38,6 @@ namespace Bloom
     private:
         const Widgets::HexViewerSharedState& hexViewerState;
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
+        const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
     };
 }

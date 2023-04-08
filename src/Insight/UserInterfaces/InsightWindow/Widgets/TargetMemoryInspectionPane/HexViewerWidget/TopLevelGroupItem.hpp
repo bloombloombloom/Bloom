@@ -13,6 +13,7 @@
 #include "src/Targets/TargetMemory.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
 
 namespace Bloom::Widgets
 {
@@ -23,6 +24,7 @@ namespace Bloom::Widgets
 
         TopLevelGroupItem(
             const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
+            const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             const HexViewerSharedState& hexViewerState
         );
 
@@ -40,6 +42,7 @@ namespace Bloom::Widgets
 
     private:
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
+        const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
         const HexViewerSharedState& hexViewerState;
 
         std::list<FocusedRegionGroupItem> focusedRegionGroupItems;

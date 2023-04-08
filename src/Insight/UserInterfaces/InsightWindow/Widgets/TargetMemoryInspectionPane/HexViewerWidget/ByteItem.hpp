@@ -52,6 +52,7 @@ namespace Bloom::Widgets
         static inline std::vector<QPixmap> hoveredPrimaryPixmapsByValue = {};
         static inline std::vector<QPixmap> hoveredPrimaryAsciiPixmapsByValue = {};
         static inline std::optional<QPixmap> missingDataPixmap = {};
+        static inline std::optional<QPixmap> selectedMissingDataPixmap = {};
 
         static void generatePixmapCaches();
     };

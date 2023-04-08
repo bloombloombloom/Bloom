@@ -20,11 +20,16 @@ namespace Bloom::Widgets
     ) const {
         const auto boundingRect = QRect(0, 0, ByteItem::WIDTH, ByteItem::HEIGHT);
 
-        if (!graphicsItem->isEnabled()) {
+        if (!graphicsItem->isEnabled() || (this->excluded && !this->selected)) {
             painter->setOpacity(0.6);
         }
 
         if (this->excluded || !hexViewerState->data.has_value()) {
+            if (this->selected) {
+                painter->drawPixmap(boundingRect, ByteItem::selectedMissingDataPixmap.value());
+                return;
+            }
+
             painter->drawPixmap(boundingRect, ByteItem::missingDataPixmap.value());
             return;
         }
@@ -279,6 +284,14 @@ namespace Bloom::Widgets
         {
             ByteItem::missingDataPixmap = standardTemplatePixmap;
             auto painter = QPainter(&ByteItem::missingDataPixmap.value());
+            painter.setFont(font);
+            painter.setPen(standardFontColor);
+            painter.drawText(byteItemRect, Qt::AlignCenter, "??");
+        }
+
+        {
+            ByteItem::selectedMissingDataPixmap = selectedTemplatePixmap;
+            auto painter = QPainter(&ByteItem::selectedMissingDataPixmap.value());
             painter.setFont(font);
             painter.setPen(standardFontColor);
             painter.drawText(byteItemRect, Qt::AlignCenter, "??");
