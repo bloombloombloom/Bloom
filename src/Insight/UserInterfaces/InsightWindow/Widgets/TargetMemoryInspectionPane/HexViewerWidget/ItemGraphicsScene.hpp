@@ -27,6 +27,7 @@
 #include "GroupItem.hpp"
 #include "ByteItem.hpp"
 #include "ByteAddressContainer.hpp"
+#include "ContextMenuAction.hpp"
 
 #include "HexViewerSharedState.hpp"
 
@@ -60,6 +61,7 @@ namespace Bloom::Widgets
         void refreshValues();
         QPointF getByteItemPositionByAddress(Targets::TargetMemoryAddress address);
         void allocateGraphicsItems();
+        void addExternalContextMenuAction(ContextMenuAction* action);
 
     signals:
         void ready();
@@ -120,6 +122,8 @@ namespace Bloom::Widgets
         // Address label container context menu actions
         QAction* displayRelativeAddressAction = new QAction("Relative", this);
         QAction* displayAbsoluteAddressAction = new QAction("Absolute", this);
+
+        std::vector<ContextMenuAction*> externalContextMenuActions;
 
         int getSceneWidth() {
             /*

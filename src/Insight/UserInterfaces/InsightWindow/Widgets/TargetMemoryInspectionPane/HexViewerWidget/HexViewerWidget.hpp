@@ -15,6 +15,7 @@
 
 #include "HexViewerWidgetSettings.hpp"
 #include "ItemGraphicsView.hpp"
+#include "ContextMenuAction.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
@@ -40,6 +41,7 @@ namespace Bloom::Widgets
         void updateValues();
         void refreshRegions();
         void setStackPointer(Targets::TargetStackPointer stackPointer);
+        void addExternalContextMenuAction(ContextMenuAction* action);
 
     signals:
         void ready();

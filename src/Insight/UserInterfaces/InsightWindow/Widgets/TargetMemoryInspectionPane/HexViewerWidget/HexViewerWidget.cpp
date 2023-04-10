@@ -237,6 +237,11 @@ namespace Bloom::Widgets
         }
     }
 
+    void HexViewerWidget::addExternalContextMenuAction(ContextMenuAction* action) {
+        assert(this->byteItemGraphicsScene != nullptr);
+        this->byteItemGraphicsScene->addExternalContextMenuAction(action);
+    }
+
     void HexViewerWidget::resizeEvent(QResizeEvent* event) {
         this->container->setFixedSize(
             this->width(),

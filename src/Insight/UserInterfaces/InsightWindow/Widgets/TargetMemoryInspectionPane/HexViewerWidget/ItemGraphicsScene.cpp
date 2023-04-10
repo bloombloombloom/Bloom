@@ -321,6 +321,14 @@ namespace Bloom::Widgets
         this->update();
     }
 
+    void ItemGraphicsScene::addExternalContextMenuAction(ContextMenuAction* action) {
+        QObject::connect(action, &QAction::triggered, this, [this, action] () {
+            emit action->invoked(this->selectedByteItemsByAddress);
+        });
+
+        this->externalContextMenuActions.push_back(action);
+    }
+
     bool ItemGraphicsScene::event(QEvent* event) {
         if (event->type() == QEvent::Type::GraphicsSceneLeave && this->state.hoveredByteItem != nullptr) {
             this->onByteItemLeave();
@@ -549,6 +557,23 @@ namespace Bloom::Widgets
         this->deselectByteItemsAction->setEnabled(itemsSelected);
 
         menu->addMenu(copyMenu);
+
+        if (!this->externalContextMenuActions.empty()) {
+            menu->addSeparator();
+
+            for (auto& externalAction : this->externalContextMenuActions) {
+                menu->addAction(externalAction);
+                externalAction->setEnabled(
+                    itemsSelected
+                    && (
+                        !externalAction->isEnabledCallback.has_value()
+                        || externalAction->isEnabledCallback.value()(this->selectedByteItemsByAddress)
+                    )
+
+                );
+            }
+        }
+
         menu->exec(event->screenPos());
     }
 
