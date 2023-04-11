@@ -5,7 +5,7 @@
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QVBoxLayout>
-#include <QHash>
+#include <QMap>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
@@ -56,8 +56,8 @@ namespace Bloom::Widgets
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 
-        QHash<QString, MemorySnapshot> snapshotsById;
-        QHash<QString, MemorySnapshotItem*> snapshotItemsById;
+        QMap<QString, MemorySnapshot> snapshotsById;
+        QMap<QString, MemorySnapshotItem*> snapshotItemsById;
 
         QWidget* container = nullptr;
         QWidget* toolBar = nullptr;

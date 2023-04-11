@@ -174,10 +174,10 @@ namespace Bloom::Widgets
     }
 
     void SnapshotManager::addSnapshot(MemorySnapshot&& snapshotTmp) {
-        const auto snapshotIt = this->snapshotsById.emplace(snapshotTmp.id, std::move(snapshotTmp));
+        const auto snapshotIt = this->snapshotsById.insert(snapshotTmp.id, std::move(snapshotTmp));
         const auto& snapshot = *snapshotIt;
 
-        const auto snapshotItemIt = this->snapshotItemsById.emplace(snapshot.id, new MemorySnapshotItem(snapshot));
+        const auto snapshotItemIt = this->snapshotItemsById.insert(snapshot.id, new MemorySnapshotItem(snapshot));
         auto& snapshotItem = *snapshotItemIt;
 
         this->snapshotListScene->addListItem(snapshotItem);
