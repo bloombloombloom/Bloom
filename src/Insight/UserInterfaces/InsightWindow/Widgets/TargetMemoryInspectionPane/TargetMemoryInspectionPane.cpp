@@ -134,8 +134,8 @@ namespace Bloom::Widgets
         this->setRefreshOnTargetStopEnabled(this->settings.refreshOnTargetStop);
         this->setRefreshOnActivationEnabled(this->settings.refreshOnActivation);
 
-        this->bottomBarHorizontalSpacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-        this->bottomBarLayout->insertItem(5, this->bottomBarHorizontalSpacer);
+        this->taskProgressIndicator = new TaskProgressIndicator(this);
+        this->bottomBarLayout->insertWidget(5, this->taskProgressIndicator);
 
         QObject::connect(
             this,
@@ -370,7 +370,7 @@ namespace Bloom::Widgets
                         );
                     }
 
-                    this->setTaskProgressIndicator(readStackPointerTask);
+                    this->taskProgressIndicator->addTask(readStackPointerTask);
                     InsightWorker::queueTask(readStackPointerTask);
                 }
             }
@@ -415,7 +415,7 @@ namespace Bloom::Widgets
             );
         }
 
-        this->setTaskProgressIndicator(readMemoryTask);
+        this->taskProgressIndicator->addTask(readMemoryTask);
         InsightWorker::queueTask(readMemoryTask);
     }
 
@@ -632,33 +632,7 @@ namespace Bloom::Widgets
     }
 
     void TargetMemoryInspectionPane::onSubtaskCreated(const QSharedPointer<InsightWorkerTask>& task) {
-        this->setTaskProgressIndicator(task);
-    }
-
-    void TargetMemoryInspectionPane::setTaskProgressIndicator(const QSharedPointer<InsightWorkerTask>& task) {
-        if (this->taskProgressIndicator != nullptr) {
-            this->bottomBarLayout->removeWidget(this->taskProgressIndicator);
-            this->taskProgressIndicator->deleteLater();
-            this->taskProgressIndicator = nullptr;
-        }
-
-        this->taskProgressIndicator = new TaskProgressIndicator(task, this);
-
-        QObject::connect(
-            this->taskProgressIndicator,
-            &TaskProgressIndicator::taskComplete,
-            this,
-            [this] {
-                this->bottomBarLayout->removeWidget(this->taskProgressIndicator);
-                this->taskProgressIndicator->deleteLater();
-                this->taskProgressIndicator = nullptr;
-
-                this->bottomBarLayout->insertItem(5, this->bottomBarHorizontalSpacer);
-            }
-        );
-
-        this->bottomBarLayout->removeItem(this->bottomBarHorizontalSpacer);
-        this->bottomBarLayout->insertWidget(5, this->taskProgressIndicator);
+        this->taskProgressIndicator->addTask(task);
     }
 
     void TargetMemoryInspectionPane::setStaleData(bool staleData) {

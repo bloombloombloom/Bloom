@@ -81,7 +81,6 @@ namespace Bloom::Widgets
         SnapshotManager* snapshotManager = nullptr;
 
         TaskProgressIndicator* taskProgressIndicator = nullptr;
-        QSpacerItem* bottomBarHorizontalSpacer = nullptr;
         QWidget* staleDataLabelContainer = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
@@ -106,7 +105,6 @@ namespace Bloom::Widgets
             Targets::TargetMemoryAddressRange addressRange
         );
         void onSubtaskCreated(const QSharedPointer<InsightWorkerTask>& task);
-        void setTaskProgressIndicator(const QSharedPointer<InsightWorkerTask>& task);
         void setStaleData(bool staleData);
     };
 }

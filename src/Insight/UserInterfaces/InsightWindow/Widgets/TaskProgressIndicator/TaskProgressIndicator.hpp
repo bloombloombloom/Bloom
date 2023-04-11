@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QWidget>
+#include <unordered_map>
 #include <QSharedPointer>
 #include <cstdint>
-#include <unordered_map>
 #include <QEvent>
+#include <QTimer>
 
 #include "src/Insight/InsightWorker/Tasks/InsightWorkerTask.hpp"
 
@@ -15,19 +16,21 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
-        TaskProgressIndicator(const QSharedPointer<InsightWorkerTask>& task, QWidget* parent);
+        TaskProgressIndicator(QWidget* parent);
 
-    signals:
-        void taskComplete();
+        void addTask(const QSharedPointer<InsightWorkerTask>& task);
 
     protected:
         void paintEvent(QPaintEvent* event) override;
 
     private:
-        QSharedPointer<InsightWorkerTask> task;
+        std::unordered_map<InsightWorkerTask::IdType, QSharedPointer<InsightWorkerTask>> tasksById;
 
-        void onTaskProgressUpdate();
-        void onTaskStateChanged();
+        std::uint8_t progressPercentage = 0;
+        QTimer* clearCompletedTasksTimer = new QTimer(this);
+
+        void clearCompletedTasks();
+        void refreshProgressPercentage();
         void onTaskFinished();
     };
 }
