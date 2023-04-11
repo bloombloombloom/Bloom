@@ -538,6 +538,8 @@ namespace Bloom::Widgets
                 this->setStaleData(true);
             }
         }
+
+        this->snapshotManager->createSnapshotWindow->refreshForm();
     }
 
     void TargetMemoryInspectionPane::setRefreshOnTargetStopEnabled(bool enabled) {
