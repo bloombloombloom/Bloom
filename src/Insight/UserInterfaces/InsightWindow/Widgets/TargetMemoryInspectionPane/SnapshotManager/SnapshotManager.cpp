@@ -100,12 +100,35 @@ namespace Bloom::Widgets
             }
         );
 
+        QObject::connect(
+            this->snapshotListScene,
+            &ListScene::itemDoubleClicked,
+            this,
+            [this] (ListItem* item) {
+                auto* snapshotItem = dynamic_cast<MemorySnapshotItem*>(item);
+
+                if (snapshotItem != nullptr) {
+                    this->onSnapshotItemDoubleClick(snapshotItem);
+                }
+            }
+        );
 
         QObject::connect(
             this->snapshotListScene,
             &ListScene::itemContextMenu,
             this,
             &SnapshotManager::onSnapshotItemContextMenu
+        );
+
+        QObject::connect(
+            this->openSnapshotViewerAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                if (this->contextMenuSnapshotItem != nullptr) {
+                    this->openSnapshotViewer(this->contextMenuSnapshotItem->memorySnapshot.id);
+                }
+            }
         );
 
         QObject::connect(
@@ -223,6 +246,25 @@ namespace Bloom::Widgets
         this->selectedItem = item;
     }
 
+    void SnapshotManager::openSnapshotViewer(const QString& snapshotId) {
+        auto snapshotViewerIt = this->snapshotViewersById.find(snapshotId);
+
+        if (snapshotViewerIt == this->snapshotViewersById.end()) {
+            const auto& snapshotIt = this->snapshotsById.find(snapshotId);
+
+            assert(snapshotIt != this->snapshotsById.end());
+
+            snapshotViewerIt = this->snapshotViewersById.insert(
+                snapshotId,
+                new SnapshotViewer(snapshotIt.value(), this->memoryDescriptor, this)
+            );
+        }
+
+        auto* snapshotViewer = snapshotViewerIt.value();
+        snapshotViewer->show();
+        snapshotViewer->activateWindow();
+    }
+
     void SnapshotManager::restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled) {
         const auto& snapshotIt = this->snapshotsById.find(snapshotId);
         assert(snapshotIt != this->snapshotsById.end());
@@ -316,6 +358,10 @@ namespace Bloom::Widgets
         InsightWorker::queueTask(writeMemoryTask);
     }
 
+    void SnapshotManager::onSnapshotItemDoubleClick(MemorySnapshotItem* item) {
+        this->openSnapshotViewer(item->memorySnapshot.id);
+    }
+
     void SnapshotManager::onSnapshotItemContextMenu(ListItem *item, QPoint sourcePosition) {
         auto* snapshotItem = dynamic_cast<MemorySnapshotItem*>(item);
 
@@ -326,6 +372,7 @@ namespace Bloom::Widgets
         this->contextMenuSnapshotItem = snapshotItem;
 
         auto* menu = new QMenu(this);
+        menu->addAction(this->openSnapshotViewerAction);
         menu->addAction(this->deleteSnapshotAction);
 
         menu->addSeparator();

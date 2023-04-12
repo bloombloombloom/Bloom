@@ -1,0 +1,49 @@
+#snapshot-viewer,
+#snapshot-viewer #container {
+    background-color: #373835;
+}
+
+#snapshot-viewer #top-bar {
+    border-bottom: 1px solid #41423f;
+}
+
+#snapshot-viewer #bottom-bar {
+    border-top: 1px solid #41423f;
+}
+
+#snapshot-viewer #details-container {
+    border-bottom: 1px solid #41423f;
+}
+
+#snapshot-viewer #right-panel-container {
+    border-left: 1px solid #41423f;
+}
+
+#snapshot-viewer #memory-regions-container #no-regions-label {
+    color: #838386;
+}
+
+#snapshot-viewer #bottom-bar #separator {
+    background-color: transparent;
+    border-right: 1px solid #41423f;
+    padding: 0;
+    min-width: 1px;
+    max-width: 1px;
+}
+
+#snapshot-viewer #memory-capacity-label,
+#snapshot-viewer #id-label,
+#snapshot-viewer #program-counter-label,
+#snapshot-viewer #date-label {
+    color: #8a8a8d;
+}
+
+#snapshot-viewer #program-counter-label,
+#snapshot-viewer #date-label {
+    padding: 1px 3px;
+}
+
+#snapshot-viewer #memory-capacity-label,
+#snapshot-viewer #id-label {
+    padding: 1px 5px;
+}

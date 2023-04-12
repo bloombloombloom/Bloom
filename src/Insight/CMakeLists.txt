@@ -106,6 +106,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/MemorySnapshotItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/CreateSnapshotWindow/CreateSnapshotWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotViewer/SnapshotViewer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotViewer/MemoryRegionItem.cpp
 
         # Memory region manager window
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/MemoryRegionManagerWindow.cpp
@@ -188,6 +189,8 @@ qt_add_resources(
         # Memory snapshots
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/UiFiles/SnapshotManager.ui"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/CreateSnapshotWindow/UiFiles/CreateSnapshotWindow.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotViewer/UiFiles/SnapshotViewer.ui"
+        "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotViewer/Stylesheets/SnapshotViewer.qss"
 
         # Memory region manager window
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/MemoryRegionManagerWindow.ui"

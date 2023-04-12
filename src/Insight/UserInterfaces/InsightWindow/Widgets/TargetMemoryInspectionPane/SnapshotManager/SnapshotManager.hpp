@@ -22,6 +22,7 @@
 
 #include "./CreateSnapshotWindow/CreateSnapshotWindow.hpp"
 #include "MemorySnapshotItem.hpp"
+#include "SnapshotViewer/SnapshotViewer.hpp"
 
 namespace Bloom::Widgets
 {
@@ -63,6 +64,7 @@ namespace Bloom::Widgets
 
         QMap<QString, MemorySnapshot> snapshotsById;
         QMap<QString, MemorySnapshotItem*> snapshotItemsById;
+        QMap<QString, SnapshotViewer*> snapshotViewersById;
 
         QWidget* container = nullptr;
         QWidget* toolBar = nullptr;
@@ -75,6 +77,7 @@ namespace Bloom::Widgets
 
         MemorySnapshotItem* contextMenuSnapshotItem = nullptr;
 
+        QAction* openSnapshotViewerAction = new QAction("Open", this);
         QAction* deleteSnapshotAction = new QAction("Delete", this);
         QAction* restoreSnapshotAction = new QAction("Restore", this);
 
@@ -84,9 +87,12 @@ namespace Bloom::Widgets
             bool captureFocusedRegions,
             bool captureDirectlyFromTarget
         );
+
         void addSnapshot(MemorySnapshot&& snapshotTmp);
         void onSnapshotItemSelected(MemorySnapshotItem* item);
+        void openSnapshotViewer(const QString& snapshotId);
         void restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled);
+        void onSnapshotItemDoubleClick(MemorySnapshotItem* item);
         void onSnapshotItemContextMenu(ListItem* item, QPoint sourcePosition);
         void onTargetStateChanged(Targets::TargetState newState);
     };

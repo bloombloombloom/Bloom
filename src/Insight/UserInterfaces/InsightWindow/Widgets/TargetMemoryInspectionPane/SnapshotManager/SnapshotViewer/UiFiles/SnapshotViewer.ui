@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <widget class="QWidget" name="container">
+        <layout class="QVBoxLayout">
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <property name="margin">
+                <number>0</number>
+            </property>
+            <item>
+                <widget class="QWidget" name="details-container">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>0</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <layout class="QVBoxLayout" name="attributes-layout">
+                                <property name="spacing">
+                                    <number>0</number>
+                                </property>
+                                <property name="margin">
+                                    <number>0</number>
+                                </property>
+                                <item>
+                                    <widget class="LabeledSeparator" name="details-separator">
+                                        <property name="title">
+                                            <string>Details</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="vertical-spacer">
+                                        <property name="sizeHint">
+                                            <size>
+                                                <height>10</height>
+                                            </size>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>QSizePolicy::Fixed</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item alignment="Qt::AlignVCenter">
+                                    <widget class="TextInput" name="name-input">
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                                        </property>
+                                        <property name="maximumWidth">
+                                            <number>800</number>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="vertical-spacer">
+                                        <property name="sizeHint">
+                                            <size>
+                                                <height>10</height>
+                                            </size>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>QSizePolicy::Fixed</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item>
+                                    <widget class="QPlainTextEdit" name="description-input">
+                                        <property name="minimumHeight">
+                                            <number>100</number>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="vertical-spacer">
+                                        <property name="sizeHint">
+                                            <size>
+                                                <height>10</height>
+                                            </size>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>QSizePolicy::Fixed</enum>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <widget class="QWidget" name="right-panel-container">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding"/>
+                                </property>
+                                <property name="minimumWidth">
+                                    <number>400</number>
+                                </property>
+                                <layout class="QVBoxLayout" name="right-panel-layout">
+                                    <property name="spacing">
+                                        <number>0</number>
+                                    </property>
+                                    <property name="margin">
+                                        <number>0</number>
+                                    </property>
+                                    <item>
+                                        <widget class="QWidget" name="memory-regions-container">
+                                            <property name="sizePolicy">
+                                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                                            </property>
+                                            <layout class="QVBoxLayout">
+                                                <property name="spacing">
+                                                    <number>0</number>
+                                                </property>
+                                                <property name="margin">
+                                                    <number>0</number>
+                                                </property>
+                                                <item alignment="Qt::AlignHCenter">
+                                                    <widget class="Label" name="no-regions-label">
+                                                        <property name="sizePolicy">
+                                                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                                                        </property>
+                                                        <property name="visible">
+                                                            <bool>true</bool>
+                                                        </property>
+                                                        <property name="alignment">
+                                                            <enum>Qt::AlignCenter</enum>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string>No memory regions were captured in this snapshot</string>
+                                                        </property>
+                                                    </widget>
+                                                </item>
+                                            </layout>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QWidget" name="bottom-bar">
+                    <property name="minimumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="maximumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <widget class="Label" name="memory-capacity-label">
+                                <property name="toolTip">
+                                    <string>Memory capacity</string>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <widget class="Label" name="program-counter-label">
+                                <property name="toolTip">
+                                    <string>Program counter at point of capture</string>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <widget class="Label" name="date-label">
+                                <property name="toolTip">
+                                    <string>Date of capture</string>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <widget class="Label" name="id-label">
+                                <property name="toolTip">
+                                    <string>Snapshot ID</string>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                                </property>
+                            </widget>
+                        </item>
+
+                    </layout>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+</ui>
