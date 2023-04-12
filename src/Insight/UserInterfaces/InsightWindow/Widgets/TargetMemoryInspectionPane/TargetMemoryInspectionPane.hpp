@@ -105,6 +105,7 @@ namespace Bloom::Widgets
             Targets::TargetMemoryAddressRange addressRange
         );
         void onSubtaskCreated(const QSharedPointer<InsightWorkerTask>& task);
+        void onSnapshotRestored(const QString& snapshotId);
         void setStaleData(bool staleData);
     };
 }

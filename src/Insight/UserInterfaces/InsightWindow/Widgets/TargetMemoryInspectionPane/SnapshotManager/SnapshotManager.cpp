@@ -1,11 +1,15 @@
 #include "SnapshotManager.hpp"
 
 #include <QDesktopServices>
+#include <algorithm>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ConfirmationDialog.hpp"
 
+#include "src/Insight/InsightSignals.hpp"
 #include "src/Insight/InsightWorker/Tasks/RetrieveMemorySnapshots.hpp"
+#include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
+#include "src/Insight/InsightWorker/Tasks/WriteTargetMemory.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
 #include "src/Services/PathService.hpp"
@@ -94,6 +98,34 @@ namespace Bloom::Widgets
 
                 this->createSnapshotWindow->activateWindow();
             }
+        );
+
+
+        QObject::connect(
+            this->snapshotListScene,
+            &ListScene::itemContextMenu,
+            this,
+            &SnapshotManager::onSnapshotItemContextMenu
+        );
+
+        QObject::connect(
+            this->restoreSnapshotAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                if (this->contextMenuSnapshotItem != nullptr) {
+                    this->restoreSnapshot(this->contextMenuSnapshotItem->memorySnapshot.id, true);
+                }
+            }
+        );
+
+        auto* insightSignals = InsightSignals::instance();
+
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::targetStateUpdated,
+            this,
+            &SnapshotManager::onTargetStateChanged
         );
 
         const auto retrieveSnapshotsTask = QSharedPointer<RetrieveMemorySnapshots>(
@@ -189,5 +221,123 @@ namespace Bloom::Widgets
         }
 
         this->selectedItem = item;
+    }
+
+    void SnapshotManager::restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled) {
+        const auto& snapshotIt = this->snapshotsById.find(snapshotId);
+        assert(snapshotIt != this->snapshotsById.end());
+        const auto& snapshot = snapshotIt.value();
+
+        if (confirmationPromptEnabled) {
+            auto* confirmationDialog = new ConfirmationDialog(
+                "Restore snapshot",
+                "This operation will overwrite the entire address range of the target's "
+                    + QString(this->memoryDescriptor.type == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
+                    + " with the contents of the selected snapshot.<br/><br/>Do you wish to proceed?",
+                "Proceed",
+                std::nullopt,
+                this
+            );
+
+            QObject::connect(
+                confirmationDialog,
+                &ConfirmationDialog::confirmed,
+                this,
+                [this, snapshotId] {
+                    this->restoreSnapshot(snapshotId, false);
+                }
+            );
+
+            confirmationDialog->show();
+            return;
+        }
+
+        /*
+         * We don't restore any excluded regions from the snapshot, so we split the write operation into blocks of
+         * contiguous data, leaving out any address range that is part of an excluded region.
+         */
+        auto writeBlocks = std::vector<WriteTargetMemory::Block>();
+
+        auto sortedExcludedRegions = std::map<Targets::TargetMemoryAddress, const ExcludedMemoryRegion*>();
+        std::transform(
+            snapshot.excludedRegions.begin(),
+            snapshot.excludedRegions.end(),
+            std::inserter(sortedExcludedRegions, sortedExcludedRegions.end()),
+            [] (const ExcludedMemoryRegion& excludedMemoryRegion) {
+                return std::pair(excludedMemoryRegion.addressRange.startAddress, &excludedMemoryRegion);
+            }
+        );
+
+        auto blockStartAddress = this->memoryDescriptor.addressRange.startAddress;
+
+        for (const auto& [excludedRegionStartAddress, excludedRegion] : sortedExcludedRegions) {
+            assert(excludedRegionStartAddress >= this->memoryDescriptor.addressRange.startAddress);
+            assert(excludedRegion->addressRange.endAddress <= this->memoryDescriptor.addressRange.endAddress);
+
+            const auto dataBeginOffset = blockStartAddress - this->memoryDescriptor.addressRange.startAddress;
+            const auto dataEndOffset = excludedRegionStartAddress - this->memoryDescriptor.addressRange.startAddress;
+
+            writeBlocks.emplace_back(
+                blockStartAddress,
+                Targets::TargetMemoryBuffer(
+                    snapshot.data.begin() + dataBeginOffset,
+                    snapshot.data.begin() + dataEndOffset
+                )
+            );
+
+            blockStartAddress = excludedRegion->addressRange.endAddress + 1;
+        }
+
+        if (blockStartAddress < this->memoryDescriptor.addressRange.endAddress) {
+            writeBlocks.emplace_back(
+                blockStartAddress,
+                Targets::TargetMemoryBuffer(
+                    snapshot.data.begin() + (blockStartAddress - this->memoryDescriptor.addressRange.startAddress),
+                    snapshot.data.end()
+                )
+            );
+        }
+
+        const auto writeMemoryTask = QSharedPointer<WriteTargetMemory>(
+            new WriteTargetMemory(this->memoryDescriptor, std::move(writeBlocks)),
+            &QObject::deleteLater
+        );
+
+        QObject::connect(
+            writeMemoryTask.get(),
+            &WriteTargetMemory::targetMemoryWritten,
+            this,
+            [this, snapshotId] () {
+                emit this->snapshotRestored(snapshotId);
+            }
+        );
+
+        emit this->insightWorkerTaskCreated(writeMemoryTask);
+        InsightWorker::queueTask(writeMemoryTask);
+    }
+
+    void SnapshotManager::onSnapshotItemContextMenu(ListItem *item, QPoint sourcePosition) {
+        auto* snapshotItem = dynamic_cast<MemorySnapshotItem*>(item);
+
+        if (snapshotItem == nullptr) {
+            return;
+        }
+
+        this->contextMenuSnapshotItem = snapshotItem;
+
+        auto* menu = new QMenu(this);
+        menu->addAction(this->deleteSnapshotAction);
+
+        menu->addSeparator();
+
+        menu->addAction(this->restoreSnapshotAction);
+
+        this->restoreSnapshotAction->setEnabled(this->targetState == Targets::TargetState::STOPPED);
+
+        menu->exec(sourcePosition);
+    }
+
+    void SnapshotManager::onTargetStateChanged(Targets::TargetState newState) {
+        this->targetState = newState;
     }
 }

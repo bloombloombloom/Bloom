@@ -203,6 +203,12 @@ namespace Bloom::Widgets
             this,
             &TargetMemoryInspectionPane::onSubtaskCreated
         );
+
+        QObject::connect(
+            this->snapshotManager,
+            &SnapshotManager::snapshotRestored,
+            this,
+            &TargetMemoryInspectionPane::onSnapshotRestored
         );
 
         QObject::connect(
@@ -635,6 +641,10 @@ namespace Bloom::Widgets
 
     void TargetMemoryInspectionPane::onSubtaskCreated(const QSharedPointer<InsightWorkerTask>& task) {
         this->taskProgressIndicator->addTask(task);
+    }
+
+    void TargetMemoryInspectionPane::onSnapshotRestored(const QString& snapshotId) {
+        this->refreshButton->click();
     }
 
     void TargetMemoryInspectionPane::setStaleData(bool staleData) {

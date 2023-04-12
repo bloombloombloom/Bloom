@@ -6,11 +6,13 @@
 #include <QShowEvent>
 #include <QVBoxLayout>
 #include <QMap>
+#include <QAction>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
 
+#include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
@@ -43,6 +45,7 @@ namespace Bloom::Widgets
 
     signals:
         void insightWorkerTaskCreated(const QSharedPointer<InsightWorkerTask>& task);
+        void snapshotRestored(const QString& snapshotId);
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
@@ -56,6 +59,8 @@ namespace Bloom::Widgets
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 
+        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+
         QMap<QString, MemorySnapshot> snapshotsById;
         QMap<QString, MemorySnapshotItem*> snapshotItemsById;
 
@@ -68,6 +73,11 @@ namespace Bloom::Widgets
         ListView* snapshotListView = nullptr;
         ListScene* snapshotListScene = nullptr;
 
+        MemorySnapshotItem* contextMenuSnapshotItem = nullptr;
+
+        QAction* deleteSnapshotAction = new QAction("Delete", this);
+        QAction* restoreSnapshotAction = new QAction("Restore", this);
+
         void createSnapshot(
             const QString& name,
             const QString& description,
@@ -76,5 +86,8 @@ namespace Bloom::Widgets
         );
         void addSnapshot(MemorySnapshot&& snapshotTmp);
         void onSnapshotItemSelected(MemorySnapshotItem* item);
+        void restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled);
+        void onSnapshotItemContextMenu(ListItem* item, QPoint sourcePosition);
+        void onTargetStateChanged(Targets::TargetState newState);
     };
 }
