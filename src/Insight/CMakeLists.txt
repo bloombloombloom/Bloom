@@ -51,6 +51,10 @@ target_sources(
         # Error dialogue window
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.cpp
 
+        # Dialogue window
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/Dialog/Dialog.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ConfirmationDialog.cpp
+
         # Target package widgets
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidgetContainer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidget.cpp
@@ -201,4 +205,9 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui"
         "./UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss"
         "./UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Images/icon.svg"
+
+        # Dialogue
+        "./UserInterfaces/InsightWindow/Widgets/Dialog/UiFiles/Dialog.ui"
+        "./UserInterfaces/InsightWindow/Widgets/Dialog/Stylesheets/Dialog.qss"
+        "./UserInterfaces/InsightWindow/Widgets/Dialog/Images/icon.svg"
 )

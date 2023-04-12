@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <widget class="QWidget" name="container">
+        <layout class="QVBoxLayout">
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <item>
+                <layout class="QHBoxLayout">
+                    <property name="spacing">
+                        <number>0</number>
+                    </property>
+                    <item alignment="Qt::AlignTop">
+                        <widget class="SvgWidget" name="icon">
+                            <property name="svgFilePath">
+                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/Dialog/Images/icon.svg</string>
+                            </property>
+                            <property name="containerHeight">
+                                <number>44</number>
+                            </property>
+                            <property name="containerWidth">
+                                <number>40</number>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <spacer name="horizontal-spacer">
+                            <property name="sizeHint">
+                                <size>
+                                    <width>10</width>
+                                </size>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item alignment="Qt::AlignVCenter">
+                        <widget class="Label" name="text-label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+                            </property>
+                            <property name="wordWrap">
+                                <bool>true</bool>
+                            </property>
+                            <property name="alignment">
+                                <enum>Qt::AlignLeft</enum>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="vertical-spacer">
+                    <property name="sizeHint">
+                        <size>
+                            <height>20</height>
+                        </size>
+                    </property>
+                    <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item alignment="Qt::AlignLeft">
+                <spacer name="vertical-spacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="actions-layout">
+                    <property name="spacing">
+                        <number>15</number>
+                    </property>
+                    <item>
+                        <spacer name="horizontal-spacer">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                        </spacer>
+                    </item>
+                </layout>
+            </item>
+        </layout>
+    </widget>
+</ui>

@@ -8,6 +8,10 @@
 
 namespace Bloom::Widgets
 {
+    /**
+     * @deprecated
+     * TODO: Bin this. Replace all usages with Bloom::Widgets::Dialog.
+     */
     class ErrorDialogue: public QDialog
     {
         Q_OBJECT

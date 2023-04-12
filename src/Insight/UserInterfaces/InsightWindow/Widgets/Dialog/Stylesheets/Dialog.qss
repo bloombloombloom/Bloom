@@ -1,0 +1,7 @@
+#dialog {
+    background-color: #373835;
+}
+
+#text-label {
+    font-size: 14px;
+}
