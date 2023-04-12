@@ -5,6 +5,8 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QByteArray>
+#include <map>
+#include <algorithm>
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/InsightSignals.hpp"
@@ -730,6 +732,20 @@ namespace Bloom::Widgets
         this->byteAddressContainer->invalidateChildItemCaches();
     }
 
+    std::map<Targets::TargetMemoryAddress, ByteItem*> ItemGraphicsScene::sortedByteItemsByAddress() {
+        auto sortedByteItemsByAddress = std::map<Targets::TargetMemoryAddress, ByteItem*>();
+        std::transform(
+            this->selectedByteItemsByAddress.begin(),
+            this->selectedByteItemsByAddress.end(),
+            std::inserter(sortedByteItemsByAddress, sortedByteItemsByAddress.end()),
+            [] (const decltype(this->selectedByteItemsByAddress)::value_type& pair) {
+                return pair;
+            }
+        );
+
+        return sortedByteItemsByAddress;
+    }
+
     void ItemGraphicsScene::copyAddressesToClipboard(AddressType type) {
         if (this->selectedByteItemsByAddress.empty()) {
             return;
@@ -738,7 +754,7 @@ namespace Bloom::Widgets
         auto data = QString();
         const auto memoryStartAddress = this->state.memoryDescriptor.addressRange.startAddress;
 
-        for (const auto& [address, byteItem] : this->selectedByteItemsByAddress) {
+        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
             data.append(
                 "0x" + QString::number(
                     type == AddressType::RELATIVE
@@ -759,7 +775,7 @@ namespace Bloom::Widgets
 
         auto data = QString();
 
-        for (const auto& [address, byteItem] : this->selectedByteItemsByAddress) {
+        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
             const unsigned char byteValue = byteItem->excluded
                 ? 0x00
                 : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
@@ -776,7 +792,7 @@ namespace Bloom::Widgets
 
         auto data = QString();
 
-        for (const auto& [address, byteItem] : this->selectedByteItemsByAddress) {
+        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
             const unsigned char byteValue = byteItem->excluded
                 ? 0x00
                 : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];

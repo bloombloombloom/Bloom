@@ -146,6 +146,7 @@ namespace Bloom::Widgets
         void clearByteItemSelection();
         void selectAllByteItems();
         void setAddressType(AddressType type);
+        std::map<Targets::TargetMemoryAddress, ByteItem*> sortedByteItemsByAddress();
         void copyAddressesToClipboard(AddressType type);
         void copyHexValuesToClipboard();
         void copyDecimalValuesToClipboard();
