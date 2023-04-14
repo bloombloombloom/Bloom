@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <yaml-cpp/yaml.h>
+#include <optional>
 
 namespace Bloom
 {
