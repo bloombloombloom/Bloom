@@ -82,6 +82,7 @@ namespace Bloom
             this->memoryType,
             std::move(*this->data),
             targetControllerService.getProgramCounter(),
+            targetControllerService.getStackPointer(),
             std::move(this->focusedRegions),
             std::move(this->excludedRegions)
         );

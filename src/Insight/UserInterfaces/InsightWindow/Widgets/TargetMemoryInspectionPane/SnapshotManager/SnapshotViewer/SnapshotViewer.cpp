@@ -186,6 +186,7 @@ namespace Bloom::Widgets
 
     void SnapshotViewer::onHexViewerReady() {
         this->hexViewerWidget->addExternalContextMenuAction(this->restoreBytesAction);
+        this->hexViewerWidget->setStackPointer(this->snapshot.stackPointer);
     }
 
     void SnapshotViewer::restoreSelectedBytes(

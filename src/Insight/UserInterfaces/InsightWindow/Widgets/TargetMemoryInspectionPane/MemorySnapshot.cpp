@@ -14,6 +14,7 @@ namespace Bloom
         Targets::TargetMemoryType memoryType,
         const Targets::TargetMemoryBuffer& data,
         Targets::TargetProgramCounter programCounter,
+        Targets::TargetStackPointer stackPointer,
         const std::vector<FocusedMemoryRegion>& focusedRegions,
         const std::vector<ExcludedMemoryRegion>& excludedRegions
     )
@@ -22,6 +23,7 @@ namespace Bloom
         , memoryType(memoryType)
         , data(data)
         , programCounter(programCounter)
+        , stackPointer(stackPointer)
         , focusedRegions(focusedRegions)
         , excludedRegions(excludedRegions)
     {}
@@ -36,6 +38,7 @@ namespace Bloom
             || !jsonObject.contains("memoryType")
             || !jsonObject.contains("hexData")
             || !jsonObject.contains("programCounter")
+            || !jsonObject.contains("stackPointer")
             || !jsonObject.contains("createdTimestamp")
             || !jsonObject.contains("focusedRegions")
             || !jsonObject.contains("excludedRegions")
@@ -48,6 +51,7 @@ namespace Bloom
         this->description = jsonObject.find("description")->toString();
         this->memoryType = EnumToStringMappings::targetMemoryTypes.at(jsonObject.find("memoryType")->toString());
         this->programCounter = static_cast<Targets::TargetProgramCounter>(jsonObject.find("programCounter")->toInteger());
+        this->stackPointer = static_cast<Targets::TargetStackPointer>(jsonObject.find("stackPointer")->toInteger());
         this->createdDate.setSecsSinceEpoch(jsonObject.find("createdTimestamp")->toInteger());
 
         const auto hexData = QByteArray::fromHex(jsonObject.find("hexData")->toString().toUtf8());
@@ -97,6 +101,7 @@ namespace Bloom
                 static_cast<qsizetype>(this->data.size())
             ).toHex())},
             {"programCounter", static_cast<qint64>(this->programCounter)},
+            {"stackPointer", static_cast<qint64>(this->stackPointer)},
             {"createdTimestamp", this->createdDate.toSecsSinceEpoch()},
             {"focusedRegions", focusedRegions},
             {"excludedRegions", excludedRegions},
