@@ -3,7 +3,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMargins>
-#include <vector>
+#include <set>
 #include <list>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
@@ -13,6 +13,7 @@
 #include <QPointF>
 
 #include "ListItem.hpp"
+#include "src/Helpers/DereferenceLessComparator.hpp"
 
 namespace Bloom::Widgets
 {
@@ -21,18 +22,19 @@ namespace Bloom::Widgets
         Q_OBJECT
 
     public:
+        using ListItemSetType = std::set<ListItem*, DereferenceLessComparator<ListItem*>>;
         QMargins margins = QMargins(0, 0, 0, 10);
 
         ListScene(
-            std::vector<ListItem*> items,
+            ListScene::ListItemSetType&& items,
             QGraphicsView* parent
         );
 
         void refreshGeometry();
         void setSelectionLimit(std::uint8_t selectionLimit);
-        void setItems(const std::vector<ListItem*>& items);
+        void setItems(const ListScene::ListItemSetType& items);
         void addListItem(ListItem* item);
-        void sortItems();
+        void removeListItem(ListItem* item);
         void setEnabled(bool enabled);
 
     signals:
@@ -47,7 +49,7 @@ namespace Bloom::Widgets
         void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
     private:
-        std::vector<ListItem*> listItems;
+        ListScene::ListItemSetType listItems;
         QGraphicsView* const parent;
         bool enabled = false;
         std::list<ListItem*> selectedItems;

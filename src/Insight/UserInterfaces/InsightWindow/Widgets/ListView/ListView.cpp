@@ -3,7 +3,7 @@
 namespace Bloom::Widgets
 {
     ListView::ListView(
-        const std::vector<ListItem*>& items,
+        ListScene::ListItemSetType&& items,
         QWidget* parent
     )
         : QGraphicsView(parent)

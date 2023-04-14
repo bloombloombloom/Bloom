@@ -15,7 +15,7 @@ namespace Bloom::Widgets
 
     public:
         ListView(
-            const std::vector<ListItem*>& items,
+            ListScene::ListItemSetType&& items,
             QWidget* parent
         );
 

@@ -9,7 +9,7 @@
 namespace Bloom::Widgets
 {
     ListScene::ListScene(
-        std::vector<ListItem*> items,
+        ListScene::ListItemSetType&& items,
         QGraphicsView* parent
     )
         : parent(parent)
@@ -48,7 +48,7 @@ namespace Bloom::Widgets
         this->update();
     }
 
-    void ListScene::setItems(const std::vector<ListItem*>& items) {
+    void ListScene::setItems(const ListScene::ListItemSetType& items) {
         for (auto& item : this->items()) {
             this->removeItem(item);
         }
@@ -58,23 +58,16 @@ namespace Bloom::Widgets
         for (const auto& listItem : this->listItems) {
             this->addItem(listItem);
         }
-
-        this->sortItems();
     }
 
     void ListScene::addListItem(ListItem* item) {
-        this->listItems.push_back(item);
+        this->listItems.insert(item);
         this->addItem(item);
     }
 
-    void ListScene::sortItems() {
-        std::sort(
-            this->listItems.begin(),
-            this->listItems.end(),
-            [] (const ListItem* itemA, const ListItem* itemB) {
-                return *itemA < *itemB;
-            }
-        );
+    void ListScene::removeListItem(ListItem* item) {
+        this->listItems.erase(item);
+        this->removeItem(item);
     }
 
     void ListScene::setEnabled(bool enabled) {

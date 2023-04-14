@@ -105,7 +105,7 @@ namespace Bloom::Widgets
         }
 
         this->registerListView = new ListView(
-            std::vector<ListItem*>(this->registerGroupItems.begin(), this->registerGroupItems.end()),
+            ListScene::ListItemSetType(this->registerGroupItems.begin(), this->registerGroupItems.end()),
             this
         );
 

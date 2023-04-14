@@ -173,7 +173,6 @@ namespace Bloom::Widgets
                     this->addSnapshot(std::move(snapshot));
                 }
 
-                this->snapshotListScene->sortItems();
                 this->snapshotListScene->refreshGeometry();
             }
         );
@@ -218,7 +217,6 @@ namespace Bloom::Widgets
             this,
             [this] (MemorySnapshot snapshot) {
                 this->addSnapshot(std::move(snapshot));
-                this->snapshotListScene->sortItems();
                 this->snapshotListScene->refreshGeometry();
             }
         );
