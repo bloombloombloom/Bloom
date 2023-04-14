@@ -110,7 +110,7 @@ namespace Bloom::Widgets
             );
 
             this->memoryRegionListView = new ListView(
-                std::vector<ListItem*>(this->memoryRegionItems.begin(), this->memoryRegionItems.end()),
+                ListScene::ListItemSetType(this->memoryRegionItems.begin(), this->memoryRegionItems.end()),
                 this
             );
             this->memoryRegionListView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
