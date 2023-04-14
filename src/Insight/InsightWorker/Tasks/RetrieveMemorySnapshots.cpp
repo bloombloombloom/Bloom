@@ -23,6 +23,7 @@ namespace Bloom
     }
 
     std::vector<MemorySnapshot> RetrieveMemorySnapshots::getSnapshots(Targets::TargetMemoryType memoryType) {
+        constexpr auto MAX_SNAPSHOTS = 30;
         auto snapshotDir = QDir(QString::fromStdString(Services::PathService::projectSettingsDirPath())
             + "/memory_snapshots/" + EnumToStringMappings::targetMemoryTypes.at(memoryType));
 
@@ -32,7 +33,12 @@ namespace Bloom
 
         auto snapshots = std::vector<MemorySnapshot>();
 
-        const auto snapshotFileEntries = snapshotDir.entryInfoList(QStringList("*.json"), QDir::Files);
+        const auto snapshotFileEntries = snapshotDir.entryInfoList(
+            QStringList("*.json"),
+            QDir::Files,
+            QDir::SortFlag::Time
+        );
+
         for (const auto& snapshotFileEntry : snapshotFileEntries) {
             auto snapshotFile = QFile(snapshotFileEntry.absoluteFilePath());
 
@@ -51,6 +57,15 @@ namespace Bloom
             }
 
             snapshotFile.close();
+
+            if (snapshots.size() >= MAX_SNAPSHOTS) {
+                Logger::warning(
+                    "The total number of " + EnumToStringMappings::targetMemoryTypes.at(memoryType).toUpper().toStdString()
+                        + " snapshots exceeds the hard limit of " + std::to_string(MAX_SNAPSHOTS)
+                        + ". Only the most recent " + std::to_string(MAX_SNAPSHOTS) + " snapshots will be loaded."
+                );
+                break;
+            }
         }
 
         return snapshots;
