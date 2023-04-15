@@ -39,6 +39,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ConstructHexViewerTopLevelGroupItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/CaptureMemorySnapshot.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/RetrieveMemorySnapshots.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/DeleteMemorySnapshot.cpp
 
         # Task indicators
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TaskIndicator/TaskIndicator.cpp

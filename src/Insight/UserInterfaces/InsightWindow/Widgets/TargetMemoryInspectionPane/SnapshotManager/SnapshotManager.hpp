@@ -91,6 +91,7 @@ namespace Bloom::Widgets
         void addSnapshot(MemorySnapshot&& snapshotTmp);
         void onSnapshotItemSelected(MemorySnapshotItem* item);
         void openSnapshotViewer(const QString& snapshotId);
+        void deleteSnapshot(const QString& snapshotId, bool confirmationPromptEnabled);
         void restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled);
         void onSnapshotItemDoubleClick(MemorySnapshotItem* item);
         void onSnapshotItemContextMenu(ListItem* item, QPoint sourcePosition);

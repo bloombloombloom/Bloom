@@ -9,6 +9,7 @@
 #include "src/Insight/InsightSignals.hpp"
 #include "src/Insight/InsightWorker/Tasks/RetrieveMemorySnapshots.hpp"
 #include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
+#include "src/Insight/InsightWorker/Tasks/DeleteMemorySnapshot.hpp"
 #include "src/Insight/InsightWorker/Tasks/WriteTargetMemory.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
@@ -127,6 +128,17 @@ namespace Bloom::Widgets
             [this] {
                 if (this->contextMenuSnapshotItem != nullptr) {
                     this->openSnapshotViewer(this->contextMenuSnapshotItem->memorySnapshot.id);
+                }
+            }
+        );
+
+        QObject::connect(
+            this->deleteSnapshotAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                if (this->contextMenuSnapshotItem != nullptr) {
+                    this->deleteSnapshot(this->contextMenuSnapshotItem->memorySnapshot.id, true);
                 }
             }
         );
@@ -261,6 +273,78 @@ namespace Bloom::Widgets
         auto* snapshotViewer = snapshotViewerIt.value();
         snapshotViewer->show();
         snapshotViewer->activateWindow();
+    }
+
+    void SnapshotManager::deleteSnapshot(const QString& snapshotId, bool confirmationPromptEnabled) {
+        const auto& snapshotIt = this->snapshotsById.find(snapshotId);
+        assert(snapshotIt != this->snapshotsById.end());
+        const auto& snapshot = snapshotIt.value();
+
+        if (confirmationPromptEnabled) {
+            auto* confirmationDialog = new ConfirmationDialog(
+                "Delete snapshot " + snapshot.id,
+                "This operation will permanently delete the selected snapshot.<br/><br/>Are you sure you want to proceed?",
+                "Proceed",
+                std::nullopt,
+                this
+            );
+
+            QObject::connect(
+                confirmationDialog,
+                &ConfirmationDialog::confirmed,
+                this,
+                [this, snapshotId] {
+                    this->deleteSnapshot(snapshotId, false);
+                }
+            );
+
+            confirmationDialog->show();
+            return;
+        }
+
+        const auto deleteSnapshotTask = QSharedPointer<DeleteMemorySnapshot>(
+            new DeleteMemorySnapshot(snapshot.id, snapshot.memoryType),
+            &QObject::deleteLater
+        );
+
+        QObject::connect(
+            deleteSnapshotTask.get(),
+            &InsightWorkerTask::completed,
+            this,
+            [this, snapshotId] () {
+                const auto& snapshotViewerIt = this->snapshotViewersById.find(snapshotId);
+                const auto& snapshotItemIt = this->snapshotItemsById.find(snapshotId);
+
+                if (snapshotItemIt != this->snapshotItemsById.end()) {
+                    auto& snapshotItem = snapshotItemIt.value();
+                    this->snapshotListScene->removeListItem(snapshotItem);
+                    this->snapshotListScene->refreshGeometry();
+
+                    this->snapshotItemsById.erase(snapshotItemIt);
+                }
+
+                if (snapshotViewerIt != this->snapshotViewersById.end()) {
+                    auto& snapshotViewer = snapshotViewerIt.value();
+                    QObject::connect(
+                        snapshotViewer,
+                        &QObject::destroyed,
+                        this,
+                        [this, snapshotId] {
+                            this->snapshotsById.remove(snapshotId);
+                        }
+                    );
+
+                    snapshotViewer->deleteLater();
+                    this->snapshotViewersById.erase(snapshotViewerIt);
+
+                } else {
+                    this->snapshotsById.remove(snapshotId);
+                }
+            }
+        );
+
+        emit this->insightWorkerTaskCreated(deleteSnapshotTask);
+        InsightWorker::queueTask(deleteSnapshotTask);
     }
 
     void SnapshotManager::restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled) {
