@@ -262,7 +262,9 @@ namespace Bloom::Widgets
         if (snapshotViewerIt == this->snapshotViewersById.end()) {
             const auto& snapshotIt = this->snapshotsById.find(snapshotId);
 
-            assert(snapshotIt != this->snapshotsById.end());
+            if (snapshotIt == this->snapshotsById.end()) {
+                return;
+            }
 
             snapshotViewerIt = this->snapshotViewersById.insert(
                 snapshotId,
@@ -277,7 +279,11 @@ namespace Bloom::Widgets
 
     void SnapshotManager::deleteSnapshot(const QString& snapshotId, bool confirmationPromptEnabled) {
         const auto& snapshotIt = this->snapshotsById.find(snapshotId);
-        assert(snapshotIt != this->snapshotsById.end());
+
+        if (snapshotIt == this->snapshotsById.end()) {
+            return;
+        }
+
         const auto& snapshot = snapshotIt.value();
 
         if (confirmationPromptEnabled) {
@@ -349,7 +355,11 @@ namespace Bloom::Widgets
 
     void SnapshotManager::restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled) {
         const auto& snapshotIt = this->snapshotsById.find(snapshotId);
-        assert(snapshotIt != this->snapshotsById.end());
+
+        if (snapshotIt == this->snapshotsById.end()) {
+            return;
+        }
+
         const auto& snapshot = snapshotIt.value();
 
         if (confirmationPromptEnabled) {
