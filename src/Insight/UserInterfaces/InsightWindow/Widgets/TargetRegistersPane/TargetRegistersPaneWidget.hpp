@@ -71,10 +71,10 @@ namespace Bloom::Widgets
         // Context-menu actions
         QAction* openInspectionWindowAction = new QAction("Inspect", this);
         QAction* refreshValueAction = new QAction("Refresh Value", this);
-        QAction* copyNameAction = new QAction("Copy Register Name", this);
-        QAction* copyValueHexAction = new QAction("Copy Hexadecimal Value", this);
-        QAction* copyValueDecimalAction = new QAction("Copy Decimal Value", this);
-        QAction* copyValueBinaryAction = new QAction("Copy Binary Value", this);
+        QAction* copyNameAction = new QAction("Register Name", this);
+        QAction* copyValueDecimalAction = new QAction("Value as Decimal", this);
+        QAction* copyValueHexAction = new QAction("...as Hex String", this);
+        QAction* copyValueBinaryAction = new QAction("...as Binary Bit String", this);
 
         RegisterItem* contextMenuRegisterItem = nullptr;
 

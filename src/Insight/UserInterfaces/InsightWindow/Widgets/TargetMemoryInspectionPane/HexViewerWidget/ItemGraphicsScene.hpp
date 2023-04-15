@@ -114,10 +114,21 @@ namespace Bloom::Widgets
         // Context menu actions
         QAction* selectAllByteItemsAction = new QAction("Select All", this);
         QAction* deselectByteItemsAction = new QAction("Deselect All", this);
-        QAction* copyAbsoluteAddressAction = new QAction("Copy Absolute Addresses", this);
-        QAction* copyRelativeAddressAction = new QAction("Copy Relative Addresses", this);
-        QAction* copyHexValuesAction = new QAction("Copy Hexadecimal Values", this);
-        QAction* copyDecimalValuesAction = new QAction("Copy Decimal Values", this);
+        QAction* copyAbsoluteAddressAction = new QAction("Absolute Addresses", this);
+        QAction* copyRelativeAddressAction = new QAction("Relative Addresses", this);
+        QAction* copyHexValuesAction = new QAction("Values as Hex Stream", this);
+        QAction* copyBinaryBitStringValues = new QAction("...as Binary Bit String", this);
+        QAction* copyBinaryBitStringWithDelimitersValues = new QAction(
+            "...as Prefixed Binary Bit Strings with Line Delimiters",
+            this
+        );
+        QAction* copyHexValuesWithDelimitersAction = new QAction(
+            "...as Prefixed Hex Strings with Line Delimiters",
+            this
+        );
+        QAction* copyDecimalValuesAction = new QAction("...as Decimals with Line Delimiters", this);
+        QAction* copyValueJsonMapAction = new QAction("...as Address to Value JSON Map", this);
+        QAction* copyAsciiValuesAction = new QAction("...as ASCII String", this);
 
         // Address label container context menu actions
         QAction* displayRelativeAddressAction = new QAction("Relative", this);
@@ -148,7 +159,10 @@ namespace Bloom::Widgets
         void setAddressType(AddressType type);
         std::map<Targets::TargetMemoryAddress, ByteItem*> sortedByteItemsByAddress();
         void copyAddressesToClipboard(AddressType type);
-        void copyHexValuesToClipboard();
+        void copyHexValuesToClipboard(bool withDelimiters);
         void copyDecimalValuesToClipboard();
+        void copyBinaryBitStringToClipboard(bool withDelimiters);
+        void copyValueMappingToClipboard();
+        void copyAsciiValueToClipboard();
     };
 }

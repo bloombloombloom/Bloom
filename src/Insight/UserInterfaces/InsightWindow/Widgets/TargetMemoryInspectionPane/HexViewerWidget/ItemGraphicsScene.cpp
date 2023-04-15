@@ -5,6 +5,8 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <map>
 #include <algorithm>
 
@@ -107,7 +109,18 @@ namespace Bloom::Widgets
             this->copyHexValuesAction,
             &QAction::triggered,
             this,
-            &ItemGraphicsScene::copyHexValuesToClipboard
+            [this] {
+                this->copyHexValuesToClipboard(false);
+            }
+        );
+
+        QObject::connect(
+            this->copyHexValuesWithDelimitersAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                this->copyHexValuesToClipboard(true);
+            }
         );
 
         QObject::connect(
@@ -115,6 +128,38 @@ namespace Bloom::Widgets
             &QAction::triggered,
             this,
             &ItemGraphicsScene::copyDecimalValuesToClipboard
+        );
+
+        QObject::connect(
+            this->copyBinaryBitStringValues,
+            &QAction::triggered,
+            this,
+            [this] {
+                this->copyBinaryBitStringToClipboard(false);
+            }
+        );
+
+        QObject::connect(
+            this->copyBinaryBitStringWithDelimitersValues,
+            &QAction::triggered,
+            this,
+            [this] {
+                this->copyBinaryBitStringToClipboard(true);
+            }
+        );
+
+        QObject::connect(
+            this->copyValueJsonMapAction,
+            &QAction::triggered,
+            this,
+            &ItemGraphicsScene::copyValueMappingToClipboard
+        );
+
+        QObject::connect(
+            this->copyAsciiValuesAction,
+            &QAction::triggered,
+            this,
+            &ItemGraphicsScene::copyAsciiValueToClipboard
         );
 
         this->setSceneRect(0, 0, this->getSceneWidth(), 0);
@@ -548,12 +593,17 @@ namespace Bloom::Widgets
         menu->addAction(this->deselectByteItemsAction);
         menu->addSeparator();
 
-        auto* copyMenu = new QMenu("Copy Selected", menu);
+        auto* copyMenu = new QMenu("Copy Selection", menu);
         copyMenu->addAction(this->copyAbsoluteAddressAction);
         copyMenu->addAction(this->copyRelativeAddressAction);
         copyMenu->addSeparator();
         copyMenu->addAction(this->copyHexValuesAction);
+        copyMenu->addAction(this->copyHexValuesWithDelimitersAction);
         copyMenu->addAction(this->copyDecimalValuesAction);
+        copyMenu->addAction(this->copyAsciiValuesAction);
+        copyMenu->addAction(this->copyBinaryBitStringValues);
+        copyMenu->addAction(this->copyBinaryBitStringWithDelimitersValues);
+        copyMenu->addAction(this->copyValueJsonMapAction);
 
         copyMenu->setEnabled(itemsSelected);
         this->deselectByteItemsAction->setEnabled(itemsSelected);
@@ -768,7 +818,7 @@ namespace Bloom::Widgets
         QApplication::clipboard()->setText(std::move(data));
     }
 
-    void ItemGraphicsScene::copyHexValuesToClipboard() {
+    void ItemGraphicsScene::copyHexValuesToClipboard(bool withDelimiters) {
         if (this->selectedByteItemsByAddress.empty()) {
             return;
         }
@@ -779,7 +829,12 @@ namespace Bloom::Widgets
             const unsigned char byteValue = byteItem->excluded
                 ? 0x00
                 : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
-            data.append("0x" + QString::number(byteValue, 16).rightJustified(2, '0').toUpper() + "\n");
+
+            data.append(
+                withDelimiters
+                    ? "0x" + QString::number(byteValue, 16).rightJustified(2, '0').toUpper() + "\n"
+                    : QString::number(byteValue, 16).rightJustified(2, '0').toUpper()
+            );
         }
 
         QApplication::clipboard()->setText(std::move(data));
@@ -797,6 +852,70 @@ namespace Bloom::Widgets
                 ? 0x00
                 : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
             data.append(QString::number(byteValue, 10) + "\n");
+        }
+
+        QApplication::clipboard()->setText(std::move(data));
+    }
+
+    void ItemGraphicsScene::copyBinaryBitStringToClipboard(bool withDelimiters) {
+        if (this->selectedByteItemsByAddress.empty()) {
+            return;
+        }
+
+        auto data = QString();
+
+        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
+            const unsigned char byteValue = byteItem->excluded
+                ? 0x00
+                : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+
+            data.append(
+                withDelimiters
+                    ? "0b" + QString::number(byteValue, 2).rightJustified(8, '0') + "\n"
+                    : QString::number(byteValue, 2).rightJustified(8, '0') + " "
+            );
+        }
+
+        QApplication::clipboard()->setText(std::move(data));
+    }
+
+    void ItemGraphicsScene::copyValueMappingToClipboard() {
+        if (this->selectedByteItemsByAddress.empty() || !this->state.data.has_value()) {
+            return;
+        }
+
+        auto data = QJsonObject();
+
+        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
+            const unsigned char byteValue = byteItem->excluded
+                ? 0x00
+                : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+
+            data.insert(
+                "0x" + QString::number(address, 16).rightJustified(8, '0').toUpper(),
+                "0x" + QString::number(byteValue, 16).rightJustified(2, '0').toUpper()
+            );
+        }
+
+        QApplication::clipboard()->setText(QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Indented));
+    }
+
+    void ItemGraphicsScene::copyAsciiValueToClipboard() {
+        if (this->selectedByteItemsByAddress.empty() || !this->state.data.has_value()) {
+            return;
+        }
+
+        auto data = QString();
+
+        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
+            const unsigned char byteValue =
+                (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+
+            if (byteItem->excluded || byteValue < 32 || byteValue > 126) {
+                continue;
+            }
+
+            data.append(QChar(byteValue));
         }
 
         QApplication::clipboard()->setText(std::move(data));

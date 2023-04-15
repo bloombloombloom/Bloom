@@ -123,7 +123,7 @@ namespace Bloom::Widgets
             memoryRegionsLayout->insertWidget(0, this->memoryRegionListView);
         }
 
-        this->restoreBytesAction = new ContextMenuAction("Restore Selected", std::nullopt, this);
+        this->restoreBytesAction = new ContextMenuAction("Restore Selection", std::nullopt, this);
 
         this->hexViewerWidget = new HexViewerWidget(
             this->memoryDescriptor,
