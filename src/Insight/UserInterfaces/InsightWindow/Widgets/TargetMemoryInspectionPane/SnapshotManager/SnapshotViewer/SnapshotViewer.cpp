@@ -63,7 +63,7 @@ namespace Bloom::Widgets
         }
 
         // Set ideal window size
-        this->setFixedSize(1200, 850);
+        this->setFixedSize(1205, 850);
         this->setMinimumSize(700, 600);
         this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
@@ -215,7 +215,7 @@ namespace Bloom::Widgets
                 "This operation will write " + QString::number(sortedByteItemsByAddress.size())
                     + " byte(s) to the target's "
                     + QString(this->memoryDescriptor.type == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
-                    + ".<br/><br/>Do you wish to proceed?",
+                    + ".<br/><br/>Are you sure you want to proceed?",
                 "Proceed",
                 std::nullopt,
                 this

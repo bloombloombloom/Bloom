@@ -14,7 +14,6 @@
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
 #include "src/Services/PathService.hpp"
-#include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -44,7 +43,7 @@ namespace Bloom::Widgets
         auto widgetUiFile = QFile(
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
-                + "/SnapshotManager/UiFiles/SnapshotManager.ui"
+                    + "/SnapshotManager/UiFiles/SnapshotManager.ui"
             )
         );
 
@@ -367,7 +366,7 @@ namespace Bloom::Widgets
                 "Restore snapshot",
                 "This operation will overwrite the entire address range of the target's "
                     + QString(this->memoryDescriptor.type == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
-                    + " with the contents of the selected snapshot.<br/><br/>Do you wish to proceed?",
+                        + " with the contents of the selected snapshot.<br/><br/>Are you sure you want to proceed?",
                 "Proceed",
                 std::nullopt,
                 this

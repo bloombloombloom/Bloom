@@ -197,7 +197,9 @@ namespace Bloom::Widgets
             this,
             [this] (TopLevelGroupItem* item) {
                 this->topLevelGroup.reset(item);
-                this->topLevelGroup->setPosition(QPoint(ByteAddressContainer::WIDTH + this->margins.left(), this->margins.top()));
+                this->topLevelGroup->setPosition(
+                    QPoint(ByteAddressContainer::WIDTH + this->margins.left(), this->margins.top())
+                );
                 this->flattenedItems = this->topLevelGroup->flattenedItems();
                 emit this->ready();
             }
