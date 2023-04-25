@@ -70,7 +70,7 @@ namespace Bloom::Widgets
     }
 
     void RegisterGroupItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-        static constexpr auto selectedBackgroundColor = QColor(0x35, 0x5A, 0x80);
+        static constexpr auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C);
 
         static constexpr auto itemLeftPadding = 3;
         static constexpr auto itemTopPadding = 4;

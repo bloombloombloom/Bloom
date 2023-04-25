@@ -27,7 +27,7 @@ QMenuBar::item {
 }
 
 QMenuBar::item:pressed {
-    background-color: #355A80;
+    background-color: #3c595c;
 }
 
 QMenuBar {
@@ -57,7 +57,7 @@ QMenu::item {
 }
 
 QMenu::item:selected {
-    background-color: #355A80;
+    background-color: #3c595c;
 }
 
 QMenu::item:disabled {
@@ -125,7 +125,7 @@ QLineEdit,
 QPlainTextEdit {
     background-color: #2F2F2D;
     border: 1px solid #41423f;
-    selection-background-color: #355A80;
+    selection-background-color: #3c595c;
     selection-color: #afb1b3;
 }
 
@@ -164,7 +164,7 @@ QComboBox QAbstractItemView:item  {
 }
 
 QComboBox QAbstractItemView::item:selected  {
-    background-color: #355A80;
+    background-color: #3c595c;
     padding: 0;
     border: 0;
     margin: 0;

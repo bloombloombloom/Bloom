@@ -30,7 +30,7 @@ namespace Bloom::Widgets
         static constexpr auto secondaryFontColor = QColor(0x8A, 0x8A, 0x8D);
 
         if (this->selected) {
-            static constexpr auto selectedBackgroundColor = QColor(0x35, 0x5A, 0x80);
+            static constexpr auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C);
 
             painter->setBrush(selectedBackgroundColor);
             painter->setPen(Qt::PenStyle::NoPen);

@@ -45,7 +45,7 @@ namespace Bloom::Widgets
             return;
         }
 
-        static constexpr auto selectedBackgroundColor = QColor(0x35, 0x5A, 0x80);
+        static constexpr auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C);
 
         static constexpr auto itemLeftPadding = 41;
         static constexpr auto itemTopPadding = 4;

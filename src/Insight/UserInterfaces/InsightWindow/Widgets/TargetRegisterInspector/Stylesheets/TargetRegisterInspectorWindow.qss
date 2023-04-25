@@ -74,7 +74,7 @@
 
 #target-register-history-widget #current-item[selected=true],
 #target-register-history-widget #register-history-item[selected=true] {
-    background-color: #355A80;
+    background-color: #3c595c;
 }
 
 #target-register-history-widget #separator-widget {

@@ -72,7 +72,7 @@
 }
 
 #region-selector #region-item[selected=true] {
-    background-color: #355A80;
+    background-color: #3c595c;
 }
 
 #region-selector #region-item #name-label {
