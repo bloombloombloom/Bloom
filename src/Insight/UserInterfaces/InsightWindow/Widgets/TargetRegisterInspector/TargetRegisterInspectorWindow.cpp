@@ -3,12 +3,13 @@
 #include <QVBoxLayout>
 #include <QMargins>
 #include <QDesktopServices>
-#include <QPlainTextEdit>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/InsightSignals.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PlainTextEdit.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
+
 
 #include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
@@ -105,7 +106,7 @@ namespace Bloom::Widgets
         auto* registerDetailsSizeInput = registerDetailsContainer->findChild<QLineEdit*>(
             "register-details-size-input"
         );
-        auto* registerDetailsDescriptionInput = registerDetailsContainer->findChild<QPlainTextEdit*>(
+        auto* registerDetailsDescriptionInput = registerDetailsContainer->findChild<PlainTextEdit*>(
             "register-details-description-input"
         );
         registerDetailsNameInput->setText(registerName);

@@ -242,7 +242,7 @@
                                                             </widget>
                                                         </item>
                                                         <item>
-                                                            <widget class="QPlainTextEdit" name="register-details-description-input">
+                                                            <widget class="PlainTextEdit" name="register-details-description-input">
                                                                 <property name="readOnly">
                                                                     <bool>true</bool>
                                                                 </property>

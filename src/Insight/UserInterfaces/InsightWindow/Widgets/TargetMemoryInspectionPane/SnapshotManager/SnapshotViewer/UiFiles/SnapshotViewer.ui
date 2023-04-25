@@ -73,7 +73,7 @@
                                     </spacer>
                                 </item>
                                 <item>
-                                    <widget class="QPlainTextEdit" name="description-input">
+                                    <widget class="PlainTextEdit" name="description-input">
                                         <property name="minimumHeight">
                                             <number>100</number>
                                         </property>
