@@ -84,8 +84,8 @@
                                                                 <property name="sizePolicy">
                                                                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
                                                                 </property>
-                                                                <property name="enabled">
-                                                                    <bool>false</bool>
+                                                                <property name="readOnly">
+                                                                    <bool>true</bool>
                                                                 </property>
                                                             </widget>
                                                         </item>
@@ -171,8 +171,8 @@
                                                         </item>
                                                         <item>
                                                             <widget class="TextInput" name="register-details-start-address-input">
-                                                                <property name="enabled">
-                                                                    <bool>false</bool>
+                                                                <property name="readOnly">
+                                                                    <bool>true</bool>
                                                                 </property>
                                                             </widget>
                                                         </item>
@@ -207,8 +207,8 @@
                                                         </item>
                                                         <item>
                                                             <widget class="TextInput" name="register-details-size-input">
-                                                                <property name="enabled">
-                                                                    <bool>false</bool>
+                                                                <property name="readOnly">
+                                                                    <bool>true</bool>
                                                                 </property>
                                                             </widget>
                                                         </item>
@@ -243,8 +243,8 @@
                                                         </item>
                                                         <item>
                                                             <widget class="QPlainTextEdit" name="register-details-description-input">
-                                                                <property name="enabled">
-                                                                    <bool>false</bool>
+                                                                <property name="readOnly">
+                                                                    <bool>true</bool>
                                                                 </property>
                                                             </widget>
                                                         </item>
