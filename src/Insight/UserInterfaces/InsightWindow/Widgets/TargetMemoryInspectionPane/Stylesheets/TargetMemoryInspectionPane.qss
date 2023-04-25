@@ -124,37 +124,13 @@
     background-color: transparent;
     border: none;
     padding: 0;
-    qproperty-buttonWidth: 20;
-    qproperty-buttonHeight: 18;
+    qproperty-buttonWidth: 24;
+    qproperty-buttonHeight: 22;
 }
 
-#snapshot-manager #snapshot-item-scroll-area {
+#snapshot-manager #tool-bar QToolButton:hover {
+    background-color: #454541;
     border: none;
-}
-
-#snapshot-manager #snapshot-item {
-    border: none;
-    border-bottom: 1px solid #41423f;
-    background-color: transparent;
-}
-
-#snapshot-manager #snapshot-item:hover {
-    border-left: none;
-    background-color: rgba(142, 139, 131, 0.1);
-}
-
-#snapshot-manager #snapshot-item[selected=true] {
-    background-color: #355A80;
-}
-
-#snapshot-manager #snapshot-item #name-label {
-    font-size: 14px
-}
-
-#snapshot-manager #snapshot-item #program-counter-label,
-#snapshot-manager #snapshot-item #created-date-label {
-    font-size: 13px;
-    color: #8a8a8d;
 }
 
 /* Create Snapshot Window */
