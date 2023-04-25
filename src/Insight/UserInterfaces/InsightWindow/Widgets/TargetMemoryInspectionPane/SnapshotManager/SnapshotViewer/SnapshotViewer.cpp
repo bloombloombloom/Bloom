@@ -75,7 +75,7 @@ namespace Bloom::Widgets
         this->detailsContainer = this->container->findChild<QWidget*>("details-container");
 
         this->nameInput = this->detailsContainer->findChild<TextInput*>("name-input");
-        this->descriptionInput = this->detailsContainer->findChild<QPlainTextEdit*>("description-input");
+        this->descriptionInput = this->detailsContainer->findChild<PlainTextEdit*>("description-input");
 
         auto* detailsContainerLayout = this->detailsContainer->findChild<QHBoxLayout*>();
         detailsContainerLayout->setContentsMargins(0, 0, 0, 0);

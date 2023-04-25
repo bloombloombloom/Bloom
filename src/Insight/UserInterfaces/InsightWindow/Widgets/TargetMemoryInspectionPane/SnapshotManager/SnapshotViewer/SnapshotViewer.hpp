@@ -4,10 +4,10 @@
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QHBoxLayout>
-#include <QPlainTextEdit>
 #include <optional>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TextInput.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PlainTextEdit.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PushButton.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.hpp"
@@ -44,7 +44,7 @@ namespace Bloom::Widgets
 
         QWidget* detailsContainer = nullptr;
         TextInput* nameInput = nullptr;
-        QPlainTextEdit* descriptionInput = nullptr;
+        PlainTextEdit* descriptionInput = nullptr;
 
         ListView* memoryRegionListView = nullptr;
         ListScene* memoryRegionListScene = nullptr;
