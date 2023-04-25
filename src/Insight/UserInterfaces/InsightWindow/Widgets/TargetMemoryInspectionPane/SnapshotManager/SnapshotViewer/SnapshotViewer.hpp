@@ -61,8 +61,6 @@ namespace Bloom::Widgets
 
         TaskProgressIndicator* taskProgressIndicator = nullptr;
 
-        PushButton* closeButton = nullptr;
-
         void onHexViewerReady();
         void restoreSelectedBytes(
             const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress,
