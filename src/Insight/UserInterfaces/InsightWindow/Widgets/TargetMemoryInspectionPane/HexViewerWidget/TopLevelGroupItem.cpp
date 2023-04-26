@@ -29,10 +29,8 @@ namespace Bloom::Widgets
         const auto& currentStackPointer = this->hexViewerState.currentStackPointer;
         const auto stackGroupingRequired = currentStackPointer.has_value()
             && this->hexViewerState.settings.groupStackMemory
-            && (
-                static_cast<std::int64_t>(this->hexViewerState.memoryDescriptor.addressRange.endAddress)
-                - static_cast<std::int64_t>(*currentStackPointer + 1)
-            ) > 0;
+            && *currentStackPointer >= this->hexViewerState.memoryDescriptor.addressRange.startAddress
+            && (*currentStackPointer + 1) <= this->hexViewerState.memoryDescriptor.addressRange.endAddress;
 
         for (const auto& focusedRegion : this->focusedMemoryRegions) {
             if (
