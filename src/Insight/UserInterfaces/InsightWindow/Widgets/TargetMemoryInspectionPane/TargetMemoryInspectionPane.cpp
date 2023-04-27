@@ -382,6 +382,17 @@ namespace Bloom::Widgets
             }
         );
 
+        QObject::connect(
+            readMemoryTask.get(),
+            &InsightWorkerTask::finished,
+            this,
+            [this, taskId = readMemoryTask->id] {
+                if (this->activeRefreshTask.has_value() && this->activeRefreshTask->get()->id == taskId) {
+                    this->activeRefreshTask.reset();
+                }
+            }
+        );
+
         // If we're refreshing RAM, the UI should only be updated once we've retrieved the current stack pointer.
         if (this->targetMemoryDescriptor.type != Targets::TargetMemoryType::RAM) {
             QObject::connect(
@@ -421,6 +432,7 @@ namespace Bloom::Widgets
             );
         }
 
+        this->activeRefreshTask = readMemoryTask;
         this->taskProgressIndicator->addTask(readMemoryTask);
         InsightWorker::queueTask(readMemoryTask);
     }

@@ -20,6 +20,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.hpp"
 
 #include "src/Insight/InsightWorker/Tasks/InsightWorkerTask.hpp"
+#include "src/Insight/InsightWorker/Tasks/ReadTargetMemory.hpp"
 
 #include "HexViewerWidget/HexViewerWidget.hpp"
 #include "MemoryRegionManager/MemoryRegionManagerWindow.hpp"
@@ -58,6 +59,7 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
 
         std::optional<Targets::TargetMemoryBuffer> data;
+        std::optional<QSharedPointer<ReadTargetMemory>> activeRefreshTask;
 
         QWidget* container = nullptr;
         QHBoxLayout* subContainerLayout = nullptr;
