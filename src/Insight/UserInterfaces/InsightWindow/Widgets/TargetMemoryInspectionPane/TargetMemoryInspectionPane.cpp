@@ -589,7 +589,6 @@ namespace Bloom::Widgets
                 this->settings.focusedMemoryRegions,
                 this->settings.excludedMemoryRegions,
                 this
-
             );
 
             QObject::connect(
