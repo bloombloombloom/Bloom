@@ -442,13 +442,19 @@ namespace Bloom::Widgets
     }
 
     void TargetMemoryInspectionPane::postActivate() {
-        if (
-            (this->settings.refreshOnActivation || !this->data.has_value())
-            && this->targetState == Targets::TargetState::STOPPED
-        ) {
-            this->refreshMemoryValues([this] {
+        if (this->targetState == Targets::TargetState::STOPPED) {
+            if (
+                !this->activeRefreshTask.has_value()
+                && (this->settings.refreshOnActivation || !this->data.has_value())
+            ) {
+                this->refreshMemoryValues([this] {
+                    this->hexViewerWidget->setDisabled(false);
+                });
+
+            } else if (this->data.has_value()) {
                 this->hexViewerWidget->setDisabled(false);
-            });
+                this->refreshButton->setDisabled(false);
+            }
         }
     }
 
@@ -529,10 +535,6 @@ namespace Bloom::Widgets
                 this->refreshMemoryValues([this] {
                     this->hexViewerWidget->setDisabled(false);
                 });
-
-            } else {
-                this->hexViewerWidget->setDisabled(false);
-                this->refreshButton->setDisabled(false);
             }
         }
 
