@@ -38,6 +38,10 @@ namespace Bloom::Widgets
                 return;
             }
 
+            if (this->hexViewerItem->allocatedGraphicsItem != nullptr) {
+                this->hexViewerItem->allocatedGraphicsItem->setHexViewerItem(nullptr);
+            }
+
             this->hexViewerItem->allocatedGraphicsItem = this;
             this->setPos(this->hexViewerItem->position());
             this->setVisible(true);
