@@ -54,7 +54,7 @@
                 <spacer name="vertical-spacer">
                     <property name="sizeHint">
                         <size>
-                            <height>15</height>
+                            <height>10</height>
                         </size>
                     </property>
                     <property name="sizeType">
