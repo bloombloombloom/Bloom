@@ -90,7 +90,9 @@ namespace Bloom::Widgets
         painter->drawText(createdDateTextRect, Qt::AlignLeft, this->createdDateText);
 
         static constexpr auto borderColor = QColor(0x41, 0x42, 0x3F);
-        painter->setPen(borderColor);
+        static constexpr auto selectedBorderColor = QColor(0x2E, 0x2E, 0x2E);
+
+        painter->setPen(this->selected ? selectedBorderColor : borderColor);
         painter->drawLine(0, this->size.height() - 1, this->size.width(), this->size.height() - 1);
     }
 }
