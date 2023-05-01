@@ -80,6 +80,17 @@ namespace Bloom::Widgets
         this->dataBPrimaryLabel->setText("Current");
         this->dataASecondaryLabel->setText(snapshotA.createdDate.toString("dd/MM/yyyy hh:mm"));
         this->dataBSecondaryLabel->setVisible(false);
+
+        this->restoreBytesAction = new ContextMenuAction("Restore Selection", std::nullopt, this);
+
+        QObject::connect(
+            this->restoreBytesAction,
+            &ContextMenuAction::invoked,
+            this,
+            [this] (const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress) {
+                this->restoreSelectedBytes(selectedByteItemsByAddress, true);
+            }
+        );
     }
 
     void SnapshotDiff::refreshB(
@@ -154,8 +165,6 @@ namespace Bloom::Widgets
         this->syncHexViewerHoverButton = toolBar->findChild<SvgToolButton*>("sync-hover-btn");
         this->syncHexViewerSelectionButton = toolBar->findChild<SvgToolButton*>("sync-selection-btn");
 
-        this->restoreBytesAction = new ContextMenuAction("Restore Selection", std::nullopt, this);
-
         this->dataAContainer = this->container->findChild<QWidget*>("data-a-container");
         this->dataBContainer = this->container->findChild<QWidget*>("data-b-container");
 
@@ -202,6 +211,9 @@ namespace Bloom::Widgets
 
         this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
         this->bottomBarLayout = this->bottomBar->findChild<QHBoxLayout*>();
+
+        this->taskProgressIndicator = new TaskProgressIndicator(this);
+        this->bottomBarLayout->insertWidget(0, this->taskProgressIndicator);
 
         this->setSyncHexViewerSettingsEnabled(this->settings.syncHexViewerSettings);
         this->setSyncHexViewerScrollEnabled(this->settings.syncHexViewerScroll);
@@ -256,7 +268,10 @@ namespace Bloom::Widgets
     void SnapshotDiff::onHexViewerAReady() {
         this->hexViewerWidgetB->setOther(this->hexViewerWidgetA);
 
-//        this->hexViewerWidgetA->addExternalContextMenuAction(this->restoreBytesAction);
+        if (this->restoreBytesAction != nullptr) {
+            this->hexViewerWidgetA->addExternalContextMenuAction(this->restoreBytesAction);
+        }
+
         if (this->memoryDescriptor.type == Targets::TargetMemoryType::RAM) {
             this->hexViewerWidgetA->setStackPointer(this->stackPointerA);
         }
@@ -288,5 +303,115 @@ namespace Bloom::Widgets
     void SnapshotDiff::setSyncHexViewerSelectionEnabled(bool enabled) {
         this->settings.syncHexViewerSelection = enabled;
         this->syncHexViewerSelectionButton->setChecked(this->settings.syncHexViewerSelection);
+    }
+
+    void SnapshotDiff::restoreSelectedBytes(
+        const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress,
+        bool confirmationPromptEnabled
+    ) {
+        auto sortedByteItemsByAddress = std::map<Targets::TargetMemoryAddress, ByteItem*>();
+
+        for (const auto& pair : selectedByteItemsByAddress) {
+            if (pair.second->excluded) {
+                continue;
+            }
+
+            sortedByteItemsByAddress.insert(pair);
+        }
+
+        if (sortedByteItemsByAddress.empty()) {
+            // The user has only selected bytes that are within an excluded region - nothing to do here
+            return;
+        }
+
+        if (confirmationPromptEnabled) {
+            auto* confirmationDialog = new ConfirmationDialog(
+                "Restore selected bytes",
+                "This operation will write " + QString::number(sortedByteItemsByAddress.size())
+                    + " byte(s) to the target's "
+                    + QString(this->memoryDescriptor.type == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
+                    + ".<br/><br/>Are you sure you want to proceed?",
+                "Proceed",
+                std::nullopt,
+                this
+            );
+
+            QObject::connect(
+                confirmationDialog,
+                &ConfirmationDialog::confirmed,
+                this,
+                [this, selectedByteItemsByAddress] {
+                    this->restoreSelectedBytes(selectedByteItemsByAddress, false);
+                }
+            );
+
+            confirmationDialog->show();
+            return;
+        }
+
+        auto writeBlocks = std::vector<WriteTargetMemory::Block>();
+
+        Targets::TargetMemoryAddress blockStartAddress = sortedByteItemsByAddress.begin()->first;
+        Targets::TargetMemoryAddress blockEndAddress = blockStartAddress;
+
+        for (const auto& [address, byteItem] : sortedByteItemsByAddress) {
+            if (address > (blockEndAddress + 1)) {
+                // Commit the block
+                const auto dataBeginOffset = blockStartAddress - this->memoryDescriptor.addressRange.startAddress;
+                const auto dataEndOffset = blockEndAddress - this->memoryDescriptor.addressRange.startAddress + 1;
+
+                writeBlocks.emplace_back(
+                    blockStartAddress,
+                    Targets::TargetMemoryBuffer(
+                        this->hexViewerDataA->begin() + dataBeginOffset,
+                        this->hexViewerDataA->begin() + dataEndOffset
+                    )
+                );
+
+                blockStartAddress = address;
+                blockEndAddress = address;
+                continue;
+            }
+
+            blockEndAddress = address;
+        }
+
+        {
+            const auto dataBeginOffset = blockStartAddress - this->memoryDescriptor.addressRange.startAddress;
+            const auto dataEndOffset = blockEndAddress - this->memoryDescriptor.addressRange.startAddress + 1;
+
+            writeBlocks.emplace_back(
+                blockStartAddress,
+                Targets::TargetMemoryBuffer(
+                    this->hexViewerDataA->begin() + dataBeginOffset,
+                    this->hexViewerDataA->begin() + dataEndOffset
+                )
+            );
+        }
+
+        const auto after = [this, writeBlocks] {
+            auto& hexViewerDataB = this->hexViewerDataB.value();
+
+            for (const auto& writeBlock : writeBlocks) {
+                std::copy(
+                    writeBlock.data.begin(),
+                    writeBlock.data.end(),
+                    hexViewerDataB.begin()
+                        + (writeBlock.startAddress - this->memoryDescriptor.addressRange.startAddress)
+                );
+            }
+
+            this->hexViewerWidgetB->updateValues();
+        };
+
+        const auto writeMemoryTask = QSharedPointer<WriteTargetMemory>(
+            new WriteTargetMemory(this->memoryDescriptor, std::move(writeBlocks)),
+            &QObject::deleteLater
+        );
+
+        QObject::connect(writeMemoryTask.get(), &WriteTargetMemory::targetMemoryWritten, this, after);
+
+        this->taskProgressIndicator->addTask(writeMemoryTask);
+        InsightWorker::queueTask(writeMemoryTask);
     }
 }

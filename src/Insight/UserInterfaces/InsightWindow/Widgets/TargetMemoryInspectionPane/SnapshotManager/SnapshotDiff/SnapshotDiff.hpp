@@ -98,6 +98,8 @@ namespace Bloom::Widgets
         QWidget* bottomBar = nullptr;
         QHBoxLayout* bottomBarLayout = nullptr;
 
+        TaskProgressIndicator* taskProgressIndicator = nullptr;
+
         void init();
 
         void onHexViewerAReady();
@@ -107,5 +109,10 @@ namespace Bloom::Widgets
         void setSyncHexViewerScrollEnabled(bool enabled);
         void setSyncHexViewerHoverEnabled(bool enabled);
         void setSyncHexViewerSelectionEnabled(bool enabled);
+
+        void restoreSelectedBytes(
+            const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress,
+            bool confirmationPromptEnabled
+        );
     };
 }
