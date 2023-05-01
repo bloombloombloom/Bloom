@@ -60,7 +60,7 @@
                                     <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-stack-memory-disabled.svg</string>
                                 </property>
                                 <property name="toolTip">
-                                    <string>Group Stack Memory</string>
+                                    <string>Group stack memory</string>
                                 </property>
                             </widget>
                         </item>
@@ -76,7 +76,7 @@
                                     <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-focused-memory-disabled.svg</string>
                                 </property>
                                 <property name="toolTip">
-                                    <string>Highlight Focused Regions</string>
+                                    <string>Highlight focused regions</string>
                                 </property>
                             </widget>
                         </item>
@@ -92,7 +92,7 @@
                                     <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/highlight-hovered-rows-columns-disabled.svg</string>
                                 </property>
                                 <property name="toolTip">
-                                    <string>Highlight Row And Column On Hover</string>
+                                    <string>Highlight row and column on hover</string>
                                 </property>
                             </widget>
                         </item>
@@ -108,7 +108,7 @@
                                     <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/display-annotations-disabled.svg</string>
                                 </property>
                                 <property name="toolTip">
-                                    <string>Display Annotations</string>
+                                    <string>Display annotations</string>
                                 </property>
                             </widget>
                         </item>
@@ -139,7 +139,7 @@
                                     <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/Images/ascii-view-disabled.svg</string>
                                 </property>
                                 <property name="toolTip">
-                                    <string>Display As ASCII</string>
+                                    <string>Display as ASCII</string>
                                 </property>
                             </widget>
                         </item>

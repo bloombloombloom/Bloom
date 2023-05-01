@@ -54,7 +54,7 @@
     max-width: 1px;
 }
 
-#hex-viewer-container #tool-bar #highlight-stack-memory-btn,
+#hex-viewer-container #tool-bar #group-stack-memory-btn,
 #hex-viewer-container #tool-bar #highlight-focused-memory-btn,
 #hex-viewer-container #tool-bar #highlight-hovered-rows-columns-btn,
 #hex-viewer-container #tool-bar #display-annotations-btn,
@@ -104,7 +104,7 @@
 #hex-viewer-container QScrollBar:vertical {
     background-color: transparent;
     width: 12px;
-    margin: 1px 3px 1px 0px;
+    margin: 1px 3px 1px 0;
 }
 
 #hex-viewer-container #byte-item-address-container-context-menu.QMenu,
