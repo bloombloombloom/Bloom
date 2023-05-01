@@ -66,18 +66,9 @@ namespace Bloom::Widgets
     signals:
         void ready();
         void hoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
-        void selectionChanged(Targets::TargetMemorySize selectionCount);
+        void selectionChanged(const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress);
 
     protected:
-        bool event(QEvent* event) override;
-        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
-        void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
-        void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
-        void mouseReleaseEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
-        void keyPressEvent(QKeyEvent* keyEvent) override;
-        void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-
-    private:
         static constexpr auto GRID_SIZE = 100;
 
         bool enabled = true;
@@ -146,7 +137,15 @@ namespace Bloom::Widgets
             return std::max(this->parent->viewport()->width(), 200) - 2;
         }
 
+        bool event(QEvent* event) override;
+        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
+        void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
+        void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
+        void mouseReleaseEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
+        void keyPressEvent(QKeyEvent* keyEvent) override;
+        void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
         void refreshItemPositionIndices();
+        int getScrollbarValue();
         void onTargetStateChanged(Targets::TargetState newState);
         void onByteItemEnter(ByteItem& byteItem);
         void onByteItemLeave();

@@ -58,11 +58,9 @@ namespace Bloom::Widgets
 
         auto uiLoader = UiLoader(this);
         this->container = uiLoader.load(&widgetUiFile, this);
-        this->container->setStyleSheet(stylesheetFile.readAll());
+        this->setStyleSheet(stylesheetFile.readAll());
         this->container->setFixedSize(this->size());
         this->container->setContentsMargins(0, 0, 0, 0);
-
-        auto* containerLayout = this->container->findChild<QVBoxLayout*>("hex-viewer-layout");
 
         this->toolBar = this->container->findChild<QWidget*>("tool-bar");
         this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
@@ -91,18 +89,6 @@ namespace Bloom::Widgets
         this->selectionCountLabel = this->bottomBar->findChild<Label*>("selection-count-label");
 
         this->loadingHexViewerLabel = this->container->findChild<Label*>("loading-hex-viewer-label");
-
-        this->byteItemGraphicsView = new ItemGraphicsView(
-            this->targetMemoryDescriptor,
-            this->data,
-            this->focusedMemoryRegions,
-            this->excludedMemoryRegions,
-            this->settings,
-            this->container
-        );
-
-        this->byteItemGraphicsView->hide();
-        containerLayout->insertWidget(2, this->byteItemGraphicsView);
 
         this->setHoveredRowAndColumnHighlightingEnabled(this->settings.highlightHoveredRowAndCol);
         this->setFocusedMemoryHighlightingEnabled(this->settings.highlightFocusedMemory);
@@ -188,6 +174,20 @@ namespace Bloom::Widgets
     }
 
     void HexViewerWidget::init() {
+        this->byteItemGraphicsView = new ItemGraphicsView(
+            this->targetMemoryDescriptor,
+            this->data,
+            this->focusedMemoryRegions,
+            this->excludedMemoryRegions,
+            this->settings,
+            this->container
+        );
+
+        this->byteItemGraphicsView->hide();
+
+        auto* containerLayout = this->container->findChild<QVBoxLayout*>("hex-viewer-layout");
+        containerLayout->insertWidget(2, this->byteItemGraphicsView);
+
         QObject::connect(
             this->byteItemGraphicsView,
             &ItemGraphicsView::sceneReady,
@@ -265,6 +265,8 @@ namespace Bloom::Widgets
         if (this->byteItemGraphicsScene != nullptr) {
             this->byteItemGraphicsScene->rebuildItemHierarchy();
         }
+
+        emit this->settingsChanged(this->settings);
     }
 
     void HexViewerWidget::setHoveredRowAndColumnHighlightingEnabled(bool enabled) {
@@ -274,6 +276,8 @@ namespace Bloom::Widgets
         if (this->byteItemGraphicsScene != nullptr) {
             this->byteItemGraphicsScene->update();
         }
+
+        emit this->settingsChanged(this->settings);
     }
 
     void HexViewerWidget::setFocusedMemoryHighlightingEnabled(bool enabled) {
@@ -283,6 +287,8 @@ namespace Bloom::Widgets
         if (this->byteItemGraphicsScene != nullptr) {
             this->byteItemGraphicsScene->update();
         }
+
+        emit this->settingsChanged(this->settings);
     }
 
     void HexViewerWidget::setAnnotationsEnabled(bool enabled) {
@@ -292,6 +298,8 @@ namespace Bloom::Widgets
         if (this->byteItemGraphicsScene != nullptr) {
             this->byteItemGraphicsScene->adjustSize();
         }
+
+        emit this->settingsChanged(this->settings);
     }
 
     void HexViewerWidget::setDisplayAsciiEnabled(bool enabled) {
@@ -301,6 +309,8 @@ namespace Bloom::Widgets
         if (this->byteItemGraphicsScene != nullptr) {
             this->byteItemGraphicsScene->update();
         }
+
+        emit this->settingsChanged(this->settings);
     }
 
     void HexViewerWidget::onGoToAddressInputChanged() {
@@ -344,7 +354,11 @@ namespace Bloom::Widgets
         );
     }
 
-    void HexViewerWidget::onByteSelectionChanged(Targets::TargetMemorySize selectionCount) {
+    void HexViewerWidget::onByteSelectionChanged(
+        const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress
+    ) {
+        const auto selectionCount = selectedByteItemsByAddress.size();
+
         if (selectionCount == 0) {
             this->selectionCountLabel->hide();
             return;

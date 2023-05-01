@@ -26,7 +26,7 @@ namespace Bloom::Widgets
             QWidget* parent
         );
 
-        void initScene();
+        virtual void initScene();
 
         [[nodiscard]] ItemGraphicsScene* getScene() const {
             return this->scene;
@@ -38,11 +38,16 @@ namespace Bloom::Widgets
         void sceneReady();
 
     protected:
+        const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
+        const std::optional<Targets::TargetMemoryBuffer>& data;
+        const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
+        const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
+        HexViewerWidgetSettings& settings;
+
+        ItemGraphicsScene* scene = nullptr;
+
         bool event(QEvent* event) override;
         void resizeEvent(QResizeEvent* event) override;
         void scrollContentsBy(int dx, int dy) override;
-
-    private:
-        ItemGraphicsScene* scene = nullptr;
     };
 }

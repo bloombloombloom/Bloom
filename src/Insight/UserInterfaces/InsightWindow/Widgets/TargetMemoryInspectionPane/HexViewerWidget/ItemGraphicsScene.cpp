@@ -214,9 +214,12 @@ namespace Bloom::Widgets
     }
 
     void ItemGraphicsScene::selectByteItems(const std::set<std::uint32_t>& addresses) {
+        this->selectedByteItemsByAddress.clear();
+
         for (auto& [address, byteItem] : this->topLevelGroup->byteItemsByAddress) {
             if (addresses.contains(address)) {
                 byteItem.selected = true;
+                this->selectedByteItemsByAddress.insert(std::pair(byteItem.startAddress, &byteItem));
 
             } else if (byteItem.selected) {
                 byteItem.selected = false;
@@ -224,6 +227,7 @@ namespace Bloom::Widgets
         }
 
         this->update();
+        emit this->selectionChanged(this->selectedByteItemsByAddress);
     }
 
     void ItemGraphicsScene::rebuildItemHierarchy() {
@@ -311,8 +315,7 @@ namespace Bloom::Widgets
     }
 
     void ItemGraphicsScene::allocateGraphicsItems() {
-        const auto* view = this->views().first();
-        const auto verticalScrollBarValue = view->verticalScrollBar()->value();
+        const auto verticalScrollBarValue = this->getScrollbarValue();
 
         constexpr auto bufferPointSize = 2;
         const auto gridPointIndex = static_cast<decltype(this->gridPoints)::size_type>(std::max(
@@ -472,10 +475,12 @@ namespace Bloom::Widgets
                     this->toggleByteItemSelection(byteItem);
                 }
 
+                emit this->selectionChanged(this->selectedByteItemsByAddress);
                 return;
             }
 
             this->toggleByteItemSelection(*byteItem);
+            emit this->selectionChanged(this->selectedByteItemsByAddress);
             break;
         }
     }
@@ -529,7 +534,7 @@ namespace Bloom::Widgets
                     this->selectByteItem(*byteItem);
                 }
             }
-            emit this->selectionChanged(static_cast<Targets::TargetMemorySize>(this->selectedByteItemsByAddress.size()));
+            emit this->selectionChanged(this->selectedByteItemsByAddress);
         }
 
         for (const auto& item : hoveredItems) {
@@ -577,6 +582,7 @@ namespace Bloom::Widgets
     void ItemGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event) {
         if (event->scenePos().x() <= ByteAddressContainer::WIDTH) {
             auto* menu = new QMenu(this->parent);
+            menu->setLayoutDirection(Qt::LayoutDirection::LeftToRight);
             menu->setObjectName("byte-item-address-container-context-menu");
 
             auto* addressTypeMenu = new QMenu("Address Type", menu);
@@ -591,6 +597,7 @@ namespace Bloom::Widgets
         const auto itemsSelected = !this->selectedByteItemsByAddress.empty();
 
         auto* menu = new QMenu(this->parent);
+        menu->setLayoutDirection(Qt::LayoutDirection::LeftToRight);
         menu->addAction(this->selectAllByteItemsAction);
         menu->addAction(this->deselectByteItemsAction);
         menu->addSeparator();
@@ -672,6 +679,10 @@ namespace Bloom::Widgets
         }
     }
 
+    int ItemGraphicsScene::getScrollbarValue() {
+        return this->views().first()->verticalScrollBar()->value();
+    }
+
     void ItemGraphicsScene::onTargetStateChanged(Targets::TargetState newState) {
         this->targetState = newState;
     }
@@ -693,7 +704,7 @@ namespace Bloom::Widgets
             this->hoverRectX->setPos(0, byteItemScenePos.y());
             this->hoverRectY->setPos(
                 byteItemScenePos.x(),
-                std::max(this->views().first()->verticalScrollBar()->value() - ByteItem::HEIGHT, 0)
+                std::max(this->getScrollbarValue() - ByteItem::HEIGHT, 0)
             );
 
             this->hoverRectX->setVisible(true);
@@ -747,12 +758,10 @@ namespace Bloom::Widgets
     void ItemGraphicsScene::toggleByteItemSelection(ByteItem& byteItem) {
         if (byteItem.selected) {
             this->deselectByteItem(byteItem);
-            emit this->selectionChanged(static_cast<Targets::TargetMemorySize>(this->selectedByteItemsByAddress.size()));
             return;
         }
 
         this->selectByteItem(byteItem);
-        emit this->selectionChanged(static_cast<Targets::TargetMemorySize>(this->selectedByteItemsByAddress.size()));
     }
 
     void ItemGraphicsScene::clearByteItemSelection() {
@@ -762,7 +771,7 @@ namespace Bloom::Widgets
 
         this->selectedByteItemsByAddress.clear();
         this->update();
-        emit this->selectionChanged(0);
+        emit this->selectionChanged(this->selectedByteItemsByAddress);
     }
 
     void ItemGraphicsScene::selectAllByteItems() {
@@ -772,7 +781,7 @@ namespace Bloom::Widgets
         }
 
         this->update();
-        emit this->selectionChanged(static_cast<Targets::TargetMemorySize>(this->selectedByteItemsByAddress.size()));
+        emit this->selectionChanged(this->selectedByteItemsByAddress);
     }
 
     void ItemGraphicsScene::setAddressType(AddressType type) {

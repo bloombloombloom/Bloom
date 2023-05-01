@@ -37,7 +37,7 @@ namespace Bloom::Widgets
             QWidget* parent
         );
 
-        void init();
+        virtual void init();
         void updateValues();
         void refreshRegions();
         void setStackPointer(Targets::TargetStackPointer stackPointer);
@@ -45,12 +45,9 @@ namespace Bloom::Widgets
 
     signals:
         void ready();
+        void settingsChanged(const HexViewerWidgetSettings& settings);
 
     protected:
-        void resizeEvent(QResizeEvent* event) override;
-        void showEvent(QShowEvent* event) override;
-
-    private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
         const std::optional<Targets::TargetMemoryBuffer>& data;
 
@@ -79,6 +76,8 @@ namespace Bloom::Widgets
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
+        void resizeEvent(QResizeEvent* event) override;
+        void showEvent(QShowEvent* event) override;
         void onTargetStateChanged(Targets::TargetState newState);
         void setStackMemoryGroupingEnabled(bool enabled);
         void setHoveredRowAndColumnHighlightingEnabled(bool enabled);
@@ -87,6 +86,8 @@ namespace Bloom::Widgets
         void setDisplayAsciiEnabled(bool enabled);
         void onGoToAddressInputChanged();
         void onHoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
-        void onByteSelectionChanged(Targets::TargetMemorySize selectionCount);
+        void onByteSelectionChanged(
+            const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress
+        );
     };
 }
