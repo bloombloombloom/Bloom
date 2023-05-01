@@ -596,6 +596,11 @@ namespace Bloom::Widgets
         menu->addAction(this->deleteSnapshotAction);
         menu->addSeparator();
         menu->addAction(this->openSnapshotCurrentDiffAction);
+
+        if (this->selectedSnapshotItems.size() == 2) {
+            menu->addAction(this->openSnapshotDiffAction);
+        }
+
         menu->addSeparator();
         menu->addAction(this->restoreSnapshotAction);
 
@@ -608,10 +613,6 @@ namespace Bloom::Widgets
         this->restoreSnapshotAction->setEnabled(
             this->selectedSnapshotItems.size() == 1 && this->targetState == Targets::TargetState::STOPPED
         );
-
-        if (this->selectedSnapshotItems.size() == 2) {
-            menu->addAction(this->openSnapshotDiffAction);
-        }
 
         menu->exec(sourcePosition);
     }

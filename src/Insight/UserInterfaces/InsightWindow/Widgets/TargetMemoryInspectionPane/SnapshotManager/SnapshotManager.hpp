@@ -33,7 +33,6 @@ namespace Bloom::Widgets
 
     public:
         CreateSnapshotWindow* createSnapshotWindow = nullptr;
-        MemorySnapshotItem* selectedItem = nullptr;
 
         explicit SnapshotManager(
             const Targets::TargetMemoryDescriptor& memoryDescriptor,
