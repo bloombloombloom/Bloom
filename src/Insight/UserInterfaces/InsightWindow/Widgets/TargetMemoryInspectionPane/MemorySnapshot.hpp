@@ -4,7 +4,6 @@
 #include <QString>
 #include <utility>
 #include <vector>
-#include <QUuid>
 #include <QJsonObject>
 
 #include "src/Targets/TargetMemory.hpp"
@@ -18,7 +17,7 @@ namespace Bloom
     struct MemorySnapshot
     {
     public:
-        QString id = QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces);
+        QString id;
         QString name;
         QString description;
         Targets::TargetMemoryType memoryType;

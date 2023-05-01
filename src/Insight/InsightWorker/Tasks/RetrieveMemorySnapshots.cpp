@@ -42,6 +42,15 @@ namespace Bloom
         for (const auto& snapshotFileEntry : snapshotFileEntries) {
             auto snapshotFile = QFile(snapshotFileEntry.absoluteFilePath());
 
+            if (snapshots.size() >= MAX_SNAPSHOTS) {
+                Logger::warning(
+                    "The total number of " + EnumToStringMappings::targetMemoryTypes.at(memoryType).toUpper().toStdString()
+                        + " snapshots exceeds the hard limit of " + std::to_string(MAX_SNAPSHOTS)
+                        + ". Only the most recent " + std::to_string(MAX_SNAPSHOTS) + " snapshots will be loaded."
+                );
+                break;
+            }
+
             try {
                 if (!snapshotFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
                     throw Exceptions::Exception("Failed to open snapshot file");
@@ -57,15 +66,6 @@ namespace Bloom
             }
 
             snapshotFile.close();
-
-            if (snapshots.size() >= MAX_SNAPSHOTS) {
-                Logger::warning(
-                    "The total number of " + EnumToStringMappings::targetMemoryTypes.at(memoryType).toUpper().toStdString()
-                        + " snapshots exceeds the hard limit of " + std::to_string(MAX_SNAPSHOTS)
-                        + ". Only the most recent " + std::to_string(MAX_SNAPSHOTS) + " snapshots will be loaded."
-                );
-                break;
-            }
         }
 
         return snapshots;

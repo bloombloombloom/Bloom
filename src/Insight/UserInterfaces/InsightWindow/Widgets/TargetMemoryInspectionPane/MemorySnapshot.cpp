@@ -1,5 +1,6 @@
 #include "MemorySnapshot.hpp"
 
+#include <QUuid>
 #include <QByteArray>
 #include <QJsonArray>
 
@@ -18,7 +19,8 @@ namespace Bloom
         const std::vector<FocusedMemoryRegion>& focusedRegions,
         const std::vector<ExcludedMemoryRegion>& excludedRegions
     )
-        : name(name)
+        : id(QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces))
+        , name(name)
         , description(description)
         , memoryType(memoryType)
         , data(data)
