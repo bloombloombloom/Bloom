@@ -126,6 +126,7 @@ namespace Bloom::Widgets
             this->staleData,
             this->settings.focusedMemoryRegions,
             this->settings.excludedMemoryRegions,
+            this->stackPointer,
             this->settings.snapshotManagerState,
             this->rightPanel
         );
@@ -350,6 +351,7 @@ namespace Bloom::Widgets
                         &ReadStackPointer::stackPointerRead,
                         this,
                         [this] (Targets::TargetStackPointer stackPointer) {
+                            this->stackPointer = stackPointer;
                             this->hexViewerWidget->setStackPointer(stackPointer);
                         }
                     );

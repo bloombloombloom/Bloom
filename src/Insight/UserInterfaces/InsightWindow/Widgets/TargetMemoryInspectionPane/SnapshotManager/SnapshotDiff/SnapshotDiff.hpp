@@ -35,6 +35,16 @@ namespace Bloom::Widgets
             QWidget* parent = nullptr
         );
 
+        SnapshotDiff(
+            MemorySnapshot& snapshotA,
+            Targets::TargetMemoryBuffer dataB,
+            std::vector<FocusedMemoryRegion> focusedRegionsB,
+            std::vector<ExcludedMemoryRegion> excludedRegionsB,
+            Targets::TargetStackPointer stackPointerB,
+            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            QWidget* parent = nullptr
+        );
+
     protected:
         void showEvent(QShowEvent* event) override;
         void resizeEvent(QResizeEvent* event) override;
@@ -65,14 +75,14 @@ namespace Bloom::Widgets
         std::optional<Targets::TargetMemoryBuffer> hexViewerDataA;
         std::vector<FocusedMemoryRegion> focusedRegionsA;
         std::vector<ExcludedMemoryRegion> excludedRegionsA;
-        std::optional<Targets::TargetStackPointer> stackPointerA;
+        Targets::TargetStackPointer stackPointerA;
         DifferentialHexViewerWidget* hexViewerWidgetA = nullptr;
         HexViewerWidgetSettings hexViewerWidgetSettingsA = HexViewerWidgetSettings();
 
         std::optional<Targets::TargetMemoryBuffer> hexViewerDataB;
         std::vector<FocusedMemoryRegion> focusedRegionsB;
         std::vector<ExcludedMemoryRegion> excludedRegionsB;
-        std::optional<Targets::TargetStackPointer> stackPointerB;
+        Targets::TargetStackPointer stackPointerB;
         DifferentialHexViewerWidget* hexViewerWidgetB = nullptr;
         HexViewerWidgetSettings hexViewerWidgetSettingsB = HexViewerWidgetSettings();
 

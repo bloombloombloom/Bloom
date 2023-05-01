@@ -59,6 +59,7 @@ namespace Bloom::Widgets
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
 
         std::optional<Targets::TargetMemoryBuffer> data;
+        std::optional<Targets::TargetStackPointer> stackPointer;
         std::optional<QSharedPointer<ReadTargetMemory>> activeRefreshTask;
 
         QWidget* container = nullptr;

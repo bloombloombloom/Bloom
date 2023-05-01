@@ -50,6 +50,38 @@ namespace Bloom::Widgets
         this->dataBSecondaryLabel->setText(snapshotB.createdDate.toString("dd/MM/yyyy hh:mm"));
     }
 
+    SnapshotDiff::SnapshotDiff(
+        MemorySnapshot& snapshotA,
+        Targets::TargetMemoryBuffer dataB,
+        std::vector<FocusedMemoryRegion> focusedRegionsB,
+        std::vector<ExcludedMemoryRegion> excludedRegionsB,
+        Targets::TargetStackPointer stackPointerB,
+        const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        QWidget* parent
+    )
+        : QWidget(parent)
+        , memoryDescriptor(memoryDescriptor)
+        , hexViewerDataA(snapshotA.data)
+        , focusedRegionsA(snapshotA.focusedRegions)
+        , excludedRegionsA(snapshotA.excludedRegions)
+        , stackPointerA(snapshotA.stackPointer)
+        , hexViewerDataB(dataB)
+        , focusedRegionsB(focusedRegionsB)
+        , excludedRegionsB(excludedRegionsB)
+        , stackPointerB(stackPointerB)
+    {
+        this->init();
+
+        this->setWindowTitle(
+            "Comparing snapshot \"" + snapshotA.name + "\" with current memory"
+        );
+
+        this->dataAPrimaryLabel->setText(snapshotA.name);
+        this->dataBPrimaryLabel->setText("Current");
+        this->dataASecondaryLabel->setText(snapshotA.createdDate.toString("dd/MM/yyyy hh:mm"));
+        this->dataBSecondaryLabel->setVisible(false);
+    }
+
     void SnapshotDiff::showEvent(QShowEvent* event) {
         QWidget::showEvent(event);
     }
@@ -206,16 +238,16 @@ namespace Bloom::Widgets
         this->hexViewerWidgetB->setOther(this->hexViewerWidgetA);
 
 //        this->hexViewerWidgetA->addExternalContextMenuAction(this->restoreBytesAction);
-        if (this->stackPointerA.has_value()) {
-            this->hexViewerWidgetA->setStackPointer(*(this->stackPointerA));
+        if (this->memoryDescriptor.type == Targets::TargetMemoryType::RAM) {
+            this->hexViewerWidgetA->setStackPointer(this->stackPointerA);
         }
     }
 
     void SnapshotDiff::onHexViewerBReady() {
         this->hexViewerWidgetA->setOther(this->hexViewerWidgetB);
 
-        if (this->stackPointerB.has_value()) {
-            this->hexViewerWidgetB->setStackPointer(*(this->stackPointerB));
+        if (this->memoryDescriptor.type == Targets::TargetMemoryType::RAM) {
+            this->hexViewerWidgetB->setStackPointer(this->stackPointerB);
         }
     }
 

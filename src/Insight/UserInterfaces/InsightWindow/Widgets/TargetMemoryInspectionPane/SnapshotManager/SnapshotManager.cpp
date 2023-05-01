@@ -27,6 +27,7 @@ namespace Bloom::Widgets
         const bool& staleData,
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
+        const std::optional<Targets::TargetStackPointer>& stackPointer,
         PaneState& state,
         PanelWidget* parent
     )
@@ -36,6 +37,7 @@ namespace Bloom::Widgets
         , staleData(staleData)
         , focusedMemoryRegions(focusedMemoryRegions)
         , excludedMemoryRegions(excludedMemoryRegions)
+        , stackPointer(stackPointer)
     {
         this->setObjectName("snapshot-manager");
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -155,6 +157,19 @@ namespace Bloom::Widgets
                     first.createdDate < second.createdDate ? first.id : second.id,
                     first.createdDate < second.createdDate ? second.id : first.id
                 );
+            }
+        );
+
+        QObject::connect(
+            this->openSnapshotCurrentDiffAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                if (this->selectedSnapshotItems.size() != 1) {
+                    return;
+                }
+
+                this->openSnapshotCurrentDiff(this->selectedSnapshotItems.front()->memorySnapshot.id);
             }
         );
 
@@ -329,6 +344,40 @@ namespace Bloom::Widgets
                 new SnapshotDiff(
                     snapshotItA.value(),
                     snapshotItB.value(),
+                    this->memoryDescriptor,
+                    this
+                )
+            );
+        }
+
+        auto* snapshotDiff = snapshotDiffIt.value();
+        snapshotDiff->show();
+        snapshotDiff->activateWindow();
+    }
+
+    void SnapshotManager::openSnapshotCurrentDiff(const QString& snapshotIdA) {
+        if (!this->data.has_value()) {
+            return;
+        }
+
+        const auto diffKey = snapshotIdA;
+        auto snapshotDiffIt = this->snapshotDiffs.find(diffKey);
+
+        if (snapshotDiffIt == this->snapshotDiffs.end()) {
+            const auto& snapshotItA = this->snapshotsById.find(snapshotIdA);
+
+            if (snapshotItA == this->snapshotsById.end()) {
+                return;
+            }
+
+            snapshotDiffIt = this->snapshotDiffs.insert(
+                diffKey,
+                new SnapshotDiff(
+                    snapshotItA.value(),
+                    *(this->data),
+                    this->focusedMemoryRegions,
+                    this->excludedMemoryRegions,
+                    this->stackPointer.value_or(0),
                     this->memoryDescriptor,
                     this
                 )
@@ -529,10 +578,16 @@ namespace Bloom::Widgets
         menu->addAction(this->openSnapshotViewerAction);
         menu->addAction(this->deleteSnapshotAction);
         menu->addSeparator();
+        menu->addAction(this->openSnapshotCurrentDiffAction);
+        menu->addSeparator();
         menu->addAction(this->restoreSnapshotAction);
 
         this->openSnapshotViewerAction->setEnabled(this->selectedSnapshotItems.size() == 1);
         this->deleteSnapshotAction->setEnabled(this->selectedSnapshotItems.size() == 1);
+        this->openSnapshotCurrentDiffAction->setEnabled(
+            this->selectedSnapshotItems.size() == 1
+            && this->data.has_value()
+        );
         this->restoreSnapshotAction->setEnabled(
             this->selectedSnapshotItems.size() == 1 && this->targetState == Targets::TargetState::STOPPED
         );

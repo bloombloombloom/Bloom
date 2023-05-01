@@ -41,6 +41,7 @@ namespace Bloom::Widgets
             const bool& staleData,
             const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
+            const std::optional<Targets::TargetStackPointer>& stackPointer,
             PaneState& state,
             PanelWidget* parent = nullptr
         );
@@ -60,6 +61,7 @@ namespace Bloom::Widgets
 
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
+        const std::optional<Targets::TargetStackPointer>& stackPointer;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
@@ -81,6 +83,7 @@ namespace Bloom::Widgets
 
         QAction* openSnapshotViewerAction = new QAction("Open", this);
         QAction* openSnapshotDiffAction = new QAction("Compare Selection", this);
+        QAction* openSnapshotCurrentDiffAction = new QAction("Compare with Current", this);
         QAction* deleteSnapshotAction = new QAction("Delete", this);
         QAction* restoreSnapshotAction = new QAction("Restore", this);
 
@@ -95,6 +98,7 @@ namespace Bloom::Widgets
         void onSnapshotItemSelectionChanged(const std::list<ListItem*>& selectedItems);
         void openSnapshotViewer(const QString& snapshotId);
         void openSnapshotDiff(const QString& snapshotIdA, const QString& snapshotIdB);
+        void openSnapshotCurrentDiff(const QString& snapshotIdA);
         void deleteSnapshot(const QString& snapshotId, bool confirmationPromptEnabled);
         void restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled);
         void onSnapshotItemDoubleClick(MemorySnapshotItem* item);
