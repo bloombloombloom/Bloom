@@ -1,0 +1,94 @@
+#pragma once
+
+#include <QWidget>
+#include <QShowEvent>
+#include <QResizeEvent>
+#include <QHBoxLayout>
+#include <QPlainTextEdit>
+#include <optional>
+
+#include "SnapshotDiffSettings.hpp"
+
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PushButton.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.hpp"
+
+#include "src/Targets/TargetMemory.hpp"
+
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
+#include "DifferentialHexViewerWidget/DifferentialHexViewerWidget.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ContextMenuAction.hpp"
+
+namespace Bloom::Widgets
+{
+    class SnapshotDiff: public QWidget
+    {
+        Q_OBJECT
+
+    public:
+        SnapshotDiff(
+            MemorySnapshot& snapshotA,
+            MemorySnapshot& snapshotB,
+            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            QWidget* parent = nullptr
+        );
+
+    protected:
+        void showEvent(QShowEvent* event) override;
+        void resizeEvent(QResizeEvent* event) override;
+
+    private:
+        SnapshotDiffSettings settings;
+
+        const Targets::TargetMemoryDescriptor& memoryDescriptor;
+
+        QWidget* container = nullptr;
+
+        SvgToolButton* syncHexViewerSettingsButton = nullptr;
+        SvgToolButton* syncHexViewerScrollButton = nullptr;
+        SvgToolButton* syncHexViewerHoverButton = nullptr;
+        SvgToolButton* syncHexViewerSelectionButton = nullptr;
+
+        QWidget* dataAContainer = nullptr;
+        QWidget* dataBContainer = nullptr;
+
+        Label* dataAPrimaryLabel = nullptr;
+        Label* dataBPrimaryLabel = nullptr;
+
+        Label* dataASecondaryLabel = nullptr;
+        Label* dataBSecondaryLabel = nullptr;
+
+        DifferentialHexViewerSharedState differentialHexViewerSharedState;
+
+        std::optional<Targets::TargetMemoryBuffer> hexViewerDataA;
+        std::vector<FocusedMemoryRegion> focusedRegionsA;
+        std::vector<ExcludedMemoryRegion> excludedRegionsA;
+        std::optional<Targets::TargetStackPointer> stackPointerA;
+        DifferentialHexViewerWidget* hexViewerWidgetA = nullptr;
+        HexViewerWidgetSettings hexViewerWidgetSettingsA = HexViewerWidgetSettings();
+
+        std::optional<Targets::TargetMemoryBuffer> hexViewerDataB;
+        std::vector<FocusedMemoryRegion> focusedRegionsB;
+        std::vector<ExcludedMemoryRegion> excludedRegionsB;
+        std::optional<Targets::TargetStackPointer> stackPointerB;
+        DifferentialHexViewerWidget* hexViewerWidgetB = nullptr;
+        HexViewerWidgetSettings hexViewerWidgetSettingsB = HexViewerWidgetSettings();
+
+        ContextMenuAction* restoreBytesAction = nullptr;
+
+        QWidget* bottomBar = nullptr;
+        QHBoxLayout* bottomBarLayout = nullptr;
+
+        void init();
+
+        void onHexViewerAReady();
+        void onHexViewerBReady();
+
+        void setSyncHexViewerSettingsEnabled(bool enabled);
+        void setSyncHexViewerScrollEnabled(bool enabled);
+        void setSyncHexViewerHoverEnabled(bool enabled);
+        void setSyncHexViewerSelectionEnabled(bool enabled);
+    };
+}

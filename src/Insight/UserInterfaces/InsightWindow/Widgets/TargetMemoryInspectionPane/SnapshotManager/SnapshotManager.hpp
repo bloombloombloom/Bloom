@@ -23,6 +23,7 @@
 #include "./CreateSnapshotWindow/CreateSnapshotWindow.hpp"
 #include "MemorySnapshotItem.hpp"
 #include "SnapshotViewer/SnapshotViewer.hpp"
+#include "SnapshotDiff/SnapshotDiff.hpp"
 
 namespace Bloom::Widgets
 {
@@ -65,6 +66,7 @@ namespace Bloom::Widgets
         QMap<QString, MemorySnapshot> snapshotsById;
         QMap<QString, MemorySnapshotItem*> snapshotItemsById;
         QMap<QString, SnapshotViewer*> snapshotViewersById;
+        QMap<QString, SnapshotDiff*> snapshotDiffs;
 
         QWidget* container = nullptr;
         QWidget* toolBar = nullptr;
@@ -75,9 +77,10 @@ namespace Bloom::Widgets
         ListView* snapshotListView = nullptr;
         ListScene* snapshotListScene = nullptr;
 
-        MemorySnapshotItem* contextMenuSnapshotItem = nullptr;
+        std::list<MemorySnapshotItem*> selectedSnapshotItems;
 
         QAction* openSnapshotViewerAction = new QAction("Open", this);
+        QAction* openSnapshotDiffAction = new QAction("Compare Selection", this);
         QAction* deleteSnapshotAction = new QAction("Delete", this);
         QAction* restoreSnapshotAction = new QAction("Restore", this);
 
@@ -89,8 +92,9 @@ namespace Bloom::Widgets
         );
 
         void addSnapshot(MemorySnapshot&& snapshotTmp);
-        void onSnapshotItemSelected(MemorySnapshotItem* item);
+        void onSnapshotItemSelectionChanged(const std::list<ListItem*>& selectedItems);
         void openSnapshotViewer(const QString& snapshotId);
+        void openSnapshotDiff(const QString& snapshotIdA, const QString& snapshotIdB);
         void deleteSnapshot(const QString& snapshotId, bool confirmationPromptEnabled);
         void restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled);
         void onSnapshotItemDoubleClick(MemorySnapshotItem* item);

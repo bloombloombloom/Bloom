@@ -102,6 +102,13 @@ namespace Bloom::Widgets
 
         QObject::connect(
             this->snapshotListScene,
+            &ListScene::selectionChanged,
+            this,
+            &SnapshotManager::onSnapshotItemSelectionChanged
+        );
+
+        QObject::connect(
+            this->snapshotListScene,
             &ListScene::itemDoubleClicked,
             this,
             [this] (ListItem* item) {
@@ -125,9 +132,29 @@ namespace Bloom::Widgets
             &QAction::triggered,
             this,
             [this] {
-                if (this->contextMenuSnapshotItem != nullptr) {
-                    this->openSnapshotViewer(this->contextMenuSnapshotItem->memorySnapshot.id);
+                if (this->selectedSnapshotItems.size() != 1) {
+                    return;
                 }
+
+                this->openSnapshotViewer(this->selectedSnapshotItems.front()->memorySnapshot.id);
+            }
+        );
+
+        QObject::connect(
+            this->openSnapshotDiffAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                if (this->selectedSnapshotItems.size() != 2) {
+                    return;
+                }
+
+                const auto& first = this->selectedSnapshotItems.front()->memorySnapshot;
+                const auto& second = this->selectedSnapshotItems.back()->memorySnapshot;
+                this->openSnapshotDiff(
+                    first.createdDate < second.createdDate ? first.id : second.id,
+                    first.createdDate < second.createdDate ? second.id : first.id
+                );
             }
         );
 
@@ -136,9 +163,11 @@ namespace Bloom::Widgets
             &QAction::triggered,
             this,
             [this] {
-                if (this->contextMenuSnapshotItem != nullptr) {
-                    this->deleteSnapshot(this->contextMenuSnapshotItem->memorySnapshot.id, true);
+                if (this->selectedSnapshotItems.size() != 1) {
+                    return;
                 }
+
+                this->deleteSnapshot(this->selectedSnapshotItems.front()->memorySnapshot.id, true);
             }
         );
 
@@ -147,9 +176,11 @@ namespace Bloom::Widgets
             &QAction::triggered,
             this,
             [this] {
-                if (this->contextMenuSnapshotItem != nullptr) {
-                    this->restoreSnapshot(this->contextMenuSnapshotItem->memorySnapshot.id, true);
+                if (this->selectedSnapshotItems.size() != 1) {
+                    return;
                 }
+
+                this->restoreSnapshot(this->selectedSnapshotItems.front()->memorySnapshot.id, true);
             }
         );
 
@@ -247,12 +278,17 @@ namespace Bloom::Widgets
         this->snapshotListScene->addListItem(snapshotItem);
     }
 
-    void SnapshotManager::onSnapshotItemSelected(MemorySnapshotItem* item) {
-        if (this->selectedItem != nullptr && this->selectedItem != item) {
-            this->selectedItem->setSelected(false);
-        }
+    void SnapshotManager::onSnapshotItemSelectionChanged(const std::list<ListItem*>& selectedItems) {
+        this->selectedSnapshotItems.clear();
 
-        this->selectedItem = item;
+        std::transform(
+            selectedItems.begin(),
+            selectedItems.end(),
+            std::inserter(this->selectedSnapshotItems, this->selectedSnapshotItems.end()),
+            [] (ListItem* item) {
+                return dynamic_cast<MemorySnapshotItem*>(item);
+            }
+        );
     }
 
     void SnapshotManager::openSnapshotViewer(const QString& snapshotId) {
@@ -274,6 +310,34 @@ namespace Bloom::Widgets
         auto* snapshotViewer = snapshotViewerIt.value();
         snapshotViewer->show();
         snapshotViewer->activateWindow();
+    }
+
+    void SnapshotManager::openSnapshotDiff(const QString& snapshotIdA, const QString& snapshotIdB) {
+        const auto diffKey = snapshotIdA + snapshotIdB;
+        auto snapshotDiffIt = this->snapshotDiffs.find(diffKey);
+
+        if (snapshotDiffIt == this->snapshotDiffs.end()) {
+            const auto& snapshotItA = this->snapshotsById.find(snapshotIdA);
+            const auto& snapshotItB = this->snapshotsById.find(snapshotIdB);
+
+            if (snapshotItA == this->snapshotsById.end() || snapshotItB == this->snapshotsById.end()) {
+                return;
+            }
+
+            snapshotDiffIt = this->snapshotDiffs.insert(
+                diffKey,
+                new SnapshotDiff(
+                    snapshotItA.value(),
+                    snapshotItB.value(),
+                    this->memoryDescriptor,
+                    this
+                )
+            );
+        }
+
+        auto* snapshotDiff = snapshotDiffIt.value();
+        snapshotDiff->show();
+        snapshotDiff->activateWindow();
     }
 
     void SnapshotManager::deleteSnapshot(const QString& snapshotId, bool confirmationPromptEnabled) {
@@ -460,17 +524,22 @@ namespace Bloom::Widgets
             return;
         }
 
-        this->contextMenuSnapshotItem = snapshotItem;
-
         auto* menu = new QMenu(this);
+
         menu->addAction(this->openSnapshotViewerAction);
         menu->addAction(this->deleteSnapshotAction);
-
         menu->addSeparator();
-
         menu->addAction(this->restoreSnapshotAction);
 
-        this->restoreSnapshotAction->setEnabled(this->targetState == Targets::TargetState::STOPPED);
+        this->openSnapshotViewerAction->setEnabled(this->selectedSnapshotItems.size() == 1);
+        this->deleteSnapshotAction->setEnabled(this->selectedSnapshotItems.size() == 1);
+        this->restoreSnapshotAction->setEnabled(
+            this->selectedSnapshotItems.size() == 1 && this->targetState == Targets::TargetState::STOPPED
+        );
+
+        if (this->selectedSnapshotItems.size() == 2) {
+            menu->addAction(this->openSnapshotDiffAction);
+        }
 
         menu->exec(sourcePosition);
     }

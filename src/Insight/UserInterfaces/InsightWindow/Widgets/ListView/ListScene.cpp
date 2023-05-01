@@ -87,6 +87,22 @@ namespace Bloom::Widgets
     void ListScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) {
         const auto button = mouseEvent->button();
 
+        const auto mousePosition = mouseEvent->buttonDownScenePos(button);
+
+        const auto items = this->items(mousePosition);
+        if (items.empty()) {
+            return;
+        }
+
+        auto* clickedListItem = dynamic_cast<ListItem*>(items.first());
+        if (clickedListItem == nullptr) {
+            return;
+        }
+
+        if (clickedListItem->selected && button == Qt::MouseButton::RightButton) {
+            return;
+        }
+
         const auto selectedItemCount = this->selectedItems.size();
         if (selectedItemCount > 0) {
             const auto ctrlModifierEnabled = (mouseEvent->modifiers() & Qt::ControlModifier) != 0;
@@ -107,18 +123,6 @@ namespace Bloom::Widgets
                     this->selectedItems.erase(itemIt++);
                 }
             }
-        }
-
-        const auto mousePosition = mouseEvent->buttonDownScenePos(button);
-
-        const auto items = this->items(mousePosition);
-        if (items.empty()) {
-            return;
-        }
-
-        auto* clickedListItem = dynamic_cast<ListItem*>(items.first());
-        if (clickedListItem == nullptr) {
-            return;
         }
 
         if (this->selectionLimit > 0) {
@@ -146,6 +150,14 @@ namespace Bloom::Widgets
         auto* clickedListItem = dynamic_cast<ListItem*>(items.first());
         if (clickedListItem == nullptr) {
             return;
+        }
+
+        if (!clickedListItem->selected) {
+            /*
+             * Sometimes, QT won't trigger a press event when the user double clicks. This usually happens when the
+             * first click closes a context menu.
+             */
+            this->mousePressEvent(mouseEvent);
         }
 
         emit this->itemDoubleClicked(clickedListItem);

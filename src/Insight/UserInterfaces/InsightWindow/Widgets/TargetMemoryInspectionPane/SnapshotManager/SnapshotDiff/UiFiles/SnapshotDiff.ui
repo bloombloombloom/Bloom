@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <widget class="QWidget" name="container">
+        <layout class="QVBoxLayout">
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <property name="margin">
+                <number>0</number>
+            </property>
+            <item>
+                <widget class="QWidget" name="tool-bar">
+                    <property name="minimumHeight">
+                        <number>32</number>
+                    </property>
+                    <property name="maximumHeight">
+                        <number>32</number>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>6</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="Label" name="sync-label">
+                                <property name="text">
+                                    <string>Synchronisation:</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>3</width>
+                                    </size>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Fixed</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="sync-settings-btn">
+                                <property name="checkable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/Images/sync-hex-viewer-settings.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Sync settings</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="sync-scroll-btn">
+                                <property name="checkable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/Images/sync-hex-viewer-scroll.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Sync scrolling</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="sync-hover-btn">
+                                <property name="checkable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/Images/sync-hex-viewer-hover.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Sync hover</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="SvgToolButton" name="sync-selection-btn">
+                                <property name="checkable">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="svgFilePath">
+                                    <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/Images/sync-hex-viewer-selection.svg</string>
+                                </property>
+                                <property name="toolTip">
+                                    <string>Sync selection</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
+                            <spacer name="horizontal-spacer">
+                                <property name="orientation">
+                                    <enum>Qt::Horizontal</enum>
+                                </property>
+                            </spacer>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QWidget" name="sub-container">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                    </property>
+                    <layout class="QHBoxLayout" name="sub-layout">
+                        <property name="spacing">
+                            <number>0</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <widget class="QWidget" name="data-a-container">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                                </property>
+                                <layout class="QVBoxLayout">
+                                    <property name="spacing">
+                                        <number>0</number>
+                                    </property>
+                                    <property name="margin">
+                                        <number>0</number>
+                                    </property>
+                                    <item>
+                                        <widget class="QWidget" name="data-details-container">
+                                            <property name="minimumHeight">
+                                                <number>28</number>
+                                            </property>
+                                            <property name="maximumHeight">
+                                                <number>28</number>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                                            </property>
+                                            <layout class="QHBoxLayout">
+                                                <property name="spacing">
+                                                    <number>3</number>
+                                                </property>
+                                                <property name="margin">
+                                                    <number>0</number>
+                                                </property>
+                                                <item>
+                                                    <spacer name="horizontal-spacer">
+                                                        <property name="sizeHint">
+                                                            <size>
+                                                                <width>6</width>
+                                                            </size>
+                                                        </property>
+                                                        <property name="sizeType">
+                                                            <enum>QSizePolicy::Fixed</enum>
+                                                        </property>
+                                                    </spacer>
+                                                </item>
+                                                <item>
+                                                    <widget class="Label" name="primary-label"/>
+                                                </item>
+                                                <item>
+                                                    <spacer name="horizontal-spacer">
+                                                        <property name="orientation">
+                                                            <enum>Qt::Horizontal</enum>
+                                                        </property>
+                                                    </spacer>
+                                                </item>
+                                                <item>
+                                                    <widget class="Label" name="secondary-label"/>
+                                                </item>
+                                                <item>
+                                                    <spacer name="horizontal-spacer">
+                                                        <property name="sizeHint">
+                                                            <size>
+                                                                <width>6</width>
+                                                            </size>
+                                                        </property>
+                                                        <property name="sizeType">
+                                                            <enum>QSizePolicy::Fixed</enum>
+                                                        </property>
+                                                    </spacer>
+                                                </item>
+                                            </layout>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QWidget" name="data-b-container">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
+                                </property>
+                                <layout class="QVBoxLayout">
+                                    <property name="spacing">
+                                        <number>0</number>
+                                    </property>
+                                    <property name="margin">
+                                        <number>0</number>
+                                    </property>
+                                    <item>
+                                        <widget class="QWidget" name="data-details-container">
+                                            <property name="minimumHeight">
+                                                <number>28</number>
+                                            </property>
+                                            <property name="maximumHeight">
+                                                <number>28</number>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                                            </property>
+                                            <layout class="QHBoxLayout">
+                                                <property name="spacing">
+                                                    <number>3</number>
+                                                </property>
+                                                <property name="margin">
+                                                    <number>0</number>
+                                                </property>
+                                                <item>
+                                                    <spacer name="horizontal-spacer">
+                                                        <property name="sizeHint">
+                                                            <size>
+                                                                <width>6</width>
+                                                            </size>
+                                                        </property>
+                                                        <property name="sizeType">
+                                                            <enum>QSizePolicy::Fixed</enum>
+                                                        </property>
+                                                    </spacer>
+                                                </item>
+                                                <item>
+                                                    <widget class="Label" name="primary-label"/>
+                                                </item>
+                                                <item>
+                                                    <spacer name="horizontal-spacer">
+                                                        <property name="orientation">
+                                                            <enum>Qt::Horizontal</enum>
+                                                        </property>
+                                                    </spacer>
+                                                </item>
+                                                <item>
+                                                    <widget class="Label" name="secondary-label"/>
+                                                </item>
+                                                <item>
+                                                    <spacer name="horizontal-spacer">
+                                                        <property name="sizeHint">
+                                                            <size>
+                                                                <width>6</width>
+                                                            </size>
+                                                        </property>
+                                                        <property name="sizeType">
+                                                            <enum>QSizePolicy::Fixed</enum>
+                                                        </property>
+                                                    </spacer>
+                                                </item>
+                                            </layout>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QWidget" name="bottom-bar">
+                    <property name="minimumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="maximumHeight">
+                        <number>28</number>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed"/>
+                    </property>
+                    <layout class="QHBoxLayout">
+                        <property name="spacing">
+                            <number>3</number>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                    </layout>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+</ui>

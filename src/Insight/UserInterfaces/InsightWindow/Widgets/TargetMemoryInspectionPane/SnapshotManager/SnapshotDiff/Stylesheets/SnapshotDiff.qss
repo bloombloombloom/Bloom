@@ -1,0 +1,72 @@
+#snapshot-diff,
+#snapshot-diff #container {
+    background-color: #373835;
+    border: none;
+}
+
+#snapshot-diff #tool-bar {
+    border-bottom: 1px solid #41423f;
+    border-left: none;
+}
+
+#snapshot-diff #tool-bar #sync-label {
+    color: #8a8a8d;
+    font-size: 12px;
+}
+
+#snapshot-diff #tool-bar QToolButton {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    qproperty-buttonWidth: 33;
+    qproperty-buttonHeight: 23;
+}
+
+#snapshot-diff #tool-bar QToolButton:hover {
+    background-color: #41413b;
+    border: none;
+    padding: 0;
+}
+
+#snapshot-diff #tool-bar QToolButton:checked {
+    background-color: #43433d;
+    border: none;
+}
+
+#snapshot-diff #tool-bar #separator {
+    background-color: transparent;
+    border-right: 1px solid #41423f;
+    padding: 0;
+    min-width: 1px;
+    max-width: 1px;
+}
+
+#snapshot-diff #data-details-container {
+    border-bottom: 1px solid #41423f;
+    color: #8a8a8d;
+}
+
+#snapshot-diff #data-details-container #primary-label,
+#snapshot-diff #data-details-container #secondary-label {
+    color: #8a8a8d;
+}
+
+#snapshot-diff #snapshot-a-container,
+#snapshot-diff #snapshot-a-container #data-details-container {
+    border-right: 1px solid #41423f;
+}
+
+#snapshot-diff #differential-hex-viewer-widget-a #hex-viewer-container QScrollBar {
+    margin: 0;
+    padding: 1px 3px 0 3px;
+    width: 15px;
+    border-right: 1px solid #41423f;
+}
+
+#snapshot-diff #differential-hex-viewer-widget-a #hex-viewer-container #graphics-view {
+    border-right: 1px solid #41423f;
+}
+
+#snapshot-diff #bottom-bar {
+    border-top: 1px solid #41423f;
+}
