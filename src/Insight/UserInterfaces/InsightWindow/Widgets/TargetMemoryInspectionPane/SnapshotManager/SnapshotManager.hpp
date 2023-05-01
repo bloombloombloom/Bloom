@@ -46,6 +46,8 @@ namespace Bloom::Widgets
             PanelWidget* parent = nullptr
         );
 
+        void onCurrentDataChanged();
+
     signals:
         void insightWorkerTaskCreated(const QSharedPointer<InsightWorkerTask>& task);
         void snapshotRestored(const QString& snapshotId);
@@ -69,6 +71,7 @@ namespace Bloom::Widgets
         QMap<QString, MemorySnapshotItem*> snapshotItemsById;
         QMap<QString, SnapshotViewer*> snapshotViewersById;
         QMap<QString, SnapshotDiff*> snapshotDiffs;
+        QMap<QString, SnapshotDiff*> snapshotCurrentDiffsBySnapshotAId;
 
         QWidget* container = nullptr;
         QWidget* toolBar = nullptr;

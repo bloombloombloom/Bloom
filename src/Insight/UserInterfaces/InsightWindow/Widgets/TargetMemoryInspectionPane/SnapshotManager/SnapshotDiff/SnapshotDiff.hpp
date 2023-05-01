@@ -45,6 +45,13 @@ namespace Bloom::Widgets
             QWidget* parent = nullptr
         );
 
+        void refreshB(
+            Targets::TargetMemoryBuffer data,
+            std::vector<FocusedMemoryRegion> focusedRegions,
+            std::vector<ExcludedMemoryRegion> excludedRegions,
+            Targets::TargetStackPointer stackPointer
+        );
+
     protected:
         void showEvent(QShowEvent* event) override;
         void resizeEvent(QResizeEvent* event) override;

@@ -82,6 +82,25 @@ namespace Bloom::Widgets
         this->dataBSecondaryLabel->setVisible(false);
     }
 
+    void SnapshotDiff::refreshB(
+        Targets::TargetMemoryBuffer data,
+        std::vector<FocusedMemoryRegion> focusedRegions,
+        std::vector<ExcludedMemoryRegion> excludedRegions,
+        Targets::TargetStackPointer stackPointer
+    ) {
+        this->hexViewerDataB = data;
+        this->focusedRegionsB = focusedRegions;
+        this->excludedRegionsB = excludedRegions;
+        this->stackPointerB = stackPointer;
+
+        if (this->memoryDescriptor.type == Targets::TargetMemoryType::RAM) {
+            this->hexViewerWidgetB->setStackPointer(this->stackPointerB);
+        }
+
+        this->hexViewerWidgetB->refreshRegions();
+        this->hexViewerWidgetB->updateValues();
+    }
+
     void SnapshotDiff::showEvent(QShowEvent* event) {
         QWidget::showEvent(event);
     }

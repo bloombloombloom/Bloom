@@ -239,6 +239,24 @@ namespace Bloom::Widgets
         this->show();
     }
 
+    void SnapshotManager::onCurrentDataChanged() {
+        this->createSnapshotWindow->refreshForm();
+
+        if (!this->data.has_value()) {
+            return;
+        }
+
+        // Refresh the data in all snapshot diff windows where current data is being used
+        for (auto& snapshotCurrentDiff : this->snapshotCurrentDiffsBySnapshotAId) {
+            snapshotCurrentDiff->refreshB(
+                *(this->data),
+                this->focusedMemoryRegions,
+                this->excludedMemoryRegions,
+                this->stackPointer.value_or(0)
+            );
+        }
+    }
+
     void SnapshotManager::resizeEvent(QResizeEvent* event) {
         const auto size = this->size();
         this->container->setFixedSize(size.width(), size.height());
@@ -360,18 +378,17 @@ namespace Bloom::Widgets
             return;
         }
 
-        const auto diffKey = snapshotIdA;
-        auto snapshotDiffIt = this->snapshotDiffs.find(diffKey);
+        auto snapshotDiffIt = this->snapshotCurrentDiffsBySnapshotAId.find(snapshotIdA);
 
-        if (snapshotDiffIt == this->snapshotDiffs.end()) {
+        if (snapshotDiffIt == this->snapshotCurrentDiffsBySnapshotAId.end()) {
             const auto& snapshotItA = this->snapshotsById.find(snapshotIdA);
 
             if (snapshotItA == this->snapshotsById.end()) {
                 return;
             }
 
-            snapshotDiffIt = this->snapshotDiffs.insert(
-                diffKey,
+            snapshotDiffIt = this->snapshotCurrentDiffsBySnapshotAId.insert(
+                snapshotIdA,
                 new SnapshotDiff(
                     snapshotItA.value(),
                     *(this->data),

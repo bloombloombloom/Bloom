@@ -361,6 +361,8 @@ namespace Bloom::Widgets
                         &InsightWorkerTask::finished,
                         this,
                         [this] {
+                            this->snapshotManager->onCurrentDataChanged();
+
                             this->refreshButton->stopSpin();
 
                             if (this->targetState == Targets::TargetState::STOPPED) {
@@ -380,6 +382,9 @@ namespace Bloom::Widgets
 
                     this->taskProgressIndicator->addTask(readStackPointerTask);
                     InsightWorker::queueTask(readStackPointerTask);
+
+                } else {
+                    this->snapshotManager->onCurrentDataChanged();
                 }
             }
         );
@@ -580,8 +585,6 @@ namespace Bloom::Widgets
         this->data = data;
         this->hexViewerWidget->updateValues();
         this->setStaleData(false);
-
-        this->snapshotManager->createSnapshotWindow->refreshForm();
     }
 
     void TargetMemoryInspectionPane::openMemoryRegionManagerWindow() {
