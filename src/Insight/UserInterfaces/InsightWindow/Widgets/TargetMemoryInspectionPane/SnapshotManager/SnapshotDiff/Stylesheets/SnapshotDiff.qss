@@ -51,8 +51,8 @@
     color: #8a8a8d;
 }
 
-#snapshot-diff #snapshot-a-container,
-#snapshot-diff #snapshot-a-container #data-details-container {
+#snapshot-diff #data-a-container,
+#snapshot-diff #data-a-container #data-details-container {
     border-right: 1px solid #41423f;
 }
 
