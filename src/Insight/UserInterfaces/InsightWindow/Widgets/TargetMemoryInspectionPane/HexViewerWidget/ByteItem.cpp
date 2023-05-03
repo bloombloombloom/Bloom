@@ -48,6 +48,14 @@ namespace Bloom::Widgets
                 return;
             }
 
+            if (this->changed) {
+                painter->drawPixmap(
+                    boundingRect,
+                    ByteItem::changedMemoryAsciiPixmapsByValue[value]
+                );
+                return;
+            }
+
             if (this->stackMemory && hexViewerState->settings.groupStackMemory) {
                 painter->drawPixmap(
                     boundingRect,
@@ -80,6 +88,14 @@ namespace Bloom::Widgets
             painter->drawPixmap(
                 boundingRect,
                 ByteItem::selectedPixmapsByValue[value]
+            );
+            return;
+        }
+
+        if (this->changed) {
+            painter->drawPixmap(
+                boundingRect,
+                ByteItem::changedMemoryPixmapsByValue[value]
             );
             return;
         }
@@ -127,6 +143,8 @@ namespace Bloom::Widgets
         static constexpr auto groupedBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
         static constexpr auto stackMemoryBackgroundColor = QColor(0x44, 0x44, 0x41, 200);
         static constexpr auto stackMemoryBarColor = QColor(0x67, 0x57, 0x20, 255);
+        static constexpr auto changedMemoryBackgroundColor = QColor(0x5C, 0x49, 0x5D, 200);
+        static constexpr auto changedMemoryFadedBackgroundColor = QColor(0x5C, 0x49, 0x5D, 125);
 
         static const auto hoveredStackMemoryBackgroundColor = QColor(
             stackMemoryBackgroundColor.red(),
@@ -140,6 +158,7 @@ namespace Bloom::Widgets
         static constexpr auto standardFontColor = QColor(0xAF, 0xB1, 0xB3);
         static constexpr auto fadedFontColor = QColor(0xAF, 0xB1, 0xB3, 100);
         static constexpr auto asciiFontColor = QColor(0xA7, 0x77, 0x26);
+        static constexpr auto changedMemoryAsciiFontColor = QColor(0xB7, 0x7F, 0x21);
 
         const auto byteItemRect = QRect(0, 0, ByteItem::WIDTH, ByteItem::HEIGHT);
         const auto byteItemSize = byteItemRect.size();
@@ -165,6 +184,12 @@ namespace Bloom::Widgets
             painter.setPen(Qt::PenStyle::NoPen);
             painter.drawRect(0, byteItemSize.height() - 3, byteItemSize.width(), 3);
         }
+
+        auto changedMemoryTemplatePixmap = QPixmap(byteItemSize);
+        changedMemoryTemplatePixmap.fill(changedMemoryBackgroundColor);
+
+        auto changedMemoryFadedTemplatePixmap = QPixmap(byteItemSize);
+        changedMemoryFadedTemplatePixmap.fill(changedMemoryFadedBackgroundColor);
 
         auto hoveredStackMemoryTemplatePixmap = QPixmap(byteItemSize);
         hoveredStackMemoryTemplatePixmap.fill(hoveredStackMemoryBackgroundColor);
@@ -221,6 +246,16 @@ namespace Bloom::Widgets
             }
 
             {
+                auto changedMemoryPixmap = changedMemoryTemplatePixmap;
+                auto painter = QPainter(&changedMemoryPixmap);
+                painter.setFont(font);
+                painter.setPen(standardFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
+
+                ByteItem::changedMemoryPixmapsByValue.emplace_back(std::move(changedMemoryPixmap));
+            }
+
+            {
                 auto hoveredPrimaryPixmap = hoveredPrimaryTemplatePixmap;
                 auto painter = QPainter(&hoveredPrimaryPixmap);
                 painter.setFont(font);
@@ -268,6 +303,19 @@ namespace Bloom::Widgets
                 painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
 
                 ByteItem::stackMemoryAsciiPixmapsByValue.emplace_back(std::move(stackMemoryAsciiPixmap));
+            }
+
+            {
+                auto changedMemoryAsciiPixmap = asciiValue.has_value()
+                    ? changedMemoryTemplatePixmap
+                    : changedMemoryFadedTemplatePixmap;
+
+                auto painter = QPainter(&changedMemoryAsciiPixmap);
+                painter.setFont(font);
+                painter.setPen(asciiValue.has_value() ? changedMemoryAsciiFontColor : fadedFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
+
+                ByteItem::changedMemoryAsciiPixmapsByValue.emplace_back(std::move(changedMemoryAsciiPixmap));
             }
 
             {
