@@ -554,6 +554,10 @@ namespace Bloom::Widgets
                 this->refreshMemoryValues([this] {
                     this->hexViewerWidget->setDisabled(false);
                 });
+
+            } else if (this->data.has_value()) {
+                this->refreshButton->setDisabled(false);
+                this->hexViewerWidget->setDisabled(false);
             }
         }
 
