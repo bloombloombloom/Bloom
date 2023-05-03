@@ -93,12 +93,14 @@ namespace Bloom
         Widgets::PanelWidget* bottomPanel = nullptr;
         Widgets::TargetMemoryInspectionPane* ramInspectionPane = nullptr;
         Widgets::TargetMemoryInspectionPane* eepromInspectionPane = nullptr;
+        Widgets::TargetMemoryInspectionPane* flashInspectionPane = nullptr;
         std::map<
             Targets::TargetMemoryType,
             Widgets::TargetMemoryInspectionPaneSettings
         > memoryInspectionPaneSettingsByMemoryType;
         QToolButton* ramInspectionButton = nullptr;
         QToolButton* eepromInspectionButton = nullptr;
+        QToolButton* flashInspectionButton = nullptr;
 
         QWidget* footer = nullptr;
         Widgets::Label* targetStatusLabel = nullptr;
@@ -137,9 +139,11 @@ namespace Bloom
         void toggleTargetRegistersPane();
         void toggleRamInspectionPane();
         void toggleEepromInspectionPane();
+        void toggleFlashInspectionPane();
         void onRegistersPaneStateChanged();
         void onRamInspectionPaneStateChanged();
         void onEepromInspectionPaneStateChanged();
+        void onFlashInspectionPaneStateChanged();
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();
     };

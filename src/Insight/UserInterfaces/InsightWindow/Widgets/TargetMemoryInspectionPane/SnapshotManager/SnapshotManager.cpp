@@ -14,6 +14,7 @@
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 
 #include "src/Services/PathService.hpp"
+#include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -495,8 +496,8 @@ namespace Bloom::Widgets
             auto* confirmationDialog = new ConfirmationDialog(
                 "Restore snapshot",
                 "This operation will overwrite the entire address range of the target's "
-                    + QString(this->memoryDescriptor.type == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
-                        + " with the contents of the selected snapshot.<br/><br/>Are you sure you want to proceed?",
+                    + EnumToStringMappings::targetMemoryTypes.at(this->memoryDescriptor.type).toUpper()
+                    + " with the contents of the selected snapshot.<br/><br/>Are you sure you want to proceed?",
                 "Proceed",
                 std::nullopt,
                 this
@@ -611,7 +612,9 @@ namespace Bloom::Widgets
             && this->data.has_value()
         );
         this->restoreSnapshotAction->setEnabled(
-            this->selectedSnapshotItems.size() == 1 && this->targetState == Targets::TargetState::STOPPED
+            this->memoryDescriptor.access.writeableDuringDebugSession
+            && this->selectedSnapshotItems.size() == 1
+            && this->targetState == Targets::TargetState::STOPPED
         );
 
         menu->exec(sourcePosition);

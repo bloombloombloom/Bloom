@@ -8,6 +8,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
 
 #include "src/Services/PathService.hpp"
+#include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::Widgets
@@ -28,8 +29,7 @@ namespace Bloom::Widgets
         this->setWindowFlag(Qt::Window);
         this->setObjectName("memory-region-manager-window");
         this->setWindowTitle(
-            "Memory Regions - "
-                + QString(this->memoryDescriptor.type == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
+            "Memory Regions - " + EnumToStringMappings::targetMemoryTypes.at(this->memoryDescriptor.type).toUpper()
         );
 
         auto windowUiFile = QFile(

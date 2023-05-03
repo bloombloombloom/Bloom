@@ -9,6 +9,7 @@
 #include "src/Insight/InsightSignals.hpp"
 
 #include "src/Services/PathService.hpp"
+#include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::Widgets
@@ -28,7 +29,7 @@ namespace Bloom::Widgets
         this->setWindowFlag(Qt::Window);
         this->setObjectName("create-snapshot-window");
         this->setWindowTitle(
-            "New Snapshot - " + QString(memoryType == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
+            "New Snapshot - " + EnumToStringMappings::targetMemoryTypes.at(memoryType).toUpper()
         );
 
         auto windowUiFile = QFile(

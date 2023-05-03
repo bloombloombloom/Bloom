@@ -61,19 +61,39 @@ namespace Bloom::Targets
         }
     };
 
+    struct TargetMemoryAccess
+    {
+        bool readable = false;
+        bool writeable = false;
+        bool writeableDuringDebugSession = false;
+
+        TargetMemoryAccess(
+            bool readable,
+            bool writeable,
+            bool writeableDuringDebugSession
+        )
+            : readable(readable)
+            , writeable(writeable)
+            , writeableDuringDebugSession(writeableDuringDebugSession)
+        {}
+    };
+
     struct TargetMemoryDescriptor
     {
         TargetMemoryType type;
         TargetMemoryAddressRange addressRange;
+        TargetMemoryAccess access;
         std::optional<TargetMemorySize> pageSize;
 
         TargetMemoryDescriptor(
             TargetMemoryType type,
             TargetMemoryAddressRange addressRange,
+            TargetMemoryAccess access,
             std::optional<TargetMemorySize> pageSize = std::nullopt
         )
             : type(type)
             , addressRange(addressRange)
+            , access(access)
             , pageSize(pageSize)
         {};
 

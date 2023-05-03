@@ -17,6 +17,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ConfirmationDialog.hpp"
 
 #include "src/Services/PathService.hpp"
+#include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 #include "src/Insight/InsightSignals.hpp"
@@ -123,7 +124,13 @@ namespace Bloom::Widgets
             memoryRegionsLayout->insertWidget(0, this->memoryRegionListView);
         }
 
-        this->restoreBytesAction = new ContextMenuAction("Restore Selection", std::nullopt, this);
+        this->restoreBytesAction = new ContextMenuAction(
+            "Restore Selection",
+            [this] (const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>&) {
+                return this->memoryDescriptor.access.writeableDuringDebugSession;
+            },
+            this
+        );
 
         this->hexViewerWidget = new HexViewerWidget(
             this->memoryDescriptor,
@@ -214,7 +221,7 @@ namespace Bloom::Widgets
                 "Restore selected bytes",
                 "This operation will write " + QString::number(sortedByteItemsByAddress.size())
                     + " byte(s) to the target's "
-                    + QString(this->memoryDescriptor.type == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
+                    + EnumToStringMappings::targetMemoryTypes.at(this->memoryDescriptor.type).toUpper()
                     + ".<br/><br/>Are you sure you want to proceed?",
                 "Proceed",
                 std::nullopt,

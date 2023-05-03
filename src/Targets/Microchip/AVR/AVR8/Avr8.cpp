@@ -723,7 +723,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 TargetMemoryAddressRange(
                     ramStartAddress,
                     ramStartAddress + this->targetParameters->ramSize.value() - 1
-                )
+                ),
+                TargetMemoryAccess(true, true, true)
             )
         ));
 
@@ -735,6 +736,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                     flashStartAddress,
                     flashStartAddress + this->targetParameters->flashSize.value() - 1
                 ),
+                TargetMemoryAccess(true, true, false),
                 this->targetParameters->flashPageSize
             )
         ));
@@ -749,7 +751,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                     TargetMemoryAddressRange(
                         eepromStartAddress,
                         eepromStartAddress + this->targetParameters->eepromSize.value() - 1
-                    )
+                    ),
+                    TargetMemoryAccess(true, true, true)
                 )
             ));
         }

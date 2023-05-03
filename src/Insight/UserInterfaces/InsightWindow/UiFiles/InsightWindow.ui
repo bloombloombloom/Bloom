@@ -353,6 +353,57 @@
                                             </widget>
                                         </item>
                                         <item>
+                                            <widget class="QToolButton" name="flash-inspection-btn">
+                                                <property name="toolTip">
+                                                    <string>Inspect FLASH</string>
+                                                </property>
+                                                <property name="checkable">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="disabled">
+                                                    <bool>false</bool>
+                                                </property>
+                                                <layout class="QHBoxLayout">
+                                                    <property name="spacing">
+                                                        <number>0</number>
+                                                    </property>
+                                                    <property name="margin">
+                                                        <number>0</number>
+                                                    </property>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="SvgWidget" name="flash-inspection-btn-icon">
+                                                            <property name="containerHeight">
+                                                                <number>22</number>
+                                                            </property>
+                                                            <property name="containerWidth">
+                                                                <number>26</number>
+                                                            </property>
+                                                            <property name="svgFilePath">
+                                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon.svg</string>
+                                                            </property>
+                                                            <property name="disabledSvgFilePath">
+                                                                <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Images/memory-inspection-icon-disabled.svg</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <widget class="Label" name="flash-inspection-btn-label">
+                                                            <property name="text">
+                                                                <string>FLASH</string>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item alignment="Qt::AlignLeft">
+                                                        <spacer name="horizontal-spacer">
+                                                            <property name="orientation">
+                                                                <enum>Qt::Horizontal</enum>
+                                                            </property>
+                                                        </spacer>
+                                                    </item>
+                                                </layout>
+                                            </widget>
+                                        </item>
+                                        <item>
                                             <spacer name="horizontal-spacer">
                                                 <property name="orientation">
                                                     <enum>Qt::Horizontal</enum>

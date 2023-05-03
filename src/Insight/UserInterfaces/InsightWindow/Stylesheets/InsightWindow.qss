@@ -211,7 +211,8 @@ QScrollBar::sub-line:vertical {
 }
 
 #bottom-menu-bar #ram-inspection-btn,
-#bottom-menu-bar #eeprom-inspection-btn {
+#bottom-menu-bar #eeprom-inspection-btn,
+#bottom-menu-bar #flash-inspection-btn {
     position: relative;
     border: none;
     min-height: 22px;
@@ -225,14 +226,20 @@ QScrollBar::sub-line:vertical {
     min-width: 99px;
 }
 
+#bottom-menu-bar #flash-inspection-btn {
+    min-width: 85px;
+}
+
 #bottom-menu-bar #ram-inspection-btn #ram-inspection-btn-icon,
-#bottom-menu-bar #eeprom-inspection-btn #eeprom-inspection-btn-icon {
+#bottom-menu-bar #eeprom-inspection-btn #eeprom-inspection-btn-icon,
+#bottom-menu-bar #flash-inspection-btn #flash-inspection-btn-icon {
     margin-left: 6px;
     margin-top: 1px;
 }
 
 #bottom-menu-bar #ram-inspection-btn #ram-inspection-btn-label,
-#bottom-menu-bar #eeprom-inspection-btn #eeprom-inspection-btn-label {
+#bottom-menu-bar #eeprom-inspection-btn #eeprom-inspection-btn-label,
+#bottom-menu-bar #flash-inspection-btn #flash-inspection-btn-label {
     color: #999a9d;
     margin-left: 5px;
 }

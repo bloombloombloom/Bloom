@@ -6,6 +6,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
+#include "src/Helpers/EnumToStringMappings.hpp"
 
 namespace Bloom
 {
@@ -17,7 +18,7 @@ namespace Bloom
         RetrieveMemorySnapshots(Targets::TargetMemoryType memoryType);
 
         QString brief() const override {
-            return "Loading saved " + QString(this->memoryType == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM")
+            return "Loading saved " + EnumToStringMappings::targetMemoryTypes.at(this->memoryType).toUpper()
                 + " memory snapshots";
         }
 

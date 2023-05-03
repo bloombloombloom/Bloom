@@ -64,6 +64,12 @@ namespace Bloom
             );
         }
 
+        if (jsonObject.contains("flashInspectionPaneState")) {
+            this->flashInspectionPaneState = this->paneStateFromJson(
+                jsonObject.find("flashInspectionPaneState")->toObject()
+            );
+        }
+
         if (jsonObject.contains("memoryInspectionPaneSettings")) {
             const auto settingsMappingObj = jsonObject.find("memoryInspectionPaneSettings")->toObject();
 
@@ -141,6 +147,13 @@ namespace Bloom
             insightObj.insert(
                 "eepromInspectionPaneState",
                 this->paneStateToJson(this->eepromInspectionPaneState.value())
+            );
+        }
+
+        if (this->flashInspectionPaneState.has_value()) {
+            insightObj.insert(
+                "flashInspectionPaneState",
+                this->paneStateToJson(this->flashInspectionPaneState.value())
             );
         }
 

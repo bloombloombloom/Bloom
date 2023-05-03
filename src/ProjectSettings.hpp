@@ -25,6 +25,7 @@ namespace Bloom
         std::optional<Widgets::PaneState> registersPaneState;
         std::optional<Widgets::PaneState> ramInspectionPaneState;
         std::optional<Widgets::PaneState> eepromInspectionPaneState;
+        std::optional<Widgets::PaneState> flashInspectionPaneState;
 
         std::map<
             Targets::TargetMemoryType,
@@ -40,6 +41,7 @@ namespace Bloom
         static const inline BiMap<Targets::TargetMemoryType, QString> memoryTypesByName = {
             {Targets::TargetMemoryType::RAM, "ram"},
             {Targets::TargetMemoryType::EEPROM, "eeprom"},
+            {Targets::TargetMemoryType::FLASH, "flash"},
         };
 
         static const inline BiMap<AddressType, QString> addressTypesByName = {

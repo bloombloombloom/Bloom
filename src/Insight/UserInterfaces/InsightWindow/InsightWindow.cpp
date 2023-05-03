@@ -152,6 +152,7 @@ namespace Bloom
 
         this->ramInspectionButton = this->container->findChild<QToolButton*>("ram-inspection-btn");
         this->eepromInspectionButton = this->container->findChild<QToolButton*>("eeprom-inspection-btn");
+        this->flashInspectionButton = this->container->findChild<QToolButton*>("flash-inspection-btn");
 
         this->footer = this->windowContainer->findChild<QWidget*>("footer");
         this->targetStatusLabel = this->footer->findChild<Label*>("target-state");
@@ -246,6 +247,12 @@ namespace Bloom
             &QToolButton::clicked,
             this,
             &InsightWindow::toggleEepromInspectionPane
+        );
+        QObject::connect(
+            this->flashInspectionButton,
+            &QToolButton::clicked,
+            this,
+            &InsightWindow::toggleFlashInspectionPane
         );
 
         // InsightSignal connections
@@ -609,9 +616,9 @@ namespace Bloom
         // Target memory inspection panes
         auto* bottomPanelLayout = this->bottomPanel->layout();
 
-        // We only support inspection of RAM and EEPROM, for now.
         const auto ramDescriptorIt = this->targetDescriptor.memoryDescriptorsByType.find(TargetMemoryType::RAM);
         const auto eepromDescriptorIt = this->targetDescriptor.memoryDescriptorsByType.find(TargetMemoryType::EEPROM);
+        const auto flashDescriptorIt = this->targetDescriptor.memoryDescriptorsByType.find(TargetMemoryType::FLASH);
 
         if (ramDescriptorIt != this->targetDescriptor.memoryDescriptorsByType.end()) {
             if (!this->insightProjectSettings.ramInspectionPaneState.has_value()) {
@@ -693,6 +700,47 @@ namespace Bloom
 
             this->eepromInspectionButton->setDisabled(false);
             this->onEepromInspectionPaneStateChanged();
+        }
+
+        if (flashDescriptorIt != this->targetDescriptor.memoryDescriptorsByType.end()) {
+            if (!this->insightProjectSettings.flashInspectionPaneState.has_value()) {
+                this->insightProjectSettings.flashInspectionPaneState = PaneState(false, true, std::nullopt);
+            }
+
+            if (!memoryInspectionPaneSettingsByMemoryType.contains(TargetMemoryType::FLASH)) {
+                memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::FLASH] = TargetMemoryInspectionPaneSettings();
+            }
+
+            this->flashInspectionPane = new TargetMemoryInspectionPane(
+                flashDescriptorIt->second,
+                memoryInspectionPaneSettingsByMemoryType[TargetMemoryType::FLASH],
+                *(this->insightProjectSettings.flashInspectionPaneState),
+                this->bottomPanel
+            );
+
+            bottomPanelLayout->addWidget(this->flashInspectionPane);
+
+            QObject::connect(
+                this->flashInspectionPane,
+                &PaneWidget::paneActivated,
+                this,
+                &InsightWindow::onFlashInspectionPaneStateChanged
+            );
+            QObject::connect(
+                this->flashInspectionPane,
+                &PaneWidget::paneDeactivated,
+                this,
+                &InsightWindow::onFlashInspectionPaneStateChanged
+            );
+            QObject::connect(
+                this->flashInspectionPane,
+                &PaneWidget::paneAttached,
+                this,
+                &InsightWindow::onFlashInspectionPaneStateChanged
+            );
+
+            this->flashInspectionButton->setDisabled(false);
+            this->onFlashInspectionPaneStateChanged();
         }
     }
 
@@ -1001,19 +1049,28 @@ namespace Bloom
             }
 
             this->ramInspectionPane->deactivate();
+            return;
+        }
 
-        } else {
+        if (this->ramInspectionPane->state.attached) {
             if (
-                this->ramInspectionPane->state.attached
-                && this->eepromInspectionPane != nullptr
+                this->eepromInspectionPane != nullptr
                 && this->eepromInspectionPane->state.activated
                 && this->eepromInspectionPane->state.attached
             ) {
                 this->eepromInspectionPane->deactivate();
             }
 
-            this->ramInspectionPane->activate();
+            if (
+                this->flashInspectionPane != nullptr
+                && this->flashInspectionPane->state.activated
+                && this->flashInspectionPane->state.attached
+            ) {
+                this->flashInspectionPane->deactivate();
+            }
         }
+
+        this->ramInspectionPane->activate();
     }
 
     void InsightWindow::toggleEepromInspectionPane() {
@@ -1026,19 +1083,62 @@ namespace Bloom
             }
 
             this->eepromInspectionPane->deactivate();
+            return;
+        }
 
-        } else {
+        if (this->eepromInspectionPane->state.attached) {
             if (
-                this->eepromInspectionPane->state.attached
-                && this->ramInspectionPane != nullptr
+                this->ramInspectionPane != nullptr
                 && this->ramInspectionPane->state.activated
                 && this->ramInspectionPane->state.attached
             ) {
                 this->ramInspectionPane->deactivate();
             }
 
-            this->eepromInspectionPane->activate();
+            if (
+                this->flashInspectionPane != nullptr
+                && this->flashInspectionPane->state.activated
+                && this->flashInspectionPane->state.attached
+            ) {
+                this->flashInspectionPane->deactivate();
+            }
         }
+
+        this->eepromInspectionPane->activate();
+    }
+
+    void InsightWindow::toggleFlashInspectionPane() {
+        if (this->flashInspectionPane->state.activated) {
+            if (!this->flashInspectionPane->state.attached) {
+                this->flashInspectionPane->activateWindow();
+                this->flashInspectionButton->setChecked(true);
+
+                return;
+            }
+
+            this->flashInspectionPane->deactivate();
+            return;
+        }
+
+        if (this->flashInspectionPane->state.attached) {
+            if (
+                this->ramInspectionPane != nullptr
+                && this->ramInspectionPane->state.activated
+                && this->ramInspectionPane->state.attached
+            ) {
+                this->ramInspectionPane->deactivate();
+            }
+
+            if (
+                this->eepromInspectionPane != nullptr
+                && this->eepromInspectionPane->state.activated
+                && this->eepromInspectionPane->state.attached
+            ) {
+                this->eepromInspectionPane->deactivate();
+            }
+        }
+
+        this->flashInspectionPane->activate();
     }
 
     void InsightWindow::onRegistersPaneStateChanged() {
@@ -1052,30 +1152,67 @@ namespace Bloom
     void InsightWindow::onRamInspectionPaneStateChanged() {
         this->ramInspectionButton->setChecked(this->ramInspectionPane->state.activated);
 
-        if (
-            this->ramInspectionPane->state.activated
-            && this->ramInspectionPane->state.attached
-            && this->eepromInspectionPane != nullptr
-            && this->eepromInspectionPane->state.activated
-            && this->eepromInspectionPane->state.attached
-        ) {
-            // Both panes cannot be attached and activated at the same time.
-            this->eepromInspectionPane->deactivate();
+        if (this->ramInspectionPane->state.activated && this->ramInspectionPane->state.attached) {
+            if (
+                this->eepromInspectionPane != nullptr
+                && this->eepromInspectionPane->state.activated
+                && this->eepromInspectionPane->state.attached
+            ) {
+                this->eepromInspectionPane->deactivate();
+            }
+
+            if (
+                this->flashInspectionPane != nullptr
+                && this->flashInspectionPane->state.activated
+                && this->flashInspectionPane->state.attached
+            ) {
+                this->flashInspectionPane->deactivate();
+            }
         }
     }
 
     void InsightWindow::onEepromInspectionPaneStateChanged() {
         this->eepromInspectionButton->setChecked(this->eepromInspectionPane->state.activated);
 
-        if (
-            this->eepromInspectionPane->state.activated
-            && this->eepromInspectionPane->state.attached
-            && this->ramInspectionPane != nullptr
-            && this->ramInspectionPane->state.activated
-            && this->ramInspectionPane->state.attached
-        ) {
-            // Both panes cannot be attached and activated at the same time.
-            this->ramInspectionPane->deactivate();
+        if (this->eepromInspectionPane->state.activated && this->eepromInspectionPane->state.attached) {
+            if (
+                this->ramInspectionPane != nullptr
+                && this->ramInspectionPane->state.activated
+                && this->ramInspectionPane->state.attached
+            ) {
+                this->ramInspectionPane->deactivate();
+            }
+
+            if (
+                this->flashInspectionPane != nullptr
+                && this->flashInspectionPane->state.activated
+                && this->flashInspectionPane->state.attached
+            ) {
+                this->flashInspectionPane->deactivate();
+            }
+        }
+    }
+
+    void InsightWindow::onFlashInspectionPaneStateChanged() {
+        this->flashInspectionButton->setChecked(this->flashInspectionPane->state.activated);
+
+        if (this->flashInspectionPane->state.activated && this->flashInspectionPane->state.attached) {
+            if (
+                this->ramInspectionPane != nullptr
+                && this->ramInspectionPane->state.activated
+                && this->ramInspectionPane->state.attached
+            ) {
+                this->ramInspectionPane->deactivate();
+            }
+
+            if (
+                this->eepromInspectionPane != nullptr
+                && this->eepromInspectionPane->state.activated
+                && this->eepromInspectionPane->state.attached
+            ) {
+                this->eepromInspectionPane->deactivate();
+            }
+
         }
     }
 

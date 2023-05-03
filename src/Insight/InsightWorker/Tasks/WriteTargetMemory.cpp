@@ -4,12 +4,18 @@
 #include <algorithm>
 #include <numeric>
 
+#include "src/Exceptions/Exception.hpp"
+
 namespace Bloom
 {
     using Services::TargetControllerService;
 
     void WriteTargetMemory::run(TargetControllerService& targetControllerService) {
         using Targets::TargetMemorySize;
+
+        if (!this->memoryDescriptor.access.writeableDuringDebugSession) {
+            throw Exceptions::Exception("Invalid request - cannot write to this memory type during a debug session.");
+        }
 
         /*
          * To prevent locking up the TargetController for too long, we split the write operation into numerous
@@ -20,7 +26,7 @@ namespace Bloom
          */
         const auto maxBlockSize = std::max(
             TargetMemorySize(256),
-            memoryDescriptor.pageSize.value_or(TargetMemorySize(0))
+            this->memoryDescriptor.pageSize.value_or(TargetMemorySize(0))
         );
 
         const TargetMemorySize totalBytesToWrite = std::accumulate(

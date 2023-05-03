@@ -5,6 +5,7 @@
 #include "InsightWorkerTask.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Helpers/EnumToStringMappings.hpp"
 
 namespace Bloom
 {
@@ -26,7 +27,7 @@ namespace Bloom
         {}
 
         QString brief() const override {
-            return "Reading target " + QString(this->memoryType == Targets::TargetMemoryType::EEPROM ? "EEPROM" : "RAM");
+            return "Reading target " + EnumToStringMappings::targetMemoryTypes.at(this->memoryType).toUpper();
         }
 
         TaskGroups taskGroups() const override {

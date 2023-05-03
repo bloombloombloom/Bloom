@@ -13,6 +13,7 @@
 #include "src/Insight/InsightWorker/Tasks/ReadStackPointer.hpp"
 
 #include "src/Services/PathService.hpp"
+#include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 namespace Bloom::Widgets
@@ -35,11 +36,9 @@ namespace Bloom::Widgets
     {
         this->setObjectName("target-memory-inspection-pane");
 
-        const auto memoryName = QString(
-            this->targetMemoryDescriptor.type == TargetMemoryType::EEPROM
-                ? "Internal EEPROM"
-                : "Internal RAM"
-        );
+        const auto memoryName = "Internal " + EnumToStringMappings::targetMemoryTypes.at(
+            this->targetMemoryDescriptor.type
+        ).toUpper();
 
         this->setWindowTitle("Memory Inspection - " + memoryName);
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
