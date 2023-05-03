@@ -164,7 +164,7 @@ namespace Bloom::Widgets
 
         this->setSceneRect(0, 0, this->getSceneWidth(), 0);
 
-        static const auto hoverRectBackgroundColor = QColor(0x8E, 0x8B, 0x83, 30);
+        static const auto hoverRectBackgroundColor = QColor(0x8E, 0x8B, 0x83, 45);
 
         this->hoverRectX->setBrush(hoverRectBackgroundColor);
         this->hoverRectY->setBrush(hoverRectBackgroundColor);
