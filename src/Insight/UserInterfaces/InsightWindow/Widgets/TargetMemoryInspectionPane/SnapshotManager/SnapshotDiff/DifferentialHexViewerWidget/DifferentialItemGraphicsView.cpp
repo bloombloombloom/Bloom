@@ -74,7 +74,7 @@ namespace Bloom::Widgets
             return;
         }
 
-        auto* byteItem = this->differentialScene->byteItemAtViewportVerticalCenter();
+        auto* byteItem = this->differentialScene->byteItemAtViewportTop();
 
         this->state.syncingScroll = true;
         this->other->alignScroll(byteItem->startAddress, byteItem->position().y() - this->verticalScrollBar()->value());

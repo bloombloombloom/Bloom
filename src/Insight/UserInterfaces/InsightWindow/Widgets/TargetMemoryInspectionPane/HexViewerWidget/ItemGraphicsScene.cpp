@@ -182,6 +182,8 @@ namespace Bloom::Widgets
     }
 
     void ItemGraphicsScene::init() {
+        this->byteAddressContainer->setPos(this->addressContainerPosition());
+
         const auto constructHexViewerTopLevelGroupItem = QSharedPointer<ConstructHexViewerTopLevelGroupItem>(
             new ConstructHexViewerTopLevelGroupItem(
                 this->focusedMemoryRegions,
@@ -196,11 +198,16 @@ namespace Bloom::Widgets
             &ConstructHexViewerTopLevelGroupItem::topLevelGroupItem,
             this,
             [this] (TopLevelGroupItem* item) {
+                const auto margins = this->margins();
+
                 this->topLevelGroup.reset(item);
                 this->topLevelGroup->setPosition(
-                    QPoint(ByteAddressContainer::WIDTH + this->margins.left(), this->margins.top())
+                    QPoint(ByteAddressContainer::WIDTH + margins.left(), margins.top())
                 );
-                this->flattenedItems = this->topLevelGroup->flattenedItems();
+
+                this->itemIndex = std::make_unique<HexViewerItemIndex>(this->topLevelGroup.get(), this);
+                this->initRenderer();
+
                 emit this->ready();
             }
         );
@@ -232,13 +239,14 @@ namespace Bloom::Widgets
 
     void ItemGraphicsScene::rebuildItemHierarchy() {
         this->topLevelGroup->rebuildItemHierarchy();
-        this->flattenedItems = this->topLevelGroup->flattenedItems();
+        this->itemIndex->refreshFlattenedItems();
         this->adjustSize();
     }
 
     void ItemGraphicsScene::adjustSize() {
+        const auto margins = this->margins();
         const auto width = this->getSceneWidth();
-        const auto availableWidth = width - ByteAddressContainer::WIDTH - this->margins.left() - this->margins.right();
+        const auto availableWidth = width - ByteAddressContainer::WIDTH - margins.left() - margins.right();
 
         auto hoverRectX = this->hoverRectX->rect();
         hoverRectX.setWidth(width);
@@ -249,38 +257,28 @@ namespace Bloom::Widgets
         this->hoverRectY->setRect(hoverRectY);
 
         this->topLevelGroup->adjustItemPositions(availableWidth);
-        this->refreshItemPositionIndices();
+        this->itemIndex->refreshIndex();
 
-        this->setSceneRect(
-            0,
-            0,
+        const auto sceneSize = QSize(
             width,
             std::max(
                 static_cast<int>(this->topLevelGroup->size().height())
-                    + this->margins.top() + this->margins.bottom(),
+                    + margins.top() + margins.bottom(),
                 this->parent->height()
             )
         );
-
-        this->byteAddressContainer->adjustAddressLabels(this->firstByteItemByLine);
-
-        const auto* view = this->views().first();
-        const auto itemsRequired = static_cast<std::uint32_t>(
-            (availableWidth / (ByteItem::WIDTH + (ByteItem::RIGHT_MARGIN / 2)))
-                * (
-                    (view->viewport()->height() + (4 * ItemGraphicsScene::GRID_SIZE))
-                    / (ByteItem::HEIGHT + (ByteItem::BOTTOM_MARGIN / 2))
-                )
+        this->setSceneRect(
+            0,
+            0,
+            sceneSize.width(),
+            sceneSize.height()
         );
 
-        while (this->graphicsItems.size() < itemsRequired) {
-            auto* item = new GraphicsItem(&(this->state));
-            item->setEnabled(this->enabled);
-            this->graphicsItems.push_back(item);
-            this->addItem(item);
+        if (this->renderer != nullptr) {
+            this->renderer->size = sceneSize;
         }
 
-        this->allocateGraphicsItems();
+        this->byteAddressContainer->adjustAddressLabels(this->itemIndex->byteItemLines);
         this->update();
     }
 
@@ -291,8 +289,8 @@ namespace Bloom::Widgets
 
         this->enabled = enabled;
 
-        for (auto& graphicsItem : this->graphicsItems) {
-            graphicsItem->setEnabled(this->enabled);
+        if (this->renderer != nullptr) {
+            this->renderer->setEnabled(this->enabled);
         }
 
         this->byteAddressContainer->setEnabled(enabled);
@@ -314,71 +312,30 @@ namespace Bloom::Widgets
         return QPointF();
     }
 
-    void ItemGraphicsScene::allocateGraphicsItems() {
-        const auto verticalScrollBarValue = this->getScrollbarValue();
-
-        constexpr auto bufferPointSize = 2;
-        const auto gridPointIndex = static_cast<decltype(this->gridPoints)::size_type>(std::max(
-            static_cast<int>(
-                std::floor(
-                    static_cast<float>(verticalScrollBarValue) / static_cast<float>(ItemGraphicsScene::GRID_SIZE)
-                )
-            ) - 1 - bufferPointSize,
-            0
-        ));
-
-        // Sanity check
-        assert(this->gridPoints.size() > gridPointIndex);
-
-        const auto& allocatableGraphicsItems = this->graphicsItems;
-        auto allocatableGraphicsItemsCount = allocatableGraphicsItems.size();
-
-        const auto allocateRangeStartItemIt = this->gridPoints[gridPointIndex];
-        const auto allocateRangeEndItemIt = this->flattenedItems.end();
-
-        const auto& firstItem = *allocateRangeStartItemIt;
-
-        /*
-         * Ensure that a graphics item for each parent, grandparent, etc. is allocated for the first item in the
-         * allocatable range.
-         */
-        auto* parentItem = firstItem->parent;
-
-        while (
-            parentItem != nullptr
-            && parentItem != this->topLevelGroup.get()
-            && allocatableGraphicsItemsCount > 0
-        ) {
-            allocatableGraphicsItems[allocatableGraphicsItemsCount - 1]->setHexViewerItem(parentItem);
-            --allocatableGraphicsItemsCount;
-            parentItem = parentItem->parent;
-        }
-
-        for (auto itemIt = allocateRangeStartItemIt; itemIt != allocateRangeEndItemIt; ++itemIt) {
-            if (allocatableGraphicsItemsCount < 1) {
-                // No more graphics items available to allocate
-                break;
-            }
-
-            allocatableGraphicsItems[allocatableGraphicsItemsCount - 1]->setHexViewerItem(*itemIt);
-            --allocatableGraphicsItemsCount;
-        }
-
-        // If we still have some available graphics items, clear them
-        while (allocatableGraphicsItemsCount > 0) {
-            allocatableGraphicsItems[allocatableGraphicsItemsCount - 1]->setHexViewerItem(nullptr);
-            --allocatableGraphicsItemsCount;
-        }
-
-        this->update();
-    }
-
     void ItemGraphicsScene::addExternalContextMenuAction(ContextMenuAction* action) {
         QObject::connect(action, &QAction::triggered, this, [this, action] () {
             emit action->invoked(this->selectedByteItemsByAddress);
         });
 
         this->externalContextMenuActions.push_back(action);
+    }
+
+    void ItemGraphicsScene::initRenderer() {
+        this->renderer = new HexViewerItemRenderer(
+            this->state,
+            *(this->itemIndex.get()),
+            this->views().first()
+        );
+        this->renderer->setPos(0, 0);
+        this->addItem(this->renderer);
+    }
+
+    QMargins ItemGraphicsScene::margins() {
+        return QMargins(10, 10, 10, 10);
+    }
+
+    QPointF ItemGraphicsScene::addressContainerPosition() {
+        return QPointF(0, 0);
     }
 
     bool ItemGraphicsScene::event(QEvent* event) {
@@ -407,20 +364,7 @@ namespace Bloom::Widgets
         this->update();
 
         if (button == Qt::MouseButton::RightButton) {
-            ByteItem* clickedByteItem = nullptr;
-            for (const auto& item : this->items(mousePosition)) {
-                auto* clickedGraphicsItem = dynamic_cast<GraphicsItem*>(item);
-
-                if (clickedGraphicsItem == nullptr) {
-                    continue;
-                }
-
-                clickedByteItem = dynamic_cast<ByteItem*>(clickedGraphicsItem->hexViewerItem);
-
-                if (clickedByteItem != nullptr) {
-                    break;
-                }
-            }
+            ByteItem* clickedByteItem = this->itemIndex->byteItemAt(mousePosition);
 
             if (clickedByteItem == nullptr || clickedByteItem->selected) {
                 return;
@@ -447,26 +391,17 @@ namespace Bloom::Widgets
             this->clearByteItemSelection();
         }
 
-        for (const auto& item : this->items(mousePosition)) {
-            auto* clickedGraphicsItem = dynamic_cast<GraphicsItem*>(item);
-
-            if (clickedGraphicsItem == nullptr) {
-                continue;
-            }
-
-            auto* byteItem = dynamic_cast<ByteItem*>(clickedGraphicsItem->hexViewerItem);
-
-            if (byteItem == nullptr) {
-                continue;
-            }
-
+        auto* clickedByteItem = this->itemIndex->byteItemAt(mousePosition);
+        if (clickedByteItem != nullptr) {
             if ((modifiers & Qt::ShiftModifier) != 0) {
                 for (
-                    auto i = byteItem->startAddress;
+                    auto i = static_cast<std::int64_t>(clickedByteItem->startAddress);
                     i >= this->state.memoryDescriptor.addressRange.startAddress;
                     --i
                 ) {
-                    auto& byteItem = this->topLevelGroup->byteItemsByAddress.at(i);
+                    auto& byteItem = this->topLevelGroup->byteItemsByAddress.at(
+                        static_cast<Targets::TargetMemoryAddress>(i)
+                    );
 
                     if (byteItem.selected) {
                         break;
@@ -479,15 +414,13 @@ namespace Bloom::Widgets
                 return;
             }
 
-            this->toggleByteItemSelection(*byteItem);
+            this->toggleByteItemSelection(*clickedByteItem);
             emit this->selectionChanged(this->selectedByteItemsByAddress);
-            break;
         }
     }
 
     void ItemGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) {
         const auto mousePosition = mouseEvent->scenePos();
-        auto hoveredItems = this->items(mousePosition);
 
         if (this->rubberBandRectItem != nullptr && this->rubberBandInitPoint.has_value()) {
             this->update();
@@ -504,52 +437,25 @@ namespace Bloom::Widgets
                 this->clearByteItemSelection();
 
             } else {
-                const auto oldItems = this->items(oldRect, Qt::IntersectsItemShape);
-                for (auto* item : oldItems) {
-                    auto* graphicsItem = dynamic_cast<GraphicsItem*>(item);
-
-                    if (graphicsItem == nullptr) {
-                        continue;
-                    }
-
-                    auto* byteItem = dynamic_cast<ByteItem*>(graphicsItem->hexViewerItem);
-
-                    if (byteItem != nullptr && byteItem->selected) {
+                const auto oldItems = this->itemIndex->intersectingByteItems(oldRect);
+                for (auto* byteItem : oldItems) {
+                    if (byteItem->selected) {
                         this->deselectByteItem(*byteItem);
                     }
                 }
             }
 
-            const auto items = this->items(this->rubberBandRectItem->rect(), Qt::IntersectsItemShape);
-            for (auto* item : items) {
-                auto* graphicsItem = dynamic_cast<GraphicsItem*>(item);
-
-                if (graphicsItem == nullptr) {
-                    continue;
-                }
-
-                auto* byteItem = dynamic_cast<ByteItem*>(graphicsItem->hexViewerItem);
-
-                if (byteItem != nullptr && !byteItem->selected) {
-                    this->selectByteItem(*byteItem);
-                }
+            const auto items = this->itemIndex->intersectingByteItems(this->rubberBandRectItem->rect());
+            for (auto& byteItem : items) {
+                this->selectByteItem(*byteItem);
             }
             emit this->selectionChanged(this->selectedByteItemsByAddress);
         }
 
-        for (const auto& item : hoveredItems) {
-            auto* hoveredGraphicsItem = dynamic_cast<GraphicsItem*>(item);
-
-            if (hoveredGraphicsItem == nullptr) {
-                continue;
-            }
-
-            auto* hoveredByteItem = dynamic_cast<ByteItem*>(hoveredGraphicsItem->hexViewerItem);
-
-            if (hoveredByteItem != nullptr) {
-                this->onByteItemEnter(*hoveredByteItem);
-                return;
-            }
+        auto* hoveredByteItem = this->itemIndex->byteItemAt(mousePosition);
+        if (hoveredByteItem != nullptr) {
+            this->onByteItemEnter(*hoveredByteItem);
+            return;
         }
 
         if (this->state.hoveredByteItem != nullptr) {
@@ -638,47 +544,6 @@ namespace Bloom::Widgets
         menu->exec(event->screenPos());
     }
 
-    void ItemGraphicsScene::refreshItemPositionIndices() {
-        const auto pointsRequired = static_cast<std::uint32_t>(
-            this->sceneRect().height() / ItemGraphicsScene::GRID_SIZE
-        );
-
-        this->gridPoints.clear();
-        this->gridPoints.reserve(pointsRequired);
-
-        this->firstByteItemByLine.clear();
-
-        auto currentPoint = 0;
-        auto currentLineYPosition = 0;
-        for (auto itemIt = this->flattenedItems.begin(); itemIt != this->flattenedItems.end(); ++itemIt) {
-            auto& item = *itemIt;
-
-            if (item->allocatedGraphicsItem != nullptr) {
-                item->allocatedGraphicsItem->setPos(item->position());
-            }
-
-            const auto byteItem = dynamic_cast<const ByteItem*>(item);
-
-            if (byteItem == nullptr) {
-                continue;
-            }
-
-            const auto itemYStartPosition = byteItem->position().y();
-            const auto itemYEndPosition = itemYStartPosition + byteItem->size().height();
-
-            if (itemYStartPosition > currentLineYPosition) {
-                this->firstByteItemByLine.push_back(byteItem);
-                currentLineYPosition = itemYStartPosition;
-            }
-
-            if (itemYEndPosition >= currentPoint) {
-                // This byte item is the first to exceed or intersect with the currentPoint
-                this->gridPoints.push_back(itemIt);
-                currentPoint += ItemGraphicsScene::GRID_SIZE;
-            }
-        }
-    }
-
     int ItemGraphicsScene::getScrollbarValue() {
         return this->views().first()->verticalScrollBar()->value();
     }
@@ -713,19 +578,11 @@ namespace Bloom::Widgets
             this->hoverRectY->update();
         }
 
-        if (byteItem.allocatedGraphicsItem != nullptr) {
-            byteItem.allocatedGraphicsItem->update();
-        }
-
         emit this->hoveredAddress(byteItem.startAddress);
     }
 
     void ItemGraphicsScene::onByteItemLeave() {
         if (this->state.hoveredByteItem != nullptr) {
-            if (this->state.hoveredByteItem->allocatedGraphicsItem != nullptr) {
-                this->state.hoveredByteItem->allocatedGraphicsItem->update();
-            }
-
             this->state.hoveredByteItem = nullptr;
         }
 

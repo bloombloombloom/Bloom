@@ -22,7 +22,8 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
-#include "GraphicsItem.hpp"
+#include "HexViewerItemIndex.hpp"
+#include "HexViewerItemRenderer.hpp"
 #include "TopLevelGroupItem.hpp"
 #include "GroupItem.hpp"
 #include "ByteItem.hpp"
@@ -60,7 +61,6 @@ namespace Bloom::Widgets
         void setEnabled(bool enabled);
         void refreshValues();
         QPointF getByteItemPositionByAddress(Targets::TargetMemoryAddress address);
-        void allocateGraphicsItems();
         void addExternalContextMenuAction(ContextMenuAction* action);
 
     signals:
@@ -69,8 +69,6 @@ namespace Bloom::Widgets
         void selectionChanged(const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress);
 
     protected:
-        static constexpr auto GRID_SIZE = 100;
-
         bool enabled = true;
 
         HexViewerSharedState state;
@@ -79,14 +77,9 @@ namespace Bloom::Widgets
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 
         std::unique_ptr<TopLevelGroupItem> topLevelGroup = nullptr;
+        std::unique_ptr<HexViewerItemIndex> itemIndex = nullptr;
 
-        std::vector<HexViewerItem*> flattenedItems;
-        std::vector<decltype(ItemGraphicsScene::flattenedItems)::iterator> gridPoints;
-        std::vector<const ByteItem*> firstByteItemByLine;
-
-        std::vector<GraphicsItem*> graphicsItems;
-
-        const QMargins margins = QMargins(10, 10, 10, 10);
+        HexViewerItemRenderer* renderer = nullptr;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
@@ -137,6 +130,9 @@ namespace Bloom::Widgets
             return std::max(this->parent->viewport()->width(), 200) - 2;
         }
 
+        virtual void initRenderer();
+        virtual QMargins margins();
+        virtual QPointF addressContainerPosition();
         bool event(QEvent* event) override;
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
         void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
@@ -144,7 +140,6 @@ namespace Bloom::Widgets
         void mouseReleaseEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
         void keyPressEvent(QKeyEvent* keyEvent) override;
         void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-        void refreshItemPositionIndices();
         int getScrollbarValue();
         void onTargetStateChanged(Targets::TargetState newState);
         void onByteItemEnter(ByteItem& byteItem);

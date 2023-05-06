@@ -17,6 +17,8 @@ namespace Bloom::Widgets
     {
     public:
         std::vector<HexViewerItem*> items;
+        QSize groupSize = {};
+        bool multiLine = false;
 
         ~GroupItem();
 
@@ -28,18 +30,7 @@ namespace Bloom::Widgets
 
         [[nodiscard]] std::vector<HexViewerItem*> flattenedItems() const;
 
-        void paint(
-            QPainter* painter,
-            const HexViewerSharedState* hexViewerState,
-            const QGraphicsItem* graphicsItem
-        ) const override {
-            return;
-        }
-
     protected:
-        QSize groupSize = {};
-        bool multiLine = false;
-
         GroupItem(
             Targets::TargetMemoryAddress startAddress,
             HexViewerItem* parent = nullptr

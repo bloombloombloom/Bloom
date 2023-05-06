@@ -48,6 +48,5 @@ namespace Bloom::Widgets
 
         bool event(QEvent* event) override;
         void resizeEvent(QResizeEvent* event) override;
-        void scrollContentsBy(int dx, int dy) override;
     };
 }

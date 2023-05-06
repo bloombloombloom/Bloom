@@ -44,23 +44,8 @@ namespace Bloom::Widgets
         );
     }
 
-    ByteItem* DifferentialItemGraphicsScene::byteItemAtViewportVerticalCenter() {
-        const auto scrollBarValue = this->getScrollbarValue();
-
-        const auto midPosition = static_cast<qreal>(
-            scrollBarValue
-        );
-
-        const auto gridPointIndex = static_cast<decltype(this->gridPoints)::size_type>(
-            std::min(
-                static_cast<int>(
-                    std::floor(static_cast<float>(midPosition) / static_cast<float>(ItemGraphicsScene::GRID_SIZE)) + 1
-                ),
-                static_cast<int>(this->gridPoints.size() - 1)
-            )
-        );
-
-        return static_cast<ByteItem*>(*(this->gridPoints[gridPointIndex]));
+    ByteItem* DifferentialItemGraphicsScene::byteItemAtViewportTop() {
+        return this->itemIndex->closestByteItem(this->getScrollbarValue());
     }
 
     void DifferentialItemGraphicsScene::onOtherHoveredAddress(
@@ -83,8 +68,7 @@ namespace Bloom::Widgets
         const auto scrollbarValue = this->getScrollbarValue();
 
         if (
-            byteItem.allocatedGraphicsItem == nullptr
-            || itemPosition < scrollbarValue
+            itemPosition < scrollbarValue
             || itemPosition > (scrollbarValue + this->views().first()->viewport()->height())
         ) {
             // The item isn't visible

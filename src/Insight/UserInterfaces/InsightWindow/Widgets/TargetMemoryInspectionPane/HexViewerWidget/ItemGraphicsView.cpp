@@ -90,12 +90,4 @@ namespace Bloom::Widgets
 
         this->scene->adjustSize();
     }
-
-    void ItemGraphicsView::scrollContentsBy(int dx, int dy) {
-        if (this->scene != nullptr) {
-            this->scene->allocateGraphicsItems();
-        }
-
-        return QGraphicsView::scrollContentsBy(dx, dy);
-    }
 }

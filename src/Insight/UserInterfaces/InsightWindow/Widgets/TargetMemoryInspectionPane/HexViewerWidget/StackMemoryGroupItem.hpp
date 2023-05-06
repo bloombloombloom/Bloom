@@ -14,6 +14,8 @@ namespace Bloom::Widgets
     class StackMemoryGroupItem: public GroupItem
     {
     public:
+        Targets::TargetStackPointer stackPointer;
+
         StackMemoryGroupItem(
             Targets::TargetStackPointer stackPointer,
             const HexViewerSharedState& hexViewerState,
@@ -28,12 +30,6 @@ namespace Bloom::Widgets
 
         void refreshValues();
 
-        void paint(
-            QPainter* painter,
-            const HexViewerSharedState* hexViewerState,
-            const QGraphicsItem* graphicsItem
-        ) const override;
-
     protected:
         QMargins groupMargins(const HexViewerSharedState* hexViewerState, const int maximumWidth) const override;
 
@@ -42,9 +38,7 @@ namespace Bloom::Widgets
         }
 
     private:
-        Targets::TargetStackPointer stackPointer;
         const HexViewerSharedState& hexViewerState;
-
         std::list<FocusedRegionGroupItem> focusedRegionGroupItems;
     };
 }
