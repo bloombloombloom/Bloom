@@ -364,7 +364,7 @@
                         <item>
                             <widget class="Label" name="memory-capacity-label">
                                 <property name="toolTip">
-                                    <string>Memory Capacity</string>
+                                    <string>Memory capacity</string>
                                 </property>
                                 <property name="sizePolicy">
                                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>

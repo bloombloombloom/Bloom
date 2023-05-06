@@ -151,7 +151,7 @@ namespace Bloom::Widgets
         auto* programCounterLabel = this->bottomBar->findChild<Label*>("program-counter-label");
         auto* dateLabel = this->bottomBar->findChild<Label*>("date-label");
 
-        memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->memoryDescriptor.size()) + " Bytes");
+        memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->memoryDescriptor.size()) + " bytes");
         snapshotIdLabel->setText(this->snapshot.id);
         programCounterLabel->setText(
             "0x" + QString::number(this->snapshot.programCounter, 16).rightJustified(8, '0').toUpper()

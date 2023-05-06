@@ -94,7 +94,7 @@ namespace Bloom::Widgets
         titleLabel->setText(memoryName);
 
         auto* memoryCapacityLabel = this->container->findChild<Label*>("memory-capacity-label");
-        memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->targetMemoryDescriptor.size()) + " Bytes");
+        memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->targetMemoryDescriptor.size()) + " bytes");
 
         // Quick sanity check to ensure the validity of persisted settings.
         this->sanitiseSettings();

@@ -11,8 +11,6 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PushButton.hpp"
-#include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
