@@ -3,6 +3,7 @@
 namespace Bloom::Widgets
 {
     DifferentialItemGraphicsView::DifferentialItemGraphicsView(
+        DifferentialHexViewerWidgetType differentialHexViewerWidgetType,
         DifferentialHexViewerSharedState& state,
         const SnapshotDiffSettings& snapshotDiffSettings,
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
@@ -20,12 +21,14 @@ namespace Bloom::Widgets
             settings,
             parent
         )
+        , differentialHexViewerWidgetType(differentialHexViewerWidgetType)
         , state(state)
         , snapshotDiffSettings(snapshotDiffSettings)
     {}
 
     void DifferentialItemGraphicsView::initScene() {
         this->differentialScene = new DifferentialItemGraphicsScene(
+            this->differentialHexViewerWidgetType,
             this->state,
             this->snapshotDiffSettings,
             this->targetMemoryDescriptor,
@@ -73,7 +76,12 @@ namespace Bloom::Widgets
     void DifferentialItemGraphicsView::scrollContentsBy(int dx, int dy) {
         ItemGraphicsView::scrollContentsBy(dx, dy);
 
-        if (!this->snapshotDiffSettings.syncHexViewerScroll || this->state.syncingScroll) {
+        if (!this->snapshotDiffSettings.syncHexViewerScroll) {
+            this->other->update();
+            return;
+        }
+
+        if (this->state.syncingScroll) {
             return;
         }
 

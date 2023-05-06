@@ -2,6 +2,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ItemGraphicsView.hpp"
 
+#include "DifferentialHexViewerWidgetType.hpp"
 #include "DifferentialHexViewerSharedState.hpp"
 #include "DifferentialItemGraphicsScene.hpp"
 
@@ -15,6 +16,7 @@ namespace Bloom::Widgets
 
     public:
         DifferentialItemGraphicsView(
+            DifferentialHexViewerWidgetType differentialHexViewerWidgetType,
             DifferentialHexViewerSharedState& state,
             const SnapshotDiffSettings& snapshotDiffSettings,
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
@@ -31,6 +33,7 @@ namespace Bloom::Widgets
         void alignScroll(Targets::TargetMemoryAddress otherByteItemAddress, int otherByteItemYOffset);
 
     protected:
+        DifferentialHexViewerWidgetType differentialHexViewerWidgetType;
         DifferentialHexViewerSharedState& state;
         const SnapshotDiffSettings& snapshotDiffSettings;
 

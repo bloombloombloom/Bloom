@@ -31,6 +31,7 @@ namespace Bloom::Widgets
 
     void DifferentialHexViewerWidget::init() {
         this->differentialView = new DifferentialItemGraphicsView(
+            this->type,
             this->state,
             this->snapshotDiffSettings,
             this->targetMemoryDescriptor,

@@ -2,9 +2,12 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ItemGraphicsView.hpp"
 
+#include "DifferentialHexViewerItemRenderer.hpp"
+
 namespace Bloom::Widgets
 {
     DifferentialItemGraphicsScene::DifferentialItemGraphicsScene(
+        DifferentialHexViewerWidgetType differentialHexViewerWidgetType,
         DifferentialHexViewerSharedState& state,
         const SnapshotDiffSettings& snapshotDiffSettings,
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
@@ -22,12 +25,19 @@ namespace Bloom::Widgets
             settings,
             parent
         )
+        , differentialHexViewerWidgetType(differentialHexViewerWidgetType)
         , diffHexViewerState(state)
         , snapshotDiffSettings(snapshotDiffSettings)
     {}
 
     void DifferentialItemGraphicsScene::setOther(DifferentialItemGraphicsScene* other) {
         this->other = other;
+
+        assert(this->other->differentialHexViewerItemRenderer != nullptr);
+
+        if (this->differentialHexViewerItemRenderer != nullptr) {
+            this->differentialHexViewerItemRenderer->setOther(this->other->differentialHexViewerItemRenderer);
+        }
 
         QObject::connect(
             this->other,
@@ -54,6 +64,29 @@ namespace Bloom::Widgets
         }
 
         this->update();
+    }
+
+    void DifferentialItemGraphicsScene::initRenderer() {
+        this->differentialHexViewerItemRenderer = new DifferentialHexViewerItemRenderer(
+            this->differentialHexViewerWidgetType,
+            this->state,
+            *(this->itemIndex.get()),
+            this->views().first()
+        );
+
+        if (this->other != nullptr && this->other->differentialHexViewerItemRenderer != nullptr) {
+            this->differentialHexViewerItemRenderer->setOther(this->other->differentialHexViewerItemRenderer);
+        }
+
+        this->renderer = this->differentialHexViewerItemRenderer;
+        this->renderer->setPos(0, 0);
+        this->addItem(this->renderer);
+    }
+
+    QMargins DifferentialItemGraphicsScene::margins() {
+        auto margins = ItemGraphicsScene::margins();
+        margins.setRight(DifferentialItemGraphicsScene::CENTER_WIDTH / 2);
+        return margins;
     }
 
     void DifferentialItemGraphicsScene::onOtherHoveredAddress(

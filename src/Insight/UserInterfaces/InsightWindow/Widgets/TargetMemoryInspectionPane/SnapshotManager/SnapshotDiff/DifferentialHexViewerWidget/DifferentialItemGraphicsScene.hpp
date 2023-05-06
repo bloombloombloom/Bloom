@@ -2,7 +2,9 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ItemGraphicsScene.hpp"
 
+#include "DifferentialHexViewerWidgetType.hpp"
 #include "DifferentialHexViewerSharedState.hpp"
+#include "DifferentialHexViewerItemRenderer.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/SnapshotDiffSettings.hpp"
 
@@ -14,6 +16,7 @@ namespace Bloom::Widgets
 
     public:
         DifferentialItemGraphicsScene(
+            DifferentialHexViewerWidgetType differentialHexViewerWidgetType,
             DifferentialHexViewerSharedState& state,
             const SnapshotDiffSettings& snapshotDiffSettings,
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
@@ -29,9 +32,16 @@ namespace Bloom::Widgets
         void updateByteItemChangedStates();
 
     protected:
+        static constexpr auto CENTER_WIDTH = 46;
+
+        DifferentialHexViewerWidgetType differentialHexViewerWidgetType;
         DifferentialHexViewerSharedState& diffHexViewerState;
         const SnapshotDiffSettings& snapshotDiffSettings;
+        DifferentialHexViewerItemRenderer* differentialHexViewerItemRenderer = nullptr;
         DifferentialItemGraphicsScene* other = nullptr;
+
+        void initRenderer() override;
+        QMargins margins() override;
 
         void onOtherHoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
         void onOtherSelectionChanged(

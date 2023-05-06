@@ -115,6 +115,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/DifferentialHexViewerWidget/DifferentialHexViewerWidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/DifferentialHexViewerWidget/DifferentialItemGraphicsView.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/DifferentialHexViewerWidget/DifferentialItemGraphicsScene.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/DifferentialHexViewerWidget/DifferentialHexViewerItemRenderer.cpp
 
         # Memory region manager window
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/MemoryRegionManagerWindow.cpp
