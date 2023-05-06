@@ -44,6 +44,7 @@ namespace Bloom::Widgets
             &ItemGraphicsScene::ready,
             this,
             [this] {
+            this->differentialScene->updateByteItemChangedStates();
                 this->scene->setEnabled(this->isEnabled());
                 emit this->sceneReady();
             }
@@ -65,6 +66,8 @@ namespace Bloom::Widgets
         this->verticalScrollBar()->setValue(
             std::max(static_cast<int>(byteItemPosition.y() - otherByteItemYOffset), 0)
         );
+
+        this->update();
     }
 
     void DifferentialItemGraphicsView::scrollContentsBy(int dx, int dy) {

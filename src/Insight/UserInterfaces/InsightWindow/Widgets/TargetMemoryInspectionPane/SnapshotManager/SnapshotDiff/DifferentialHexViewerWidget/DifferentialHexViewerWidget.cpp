@@ -85,6 +85,13 @@ namespace Bloom::Widgets
         this->byteItemGraphicsView->initScene();
     }
 
+    void DifferentialHexViewerWidget::updateValues() {
+        if (this->differentialScene != nullptr) {
+            this->differentialScene->updateByteItemChangedStates();
+            this->differentialScene->refreshValues();
+        }
+    }
+
     void DifferentialHexViewerWidget::setOther(DifferentialHexViewerWidget* other) {
         assert(other->byteItemGraphicsView != nullptr);
         assert(other->byteItemGraphicsScene != nullptr);

@@ -48,6 +48,14 @@ namespace Bloom::Widgets
         return this->itemIndex->closestByteItem(this->getScrollbarValue());
     }
 
+    void DifferentialItemGraphicsScene::updateByteItemChangedStates() {
+        for (auto& [address, byteItem] : this->topLevelGroup->byteItemsByAddress) {
+            byteItem.changed = !byteItem.excluded && this->diffHexViewerState.differences.contains(address);
+        }
+
+        this->update();
+    }
+
     void DifferentialItemGraphicsScene::onOtherHoveredAddress(
         const std::optional<Targets::TargetMemoryAddress>& address
     ) {

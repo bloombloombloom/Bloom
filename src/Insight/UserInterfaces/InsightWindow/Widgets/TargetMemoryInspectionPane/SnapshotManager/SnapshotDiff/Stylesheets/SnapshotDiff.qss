@@ -70,3 +70,17 @@
 #snapshot-diff #bottom-bar {
     border-top: 1px solid #41423f;
 }
+
+#snapshot-diff #bottom-bar #separator {
+    background-color: transparent;
+    border-right: 1px solid #41423f;
+    padding: 0;
+    min-width: 1px;
+    max-width: 1px;
+}
+
+#snapshot-diff #memory-capacity-label,
+#snapshot-diff #diff-count-label {
+    padding: 1px 5px;
+    color: #8a8a8d;
+}

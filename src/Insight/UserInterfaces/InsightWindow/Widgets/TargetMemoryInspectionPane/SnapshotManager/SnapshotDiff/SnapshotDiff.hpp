@@ -97,6 +97,8 @@ namespace Bloom::Widgets
 
         QWidget* bottomBar = nullptr;
         QHBoxLayout* bottomBarLayout = nullptr;
+        Label* memoryCapacityLabel = nullptr;
+        Label* diffCountLabel = nullptr;
 
         TaskProgressIndicator* taskProgressIndicator = nullptr;
 
@@ -104,6 +106,8 @@ namespace Bloom::Widgets
 
         void onHexViewerAReady();
         void onHexViewerBReady();
+
+        void refreshDifferences();
 
         void setSyncHexViewerSettingsEnabled(bool enabled);
         void setSyncHexViewerScrollEnabled(bool enabled);

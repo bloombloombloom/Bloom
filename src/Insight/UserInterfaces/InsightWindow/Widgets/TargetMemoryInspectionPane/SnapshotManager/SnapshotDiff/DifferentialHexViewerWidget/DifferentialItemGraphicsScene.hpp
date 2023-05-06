@@ -26,6 +26,7 @@ namespace Bloom::Widgets
 
         void setOther(DifferentialItemGraphicsScene* other);
         ByteItem* byteItemAtViewportTop();
+        void updateByteItemChangedStates();
 
     protected:
         DifferentialHexViewerSharedState& diffHexViewerState;

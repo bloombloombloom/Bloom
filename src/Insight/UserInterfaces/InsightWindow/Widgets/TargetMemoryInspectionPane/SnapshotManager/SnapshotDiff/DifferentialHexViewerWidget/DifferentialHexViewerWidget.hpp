@@ -28,6 +28,7 @@ namespace Bloom::Widgets
         );
 
         void init() override;
+        void updateValues() override;
 
         void setOther(DifferentialHexViewerWidget* other);
 

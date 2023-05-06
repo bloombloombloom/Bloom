@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QVBoxLayout>
+#include <QLocale>
 #include <algorithm>
 
 #include "src/Insight/InsightWorker/Tasks/WriteTargetMemory.hpp"
@@ -115,8 +116,11 @@ namespace Bloom::Widgets
             this->hexViewerWidgetB->setStackPointer(this->stackPointerB);
         }
 
+        this->refreshDifferences();
         this->hexViewerWidgetB->refreshRegions();
         this->hexViewerWidgetB->updateValues();
+
+        this->hexViewerWidgetA->updateValues();
     }
 
     void SnapshotDiff::showEvent(QShowEvent* event) {
@@ -219,8 +223,13 @@ namespace Bloom::Widgets
         this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
         this->bottomBarLayout = this->bottomBar->findChild<QHBoxLayout*>();
 
+        this->memoryCapacityLabel = this->bottomBar->findChild<Label*>("memory-capacity-label");
+        this->diffCountLabel = this->bottomBar->findChild<Label*>("diff-count-label");
+
+        this->memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->hexViewerDataA->size()) + " bytes");
+
         this->taskProgressIndicator = new TaskProgressIndicator(this);
-        this->bottomBarLayout->insertWidget(0, this->taskProgressIndicator);
+        this->bottomBarLayout->insertWidget(5, this->taskProgressIndicator);
 
         this->setSyncHexViewerSettingsEnabled(this->settings.syncHexViewerSettings);
         this->setSyncHexViewerScrollEnabled(this->settings.syncHexViewerScroll);
@@ -266,6 +275,8 @@ namespace Bloom::Widgets
         QObject::connect(this->hexViewerWidgetA, &HexViewerWidget::ready, this, &SnapshotDiff::onHexViewerAReady);
         QObject::connect(this->hexViewerWidgetB, &HexViewerWidget::ready, this, &SnapshotDiff::onHexViewerBReady);
 
+        this->refreshDifferences();
+
         this->hexViewerWidgetA->init();
         this->hexViewerWidgetB->init();
 
@@ -290,6 +301,33 @@ namespace Bloom::Widgets
         if (this->memoryDescriptor.type == Targets::TargetMemoryType::RAM) {
             this->hexViewerWidgetB->setStackPointer(this->stackPointerB);
         }
+    }
+
+    void SnapshotDiff::refreshDifferences() {
+        assert(this->hexViewerDataA.has_value());
+        assert(this->hexViewerDataB.has_value());
+
+        this->differentialHexViewerSharedState.differences.clear();
+
+        const auto& dataA = *(this->hexViewerDataA);
+        const auto& dataB = *(this->hexViewerDataB);
+
+        const auto& memoryStartAddress = this->memoryDescriptor.addressRange.startAddress;
+
+        for (Targets::TargetMemoryBuffer::size_type i = 0; i < dataA.size(); ++i) {
+            if (dataA[i] != dataB[i]) {
+                this->differentialHexViewerSharedState.differences.insert(
+                    memoryStartAddress + static_cast<Targets::TargetMemoryAddress>(i)
+                );
+            }
+        }
+
+        const auto count = this->differentialHexViewerSharedState.differences.size();
+        this->diffCountLabel->setText(
+            count == 0
+                ? "Contents are identical"
+                : QLocale(QLocale::English).toString(count) + (count == 1 ? " difference" : " differences")
+        );
     }
 
     void SnapshotDiff::setSyncHexViewerSettingsEnabled(bool enabled) {
@@ -408,6 +446,8 @@ namespace Bloom::Widgets
                 );
             }
 
+            this->refreshDifferences();
+            this->hexViewerWidgetA->updateValues();
             this->hexViewerWidgetB->updateValues();
         };
 

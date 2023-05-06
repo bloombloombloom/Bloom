@@ -38,7 +38,7 @@ namespace Bloom::Widgets
         );
 
         virtual void init();
-        void updateValues();
+        virtual void updateValues();
         void refreshRegions();
         void setStackPointer(Targets::TargetStackPointer stackPointer);
         void addExternalContextMenuAction(ContextMenuAction* action);
