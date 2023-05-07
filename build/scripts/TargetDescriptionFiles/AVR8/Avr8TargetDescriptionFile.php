@@ -725,7 +725,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'Missing eeprom start address.';
         }
 
-        if (in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $this->debugPhysicalInterfaces)
+        if (
+            in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $this->debugPhysicalInterfaces)
             || (
                 in_array(self::AVR8_PHYSICAL_INTERFACE_JTAG, $this->debugPhysicalInterfaces)
                 && $this->family == self::AVR8_FAMILY_MEGA

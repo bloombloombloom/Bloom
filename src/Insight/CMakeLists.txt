@@ -211,7 +211,6 @@ qt_add_resources(
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/Images/sync-hex-viewer-hover.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/Images/sync-hex-viewer-selection.svg"
 
-
         # Memory region manager window
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/UiFiles/MemoryRegionManagerWindow.ui"
         "./UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegionManager/Stylesheets/MemoryRegionManagerWindow.qss"
