@@ -818,13 +818,22 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * violates the Avr8DebugInterface contract - as this member function should only ever erase program memory.
          *
          * All we can do here is take a copy of EEPROM and restore it after the erase operation.
+         *
+         * TODO: Look into setting the EESAVE fuse bit as an alternative to the backup-then-restore approach.
          */
-        Logger::debug("Capturing EEPROM data, in preparation for chip erase");
-        auto eepromSnapshot = this->readMemory(
-            TargetMemoryType::EEPROM,
-            this->targetParameters.eepromStartAddress.value(),
-            this->targetParameters.eepromSize.value()
-        );
+        auto eepromSnapshot = std::optional<Targets::TargetMemoryBuffer>();
+
+        if (this->targetConfig->preserveEeprom) {
+            Logger::debug("Capturing EEPROM data, in preparation for chip erase");
+            eepromSnapshot = this->readMemory(
+                TargetMemoryType::EEPROM,
+                this->targetParameters.eepromStartAddress.value(),
+                this->targetParameters.eepromSize.value()
+            );
+
+        } else {
+            Logger::warning("EEPROM will be erased - use the 'preserveEeprom' parameter to preserve EEPROM");
+        }
 
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EraseMemory(Avr8EraseMemoryMode::CHIP)
@@ -834,12 +843,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw Avr8CommandFailure("AVR8 erase memory command failed", responseFrame);
         }
 
-        Logger::debug("Restoring EEPROM data");
-        this->writeMemory(
-            TargetMemoryType::EEPROM,
-            this->targetParameters.eepromStartAddress.value(),
-            std::move(eepromSnapshot)
-        );
+        if (eepromSnapshot.has_value()) {
+            Logger::debug("Restoring EEPROM data");
+            this->writeMemory(
+                TargetMemoryType::EEPROM,
+                this->targetParameters.eepromStartAddress.value(),
+                std::move(*eepromSnapshot)
+            );
+        }
     }
 
     TargetState EdbgAvr8Interface::getTargetState() {

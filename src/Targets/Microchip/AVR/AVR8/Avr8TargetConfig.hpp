@@ -76,6 +76,23 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          */
         bool manageOcdenFuseBit = false;
 
+        /**
+         * With JTAG and UPDI targets, we have to perform a full chip erase when updating the target's flash memory.
+         * This means the user will lose their EEPROM data whenever they wish to upload any program changes via Bloom.
+         *
+         * The preserveEeprom flag determines if Bloom should preserve the target's EEPROM when performing a full chip
+         * erase. If enabled, we'll take a backup of the target's EEPROM just before performing the chip erase, then
+         * restore the backup afterwards.
+         *
+         * The backup-then-restore operation can take some time to complete. This can be a source of frustration for
+         * users who don't care about their EEPROM data being wiped, as it can add minutes to the time it takes to
+         * upload program changes. This is why the function is optional - setting this flag to false will speed up
+         * uploads.
+         *
+         * This parameter is optional, and the function is enabled by default.
+         */
+        bool preserveEeprom = true;
+
         explicit Avr8TargetConfig(const TargetConfig& targetConfig);
 
     private:

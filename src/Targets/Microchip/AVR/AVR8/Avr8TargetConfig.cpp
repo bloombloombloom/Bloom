@@ -57,5 +57,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         if (targetNode["manageOcdenFuseBit"]) {
             this->manageOcdenFuseBit = targetNode["manageOcdenFuseBit"].as<bool>();
         }
+
+        if (targetNode["preserveEeprom"]) {
+            this->preserveEeprom = targetNode["preserveEeprom"].as<bool>();
+        }
     }
 }
