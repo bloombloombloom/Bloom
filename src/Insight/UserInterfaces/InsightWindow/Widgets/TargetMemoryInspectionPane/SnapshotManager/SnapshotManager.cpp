@@ -381,26 +381,39 @@ namespace Bloom::Widgets
 
         auto snapshotDiffIt = this->snapshotCurrentDiffsBySnapshotAId.find(snapshotIdA);
 
-        if (snapshotDiffIt == this->snapshotCurrentDiffsBySnapshotAId.end()) {
-            const auto& snapshotItA = this->snapshotsById.find(snapshotIdA);
+        if (snapshotDiffIt != this->snapshotCurrentDiffsBySnapshotAId.end()) {
+            auto* snapshotDiff = snapshotDiffIt.value();
 
-            if (snapshotItA == this->snapshotsById.end()) {
-                return;
-            }
-
-            snapshotDiffIt = this->snapshotCurrentDiffsBySnapshotAId.insert(
-                snapshotIdA,
-                new SnapshotDiff(
-                    snapshotItA.value(),
-                    *(this->data),
-                    this->focusedMemoryRegions,
-                    this->excludedMemoryRegions,
-                    this->stackPointer.value_or(0),
-                    this->memoryDescriptor,
-                    this
-                )
+            snapshotDiff->refreshB(
+                *(this->data),
+                this->focusedMemoryRegions,
+                this->excludedMemoryRegions,
+                this->stackPointer.value_or(0)
             );
+
+            snapshotDiff->show();
+            snapshotDiff->activateWindow();
+            return;
         }
+
+        const auto& snapshotItA = this->snapshotsById.find(snapshotIdA);
+
+        if (snapshotItA == this->snapshotsById.end()) {
+            return;
+        }
+
+        snapshotDiffIt = this->snapshotCurrentDiffsBySnapshotAId.insert(
+            snapshotIdA,
+            new SnapshotDiff(
+                snapshotItA.value(),
+                *(this->data),
+                this->focusedMemoryRegions,
+                this->excludedMemoryRegions,
+                this->stackPointer.value_or(0),
+                this->memoryDescriptor,
+                this
+            )
+        );
 
         auto* snapshotDiff = snapshotDiffIt.value();
         snapshotDiff->show();
