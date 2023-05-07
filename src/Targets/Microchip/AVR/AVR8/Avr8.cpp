@@ -927,7 +927,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
             Logger::info("Current SPIEN fuse bit value confirmed");
 
-            if (static_cast<bool>(dwenFuseByte & dwenFuseBitsDescriptor->bitMask) == !enable) {
+            if (!static_cast<bool>(dwenFuseByte & dwenFuseBitsDescriptor->bitMask) == enable) {
                 /*
                  * The DWEN fuse appears to already be set to the desired value. This may be a result of incorrect data
                  * in the TDF, but we're not taking any chances.
@@ -961,11 +961,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                     : static_cast<unsigned char>(dwenFuseByte | dwenFuseBitsDescriptor->bitMask)
             );
 
-            Logger::warning("Programming DWEN fuse bit");
+            Logger::warning("Updating DWEN fuse bit");
             this->avrIspInterface->programFuse(newFuse);
 
+            Logger::debug("Verifying DWEN fuse bit");
             if (this->avrIspInterface->readFuse(dwenFuseBitsDescriptor->fuseType).value != newFuse.value) {
-                throw Exception("Failed to program fuse bit - post-program value check failed");
+                throw Exception("Failed to update DWEN fuse bit - post-update verification failed");
             }
 
             Logger::info("DWEN fuse bit successfully updated");
