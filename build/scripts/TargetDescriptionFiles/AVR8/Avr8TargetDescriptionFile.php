@@ -92,7 +92,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $ispReadLockPollIndex = null;
 
     public ?FuseBitDescriptor $dwenFuseBitDescriptor = null;
-
+    public ?FuseBitDescriptor $ocdenFuseBitDescriptor = null;
+    public ?FuseBitDescriptor $jtagenFuseBitDescriptor = null;
 
     protected function init()
     {
@@ -256,6 +257,16 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                     if (isset($fuseRegister->bitFieldsByName['dwen'])) {
                         $this->dwenFuseBitDescriptor = new FuseBitDescriptor();
                         $this->dwenFuseBitDescriptor->fuseType = $fuseType;
+                    }
+
+                    if (isset($fuseRegister->bitFieldsByName['ocden'])) {
+                        $this->ocdenFuseBitDescriptor = new FuseBitDescriptor();
+                        $this->ocdenFuseBitDescriptor->fuseType = $fuseType;
+                    }
+
+                    if (isset($fuseRegister->bitFieldsByName['jtagen'])) {
+                        $this->jtagenFuseBitDescriptor = new FuseBitDescriptor();
+                        $this->jtagenFuseBitDescriptor->fuseType = $fuseType;
                     }
                 }
             }
@@ -828,6 +839,35 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             if (is_null($this->lockbitsSegmentStartAddress)) {
                 $failures[] = 'Missing lockbits segment start address.';
+            }
+        }
+
+        if (
+            in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_JTAG, $this->debugPhysicalInterfaces)
+            && $this->family == self::AVR8_FAMILY_MEGA
+        ) {
+            static $validFuseTypes = [
+                FuseBitDescriptor::FUSE_TYPE_LOW,
+                FuseBitDescriptor::FUSE_TYPE_HIGH,
+                FuseBitDescriptor::FUSE_TYPE_EXTENDED,
+            ];
+
+            if (empty($this->ocdenFuseBitDescriptor)) {
+                $failures[] = 'Could not find OCDEN fuse bit field for JTAG target.';
+
+            } else {
+                if (!in_array($this->ocdenFuseBitDescriptor->fuseType, $validFuseTypes)) {
+                    $failures[] = 'Invalid/unknown fuse byte type for OCDEN fuse bit.';
+                }
+            }
+
+            if (empty($this->jtagenFuseBitDescriptor)) {
+                $failures[] = 'Could not find JTAGEN fuse bit field for JTAG target.';
+
+            } else {
+                if (!in_array($this->jtagenFuseBitDescriptor->fuseType, $validFuseTypes)) {
+                    $failures[] = 'Invalid/unknown fuse byte type for JTAGEN fuse bit.';
+                }
             }
         }
 
