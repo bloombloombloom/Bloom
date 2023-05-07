@@ -127,6 +127,10 @@ namespace Bloom::DebugServer::Gdb
             std::bind(&GdbRspDebugServer::onTargetExecutionStopped, this, std::placeholders::_1)
         );
 
+        this->eventListener.registerCallbackForEventType<Events::TargetExecutionResumed>(
+            std::bind(&GdbRspDebugServer::onTargetExecutionResumed, this, std::placeholders::_1)
+        );
+
         if (Services::ProcessService::isManagedByClion()) {
             Logger::warning(
                 "Bloom's process is being managed by CLion - Bloom will automatically shutdown upon detaching from GDB."
@@ -241,6 +245,13 @@ namespace Bloom::DebugServer::Gdb
         const auto rawPackets = this->activeDebugSession->connection.readRawPackets();
 
         if (rawPackets.size() > 1) {
+            const auto& firstRawPacket = rawPackets.front();
+
+            if (firstRawPacket.size() == 5 && firstRawPacket[1] == 0x03) {
+                // Interrupt packet that came in too quickly before another packet
+                this->activeDebugSession->pendingInterrupt = true;
+            }
+
             // We only process the last packet - any others will probably be duplicates from an impatient client.
             Logger::warning("Multiple packets received from GDB - only the most recent will be processed");
         }
@@ -347,6 +358,43 @@ namespace Bloom::DebugServer::Gdb
                 this->activeDebugSession->connection.writePacket(
                     ResponsePackets::TargetStopped(Signal::TRAP)
                 );
+                this->activeDebugSession->waitingForBreak = false;
+            }
+
+        } catch (const ClientDisconnected&) {
+            Logger::info("GDB RSP client disconnected");
+            this->activeDebugSession.reset();
+            return;
+
+        } catch (const ClientCommunicationError& exception) {
+            Logger::error(
+                "GDB RSP client communication error - " + exception.getMessage() + " - closing connection"
+            );
+            this->activeDebugSession.reset();
+            return;
+
+        } catch (const DebugServerInterrupted&) {
+            // Server was interrupted
+            Logger::debug("GDB RSP interrupted");
+            return;
+        }
+    }
+
+    void GdbRspDebugServer::onTargetExecutionResumed(const Events::TargetExecutionResumed&) {
+        try {
+            if (
+                this->activeDebugSession.has_value()
+                && this->activeDebugSession->pendingInterrupt
+                && this->activeDebugSession->waitingForBreak
+            ) {
+                Logger::info("Servicing pending interrupt");
+                this->targetControllerService.stopTargetExecution();
+
+                this->activeDebugSession->connection.writePacket(
+                    ResponsePackets::TargetStopped(Signal::INTERRUPTED)
+                );
+
+                this->activeDebugSession->pendingInterrupt = false;
                 this->activeDebugSession->waitingForBreak = false;
             }
 

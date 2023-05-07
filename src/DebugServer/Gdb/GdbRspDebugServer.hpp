@@ -25,6 +25,7 @@
 
 #include "src/EventManager/Events/TargetControllerStateChanged.hpp"
 #include "src/EventManager/Events/TargetExecutionStopped.hpp"
+#include "src/EventManager/Events/TargetExecutionResumed.hpp"
 
 namespace Bloom::DebugServer::Gdb
 {
@@ -197,5 +198,10 @@ namespace Bloom::DebugServer::Gdb
          * a "stop reply" packet to the client once the target execution stops.
          */
         void onTargetExecutionStopped(const Events::TargetExecutionStopped&);
+
+        /**
+         * Services any pending interrupts.
+         */
+        void onTargetExecutionResumed(const Events::TargetExecutionResumed&);
     };
 }

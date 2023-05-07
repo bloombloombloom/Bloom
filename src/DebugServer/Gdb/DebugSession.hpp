@@ -43,6 +43,8 @@ namespace Bloom::DebugServer::Gdb
          */
         bool waitingForBreak = false;
 
+        bool pendingInterrupt = false;
+
         /**
          * When the user attempts to program the target via GDB's 'load' command, GDB will send a number of
          * FlashWrite (vFlashWrite) packets to Bloom. We group the data in these packets and flush it all at once, upon

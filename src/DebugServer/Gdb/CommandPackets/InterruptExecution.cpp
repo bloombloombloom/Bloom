@@ -18,6 +18,11 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     void InterruptExecution::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::debug("Handling InterruptExecution packet");
 
+        if (targetControllerService.getTargetState() == Targets::TargetState::STOPPED) {
+            debugSession.pendingInterrupt = true;
+            return;
+        }
+
         try {
             targetControllerService.stopTargetExecution();
             debugSession.connection.writePacket(TargetStopped(Signal::INTERRUPTED));
