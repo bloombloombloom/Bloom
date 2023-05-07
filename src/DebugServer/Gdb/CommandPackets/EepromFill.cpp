@@ -35,7 +35,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     }
 
     void EepromFill::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling EepromFill packet");
+        Logger::info("Handling EepromFill packet");
 
         try {
             const auto& targetDescriptor = debugSession.gdbTargetDescriptor.targetDescriptor;

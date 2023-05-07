@@ -49,7 +49,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     }
 
     void FlashWrite::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling FlashWrite packet");
+        Logger::info("Handling FlashWrite packet");
 
         try {
             if (this->buffer.empty()) {

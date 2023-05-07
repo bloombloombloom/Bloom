@@ -53,7 +53,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     }
 
     void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling SetBreakpoint packet");
+        Logger::info("Handling SetBreakpoint packet");
 
         try {
             if (this->type == BreakpointType::UNKNOWN) {

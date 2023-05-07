@@ -49,7 +49,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     }
 
     void FlashErase::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling FlashErase packet");
+        Logger::info("Handling FlashErase packet");
 
         try {
             targetControllerService.enableProgrammingMode();

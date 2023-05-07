@@ -24,7 +24,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     }
 
     void StepExecution::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling StepExecution packet");
+        Logger::info("Handling StepExecution packet");
 
         try {
             targetControllerService.stepTargetExecution(this->fromAddress);

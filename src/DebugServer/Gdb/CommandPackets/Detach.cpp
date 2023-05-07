@@ -21,7 +21,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     {}
 
     void Detach::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling Detach packet");
+        Logger::info("Handling Detach packet");
 
         try {
             if (Services::ProcessService::isManagedByClion()) {

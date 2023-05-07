@@ -29,7 +29,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     {}
 
     void GenerateSvd::handle(DebugSession& debugSession, TargetControllerService&) {
-        Logger::debug("Handling GenerateSvd packet");
+        Logger::info("Handling GenerateSvd packet");
 
         try {
             Logger::info("Generating SVD XML for current target");

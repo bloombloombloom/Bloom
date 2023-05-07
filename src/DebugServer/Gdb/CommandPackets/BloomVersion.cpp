@@ -27,7 +27,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     {}
 
     void BloomVersion::handle(DebugSession& debugSession, TargetControllerService&) {
-        Logger::debug("Handling BloomVersion packet");
+        Logger::info("Handling BloomVersion packet");
 
         debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
             std::string(

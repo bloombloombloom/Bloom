@@ -23,7 +23,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     }
 
     void ContinueExecution::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling ContinueExecution packet");
+        Logger::info("Handling ContinueExecution packet");
 
         try {
             targetControllerService.continueTargetExecution(this->fromAddress, std::nullopt);

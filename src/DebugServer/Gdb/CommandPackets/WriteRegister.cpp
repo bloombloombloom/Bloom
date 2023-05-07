@@ -43,7 +43,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     }
 
     void WriteRegister::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling WriteRegister packet");
+        Logger::info("Handling WriteRegister packet");
 
         try {
             auto targetRegisterDescriptor = debugSession.gdbTargetDescriptor.getTargetRegisterDescriptorFromNumber(

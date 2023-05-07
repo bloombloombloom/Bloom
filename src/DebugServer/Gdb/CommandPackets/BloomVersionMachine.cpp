@@ -26,7 +26,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     {}
 
     void BloomVersionMachine::handle(DebugSession& debugSession, TargetControllerService&) {
-        Logger::debug("Handling BloomVersionMachine packet");
+        Logger::info("Handling BloomVersionMachine packet");
 
         debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
             QJsonDocument(QJsonObject({

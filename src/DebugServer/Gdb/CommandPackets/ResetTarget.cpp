@@ -22,7 +22,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     {}
 
     void ResetTarget::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling ResetTarget packet");
+        Logger::info("Handling ResetTarget packet");
 
         try {
             Logger::warning("Resetting target");

@@ -16,7 +16,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using Exceptions::Exception;
 
     void InterruptExecution::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling InterruptExecution packet");
+        Logger::info("Handling InterruptExecution packet");
 
         if (targetControllerService.getTargetState() == Targets::TargetState::STOPPED) {
             debugSession.pendingInterrupt = true;

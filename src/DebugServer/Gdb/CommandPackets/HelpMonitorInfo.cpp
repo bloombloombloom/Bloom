@@ -26,7 +26,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     {}
 
     void HelpMonitorInfo::handle(DebugSession& debugSession, TargetControllerService&) {
-        Logger::debug("Handling HelpMonitorInfo packet");
+        Logger::info("Handling HelpMonitorInfo packet");
 
         try {
             /*

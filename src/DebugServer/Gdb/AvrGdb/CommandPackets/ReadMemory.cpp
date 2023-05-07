@@ -63,7 +63,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     }
 
     void ReadMemory::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling ReadMemory packet");
+        Logger::info("Handling ReadMemory packet");
 
         try {
             const auto& memoryDescriptorsByType = debugSession.gdbTargetDescriptor.targetDescriptor.memoryDescriptorsByType;

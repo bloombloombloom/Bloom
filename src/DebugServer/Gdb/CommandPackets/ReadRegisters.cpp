@@ -33,7 +33,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     }
 
     void ReadRegisters::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling ReadRegisters packet");
+        Logger::info("Handling ReadRegisters packet");
 
         try {
             const auto& targetDescriptor = debugSession.gdbTargetDescriptor;

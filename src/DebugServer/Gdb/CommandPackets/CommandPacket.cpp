@@ -39,13 +39,13 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
         }
 
         if (packetString.find("vMustReplyEmpty") == 0) {
-            Logger::debug("Handling vMustReplyEmpty");
+            Logger::info("Handling vMustReplyEmpty");
             debugSession.connection.writePacket(EmptyResponsePacket());
             return;
         }
 
         if (packetString.find("qAttached") == 0) {
-            Logger::debug("Handling qAttached");
+            Logger::info("Handling qAttached");
             debugSession.connection.writePacket(ResponsePacket(std::vector<unsigned char>({1})));
             return;
         }

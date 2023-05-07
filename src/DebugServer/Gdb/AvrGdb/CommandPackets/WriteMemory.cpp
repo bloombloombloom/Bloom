@@ -69,7 +69,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     }
 
     void WriteMemory::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling WriteMemory packet");
+        Logger::info("Handling WriteMemory packet");
 
         try {
             const auto& memoryDescriptorsByType = debugSession.gdbTargetDescriptor.targetDescriptor.memoryDescriptorsByType;

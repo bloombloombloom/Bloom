@@ -54,7 +54,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     }
 
     void SupportedFeaturesQuery::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling QuerySupport packet");
+        Logger::info("Handling QuerySupport packet");
 
         if (!this->isFeatureSupported(Feature::HARDWARE_BREAKPOINTS)
             && !this->isFeatureSupported(Feature::SOFTWARE_BREAKPOINTS)

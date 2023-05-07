@@ -20,7 +20,7 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
     {}
 
     void FlashDone::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
-        Logger::debug("Handling FlashDone packet");
+        Logger::info("Handling FlashDone packet");
 
         try {
             if (debugSession.programmingSession.has_value()) {
