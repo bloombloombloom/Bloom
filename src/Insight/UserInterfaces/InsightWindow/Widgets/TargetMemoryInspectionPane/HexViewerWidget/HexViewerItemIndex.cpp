@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cmath>
-#include "src/Logger/Logger.hpp"
 
 namespace Bloom::Widgets
 {
@@ -22,8 +21,13 @@ namespace Bloom::Widgets
         const auto gridPointCount = this->byteItemGrid.size();
 
         const auto startGridPointIndex = static_cast<decltype(this->byteItemGrid)::size_type>(
-            std::floor(
-                static_cast<float>(yStart) / static_cast<float>(HexViewerItemIndex::GRID_SIZE)
+            std::max(
+                static_cast<int>(
+                    std::floor(
+                        static_cast<float>(yStart) / static_cast<float>(HexViewerItemIndex::GRID_SIZE) - 1
+                    )
+                ),
+                0
             )
         );
 
@@ -35,7 +39,7 @@ namespace Bloom::Widgets
             static_cast<decltype(this->byteItemGrid)::size_type>(
                 std::ceil(
                     static_cast<float>(yEnd) / static_cast<float>(HexViewerItemIndex::GRID_SIZE)
-                )
+                ) + 1
             ),
             gridPointCount - 1
         ));
@@ -52,9 +56,14 @@ namespace Bloom::Widgets
         const auto gridPointCount = this->byteItemGrid.size();
 
         const auto startGridPointIndex = static_cast<decltype(this->byteItemGrid)::size_type>(
-            std::floor(
-                static_cast<float>(std::max(position.y(), static_cast<qreal>(0)))
-                    / static_cast<float>(HexViewerItemIndex::GRID_SIZE)
+            std::max(
+                static_cast<int>(
+                    std::floor(
+                        static_cast<float>(std::max(position.y(), static_cast<qreal>(0)))
+                            / static_cast<float>(HexViewerItemIndex::GRID_SIZE) - 1
+                    )
+                ),
+                0
             )
         );
 
