@@ -155,7 +155,6 @@ qt_add_resources(
 
         # Target registers pane
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui"
-        "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/collapse-all.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/expand-all.svg"
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/arrow.svg"
