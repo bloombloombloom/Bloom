@@ -778,6 +778,16 @@ namespace Bloom
             this->eepromInspectionButton->setChecked(false);
             this->eepromInspectionButton->setDisabled(true);
         }
+
+        if (this->flashInspectionPane != nullptr) {
+            this->flashInspectionPane->deactivate();
+            this->flashInspectionPane->deleteLater();
+            this->flashInspectionPane = nullptr;
+
+            this->bottomPanel->setVisible(false);
+            this->flashInspectionButton->setChecked(false);
+            this->flashInspectionButton->setDisabled(true);
+        }
     }
 
     void InsightWindow::deactivate() {
