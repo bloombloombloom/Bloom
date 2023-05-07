@@ -13,6 +13,7 @@ namespace Bloom::Services
         static std::string asciiToUpper(std::string str);
 
         static bool isAscii(const std::string& str);
+        static std::string replaceUnprintable(std::string str);
 
         static std::string toHex(unsigned char value);
         static std::string toHex(const std::vector<unsigned char>& data);

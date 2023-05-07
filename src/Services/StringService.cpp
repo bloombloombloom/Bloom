@@ -29,6 +29,14 @@ namespace Bloom::Services
         });
     }
 
+    std::string StringService::replaceUnprintable(std::string str) {
+        std::transform(str.begin(), str.end(), str.begin(), [] (unsigned char character) {
+            return character < 32 || character > 126 ? '?' : character;
+        });
+
+        return str;
+    }
+
     std::string StringService::toHex(unsigned char value) {
         auto stream = std::stringstream();
         stream << std::hex << std::setfill('0') << std::setw(2) << static_cast<unsigned int>(value);

@@ -13,6 +13,7 @@
 #include "src/Exceptions/Exception.hpp"
 
 #include "src/Logger/Logger.hpp"
+#include "src/Services/StringService.hpp"
 
 namespace Bloom::DebugServer::Gdb
 {
@@ -127,7 +128,12 @@ namespace Bloom::DebugServer::Gdb
                         continue;
                     }
 
-                    Logger::debug("Read GDB packet: " + std::string(rawPacket.begin(), rawPacket.end()));
+                    Logger::debug(
+                        "Read GDB packet: "
+                            + Services::StringService::replaceUnprintable(
+                                std::string(rawPacket.begin(), rawPacket.end())
+                            )
+                    );
 
                     // Acknowledge receipt
                     this->write({'+'});
