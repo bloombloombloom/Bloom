@@ -15,6 +15,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     const AVR8_FAMILY_DB = 'DB';
     const AVR8_FAMILY_DA = 'DA';
     const AVR8_FAMILY_DD = 'DD';
+    const AVR8_FAMILY_EA = 'EA';
     const AVR8_FAMILY_OTHER = 'OTHER';
 
     const AVR8_PHYSICAL_INTERFACE_ISP = 'ISP';
@@ -124,6 +125,9 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             } else if (strtolower(trim($deviceAttributes['family'])) == 'avr dd') {
                 $this->family = self::AVR8_FAMILY_DD;
+
+            } else if (strtolower(trim($deviceAttributes['family'])) == 'avr ea') {
+                $this->family = self::AVR8_FAMILY_EA;
 
             } else {
                 $this->family = self::AVR8_FAMILY_OTHER;
