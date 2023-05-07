@@ -103,6 +103,24 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         [[nodiscard]] std::optional<FuseBitsDescriptor> getSpienFuseBitsDescriptor() const;
 
         /**
+         * Constructs a FuseBitDescriptor for the OCD enable (OCDEN) fuse bit, with information extracted from
+         * the TDF.
+         *
+         * @return
+         *  std::nullopt if the OCDEN bit field could not be found in the TDF.
+         */
+        [[nodiscard]] std::optional<FuseBitsDescriptor> getOcdenFuseBitsDescriptor() const;
+
+        /**
+         * Constructs a FuseBitDescriptor for the JTAG enable (JTAGEN) fuse bit, with information extracted from
+         * the TDF.
+         *
+         * @return
+         *  std::nullopt if the JTAGEN bit field could not be found in the TDF.
+         */
+        [[nodiscard]] std::optional<FuseBitsDescriptor> getJtagenFuseBitsDescriptor() const;
+
+        /**
          * Returns a set of all supported physical interfaces for debugging.
          *
          * @return

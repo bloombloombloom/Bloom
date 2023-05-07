@@ -184,6 +184,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         void updateDwenFuseBit(bool enable);
 
         /**
+         * Updates the On-chip debug enable (OCDEN) fuse bit on the AVR target.
+         *
+         * @param enable
+         *  True to enable the fuse, false to disable it.
+         */
+        void updateOcdenFuseBit(bool enable);
+
+        /**
          * Resolves the program memory section from a program memory address.
          *
          * Currently unused, but will be needed soon.

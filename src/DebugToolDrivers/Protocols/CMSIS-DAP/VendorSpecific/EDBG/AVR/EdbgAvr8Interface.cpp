@@ -305,10 +305,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 }
             }
 
-            this->stop();
-            this->clearAllBreakpoints();
-            this->run();
-
             this->detach();
         }
 
@@ -664,6 +660,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     // EEPROM addresses should be in relative form, for XMEGA (PDI) targets
                     startAddress -= this->targetParameters.eepromStartAddress.value();
                 }
+                break;
+            }
+            case TargetMemoryType::FUSES: {
+                avr8MemoryType = Avr8MemoryType::FUSES;
+                break;
             }
             default: {
                 break;
@@ -759,6 +760,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                         break;
                     }
                 }
+                break;
+            }
+            case TargetMemoryType::FUSES: {
+                avr8MemoryType = Avr8MemoryType::FUSES;
+                break;
             }
             default: {
                 break;
@@ -881,14 +887,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         this->programmingModeEnabled = false;
-
-        if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
-            this->deactivatePhysical();
-            this->setTargetParameters(this->targetParameters);
-            this->targetAttached = false;
-            this->activate();
-            this->stop();
-        }
     }
 
     std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>
@@ -1687,6 +1685,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         TargetMemorySize bytes,
         const std::set<TargetMemoryAddress>& excludedAddresses
     ) {
+        if (type == Avr8MemoryType::FUSES) {
+            if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+                throw Exception("Cannot access AVR fuses via the debugWire interface");
+            }
+        }
+
         if (!excludedAddresses.empty() && (this->avoidMaskedMemoryRead || type != Avr8MemoryType::SRAM)) {
             /*
              * Driver-side masked memory read.
@@ -1805,6 +1809,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         TargetMemoryAddress startAddress,
         const TargetMemoryBuffer& buffer
     ) {
+        if (type == Avr8MemoryType::FUSES) {
+            if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+                throw Exception("Cannot access AVR fuses via the debugWire interface");
+            }
+        }
+
         const auto bytes = static_cast<TargetMemorySize>(buffer.size());
 
         if (this->alignmentRequired(type)) {

@@ -53,5 +53,9 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         if (targetNode["targetPowerCycleDelay"]) {
             this->targetPowerCycleDelay = std::chrono::milliseconds(targetNode["targetPowerCycleDelay"].as<int>());
         }
+
+        if (targetNode["manageOcdenFuseBit"]) {
+            this->manageOcdenFuseBit = targetNode["manageOcdenFuseBit"].as<bool>();
+        }
     }
 }

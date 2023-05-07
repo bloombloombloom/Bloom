@@ -67,6 +67,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          */
         std::chrono::milliseconds targetPowerCycleDelay = std::chrono::milliseconds(250);
 
+        /**
+         * The manageOcdenFuseBit flag determines if Bloom should manage the OCDEN fuse but on JTAG-enabled AVR
+         * targets.
+         *
+         * This parameter is optional, and the function is disabled by default. Users must explicitly enable it in
+         * their target configuration.
+         */
+        bool manageOcdenFuseBit = false;
+
         explicit Avr8TargetConfig(const TargetConfig& targetConfig);
 
     private:

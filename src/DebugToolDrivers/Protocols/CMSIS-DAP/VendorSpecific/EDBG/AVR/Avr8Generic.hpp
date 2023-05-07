@@ -182,6 +182,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * to access general purpose registers when other variants are in use.
          */
         REGISTER_FILE = 0xB8,
+
+        /**
+         * The FUSES memory type can be used to read and write AVR fuses in programming mode.
+         *
+         * Not available for the debugWire config variant.
+         */
+        FUSES = 0xB2,
     };
 
     enum class Avr8ResponseId: unsigned char

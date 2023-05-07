@@ -23,6 +23,7 @@ namespace Bloom::Targets
         FLASH,
         RAM,
         EEPROM,
+        FUSES,
         OTHER,
     };
 

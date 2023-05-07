@@ -8,6 +8,7 @@
 
 #include "src/Logger/Logger.hpp"
 #include "src/Services/PathService.hpp"
+#include "src/Services/StringService.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "Exceptions/DebugWirePhysicalInterfaceError.hpp"
@@ -92,7 +93,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         if (
-            this->targetConfig->manageDwenFuseBit && this->avrIspInterface == nullptr
+            this->targetConfig->manageDwenFuseBit
+            && this->avrIspInterface == nullptr
             && this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
         ) {
             Logger::warning(
@@ -101,10 +103,19 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             );
         }
 
-        this->avr8DebugInterface->configure(this->targetConfig.value());
+        if (
+            this->targetConfig->manageOcdenFuseBit
+            && this->targetConfig->physicalInterface != PhysicalInterface::JTAG
+        ) {
+            Logger::warning(
+                "The 'manageOcdenFuseBit' parameter only applies to JTAG targets. It will be ignored in this session."
+            );
+        }
+
+        this->avr8DebugInterface->configure(*(this->targetConfig));
 
         if (this->avrIspInterface != nullptr) {
-            this->avrIspInterface->configure(targetConfig);
+            this->avrIspInterface->configure(*(this->targetConfig));
         }
     }
 
@@ -211,13 +222,34 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             this->avr8DebugInterface->activate();
         }
 
+        if (
+            this->targetConfig->physicalInterface == PhysicalInterface::JTAG
+            && this->targetConfig->manageOcdenFuseBit
+        ) {
+            Logger::debug("Attempting OCDEN fuse bit management");
+            this->updateOcdenFuseBit(true);
+        }
+
         this->activated = true;
         this->avr8DebugInterface->reset();
     }
 
     void Avr8::deactivate() {
         try {
-            this->avr8DebugInterface->deactivate();
+            this->stop();
+            this->clearAllBreakpoints();
+
+            if (
+                this->targetConfig->physicalInterface == PhysicalInterface::JTAG
+                && this->targetConfig->manageOcdenFuseBit
+            ) {
+                Logger::debug("Attempting OCDEN fuse bit management");
+                this->updateOcdenFuseBit(false);
+
+            } else {
+                this->avr8DebugInterface->deactivate();
+            }
+
             this->activated = false;
 
         } catch (const Exception& exception) {
@@ -942,6 +974,110 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         } catch (const Exception& exception) {
             this->avrIspInterface->deactivate();
+            throw exception;
+        }
+    }
+
+    void Avr8::updateOcdenFuseBit(bool enable) {
+        using Services::PathService;
+        using Services::StringService;
+
+        if (!this->targetDescriptionFile.has_value() || !this->id.has_value()) {
+            throw Exception(
+                "Insufficient target information for managing OCDEN fuse bit - do not use the generic \"avr8\" "
+                    "target name in conjunction with the \"manageOcdenFuseBit\" function. Please update your target "
+                    "configuration."
+            );
+        }
+
+        if (!this->supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)) {
+            throw Exception(
+                "Target does not support JTAG physical interface - check target configuration or "
+                    "report this issue via " + PathService::homeDomainName() + "/report-issue"
+            );
+        }
+
+        const auto ocdenFuseBitsDescriptor = this->targetDescriptionFile->getOcdenFuseBitsDescriptor();
+        const auto jtagenFuseBitsDescriptor = this->targetDescriptionFile->getJtagenFuseBitsDescriptor();
+
+        if (!ocdenFuseBitsDescriptor.has_value()) {
+            throw Exception("Could not find OCDEN bit field in TDF.");
+        }
+
+        if (!jtagenFuseBitsDescriptor.has_value()) {
+            throw Exception("Could not find JTAGEN bit field in TDF.");
+        }
+
+        try {
+            this->enableProgrammingMode();
+
+            const auto ocdenFuseByteValue = this->avr8DebugInterface->readMemory(
+                TargetMemoryType::FUSES,
+                ocdenFuseBitsDescriptor->byteAddress,
+                1
+            ).at(0);
+            const auto jtagenFuseByteValue = jtagenFuseBitsDescriptor->byteAddress == ocdenFuseBitsDescriptor->byteAddress
+                ? ocdenFuseByteValue
+                : this->avr8DebugInterface->readMemory(
+                    TargetMemoryType::FUSES,
+                    jtagenFuseBitsDescriptor->byteAddress,
+                    1
+                ).at(0)
+            ;
+
+            Logger::debug("OCDEN fuse byte value (before update): 0x" + StringService::toHex(ocdenFuseByteValue));
+
+            if ((jtagenFuseByteValue & jtagenFuseBitsDescriptor->bitMask) != 0) {
+                /*
+                 * If we get here, something has gone wrong. The JTAGEN fuse should always be programmed by this point.
+                 * We wouldn't have been able to activate the JTAG physical interface if the fuse wasn't programmed.
+                 *
+                 * This means the data we have on the JTAGEN fuse bit, from the TDF, is likely incorrect. And if that's
+                 * the case, we cannot rely on the data for the OCDEN fuse bit being any better.
+                 */
+                throw Exception(
+                    "Invalid JTAGEN fuse bit value - suspected inaccuracies in TDF data. Please report this to "
+                    "Bloom developers as a matter of urgency, via " + PathService::homeDomainName() + "/report-issue"
+                );
+            }
+
+            if (!static_cast<bool>(ocdenFuseByteValue & ocdenFuseBitsDescriptor->bitMask) == enable) {
+                Logger::debug("OCDEN fuse bit already set to desired value - aborting update operation");
+
+                this->disableProgrammingMode();
+                return;
+            }
+
+            const auto newValue = (enable)
+                ? static_cast<unsigned char>(ocdenFuseByteValue & ~(ocdenFuseBitsDescriptor->bitMask))
+                : static_cast<unsigned char>(ocdenFuseByteValue | ocdenFuseBitsDescriptor->bitMask);
+
+            Logger::debug("New OCDEN fuse byte value (to be written): 0x" + StringService::toHex(newValue));
+
+            Logger::warning("Updating OCDEN fuse bit");
+            this->avr8DebugInterface->writeMemory(
+                TargetMemoryType::FUSES,
+                ocdenFuseBitsDescriptor->byteAddress,
+                {newValue}
+            );
+
+            Logger::debug("Verifying OCDEN fuse bit");
+            const auto postUpdateOcdenByteValue = this->avr8DebugInterface->readMemory(
+                TargetMemoryType::FUSES,
+                ocdenFuseBitsDescriptor->byteAddress,
+                1
+            ).at(0);
+
+            if (postUpdateOcdenByteValue != newValue) {
+                throw Exception("Failed to update OCDEN fuse bit - post-update verification failed");
+            }
+
+            Logger::info("OCDEN fuse bit updated");
+
+            this->disableProgrammingMode();
+
+        } catch (const Exception& exception) {
+            this->disableProgrammingMode();
             throw exception;
         }
     }

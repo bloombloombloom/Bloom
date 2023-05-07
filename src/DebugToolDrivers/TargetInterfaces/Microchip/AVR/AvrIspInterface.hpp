@@ -13,6 +13,14 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr
     /**
      * Many AVRs can be programmed via an SPI interface. Some debug tools provide access to this interface via the AVR
      * In-System Programming (ISP) protocol.
+     *
+     * This interface class is incomplete - it only provides the ability to read the device ID and access AVR fuses and
+     * lockbit bytes (as that's all we need, for now).
+     *
+     * Currently, Bloom only uses the ISP interface for accessing fuses and lockbits on debugWire targets. We can't
+     * access fuses via the debugWire interface, so we have to use the ISP interface.
+     *
+     * @see Avr8::updateDwenFuseBit() for more.
      */
     class AvrIspInterface
     {

@@ -394,6 +394,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         return this->getFuseBitsDescriptorByName("spien");
     }
 
+    std::optional<FuseBitsDescriptor> TargetDescriptionFile::getOcdenFuseBitsDescriptor() const {
+        return this->getFuseBitsDescriptorByName("ocden");
+    }
+
+    std::optional<FuseBitsDescriptor> TargetDescriptionFile::getJtagenFuseBitsDescriptor() const {
+        return this->getFuseBitsDescriptorByName("jtagen");
+    }
+
     void TargetDescriptionFile::loadSupportedPhysicalInterfaces() {
         auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
            {"updi", PhysicalInterface::UPDI},
@@ -665,6 +673,24 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     std::optional<FuseBitsDescriptor> TargetDescriptionFile::getFuseBitsDescriptorByName(
         const std::string& fuseBitName
     ) const {
+        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
+        std::uint32_t fuseAddressOffset = 0;
+
+        const auto fusePeripheralModuleIt = peripheralModules.find("fuse");
+        if (fusePeripheralModuleIt != peripheralModules.end()) {
+            const auto& fusePeripheralModule = fusePeripheralModuleIt->second;
+
+            const auto fuseInstanceIt = fusePeripheralModule.instancesMappedByName.find("fuse");
+            if (fuseInstanceIt != fusePeripheralModule.instancesMappedByName.end()) {
+                const auto& fuseInstance = fuseInstanceIt->second;
+
+                const auto fuseRegisterGroupIt = fuseInstance.registerGroupsMappedByName.find("fuse");
+                if (fuseRegisterGroupIt != fuseInstance.registerGroupsMappedByName.end()) {
+                    fuseAddressOffset = fuseRegisterGroupIt->second.offset.value_or(0);
+                }
+            }
+        }
+
         const auto fuseModuleIt = this->modulesMappedByName.find("fuse");
 
         if (fuseModuleIt == this->modulesMappedByName.end()) {
@@ -687,7 +713,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             {"extended", FuseType::EXTENDED},
         });
 
-        for (const auto&[fuseTypeName, fuse] : fuseRegisterGroup.registersMappedByName) {
+
+        for (const auto& [fuseTypeName, fuse] : fuseRegisterGroup.registersMappedByName) {
             const auto fuseTypeIt = fuseTypesByName.find(fuseTypeName);
             if (fuseTypeIt == fuseTypesByName.end()) {
                 // Unknown fuse type name
@@ -698,6 +725,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
             if (fuseBitFieldIt != fuse.bitFieldsMappedByName.end()) {
                 return FuseBitsDescriptor(
+                    fuseAddressOffset + fuse.offset,
                     fuseTypeIt->second,
                     fuseBitFieldIt->second.mask
                 );

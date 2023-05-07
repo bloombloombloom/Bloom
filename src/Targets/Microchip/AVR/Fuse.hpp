@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Bloom::Targets::Microchip::Avr
 {
     enum class FuseType: std::uint8_t
@@ -24,6 +26,8 @@ namespace Bloom::Targets::Microchip::Avr
 
     struct FuseBitsDescriptor
     {
+        TargetMemoryAddress byteAddress;
+
         /**
          * The type of the fuse byte in which the fuse bits resides.
          */
@@ -34,8 +38,9 @@ namespace Bloom::Targets::Microchip::Avr
          */
         std::uint8_t bitMask;
 
-        FuseBitsDescriptor(FuseType fuseType, std::uint8_t bitMask)
-            : fuseType(fuseType)
+        FuseBitsDescriptor(TargetMemoryAddress byteAddress, FuseType fuseType, std::uint8_t bitMask)
+            : byteAddress(byteAddress)
+            , fuseType(fuseType)
             , bitMask(bitMask)
         {}
     };
