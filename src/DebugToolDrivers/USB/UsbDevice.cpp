@@ -4,6 +4,7 @@
 
 #include "src/Logger/Logger.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
+#include "src/TargetController/Exceptions/DeviceNotFound.hpp"
 
 namespace Bloom::Usb
 {
@@ -25,7 +26,7 @@ namespace Bloom::Usb
         auto devices = this->findMatchingDevices(this->vendorId, this->productId);
 
         if (devices.empty()) {
-            throw DeviceInitializationFailure(
+            throw DeviceNotFound(
                 "Failed to find USB device with matching vendor and product ID. Please examine the debug tool's USB "
                 "connection, as well as the selected environment's debug tool configuration, in bloom.yaml"
             );

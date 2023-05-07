@@ -9,9 +9,6 @@
 #include "src/Services/ProcessService.hpp"
 #include "src/Logger/Logger.hpp"
 
-#include "src/TargetController/Exceptions/DeviceFailure.hpp"
-#include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
-#include "src/Exceptions/TargetControllerStartupFailure.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace Bloom::TargetController
@@ -96,14 +93,6 @@ namespace Bloom::TargetController
                     this->suspend();
                 }
             }
-
-        } catch (const TargetControllerStartupFailure& exception) {
-            Logger::error("TargetController failed to start up. See below for errors:");
-            Logger::error(exception.getMessage());
-
-        } catch (const Exception& exception) {
-            Logger::error("The TargetController encountered a fatal error. See below for errors:");
-            Logger::error(exception.getMessage());
 
         } catch (const std::exception& exception) {
             Logger::error("The TargetController encountered a fatal error. See below for errors:");
