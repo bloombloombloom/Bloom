@@ -32,7 +32,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         this->targetConfig = Avr8TargetConfig(targetConfig);
 
         if (this->targetConfig->name == "avr8") {
-            Logger::warning("The \"avr8\" target name will be deprecated in a later version.");
+            Logger::warning("The \"avr8\" target name is deprecated and will be removed in a later version.");
         }
 
         if (this->family.has_value()) {
