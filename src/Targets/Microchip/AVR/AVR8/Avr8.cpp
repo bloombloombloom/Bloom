@@ -31,6 +31,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         // Extract AVR8 specific target config
         this->targetConfig = Avr8TargetConfig(targetConfig);
 
+        if (this->targetConfig->name == "avr8") {
+            Logger::warning("The \"avr8\" target name will be deprecated in a later version.");
+        }
+
         if (this->family.has_value()) {
             this->avr8DebugInterface->setFamily(this->family.value());
 
