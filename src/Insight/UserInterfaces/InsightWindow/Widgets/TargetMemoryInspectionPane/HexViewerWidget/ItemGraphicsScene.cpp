@@ -563,6 +563,7 @@ namespace Bloom::Widgets
         }
 
         this->state.hoveredByteItem = &byteItem;
+        this->update();
 
         if (this->state.settings.highlightHoveredRowAndCol) {
             const auto byteItemScenePos = byteItem.position();
@@ -590,6 +591,7 @@ namespace Bloom::Widgets
         this->hoverRectY->setVisible(false);
         this->hoverRectX->update();
         this->hoverRectY->update();
+        this->update();
 
         emit this->hoveredAddress(std::nullopt);
     }
