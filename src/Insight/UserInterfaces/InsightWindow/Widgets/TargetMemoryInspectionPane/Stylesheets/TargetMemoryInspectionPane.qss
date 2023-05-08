@@ -88,7 +88,7 @@
 }
 
 #target-memory-inspection-pane #rh-side-bar #manage-memory-snapshots-btn #label {
-    qproperty-bottomMargin: 4;
+    qproperty-bottomMargin: 2;
     color: #999a9d;
 
 }

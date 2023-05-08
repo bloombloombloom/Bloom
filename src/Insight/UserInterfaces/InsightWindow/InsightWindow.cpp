@@ -137,7 +137,7 @@ namespace Bloom
         auto* targetRegisterButtonLayout = this->targetRegistersButton->findChild<QVBoxLayout*>();
         auto* registersBtnLabel = new RotatableLabel(270, "Registers", this->targetRegistersButton);
         registersBtnLabel->setObjectName("target-registers-btn-label");
-        registersBtnLabel->setContentsMargins(4, 4, 10, 0);
+        registersBtnLabel->setContentsMargins(4, 4, 10, 2);
         targetRegisterButtonLayout->insertWidget(0, registersBtnLabel, 0, Qt::AlignTop);
 
         this->bottomMenuBar = this->container->findChild<QWidget*>("bottom-menu-bar");

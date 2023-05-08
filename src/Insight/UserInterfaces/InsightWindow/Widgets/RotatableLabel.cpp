@@ -37,7 +37,7 @@ namespace Bloom::Widgets
 
         } else if (this->angle % 90 == 0) {
             size.setHeight(textSize.width());
-            size.setWidth(textSize.height());
+            size.setWidth(this->width());
 
         } else {
             auto angle = this->angle;
