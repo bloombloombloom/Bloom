@@ -132,7 +132,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             {Avr8CommandFailureCode::ILLEGAL_CONTROL_OR_STATUS_BITS, "Illegal control/status bits"},
             {Avr8CommandFailureCode::CRC_MISMATCH, "CRC mismatch"},
             {Avr8CommandFailureCode::FAILED_TO_ENABLE_OCD, "Failed to enable OCD"},
-            {Avr8CommandFailureCode::DEVICE_NOT_UNDER_CONTROL, "Device not under control"},
+            {Avr8CommandFailureCode::DEVICE_NOT_UNDER_CONTROL, "Device not under control - check OCDEN fuse bit (if applicable)"},
             {Avr8CommandFailureCode::ERROR_WHEN_READING_PC, "Error when reading PC"},
             {Avr8CommandFailureCode::ERROR_WHEN_READING_REGISTER, "Error when reading register"},
             {Avr8CommandFailureCode::ERROR_WHILE_READING, "Error while reading"},
