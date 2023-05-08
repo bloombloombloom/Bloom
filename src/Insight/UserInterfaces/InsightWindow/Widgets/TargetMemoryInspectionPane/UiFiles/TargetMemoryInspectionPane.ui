@@ -253,7 +253,7 @@
                                             <number>22</number>
                                         </property>
                                         <property name="minimumHeight">
-                                            <number>100</number>
+                                            <number>105</number>
                                         </property>
                                         <property name="checkable">
                                             <bool>true</bool>
