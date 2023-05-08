@@ -74,6 +74,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             this->maximumMemoryAccessSizePerRequest = maximumSize;
         }
 
+        void setReactivateJtagTargetPostProgrammingMode(bool reactivateJtagTargetPostProgrammingMode) {
+            this->reactivateJtagTargetPostProgrammingMode = reactivateJtagTargetPostProgrammingMode;
+        }
+
         /*
          * The public methods below implement the interface defined by the Avr8Interface class.
          * See the comments in that class for more info on the expected behaviour of each method.
@@ -327,6 +331,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * See the comment for EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest().
          */
         std::optional<Targets::TargetMemorySize> maximumMemoryAccessSizePerRequest;
+
+        bool reactivateJtagTargetPostProgrammingMode = false;
 
         /**
          * We keep record of the current target state for caching purposes. We'll only refresh the target state if the

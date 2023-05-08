@@ -18,6 +18,7 @@ namespace Bloom::DebugToolDrivers
 
         try {
             EdbgDevice::init();
+            this->edbgAvr8Interface->setReactivateJtagTargetPostProgrammingMode(true);
 
         } catch (const DeviceNotFound& exception) {
             /*
