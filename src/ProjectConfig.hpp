@@ -5,6 +5,7 @@
 #include <string>
 #include <optional>
 #include <yaml-cpp/yaml.h>
+#include <optional>
 
 namespace Bloom
 {
