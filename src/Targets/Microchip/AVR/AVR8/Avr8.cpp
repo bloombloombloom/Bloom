@@ -1002,6 +1002,18 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             );
         }
 
+        const auto targetSignature = this->avr8DebugInterface->getDeviceId();
+        const auto tdSignature = this->targetDescriptionFile->getTargetSignature();
+
+        if (targetSignature != tdSignature) {
+            throw Exception(
+                "Failed to validate connected target - target signature mismatch.\nThe target signature"
+                    " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
+                    + tdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the "
+                    + "configuration file (bloom.yaml)."
+            );
+        }
+
         const auto ocdenFuseBitsDescriptor = this->targetDescriptionFile->getOcdenFuseBitsDescriptor();
         const auto jtagenFuseBitsDescriptor = this->targetDescriptionFile->getJtagenFuseBitsDescriptor();
 
