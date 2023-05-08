@@ -96,6 +96,7 @@ namespace Bloom::Widgets
         QWidget* bottomBar = nullptr;
         QHBoxLayout* bottomBarLayout = nullptr;
         Label* memoryCapacityLabel = nullptr;
+        Label* memoryTypeLabel = nullptr;
         Label* diffCountLabel = nullptr;
 
         TaskProgressIndicator* taskProgressIndicator = nullptr;

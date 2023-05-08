@@ -224,12 +224,16 @@ namespace Bloom::Widgets
         this->bottomBarLayout = this->bottomBar->findChild<QHBoxLayout*>();
 
         this->memoryCapacityLabel = this->bottomBar->findChild<Label*>("memory-capacity-label");
+        this->memoryTypeLabel = this->bottomBar->findChild<Label*>("memory-type-label");
         this->diffCountLabel = this->bottomBar->findChild<Label*>("diff-count-label");
 
         this->memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->hexViewerDataA->size()) + " bytes");
+        this->memoryTypeLabel->setText(EnumToStringMappings::targetMemoryTypes.at(
+            this->memoryDescriptor.type).toUpper()
+        );
 
         this->taskProgressIndicator = new TaskProgressIndicator(this);
-        this->bottomBarLayout->insertWidget(5, this->taskProgressIndicator);
+        this->bottomBarLayout->insertWidget(7, this->taskProgressIndicator);
 
         this->setSyncHexViewerSettingsEnabled(this->settings.syncHexViewerSettings);
         this->setSyncHexViewerScrollEnabled(this->settings.syncHexViewerScroll);

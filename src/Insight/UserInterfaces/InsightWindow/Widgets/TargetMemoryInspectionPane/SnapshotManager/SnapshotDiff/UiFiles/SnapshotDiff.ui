@@ -315,6 +315,16 @@
                             <widget class="QFrame" name="separator"/>
                         </item>
                         <item>
+                            <widget class="Label" name="memory-type-label">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="separator"/>
+                        </item>
+                        <item>
                             <widget class="Label" name="diff-count-label">
                                 <property name="sizePolicy">
                                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>

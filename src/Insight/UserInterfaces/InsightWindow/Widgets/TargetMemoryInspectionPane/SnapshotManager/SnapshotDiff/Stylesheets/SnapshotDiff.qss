@@ -80,6 +80,7 @@
 }
 
 #snapshot-diff #memory-capacity-label,
+#snapshot-diff #memory-type-label,
 #snapshot-diff #diff-count-label {
     padding: 1px 5px;
     color: #8a8a8d;
