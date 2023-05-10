@@ -16,7 +16,6 @@
 #include "TargetExecutionResumed.hpp"
 #include "TargetExecutionStopped.hpp"
 #include "MemoryWrittenToTarget.hpp"
-#include "InsightThreadStateChanged.hpp"
 #include "TargetReset.hpp"
 #include "ProgrammingModeEnabled.hpp"
 #include "ProgrammingModeDisabled.hpp"
