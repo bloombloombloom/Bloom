@@ -124,3 +124,27 @@ sudo cmake --install ./ --prefix [SOME_OTHER_INSTALLATION_DIR];
   having to supply the full path: `sudo ln -s /opt/bloom/bin/bloom /usr/bin/;`
 - If you're installing on Ubuntu 20.04 or older, you may need to move the installed udev rules, as they're expected
   to reside in `/lib/udev/rules.d` on those systems. Move them via: `sudo mv /usr/lib/udev/rules.d/99-bloom.rules /lib/udev/rules.d/;`
+
+### Excluding Insight at build time
+
+The Insight component can be excluded at build time, via the `EXCLUDE_INSIGHT` flag.
+You'll still need to satisfy the Qt dependency on the build machine, as other parts of Bloom use Qt, but you'll no
+longer need to install GUI dependencies on every machine you intend to run Bloom on. Just build it once and distribute
+the binary, along with the necessary shared objects.
+
+To identify the necessary shared objects, copy the binary to one of those machines and run `ldd [PATH_TO_BLOOM_BINARY]`.
+That will output a list of all the dependencies that `ld` couldn't satisfy - those will be what you need to distribute
+(or manually install on each machine).
+
+#### Example build excluding Insight
+
+```shell
+# Build Bloom in [SOME_BUILD_DIR]
+mkdir [SOME_BUILD_DIR];
+cd [SOME_BUILD_DIR];
+
+cmake [PATH_TO_BLOOM_SOURCE] -DEXCLUDE_INSIGHT=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=[PATH_TO_QT_INSTALLATION]/gcc_64/;
+cmake --build ./;
+
+...
+```

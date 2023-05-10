@@ -8,14 +8,18 @@
 #include <QJsonObject>
 
 #include "src/Targets/TargetMemory.hpp"
+
+#ifndef EXCLUDE_INSIGHT
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelState.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneState.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPaneSettings.hpp"
+#endif
 
 #include "src/Helpers/BiMap.hpp"
 
 namespace Bloom
 {
+#ifndef EXCLUDE_INSIGHT
     struct InsightProjectSettings
     {
     public:
@@ -65,10 +69,13 @@ namespace Bloom
 
         [[nodiscard]] QJsonObject paneStateToJson(const Widgets::PaneState& paneState) const;
     };
+#endif
 
     struct ProjectSettings
     {
+#ifndef EXCLUDE_INSIGHT
         InsightProjectSettings insightSettings;
+#endif
 
         ProjectSettings() = default;
         explicit ProjectSettings(const QJsonObject& jsonObject);

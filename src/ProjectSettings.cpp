@@ -9,19 +9,24 @@
 namespace Bloom
 {
     ProjectSettings::ProjectSettings(const QJsonObject& jsonObject) {
+#ifndef EXCLUDE_INSIGHT
         if (jsonObject.contains("insight")) {
             this->insightSettings = InsightProjectSettings(jsonObject.find("insight")->toObject());
         }
+#endif
     }
 
     QJsonObject ProjectSettings::toJson() const {
         auto projectSettingsObj = QJsonObject();
 
+#ifndef EXCLUDE_INSIGHT
         projectSettingsObj.insert("insight", this->insightSettings.toJson());
+#endif
 
         return projectSettingsObj;
     }
 
+#ifndef EXCLUDE_INSIGHT
     InsightProjectSettings::InsightProjectSettings(const QJsonObject& jsonObject) {
         if (jsonObject.contains("mainWindowSize")) {
             const auto mainWindowSizeObj = jsonObject.find("mainWindowSize")->toObject();
@@ -351,4 +356,5 @@ namespace Bloom
 
         return json;
     }
+#endif
 }

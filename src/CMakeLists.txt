@@ -33,4 +33,7 @@ add_subdirectory(DebugToolDrivers)
 add_subdirectory(Targets)
 add_subdirectory(TargetController)
 add_subdirectory(DebugServer)
-add_subdirectory(Insight)
+
+if (NOT ${EXCLUDE_INSIGHT})
+    add_subdirectory(Insight)
+endif()

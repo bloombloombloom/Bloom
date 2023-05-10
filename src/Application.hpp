@@ -12,7 +12,11 @@
 
 #include "src/TargetController/TargetControllerComponent.hpp"
 #include "src/DebugServer/DebugServerComponent.hpp"
+
+#ifndef EXCLUDE_INSIGHT
 #include "src/Insight/Insight.hpp"
+#endif
+
 #include "src/SignalHandler/SignalHandler.hpp"
 
 #include "src/ProjectConfig.hpp"
@@ -80,6 +84,7 @@ namespace Bloom
         std::unique_ptr<DebugServer::DebugServerComponent> debugServer = nullptr;
         std::thread debugServerThread;
 
+#ifndef EXCLUDE_INSIGHT
         /**
          * Insight is, effectively, a small Qt application that serves a GUI to the user. It occupies the main thread,
          * as well as a single worker thread, and possibly other threads created by Qt.
@@ -95,6 +100,7 @@ namespace Bloom
          * as we want to manage the lifetime of the object here.
          */
         std::unique_ptr<Insight> insight = nullptr;
+#endif
 
         /**
          * Configuration extracted from the user's project configuration file.

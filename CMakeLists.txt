@@ -11,15 +11,7 @@ set(ENABLE_SANITIZERS off)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-find_package(yaml-cpp 0.7.0 REQUIRED)
-find_package(Qt6Core REQUIRED)
-find_package(Qt6Gui REQUIRED)
-find_package(Qt6Widgets REQUIRED)
-find_package(Qt6Xml REQUIRED)
-find_package(Qt6Svg REQUIRED)
-find_package(Qt6UiTools REQUIRED)
-find_package(Qt6SvgWidgets REQUIRED)
-find_package(Qt6Network REQUIRED)
+option(EXCLUDE_INSIGHT "Exclude the Insight component from this build" OFF)
 
 set(CMAKE_SKIP_BUILD_RPATH false)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
@@ -52,6 +44,39 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 endif()
 
 add_executable(Bloom)
+set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
+
+find_package(yaml-cpp 0.7.0 REQUIRED)
+find_package(Qt6Core REQUIRED)
+find_package(Qt6Xml REQUIRED)
+
+if (NOT ${EXCLUDE_INSIGHT})
+    find_package(Qt6Widgets REQUIRED)
+    find_package(Qt6Gui REQUIRED)
+    find_package(Qt6Widgets REQUIRED)
+    find_package(Qt6Xml REQUIRED)
+    find_package(Qt6Svg REQUIRED)
+    find_package(Qt6UiTools REQUIRED)
+    find_package(Qt6SvgWidgets REQUIRED)
+    find_package(Qt6Network REQUIRED)
+
+    target_link_libraries(Bloom Qt6::Gui)
+    target_link_libraries(Bloom Qt6::UiTools)
+    target_link_libraries(Bloom Qt6::Widgets)
+    target_link_libraries(Bloom Qt6::Xml)
+    target_link_libraries(Bloom Qt6::Svg)
+    target_link_libraries(Bloom Qt6::SvgWidgets)
+    target_link_libraries(Bloom Qt6::Network)
+endif()
+
+target_link_libraries(Bloom -lstdc++fs)
+target_link_libraries(Bloom -lpthread)
+target_link_libraries(Bloom -lusb-1.0)
+target_link_libraries(Bloom -lhidapi-libusb)
+target_link_libraries(Bloom -lprocps)
+target_link_libraries(Bloom ${YAML_CPP_LIBRARIES})
+target_link_libraries(Bloom Qt6::Core)
+target_link_libraries(Bloom Qt6::Xml)
 
 target_sources(
     Bloom
@@ -70,8 +95,6 @@ qt_add_resources(
 )
 
 add_subdirectory(src)
-
-set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
 target_include_directories(Bloom PUBLIC ./)
 target_include_directories(Bloom PUBLIC ${YAML_CPP_INCLUDE_DIR})
 
@@ -83,20 +106,10 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     target_include_directories(Bloom PUBLIC /opt/Qt/6.2.4/Src)
 endif()
 
-target_link_libraries(Bloom -lstdc++fs)
-target_link_libraries(Bloom -lpthread)
-target_link_libraries(Bloom -lusb-1.0)
-target_link_libraries(Bloom -lhidapi-libusb)
-target_link_libraries(Bloom -lprocps)
-target_link_libraries(Bloom ${YAML_CPP_LIBRARIES})
-target_link_libraries(Bloom Qt6::Core)
-target_link_libraries(Bloom Qt6::Gui)
-target_link_libraries(Bloom Qt6::UiTools)
-target_link_libraries(Bloom Qt6::Widgets)
-target_link_libraries(Bloom Qt6::Xml)
-target_link_libraries(Bloom Qt6::Svg)
-target_link_libraries(Bloom Qt6::SvgWidgets)
-target_link_libraries(Bloom Qt6::Network)
+target_compile_definitions(
+    Bloom
+    PUBLIC $<$<BOOL:${EXCLUDE_INSIGHT}>:EXCLUDE_INSIGHT>
+)
 
 target_compile_options(
     Bloom

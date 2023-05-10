@@ -47,8 +47,16 @@ namespace Bloom
             Logger::warning("This is a debug build - some functions may not work as expected");
 #endif
 
+#ifdef EXCLUDE_INSIGHT
+            Logger::warning(
+                "The Insight component has been excluded from this build. All Insight related configuration parameters "
+                "will be ignored."
+            );
+#endif
+
             this->startup();
 
+#ifndef EXCLUDE_INSIGHT
             if (this->insightConfig->insightEnabled) {
                 this->insight = std::make_unique<Insight>(
                     *(this->applicationEventListener),
@@ -72,6 +80,7 @@ namespace Bloom
                 this->shutdown();
                 return EXIT_SUCCESS;
             }
+#endif
 
             // Main event loop
             while (Thread::getThreadState() == ThreadState::READY) {
@@ -165,9 +174,11 @@ namespace Bloom
         Thread::setThreadState(ThreadState::SHUTDOWN_INITIATED);
         Logger::info("Shutting down Bloom");
 
+#ifndef EXCLUDE_INSIGHT
         if (this->insight != nullptr) {
             this->insight->shutdown();
         }
+#endif
 
         this->stopDebugServer();
         this->stopTargetController();
@@ -283,6 +294,7 @@ namespace Bloom
 
         this->environmentConfig = selectedEnvironmentIt->second;
 
+#ifndef EXCLUDE_INSIGHT
         if (this->environmentConfig->insightConfig.has_value()) {
             this->insightConfig = this->environmentConfig->insightConfig.value();
 
@@ -292,6 +304,7 @@ namespace Bloom
         } else {
             throw InvalidConfig("Insight configuration missing.");
         }
+#endif
 
         if (this->environmentConfig->debugServerConfig.has_value()) {
             this->debugServerConfig = this->environmentConfig->debugServerConfig.value();
@@ -332,6 +345,10 @@ namespace Bloom
 
         std::cout << "Bloom v" << Application::VERSION.toString() << "\n";
 
+#ifdef EXCLUDE_INSIGHT
+        std::cout << "Insight has been excluded from this build.\n";
+#endif
+
 #ifdef BLOOM_DEBUG_BUILD
         std::cout << "DEBUG BUILD - Compilation timestamp: " << __DATE__ << " " << __TIME__ << "\n";
 #endif
@@ -344,6 +361,11 @@ namespace Bloom
     int Application::presentVersionMachineText() {
         Logger::silence();
 
+        auto insightAvailable = true;
+#ifdef EXCLUDE_INSIGHT
+        insightAvailable = false;
+#endif
+
         std::cout << QJsonDocument(QJsonObject({
             {"version", QString::fromStdString(Application::VERSION.toString())},
             {"components", QJsonObject({
@@ -351,6 +373,7 @@ namespace Bloom
                 {"minor", Application::VERSION.minor},
                 {"patch", Application::VERSION.patch},
             })},
+            {"insightAvailable", insightAvailable},
         })).toJson().toStdString();
 
         return EXIT_SUCCESS;
