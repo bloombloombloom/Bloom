@@ -95,7 +95,7 @@ If you already have another version of Qt installed, you may need to temporarily
 sudo nano /usr/lib/x86_64-linux-gnu/qt-default/qtchooser/default.conf
 ```
 
-### Example build
+#### Example build
 
 ```shell
 # Build Bloom in [SOME_BUILD_DIR]
