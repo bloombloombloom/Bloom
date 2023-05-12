@@ -950,6 +950,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                     {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                 }
             },
+            {
+                Family::EA,
+                {
+                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                }
+            },
         });
     }
 

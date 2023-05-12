@@ -177,6 +177,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 {"avr da", Family::DA},
                 {"avr db", Family::DB},
                 {"avr dd", Family::DD},
+                {"avr ea", Family::EA},
             };
         };
 

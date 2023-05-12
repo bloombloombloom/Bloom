@@ -10,5 +10,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         DB,
         DA,
         DD,
+        EA,
     };
 }
