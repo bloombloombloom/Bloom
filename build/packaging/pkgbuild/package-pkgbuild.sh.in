@@ -36,6 +36,9 @@ echo "Copying distributed binaries...";
 cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/lib ${BLOOM_INSTALLATION_DIR}/;
 cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/plugins ${BLOOM_INSTALLATION_DIR}/;
 
+# We don't ship libstdc++ shared objects in Arch packages - the package manager will install the one we need
+rm -f ${BLOOM_INSTALLATION_DIR}/lib/libstdc++.so.*;
+
 echo "Copying udev rules...";
 cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/udevrules/99-bloom.rules ${BUILD_ROOT_DIR}/usr/lib/udev/rules.d/;
 
