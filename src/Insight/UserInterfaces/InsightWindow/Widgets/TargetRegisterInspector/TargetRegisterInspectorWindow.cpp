@@ -118,7 +118,7 @@ namespace Bloom::Widgets
             QString::fromStdString(this->registerDescriptor.description.value_or(""))
         );
 
-        if (!this->registerDescriptor.writable) {
+        if (!this->registerDescriptor.access.writable) {
             this->registerValueTextInput->setDisabled(true);
             this->applyButton->setVisible(false);
 
@@ -146,7 +146,7 @@ namespace Bloom::Widgets
             auto* bitsetWidget = new BitsetWidget(
                 byteNumber,
                 this->registerValue.at(registerByteIndex),
-                !this->registerDescriptor.writable,
+                !this->registerDescriptor.access.writable,
                 this
             );
 
@@ -273,7 +273,7 @@ namespace Bloom::Widgets
             this->registerValueBitsetWidgetContainer->setDisabled(false);
             this->refreshValueButton->setDisabled(false);
 
-            if (this->registerDescriptor.writable) {
+            if (this->registerDescriptor.access.writable) {
                 this->registerValueTextInput->setDisabled(false);
                 this->applyButton->setDisabled(false);
             }
@@ -319,7 +319,7 @@ namespace Bloom::Widgets
     void TargetRegisterInspectorWindow::refreshRegisterValue() {
         this->registerValueContainer->setDisabled(true);
         const auto readTargetRegisterTask = QSharedPointer<ReadTargetRegisters>(
-            new ReadTargetRegisters({this->registerDescriptor}),
+            new ReadTargetRegisters({this->registerDescriptor.id}),
             &QObject::deleteLater
         );
 
@@ -331,7 +331,7 @@ namespace Bloom::Widgets
                 this->registerValueContainer->setDisabled(false);
 
                 for (const auto& targetRegister : targetRegisters) {
-                    if (targetRegister.descriptor == this->registerDescriptor) {
+                    if (targetRegister.descriptorId == this->registerDescriptor.id) {
                         this->setValue(targetRegister.value);
                     }
                 }
@@ -353,7 +353,7 @@ namespace Bloom::Widgets
     void TargetRegisterInspectorWindow::applyChanges() {
         this->registerValueContainer->setDisabled(true);
         const auto targetRegister = Targets::TargetRegister(
-            this->registerDescriptor,
+            this->registerDescriptor.id,
             this->registerValue
         );
         const auto writeRegisterTask = QSharedPointer<WriteTargetRegister>(

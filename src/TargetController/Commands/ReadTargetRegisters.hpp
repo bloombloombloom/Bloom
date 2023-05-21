@@ -15,10 +15,10 @@ namespace Bloom::TargetController::Commands
         static constexpr CommandType type = CommandType::READ_TARGET_REGISTERS;
         static const inline std::string name = "ReadTargetRegisters";
 
-        Targets::TargetRegisterDescriptors descriptors;
+        std::set<Targets::TargetRegisterDescriptorId> descriptorIds;
 
-        explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors)
-            : descriptors(descriptors)
+        explicit ReadTargetRegisters(const std::set<Targets::TargetRegisterDescriptorId>& descriptorIds)
+            : descriptorIds(descriptorIds)
         {};
 
         [[nodiscard]] CommandType getType() const override {

@@ -326,42 +326,26 @@ namespace Bloom::TargetController
 
     std::map<
         std::string,
-        std::function<std::unique_ptr<Targets::Target>()>
+        std::function<std::unique_ptr<Targets::Target>(const TargetConfig&)>
     > TargetControllerComponent::getSupportedTargets() {
         using Avr8TargetDescriptionFile = Targets::Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile;
 
-        auto mapping = std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>>({
-            {
-                "avr8",
-                [] {
-                    return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>();
-                }
-            },
-        });
+        auto mapping = std::map<std::string, std::function<std::unique_ptr<Targets::Target>(const TargetConfig&)>>();
 
         // Include all targets from AVR8 target description files
         const auto avr8PdMapping = Avr8TargetDescriptionFile::getTargetDescriptionMapping();
 
-        for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); mapIt++) {
-            // Each target signature maps to an array of targets, as numerous targets can possess the same signature.
-            const auto targets = mapIt.value().toArray();
+        for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); ++mapIt) {
+            const auto mappingObject = mapIt.value().toObject();
+            const auto targetName = mappingObject.find("name").value().toString().toLower().toStdString();
 
-            for (auto targetIt = targets.begin(); targetIt != targets.end(); targetIt++) {
-                const auto targetName = targetIt->toObject().find("targetName").value().toString()
-                    .toLower().toStdString();
-                const auto targetSignatureHex = mapIt.key().toLower().toStdString();
-
-                if (!mapping.contains(targetName)) {
-                    mapping.insert({
-                        targetName,
-                        [targetName, targetSignatureHex] {
-                            return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>(
-                                targetName,
-                                Targets::Microchip::Avr::TargetSignature(targetSignatureHex)
-                            );
-                        }
-                    });
-                }
+            if (!mapping.contains(targetName)) {
+                mapping.insert({
+                    targetName,
+                    [targetName] (const TargetConfig& targetConfig) {
+                        return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>(targetConfig);
+                    }
+                });
             }
         }
 
@@ -467,7 +451,7 @@ namespace Bloom::TargetController
         this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
 
         this->lastTargetState = TargetState::UNKNOWN;
-        this->cachedTargetDescriptor = std::nullopt;
+        this->targetDescriptor = std::nullopt;
         this->registerDescriptorsByMemoryType.clear();
         this->registerAddressRangeByMemoryType.clear();
 
@@ -518,7 +502,6 @@ namespace Bloom::TargetController
             );
         }
 
-        // Initiate debug tool and target
         this->debugTool = debugToolIt->second();
 
         Logger::info("Connecting to debug tool");
@@ -528,39 +511,24 @@ namespace Bloom::TargetController
         Logger::info("Debug tool name: " + this->debugTool->getName());
         Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
 
-        this->target = targetIt->second();
+        this->target = targetIt->second(this->environmentConfig.targetConfig);
+        const auto& targetDescriptor = this->getTargetDescriptor();
 
-        if (!this->target->isDebugToolSupported(this->debugTool.get())) {
+        if (!this->target->supportsDebugTool(this->debugTool.get())) {
             throw Exceptions::InvalidConfig(
-                "Debug tool (\"" + this->debugTool->getName() + "\") not supported " +
-                    "by target (\"" + this->target->getName() + "\")."
+                "Debug tool (\"" + this->debugTool->getName() + "\") not supported by target (\""
+                    + targetDescriptor.name + "\")."
             );
         }
 
         this->target->setDebugTool(this->debugTool.get());
-        this->target->preActivationConfigure(this->environmentConfig.targetConfig);
 
         Logger::info("Activating target");
         this->target->activate();
         Logger::info("Target activated");
-        this->target->postActivationConfigure();
 
-        while (this->target->supportsPromotion()) {
-            auto promotedTarget = this->target->promote();
-
-            if (
-                promotedTarget == nullptr
-                || std::type_index(typeid(*promotedTarget)) == std::type_index(typeid(*this->target))
-            ) {
-                break;
-            }
-
-            this->target = std::move(promotedTarget);
-            this->target->postPromotionConfigure();
-        }
-
-        Logger::info("Target ID: " + this->target->getHumanReadableId());
-        Logger::info("Target name: " + this->target->getName());
+        Logger::info("Target ID: " + targetDescriptor.id);
+        Logger::info("Target name: " + targetDescriptor.name);
     }
 
     void TargetControllerComponent::releaseHardware() {
@@ -589,34 +557,32 @@ namespace Bloom::TargetController
     void TargetControllerComponent::loadRegisterDescriptors() {
         const auto& targetDescriptor = this->getTargetDescriptor();
 
-        for (const auto& [registerType, registerDescriptors] : targetDescriptor.registerDescriptorsByType) {
-            for (const auto& registerDescriptor : registerDescriptors) {
-                auto startAddress = registerDescriptor.startAddress.value_or(0);
-                auto endAddress = startAddress + (registerDescriptor.size - 1);
+        for (const auto& [registerDescriptorId, registerDescriptor] : targetDescriptor.registerDescriptorsById) {
+            auto startAddress = registerDescriptor.startAddress.value_or(0);
+            auto endAddress = startAddress + (registerDescriptor.size - 1);
 
-                const auto registerAddressRangeIt = this->registerAddressRangeByMemoryType.find(
-                    registerDescriptor.memoryType
+            const auto registerAddressRangeIt = this->registerAddressRangeByMemoryType.find(
+                registerDescriptor.memoryType
+            );
+
+            if (registerAddressRangeIt == this->registerAddressRangeByMemoryType.end()) {
+                this->registerAddressRangeByMemoryType.insert(
+                    std::pair(registerDescriptor.memoryType, TargetMemoryAddressRange(startAddress, endAddress))
                 );
 
-                if (registerAddressRangeIt == this->registerAddressRangeByMemoryType.end()) {
-                    this->registerAddressRangeByMemoryType.insert(
-                        std::pair(registerDescriptor.memoryType, TargetMemoryAddressRange(startAddress, endAddress))
-                    );
+            } else {
+                auto& addressRange = registerAddressRangeIt->second;
 
-                } else {
-                    auto& addressRange = registerAddressRangeIt->second;
-
-                    if (startAddress < addressRange.startAddress) {
-                        addressRange.startAddress = startAddress;
-                    }
-
-                    if (endAddress > addressRange.endAddress) {
-                        addressRange.endAddress = endAddress;
-                    }
+                if (startAddress < addressRange.startAddress) {
+                    addressRange.startAddress = startAddress;
                 }
 
-                this->registerDescriptorsByMemoryType[registerDescriptor.memoryType].insert(registerDescriptor);
+                if (endAddress > addressRange.endAddress) {
+                    addressRange.endAddress = endAddress;
+                }
             }
+
+            this->registerDescriptorsByMemoryType[registerDescriptor.memoryType].insert(registerDescriptor);
         }
     }
 
@@ -640,7 +606,7 @@ namespace Bloom::TargetController
                 (startAddress <= registersAddressRange.startAddress && endAddress >= registersAddressRange.startAddress)
                 || (startAddress <= registersAddressRange.endAddress && endAddress >= registersAddressRange.startAddress)
             ) {
-                const auto& registerDescriptors = this->registerDescriptorsByMemoryType.at(memoryType);
+                const auto& registerDescriptors = registerDescriptorsIt->second;
 
                 for (const auto& registerDescriptor : registerDescriptors) {
                     if (!registerDescriptor.startAddress.has_value() || registerDescriptor.size < 1) {
@@ -707,11 +673,11 @@ namespace Bloom::TargetController
     }
 
     const Targets::TargetDescriptor& TargetControllerComponent::getTargetDescriptor() {
-        if (!this->cachedTargetDescriptor.has_value()) {
-            this->cachedTargetDescriptor.emplace(this->target->getDescriptor());
+        if (!this->targetDescriptor.has_value()) {
+            this->targetDescriptor.emplace(this->target->getDescriptor());
         }
 
-        return *this->cachedTargetDescriptor;
+        return *this->targetDescriptor;
     }
 
     void TargetControllerComponent::onShutdownTargetControllerEvent(const Events::ShutdownTargetController&) {
@@ -807,14 +773,20 @@ namespace Bloom::TargetController
     std::unique_ptr<TargetRegistersRead> TargetControllerComponent::handleReadTargetRegisters(
         ReadTargetRegisters& command
     ) {
-        return std::make_unique<TargetRegistersRead>(this->target->readRegisters(command.descriptors));
+        return std::make_unique<TargetRegistersRead>(
+            !command.descriptorIds.empty()
+                ? this->target->readRegisters(command.descriptorIds)
+                : Targets::TargetRegisters()
+        );
     }
 
     std::unique_ptr<Response> TargetControllerComponent::handleWriteTargetRegisters(WriteTargetRegisters& command) {
-        this->target->writeRegisters(command.registers);
+        if (!command.registers.empty()) {
+            this->target->writeRegisters(command.registers);
+        }
 
         auto registersWrittenEvent = std::make_shared<Events::RegistersWrittenToTarget>();
-        registersWrittenEvent->registers = command.registers;
+        registersWrittenEvent->registers = std::move(command.registers);
 
         EventManager::triggerEvent(registersWrittenEvent);
 
@@ -822,12 +794,16 @@ namespace Bloom::TargetController
     }
 
     std::unique_ptr<TargetMemoryRead> TargetControllerComponent::handleReadTargetMemory(ReadTargetMemory& command) {
-        return std::make_unique<TargetMemoryRead>(this->target->readMemory(
-            command.memoryType,
-            command.startAddress,
-            command.bytes,
-            command.excludedAddressRanges
-        ));
+        return std::make_unique<TargetMemoryRead>(
+            command.bytes > 0
+                ? this->target->readMemory(
+                    command.memoryType,
+                    command.startAddress,
+                    command.bytes,
+                    command.excludedAddressRanges
+                )
+                : Targets::TargetMemoryBuffer()
+        );
     }
 
     std::unique_ptr<Response> TargetControllerComponent::handleWriteTargetMemory(WriteTargetMemory& command) {
@@ -876,7 +852,7 @@ namespace Bloom::TargetController
 
                     const auto bufferBeginIt = buffer.begin() + (registerStartAddress - bufferStartAddress);
                     registersWrittenEvent->registers.emplace_back(TargetRegister(
-                        registerDescriptor,
+                        registerDescriptor.id,
                         TargetMemoryBuffer(bufferBeginIt, bufferBeginIt + registerSize)
                     ));
                 }
@@ -889,8 +865,6 @@ namespace Bloom::TargetController
     }
 
     std::unique_ptr<Response> TargetControllerComponent::handleEraseTargetMemory(EraseTargetMemory& command) {
-        const auto& targetDescriptor = this->getTargetDescriptor();
-
         if (
             command.memoryType == this->getTargetDescriptor().programMemoryType
             && !this->target->programmingModeEnabled()

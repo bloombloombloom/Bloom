@@ -36,13 +36,15 @@ namespace Bloom
     InsightWindow::InsightWindow(
         const EnvironmentConfig& environmentConfig,
         const InsightConfig& insightConfig,
-        InsightProjectSettings& insightProjectSettings
+        InsightProjectSettings& insightProjectSettings,
+        const Targets::TargetDescriptor& targetDescriptor
     )
         : QMainWindow(nullptr)
         , environmentConfig(environmentConfig)
         , targetConfig(environmentConfig.targetConfig)
         , insightConfig(insightConfig)
         , insightProjectSettings(insightProjectSettings)
+        , targetDescriptor(targetDescriptor)
     {
         this->setObjectName("main-window");
         this->setWindowTitle("Bloom Insight");

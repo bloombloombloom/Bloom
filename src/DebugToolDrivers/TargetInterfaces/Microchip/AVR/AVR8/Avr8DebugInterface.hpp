@@ -42,28 +42,6 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
         Avr8DebugInterface& operator = (Avr8DebugInterface&& other) = default;
 
         /**
-         * Configures the interface. Any debug tool -> target interface specific configuration should take
-         * place here.
-         *
-         * @param targetConfig
-         */
-        virtual void configure(const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig) = 0;
-
-        /**
-         * Sets the target family, independent of other configuration.
-         *
-         * @param family
-         */
-        virtual void setFamily(Targets::Microchip::Avr::Avr8Bit::Family family) = 0;
-
-        /**
-         * Should accept Avr8 target parameters for configuration of the interface.
-         *
-         * @param config
-         */
-        virtual void setTargetParameters(const Targets::Microchip::Avr::Avr8Bit::TargetParameters& config) = 0;
-
-        /**
          * Should initialise the interface between the debug tool and the AVR8 target.
          */
         virtual void init() = 0;
@@ -153,12 +131,12 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
         /**
          * Should read the requested registers from the target.
          *
-         * @param descriptors
-         *  A collection of register descriptors, for the registers to be read.
+         * @param descriptorIds
+         *  A collection of register descriptor IDs, for the registers to be read.
          *
          * @return
          */
-        virtual Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors) = 0;
+        virtual Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) = 0;
 
         /**
          * Should update the value of the given registers.

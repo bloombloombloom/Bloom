@@ -15,7 +15,7 @@ namespace Bloom::Widgets
     RegisterGroupItem::RegisterGroupItem(
         QString name,
         const std::set<Targets::TargetRegisterDescriptor>& registerDescriptors,
-        std::unordered_map<Targets::TargetRegisterDescriptor, RegisterItem*>& registerItemsByDescriptor
+        std::unordered_map<Targets::TargetRegisterDescriptorId, RegisterItem*>& registerItemsByDescriptorIds
     )
         : groupName(name)
     {
@@ -25,7 +25,7 @@ namespace Bloom::Widgets
             registerItem->setVisible(this->isExpanded());
 
             this->registerItems.push_back(registerItem);
-            registerItemsByDescriptor.insert(std::pair(registerDescriptor, registerItem));
+            registerItemsByDescriptorIds.insert(std::pair(registerDescriptor.id, registerItem));
         }
 
         if (!RegisterGroupItem::registerGroupIconPixmap.has_value()) {

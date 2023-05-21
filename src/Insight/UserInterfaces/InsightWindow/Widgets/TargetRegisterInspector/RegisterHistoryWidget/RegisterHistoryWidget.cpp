@@ -140,7 +140,7 @@ namespace Bloom::Widgets
         const QDateTime& changeDate
     ) {
         for (const auto& targetRegister : targetRegisters) {
-            if (targetRegister.descriptor == this->registerDescriptor) {
+            if (targetRegister.descriptorId == this->registerDescriptor.id) {
                 this->addItem(targetRegister.value, changeDate);
                 this->updateCurrentItemValue(targetRegister.value);
             }

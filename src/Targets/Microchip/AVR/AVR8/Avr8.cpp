@@ -16,145 +16,134 @@
 
 #include "src/Targets/Microchip/AVR/Fuse.hpp"
 
-// Derived AVR8 targets
-#include "XMega/XMega.hpp"
-#include "Mega/Mega.hpp"
-#include "Tiny/Tiny.hpp"
-
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
     using namespace Exceptions;
 
-    void Avr8::preActivationConfigure(const TargetConfig& targetConfig) {
-        Target::preActivationConfigure(targetConfig);
+    Avr8::Avr8(const TargetConfig& targetConfig)
+        : targetConfig(Avr8TargetConfig(targetConfig))
+        , targetDescriptionFile(TargetDescription::TargetDescriptionFile(this->targetConfig.name))
+        , name(this->targetDescriptionFile.getTargetName())
+        , signature(this->targetDescriptionFile.getTargetSignature())
+        , family(this->targetDescriptionFile.getFamily())
+        , targetParameters(this->targetDescriptionFile.getTargetParameters())
+        , supportedPhysicalInterfaces(this->targetDescriptionFile.getSupportedPhysicalInterfaces())
+        , padDescriptorsByName(this->targetDescriptionFile.getPadDescriptorsMappedByName())
+        , targetVariantsById(this->targetDescriptionFile.getVariantsMappedById())
+        , stackPointerRegisterDescriptor(
+            TargetRegisterDescriptor(
+                TargetRegisterType::STACK_POINTER,
+                this->targetParameters.stackPointerRegisterLowAddress.value(),
+                this->targetParameters.stackPointerRegisterSize.value(),
+                TargetMemoryType::OTHER,
+                "SP",
+                "CPU",
+                "Stack Pointer Register",
+                TargetRegisterAccess(true, true)
+            )
+        )
+        , statusRegisterDescriptor(
+            TargetRegisterDescriptor(
+                TargetRegisterType::STATUS_REGISTER,
+                this->targetParameters.statusRegisterStartAddress.value(),
+                this->targetParameters.statusRegisterSize.value(),
+                TargetMemoryType::OTHER,
+                "SREG",
+                "CPU",
+                "Status Register",
+                TargetRegisterAccess(true, true)
+            )
+        )
+    {
+        if (!this->supportedPhysicalInterfaces.contains(this->targetConfig.physicalInterface)) {
+            /*
+             * The user has selected a physical interface that does not appear to be supported by the selected
+             * target.
+             *
+             * Bloom's target description files provide a list of supported physical interfaces for each target
+             * (which is how this->supportedPhysicalInterfaces is populated), but it's possible that this list may
+             * be wrong/incomplete. For this reason, we don't throw an exception here. Instead, we just present the
+             * user with a warning and a list of physical interfaces known to be supported by their selected target.
+             */
+            const auto physicalInterfaceNames = getPhysicalInterfaceNames();
 
-        // Extract AVR8 specific target config
-        this->targetConfig = Avr8TargetConfig(targetConfig);
-
-        if (this->targetConfig->name == "avr8") {
-            Logger::warning("The \"avr8\" target name is deprecated and will be removed in a later version.");
-        }
-
-        if (this->family.has_value()) {
-            this->avr8DebugInterface->setFamily(this->family.value());
-
-            if (!this->supportedPhysicalInterfaces.contains(this->targetConfig->physicalInterface)) {
-                /*
-                 * The user has selected a physical interface that does not appear to be supported by the selected
-                 * target.
-                 *
-                 * Bloom's target description files provide a list of supported physical interfaces for each target
-                 * (which is how this->supportedPhysicalInterfaces is populated), but it's possible that this list may
-                 * be wrong/incomplete. For this reason, we don't throw an exception here. Instead, we just present the
-                 * user with a warning and a list of physical interfaces known to be supported by their selected target.
-                 */
-                const auto physicalInterfaceNames = getPhysicalInterfaceNames();
-
-                std::string supportedPhysicalInterfaceList = std::accumulate(
-                    this->supportedPhysicalInterfaces.begin(),
-                    this->supportedPhysicalInterfaces.end(),
-                    std::string(),
-                    [&physicalInterfaceNames] (const std::string& string, PhysicalInterface physicalInterface) {
-                        if (physicalInterface == PhysicalInterface::ISP) {
-                            /*
-                             * Don't include the ISP interface in the list of supported interfaces, as doing so may
-                             * mislead the user into thinking the ISP interface can be used for debugging operations.
-                             */
-                            return string;
-                        }
-
-                        return string + "\n - " + physicalInterfaceNames.at(physicalInterface);
+            const auto supportedPhysicalInterfaceList = std::accumulate(
+                this->supportedPhysicalInterfaces.begin(),
+                this->supportedPhysicalInterfaces.end(),
+                std::string(),
+                [&physicalInterfaceNames] (const std::string& string, PhysicalInterface physicalInterface) {
+                    if (physicalInterface == PhysicalInterface::ISP) {
+                        /*
+                         * Don't include the ISP interface in the list of supported interfaces, as doing so may
+                         * mislead the user into thinking the ISP interface can be used for debugging operations.
+                         */
+                        return string;
                     }
-                );
 
-                Logger::warning(
-                    "\nThe selected target (" + this->name + ") does not support the selected physical interface ("
-                        + physicalInterfaceNames.at(this->targetConfig->physicalInterface) + "). Target activation "
-                        "will likely fail. The target supports the following physical interfaces: \n"
-                        + supportedPhysicalInterfaceList + "\n\nFor physical interface configuration values, see "
-                        + Services::PathService::homeDomainName() + "/docs/configuration/avr8-physical-interfaces. \n\nIf this "
-                        "information is incorrect, please report this to Bloom developers via "
-                        + Services::PathService::homeDomainName() + "/report-issue.\n"
-                );
-            }
+                    return string + "\n - " + physicalInterfaceNames.at(physicalInterface);
+                }
+            );
 
-        } else {
-            if (this->targetConfig->physicalInterface == PhysicalInterface::JTAG) {
-                throw InvalidConfig(
-                    "The JTAG physical interface cannot be used with an ambiguous target name"
-                        " - please specify the exact name of the target in your configuration file. "
-                        "See " + Services::PathService::homeDomainName() + "/docs/supported-targets"
-                );
-            }
-
-            if (this->targetConfig->physicalInterface == PhysicalInterface::UPDI) {
-                throw InvalidConfig(
-                    "The UPDI physical interface cannot be used with an ambiguous target name"
-                        " - please specify the exact name of the target in your configuration file. "
-                        "See " + Services::PathService::homeDomainName() + "/docs/supported-targets"
-                );
-            }
-        }
-
-        if (
-            this->targetConfig->manageDwenFuseBit
-            && this->avrIspInterface == nullptr
-            && this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
-        ) {
             Logger::warning(
-                "The connected debug tool (or associated driver) does not provide any ISP interface. "
-                    "Bloom will be unable to update the DWEN fuse bit in the event of a debugWire activation failure."
+                "\nThe selected target (" + this->name + ") does not support the selected physical interface ("
+                    + physicalInterfaceNames.at(this->targetConfig.physicalInterface) + "). Target activation "
+                    "will likely fail. The target supports the following physical interfaces: \n"
+                    + supportedPhysicalInterfaceList + "\n\nFor physical interface configuration values, see "
+                    + Services::PathService::homeDomainName() + "/docs/configuration/avr8-physical-interfaces. \n\n"
+                    + "If this information is incorrect, please report this to Bloom developers via "
+                    + Services::PathService::homeDomainName() + "/report-issue.\n"
             );
         }
 
         if (
-            this->targetConfig->manageOcdenFuseBit
-            && this->targetConfig->physicalInterface != PhysicalInterface::JTAG
+            this->targetConfig.manageDwenFuseBit
+            && this->avrIspInterface == nullptr
+            && this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE
+        ) {
+            Logger::warning(
+                "The connected debug tool (or associated driver) does not provide any ISP interface. "
+                    "Bloom will be unable to manage the DWEN fuse bit."
+            );
+        }
+
+        if (
+            this->targetConfig.manageOcdenFuseBit
+            && this->targetConfig.physicalInterface != PhysicalInterface::JTAG
         ) {
             Logger::warning(
                 "The 'manageOcdenFuseBit' parameter only applies to JTAG targets. It will be ignored in this session."
             );
         }
 
-        this->avr8DebugInterface->configure(*(this->targetConfig));
+        this->loadTargetRegisterDescriptors();
+        this->loadTargetMemoryDescriptors();
+    }
+
+    bool Avr8::supportsDebugTool(DebugTool* debugTool) {
+        return debugTool->getAvr8DebugInterface(
+            this->targetConfig,
+            this->family,
+            this->targetParameters,
+            this->targetRegisterDescriptorsById
+        ) != nullptr;
+    }
+
+    void Avr8::setDebugTool(DebugTool* debugTool) {
+        this->targetPowerManagementInterface = debugTool->getTargetPowerManagementInterface();
+        this->avr8DebugInterface = debugTool->getAvr8DebugInterface(
+            this->targetConfig,
+            this->family,
+            this->targetParameters,
+            this->targetRegisterDescriptorsById
+        );
+
+        this->avrIspInterface = debugTool->getAvrIspInterface(
+            this->targetConfig
+        );
 
         if (this->avrIspInterface != nullptr) {
-            this->avrIspInterface->configure(*(this->targetConfig));
+            this->avrIspInterface->configure(this->targetConfig);
         }
-    }
-
-    void Avr8::postActivationConfigure() {
-        if (!this->targetDescriptionFile.has_value()) {
-            this->initFromTargetDescriptionFile();
-        }
-
-        /*
-         * The signature obtained from the device should match what is in the target description file
-         *
-         * We don't use this->getId() here as that could return the ID that was extracted from the target description
-         * file (which it would, if the user specified the exact target name in their project config - see
-         * Avr8::getId() and TargetControllerComponent::getSupportedTargets() for more).
-         */
-        const auto targetSignature = this->avr8DebugInterface->getDeviceId();
-        const auto tdSignature = this->targetDescriptionFile->getTargetSignature();
-
-        if (targetSignature != tdSignature) {
-            throw Exception(
-                "Failed to validate connected target - target signature mismatch.\nThe target signature"
-                    " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
-                    + tdSignature.toHex() + "\"). This will likely be due to an incorrect target name in the "
-                    + "configuration file (bloom.yaml)."
-            );
-        }
-    }
-
-    void Avr8::postPromotionConfigure() {
-        if (!this->family.has_value()) {
-            throw Exception("Failed to resolve AVR8 family");
-        }
-
-        this->avr8DebugInterface->setFamily(this->family.value());
-        this->avr8DebugInterface->setTargetParameters(this->targetParameters.value());
     }
 
     void Avr8::activate() {
@@ -164,17 +153,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         this->avr8DebugInterface->init();
 
-        if (this->targetParameters.has_value()) {
-            this->avr8DebugInterface->setTargetParameters(this->targetParameters.value());
-        }
-
         try {
             this->avr8DebugInterface->activate();
 
         } catch (const Exceptions::DebugWirePhysicalInterfaceError& debugWireException) {
             // We failed to activate the debugWire physical interface. DWEN fuse bit may need updating.
 
-            if (!this->targetConfig->manageDwenFuseBit) {
+            if (!this->targetConfig.manageDwenFuseBit) {
                 throw TargetOperationFailure(
                     "Failed to activate debugWire physical interface - check target connection and DWEN fuse "
                         "bit. Bloom can manage the DWEN fuse bit automatically. For instructions on enabling this "
@@ -192,7 +177,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 // If the debug tool provides a TargetPowerManagementInterface, attempt to cycle the target power
                 if (
                     this->targetPowerManagementInterface != nullptr
-                    && this->targetConfig->cycleTargetPowerPostDwenUpdate
+                    && this->targetConfig.cycleTargetPowerPostDwenUpdate
                 ) {
                     Logger::info("Cycling target power");
 
@@ -200,20 +185,19 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                     this->targetPowerManagementInterface->disableTargetPower();
 
                     Logger::debug(
-                        "Holding power off for ~"
-                            + std::to_string(this->targetConfig->targetPowerCycleDelay.count())
+                        "Holding power off for ~" + std::to_string(this->targetConfig.targetPowerCycleDelay.count())
                             + " ms"
                     );
-                    std::this_thread::sleep_for(this->targetConfig->targetPowerCycleDelay);
+                    std::this_thread::sleep_for(this->targetConfig.targetPowerCycleDelay);
 
                     Logger::debug("Enabling target power");
                     this->targetPowerManagementInterface->enableTargetPower();
 
                     Logger::debug(
-                        "Waiting ~" + std::to_string(this->targetConfig->targetPowerCycleDelay.count())
+                        "Waiting ~" + std::to_string(this->targetConfig.targetPowerCycleDelay.count())
                             + " ms for target power-up"
                     );
-                    std::this_thread::sleep_for(this->targetConfig->targetPowerCycleDelay);
+                    std::this_thread::sleep_for(this->targetConfig.targetPowerCycleDelay);
                 }
 
             } catch (const Exception& exception) {
@@ -227,14 +211,31 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         if (
-            this->targetConfig->physicalInterface == PhysicalInterface::JTAG
-            && this->targetConfig->manageOcdenFuseBit
+            this->targetConfig.physicalInterface == PhysicalInterface::JTAG
+            && this->targetConfig.manageOcdenFuseBit
         ) {
             Logger::debug("Attempting OCDEN fuse bit management");
             this->updateOcdenFuseBit(true);
         }
 
         this->activated = true;
+
+        /*
+         * Validate the target signature.
+         *
+         * The signature obtained from the device should match what we loaded from the target description file.
+         */
+        const auto targetSignature = this->avr8DebugInterface->getDeviceId();
+
+        if (targetSignature != this->signature) {
+            throw Exception(
+                "Failed to validate connected target - target signature mismatch.\nThe target signature"
+                " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
+                + this->signature.toHex() + "\"). This will likely be due to an incorrect target name in the "
+                + "configuration file (bloom.yaml)."
+            );
+        }
+
         this->avr8DebugInterface->reset();
     }
 
@@ -244,8 +245,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             this->clearAllBreakpoints();
 
             if (
-                this->targetConfig->physicalInterface == PhysicalInterface::JTAG
-                && this->targetConfig->manageOcdenFuseBit
+                this->targetConfig.physicalInterface == PhysicalInterface::JTAG
+                && this->targetConfig.manageOcdenFuseBit
             ) {
                 Logger::debug("Attempting OCDEN fuse bit management");
                 this->updateOcdenFuseBit(false);
@@ -261,44 +262,16 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
     }
 
-    std::unique_ptr<Targets::Target> Avr8::promote() {
-        std::unique_ptr<Targets::Target> promoted = nullptr;
-
-        if (this->family.has_value()) {
-            // Promote generic AVR8 target to correct family.
-            switch (this->family.value()) {
-                case Family::XMEGA: {
-                    Logger::info("AVR8 target promoted to XMega target");
-                    promoted = std::make_unique<XMega>(*this);
-                    break;
-                }
-                case Family::MEGA: {
-                    Logger::info("AVR8 target promoted to megaAVR target");
-                    promoted = std::make_unique<Mega>(*this);
-                    break;
-                }
-                case Family::TINY: {
-                    Logger::info("AVR8 target promoted to tinyAVR target");
-                    promoted = std::make_unique<Tiny>(*this);
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-        }
-
-        return promoted;
-    }
-
-    TargetDescriptor Avr8Bit::Avr8::getDescriptor() {
-        auto descriptor = TargetDescriptor();
-        descriptor.id = this->getHumanReadableId();
-        descriptor.name = this->getName();
-        descriptor.vendorName = std::string("Microchip");
-        descriptor.programMemoryType = Targets::TargetMemoryType::FLASH;
-        descriptor.registerDescriptorsByType = this->targetRegisterDescriptorsByType;
-        descriptor.memoryDescriptorsByType = this->targetMemoryDescriptorsByType;
+    TargetDescriptor Avr8::getDescriptor() {
+        auto descriptor = TargetDescriptor(
+            this->signature.toHex(),
+            this->name,
+            "Microchip",
+            this->targetMemoryDescriptorsByType,
+            this->targetRegisterDescriptorsById,
+            {},
+            Targets::TargetMemoryType::FLASH
+        );
 
         std::transform(
             this->targetVariantsById.begin(),
@@ -345,56 +318,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     }
 
     void Avr8::writeRegisters(TargetRegisters registers) {
-        for (auto registerIt = registers.begin(); registerIt != registers.end();) {
-            if (registerIt->descriptor.type == TargetRegisterType::PROGRAM_COUNTER) {
-                auto programCounterBytes = registerIt->value;
-
-                if (programCounterBytes.size() < 4) {
-                    // All PC register values should be at least 4 bytes in size
-                    programCounterBytes.insert(programCounterBytes.begin(), 4 - programCounterBytes.size(), 0x00);
-                }
-
-                this->setProgramCounter(static_cast<std::uint32_t>(
-                    programCounterBytes[0] << 24
-                    | programCounterBytes[1] << 16
-                    | programCounterBytes[2] << 8
-                    | programCounterBytes[3]
-                ));
-
-                registerIt = registers.erase(registerIt);
-
-            } else {
-                registerIt++;
-            }
-        }
-
-        if (!registers.empty()) {
-            this->avr8DebugInterface->writeRegisters(registers);
-        }
+        this->avr8DebugInterface->writeRegisters(registers);
     }
 
-    TargetRegisters Avr8::readRegisters(TargetRegisterDescriptors descriptors) {
-        TargetRegisters registers;
-
-        for (auto registerDescriptorIt = descriptors.begin(); registerDescriptorIt != descriptors.end();) {
-            const auto& descriptor = *registerDescriptorIt;
-
-            if (descriptor.type == TargetRegisterType::PROGRAM_COUNTER) {
-                registers.push_back(this->getProgramCounterRegister());
-
-                registerDescriptorIt = descriptors.erase(registerDescriptorIt);
-
-            } else {
-                registerDescriptorIt++;
-            }
-        }
-
-        if (!descriptors.empty()) {
-            auto otherRegisters = this->avr8DebugInterface->readRegisters(descriptors);
-            registers.insert(registers.end(), otherRegisters.begin(), otherRegisters.end());
-        }
-
-        return registers;
+    TargetRegisters Avr8::readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) {
+        return this->avr8DebugInterface->readRegisters(descriptorIds);
     }
 
     TargetMemoryBuffer Avr8::readMemory(
@@ -416,7 +344,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
     void Avr8::eraseMemory(TargetMemoryType memoryType) {
         if (memoryType == TargetMemoryType::FLASH) {
-            if (this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE) {
+            if (this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE) {
                 // debugWire targets do not need to be erased
                 return;
             }
@@ -431,12 +359,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         this->writeMemory(
             memoryType,
             memoryType == TargetMemoryType::RAM
-                ? this->targetParameters->ramStartAddress.value()
-                : this->targetParameters->eepromStartAddress.value(),
+                ? this->targetParameters.ramStartAddress.value()
+                : this->targetParameters.eepromStartAddress.value(),
             TargetMemoryBuffer(
                 memoryType == TargetMemoryType::RAM
-                    ? this->targetParameters->ramSize.value()
-                    : this->targetParameters->eepromSize.value(),
+                    ? this->targetParameters.ramSize.value()
+                    : this->targetParameters.eepromSize.value(),
                 0xFF
             )
         );
@@ -450,24 +378,13 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         return this->avr8DebugInterface->getProgramCounter();
     }
 
-    TargetRegister Avr8::getProgramCounterRegister() {
-        auto programCounter = this->getProgramCounter();
-
-        return TargetRegister(TargetRegisterDescriptor(TargetRegisterType::PROGRAM_COUNTER), {
-            static_cast<unsigned char>(programCounter >> 24),
-            static_cast<unsigned char>(programCounter >> 16),
-            static_cast<unsigned char>(programCounter >> 8),
-            static_cast<unsigned char>(programCounter),
-        });
-    }
-
     void Avr8::setProgramCounter(std::uint32_t programCounter) {
         this->avr8DebugInterface->setProgramCounter(programCounter);
     }
 
     std::uint32_t Avr8::getStackPointer() {
         const auto stackPointerRegister = this->readRegisters(
-            {this->targetRegisterDescriptorsByType.at(TargetRegisterType::STACK_POINTER)}
+            {this->stackPointerRegisterDescriptor.id}
         ).front();
 
         std::uint32_t stackPointer = 0;
@@ -649,108 +566,45 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         return this->progModeEnabled;
     }
 
-    void Avr8::initFromTargetDescriptionFile() {
-        this->targetDescriptionFile = TargetDescription::TargetDescriptionFile(
-            this->getId(),
-            (!this->name.empty()) ? std::optional(this->name) : std::nullopt
-        );
-
-        this->name = this->targetDescriptionFile->getTargetName();
-        this->family = this->targetDescriptionFile->getFamily();
-        this->supportedPhysicalInterfaces = this->targetDescriptionFile->getSupportedPhysicalInterfaces();
-
-        this->targetParameters = this->targetDescriptionFile->getTargetParameters();
-        this->padDescriptorsByName = this->targetDescriptionFile->getPadDescriptorsMappedByName();
-        this->targetVariantsById = this->targetDescriptionFile->getVariantsMappedById();
-
-        if (!this->targetParameters->stackPointerRegisterLowAddress.has_value()) {
-            throw Exception(
-                "Failed to load sufficient AVR8 target parameters - missing stack pointer start address"
-            );
-        }
-
-        if (!this->targetParameters->statusRegisterStartAddress.has_value()) {
-            throw Exception(
-                "Failed to load sufficient AVR8 target parameters - missing status register start address"
-            );
-        }
-
-        this->loadTargetRegisterDescriptors();
-        this->loadTargetMemoryDescriptors();
-    }
-
     void Avr8::loadTargetRegisterDescriptors() {
-        this->targetRegisterDescriptorsByType = this->targetDescriptionFile->getRegisterDescriptorsMappedByType();
+        this->targetRegisterDescriptorsById = this->targetDescriptionFile.getRegisterDescriptorsMappedById();
 
         /*
          * All AVR8 targets possess 32 general purpose CPU registers. These are not described in the TDF, so we
          * construct the descriptors for them here.
          */
-        auto gpRegisterStartAddress = this->targetParameters->gpRegisterStartAddress.value_or(0);
+        const auto gpRegisterStartAddress = this->targetParameters.gpRegisterStartAddress.value_or(0);
         for (std::uint8_t i = 0; i <= 31; i++) {
-            auto generalPurposeRegisterDescriptor = TargetRegisterDescriptor();
-            generalPurposeRegisterDescriptor.startAddress = gpRegisterStartAddress + i;
-            generalPurposeRegisterDescriptor.size = 1;
-            generalPurposeRegisterDescriptor.type = TargetRegisterType::GENERAL_PURPOSE_REGISTER;
-            generalPurposeRegisterDescriptor.name = "r" + std::to_string(i);
-            generalPurposeRegisterDescriptor.groupName = "general purpose cpu";
-            generalPurposeRegisterDescriptor.readable = true;
-            generalPurposeRegisterDescriptor.writable = true;
+            auto generalPurposeRegisterDescriptor = TargetRegisterDescriptor(
+                TargetRegisterType::GENERAL_PURPOSE_REGISTER,
+                gpRegisterStartAddress + i,
+                1,
+                TargetMemoryType::OTHER,
+                "r" + std::to_string(i),
+                "CPU General Purpose",
+                std::nullopt,
+                TargetRegisterAccess(true, true)
+            );
 
-            this->targetRegisterDescriptorsByType[generalPurposeRegisterDescriptor.type].insert(
-                generalPurposeRegisterDescriptor
+            this->targetRegisterDescriptorsById.emplace(
+                generalPurposeRegisterDescriptor.id,
+                std::move(generalPurposeRegisterDescriptor)
             );
         }
 
-        /*
-         * The SP and SREG registers are described in the TDF, so we could just use the descriptors extracted from the
-         * TDF. The problem with that is, sometimes the SP register consists of two bytes; an SPL and an SPH. These need
-         * to be combined into one register descriptor. This is why we just use what we already have in
-         * this->targetParameters.
-         */
-        auto stackPointerRegisterDescriptor = TargetRegisterDescriptor();
-        stackPointerRegisterDescriptor.type = TargetRegisterType::STACK_POINTER;
-        stackPointerRegisterDescriptor.startAddress = this->targetParameters->stackPointerRegisterLowAddress.value();
-        stackPointerRegisterDescriptor.size = this->targetParameters->stackPointerRegisterSize.value();
-        stackPointerRegisterDescriptor.name = "SP";
-        stackPointerRegisterDescriptor.groupName = "CPU";
-        stackPointerRegisterDescriptor.description = "Stack Pointer Register";
-        stackPointerRegisterDescriptor.readable = true;
-        stackPointerRegisterDescriptor.writable = true;
-
-        auto statusRegisterDescriptor = TargetRegisterDescriptor();
-        statusRegisterDescriptor.type = TargetRegisterType::STATUS_REGISTER;
-        statusRegisterDescriptor.startAddress = this->targetParameters->statusRegisterStartAddress.value();
-        statusRegisterDescriptor.size = this->targetParameters->statusRegisterSize.value();
-        statusRegisterDescriptor.name = "SREG";
-        statusRegisterDescriptor.groupName = "CPU";
-        statusRegisterDescriptor.description = "Status Register";
-        statusRegisterDescriptor.readable = true;
-        statusRegisterDescriptor.writable = true;
-
-        auto programCounterRegisterDescriptor = TargetRegisterDescriptor();
-        programCounterRegisterDescriptor.type = TargetRegisterType::PROGRAM_COUNTER;
-        programCounterRegisterDescriptor.size = 4;
-        programCounterRegisterDescriptor.name = "PC";
-        programCounterRegisterDescriptor.groupName = "CPU";
-        programCounterRegisterDescriptor.description = "Program Counter";
-        programCounterRegisterDescriptor.readable = true;
-        programCounterRegisterDescriptor.writable = true;
-
-        this->targetRegisterDescriptorsByType[stackPointerRegisterDescriptor.type].insert(
-            stackPointerRegisterDescriptor
+        this->targetRegisterDescriptorsById.emplace(
+            this->stackPointerRegisterDescriptor.id,
+            this->stackPointerRegisterDescriptor
         );
-        this->targetRegisterDescriptorsByType[statusRegisterDescriptor.type].insert(
-            statusRegisterDescriptor
-        );
-        this->targetRegisterDescriptorsByType[programCounterRegisterDescriptor.type].insert(
-            programCounterRegisterDescriptor
+        this->targetRegisterDescriptorsById.emplace(
+            this->statusRegisterDescriptor.id,
+            this->statusRegisterDescriptor
         );
     }
 
     void Avr8::loadTargetMemoryDescriptors() {
-        const auto ramStartAddress = this->targetParameters->ramStartAddress.value();
-        const auto flashStartAddress = this->targetParameters->flashStartAddress.value();
+        const auto ramStartAddress = this->targetParameters.ramStartAddress.value();
+        const auto flashStartAddress = this->targetParameters.flashStartAddress.value();
 
         this->targetMemoryDescriptorsByType.insert(std::pair(
             TargetMemoryType::RAM,
@@ -758,7 +612,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 TargetMemoryType::RAM,
                 TargetMemoryAddressRange(
                     ramStartAddress,
-                    ramStartAddress + this->targetParameters->ramSize.value() - 1
+                    ramStartAddress + this->targetParameters.ramSize.value() - 1
                 ),
                 TargetMemoryAccess(true, true, true)
             )
@@ -770,15 +624,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 TargetMemoryType::FLASH,
                 TargetMemoryAddressRange(
                     flashStartAddress,
-                    flashStartAddress + this->targetParameters->flashSize.value() - 1
+                    flashStartAddress + this->targetParameters.flashSize.value() - 1
                 ),
                 TargetMemoryAccess(true, true, false),
-                this->targetParameters->flashPageSize
+                this->targetParameters.flashPageSize
             )
         ));
 
-        if (this->targetParameters->eepromStartAddress.has_value() && this->targetParameters->eepromSize.has_value()) {
-            const auto eepromStartAddress = this->targetParameters->eepromStartAddress.value();
+        if (this->targetParameters.eepromStartAddress.has_value() && this->targetParameters.eepromSize.has_value()) {
+            const auto eepromStartAddress = this->targetParameters.eepromStartAddress.value();
 
             this->targetMemoryDescriptorsByType.insert(std::pair(
                 TargetMemoryType::EEPROM,
@@ -786,20 +640,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                     TargetMemoryType::EEPROM,
                     TargetMemoryAddressRange(
                         eepromStartAddress,
-                        eepromStartAddress + this->targetParameters->eepromSize.value() - 1
+                        eepromStartAddress + this->targetParameters.eepromSize.value() - 1
                     ),
                     TargetMemoryAccess(true, true, true)
                 )
             ));
         }
-    }
-
-    TargetSignature Avr8::getId() {
-        if (!this->id.has_value()) {
-            this->id = this->avr8DebugInterface->getDeviceId();
-        }
-
-        return this->id.value();
     }
 
     void Avr8::updateDwenFuseBit(bool enable) {
@@ -811,13 +657,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             );
         }
 
-        if (!this->targetDescriptionFile.has_value() || !this->id.has_value()) {
-            throw Exception(
-                "Insufficient target information for ISP interface - do not use the generic \"avr8\" "
-                    "target name in conjunction with the ISP interface. Please update your target configuration."
-            );
-        }
-
         if (!this->supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)) {
             throw Exception(
                 "Target does not support debugWire physical interface - check target configuration or "
@@ -825,8 +664,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             );
         }
 
-        const auto dwenFuseBitsDescriptor = this->targetDescriptionFile->getDwenFuseBitsDescriptor();
-        const auto spienFuseBitsDescriptor = this->targetDescriptionFile->getSpienFuseBitsDescriptor();
+        const auto dwenFuseBitsDescriptor = this->targetDescriptionFile.getDwenFuseBitsDescriptor();
+        const auto spienFuseBitsDescriptor = this->targetDescriptionFile.getSpienFuseBitsDescriptor();
 
         if (!dwenFuseBitsDescriptor.has_value()) {
             throw Exception("Could not find DWEN bit field in TDF.");
@@ -837,7 +676,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         Logger::debug("Extracting ISP parameters from TDF");
-        this->avrIspInterface->setIspParameters(this->targetDescriptionFile->getIspParameters());
+        this->avrIspInterface->setIspParameters(this->targetDescriptionFile.getIspParameters());
 
         Logger::info("Initiating ISP interface");
         this->avrIspInterface->activate();
@@ -890,16 +729,16 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         try {
             Logger::info("Reading target signature via ISP");
-            const auto ispDeviceId = this->avrIspInterface->getDeviceId();
+            const auto ispDeviceSignature = this->avrIspInterface->getDeviceId();
 
-            if (ispDeviceId != this->id) {
+            if (ispDeviceSignature != this->signature) {
                 throw Exception(
-                    "AVR target signature mismatch - expected signature \"" + this->id->toHex()
-                        + "\" but got \"" + ispDeviceId.toHex() + "\". Please check target configuration."
+                    "AVR target signature mismatch - expected signature \"" + this->signature.toHex()
+                        + "\" but got \"" + ispDeviceSignature.toHex() + "\". Please check target configuration."
                 );
             }
 
-            Logger::info("Target signature confirmed: " + ispDeviceId.toHex());
+            Logger::info("Target signature confirmed: " + ispDeviceSignature.toHex());
 
             const auto dwenFuseByte = this->avrIspInterface->readFuse(dwenFuseBitsDescriptor->fuseType).value;
             const auto spienFuseByte = (spienFuseBitsDescriptor->fuseType == dwenFuseBitsDescriptor->fuseType)
@@ -925,7 +764,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                  */
                 throw Exception(
                     "Invalid SPIEN fuse bit value - suspected inaccuracies in TDF data. Please report this to "
-                        "Bloom developers as a matter of urgency, via " + Services::PathService::homeDomainName() + "/report-issue"
+                        "Bloom developers as a matter of urgency, via " + Services::PathService::homeDomainName()
+                        + "/report-issue"
                 );
             }
 
@@ -987,14 +827,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         using Services::PathService;
         using Services::StringService;
 
-        if (!this->targetDescriptionFile.has_value() || !this->id.has_value()) {
-            throw Exception(
-                "Insufficient target information for managing OCDEN fuse bit - do not use the generic \"avr8\" "
-                    "target name in conjunction with the \"manageOcdenFuseBit\" function. Please update your target "
-                    "configuration."
-            );
-        }
-
         if (!this->supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)) {
             throw Exception(
                 "Target does not support JTAG physical interface - check target configuration or "
@@ -1003,7 +835,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         const auto targetSignature = this->avr8DebugInterface->getDeviceId();
-        const auto tdSignature = this->targetDescriptionFile->getTargetSignature();
+        const auto tdSignature = this->targetDescriptionFile.getTargetSignature();
 
         if (targetSignature != tdSignature) {
             throw Exception(
@@ -1014,8 +846,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             );
         }
 
-        const auto ocdenFuseBitsDescriptor = this->targetDescriptionFile->getOcdenFuseBitsDescriptor();
-        const auto jtagenFuseBitsDescriptor = this->targetDescriptionFile->getJtagenFuseBitsDescriptor();
+        const auto ocdenFuseBitsDescriptor = this->targetDescriptionFile.getOcdenFuseBitsDescriptor();
+        const auto jtagenFuseBitsDescriptor = this->targetDescriptionFile.getJtagenFuseBitsDescriptor();
 
         if (!ocdenFuseBitsDescriptor.has_value()) {
             throw Exception("Could not find OCDEN bit field in TDF.");
@@ -1100,8 +932,8 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     }
 
     ProgramMemorySection Avr8::getProgramMemorySectionFromAddress(std::uint32_t address) {
-        return this->targetParameters->bootSectionStartAddress.has_value()
-            && address >= this->targetParameters->bootSectionStartAddress.value()
+        return this->targetParameters.bootSectionStartAddress.has_value()
+            && address >= this->targetParameters.bootSectionStartAddress.value()
             ? ProgramMemorySection::BOOT
             : ProgramMemorySection::APPLICATION;
     }

@@ -28,13 +28,6 @@ namespace Bloom::Widgets::InsightTargetWidgets
 
         QObject::connect(
             insightSignals,
-            &InsightSignals::targetRegistersWritten,
-            this,
-            &TargetPackageWidget::onRegistersWritten
-        );
-
-        QObject::connect(
-            insightSignals,
             &InsightSignals::programmingModeEnabled,
             this,
             &TargetPackageWidget::onProgrammingModeEnabled
@@ -104,20 +97,6 @@ namespace Bloom::Widgets::InsightTargetWidgets
     void TargetPackageWidget::onProgrammingModeDisabled() {
         if (this->targetState == TargetState::STOPPED) {
             this->setDisabled(false);
-        }
-    }
-
-    void TargetPackageWidget::onRegistersWritten(Targets::TargetRegisters targetRegisters) {
-        if (this->targetState != TargetState::STOPPED) {
-            return;
-        }
-
-        // If a PORT register was just updated, refresh pin states.
-        for (const auto& targetRegister : targetRegisters) {
-            if (targetRegister.descriptor.type == Targets::TargetRegisterType::PORT_REGISTER) {
-                this->refreshPinStates();
-                return;
-            }
         }
     }
 }

@@ -50,11 +50,16 @@ namespace Bloom::DebugToolDrivers
          */
         void close() override;
 
-        TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() override {
-            return this->edbgAvr8Interface.get();
-        }
+        TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface(
+            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
+            Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
+            const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
+            const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
+        ) override;
 
-        TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface() override {
+        TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface(
+            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
+        ) override {
             return this->edbgAvrIspInterface.get();
         }
 
@@ -153,5 +158,9 @@ namespace Bloom::DebugToolDrivers
          * @return
          */
         std::uint16_t getCmsisHidReportSize();
+
+        virtual void configureAvr8Interface() {
+            return;
+        }
     };
 }

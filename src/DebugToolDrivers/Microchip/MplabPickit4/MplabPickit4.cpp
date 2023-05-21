@@ -18,7 +18,6 @@ namespace Bloom::DebugToolDrivers
 
         try {
             EdbgDevice::init();
-            this->edbgAvr8Interface->setReactivateJtagTargetPostProgrammingMode(true);
 
         } catch (const DeviceNotFound& exception) {
             /*
@@ -39,5 +38,9 @@ namespace Bloom::DebugToolDrivers
 
             throw exception;
         }
+    }
+
+    void MplabPickit4::configureAvr8Interface() {
+        this->edbgAvr8Interface->setReactivateJtagTargetPostProgrammingMode(true);
     }
 }

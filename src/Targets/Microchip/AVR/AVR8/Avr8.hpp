@@ -5,7 +5,7 @@
 #include <utility>
 #include <optional>
 
-#include "src/Targets/Microchip/AVR/Target.hpp"
+#include "src/Targets/Target.hpp"
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
 #include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
@@ -26,27 +26,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     class Avr8: public Target
     {
     public:
-        explicit Avr8() = default;
-        Avr8(std::string name, const TargetSignature& signature)
-            : name(std::move(name))
-            , Target(signature)
-        {
-            this->initFromTargetDescriptionFile();
-        };
+        explicit Avr8(const TargetConfig& targetConfig);
 
         /*
          * The functions below implement the Target interface for AVR8 targets.
          *
-         * See the Bloom::Targets::Target interface class for documentation on the expected behaviour of
+         * See the Bloom::Targets::Target abstract class for documentation on the expected behaviour of
          * each function.
          */
-
-        void preActivationConfigure(const TargetConfig& targetConfig) override;
-        void postActivationConfigure() override;
-        void postPromotionConfigure() override;
-
-        void activate() override;
-        void deactivate() override;
 
         /**
          * All AVR8 compatible debug tools must provide a valid Avr8Interface.
@@ -54,36 +41,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          * @param debugTool
          * @return
          */
-        bool isDebugToolSupported(DebugTool* debugTool) override {
-            return debugTool->getAvr8DebugInterface() != nullptr;
-        }
+        bool supportsDebugTool(DebugTool* debugTool) override;
 
-        void setDebugTool(DebugTool* debugTool) override {
-            this->targetPowerManagementInterface = debugTool->getTargetPowerManagementInterface();
-            this->avr8DebugInterface = debugTool->getAvr8DebugInterface();
-            this->avrIspInterface = debugTool->getAvrIspInterface();
-        }
+        void setDebugTool(DebugTool* debugTool) override;
 
-        /**
-         * Instances to this target class can be promoted. See Avr8::promote() method for more.
-         *
-         * @return
-         */
-        bool supportsPromotion() override {
-            return true;
-        }
-
-        /**
-         * Instances of this generic Avr8 target class will be promoted to a family specific class (see the Mega, Xmega
-         * and Tiny classes for more).
-         *
-         * @return
-         */
-        std::unique_ptr<Targets::Target> promote() override;
-
-        std::string getName() const override {
-            return this->name;
-        }
+        void activate() override;
+        void deactivate() override;
 
         TargetDescriptor getDescriptor() override;
 
@@ -97,7 +60,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         void clearAllBreakpoints() override;
 
         void writeRegisters(TargetRegisters registers) override;
-        TargetRegisters readRegisters(TargetRegisterDescriptors descriptors) override;
+        TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) override;
 
         TargetMemoryBuffer readMemory(
             TargetMemoryType memoryType,
@@ -115,7 +78,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         TargetState getState() override;
 
         TargetProgramCounter getProgramCounter() override;
-        TargetRegister getProgramCounterRegister();
         void setProgramCounter(TargetProgramCounter programCounter) override;
 
         TargetStackPointer getStackPointer() override;
@@ -137,43 +99,36 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* avr8DebugInterface = nullptr;
         DebugToolDrivers::TargetInterfaces::Microchip::Avr::AvrIspInterface* avrIspInterface = nullptr;
 
-        std::optional<Avr8TargetConfig> targetConfig;
+        Avr8TargetConfig targetConfig;
 
+        TargetDescription::TargetDescriptionFile targetDescriptionFile;
+
+        TargetSignature signature;
         std::string name;
-        std::optional<Family> family;
-        std::optional<TargetDescription::TargetDescriptionFile> targetDescriptionFile;
+        Family family;
+
+        TargetParameters targetParameters;
 
         std::set<PhysicalInterface> supportedPhysicalInterfaces;
-
-        std::optional<TargetParameters> targetParameters;
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
-        std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
+
+        TargetRegisterDescriptor stackPointerRegisterDescriptor;
+        TargetRegisterDescriptor statusRegisterDescriptor;
+
+        std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor> targetRegisterDescriptorsById;
+
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
 
         bool progModeEnabled = false;
 
         /**
-         * Initiates the AVR8 instance from data extracted from the TDF.
-         */
-        void initFromTargetDescriptionFile();
-
-        /**
-         * Populates this->targetRegisterDescriptorsByType with registers extracted from the TDF, as well as general
+         * Populates this->targetRegisterDescriptorsById with registers extracted from the TDF, as well as general
          * purpose and other CPU registers.
          */
         void loadTargetRegisterDescriptors();
 
         void loadTargetMemoryDescriptors();
-
-        /**
-         * Extracts the ID from the target's memory.
-         *
-         * This function will cache the ID value and use the cached version for any subsequent calls.
-         *
-         * @return
-         */
-        TargetSignature getId() override;
 
         /**
          * Updates the debugWire enable (DWEN) fuse bit on the AVR target.

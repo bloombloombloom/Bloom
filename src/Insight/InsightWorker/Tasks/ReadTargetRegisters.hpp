@@ -10,12 +10,12 @@ namespace Bloom
         Q_OBJECT
 
     public:
-        explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors)
-            : descriptors(descriptors)
+        explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds)
+            : descriptorIds(descriptorIds)
         {}
 
         QString brief() const override {
-            return "Reading target registers";
+            return "Reading " + QString::number(this->descriptorIds.size()) + " target register(s)";
         }
 
         TaskGroups taskGroups() const override {
@@ -31,6 +31,6 @@ namespace Bloom
         void run(Services::TargetControllerService& targetControllerService) override;
 
     private:
-        Targets::TargetRegisterDescriptors descriptors;
+        Targets::TargetRegisterDescriptorIds descriptorIds;
     };
 }

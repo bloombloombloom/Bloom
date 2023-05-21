@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "../../AvrEvent.hpp"
-#include "src/Targets/Microchip/AVR/Target.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrEvent.hpp"
+#include "src/Targets/TargetBreakpoint.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {

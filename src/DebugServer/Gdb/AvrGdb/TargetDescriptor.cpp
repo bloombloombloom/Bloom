@@ -19,164 +19,143 @@ namespace Bloom::DebugServer::Gdb::AvrGdb
                 {Targets::TargetMemoryType::FLASH, 0},
                 {Targets::TargetMemoryType::RAM, 0x00800000U},
                 {Targets::TargetMemoryType::EEPROM, 0x00810000U},
-            }
+            },
+            {},
+            {},
+            {}
         )
     {
         this->loadRegisterMappings();
     }
 
-    std::optional<GdbRegisterNumber> TargetDescriptor::getRegisterNumberFromTargetRegisterDescriptor(
-        const Targets::TargetRegisterDescriptor& registerDescriptor
-    ) const {
-        return this->targetRegisterDescriptorsByGdbNumber.valueAt(registerDescriptor);
-    }
-
-    const RegisterDescriptor& TargetDescriptor::getRegisterDescriptorFromNumber(GdbRegisterNumber number) const {
-        const auto registerDescriptorIt = this->registerDescriptorsByGdbNumber.find(number);
-        if (registerDescriptorIt.has_value()) {
-            return (*registerDescriptorIt)->second;
-        }
-
-        throw Exception(
-            "Unknown register from GDB - register number (" + std::to_string(number)
-                + ") not mapped to any GDB register descriptor."
-        );
-    }
-
-    const TargetRegisterDescriptor& TargetDescriptor::getTargetRegisterDescriptorFromNumber(
-        GdbRegisterNumber number
-    ) const {
-        const auto targetRegisterDescriptorIt = this->targetRegisterDescriptorsByGdbNumber.find(number);
-        if (targetRegisterDescriptorIt.has_value()) {
-            return (*targetRegisterDescriptorIt)->second;
-        }
-
-        throw Exception(
-            "Unknown register from GDB - register number (" + std::to_string(number)
-                + ") not mapped to any target register descriptor."
-        );
-    }
-
-    const std::vector<GdbRegisterNumber>& TargetDescriptor::getRegisterNumbers() const {
-        return this->registerNumbers;
-    }
-
     void TargetDescriptor::loadRegisterMappings() {
-        const auto& registerDescriptorsByType = this->targetDescriptor.registerDescriptorsByType;
-        if (!registerDescriptorsByType.contains(TargetRegisterType::STATUS_REGISTER)) {
-            throw Exception("Missing status register descriptor");
-        }
-
-        if (!registerDescriptorsByType.contains(TargetRegisterType::STACK_POINTER)) {
-            throw Exception("Missing stack pointer register descriptor");
-        }
-
-        if (!registerDescriptorsByType.contains(TargetRegisterType::PROGRAM_COUNTER)) {
-            throw Exception("Missing program counter register descriptor");
-        }
-
-        if (
-            !registerDescriptorsByType.contains(TargetRegisterType::GENERAL_PURPOSE_REGISTER)
-            || registerDescriptorsByType.at(TargetRegisterType::GENERAL_PURPOSE_REGISTER).size() != 32
-        ) {
-            throw Exception("Unexpected general purpose register count");
-        }
-
-        /*
-         * For AVR targets, avr-gdb defines 35 registers in total:
-         *
-         * Register number 0 through 31 are general purpose registers
-         * Register number 32 is the status register (SREG)
-         * Register number 33 is the stack pointer register
-         * Register number 34 is the program counter register
-         */
-
-        // Generate 35 register numbers (0 -> 34)
-        std::iota(this->registerNumbers.begin(), this->registerNumbers.end(), 0);
-
-        /*
-         * Worth noting that gpRegisterDescriptors will always be sorted in the correct order, from register 0 to 31.
-         *
-         * Hmm, but the sorting is based on the start address (see TargetRegisterDescriptor::<() for more). So
-         * effectively, we're assuming that the registers will be laid out in the correct order, in memory. I think
-         * this assumption is fair.
-         */
-        const auto& gpRegisterDescriptors = registerDescriptorsByType.at(
+        const auto generalPurposeTargetRegisterDescriptorIds = this->targetDescriptor.registerDescriptorIdsForType(
             TargetRegisterType::GENERAL_PURPOSE_REGISTER
         );
 
-        // General purpose registers
-        GdbRegisterNumber regNumber = 0;
-        for (const auto& descriptor : gpRegisterDescriptors) {
-            this->registerDescriptorsByGdbNumber.insert(std::pair(
-                regNumber,
-                RegisterDescriptor(
-                    regNumber,
-                    1,
-                    "General Purpose Register " + std::to_string(regNumber)
-                )
-            ));
+        const auto statusTargetRegisterDescriptorIds = this->targetDescriptor.registerDescriptorIdsForType(
+            TargetRegisterType::STATUS_REGISTER
+        );
 
-            this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
-                regNumber,
-                descriptor
-            ));
+        const auto stackPointerTargetRegisterDescriptorIds = this->targetDescriptor.registerDescriptorIdsForType(
+            TargetRegisterType::STACK_POINTER
+        );
 
-            regNumber++;
+        if (generalPurposeTargetRegisterDescriptorIds.size() != 32) {
+            throw Exception("Unexpected general purpose register count");
         }
 
-        // Status, stack pointer and program counter registers
-        const auto statusDescriptor = RegisterDescriptor(
-            32,
+        if (statusTargetRegisterDescriptorIds.empty()) {
+            throw Exception("Missing status register descriptor");
+        }
+
+        if (stackPointerTargetRegisterDescriptorIds.empty()) {
+            throw Exception("Missing stack pointer register descriptor");
+        }
+
+        /*
+         * For AVR targets, GDB defines 35 registers in total:
+         *
+         * - Register ID 0 through 31 are general purpose registers
+         * - Register ID 32 is the status register (SREG)
+         * - Register ID 33 is the stack pointer register
+         * - Register ID 34 is the program counter
+         *
+         * For AVR targets, we don't have a target register descriptor for the program counter, so we don't map that
+         * GDB register ID (34) to anything here. Instead, the register command packet handlers (ReadRegisters,
+         * WriteRegister, etc) will handle any operations involving that GDB register.
+         */
+
+        // General purpose registers
+        GdbRegisterId gdbRegisterId = 0;
+        for (const auto descriptorId : generalPurposeTargetRegisterDescriptorIds) {
+            auto gdbRegisterDescriptor = RegisterDescriptor(
+                gdbRegisterId,
+                1,
+                "General Purpose Register " + std::to_string(gdbRegisterId)
+            );
+
+            this->gdbRegisterIdsByTargetRegisterDescriptorId.emplace(descriptorId, gdbRegisterDescriptor.id);
+            this->targetRegisterDescriptorIdsByGdbRegisterId.emplace(gdbRegisterDescriptor.id, descriptorId);
+
+            this->gdbRegisterDescriptorsById.emplace(gdbRegisterDescriptor.id, std::move(gdbRegisterDescriptor));
+
+            gdbRegisterId++;
+        }
+
+        const auto& statusTargetRegisterDescriptor = this->targetDescriptor.registerDescriptorsById.at(
+            *(statusTargetRegisterDescriptorIds.begin())
+        );
+
+        auto statusGdbRegisterDescriptor = RegisterDescriptor(
+            TargetDescriptor::STATUS_GDB_REGISTER_ID,
             1,
             "Status Register"
         );
 
-        this->registerDescriptorsByGdbNumber.insert(std::pair(statusDescriptor.number, statusDescriptor));
-        this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
-            statusDescriptor.number,
-            *(registerDescriptorsByType.at(TargetRegisterType::STATUS_REGISTER).begin())
-        ));
+        if (statusTargetRegisterDescriptor.size > statusGdbRegisterDescriptor.size) {
+            throw Exception("AVR8 status target register size exceeds the GDB register size.");
+        }
 
-        const auto stackPointerDescriptor = RegisterDescriptor(
-            33,
+        this->gdbRegisterIdsByTargetRegisterDescriptorId.emplace(
+            statusTargetRegisterDescriptor.id,
+            statusGdbRegisterDescriptor.id
+        );
+        this->targetRegisterDescriptorIdsByGdbRegisterId.emplace(
+            statusGdbRegisterDescriptor.id,
+            statusTargetRegisterDescriptor.id
+        );
+
+        this->gdbRegisterDescriptorsById.emplace(
+            statusGdbRegisterDescriptor.id,
+            std::move(statusGdbRegisterDescriptor)
+        );
+
+        const auto& stackPointerTargetRegisterDescriptor = this->targetDescriptor.registerDescriptorsById.at(
+            *(stackPointerTargetRegisterDescriptorIds.begin())
+        );
+
+        auto stackPointerGdbRegisterDescriptor = RegisterDescriptor(
+            TargetDescriptor::STACK_POINTER_GDB_REGISTER_ID,
             2,
             "Stack Pointer Register"
         );
 
-        this->registerDescriptorsByGdbNumber.insert(std::pair(stackPointerDescriptor.number, stackPointerDescriptor));
-        this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
-            stackPointerDescriptor.number,
-            *(registerDescriptorsByType.at(TargetRegisterType::STACK_POINTER).begin())
-        ));
+        if (stackPointerTargetRegisterDescriptor.size > stackPointerGdbRegisterDescriptor.size) {
+            throw Exception("AVR8 stack pointer target register size exceeds the GDB register size.");
+        }
 
-        const auto programCounterDescriptor = RegisterDescriptor(
-            34,
+        this->gdbRegisterIdsByTargetRegisterDescriptorId.emplace(
+            stackPointerTargetRegisterDescriptor.id,
+            stackPointerGdbRegisterDescriptor.id
+        );
+        this->targetRegisterDescriptorIdsByGdbRegisterId.emplace(
+            stackPointerGdbRegisterDescriptor.id,
+            stackPointerTargetRegisterDescriptor.id
+        );
+
+        this->gdbRegisterDescriptorsById.emplace(
+            stackPointerGdbRegisterDescriptor.id,
+            std::move(stackPointerGdbRegisterDescriptor)
+        );
+
+        /*
+         * We acknowledge the GDB program counter register here, but we don't map it to any target register descriptors.
+         *
+         * This is because we can't access the program counter on AVR targets in the same way we do with other
+         * registers. We don't have a register descriptor for the program counter. We have to treat it as a special
+         * case in the register access command packet handlers. See CommandPackets::ReadRegister,
+         * CommandPackets::WriteRegister, etc for more.
+         */
+        auto programCounterGdbRegisterDescriptor = RegisterDescriptor(
+            TargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID,
             4,
             "Program Counter"
         );
 
-        this->registerDescriptorsByGdbNumber.insert(std::pair(
-            programCounterDescriptor.number,
-            programCounterDescriptor
-        ));
-        this->targetRegisterDescriptorsByGdbNumber.insert(std::pair(
-            programCounterDescriptor.number,
-            *(registerDescriptorsByType.at(TargetRegisterType::PROGRAM_COUNTER).begin())
-        ));
-
-        if (registerDescriptorsByType.at(TargetRegisterType::STATUS_REGISTER).size() > statusDescriptor.size) {
-            throw Exception("AVR8 status target register size exceeds the GDB register size.");
-        }
-
-        if (registerDescriptorsByType.at(TargetRegisterType::STACK_POINTER).size() > stackPointerDescriptor.size) {
-            throw Exception("AVR8 stack pointer target register size exceeds the GDB register size.");
-        }
-
-        if (
-            registerDescriptorsByType.at(TargetRegisterType::PROGRAM_COUNTER).size() > programCounterDescriptor.size
-        ) {
-            throw Exception("AVR8 program counter size exceeds the GDB register size.");
-        }
+        this->gdbRegisterDescriptorsById.emplace(
+            programCounterGdbRegisterDescriptor.id,
+            std::move(programCounterGdbRegisterDescriptor)
+        );
     }
 }

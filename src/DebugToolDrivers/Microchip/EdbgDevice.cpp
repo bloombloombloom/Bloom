@@ -66,7 +66,6 @@ namespace Bloom::DebugToolDrivers
             );
         }
 
-        this->edbgAvr8Interface = std::make_unique<EdbgAvr8Interface>(this->edbgInterface.get());
         this->edbgAvrIspInterface = std::make_unique<EdbgAvrIspInterface>(this->edbgInterface.get());
 
         this->setInitialised(true);
@@ -79,6 +78,27 @@ namespace Bloom::DebugToolDrivers
 
         this->edbgInterface->getUsbHidInterface().close();
         UsbDevice::close();
+    }
+
+    TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* EdbgDevice::getAvr8DebugInterface(
+        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
+        Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
+        const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
+        const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
+    ) {
+        if (this->edbgAvr8Interface == nullptr) {
+            this->edbgAvr8Interface = std::make_unique<EdbgAvr8Interface>(
+                this->edbgInterface.get(),
+                targetConfig,
+                targetFamily,
+                targetParameters,
+                targetRegisterDescriptorsById
+            );
+
+            this->configureAvr8Interface();
+        }
+
+        return this->edbgAvr8Interface.get();
     }
 
     std::string EdbgDevice::getSerialNumber() {

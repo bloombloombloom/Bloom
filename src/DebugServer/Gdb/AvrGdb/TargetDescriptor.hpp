@@ -2,52 +2,18 @@
 
 #include "src/DebugServer/Gdb/TargetDescriptor.hpp"
 
-#include "src/Helpers/BiMap.hpp"
-
 namespace Bloom::DebugServer::Gdb::AvrGdb
 {
     class TargetDescriptor: public DebugServer::Gdb::TargetDescriptor
     {
     public:
-        BiMap<GdbRegisterNumber, RegisterDescriptor> registerDescriptorsByGdbNumber = {};
-        BiMap<GdbRegisterNumber, Targets::TargetRegisterDescriptor> targetRegisterDescriptorsByGdbNumber = {};
+        static constexpr auto STATUS_GDB_REGISTER_ID = 32;
+        static constexpr auto STACK_POINTER_GDB_REGISTER_ID = 33;
+        static constexpr auto PROGRAM_COUNTER_GDB_REGISTER_ID = 34;
 
         explicit TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor);
 
-        /**
-         * Should retrieve the GDB register number, given a target register descriptor. Or std::nullopt if the target
-         * register descriptor isn't mapped to any GDB register.
-         *
-         * @param registerDescriptor
-         * @return
-         */
-        std::optional<GdbRegisterNumber> getRegisterNumberFromTargetRegisterDescriptor(
-            const Targets::TargetRegisterDescriptor& registerDescriptor
-        ) const override;
-
-        /**
-         * Should retrieve the GDB register descriptor for a given GDB register number.
-         *
-         * @param number
-         * @return
-         */
-        const RegisterDescriptor& getRegisterDescriptorFromNumber(GdbRegisterNumber number) const override;
-
-        /**
-         * Should retrieve the mapped target register descriptor for a given GDB register number.
-         *
-         * @param number
-         * @return
-         */
-        const Targets::TargetRegisterDescriptor& getTargetRegisterDescriptorFromNumber(
-            GdbRegisterNumber number
-        ) const override;
-
-        const std::vector<GdbRegisterNumber>& getRegisterNumbers() const override;
-
     private:
-        std::vector<GdbRegisterNumber> registerNumbers = std::vector<GdbRegisterNumber>(35);
-
         /**
          * For AVR targets, avr-gdb defines 35 registers in total:
          *

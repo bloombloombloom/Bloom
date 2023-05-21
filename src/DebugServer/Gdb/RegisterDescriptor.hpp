@@ -5,27 +5,28 @@
 
 namespace Bloom::DebugServer::Gdb
 {
-    using GdbRegisterNumber = int;
+    using GdbRegisterId = std::uint16_t;
 
     /*
      * GDB defines a set of registers for each target architecture.
      *
-     * Each register in the set is assigned a register number, which is used to identify the register.
+     * Each register in the set is assigned an ID, which is used to identify the registers. Although the mapping of
+     * registers to IDs is hardcoded in GDB, GDB server implementations are expected to be aware of this mapping.
      */
     struct RegisterDescriptor
     {
-        GdbRegisterNumber number;
+        GdbRegisterId id;
         std::uint16_t size;
         std::string name;
 
-        RegisterDescriptor(GdbRegisterNumber number, std::uint16_t size, const std::string& name)
-            : number(number)
+        RegisterDescriptor(GdbRegisterId id, std::uint16_t size, const std::string& name)
+            : id(id)
             , size(size)
             , name(name)
         {};
 
         bool operator == (const RegisterDescriptor& other) const {
-            return this->number == other.number;
+            return this->id == other.id;
         }
 
         bool operator != (const RegisterDescriptor& other) const {
@@ -33,7 +34,7 @@ namespace Bloom::DebugServer::Gdb
         }
 
         bool operator < (const RegisterDescriptor& rhs) const {
-            return this->number < rhs.number;
+            return this->id < rhs.id;
         }
 
         bool operator > (const RegisterDescriptor& rhs) const {
@@ -64,7 +65,7 @@ namespace std
     public:
         std::size_t operator () (const Bloom::DebugServer::Gdb::RegisterDescriptor& descriptor) const {
             // We use the GDB register number as the hash, as it is unique to the register.
-            return static_cast<size_t>(descriptor.number);
+            return static_cast<size_t>(descriptor.id);
         }
     };
 }

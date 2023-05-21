@@ -159,9 +159,11 @@ namespace Bloom::Services
         );
     }
 
-    TargetRegisters TargetControllerService::readRegisters(const TargetRegisterDescriptors& descriptors) const {
+    TargetRegisters TargetControllerService::readRegisters(
+        const Targets::TargetRegisterDescriptorIds& descriptorIds
+    ) const {
         return this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<ReadTargetRegisters>(descriptors),
+            std::make_unique<ReadTargetRegisters>(descriptorIds),
             this->defaultTimeout
         )->registers;
     }

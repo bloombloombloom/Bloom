@@ -5,6 +5,7 @@
 #include <QClipboard>
 #include <QApplication>
 #include <set>
+#include <algorithm>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/InsightSignals.hpp"
@@ -72,36 +73,36 @@ namespace Bloom::Widgets
             this->filterRegisters(this->searchInput->text());
         });
 
-        const auto& registerDescriptors = targetDescriptor.registerDescriptorsByType;
+        const auto& registerDescriptors = targetDescriptor.registerDescriptorsById;
 
-        auto registerDescriptorsByGroupName = std::map<QString, std::set<TargetRegisterDescriptor>>({
-            {
-                "CPU General Purpose",
-                std::set<TargetRegisterDescriptor>(
-                    registerDescriptors.at(TargetRegisterType::GENERAL_PURPOSE_REGISTER).begin(),
-                    registerDescriptors.at(TargetRegisterType::GENERAL_PURPOSE_REGISTER).end()
-                )
+        auto registerDescriptorsByGroupName = std::map<QString, std::set<TargetRegisterDescriptor>>();
+
+        for (const auto& [descriptorId, descriptor] : registerDescriptors) {
+            if (
+                descriptor.type != TargetRegisterType::GENERAL_PURPOSE_REGISTER
+                && descriptor.type != TargetRegisterType::PORT_REGISTER
+                && descriptor.type != TargetRegisterType::OTHER
+            ) {
+                continue;
             }
-        });
 
-        for (const auto& registerDescriptor : registerDescriptors.at(TargetRegisterType::OTHER)) {
-            const auto groupName = QString::fromStdString(registerDescriptor.groupName.value_or("other")).toUpper();
-            registerDescriptorsByGroupName[groupName].insert(registerDescriptor);
-        }
+            const auto groupName = descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER
+                ? "CPU General Purpose"
+                : QString::fromStdString(descriptor.groupName.value_or("other")).toUpper();
 
-        for (const auto& registerDescriptor : registerDescriptors.at(TargetRegisterType::PORT_REGISTER)) {
-            const auto groupName = QString::fromStdString(registerDescriptor.groupName.value_or("other")).toUpper();
-            registerDescriptorsByGroupName[groupName].insert(registerDescriptor);
+            registerDescriptorsByGroupName[groupName].insert(descriptor);
+            this->registerDescriptors.insert(descriptor);
+
         }
 
         for (const auto& [groupName, registerDescriptors] : registerDescriptorsByGroupName) {
-            this->registerGroupItems.emplace_back(new RegisterGroupItem(
-                groupName,
-                registerDescriptors,
-                this->registerItemsByDescriptor
-            ));
-
-            this->registerDescriptors.insert(registerDescriptors.begin(), registerDescriptors.end());
+            this->registerGroupItems.emplace_back(
+                new RegisterGroupItem(
+                    groupName,
+                    registerDescriptors,
+                    this->registerItemsByDescriptorId
+                )
+            );
         }
 
         this->registerListView = new ListView(
@@ -144,7 +145,7 @@ namespace Bloom::Widgets
             this,
             [this] {
                 if (this->contextMenuRegisterItem != nullptr) {
-                    this->refreshRegisterValues(this->contextMenuRegisterItem->registerDescriptor, std::nullopt);
+                    this->refreshRegisterValues(this->contextMenuRegisterItem->registerDescriptor.id, std::nullopt);
                 }
             }
         );
@@ -259,19 +260,31 @@ namespace Bloom::Widgets
     }
 
     void TargetRegistersPaneWidget::refreshRegisterValues(
-        std::optional<Targets::TargetRegisterDescriptor> registerDescriptor,
+        std::optional<Targets::TargetRegisterDescriptorId> registerDescriptorId,
         std::optional<std::function<void(void)>> callback
     ) {
-        if (!registerDescriptor.has_value() && this->registerDescriptors.empty()) {
+        if (!registerDescriptorId.has_value() && this->registerDescriptors.empty()) {
             return;
         }
 
+        auto descriptorIds = Targets::TargetRegisterDescriptorIds();
+
+        if (registerDescriptorId.has_value()) {
+            descriptorIds.insert(*registerDescriptorId);
+
+        } else {
+            std::transform(
+                this->registerDescriptors.begin(),
+                this->registerDescriptors.end(),
+                std::inserter(descriptorIds, descriptorIds.end()),
+                [] (const Targets::TargetRegisterDescriptor& descriptor) {
+                    return descriptor.id;
+                }
+            );
+        }
+
         const auto readRegisterTask = QSharedPointer<ReadTargetRegisters>(
-            new ReadTargetRegisters(
-                registerDescriptor.has_value()
-                    ? Targets::TargetRegisterDescriptors({*registerDescriptor})
-                    : this->registerDescriptors
-            ),
+            new ReadTargetRegisters(descriptorIds),
             &QObject::deleteLater
         );
 
@@ -353,7 +366,7 @@ namespace Bloom::Widgets
 
         const auto targetStopped = this->targetState == Targets::TargetState::STOPPED;
         const auto targetStoppedAndValuePresent = targetStopped
-            && this->currentRegisterValues.contains(this->contextMenuRegisterItem->registerDescriptor);
+            && this->currentRegisterValuesByDescriptorId.contains(this->contextMenuRegisterItem->registerDescriptor.id);
 
         this->refreshValueAction->setEnabled(targetStopped);
         this->copyValueDecimalAction->setEnabled(targetStoppedAndValuePresent);
@@ -377,27 +390,26 @@ namespace Bloom::Widgets
 
     void TargetRegistersPaneWidget::onRegistersRead(const Targets::TargetRegisters& registers) {
         for (const auto& targetRegister : registers) {
-            const auto& descriptor = targetRegister.descriptor;
-            const auto& previousValueIt = this->currentRegisterValues.find(descriptor);
-            const auto& registerItemIt = this->registerItemsByDescriptor.find(descriptor);
+            const auto& previousValueIt = this->currentRegisterValuesByDescriptorId.find(targetRegister.descriptorId);
+            const auto& registerItemIt = this->registerItemsByDescriptorId.find(targetRegister.descriptorId);
 
-            if (registerItemIt != this->registerItemsByDescriptor.end()) {
+            if (registerItemIt != this->registerItemsByDescriptorId.end()) {
                 auto& registerItem = registerItemIt->second;
 
                 registerItem->setValue(targetRegister.value);
-                registerItem->valueChanged = previousValueIt != this->currentRegisterValues.end()
+                registerItem->valueChanged = previousValueIt != this->currentRegisterValuesByDescriptorId.end()
                     ? previousValueIt->second != targetRegister.value
                     : false;
             }
 
-            this->currentRegisterValues[descriptor] = targetRegister.value;
+            this->currentRegisterValuesByDescriptorId[targetRegister.descriptorId] = targetRegister.value;
         }
 
         this->registerListScene->update();
     }
 
     void TargetRegistersPaneWidget::clearInlineRegisterValues() {
-        for (auto& [registerDescriptor, registerItem] : this->registerItemsByDescriptor) {
+        for (auto& [registerDescriptorId, registerItem] : this->registerItemsByDescriptorId) {
             registerItem->clearValue();
         }
 
@@ -411,10 +423,10 @@ namespace Bloom::Widgets
 
         TargetRegisterInspectorWindow* inspectionWindow = nullptr;
 
-        const auto& currentValueIt = this->currentRegisterValues.find(registerDescriptor);
-        const auto& inspectionWindowIt = this->inspectionWindowsByDescriptor.find(registerDescriptor);
+        const auto& currentValueIt = this->currentRegisterValuesByDescriptorId.find(registerDescriptor.id);
+        const auto& inspectionWindowIt = this->inspectionWindowsByDescriptorId.find(registerDescriptor.id);
 
-        if (inspectionWindowIt != this->inspectionWindowsByDescriptor.end()) {
+        if (inspectionWindowIt != this->inspectionWindowsByDescriptorId.end()) {
             inspectionWindow = inspectionWindowIt->second;
 
         } else {
@@ -424,13 +436,13 @@ namespace Bloom::Widgets
                 this
             );
 
-            this->inspectionWindowsByDescriptor.insert(std::pair(
-                registerDescriptor,
+            this->inspectionWindowsByDescriptorId.insert(std::pair(
+                registerDescriptor.id,
                 inspectionWindow
             ));
         }
 
-        if (currentValueIt != this->currentRegisterValues.end()) {
+        if (currentValueIt != this->currentRegisterValuesByDescriptorId.end()) {
             inspectionWindow->setValue(currentValueIt->second);
         }
 
@@ -443,9 +455,9 @@ namespace Bloom::Widgets
     }
 
     void TargetRegistersPaneWidget::copyRegisterValueHex(const TargetRegisterDescriptor& registerDescriptor) {
-        const auto& valueIt = this->currentRegisterValues.find(registerDescriptor);
+        const auto& valueIt = this->currentRegisterValuesByDescriptorId.find(registerDescriptor.id);
 
-        if (valueIt == this->currentRegisterValues.end()) {
+        if (valueIt == this->currentRegisterValuesByDescriptorId.end()) {
             return;
         }
 
@@ -459,9 +471,9 @@ namespace Bloom::Widgets
     }
 
     void TargetRegistersPaneWidget::copyRegisterValueDecimal(const TargetRegisterDescriptor& registerDescriptor) {
-        const auto& valueIt = this->currentRegisterValues.find(registerDescriptor);
+        const auto& valueIt = this->currentRegisterValuesByDescriptorId.find(registerDescriptor.id);
 
-        if (valueIt == this->currentRegisterValues.end()) {
+        if (valueIt == this->currentRegisterValuesByDescriptorId.end()) {
             return;
         }
 
@@ -475,9 +487,9 @@ namespace Bloom::Widgets
     }
 
     void TargetRegistersPaneWidget::copyRegisterValueBinary(const TargetRegisterDescriptor& registerDescriptor) {
-        const auto& valueIt = this->currentRegisterValues.find(registerDescriptor);
+        const auto& valueIt = this->currentRegisterValuesByDescriptorId.find(registerDescriptor.id);
 
-        if (valueIt == this->currentRegisterValues.end()) {
+        if (valueIt == this->currentRegisterValuesByDescriptorId.end()) {
             return;
         }
 

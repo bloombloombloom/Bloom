@@ -46,6 +46,5 @@ namespace Bloom::Widgets::InsightTargetWidgets
         void onTargetStateChanged(Targets::TargetState newState);
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();
-        void onRegistersWritten(Targets::TargetRegisters targetRegisters);
     };
 }

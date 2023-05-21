@@ -142,40 +142,34 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
         auto peripheralsByName = std::map<std::string, Peripheral>();
 
-        for (const auto& [registerType, registerDescriptors] : targetDescriptor.registerDescriptorsByType) {
-            if (registerDescriptors.empty()) {
+        for (const auto& [descriptorId, registerDescriptor] : targetDescriptor.registerDescriptorsById) {
+            if (
+                !registerDescriptor.startAddress.has_value()
+                || !registerDescriptor.name.has_value()
+                || registerDescriptor.name->empty()
+                || !registerDescriptor.groupName.has_value()
+                || (
+                    registerDescriptor.type != Targets::TargetRegisterType::OTHER
+                    && registerDescriptor.type != Targets::TargetRegisterType::PORT_REGISTER
+                )
+            ) {
                 continue;
             }
 
-            for (const auto& registerDescriptor : registerDescriptors) {
-                if (
-                    !registerDescriptor.startAddress.has_value()
-                    || !registerDescriptor.name.has_value()
-                    || registerDescriptor.name->empty()
-                    || !registerDescriptor.groupName.has_value()
-                    || (
-                        registerDescriptor.type != Targets::TargetRegisterType::OTHER
-                        && registerDescriptor.type != Targets::TargetRegisterType::PORT_REGISTER
-                    )
-                ) {
-                    continue;
-                }
+            auto peripheralIt = peripheralsByName.find(*registerDescriptor.groupName);
 
-                auto peripheralIt = peripheralsByName.find(*registerDescriptor.groupName);
+            if (peripheralIt == peripheralsByName.end()) {
+                auto peripheral = Peripheral{
+                    .name = QString::fromStdString(
+                        *registerDescriptor.groupName
+                    ).replace(QChar(' '), QChar('_')).toUpper(),
+                    .baseAddress = baseAddressOffset
+                };
 
-                if (peripheralIt == peripheralsByName.end()) {
-                    auto peripheral = Peripheral{
-                        .name = QString::fromStdString(
-                            *registerDescriptor.groupName
-                        ).replace(QChar(' '), QChar('_')).toUpper(),
-                        .baseAddress = baseAddressOffset
-                    };
-
-                    peripheralIt = peripheralsByName.insert(std::pair(*registerDescriptor.groupName, peripheral)).first;
-                }
-
-                peripheralIt->second.registerDescriptors.insert(registerDescriptor);
+                peripheralIt = peripheralsByName.insert(std::pair(*registerDescriptor.groupName, peripheral)).first;
             }
+
+            peripheralIt->second.registerDescriptors.insert(registerDescriptor);
         }
 
         auto peripheralsElement = document.createElement("peripherals");
@@ -213,7 +207,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
                 );
 
                 registerElement.appendChild(
-                    createElement("access", registerDescriptor.writable ? "read-write" : "read-only")
+                    createElement("access", registerDescriptor.access.writable ? "read-write" : "read-only")
                 );
 
                 registersElement.appendChild(registerElement);

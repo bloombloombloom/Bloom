@@ -98,12 +98,12 @@ namespace Bloom::Services
         /**
          * Requests the TargetController to read register values from the target.
          *
-         * @param descriptors
-         *  Descriptors of the registers to read.
+         * @param descriptorIds
+         *  Descriptor IDs of the registers to read.
          *
          * @return
          */
-        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors) const;
+        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) const;
 
         /**
          * Requests the TargetController to write register values to the target.

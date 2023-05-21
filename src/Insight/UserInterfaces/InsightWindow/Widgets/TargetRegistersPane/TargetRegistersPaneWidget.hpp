@@ -40,7 +40,7 @@ namespace Bloom::Widgets
         void expandAllRegisterGroups();
 
         void refreshRegisterValues(
-            std::optional<Targets::TargetRegisterDescriptor> registerDescriptor = std::nullopt,
+            std::optional<Targets::TargetRegisterDescriptorId> registerDescriptorId = std::nullopt,
             std::optional<std::function<void(void)>> callback = std::nullopt
         );
 
@@ -62,9 +62,9 @@ namespace Bloom::Widgets
 
         Targets::TargetRegisterDescriptors registerDescriptors;
         std::vector<RegisterGroupItem*> registerGroupItems;
-        std::unordered_map<Targets::TargetRegisterDescriptor, RegisterItem*> registerItemsByDescriptor;
-        std::unordered_map<Targets::TargetRegisterDescriptor, TargetRegisterInspectorWindow*> inspectionWindowsByDescriptor;
-        std::unordered_map<Targets::TargetRegisterDescriptor, Targets::TargetMemoryBuffer> currentRegisterValues;
+        std::unordered_map<Targets::TargetRegisterDescriptorId, RegisterItem*> registerItemsByDescriptorId;
+        std::unordered_map<Targets::TargetRegisterDescriptorId, TargetRegisterInspectorWindow*> inspectionWindowsByDescriptorId;
+        std::unordered_map<Targets::TargetRegisterDescriptorId, Targets::TargetMemoryBuffer> currentRegisterValuesByDescriptorId;
 
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 

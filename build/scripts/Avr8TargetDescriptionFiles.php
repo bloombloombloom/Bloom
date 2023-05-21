@@ -40,15 +40,13 @@ $avrTdfs = TargetDescriptionFiles\Factory::loadAvr8Tdfs();
 
 print "Processing " . count($avrTdfs) . " AVR8 TDFs...\n\n";
 
-$processedTargetIds = [];
-
 foreach ($avrTdfs as $avrTdf) {
     print "Processing AVR8 TDF for target " . $avrTdf->targetName . "\n";
 
     $strippedTargetName = str_replace([' '] , '_', $avrTdf->targetName);
     $id = strtolower($strippedTargetName);
 
-    if (in_array($id, $processedTargetIds)) {
+    if (in_array($id, $tdfMapping)) {
         print "\033[31m" . "\n";
         print "FATAL ERROR: duplicate AVR8 target ID detected: " . $id . "\n\n"
             . "TDF Path: " . realpath($avrTdf->filePath);
@@ -94,12 +92,11 @@ foreach ($avrTdfs as $avrTdf) {
         exit(1);
     }
 
-    $tdfMapping[strtolower($avrTdf->signature->toHex())][] = [
-        'targetName' => $strippedTargetName,
-        'targetDescriptionFilePath' => $relativeDestinationFilePath,
+    $tdfMapping[$id] = [
+        'name' => $strippedTargetName,
+        'signature' => $avrTdf->signature->toHex(),
+        'tdfPath' => $relativeDestinationFilePath,
     ];
-
-    $processedTargetIds[] = $id;
 }
 
 if (file_put_contents(AVR_TDF_MAPPING_FILE_PATH, json_encode($tdfMapping, JSON_PRETTY_PRINT)) === false) {

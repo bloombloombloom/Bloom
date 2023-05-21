@@ -27,6 +27,7 @@ namespace Bloom::DebugToolDrivers
             return "Xplained Pro";
         }
 
-        void init() override;
+    protected:
+        void configureAvr8Interface() override;
     };
 }

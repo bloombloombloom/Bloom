@@ -22,70 +22,23 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     using Bloom::Targets::TargetVariant;
     using Bloom::Targets::TargetRegisterDescriptor;
 
-    TargetDescriptionFile::TargetDescriptionFile(
-        const TargetSignature& targetSignature,
-        std::optional<std::string> targetName
-    ) {
-        const auto targetSignatureHex = targetSignature.toHex();
+    TargetDescriptionFile::TargetDescriptionFile(const std::string& targetName) {
         const auto mapping = TargetDescriptionFile::getTargetDescriptionMapping();
-        const auto descriptionFiles = mapping.find(QString::fromStdString(targetSignatureHex).toLower())->toArray();
+        const auto descriptionFileObjectIt = mapping.find(QString::fromStdString(targetName).toLower());
 
-        if (descriptionFiles.empty()) {
+        if (descriptionFileObjectIt == mapping.end()) {
             throw Exception(
-                "Failed to resolve target description file for target \"" + targetSignatureHex
-                    + "\" - unknown target signature."
+                "Failed to resolve target description file for target \"" + targetName + "\" - unknown target name."
             );
         }
 
-        if (descriptionFiles.size() > 1 && !targetName.has_value()) {
-            /*
-             * There are numerous target description files mapped to this target signature and we don't have a target
-             * name to filter by. There's really not much we can do at this point, so we'll just instruct the user to
-             * provide a specific target name.
-             */
-            auto targetNames = QStringList();
-            std::transform(
-                descriptionFiles.begin(),
-                descriptionFiles.end(),
-                std::back_inserter(targetNames),
-                [] (const QJsonValue& descriptionFile) {
-                    return QString(
-                        "\"" + descriptionFile.toObject().find("targetName")->toString().toLower() + "\""
-                    );
-                }
-            );
+        const auto descriptionFileObject = descriptionFileObjectIt.value().toObject();
+        const auto descriptionFilePath = QString::fromStdString(
+            Services::PathService::applicationDirPath()) + "/" + descriptionFileObject.find("tdfPath")->toString();
 
-            throw Exception(
-                "Failed to resolve target description file for target \"" + targetSignatureHex
-                    + "\" - ambiguous signature.\nThe signature is mapped to numerous targets: "
-                    + targetNames.join(", ").toStdString() + ".\n\nPlease update the target name in your Bloom "
-                    + "configuration file, to one of the above."
-            );
-        }
+        Logger::debug("Loading AVR8 target description file: " + descriptionFilePath.toStdString());
 
-        for (const auto& mappingJsonValue : descriptionFiles) {
-            const auto mappingObject = mappingJsonValue.toObject();
-
-            if (
-                targetName.has_value()
-                && *targetName != mappingObject.find("targetName")->toString().toLower().toStdString()
-            ) {
-                continue;
-            }
-
-            const auto descriptionFilePath = QString::fromStdString(Services::PathService::applicationDirPath()) + "/"
-                + mappingObject.find("targetDescriptionFilePath")->toString();
-
-            Logger::debug("Loading AVR8 target description file: " + descriptionFilePath.toStdString());
-            Targets::TargetDescription::TargetDescriptionFile::init(descriptionFilePath);
-            return;
-        }
-
-        throw Exception(
-            "Failed to resolve target description file for target \"" + *targetName
-                + "\" - target signature \"" + targetSignatureHex + "\" does not belong to target with name \""
-                + *targetName + "\". Please review your bloom.yaml configuration."
-        );
+        Targets::TargetDescription::TargetDescriptionFile::init(descriptionFilePath);
     }
 
     void TargetDescriptionFile::init(const QDomDocument& xml) {
@@ -634,35 +587,28 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                                 continue;
                             }
 
-                            auto registerDescriptor = TargetRegisterDescriptor();
-                            registerDescriptor.type = moduleName == "port"
-                                ? TargetRegisterType::PORT_REGISTER : TargetRegisterType::OTHER;
-                            registerDescriptor.memoryType = TargetMemoryType::RAM;
-                            registerDescriptor.name = moduleRegisterName;
-                            registerDescriptor.groupName = peripheralRegisterGroup.name;
-                            registerDescriptor.size = moduleRegister.size;
-                            registerDescriptor.startAddress = moduleRegister.offset
-                                + peripheralRegisterGroup.offset.value_or(0);
+                            auto registerDescriptor = TargetRegisterDescriptor(
+                                moduleName == "port" ? TargetRegisterType::PORT_REGISTER : TargetRegisterType::OTHER,
+                                moduleRegister.offset + peripheralRegisterGroup.offset.value_or(0),
+                                moduleRegister.size,
+                                TargetMemoryType::RAM,
+                                moduleRegisterName,
+                                peripheralRegisterGroup.name,
+                                moduleRegister.caption.has_value() && !moduleRegister.caption->empty()
+                                    ? moduleRegister.caption
+                                    : std::nullopt,
+                                moduleRegister.readWriteAccess.has_value()
+                                    ? TargetRegisterAccess(
+                                        moduleRegister.readWriteAccess.value().find('r') != std::string::npos,
+                                        moduleRegister.readWriteAccess.value().find('w') != std::string::npos
+                                    )
+                                    : TargetRegisterAccess(true, true)
+                            );
 
-                            if (moduleRegister.caption.has_value() && !moduleRegister.caption->empty()) {
-                                registerDescriptor.description = moduleRegister.caption;
-                            }
-
-                            if (moduleRegister.readWriteAccess.has_value()) {
-                                const auto& readWriteAccess = moduleRegister.readWriteAccess.value();
-                                registerDescriptor.readable = readWriteAccess.find('r') != std::string::npos;
-                                registerDescriptor.writable = readWriteAccess.find('w') != std::string::npos;
-
-                            } else {
-                                /*
-                                 * If the TDF doesn't specify the OCD read/write access for a register, we assume both
-                                 * are permitted.
-                                 */
-                                registerDescriptor.readable = true;
-                                registerDescriptor.writable = true;
-                            }
-
-                            this->targetRegisterDescriptorsByType[registerDescriptor.type].insert(registerDescriptor);
+                            this->targetRegisterDescriptorsById.emplace(
+                                registerDescriptor.id,
+                                std::move(registerDescriptor)
+                            );
                         }
                     }
                 }

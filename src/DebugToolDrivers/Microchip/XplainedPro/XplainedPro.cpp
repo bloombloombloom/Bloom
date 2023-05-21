@@ -11,9 +11,7 @@ namespace Bloom::DebugToolDrivers
         )
     {}
 
-    void XplainedPro::init() {
-        EdbgDevice::init();
-
+    void XplainedPro::configureAvr8Interface() {
         this->edbgAvr8Interface->setMaximumMemoryAccessSizePerRequest(256);
     }
 }

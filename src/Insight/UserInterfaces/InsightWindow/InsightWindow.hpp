@@ -34,7 +34,8 @@ namespace Bloom
         InsightWindow(
             const EnvironmentConfig& environmentConfig,
             const InsightConfig& insightConfig,
-            InsightProjectSettings& insightProjectSettings
+            InsightProjectSettings& insightProjectSettings,
+            const Targets::TargetDescriptor& targetDescriptor
         );
 
         void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {

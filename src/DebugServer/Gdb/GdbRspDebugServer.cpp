@@ -21,8 +21,6 @@
 #include "CommandPackets/InterruptExecution.hpp"
 #include "CommandPackets/ContinueExecution.hpp"
 #include "CommandPackets/StepExecution.hpp"
-#include "CommandPackets/ReadRegisters.hpp"
-#include "CommandPackets/WriteRegister.hpp"
 #include "CommandPackets/SetBreakpoint.hpp"
 #include "CommandPackets/RemoveBreakpoint.hpp"
 #include "CommandPackets/Monitor.hpp"
@@ -278,14 +276,6 @@ namespace Bloom::DebugServer::Gdb
              */
             if (rawPacketString.find("qSupported") == 1) {
                 return std::make_unique<CommandPackets::SupportedFeaturesQuery>(rawPacket);
-            }
-
-            if (rawPacketString[1] == 'g' || rawPacketString[1] == 'p') {
-                return std::make_unique<CommandPackets::ReadRegisters>(rawPacket);
-            }
-
-            if (rawPacketString[1] == 'P') {
-                return std::make_unique<CommandPackets::WriteRegister>(rawPacket);
             }
 
             if (rawPacketString[1] == 'c') {

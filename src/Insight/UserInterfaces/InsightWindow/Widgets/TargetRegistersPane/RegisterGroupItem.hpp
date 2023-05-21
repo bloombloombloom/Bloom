@@ -22,7 +22,7 @@ namespace Bloom::Widgets
         explicit RegisterGroupItem(
             QString name,
             const std::set<Targets::TargetRegisterDescriptor>& registerDescriptors,
-            std::unordered_map<Targets::TargetRegisterDescriptor, RegisterItem*>& registerItemsByDescriptor
+            std::unordered_map<Targets::TargetRegisterDescriptorId, RegisterItem*>& registerItemsByDescriptorIds
         );
 
         bool isExpanded() const {

@@ -79,18 +79,17 @@ namespace Bloom
         InsightProjectSettings& insightProjectSettings;
 
         EventListener& eventListener;
+        Services::TargetControllerService targetControllerService = Services::TargetControllerService();
 
         QApplication application;
 
         std::map<decltype(InsightWorker::id), std::pair<InsightWorker*, QThread*>> insightWorkersById;
-
         InsightWindow* mainWindow = new InsightWindow(
             this->environmentConfig,
             this->insightConfig,
-            this->insightProjectSettings
+            this->insightProjectSettings,
+            this->targetControllerService.getTargetDescriptor()
         );
-
-        Services::TargetControllerService targetControllerService = Services::TargetControllerService();
 
         Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
         bool targetStepping = false;

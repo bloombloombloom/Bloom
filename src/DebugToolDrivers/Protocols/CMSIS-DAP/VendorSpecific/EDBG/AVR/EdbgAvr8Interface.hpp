@@ -10,9 +10,10 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Avr8Generic.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Targets/Microchip/AVR/Target.hpp"
+#include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 
 namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
@@ -28,7 +29,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     class EdbgAvr8Interface: public TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface
     {
     public:
-        explicit EdbgAvr8Interface(EdbgInterface* edbgInterface);
+        explicit EdbgAvr8Interface(
+            EdbgInterface* edbgInterface,
+            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
+            Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
+            const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
+            const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
+        );
 
         /**
          * Some EDBG devices don't seem to operate correctly when actioning the masked memory read EDBG command. The
@@ -82,32 +89,6 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * The public methods below implement the interface defined by the Avr8Interface class.
          * See the comments in that class for more info on the expected behaviour of each method.
          */
-
-        /**
-         * As already mentioned in numerous comments above, the EdbgAvr8Interface requires some configuration from
-         * the user. This is supplied via the user's Bloom configuration.
-         *
-         * @param targetConfig
-         */
-        void configure(const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig) override;
-
-        /**
-         * Configures the target family. For some physical interfaces, the target family is required in order
-         * properly configure the EDBG tool. See EdbgAvr8Interface::resolveConfigVariant() for more.
-         *
-         * @param family
-         */
-        void setFamily(Targets::Microchip::Avr::Avr8Bit::Family family) override {
-            this->family = family;
-        }
-
-        /**
-         * Accepts target parameters from the AVR8 target instance and sends the necessary target parameters to the
-         * debug tool.
-         *
-         * @param config
-         */
-        void setTargetParameters(const Targets::Microchip::Avr::Avr8Bit::TargetParameters& config) override;
 
         /**
          * Initialises the AVR8 Generic protocol interface by setting the appropriate parameters on the debug tool.
@@ -207,10 +188,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         /**
          * Reads registers from the target.
          *
-         * @param descriptors
+         * @param descriptorIds
          * @return
          */
-        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptors& descriptors) override;
+        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) override;
 
         /**
          * Writes registers to target.
@@ -289,7 +270,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         /**
          * Project's AVR8 target configuration.
          */
-        std::optional<Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig> targetConfig;
+        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig;
 
         /**
          * The target family is taken into account when configuring the AVR8 Generic protocol on the EDBG device.
@@ -297,7 +278,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * We use this to determine which config variant to select.
          * See EdbgAvr8Interface::resolveConfigVariant() for more.
          */
-        std::optional<Targets::Microchip::Avr::Avr8Bit::Family> family;
+        Targets::Microchip::Avr::Avr8Bit::Family family;
 
         /**
          * The AVR8 Generic protocol provides two functions: Debugging and programming. The desired function must be
@@ -320,7 +301,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * For the EdbgAvr8Interface, we send the required parameters to the debug tool immediately upon receiving
          * them. See EdbgAvr8Interface::setTargetParameters().
          */
-        Targets::Microchip::Avr::Avr8Bit::TargetParameters targetParameters;
+        const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters;
+
+        const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById;
 
         /**
          * See the comment for EdbgAvr8Interface::setAvoidMaskedMemoryRead().
@@ -358,6 +341,13 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         bool programmingModeEnabled = false;
 
         /**
+         * Sends the necessary target parameters to the debug tool.
+         *
+         * @param config
+         */
+        void setTargetParameters();
+
+        /**
          * This mapping allows us to determine which config variant to select, based on the target family and the
          * selected physical interface.
          */
@@ -367,11 +357,14 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         > getConfigVariantsByFamilyAndPhysicalInterface();
 
         /**
-         * Will attempt to resolve the config variant with the information currently held.
+         * Determines the config variant given a target family and physical interface.
          *
          * @return
          */
-        std::optional<Avr8ConfigVariant> resolveConfigVariant();
+        static Avr8ConfigVariant resolveConfigVariant(
+            Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
+            Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface
+        );
 
         /**
          * Sets an AVR8 parameter on the debug tool. See the Avr8EdbgParameters class and protocol documentation

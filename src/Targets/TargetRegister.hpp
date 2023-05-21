@@ -1,8 +1,9 @@
 #pragma once
 
+#include <cstdint>
+#include <atomic>
 #include <string>
 #include <optional>
-#include <cstdint>
 #include <utility>
 #include <vector>
 #include <map>
@@ -12,6 +13,9 @@
 
 namespace Bloom::Targets
 {
+    using TargetRegisterDescriptorId = std::uint32_t;
+    using TargetRegisterDescriptorIds = std::set<Targets::TargetRegisterDescriptorId>;
+
     enum class TargetRegisterType: std::uint8_t
     {
         GENERAL_PURPOSE_REGISTER,
@@ -22,23 +26,55 @@ namespace Bloom::Targets
         OTHER,
     };
 
+    struct TargetRegisterAccess
+    {
+        bool readable = false;
+        bool writable = false;
+
+        TargetRegisterAccess(
+            bool readable,
+            bool writable
+        )
+            : readable(readable)
+            , writable(writable)
+        {}
+    };
+
     struct TargetRegisterDescriptor
     {
     public:
+        TargetRegisterDescriptorId id;
         std::optional<TargetMemoryAddress> startAddress;
-        TargetMemorySize size = 0;
-        TargetRegisterType type = TargetRegisterType::OTHER;
-        TargetMemoryType memoryType = TargetMemoryType::OTHER;
+        TargetMemorySize size;
+        TargetRegisterType type;
+        TargetMemoryType memoryType;
 
         std::optional<std::string> name;
         std::optional<std::string> groupName;
         std::optional<std::string> description;
 
-        bool readable = false;
-        bool writable = false;
+        TargetRegisterAccess access;
 
-        TargetRegisterDescriptor() = default;
-        explicit TargetRegisterDescriptor(TargetRegisterType type): type(type) {};
+        TargetRegisterDescriptor(
+            TargetRegisterType type,
+            std::optional<TargetMemoryAddress> startAddress,
+            TargetMemorySize size,
+            TargetMemoryType memoryType,
+            std::optional<std::string> name,
+            std::optional<std::string> groupName,
+            std::optional<std::string> description,
+            TargetRegisterAccess access
+        )
+            : id(++(TargetRegisterDescriptor::lastRegisterDescriptorId))
+            , type(type)
+            , startAddress(startAddress)
+            , size(size)
+            , memoryType(memoryType)
+            , name(name)
+            , groupName(groupName)
+            , description(description)
+            , access(access)
+        {};
 
         bool operator == (const TargetRegisterDescriptor& other) const {
             return this->getHash() == other.getHash();
@@ -58,6 +94,7 @@ namespace Bloom::Targets
 
     private:
         mutable std::optional<std::size_t> cachedHash;
+        static inline std::atomic<TargetRegisterDescriptorId> lastRegisterDescriptorId = 0;
         std::size_t getHash() const;
 
         friend std::hash<Bloom::Targets::TargetRegisterDescriptor>;
@@ -65,12 +102,12 @@ namespace Bloom::Targets
 
     struct TargetRegister
     {
-        TargetRegisterDescriptor descriptor;
+        TargetRegisterDescriptorId descriptorId;
         TargetMemoryBuffer value;
 
-        TargetRegister(TargetRegisterDescriptor descriptor, std::vector<unsigned char> value)
+        TargetRegister(TargetRegisterDescriptorId descriptorId, std::vector<unsigned char> value)
             : value(std::move(value))
-            , descriptor(std::move(descriptor))
+            , descriptorId(descriptorId)
         {};
 
         [[nodiscard]] std::size_t size() const {
@@ -80,6 +117,7 @@ namespace Bloom::Targets
 
     using TargetRegisters = std::vector<TargetRegister>;
     using TargetRegisterDescriptors = std::set<TargetRegisterDescriptor>;
+    using TargetRegisterDescriptorMapping = std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor>;
 }
 
 namespace std

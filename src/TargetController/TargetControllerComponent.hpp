@@ -141,10 +141,7 @@ namespace Bloom::TargetController
          */
         Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
 
-        /**
-         * Obtaining a TargetDescriptor for the connected target can be quite expensive. We cache it here.
-         */
-        std::optional<const Targets::TargetDescriptor> cachedTargetDescriptor;
+        std::optional<const Targets::TargetDescriptor> targetDescriptor;
 
         /**
          * Target register descriptors mapped by the memory type on which the register is stored.
@@ -218,7 +215,7 @@ namespace Bloom::TargetController
          *
          * @return
          */
-        std::map<std::string, std::function<std::unique_ptr<Targets::Target>()>> getSupportedTargets();
+        std::map<std::string, std::function<std::unique_ptr<Targets::Target>(const TargetConfig&)>> getSupportedTargets();
 
         /**
          * Processes any pending commands in the queue.

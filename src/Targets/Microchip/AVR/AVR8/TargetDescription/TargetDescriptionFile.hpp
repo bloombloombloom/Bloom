@@ -34,12 +34,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     {
     public:
         /**
-         * Will resolve the target description file using the target description JSON mapping and a given target signature.
+         * Will resolve the target description file using the target description JSON mapping and a given target name.
          *
-         * @param targetSignatureHex
          * @param targetName
          */
-        TargetDescriptionFile(const TargetSignature& targetSignature, std::optional<std::string> targetName);
+        TargetDescriptionFile(const std::string& targetName);
 
         /**
          * Extends TDF initialisation to include the loading of physical interfaces for debugging AVR8 targets, among
@@ -148,12 +147,12 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         }
 
         /**
-         * Returns a mapping of all target register descriptors extracted from the TDF, by type.
+         * Returns a mapping of all target register descriptors extracted from the TDF, by ID.
          *
          * @return
          */
-        [[nodiscard]] const auto& getRegisterDescriptorsMappedByType() const {
-            return this->targetRegisterDescriptorsByType;
+        [[nodiscard]] const auto& getRegisterDescriptorsMappedById() const {
+            return this->targetRegisterDescriptorsById;
         }
 
     private:
@@ -166,7 +165,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @return
          */
         static inline auto getFamilyNameToEnumMapping() {
-            // All keys should be lower case.
+            // All keys should be lower-case.
             return std::map<std::string, Family> {
                 {"megaavr", Family::MEGA},
                 {"avr mega", Family::MEGA},
@@ -186,7 +185,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
 
-        std::map<TargetRegisterType, TargetRegisterDescriptors> targetRegisterDescriptorsByType;
+        std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor> targetRegisterDescriptorsById;
 
         /**
          * Populates this->supportedPhysicalInterfaces with physical interfaces defined in the TDF.
@@ -204,7 +203,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         void loadTargetVariants();
 
         /**
-         * Loads all register descriptors from the TDF, and populates this->targetRegisterDescriptorsByType.
+         * Loads all register descriptors from the TDF, and populates this->targetRegisterDescriptorsById.
          */
         void loadTargetRegisterDescriptors();
 

@@ -3,6 +3,11 @@
 #include "TargetInterfaces/TargetPowerManagementInterface.hpp"
 
 #include "TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/Avr8TargetConfig.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
+#include "src/Targets/TargetRegister.hpp"
+
 #include "TargetInterfaces/Microchip/AVR/AvrIspInterface.hpp"
 
 namespace Bloom
@@ -67,7 +72,12 @@ namespace Bloom
          *
          * @return
          */
-        virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface() {
+        virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface(
+            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
+            Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
+            const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
+            const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
+        ) {
             return nullptr;
         }
 
@@ -81,7 +91,9 @@ namespace Bloom
          *
          * @return
          */
-        virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface() {
+        virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface(
+            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
+        ) {
             return nullptr;
         }
 

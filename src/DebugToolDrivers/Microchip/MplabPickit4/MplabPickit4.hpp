@@ -36,5 +36,8 @@ namespace Bloom::DebugToolDrivers
         }
 
         void init() override;
+
+    protected:
+        void configureAvr8Interface() override;
     };
 }

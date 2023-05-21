@@ -1,6 +1,7 @@
 #include "EdbgAvr8Interface.hpp"
 
 #include <thread>
+#include <cassert>
 #include <cmath>
 
 #include "src/Services/PathService.hpp"
@@ -80,70 +81,25 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using Bloom::Targets::TargetRegister;
     using Bloom::Targets::TargetRegisterDescriptor;
     using Bloom::Targets::TargetRegisterDescriptors;
+    using Bloom::Targets::TargetRegisterDescriptorId;
+    using Bloom::Targets::TargetRegisterDescriptorIds;
     using Bloom::Targets::TargetRegisterType;
     using Bloom::Targets::TargetRegisters;
 
-    EdbgAvr8Interface::EdbgAvr8Interface(EdbgInterface* edbgInterface)
+    EdbgAvr8Interface::EdbgAvr8Interface(
+        EdbgInterface* edbgInterface,
+        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
+        Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
+        const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
+        const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
+    )
         : edbgInterface(edbgInterface)
+        , targetConfig(targetConfig)
+        , family(targetFamily)
+        , targetParameters(targetParameters)
+        , targetRegisterDescriptorsById(targetRegisterDescriptorsById)
+        , configVariant(EdbgAvr8Interface::resolveConfigVariant(targetFamily, targetConfig.physicalInterface))
     {}
-
-    void EdbgAvr8Interface::configure(const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig) {
-        this->targetConfig = targetConfig;
-
-        this->configVariant = this->resolveConfigVariant().value_or(Avr8ConfigVariant::NONE);
-    }
-
-    void EdbgAvr8Interface::setTargetParameters(const Avr8Bit::TargetParameters& config) {
-        this->targetParameters = config;
-
-        if (!config.stackPointerRegisterLowAddress.has_value()) {
-            throw DeviceInitializationFailure("Failed to find stack pointer register start address");
-        }
-
-        if (!config.stackPointerRegisterSize.has_value()) {
-            throw DeviceInitializationFailure("Failed to find stack pointer register size");
-        }
-
-        if (!config.statusRegisterStartAddress.has_value()) {
-            throw DeviceInitializationFailure("Failed to find status register start address");
-        }
-
-        if (!config.statusRegisterSize.has_value()) {
-            throw DeviceInitializationFailure("Failed to find status register size");
-        }
-
-        if (this->configVariant == Avr8ConfigVariant::NONE) {
-            auto configVariant = this->resolveConfigVariant();
-
-            if (!configVariant.has_value()) {
-                throw DeviceInitializationFailure("Failed to resolve config variant for the selected "
-                    "physical interface and AVR8 family. The selected physical interface is not known to be supported "
-                    "by the AVR8 family."
-                );
-            }
-
-            this->configVariant = configVariant.value();
-        }
-
-        switch (this->configVariant) {
-            case Avr8ConfigVariant::DEBUG_WIRE:
-            case Avr8ConfigVariant::MEGAJTAG: {
-                this->setDebugWireAndJtagParameters();
-                break;
-            }
-            case Avr8ConfigVariant::XMEGA: {
-                this->setPdiParameters();
-                break;
-            }
-            case Avr8ConfigVariant::UPDI: {
-                this->setUpdiParameters();
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-    }
 
     void EdbgAvr8Interface::init() {
         if (this->configVariant == Avr8ConfigVariant::XMEGA) {
@@ -177,8 +133,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
         this->setParameter(
             Avr8EdbgParameters::PHYSICAL_INTERFACE,
-            getAvr8PhysicalInterfaceToIdMapping().at(this->targetConfig->physicalInterface)
+            getAvr8PhysicalInterfaceToIdMapping().at(this->targetConfig.physicalInterface)
         );
+
+        this->setTargetParameters();
     }
 
     void EdbgAvr8Interface::stop() {
@@ -267,7 +225,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
             } catch (const Avr8CommandFailure& activationException) {
                 if (
-                    this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
+                    this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE
                     && (
                         activationException.code == Avr8CommandFailureCode::DEBUGWIRE_PHYSICAL_ERROR
                         || activationException.code == Avr8CommandFailureCode::FAILED_TO_ENABLE_OCD
@@ -292,8 +250,8 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     void EdbgAvr8Interface::deactivate() {
         if (this->targetAttached) {
             if (
-                this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
-                && this->targetConfig->disableDebugWireOnDeactivate
+                this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE
+                && this->targetConfig.disableDebugWireOnDeactivate
             ) {
                 try {
                     this->disableDebugWire();
@@ -385,7 +343,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             throw Avr8CommandFailure("AVR8 Get device ID command failed", responseFrame);
         }
 
-        return responseFrame.extractSignature(this->targetConfig->physicalInterface);
+        return responseFrame.extractSignature(this->targetConfig.physicalInterface);
     }
 
     void EdbgAvr8Interface::setBreakpoint(TargetMemoryAddress address) {
@@ -418,7 +376,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
     }
 
-    TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptors& descriptors) {
+    TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptorIds& descriptorIds) {
         /*
          * This function needs to be fast. Insight eagerly requests the values of all known registers that it can
          * present to the user. It does this on numerous occasions (target stopped, user clicked refresh, etc). This
@@ -439,7 +397,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         auto output = TargetRegisters();
 
         // Group descriptors by type and resolve the address range for each type
-        auto descriptorsByType = std::map<TargetRegisterType, std::set<const TargetRegisterDescriptor*>>();
+        auto descriptorIdsByType = std::map<TargetRegisterType, std::set<TargetRegisterDescriptorId>>();
 
         /*
          * An address range is just an std::pair of addresses - the first being the start address, the second being
@@ -450,7 +408,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         using AddressRange = std::pair<TargetMemoryAddress, TargetMemoryAddress>;
         auto addressRangeByType = std::map<TargetRegisterType, AddressRange>();
 
-        for (const auto& descriptor : descriptors) {
+        for (const auto& descriptorId : descriptorIds) {
+            const auto descriptorIt = this->targetRegisterDescriptorsById.find(descriptorId);
+            assert(descriptorIt != this->targetRegisterDescriptorsById.end());
+
+            const auto& descriptor = descriptorIt->second;
+
             if (!descriptor.startAddress.has_value()) {
                 Logger::debug(
                     "Attempted to read register in the absence of a start address - register name: "
@@ -459,18 +422,18 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 continue;
             }
 
-            descriptorsByType[descriptor.type].insert(&descriptor);
+            descriptorIdsByType[descriptor.type].insert(descriptor.id);
 
             const auto startAddress = descriptor.startAddress.value();
             const auto endAddress = startAddress + (descriptor.size - 1);
 
-            const auto addressRangeit = addressRangeByType.find(descriptor.type);
+            const auto addressRangeIt = addressRangeByType.find(descriptor.type);
 
-            if (addressRangeit == addressRangeByType.end()) {
+            if (addressRangeIt == addressRangeByType.end()) {
                 addressRangeByType[descriptor.type] = AddressRange(startAddress, endAddress);
 
             } else {
-                auto& addressRange = addressRangeit->second;
+                auto& addressRange = addressRangeIt->second;
 
                 if (startAddress < addressRange.first) {
                     addressRange.first = startAddress;
@@ -486,16 +449,17 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * Now that we have our address ranges and grouped descriptors, we can perform a single read call for each
          * register type.
          */
-        for (const auto&[registerType, descriptors] : descriptorsByType) {
+        for (const auto&[registerType, descriptorIds] : descriptorIdsByType) {
             const auto& addressRange = addressRangeByType[registerType];
             const auto startAddress = addressRange.first;
             const auto endAddress = addressRange.second;
-            const auto bufferSize = (endAddress - startAddress) + 1;
+            const auto readSize = (endAddress - startAddress) + 1;
 
-            const auto memoryType = (registerType != TargetRegisterType::GENERAL_PURPOSE_REGISTER) ?
-                Avr8MemoryType::SRAM
+            const auto memoryType = (registerType != TargetRegisterType::GENERAL_PURPOSE_REGISTER)
+                ? Avr8MemoryType::SRAM
                 : (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
-                ? Avr8MemoryType::REGISTER_FILE : Avr8MemoryType::SRAM);
+                    ? Avr8MemoryType::REGISTER_FILE
+                    : Avr8MemoryType::SRAM);
 
             /*
              * When reading the entire range, we must avoid any attempts to access the OCD data register (OCDDR), as
@@ -526,37 +490,40 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 );
             }
 
-            const auto flatMemoryBuffer = this->readMemory(
+            const auto flatMemoryData = this->readMemory(
                 memoryType,
                 startAddress,
-                bufferSize,
+                readSize,
                 excludedAddresses
             );
 
-            if (flatMemoryBuffer.size() != bufferSize) {
+            if (flatMemoryData.size() != readSize) {
                 throw Exception(
                     "Failed to read memory within register type address range (" + std::to_string(startAddress)
-                        + " - " + std::to_string(endAddress) + "). Expected " + std::to_string(bufferSize)
-                        + " bytes, got " + std::to_string(flatMemoryBuffer.size())
+                        + " - " + std::to_string(endAddress) + "). Expected " + std::to_string(readSize)
+                        + " bytes, got " + std::to_string(flatMemoryData.size())
                 );
             }
 
             // Construct our TargetRegister objects directly from the flat memory buffer
-            for (const auto& descriptor : descriptors) {
+            for (const auto descriptorId : descriptorIds) {
+                const auto descriptorIt = this->targetRegisterDescriptorsById.find(descriptorId);
+                const auto& descriptor = descriptorIt->second;
+
                 /*
                  * Multibyte AVR8 registers are stored in LSB form.
                  *
-                 * This is why we use reverse iterators when extracting our data from flatMemoryBuffer. Doing so allows
+                 * This is why we use reverse iterators when extracting our data from flatMemoryData. Doing so allows
                  * us to extract the data in MSB form (as is expected for all register values held in TargetRegister
                  * objects).
                  */
-                const auto bufferStartIt = flatMemoryBuffer.rend() - (descriptor->startAddress.value() - startAddress)
-                    - descriptor->size;
+                const auto bufferStartIt = flatMemoryData.rend() - (descriptor.startAddress.value() - startAddress)
+                    - descriptor.size;
 
                 output.emplace_back(
                     TargetRegister(
-                        *descriptor,
-                        TargetMemoryBuffer(bufferStartIt, bufferStartIt + descriptor->size)
+                        descriptor.id,
+                        TargetMemoryBuffer(bufferStartIt, bufferStartIt + descriptor.size)
                     )
                 );
             }
@@ -567,7 +534,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 
     void EdbgAvr8Interface::writeRegisters(const Targets::TargetRegisters& registers) {
         for (const auto& reg : registers) {
-            const auto& registerDescriptor = reg.descriptor;
+            const auto& registerDescriptorIt = this->targetRegisterDescriptorsById.find(reg.descriptorId);
+            assert(registerDescriptorIt != this->targetRegisterDescriptorsById.end());
+
+            const auto& registerDescriptor = registerDescriptorIt->second;
             auto registerValue = reg.value;
 
             if (registerValue.empty()) {
@@ -827,7 +797,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          */
         auto eepromSnapshot = std::optional<Targets::TargetMemoryBuffer>();
 
-        if (this->targetConfig->preserveEeprom) {
+        if (this->targetConfig.preserveEeprom) {
             Logger::debug("Capturing EEPROM data, in preparation for chip erase");
             eepromSnapshot = this->readMemory(
                 TargetMemoryType::EEPROM,
@@ -910,6 +880,43 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
     }
 
+    void EdbgAvr8Interface::setTargetParameters() {
+        if (!this->targetParameters.stackPointerRegisterLowAddress.has_value()) {
+            throw DeviceInitializationFailure("Failed to find stack pointer register start address");
+        }
+
+        if (!this->targetParameters.stackPointerRegisterSize.has_value()) {
+            throw DeviceInitializationFailure("Failed to find stack pointer register size");
+        }
+
+        if (!this->targetParameters.statusRegisterStartAddress.has_value()) {
+            throw DeviceInitializationFailure("Failed to find status register start address");
+        }
+
+        if (!this->targetParameters.statusRegisterSize.has_value()) {
+            throw DeviceInitializationFailure("Failed to find status register size");
+        }
+
+        switch (this->configVariant) {
+            case Avr8ConfigVariant::DEBUG_WIRE:
+            case Avr8ConfigVariant::MEGAJTAG: {
+                this->setDebugWireAndJtagParameters();
+                break;
+            }
+            case Avr8ConfigVariant::XMEGA: {
+                this->setPdiParameters();
+                break;
+            }
+            case Avr8ConfigVariant::UPDI: {
+                this->setUpdiParameters();
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+
     std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>
     EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface() {
         return std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>({
@@ -963,49 +970,21 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         });
     }
 
-    std::optional<Avr8ConfigVariant> EdbgAvr8Interface::resolveConfigVariant() {
-        if (this->family.has_value()) {
-            const auto configVariantsByFamily = EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface();
-            const auto configVariantsByPhysicalInterfaceIt = configVariantsByFamily.find(*(this->family));
+    Avr8ConfigVariant EdbgAvr8Interface::resolveConfigVariant(
+        Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
+        Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface
+    ) {
+        const auto configVariantsByFamily = EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface();
+        const auto configVariantsByPhysicalInterfaceIt = configVariantsByFamily.find(targetFamily);
 
-            if (configVariantsByPhysicalInterfaceIt != configVariantsByFamily.end()) {
-                const auto& configVariantsByPhysicalInterface = configVariantsByPhysicalInterfaceIt->second;
-                const auto configVariantIt = configVariantsByPhysicalInterface.find(
-                    this->targetConfig->physicalInterface
-                );
+        assert(configVariantsByPhysicalInterfaceIt != configVariantsByFamily.end());
 
-                if (configVariantIt != configVariantsByPhysicalInterface.end()) {
-                    return configVariantIt->second;
-                }
-            }
+        const auto& configVariantsByPhysicalInterface = configVariantsByPhysicalInterfaceIt->second;
+        const auto configVariantIt = configVariantsByPhysicalInterface.find(physicalInterface);
 
-        } else {
-            /*
-             * If there is no family set, we may be able to resort to a simpler mapping of physical interfaces
-             * to config variants. But this will only work if the selected physical interface is *NOT* JTAG.
-             *
-             * This is because JTAG is the only physical interface that could map to two different config
-             * variants (MEGAJTAG and XMEGA). The only way we can figure out which config variant to use is if we
-             * know the target family.
-             *
-             * This is why we don't allow users to use ambiguous target names (such as the generic "avr8" target
-             * name), when using the JTAG physical interface. We won't be able to resolve the correct target
-             * variant. Users are required to specify the exact target name in their config, when using the JTAG
-             * physical interface. That way, this->family will be set by the time resolveConfigVariant() is called.
-             */
-            static const std::map<PhysicalInterface, Avr8ConfigVariant> physicalInterfacesToConfigVariants = {
-                {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-                {PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
-                {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-            };
-            const auto configVariantIt = physicalInterfacesToConfigVariants.find(this->targetConfig->physicalInterface);
+        assert(configVariantIt != configVariantsByPhysicalInterface.end());
 
-            if (configVariantIt != physicalInterfacesToConfigVariants.end()) {
-                return configVariantIt->second;
-            }
-        }
-
-        return std::nullopt;
+        return configVariantIt->second;
     }
 
     void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
