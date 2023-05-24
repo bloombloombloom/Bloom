@@ -820,10 +820,7 @@ namespace Bloom
 
         this->destroyPanes();
 
-        this->ioUnavailableWidget->setText(
-            "Insight deactivated - Bloom has been disconnected from the target.\n\n"
-            "Bloom will attempt to reconnect upon the start of a new debug session."
-        );
+        this->ioUnavailableWidget->setText("Insight deactivated");
         this->ioUnavailableWidget->show();
 
         this->targetStatusLabel->setText("Unknown");
