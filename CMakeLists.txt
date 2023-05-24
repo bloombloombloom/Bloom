@@ -103,7 +103,7 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     # The QT source directory is specified as an include path just so that CLion can navigate to the Qt implementation
     # files, during debugging. No QT headers are actually included via this method. Feel free to comment this out if
     # you don't possess the Qt source code on your machine. You may need to invalidate CMake cache.
-    target_include_directories(Bloom PUBLIC /opt/Qt/6.2.4/Src)
+    # target_include_directories(Bloom PUBLIC /opt/Qt/6.2.4/Src)
 endif()
 
 target_compile_definitions(
