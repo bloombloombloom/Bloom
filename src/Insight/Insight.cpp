@@ -66,6 +66,11 @@ namespace Bloom
         this->shutdown();
     }
 
+    void Insight::showMainWindow() {
+        this->mainWindow->show();
+        this->mainWindow->activateWindow();
+    }
+
     void Insight::startup() {
         Logger::info("Starting Insight");
         this->setThreadState(ThreadState::STARTING);
@@ -102,7 +107,7 @@ namespace Bloom
             std::bind(&Insight::onProgrammingModeDisabledEvent, this, std::placeholders::_1)
         );
 
-        QApplication::setQuitOnLastWindowClosed(true);
+        QApplication::setQuitOnLastWindowClosed(false);
         QApplication::setStyle(new BloomProxyStyle());
 
         auto globalStylesheet = QFile(

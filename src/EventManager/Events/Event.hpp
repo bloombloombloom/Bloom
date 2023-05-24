@@ -32,6 +32,7 @@ namespace Bloom::Events
         TARGET_RESET,
         PROGRAMMING_MODE_ENABLED,
         PROGRAMMING_MODE_DISABLED,
+        INSIGHT_ACTIVATION_REQUESTED,
     };
 
     class Event

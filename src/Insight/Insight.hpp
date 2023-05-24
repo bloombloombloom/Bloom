@@ -62,6 +62,11 @@ namespace Bloom
         void run();
 
         /**
+         * Opens main window and obtains focus.
+         */
+        void showMainWindow();
+
+        /**
          * Shuts down Insight. Called when the user closes the Insight window or a ShutdownApplication event is fired.
          */
         void shutdown();

@@ -318,6 +318,10 @@ namespace Bloom
     }
 
     void InsightWindow::showEvent(QShowEvent* event) {
+        if (!this->activated) {
+            this->activate();
+        }
+
         this->adjustPanels();
         this->adjustMinimumSize();
     }

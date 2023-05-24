@@ -57,33 +57,19 @@ namespace Bloom
             this->startup();
 
 #ifndef EXCLUDE_INSIGHT
-            if (this->insightConfig->insightEnabled) {
-                this->insight = std::make_unique<Insight>(
-                    *(this->applicationEventListener),
-                    this->projectConfig.value(),
-                    this->environmentConfig.value(),
-                    this->insightConfig.value(),
-                    this->projectSettings.value().insightSettings
-                );
-
-                /*
-                 * Before letting Insight occupy the main thread, process any pending events that accumulated
-                 * during startup.
-                 */
-                this->applicationEventListener->dispatchCurrentEvents();
-
-                if (Thread::getThreadState() == ThreadState::READY) {
-                    this->insight->run();
-                    Logger::debug("Insight closed");
-                }
-
-                this->shutdown();
-                return EXIT_SUCCESS;
-            }
+            this->insightActivationPending = this->insightConfig->insightEnabled;
 #endif
 
             // Main event loop
             while (Thread::getThreadState() == ThreadState::READY) {
+#ifndef EXCLUDE_INSIGHT
+                if (this->insightActivationPending) {
+                    this->insightActivationPending = false;
+                    this->startInsight();
+                    continue;
+                }
+#endif
+
                 this->applicationEventListener->waitAndDispatch();
             }
 
@@ -159,6 +145,11 @@ namespace Bloom
             std::bind(&Application::onDebugSessionFinished, this, std::placeholders::_1)
         );
 
+#ifndef EXCLUDE_INSIGHT
+        applicationEventListener->registerCallbackForEventType<Events::InsightActivationRequested>(
+            std::bind(&Application::onInsightActivationRequest, this, std::placeholders::_1)
+        );
+#endif
         this->startTargetController();
         this->startDebugServer();
 
@@ -506,6 +497,41 @@ namespace Bloom
             Logger::debug("DebugServer thread joined");
         }
     }
+
+#ifndef EXCLUDE_INSIGHT
+    void Application::startInsight() {
+        assert(!this->insight);
+
+        this->insight = std::make_unique<Insight>(
+            *(this->applicationEventListener),
+            this->projectConfig.value(),
+            this->environmentConfig.value(),
+            this->insightConfig.value(),
+            this->projectSettings.value().insightSettings
+        );
+
+        /*
+         * Before letting Insight occupy the main thread, process any pending events that accumulated
+         * during startup.
+         */
+        this->applicationEventListener->dispatchCurrentEvents();
+
+        if (Thread::getThreadState() == ThreadState::READY) {
+            this->insight->run();
+            Logger::debug("Insight closed");
+        }
+    }
+
+    void Application::onInsightActivationRequest(const Events::InsightActivationRequested&) {
+        if (this->insight) {
+            // Insight has already been started
+            this->insight->showMainWindow();
+            return;
+        }
+
+        this->insightActivationPending = true;
+    }
+#endif
 
     void Application::onShutdownApplicationRequest(const Events::ShutdownApplication&) {
         Logger::debug("ShutdownApplication event received.");

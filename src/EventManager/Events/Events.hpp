@@ -20,6 +20,10 @@
 #include "ProgrammingModeEnabled.hpp"
 #include "ProgrammingModeDisabled.hpp"
 
+#ifndef EXCLUDE_INSIGHT
+#include "InsightActivationRequested.hpp"
+#endif
+
 namespace Bloom::Events
 {
     template <class EventType>

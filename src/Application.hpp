@@ -86,8 +86,8 @@ namespace Bloom
 
 #ifndef EXCLUDE_INSIGHT
         /**
-         * Insight is, effectively, a small Qt application that serves a GUI to the user. It occupies the main thread,
-         * as well as a single worker thread, and possibly other threads created by Qt.
+         * Insight is a small Qt application that serves a GUI to the user. It occupies the main thread, as well as a
+         * single worker thread, and possibly other threads created by Qt.
          *
          * Insight is optional - users can disable it via their project configuration.
          *
@@ -100,6 +100,13 @@ namespace Bloom
          * as we want to manage the lifetime of the object here.
          */
         std::unique_ptr<Insight> insight = nullptr;
+
+        /**
+         * Activation of the Insight GUI can be requested by triggering an InsightActivationRequested event.
+         *
+         * This flag will be set upon that event being triggered. The Insight GUI will be started shortly after.
+         */
+        bool insightActivationPending = false;
 #endif
 
         /**
@@ -230,6 +237,20 @@ namespace Bloom
          * Sends a shutdown request to the DebugServer thread and waits on it to exit.
          */
         void stopDebugServer();
+
+#ifndef EXCLUDE_INSIGHT
+        /**
+         * Starts the Insight GUI.
+         *
+         * This function should never be called more than once.
+         */
+        void startInsight();
+
+        /**
+         * Handles requests to start the Insight GUI.
+         */
+        void onInsightActivationRequest(const Events::InsightActivationRequested&);
+#endif
 
         /**
          * Triggers a shutdown of Bloom and all of its components.
