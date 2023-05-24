@@ -34,9 +34,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
              * See src/DebugServer/CMakeLists.txt for more.
              */
             auto helpFile = QFile(
-                QString::fromStdString(
-                    Services::PathService::compiledResourcesPath() + "/src/DebugServer/Gdb/Resources/GdbHelpMonitorInfo.txt"
-                )
+                QString::fromStdString(":/compiled/src/DebugServer/Gdb/Resources/GdbHelpMonitorInfo.txt")
             );
 
             if (!helpFile.open(QIODevice::ReadOnly)) {
