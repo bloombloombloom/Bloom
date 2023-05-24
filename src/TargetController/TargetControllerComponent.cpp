@@ -67,31 +67,14 @@ namespace Bloom::TargetController
             Logger::debug("TargetController ready and waiting for events.");
 
             while (this->getThreadState() == ThreadState::READY) {
-                try {
-                    if (this->state == TargetControllerState::ACTIVE) {
-                        this->fireTargetEvents();
-                    }
-
-                    TargetControllerComponent::notifier.waitForNotification(std::chrono::milliseconds(60));
-
-                    this->processQueuedCommands();
-                    this->eventListener->dispatchCurrentEvents();
-
-                } catch (const DeviceFailure& exception) {
-                    /*
-                     * Upon a device failure, we assume Bloom has lost control of the debug tool. This could be the
-                     * result of the user disconnecting the debug tool, or issuing a soft reset. The soft reset could
-                     * have been issued via another application, without the user's knowledge.
-                     * See https://github.com/navnavnav/Bloom/issues/3 for more on that.
-                     *
-                     * The TC will go into a suspended state and the DebugServer should terminate any active debug
-                     * session. When the user attempts to start another debug session, we will try to re-connect to the
-                     * debug tool.
-                     */
-                    Logger::error("Device failure detected - " + exception.getMessage());
-                    Logger::error("Suspending TargetController");
-                    this->suspend();
+                if (this->state == TargetControllerState::ACTIVE) {
+                    this->fireTargetEvents();
                 }
+
+                TargetControllerComponent::notifier.waitForNotification(std::chrono::milliseconds(60));
+
+                this->processQueuedCommands();
+                this->eventListener->dispatchCurrentEvents();
             }
 
         } catch (const std::exception& exception) {
@@ -391,6 +374,14 @@ namespace Bloom::TargetController
                 }
 
                 this->registerCommandResponse(commandId, commandHandlerIt->second(*(command.get())));
+
+            } catch (const DeviceFailure& exception) {
+                this->registerCommandResponse(
+                    commandId,
+                    std::make_unique<Responses::Error>(exception.getMessage())
+                );
+
+                throw exception;
 
             } catch (const Exception& exception) {
                 this->registerCommandResponse(
