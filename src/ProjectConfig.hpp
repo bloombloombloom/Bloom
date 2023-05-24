@@ -135,7 +135,7 @@ namespace Bloom
 
     struct InsightConfig
     {
-        bool insightEnabled = true;
+        bool activateOnStartup = false;
 
         InsightConfig() = default;
 

@@ -71,8 +71,8 @@ namespace Bloom
     }
 
     InsightConfig::InsightConfig(const YAML::Node& insightNode) {
-        if (insightNode["enabled"]) {
-            this->insightEnabled = insightNode["enabled"].as<bool>(this->insightEnabled);
+        if (insightNode["activateOnStartup"]) {
+            this->activateOnStartup = insightNode["activateOnStartup"].as<bool>(this->activateOnStartup);
         }
     }
 

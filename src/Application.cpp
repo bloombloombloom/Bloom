@@ -57,7 +57,7 @@ namespace Bloom
             this->startup();
 
 #ifndef EXCLUDE_INSIGHT
-            this->insightActivationPending = this->insightConfig->insightEnabled;
+            this->insightActivationPending = this->insightConfig->activateOnStartup;
 #endif
 
             // Main event loop
