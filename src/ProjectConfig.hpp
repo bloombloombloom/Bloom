@@ -84,15 +84,6 @@ namespace Bloom
         std::string name;
 
         /**
-         * Determines if the TargetController will release the debug tool at the end of a debug session.
-         *
-         * If this is enabled, the TargetController will automatically suspend once the current debug session has
-         * ended. If not enabled, the TargetController will remain active and in control of the debug tool, preventing
-         * the user from running any other application that needs access to the debug tool.
-         */
-        bool releasePostDebugSession = false;
-
-        /**
          * For extracting any debug tool specific configuration.
          */
         YAML::Node debugToolNode;

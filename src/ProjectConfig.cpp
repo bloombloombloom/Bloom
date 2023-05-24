@@ -149,13 +149,6 @@ namespace Bloom
         }
 
         this->name = StringService::asciiToLower(debugToolNode["name"].as<std::string>());
-
-        if (debugToolNode["releasePostDebugSession"]) {
-            this->releasePostDebugSession = debugToolNode["releasePostDebugSession"].as<bool>(
-                this->releasePostDebugSession
-            );
-        }
-
         this->debugToolNode = debugToolNode;
     }
 

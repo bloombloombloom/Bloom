@@ -698,10 +698,6 @@ namespace Bloom::TargetController
             this->target->run();
             this->fireTargetEvents();
         }
-
-        if (this->environmentConfig.debugToolConfig.releasePostDebugSession) {
-            this->suspend();
-        }
     }
 
     std::unique_ptr<Responses::State> TargetControllerComponent::handleGetState(GetState& command) {
