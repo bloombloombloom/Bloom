@@ -250,22 +250,10 @@ namespace Bloom
         auto configFile = QFile(QString::fromStdString(Services::PathService::projectConfigPath()));
 
         if (!configFile.exists()) {
-            // Try looking for the old bloom.json config file
-            configFile.setFileName(QString::fromStdString(Services::PathService::projectDirPath()) + "/bloom.json");
-
-            if (configFile.exists()) {
-                Logger::warning(
-                    "The recommended project configuration file format changed from JSON to YAML in Bloom v0.11.0."
-                    " Bloom could not find a bloom.yaml configuration file, but did find bloom.json. Please convert"
-                    " bloom.json to YAML format and rename to \"bloom.yaml\". There are numerous online JSON -> YAML"
-                    " converters. For now, bloom.json will be used in the absence of bloom.yaml."
-                );
-
-            } else {
-                throw InvalidConfig(
-                    "Bloom configuration file (bloom.yaml) not found. Working directory: " + Services::PathService::projectDirPath()
-                );
-            }
+            throw Exception(
+                "Bloom configuration file (bloom.yaml) not found. Working directory: "
+                    + Services::PathService::projectDirPath()
+            );
         }
 
         if (!configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
