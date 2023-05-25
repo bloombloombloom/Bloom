@@ -50,7 +50,7 @@ namespace Bloom
         try {
             this->startup();
 
-            this->setThreadState(ThreadState::READY);
+            this->threadState = ThreadState::READY;
             Logger::info("Insight ready");
             this->application.exec();
 
@@ -73,7 +73,7 @@ namespace Bloom
 
     void Insight::startup() {
         Logger::info("Starting Insight");
-        this->setThreadState(ThreadState::STARTING);
+        this->threadState = ThreadState::STARTING;
 
         this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
             std::bind(&Insight::onTargetStoppedEvent, this, std::placeholders::_1)
@@ -232,7 +232,7 @@ namespace Bloom
         }
 
         this->application.exit(0);
-        this->setThreadState(ThreadState::STOPPED);
+        this->threadState = ThreadState::STOPPED;
     }
 
     void Insight::checkBloomVersion() {

@@ -1,13 +1,13 @@
 #pragma once
 
+#include <cstdint>
 #include <csignal>
 #include <cassert>
-
-#include "SyncSafe.hpp"
+#include <atomic>
 
 namespace Bloom
 {
-    enum class ThreadState
+    enum class ThreadState: std::uint8_t
     {
         UNINITIALISED,
         READY,
@@ -28,15 +28,12 @@ namespace Bloom
         Thread& operator = (const Thread& other) = delete;
         Thread& operator = (Thread&& other) = delete;
 
-        virtual ThreadState getThreadState() {
-            auto lock = this->state.acquireLock();
-            return this->state.getValue();
+        ThreadState getThreadState() {
+            return this->threadState;
         }
 
     protected:
-        virtual void setThreadState(ThreadState state) {
-            this->state.setValue(state);
-        }
+        std::atomic<ThreadState> threadState = ThreadState::UNINITIALISED;
 
         /**
          * Disables signal interrupts on current thread.
@@ -53,8 +50,5 @@ namespace Bloom
 
             pthread_setname_np(pthread_self(), name.c_str());
         }
-
-    private:
-        SyncSafe<ThreadState> state = SyncSafe<ThreadState>(ThreadState::UNINITIALISED);
     };
 }

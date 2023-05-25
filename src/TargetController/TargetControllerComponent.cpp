@@ -134,7 +134,7 @@ namespace Bloom::TargetController
     void TargetControllerComponent::startup() {
         this->setName("TC");
         Logger::info("Starting TargetController");
-        this->setThreadState(ThreadState::STARTING);
+        this->threadState = ThreadState::STARTING;
         this->blockAllSignals();
         this->eventListener->setInterruptEventNotifier(&TargetControllerComponent::notifier);
         EventManager::registerListener(this->eventListener);

@@ -80,14 +80,12 @@ namespace Bloom::DebugServer
     }
 
     void DebugServerComponent::shutdown() {
-        if (
-            this->getThreadState() == ThreadState::STOPPED
-            || this->getThreadState() == ThreadState::SHUTDOWN_INITIATED
-        ) {
+        const auto threadState = this->getThreadState();
+        if (threadState == ThreadState::STOPPED || threadState == ThreadState::SHUTDOWN_INITIATED) {
             return;
         }
 
-        this->setThreadState(ThreadState::SHUTDOWN_INITIATED);
+        this->threadState = ThreadState::SHUTDOWN_INITIATED;
         Logger::info("Shutting down DebugServer");
 
         if (this->server) {
@@ -101,7 +99,7 @@ namespace Bloom::DebugServer
     }
 
     void DebugServerComponent::setThreadStateAndEmitEvent(ThreadState state) {
-        Thread::setThreadState(state);
+        this->threadState = state;
         EventManager::triggerEvent(
             std::make_shared<Events::DebugServerThreadStateChanged>(state)
         );

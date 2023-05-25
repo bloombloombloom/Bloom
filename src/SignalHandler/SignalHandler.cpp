@@ -32,12 +32,12 @@ namespace Bloom
         }
 
         Logger::info("Shutting down SignalHandler");
-        Thread::setThreadState(ThreadState::STOPPED);
+        this->threadState = ThreadState::STOPPED;
     }
 
     void SignalHandler::startup() {
         this->setName("SH");
-        Thread::setThreadState(ThreadState::STARTING);
+        this->threadState = ThreadState::STARTING;
         Logger::debug("Starting SignalHandler");
         // Block all signal interrupts
         auto signalSet = this->getRegisteredSignalSet();
@@ -54,9 +54,9 @@ namespace Bloom
             std::bind(&SignalHandler::triggerApplicationShutdown, this)
         ));
 
-        // It's possible that the SignalHandler has been instructed to shutdown, before it could finish starting up.
+        // It's possible that the SignalHandler has been instructed to shut down, before it could finish starting up.
         if (this->getThreadState() != ThreadState::SHUTDOWN_INITIATED) {
-            Thread::setThreadState(ThreadState::READY);
+            this->threadState = ThreadState::READY;
         }
     }
 

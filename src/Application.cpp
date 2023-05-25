@@ -153,7 +153,7 @@ namespace Bloom
         this->startTargetController();
         this->startDebugServer();
 
-        Thread::setThreadState(ThreadState::READY);
+        Thread::threadState = ThreadState::READY;
     }
 
     void Application::shutdown() {
@@ -162,7 +162,7 @@ namespace Bloom
             return;
         }
 
-        Thread::setThreadState(ThreadState::SHUTDOWN_INITIATED);
+        Thread::threadState = ThreadState::SHUTDOWN_INITIATED;
         Logger::info("Shutting down Bloom");
 
 #ifndef EXCLUDE_INSIGHT
@@ -176,7 +176,7 @@ namespace Bloom
         this->stopSignalHandler();
 
         this->saveProjectSettings();
-        Thread::setThreadState(ThreadState::STOPPED);
+        Thread::threadState = ThreadState::STOPPED;
     }
 
     void Application::loadProjectSettings() {
