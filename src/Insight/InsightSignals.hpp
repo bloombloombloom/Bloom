@@ -37,8 +37,6 @@ namespace Bloom
         void targetReset();
         void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
         void targetMemoryWritten(Bloom::Targets::TargetMemoryType memoryType, Targets::TargetMemoryAddressRange addressRange);
-        void targetControllerSuspended();
-        void targetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void programmingModeEnabled();
         void programmingModeDisabled();
 

@@ -128,8 +128,6 @@ namespace Bloom
         void adjustPanels();
         void adjustMinimumSize();
 
-        void onTargetControllerSuspended();
-        void onTargetControllerResumed(const Bloom::Targets::TargetDescriptor& targetDescriptor);
         void onTargetStateUpdate(Targets::TargetState newState);
         void refresh();
         void refreshPinStates();

@@ -23,7 +23,6 @@
 #include "Feature.hpp"
 #include "CommandPackets/CommandPacket.hpp"
 
-#include "src/EventManager/Events/TargetControllerStateChanged.hpp"
 #include "src/EventManager/Events/TargetExecutionStopped.hpp"
 #include "src/EventManager/Events/TargetExecutionResumed.hpp"
 
@@ -185,13 +184,6 @@ namespace Bloom::DebugServer::Gdb
          * @return
          */
         virtual const TargetDescriptor& getGdbTargetDescriptor() = 0;
-
-        /**
-         * Responds to any unexpected TargetController state changes.
-         *
-         * @param event
-         */
-        void onTargetControllerStateChanged(const Events::TargetControllerStateChanged& event);
 
         /**
          * If the GDB client is currently waiting for the target execution to stop, this event handler will issue

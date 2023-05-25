@@ -75,10 +75,6 @@ namespace Bloom
         Logger::info("Starting Insight");
         this->setThreadState(ThreadState::STARTING);
 
-        this->eventListener.registerCallbackForEventType<Events::TargetControllerStateChanged>(
-            std::bind(&Insight::onTargetControllerStateChangedEvent, this, std::placeholders::_1)
-        );
-
         this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
             std::bind(&Insight::onTargetStoppedEvent, this, std::placeholders::_1)
         );
@@ -348,33 +344,6 @@ namespace Bloom
             event.memoryType,
             Targets::TargetMemoryAddressRange(event.startAddress, event.startAddress + (event.size - 1))
         );
-    }
-
-    void Insight::onTargetControllerStateChangedEvent(const Events::TargetControllerStateChanged& event) {
-        using TargetController::TargetControllerState;
-
-        if (event.state == TargetControllerState::SUSPENDED) {
-            emit this->insightSignals->targetControllerSuspended();
-            return;
-        }
-
-        if (event.state == TargetControllerState::ACTIVE) {
-            const auto getTargetDescriptorTask = QSharedPointer<GetTargetDescriptor>(
-                new GetTargetDescriptor(),
-                &QObject::deleteLater
-            );
-
-            QObject::connect(
-                getTargetDescriptorTask.get(),
-                &GetTargetDescriptor::targetDescriptor,
-                this,
-                [this] (Targets::TargetDescriptor targetDescriptor) {
-                    emit this->insightSignals->targetControllerResumed(targetDescriptor);
-                }
-            );
-
-            InsightWorker::queueTask(getTargetDescriptorTask);
-        }
     }
 
     void Insight::onProgrammingModeEnabledEvent(const Events::ProgrammingModeEnabled& event) {

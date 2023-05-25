@@ -121,10 +121,6 @@ namespace Bloom::DebugServer::Gdb
         Logger::info("GDB RSP address: " + this->debugServerConfig.listeningAddress);
         Logger::info("GDB RSP port: " + std::to_string(this->debugServerConfig.listeningPortNumber));
 
-        this->eventListener.registerCallbackForEventType<Events::TargetControllerStateChanged>(
-            std::bind(&GdbRspDebugServer::onTargetControllerStateChanged, this, std::placeholders::_1)
-        );
-
         this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
             std::bind(&GdbRspDebugServer::onTargetExecutionStopped, this, std::placeholders::_1)
         );
@@ -341,13 +337,6 @@ namespace Bloom::DebugServer::Gdb
         return {
             {Feature::SOFTWARE_BREAKPOINTS, std::nullopt},
         };
-    }
-
-    void GdbRspDebugServer::onTargetControllerStateChanged(const Events::TargetControllerStateChanged& event) {
-        if (event.state == TargetControllerState::SUSPENDED && this->activeDebugSession.has_value()) {
-            Logger::warning("TargetController suspended unexpectedly - terminating debug session");
-            this->activeDebugSession.reset();
-        }
     }
 
     void GdbRspDebugServer::onTargetExecutionStopped(const Events::TargetExecutionStopped&) {

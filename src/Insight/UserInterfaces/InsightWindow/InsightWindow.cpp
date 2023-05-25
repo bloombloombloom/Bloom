@@ -262,18 +262,6 @@ namespace Bloom
 
         QObject::connect(
             insightSignals,
-            &InsightSignals::targetControllerSuspended,
-            this,
-            &InsightWindow::onTargetControllerSuspended
-        );
-        QObject::connect(
-            insightSignals,
-            &InsightSignals::targetControllerResumed,
-            this,
-            &InsightWindow::onTargetControllerResumed
-        );
-        QObject::connect(
-            insightSignals,
             &InsightSignals::targetStateUpdated,
             this,
             &InsightWindow::onTargetStateUpdate
@@ -903,19 +891,6 @@ namespace Bloom
             std::min(std::max(minSize.width(), absoluteMinimum.width()), absoluteMaximum.width()),
             std::min(std::max(minSize.height(), absoluteMinimum.height()), absoluteMaximum.height())
         );
-    }
-
-    void InsightWindow::onTargetControllerSuspended() {
-        if (this->activated) {
-            this->deactivate();
-        }
-    }
-
-    void InsightWindow::onTargetControllerResumed(const TargetDescriptor& targetDescriptor) {
-        if (!this->activated) {
-            this->targetDescriptor = targetDescriptor;
-            this->activate();
-        }
     }
 
     void InsightWindow::onTargetStateUpdate(TargetState newState) {
