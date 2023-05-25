@@ -1,9 +1,6 @@
 #include "TargetControllerService.hpp"
 
 // Commands
-#include "src/TargetController/Commands/GetState.hpp"
-#include "src/TargetController/Commands/Suspend.hpp"
-#include "src/TargetController/Commands/Resume.hpp"
 #include "src/TargetController/Commands/GetTargetDescriptor.hpp"
 #include "src/TargetController/Commands/GetTargetState.hpp"
 #include "src/TargetController/Commands/StopTargetExecution.hpp"
@@ -27,9 +24,6 @@
 
 namespace Bloom::Services
 {
-    using TargetController::Commands::GetState;
-    using TargetController::Commands::Suspend;
-    using TargetController::Commands::Resume;
     using TargetController::Commands::GetTargetDescriptor;
     using TargetController::Commands::GetTargetState;
     using TargetController::Commands::StopTargetExecution;
@@ -51,8 +45,6 @@ namespace Bloom::Services
     using TargetController::Commands::EnableProgrammingMode;
     using TargetController::Commands::DisableProgrammingMode;
 
-    using TargetController::TargetControllerState;
-
     using Targets::TargetDescriptor;
     using Targets::TargetState;
 
@@ -72,38 +64,6 @@ namespace Bloom::Services
     using Targets::TargetPinDescriptor;
     using Targets::TargetPinState;
     using Targets::TargetPinStateMapping;
-
-    TargetControllerState TargetControllerService::getTargetControllerState() const {
-        return this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<GetState>(),
-            this->defaultTimeout
-        )->state;
-    }
-
-    bool TargetControllerService::isTargetControllerInService() const noexcept {
-        try {
-            return this->getTargetControllerState() == TargetControllerState::ACTIVE;
-
-        } catch (...) {
-            return false;
-        }
-    }
-
-    void TargetControllerService::resumeTargetController() const {
-        this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<Resume>(),
-            this->defaultTimeout
-        );
-        return;
-    }
-
-    void TargetControllerService::suspendTargetController() const {
-        this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<Suspend>(),
-            this->defaultTimeout
-        );
-        return;
-    }
 
     const TargetDescriptor& TargetControllerService::getTargetDescriptor() const {
         return this->commandManager.sendCommandAndWaitForResponse(

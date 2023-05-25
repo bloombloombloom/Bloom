@@ -6,7 +6,6 @@
 #include "DebugSessionStarted.hpp"
 #include "DebugSessionFinished.hpp"
 #include "TargetControllerThreadStateChanged.hpp"
-#include "TargetControllerStateChanged.hpp"
 #include "ShutdownTargetController.hpp"
 #include "TargetControllerErrorOccurred.hpp"
 #include "ShutdownApplication.hpp"

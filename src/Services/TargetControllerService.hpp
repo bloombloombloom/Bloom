@@ -5,7 +5,6 @@
 #include <optional>
 
 #include "src/TargetController/CommandManager.hpp"
-#include "src/TargetController/TargetControllerState.hpp"
 
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegister.hpp"
@@ -29,35 +28,6 @@ namespace Bloom::Services
         void setDefaultTimeout(std::chrono::milliseconds timeout) {
             this->defaultTimeout = timeout;
         }
-
-        /**
-         * Requests the current TargetController state from the TargetController. The TargetController should always
-         * respond to such a request, even when it's in a suspended state.
-         *
-         * To check if the TargetController is in an active state, isTargetControllerInService() can be used for
-         * convenience.
-         *
-         * @return
-         */
-        TargetController::TargetControllerState getTargetControllerState() const;
-
-        /**
-         * Retrieves the TargetController state and checks if it's currently active.
-         *
-         * @return
-         *  True if the TargetController is currently in an active state, otherwise false.
-         */
-        bool isTargetControllerInService() const noexcept;
-
-        /**
-         * Resumes the TargetController if it's suspended. Otherwise, this function does nothing.
-         */
-        void resumeTargetController() const;
-
-        /**
-         * Suspends the TargetController if it's active. Otherwise, this function does nothing.
-         */
-        void suspendTargetController() const;
 
         /**
          * Requests the TargetDescriptor from the TargetController

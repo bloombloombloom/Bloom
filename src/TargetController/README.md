@@ -76,40 +76,6 @@ All components within Bloom should use the `TargetControllerService` class to in
 **should not** directly issue commands via the `Bloom::TargetController::CommandManager`, unless there is a very good
 reason to do so.
 
-### TargetController suspension
-
-The TargetController possesses the ability to go into a suspended state. In this state, control of the connected
-hardware is surrendered - Bloom will no longer be able to interact with the debug tool or target. The purpose of this
-state is to allow other programs access to the hardware, without requiring the termination of the Bloom process. The
-TargetController goes into a suspended state at the end of a debug session, if the user has enabled this via the
-`releasePostDebugSession` debug tool parameter, in their project configuration file (bloom.yaml). See
-`TargetControllerComponent::onDebugSessionFinishedEvent()` for more.
-
-When in a suspended state, the TargetController will reject most commands. More specifically, any command that
-requires access to the debug tool or target. Issuing any of these commands whilst the TargetController is suspended
-will result in an error response.
-
-In some cases, the TargetController may be forced to go into a suspended state. This could be in response to the user
-disconnecting the debug tool, or from another program stealing control of the hardware. Actually, this is what led to
-the introduction of TargetController suspension. See the corresponding
-[GitHub issue](https://github.com/navnavnav/Bloom/issues/3) for more.
-
-Upon suspension, the TargetController will trigger a `Bloom::Events::TargetControllerStateChanged` event. Other
-components listen for this event to promptly perform the necessary actions in response to the state change. For example,
-the [GDB debug server implementation](../DebugServer/Gdb/README.md) will terminate any active debug session:
-
-```c++
-void GdbRspDebugServer::onTargetControllerStateChanged(const Events::TargetControllerStateChanged& event) {
-    if (event.state == TargetControllerState::SUSPENDED && this->activeDebugSession.has_value()) {
-        Logger::warning("TargetController suspended unexpectedly - terminating debug session");
-        this->activeDebugSession.reset();
-    }
-}
-```
-
-For more on TargetController suspension, see `TargetControllerComponent::suspend()` and
-`TargetControllerComponent::resume()`.
-
 ### Programming mode
 
 When a component needs to write to the target's program memory, it must enable programming mode on the target. This can

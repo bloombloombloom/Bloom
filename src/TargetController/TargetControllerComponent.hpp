@@ -20,9 +20,6 @@
 
 // Commands
 #include "Commands/Command.hpp"
-#include "Commands/GetState.hpp"
-#include "Commands/Resume.hpp"
-#include "Commands/Suspend.hpp"
 #include "Commands/GetTargetDescriptor.hpp"
 #include "Commands/GetTargetState.hpp"
 #include "Commands/StopTargetExecution.hpp"
@@ -46,7 +43,6 @@
 
 // Responses
 #include "Responses/Response.hpp"
-#include "Responses/State.hpp"
 #include "Responses/TargetDescriptor.hpp"
 #include "Responses/TargetState.hpp"
 #include "Responses/TargetRegistersRead.hpp"
@@ -110,11 +106,7 @@ namespace Bloom::TargetController
         static inline ConditionVariableNotifier notifier = ConditionVariableNotifier();
         static inline std::condition_variable responsesByCommandIdCv = std::condition_variable();
 
-        /**
-         * The TC starts off in a suspended state. TargetControllerComponent::resume() is invoked from the start up
-         * routine.
-         */
-        TargetControllerState state = TargetControllerState::SUSPENDED;
+        static inline std::atomic<TargetControllerState> state = TargetControllerState::INACTIVE;
 
         ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
@@ -201,6 +193,13 @@ namespace Bloom::TargetController
         void startup();
 
         /**
+         * Exit point - must be called before the TargetController thread is terminated.
+         *
+         * Handles releasing the hardware among other clean-up related things.
+         */
+        void shutdown();
+
+        /**
          * Constructs a mapping of supported debug tool names to lambdas. The lambdas should *only* instantiate
          * and return an instance to the derived DebugTool class. They should not attempt to establish
          * a connection to the device.
@@ -230,25 +229,6 @@ namespace Bloom::TargetController
          * @param response
          */
         void registerCommandResponse(Commands::CommandIdType commandId, std::unique_ptr<Responses::Response> response);
-
-        /**
-         * Exit point - must be called before the TargetController thread is terminated.
-         *
-         * Handles releasing the hardware among other clean-up related things.
-         */
-        void shutdown();
-
-        /**
-         * Puts the TargetController into the suspended state.
-         *
-         * In this state, the hardware is released and the TargetController will only handle a subset of events.
-         */
-        void suspend();
-
-        /**
-         * Wakes the TargetController from the suspended state.
-         */
-        void resume();
 
         /**
          * Establishes a connection with the debug tool and target. Prepares the hardware for a debug session.
@@ -316,13 +296,6 @@ namespace Bloom::TargetController
         void onShutdownTargetControllerEvent(const Events::ShutdownTargetController& event);
 
         /**
-         * Will hold the target stopped at it's current state.
-         *
-         * @param event
-         */
-        void onDebugSessionStartedEvent(const Events::DebugSessionStarted& event);
-
-        /**
          * Will simply kick off execution on the target.
          *
          * @param event
@@ -330,9 +303,6 @@ namespace Bloom::TargetController
         void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
         // Command handlers
-        std::unique_ptr<Responses::State> handleGetState(Commands::GetState& command);
-        std::unique_ptr<Responses::Response> handleSuspend(Commands::Suspend& command);
-        std::unique_ptr<Responses::Response> handleResume(Commands::Resume& command);
         std::unique_ptr<Responses::TargetDescriptor> handleGetTargetDescriptor(Commands::GetTargetDescriptor& command);
         std::unique_ptr<Responses::TargetState> handleGetTargetState(Commands::GetTargetState& command);
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);

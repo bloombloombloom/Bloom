@@ -20,9 +20,6 @@ namespace Bloom::TargetController
     using Commands::CommandIdType;
 
     using Commands::Command;
-    using Commands::GetState;
-    using Commands::Resume;
-    using Commands::Suspend;
     using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
     using Commands::StopTargetExecution;
@@ -67,9 +64,7 @@ namespace Bloom::TargetController
             Logger::debug("TargetController ready and waiting for events.");
 
             while (this->getThreadState() == ThreadState::READY) {
-                if (this->state == TargetControllerState::ACTIVE) {
-                    this->fireTargetEvents();
-                }
+                this->fireTargetEvents();
 
                 TargetControllerComponent::notifier.waitForNotification(std::chrono::milliseconds(60));
 
@@ -86,6 +81,10 @@ namespace Bloom::TargetController
     }
 
     void TargetControllerComponent::registerCommand(std::unique_ptr<Command> command) {
+        if (TargetControllerComponent::state != TargetControllerState::ACTIVE) {
+            throw Exception("Command rejected - TargetController not in active state.");
+        }
+
         auto commandQueueLock = TargetControllerComponent::commandQueue.acquireLock();
         TargetControllerComponent::commandQueue.getValue().push(std::move(command));
         TargetControllerComponent::notifier.notify();
@@ -140,18 +139,6 @@ namespace Bloom::TargetController
         EventManager::registerListener(this->eventListener);
 
         // Register command handlers
-        this->registerCommandHandler<GetState>(
-            std::bind(&TargetControllerComponent::handleGetState, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<Resume>(
-            std::bind(&TargetControllerComponent::handleResume, this, std::placeholders::_1)
-        );
-
-        this->registerCommandHandler<Suspend>(
-            std::bind(&TargetControllerComponent::handleSuspend, this, std::placeholders::_1)
-        );
-
         this->registerCommandHandler<GetTargetDescriptor>(
             std::bind(&TargetControllerComponent::handleGetTargetDescriptor, this, std::placeholders::_1)
         );
@@ -237,11 +224,48 @@ namespace Bloom::TargetController
             std::bind(&TargetControllerComponent::onShutdownTargetControllerEvent, this, std::placeholders::_1)
         );
 
-        this->eventListener->registerCallbackForEventType<Events::DebugSessionStarted>(
-            std::bind(&TargetControllerComponent::onDebugSessionStartedEvent, this, std::placeholders::_1)
+        this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
+            std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
         );
 
-        this->resume();
+        this->acquireHardware();
+        this->loadRegisterDescriptors();
+
+        if (this->target->getState() != TargetState::RUNNING) {
+            this->target->run();
+            this->lastTargetState = TargetState::RUNNING;
+        }
+
+        this->state = TargetControllerState::ACTIVE;
+    }
+
+    void TargetControllerComponent::shutdown() {
+        const auto threadState = this->getThreadState();
+        if (threadState == ThreadState::SHUTDOWN_INITIATED || threadState == ThreadState::STOPPED) {
+            return;
+        }
+
+        this->threadState = ThreadState::SHUTDOWN_INITIATED;
+
+        try {
+            Logger::info("Shutting down TargetController");
+            this->state = TargetControllerState::INACTIVE;
+            EventManager::deregisterListener(this->eventListener->getId());
+
+            // Reject any commands still waiting in the queue
+            this->processQueuedCommands();
+
+            this->releaseHardware();
+
+        } catch (const std::exception& exception) {
+            this->target.reset();
+            this->debugTool.reset();
+            Logger::error(
+                "Failed to properly shutdown TargetController. Error: " + std::string(exception.what())
+            );
+        }
+
+        this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
     }
 
     std::map<
@@ -357,20 +381,18 @@ namespace Bloom::TargetController
                     throw Exception("No handler registered for this command.");
                 }
 
-                if (this->state != TargetControllerState::ACTIVE && command->requiresActiveState()) {
+                if (this->state != TargetControllerState::ACTIVE) {
                     throw Exception("Command rejected - TargetController not in active state.");
                 }
 
-                if (this->state == TargetControllerState::ACTIVE) {
-                    if (command->requiresStoppedTargetState() && this->lastTargetState != TargetState::STOPPED) {
-                        throw Exception("Command rejected - command requires target execution to be stopped.");
-                    }
+                if (command->requiresStoppedTargetState() && this->lastTargetState != TargetState::STOPPED) {
+                    throw Exception("Command rejected - command requires target execution to be stopped.");
+                }
 
-                    if (this->target->programmingModeEnabled() && command->requiresDebugMode()) {
-                        throw Exception(
-                            "Command rejected - command cannot be serviced whilst the target is in programming mode."
-                        );
-                    }
+                if (this->target->programmingModeEnabled() && command->requiresDebugMode()) {
+                    throw Exception(
+                        "Command rejected - command cannot be serviced whilst the target is in programming mode."
+                    );
                 }
 
                 this->registerCommandResponse(commandId, commandHandlerIt->second(*(command.get())));
@@ -401,74 +423,6 @@ namespace Bloom::TargetController
             std::pair(commandId, std::move(response))
         );
         TargetControllerComponent::responsesByCommandIdCv.notify_all();
-    }
-
-    void TargetControllerComponent::shutdown() {
-        if (this->getThreadState() == ThreadState::STOPPED) {
-            return;
-        }
-
-        try {
-            Logger::info("Shutting down TargetController");
-            EventManager::deregisterListener(this->eventListener->getId());
-            this->releaseHardware();
-
-        } catch (const std::exception& exception) {
-            this->target.reset();
-            this->debugTool.reset();
-            Logger::error(
-                "Failed to properly shutdown TargetController. Error: " + std::string(exception.what())
-            );
-        }
-
-        this->setThreadStateAndEmitEvent(ThreadState::STOPPED);
-    }
-
-    void TargetControllerComponent::suspend() {
-        if (this->getThreadState() != ThreadState::READY) {
-            return;
-        }
-
-        Logger::debug("Suspending TargetController");
-
-        try {
-            this->releaseHardware();
-
-        } catch (const std::exception& exception) {
-            Logger::error("Failed to release connected debug tool and target resources. Error: "
-                + std::string(exception.what()));
-        }
-
-        this->eventListener->deregisterCallbacksForEventType<Events::DebugSessionFinished>();
-
-        this->lastTargetState = TargetState::UNKNOWN;
-        this->targetDescriptor = std::nullopt;
-        this->registerDescriptorsByMemoryType.clear();
-        this->registerAddressRangeByMemoryType.clear();
-
-        TargetControllerComponent::state = TargetControllerState::SUSPENDED;
-        EventManager::triggerEvent(std::make_shared<TargetControllerStateChanged>(TargetControllerComponent::state));
-
-        Logger::debug("TargetController suspended");
-    }
-
-    void TargetControllerComponent::resume() {
-        this->acquireHardware();
-        this->loadRegisterDescriptors();
-
-        this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
-            std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
-        );
-
-        TargetControllerComponent::state = TargetControllerState::ACTIVE;
-        EventManager::triggerEvent(
-            std::make_shared<TargetControllerStateChanged>(TargetControllerComponent::state)
-        );
-
-        if (this->target->getState() != TargetState::RUNNING) {
-            this->target->run();
-            this->lastTargetState = TargetState::RUNNING;
-        }
     }
 
     void TargetControllerComponent::acquireHardware() {
@@ -675,40 +629,15 @@ namespace Bloom::TargetController
         this->shutdown();
     }
 
-    void TargetControllerComponent::onDebugSessionStartedEvent(const Events::DebugSessionStarted&) {
-        if (TargetControllerComponent::state == TargetControllerState::SUSPENDED) {
-            Logger::debug("Waking TargetController");
-
-            this->resume();
-            this->fireTargetEvents();
-        }
-    }
-
     void TargetControllerComponent::onDebugSessionFinishedEvent(const DebugSessionFinished&) {
+        if (this->state != TargetControllerState::ACTIVE) {
+            return;
+        }
+
         if (this->target->getState() != TargetState::RUNNING) {
             this->target->run();
             this->fireTargetEvents();
         }
-    }
-
-    std::unique_ptr<Responses::State> TargetControllerComponent::handleGetState(GetState& command) {
-        return std::make_unique<Responses::State>(this->state);
-    }
-
-    std::unique_ptr<Responses::Response> TargetControllerComponent::handleResume(Resume& command) {
-        if (this->state != TargetControllerState::ACTIVE) {
-            this->resume();
-        }
-
-        return std::make_unique<Response>();
-    }
-
-    std::unique_ptr<Responses::Response> TargetControllerComponent::handleSuspend(Suspend& command) {
-        if (this->state != TargetControllerState::SUSPENDED) {
-            this->suspend();
-        }
-
-        return std::make_unique<Response>();
     }
 
     std::unique_ptr<Responses::TargetDescriptor> TargetControllerComponent::handleGetTargetDescriptor(

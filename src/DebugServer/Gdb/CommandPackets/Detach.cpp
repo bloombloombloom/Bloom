@@ -25,13 +25,13 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
         try {
             if (Services::ProcessService::isManagedByClion()) {
-                targetControllerService.suspendTargetController();
+                // TODO: Force the TC to shutdown.
             }
 
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {
-            Logger::error("Failed to suspend TargetController - " + exception.getMessage());
+            Logger::error("Failed to shut down TargetController - " + exception.getMessage());
             debugSession.connection.writePacket(ErrorResponsePacket());
         }
     }

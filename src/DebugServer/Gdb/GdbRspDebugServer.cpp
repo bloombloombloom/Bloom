@@ -48,8 +48,6 @@ namespace Bloom::DebugServer::Gdb
 
     using CommandPackets::CommandPacket;
 
-    using TargetController::TargetControllerState;
-
     GdbRspDebugServer::GdbRspDebugServer(
         const DebugServerConfig& debugServerConfig,
         EventListener& eventListener,
@@ -159,25 +157,6 @@ namespace Bloom::DebugServer::Gdb
                     this->getGdbTargetDescriptor(),
                     this->debugServerConfig
                 );
-
-                /*
-                 * Before proceeding with a new debug session, we must ensure that the TargetController is able to
-                 * service it.
-                 */
-                if (!this->targetControllerService.isTargetControllerInService()) {
-                    // The TargetController is suspended - attempt to wake it up
-                    try {
-                        this->targetControllerService.resumeTargetController();
-
-                    } catch (Bloom::Exceptions::Exception& exception) {
-                        Logger::error("Failed to wake up TargetController - " + exception.getMessage());
-                    }
-
-                    if (!this->targetControllerService.isTargetControllerInService()) {
-                        this->activeDebugSession.reset();
-                        throw DebugSessionInitialisationFailure("TargetController not in service");
-                    }
-                }
 
                 this->targetControllerService.stopTargetExecution();
                 this->targetControllerService.resetTarget();
