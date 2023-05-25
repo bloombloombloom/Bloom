@@ -444,8 +444,8 @@ namespace Bloom
             return;
         }
 
-        const auto targetControllerState = this->targetController->getThreadState();
-        if (targetControllerState == ThreadState::STARTING || targetControllerState == ThreadState::READY) {
+        const auto tcThreadState = this->targetController->getThreadState();
+        if (tcThreadState == ThreadState::STARTING || tcThreadState == ThreadState::READY) {
             EventManager::triggerEvent(std::make_shared<Events::ShutdownTargetController>());
             this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>(
                 std::chrono::milliseconds(10000)
