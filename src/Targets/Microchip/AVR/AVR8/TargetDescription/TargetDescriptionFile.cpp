@@ -381,6 +381,10 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         return this->getFuseBitsDescriptorByName("jtagen");
     }
 
+    std::optional<FuseBitsDescriptor> TargetDescriptionFile::getEesaveFuseBitsDescriptor() const {
+        return this->getFuseBitsDescriptorByName("eesave");
+    }
+
     void TargetDescriptionFile::loadSupportedPhysicalInterfaces() {
         auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
            {"updi", PhysicalInterface::UPDI},

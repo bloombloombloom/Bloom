@@ -128,6 +128,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         [[nodiscard]] std::optional<FuseBitsDescriptor> getJtagenFuseBitsDescriptor() const;
 
         /**
+         * Constructs a FuseBitDescriptor for the "Preserve EEPROM" (EESAVE) fuse bit, with information extracted from
+         * the TDF.
+         *
+         * @return
+         *  std::nullopt if the EESAVE bit field could not be found in the TDF.
+         */
+        [[nodiscard]] std::optional<FuseBitsDescriptor> getEesaveFuseBitsDescriptor() const;
+
+        /**
          * Returns a set of all supported physical interfaces for debugging.
          *
          * @return
