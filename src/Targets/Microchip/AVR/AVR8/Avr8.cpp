@@ -95,17 +95,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
 
         if (
-            this->targetConfig.manageDwenFuseBit
-            && this->avrIspInterface == nullptr
-            && this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE
-        ) {
-            Logger::warning(
-                "The connected debug tool (or associated driver) does not provide any ISP interface. "
-                    "Bloom will be unable to manage the DWEN fuse bit."
-            );
-        }
-
-        if (
             this->targetConfig.manageOcdenFuseBit
             && this->targetConfig.physicalInterface != PhysicalInterface::JTAG
         ) {
@@ -142,6 +131,17 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         if (this->avrIspInterface != nullptr) {
             this->avrIspInterface->configure(this->targetConfig);
+        }
+
+        if (
+            this->targetConfig.manageDwenFuseBit
+            && this->avrIspInterface == nullptr
+            && this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE
+        ) {
+            Logger::warning(
+                "The connected debug tool (or associated driver) does not provide any ISP interface. "
+                    "Bloom will be unable to manage the DWEN fuse bit."
+            );
         }
     }
 
