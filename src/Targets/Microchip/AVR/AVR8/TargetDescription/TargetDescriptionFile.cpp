@@ -685,20 +685,15 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             {"extended", FuseType::EXTENDED},
         });
 
-
         for (const auto& [fuseTypeName, fuse] : fuseRegisterGroup.registersMappedByName) {
-            const auto fuseTypeIt = fuseTypesByName.find(fuseTypeName);
-            if (fuseTypeIt == fuseTypesByName.end()) {
-                // Unknown fuse type name
-                continue;
-            }
-
             const auto fuseBitFieldIt = fuse.bitFieldsMappedByName.find(fuseBitName);
 
             if (fuseBitFieldIt != fuse.bitFieldsMappedByName.end()) {
+                const auto fuseTypeIt = fuseTypesByName.find(fuseTypeName);
+
                 return FuseBitsDescriptor(
                     fuseAddressOffset + fuse.offset,
-                    fuseTypeIt->second,
+                    fuseTypeIt != fuseTypesByName.end() ? fuseTypeIt->second : FuseType::OTHER,
                     fuseBitFieldIt->second.mask
                 );
             }

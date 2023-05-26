@@ -53,6 +53,9 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames
                     this->payload[3] = 0x00;
                     break;
                 }
+                default: {
+                    throw Exceptions::Exception("Unsupported fuse type");
+                }
             }
         }
     };

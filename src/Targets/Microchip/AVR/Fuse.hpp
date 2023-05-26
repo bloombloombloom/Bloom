@@ -11,6 +11,7 @@ namespace Bloom::Targets::Microchip::Avr
         LOW,
         HIGH,
         EXTENDED,
+        OTHER,
     };
 
     enum class FuseEnableStrategy: std::uint8_t
