@@ -13,6 +13,12 @@ namespace Bloom::Targets::Microchip::Avr
         EXTENDED,
     };
 
+    enum class FuseEnableStrategy: std::uint8_t
+    {
+        CLEAR,
+        SET,
+    };
+
     struct Fuse
     {
         FuseType type;

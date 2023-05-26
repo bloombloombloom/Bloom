@@ -84,6 +84,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         [[nodiscard]] IspParameters getIspParameters() const;
 
         /**
+         * Extracts the target's fuse enable strategy.
+         *
+         * @return
+         *  std::nullopt if the TDF doesn't contain a fuse enable strategy.
+         */
+        [[nodiscard]] std::optional<FuseEnableStrategy> getFuseEnableStrategy() const;
+
+        /**
          * Constructs a FuseBitDescriptor for the debugWire enable (DWEN) fuse bit, with information extracted from
          * the TDF.
          *

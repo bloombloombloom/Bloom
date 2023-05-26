@@ -15,6 +15,8 @@
 #include "TargetParameters.hpp"
 #include "PadDescriptor.hpp"
 #include "ProgramMemorySection.hpp"
+
+#include "src/Targets/Microchip/AVR/Fuse.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
 #include "TargetDescription/TargetDescriptionFile.hpp"
@@ -116,6 +118,16 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         TargetRegisterDescriptor stackPointerRegisterDescriptor;
         TargetRegisterDescriptor statusRegisterDescriptor;
 
+        /**
+         * On some AVR8 targets, like the ATmega328P, a cleared fuse bit means the fuse is "programmed" (enabled).
+         * And a set bit means the fuse is "un-programmed" (disabled). But on others, like the ATmega4809, it's the
+         * other way around (set bit == enabled, cleared bit == disabled).
+         *
+         * The FuseEnableStrategy specifies the strategy of enabling a fuse. It's extracted from the TDF.
+         * See TargetDescription::getFuseEnableStrategy() for more.
+         */
+        FuseEnableStrategy fuseEnableStrategy;
+
         std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor> targetRegisterDescriptorsById;
 
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
@@ -129,6 +141,33 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         void loadTargetRegisterDescriptors();
 
         void loadTargetMemoryDescriptors();
+
+        /**
+         * Checks if a particular fuse is enabled in the given fuse byte value. Takes the target's fuse enable strategy
+         * into account.
+         *
+         * @param descriptor
+         * @param fuseByteValue
+         *
+         * @return
+         */
+        bool isFuseEnabled(const FuseBitsDescriptor& descriptor, unsigned char fuseByteValue) const;
+
+        /**
+         * Enables/disables a fuse within the given fuse byte, using the target's fuse enable strategy.
+         *
+         * @param descriptor
+         * @param fuseByteValue
+         * @param enabled
+         *
+         * @return
+         *  The updated fuse byte value.
+         */
+        unsigned char setFuseEnabled(
+            const FuseBitsDescriptor& descriptor,
+            unsigned char fuseByteValue,
+            bool enabled
+        ) const;
 
         /**
          * Updates the debugWire enable (DWEN) fuse bit on the AVR target.

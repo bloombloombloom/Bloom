@@ -14,8 +14,6 @@
 #include "Exceptions/DebugWirePhysicalInterfaceError.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
-#include "src/Targets/Microchip/AVR/Fuse.hpp"
-
 namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 {
     using namespace Exceptions;
@@ -54,6 +52,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 TargetRegisterAccess(true, true)
             )
         )
+        , fuseEnableStrategy(this->targetDescriptionFile.getFuseEnableStrategy().value_or(FuseEnableStrategy::CLEAR))
     {
         if (!this->supportedPhysicalInterfaces.contains(this->targetConfig.physicalInterface)) {
             /*
@@ -648,6 +647,28 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         }
     }
 
+    bool Avr8::isFuseEnabled(const FuseBitsDescriptor& descriptor, unsigned char fuseByteValue) const {
+        const auto programmedValue = static_cast<unsigned char>(
+            this->fuseEnableStrategy == FuseEnableStrategy::SET
+                ? (0xFF & descriptor.bitMask)
+                : 0
+        );
+
+        return (fuseByteValue & descriptor.bitMask) == programmedValue;
+    }
+
+    unsigned char Avr8::setFuseEnabled(
+        const FuseBitsDescriptor& descriptor,
+        unsigned char fuseByteValue,
+        bool enabled
+    ) const {
+        return static_cast<unsigned char>(
+            this->fuseEnableStrategy == FuseEnableStrategy::SET
+                ? enabled ? (fuseByteValue | descriptor.bitMask) : fuseByteValue & ~(descriptor.bitMask)
+                : enabled ? fuseByteValue & ~(descriptor.bitMask) : (fuseByteValue | descriptor.bitMask)
+        );
+    }
+
     void Avr8::updateDwenFuseBit(bool enable) {
         if (this->avrIspInterface == nullptr) {
             throw Exception(
@@ -750,7 +771,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
              * cleared bit (0b0), means the fuse/lock is set.
              */
 
-            if ((spienFuseByte & spienFuseBitsDescriptor->bitMask) != 0) {
+            if (!this->isFuseEnabled(*spienFuseBitsDescriptor, spienFuseByte)) {
                 /*
                  * If we get here, something is very wrong. The SPIEN (SPI enable) fuse bit appears to be cleared, but
                  * this is not possible because we're connected to the target via the SPI (the ISP interface uses a
@@ -771,7 +792,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
             Logger::info("Current SPIEN fuse bit value confirmed");
 
-            if (!static_cast<bool>(dwenFuseByte & dwenFuseBitsDescriptor->bitMask) == enable) {
+            if (this->isFuseEnabled(*dwenFuseBitsDescriptor, dwenFuseByte) == enable) {
                 /*
                  * The DWEN fuse appears to already be set to the desired value. This may be a result of incorrect data
                  * in the TDF, but we're not taking any chances.
@@ -801,8 +822,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
             const auto newFuse = Fuse(
                 dwenFuseBitsDescriptor->fuseType,
-                (enable) ? static_cast<unsigned char>(dwenFuseByte & ~(dwenFuseBitsDescriptor->bitMask))
-                    : static_cast<unsigned char>(dwenFuseByte | dwenFuseBitsDescriptor->bitMask)
+                this->setFuseEnabled(*dwenFuseBitsDescriptor, dwenFuseByte, enable)
             );
 
             Logger::warning("Updating DWEN fuse bit");
@@ -876,7 +896,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
             Logger::debug("OCDEN fuse byte value (before update): 0x" + StringService::toHex(ocdenFuseByteValue));
 
-            if ((jtagenFuseByteValue & jtagenFuseBitsDescriptor->bitMask) != 0) {
+            if (!this->isFuseEnabled(*jtagenFuseBitsDescriptor, jtagenFuseByteValue)) {
                 /*
                  * If we get here, something has gone wrong. The JTAGEN fuse should always be programmed by this point.
                  * We wouldn't have been able to activate the JTAG physical interface if the fuse wasn't programmed.
@@ -890,16 +910,14 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 );
             }
 
-            if (!static_cast<bool>(ocdenFuseByteValue & ocdenFuseBitsDescriptor->bitMask) == enable) {
+            if (this->isFuseEnabled(*ocdenFuseBitsDescriptor, ocdenFuseByteValue) == enable) {
                 Logger::debug("OCDEN fuse bit already set to desired value - aborting update operation");
 
                 this->disableProgrammingMode();
                 return;
             }
 
-            const auto newValue = (enable)
-                ? static_cast<unsigned char>(ocdenFuseByteValue & ~(ocdenFuseBitsDescriptor->bitMask))
-                : static_cast<unsigned char>(ocdenFuseByteValue | ocdenFuseBitsDescriptor->bitMask);
+            const auto newValue = this->setFuseEnabled(*ocdenFuseBitsDescriptor, ocdenFuseByteValue, enable);
 
             Logger::debug("New OCDEN fuse byte value (to be written): 0x" + StringService::toHex(newValue));
 

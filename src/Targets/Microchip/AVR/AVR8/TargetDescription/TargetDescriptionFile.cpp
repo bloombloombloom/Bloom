@@ -339,6 +339,32 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         return output;
     }
 
+    std::optional<FuseEnableStrategy> TargetDescriptionFile::getFuseEnableStrategy() const {
+        static const auto fuseEnableStrategies = std::map<std::string, FuseEnableStrategy>({
+            {"0", FuseEnableStrategy::CLEAR},
+            {"1", FuseEnableStrategy::SET},
+        });
+
+        const auto programmingInfoPropertyGroupIt = this->propertyGroupsMappedByName.find("programming_info");
+
+        if (programmingInfoPropertyGroupIt != this->propertyGroupsMappedByName.end()) {
+            const auto& programmingInfoParamsByName = programmingInfoPropertyGroupIt->second.propertiesMappedByName;
+            const auto fuseEnabledValuePropertyIt = programmingInfoParamsByName.find("fuse_enabled_value");
+
+            if (fuseEnabledValuePropertyIt != programmingInfoParamsByName.end()) {
+                const auto fuseEnableStrategyIt = fuseEnableStrategies.find(
+                    fuseEnabledValuePropertyIt->second.value.toStdString()
+                );
+
+                if (fuseEnableStrategyIt != fuseEnableStrategies.end()) {
+                    return fuseEnableStrategyIt->second;
+                }
+            }
+        }
+
+        return std::nullopt;
+    }
+
     std::optional<FuseBitsDescriptor> TargetDescriptionFile::getDwenFuseBitsDescriptor() const {
         return this->getFuseBitsDescriptorByName("dwen");
     }
