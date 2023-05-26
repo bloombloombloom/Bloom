@@ -95,6 +95,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?FuseBitDescriptor $dwenFuseBitDescriptor = null;
     public ?FuseBitDescriptor $ocdenFuseBitDescriptor = null;
     public ?FuseBitDescriptor $jtagenFuseBitDescriptor = null;
+    public ?FuseBitDescriptor $eesaveFuseBitDescriptor = null;
 
     protected function init()
     {
@@ -271,6 +272,11 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                     if (isset($fuseRegister->bitFieldsByName['jtagen'])) {
                         $this->jtagenFuseBitDescriptor = new FuseBitDescriptor();
                         $this->jtagenFuseBitDescriptor->fuseType = $fuseType;
+                    }
+
+                    if (isset($fuseRegister->bitFieldsByName['eesave'])) {
+                        $this->eesaveFuseBitDescriptor = new FuseBitDescriptor();
+                        $this->eesaveFuseBitDescriptor->fuseType = $fuseType;
                     }
                 }
             }
@@ -859,6 +865,15 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             if (empty($this->jtagenFuseBitDescriptor)) {
                 $failures[] = 'Could not find JTAGEN fuse bit field for JTAG target.';
 
+            }
+        }
+
+        if (
+            in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_JTAG, $this->debugPhysicalInterfaces)
+            || in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterfaces)
+        ) {
+            if (empty($this->eesaveFuseBitDescriptor)) {
+                $failures[] = 'Could not find EESAVE fuse bit field for JTAG/UPDI target.';
             }
         }
 
