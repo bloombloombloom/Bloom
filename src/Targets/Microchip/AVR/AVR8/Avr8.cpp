@@ -348,6 +348,20 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 return;
             }
 
+            /*
+             * For JTAG and UPDI targets, we must perform a chip erase. This means we could end up erasing EEPROM,
+             * unless the EESAVE fuse bit has been programmed.
+             *
+             * If configured to do so, we will ensure that the EESAVE fuse bit has been programmed when we start a
+             * programming session. See Avr8::enableProgrammingMode() for more.
+             */
+            if (
+                this->targetConfig.physicalInterface == PhysicalInterface::JTAG
+                || this->targetConfig.physicalInterface == PhysicalInterface::UPDI
+            ) {
+                return this->avr8DebugInterface->eraseChip();
+            }
+
             return this->avr8DebugInterface->eraseProgramMemory();
         }
 
@@ -552,17 +566,49 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
     }
 
     void Avr8::enableProgrammingMode() {
+        if (this->activeProgrammingSession.has_value()) {
+            return;
+        }
+
         this->avr8DebugInterface->enableProgrammingMode();
-        this->progModeEnabled = true;
+        this->activeProgrammingSession = ProgrammingSession();
+
+        if (
+            this->targetConfig.preserveEeprom
+            && (
+                this->targetConfig.physicalInterface == PhysicalInterface::JTAG
+                || this->targetConfig.physicalInterface == PhysicalInterface::UPDI
+            )
+        ) {
+            Logger::debug("Inspecting EESAVE fuse bit");
+            this->activeProgrammingSession->managingEesaveFuseBit = this->updateEesaveFuseBit(true);
+
+            if (this->activeProgrammingSession->managingEesaveFuseBit) {
+                /*
+                 * We must disable and re-enable programming mode, in order for the changes to the EESAVE fuse bit to
+                 * take effect.
+                 */
+                this->avr8DebugInterface->disableProgrammingMode();
+                this->avr8DebugInterface->enableProgrammingMode();
+            }
+        }
     }
 
     void Avr8::disableProgrammingMode() {
+        if (!this->activeProgrammingSession.has_value()) {
+            return;
+        }
+
+        if (this->activeProgrammingSession->managingEesaveFuseBit) {
+            this->updateEesaveFuseBit(false);
+        }
+
         this->avr8DebugInterface->disableProgrammingMode();
-        this->progModeEnabled = false;
+        this->activeProgrammingSession.reset();
     }
 
     bool Avr8::programmingModeEnabled() {
-        return this->progModeEnabled;
+        return this->activeProgrammingSession.has_value();
     }
 
     void Avr8::loadTargetRegisterDescriptors() {
@@ -945,6 +991,79 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         } catch (const Exception& exception) {
             this->disableProgrammingMode();
+            throw exception;
+        }
+    }
+
+    bool Avr8::updateEesaveFuseBit(bool enable) {
+        using Services::StringService;
+
+        const auto eesaveFuseBitsDescriptor = this->targetDescriptionFile.getEesaveFuseBitsDescriptor();
+
+        if (!eesaveFuseBitsDescriptor.has_value()) {
+            throw Exception("Could not find EESAVE bit field in TDF.");
+        }
+
+        const auto managingProgrammingMode = !this->programmingModeEnabled();
+
+        try {
+            if (managingProgrammingMode) {
+                this->enableProgrammingMode();
+            }
+
+            const auto eesaveFuseByteValue = this->avr8DebugInterface->readMemory(
+                TargetMemoryType::FUSES,
+                eesaveFuseBitsDescriptor->byteAddress,
+                1
+            ).at(0);
+
+            Logger::debug("EESAVE fuse byte value (before update): 0x" + StringService::toHex(eesaveFuseByteValue));
+
+            if (this->isFuseEnabled(*eesaveFuseBitsDescriptor, eesaveFuseByteValue) == enable) {
+                Logger::debug("EESAVE fuse bit already set to desired value - aborting update operation");
+
+                if (managingProgrammingMode) {
+                    this->disableProgrammingMode();
+                }
+
+                return false;
+            }
+
+            const auto newValue = this->setFuseEnabled(*eesaveFuseBitsDescriptor, eesaveFuseByteValue, enable);
+
+            Logger::debug("New EESAVE fuse byte value (to be written): 0x" + StringService::toHex(newValue));
+
+            Logger::warning("Updating EESAVE fuse bit");
+            this->avr8DebugInterface->writeMemory(
+                TargetMemoryType::FUSES,
+                eesaveFuseBitsDescriptor->byteAddress,
+                {newValue}
+            );
+
+            Logger::debug("Verifying EESAVE fuse bit");
+            const auto postUpdateEesaveByteValue = this->avr8DebugInterface->readMemory(
+                TargetMemoryType::FUSES,
+                eesaveFuseBitsDescriptor->byteAddress,
+                1
+            ).at(0);
+
+            if (postUpdateEesaveByteValue != newValue) {
+                throw Exception("Failed to update EESAVE fuse bit - post-update verification failed");
+            }
+
+            Logger::info("EESAVE fuse bit updated");
+
+            if (managingProgrammingMode) {
+                this->disableProgrammingMode();
+            }
+
+            return true;
+
+        } catch (const Exception& exception) {
+            if (managingProgrammingMode) {
+                this->disableProgrammingMode();
+            }
+
             throw exception;
         }
     }

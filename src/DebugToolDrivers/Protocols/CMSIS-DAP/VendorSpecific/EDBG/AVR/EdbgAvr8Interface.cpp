@@ -787,43 +787,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             return;
         }
 
-        /*
-         * For JTAG and UPDI targets, the erase command can only erase the entire chip (including EEPROM). This
-         * violates the Avr8DebugInterface contract - as this member function should only ever erase program memory.
-         *
-         * All we can do here is take a copy of EEPROM and restore it after the erase operation.
-         *
-         * TODO: Look into setting the EESAVE fuse bit as an alternative to the backup-then-restore approach.
-         */
-        auto eepromSnapshot = std::optional<Targets::TargetMemoryBuffer>();
+        throw Exception("JTAG and UPDI targets do not support program memory erase.");
+    }
 
-        if (this->targetConfig.preserveEeprom) {
-            Logger::debug("Capturing EEPROM data, in preparation for chip erase");
-            eepromSnapshot = this->readMemory(
-                TargetMemoryType::EEPROM,
-                this->targetParameters.eepromStartAddress.value(),
-                this->targetParameters.eepromSize.value()
-            );
-
-        } else {
-            Logger::warning("EEPROM will be erased - use the 'preserveEeprom' parameter to preserve EEPROM");
-        }
-
+    void EdbgAvr8Interface::eraseChip() {
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EraseMemory(Avr8EraseMemoryMode::CHIP)
         );
 
         if (responseFrame.id == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 erase memory command failed", responseFrame);
-        }
-
-        if (eepromSnapshot.has_value()) {
-            Logger::debug("Restoring EEPROM data");
-            this->writeMemory(
-                TargetMemoryType::EEPROM,
-                this->targetParameters.eepromStartAddress.value(),
-                std::move(*eepromSnapshot)
-            );
         }
     }
 

@@ -185,6 +185,11 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
         ) = 0;
 
         /**
+         * Should erase the chip.
+         */
+        virtual void eraseChip() = 0;
+
+        /**
          * Should obtain the current target state.
          *
          * @return

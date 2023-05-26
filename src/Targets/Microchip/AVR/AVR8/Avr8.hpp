@@ -15,6 +15,7 @@
 #include "TargetParameters.hpp"
 #include "PadDescriptor.hpp"
 #include "ProgramMemorySection.hpp"
+#include "ProgrammingSession.hpp"
 
 #include "src/Targets/Microchip/AVR/Fuse.hpp"
 #include "src/Targets/TargetRegister.hpp"
@@ -132,7 +133,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         std::map<TargetMemoryType, TargetMemoryDescriptor> targetMemoryDescriptorsByType;
 
-        bool progModeEnabled = false;
+        std::optional<ProgrammingSession> activeProgrammingSession = std::nullopt;
 
         /**
          * Populates this->targetRegisterDescriptorsById with registers extracted from the TDF, as well as general
@@ -184,6 +185,17 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
          *  True to enable the fuse, false to disable it.
          */
         void updateOcdenFuseBit(bool enable);
+
+        /**
+         * Updates the "Preserve EEPROM" (EESAVE) fuse bit on the AVR target.
+         *
+         * @param enable
+         *  True to enable the fuse, false to disable it.
+         *
+         * @return
+         *  True if the fuse bit was updated. False if the fuse bit was already set to the desired value.
+         */
+        bool updateEesaveFuseBit(bool enable);
 
         /**
          * Resolves the program memory section from a program memory address.
