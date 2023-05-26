@@ -21,6 +21,7 @@
 #include "src/TargetController/Commands/GetTargetProgramCounter.hpp"
 #include "src/TargetController/Commands/EnableProgrammingMode.hpp"
 #include "src/TargetController/Commands/DisableProgrammingMode.hpp"
+#include "src/TargetController/Commands/Shutdown.hpp"
 
 namespace Bloom::Services
 {
@@ -44,6 +45,7 @@ namespace Bloom::Services
     using TargetController::Commands::GetTargetProgramCounter;
     using TargetController::Commands::EnableProgrammingMode;
     using TargetController::Commands::DisableProgrammingMode;
+    using TargetController::Commands::Shutdown;
 
     using Targets::TargetDescriptor;
     using Targets::TargetState;
@@ -236,6 +238,13 @@ namespace Bloom::Services
     void TargetControllerService::disableProgrammingMode() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<DisableProgrammingMode>(),
+            this->defaultTimeout
+        );
+    }
+
+    void TargetControllerService::shutdown() const {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<Shutdown>(),
             this->defaultTimeout
         );
     }

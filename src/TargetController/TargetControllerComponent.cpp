@@ -20,6 +20,7 @@ namespace Bloom::TargetController
     using Commands::CommandIdType;
 
     using Commands::Command;
+    using Commands::Shutdown;
     using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
     using Commands::StopTargetExecution;
@@ -139,6 +140,10 @@ namespace Bloom::TargetController
         EventManager::registerListener(this->eventListener);
 
         // Register command handlers
+        this->registerCommandHandler<Shutdown>(
+            std::bind(&TargetControllerComponent::handleShutdown, this, std::placeholders::_1)
+        );
+
         this->registerCommandHandler<GetTargetDescriptor>(
             std::bind(&TargetControllerComponent::handleGetTargetDescriptor, this, std::placeholders::_1)
         );
@@ -638,6 +643,11 @@ namespace Bloom::TargetController
             this->target->run();
             this->fireTargetEvents();
         }
+    }
+
+    std::unique_ptr<Response> TargetControllerComponent::handleShutdown(Shutdown& command) {
+        this->shutdown();
+        return std::make_unique<Response>();
     }
 
     std::unique_ptr<Responses::TargetDescriptor> TargetControllerComponent::handleGetTargetDescriptor(

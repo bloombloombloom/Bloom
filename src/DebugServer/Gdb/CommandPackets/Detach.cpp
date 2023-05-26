@@ -25,7 +25,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
 
         try {
             if (Services::ProcessService::isManagedByClion()) {
-                // TODO: Force the TC to shutdown.
+                targetControllerService.shutdown();
             }
 
             debugSession.connection.writePacket(OkResponsePacket());

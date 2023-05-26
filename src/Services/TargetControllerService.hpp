@@ -187,6 +187,11 @@ namespace Bloom::Services
          */
         void disableProgrammingMode() const;
 
+        /**
+         * Forces the TargetController to shutdown
+         */
+        void shutdown() const;
+
     private:
         TargetController::CommandManager commandManager = TargetController::CommandManager();
 

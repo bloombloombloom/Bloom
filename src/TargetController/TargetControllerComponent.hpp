@@ -20,6 +20,7 @@
 
 // Commands
 #include "Commands/Command.hpp"
+#include "Commands/Shutdown.hpp"
 #include "Commands/GetTargetDescriptor.hpp"
 #include "Commands/GetTargetState.hpp"
 #include "Commands/StopTargetExecution.hpp"
@@ -303,6 +304,7 @@ namespace Bloom::TargetController
         void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
         // Command handlers
+        std::unique_ptr<Responses::Response> handleShutdown(Commands::Shutdown& command);
         std::unique_ptr<Responses::TargetDescriptor> handleGetTargetDescriptor(Commands::GetTargetDescriptor& command);
         std::unique_ptr<Responses::TargetState> handleGetTargetState(Commands::GetTargetState& command);
         std::unique_ptr<Responses::Response> handleStopTargetExecution(Commands::StopTargetExecution& command);
