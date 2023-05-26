@@ -851,28 +851,14 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_JTAG, $this->debugPhysicalInterfaces)
             && $this->family == self::AVR8_FAMILY_MEGA
         ) {
-            static $validFuseTypes = [
-                FuseBitDescriptor::FUSE_TYPE_LOW,
-                FuseBitDescriptor::FUSE_TYPE_HIGH,
-                FuseBitDescriptor::FUSE_TYPE_EXTENDED,
-            ];
-
             if (empty($this->ocdenFuseBitDescriptor)) {
                 $failures[] = 'Could not find OCDEN fuse bit field for JTAG target.';
 
-            } else {
-                if (!in_array($this->ocdenFuseBitDescriptor->fuseType, $validFuseTypes)) {
-                    $failures[] = 'Invalid/unknown fuse byte type for OCDEN fuse bit.';
-                }
             }
 
             if (empty($this->jtagenFuseBitDescriptor)) {
                 $failures[] = 'Could not find JTAGEN fuse bit field for JTAG target.';
 
-            } else {
-                if (!in_array($this->jtagenFuseBitDescriptor->fuseType, $validFuseTypes)) {
-                    $failures[] = 'Invalid/unknown fuse byte type for JTAGEN fuse bit.';
-                }
             }
         }
 
