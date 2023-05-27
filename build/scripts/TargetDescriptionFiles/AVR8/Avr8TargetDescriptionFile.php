@@ -5,7 +5,7 @@ use Bloom\BuildScripts\TargetDescriptionFiles\TargetDescriptionFile;
 
 require_once __DIR__ . "/../TargetDescriptionFile.php";
 require_once __DIR__ . "/Signature.php";
-require_once __DIR__ . "/FuseBitDescriptor.php";
+require_once __DIR__ . "/FuseBitsDescriptor.php";
 
 class Avr8TargetDescriptionFile extends TargetDescriptionFile
 {
@@ -91,11 +91,6 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public ?int $ispReadSignaturePollIndex = null;
     public ?int $ispReadFusePollIndex = null;
     public ?int $ispReadLockPollIndex = null;
-
-    public ?FuseBitDescriptor $dwenFuseBitDescriptor = null;
-    public ?FuseBitDescriptor $ocdenFuseBitDescriptor = null;
-    public ?FuseBitDescriptor $jtagenFuseBitDescriptor = null;
-    public ?FuseBitDescriptor $eesaveFuseBitDescriptor = null;
 
     protected function init()
     {
@@ -251,34 +246,6 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 $this->ispReadLockPollIndex = $this->stringToInt(
                     $ispParamPropertyGroup->propertiesMappedByName['ispreadlock_pollindex']->value
                 );
-            }
-        }
-
-        $fuseModule = $this->modulesByName['fuse'] ?? null;
-        if (!empty($fuseModule)) {
-            $fuseRegisterGroup = $fuseModule->registerGroupsMappedByName['fuse'] ?? null;
-            if (!empty($fuseRegisterGroup)) {
-                foreach ($fuseRegisterGroup->registersMappedByName as $fuseType => $fuseRegister) {
-                    if (isset($fuseRegister->bitFieldsByName['dwen'])) {
-                        $this->dwenFuseBitDescriptor = new FuseBitDescriptor();
-                        $this->dwenFuseBitDescriptor->fuseType = $fuseType;
-                    }
-
-                    if (isset($fuseRegister->bitFieldsByName['ocden'])) {
-                        $this->ocdenFuseBitDescriptor = new FuseBitDescriptor();
-                        $this->ocdenFuseBitDescriptor->fuseType = $fuseType;
-                    }
-
-                    if (isset($fuseRegister->bitFieldsByName['jtagen'])) {
-                        $this->jtagenFuseBitDescriptor = new FuseBitDescriptor();
-                        $this->jtagenFuseBitDescriptor->fuseType = $fuseType;
-                    }
-
-                    if (isset($fuseRegister->bitFieldsByName['eesave'])) {
-                        $this->eesaveFuseBitDescriptor = new FuseBitDescriptor();
-                        $this->eesaveFuseBitDescriptor->fuseType = $fuseType;
-                    }
-                }
             }
         }
 
@@ -588,6 +555,42 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         }
     }
 
+    public function getFuseBitsDescriptor(string $fuseBitName): ?FuseBitsDescriptor
+    {
+        $fuseModule = $this->modulesByName['fuse'] ?? null;
+        if (!empty($fuseModule)) {
+            $fuseRegisterGroup = $fuseModule->registerGroupsMappedByName['fuse'] ?? null;
+
+            if (empty($fuseRegisterGroup)) {
+                $fuseRegisterGroup = $fuseModule->registerGroupsMappedByName['nvm_fuses'] ?? null;
+            }
+
+            if (!empty($fuseRegisterGroup)) {
+                foreach ($fuseRegisterGroup->registersMappedByName as $fuseType => $fuseRegister) {
+                    if (isset($fuseRegister->bitFieldsByName[$fuseBitName])) {
+                        return new FuseBitsDescriptor($fuseType);
+                    }
+                }
+            }
+        }
+
+        // Try the NVM module
+        $nvmModule = $this->modulesByName['nvm'] ?? null;
+        if (!empty($nvmModule)) {
+            $fuseRegisterGroup = $nvmModule->registerGroupsMappedByName['nvm_fuses'] ?? null;
+
+            if (!empty($fuseRegisterGroup)) {
+                foreach ($fuseRegisterGroup->registersMappedByName as $fuseType => $fuseRegister) {
+                    if (isset($fuseRegister->bitFieldsByName[$fuseBitName])) {
+                        return new FuseBitsDescriptor($fuseType);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public function validate(): array
     {
         $failures = parent::validate();
@@ -652,17 +655,18 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 $failures[] = 'Missing ispreadlock_pollindex ISP parameter.';
             }
 
-            if (empty($this->dwenFuseBitDescriptor)) {
+            $dwenFuseBitDescriptor = $this->getFuseBitsDescriptor('dwen');
+            if (empty($dwenFuseBitDescriptor)) {
                 $failures[] = 'Could not find DWEN fuse bit field for debugWire target.';
 
             } else {
                 static $validFuseTypes = [
-                    FuseBitDescriptor::FUSE_TYPE_LOW,
-                    FuseBitDescriptor::FUSE_TYPE_HIGH,
-                    FuseBitDescriptor::FUSE_TYPE_EXTENDED,
+                    FuseBitsDescriptor::FUSE_TYPE_LOW,
+                    FuseBitsDescriptor::FUSE_TYPE_HIGH,
+                    FuseBitsDescriptor::FUSE_TYPE_EXTENDED,
                 ];
 
-                if (!in_array($this->dwenFuseBitDescriptor->fuseType, $validFuseTypes)) {
+                if (!in_array($dwenFuseBitDescriptor->fuseType, $validFuseTypes)) {
                     $failures[] = 'Invalid/unknown fuse byte type for DWEN fuse bit.';
                 }
             }
@@ -857,12 +861,12 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_JTAG, $this->debugPhysicalInterfaces)
             && $this->family == self::AVR8_FAMILY_MEGA
         ) {
-            if (empty($this->ocdenFuseBitDescriptor)) {
+            if (empty($this->getFuseBitsDescriptor('ocden'))) {
                 $failures[] = 'Could not find OCDEN fuse bit field for JTAG target.';
 
             }
 
-            if (empty($this->jtagenFuseBitDescriptor)) {
+            if (empty($this->getFuseBitsDescriptor('jtagen'))) {
                 $failures[] = 'Could not find JTAGEN fuse bit field for JTAG target.';
 
             }
@@ -872,7 +876,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_JTAG, $this->debugPhysicalInterfaces)
             || in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $this->debugPhysicalInterfaces)
         ) {
-            if (empty($this->eesaveFuseBitDescriptor)) {
+            if (empty($this->getFuseBitsDescriptor('eesave'))) {
                 $failures[] = 'Could not find EESAVE fuse bit field for JTAG/UPDI target.';
             }
         }
