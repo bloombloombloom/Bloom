@@ -121,9 +121,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     TargetParameters TargetDescriptionFile::getTargetParameters() const {
         TargetParameters targetParameters;
 
-        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
-        const auto& propertyGroups = this->getPropertyGroupsMappedByName();
-
         const auto programMemoryAddressSpace = this->getProgramMemoryAddressSpace();
 
         if (programMemoryAddressSpace.has_value()) {
@@ -173,22 +170,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             targetParameters.bootSectionSize = firstBootSectionMemorySegment->size;
         }
 
-        std::uint32_t cpuRegistersOffset = 0;
-
-        const auto cpuPeripheralModuleIt = peripheralModules.find("cpu");
-        if (cpuPeripheralModuleIt != peripheralModules.end()) {
-            const auto& cpuPeripheralModule = cpuPeripheralModuleIt->second;
-
-            const auto cpuInstanceIt = cpuPeripheralModule.instancesMappedByName.find("cpu");
-            if (cpuInstanceIt != cpuPeripheralModule.instancesMappedByName.end()) {
-                const auto& cpuInstance = cpuInstanceIt->second;
-
-                const auto cpuRegisterGroupIt = cpuInstance.registerGroupsMappedByName.find("cpu");
-                if (cpuRegisterGroupIt != cpuInstance.registerGroupsMappedByName.end()) {
-                    cpuRegistersOffset = cpuRegisterGroupIt->second.offset.value_or(0);
-                }
-            }
-        }
+        const auto cpuRegistersOffset = this->getPeripheralModuleRegisterAddressOffset("cpu", "cpu", "cpu");
 
         const auto statusRegister = this->getStatusRegister();
         if (statusRegister.has_value()) {
@@ -422,14 +404,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 continue;
             }
 
-            const auto portPeripheralRegisterGroupIt = portPeripheralModule.registerGroupsMappedByName.find(
+            const auto portRegisterAddressOffset = this->getPeripheralModuleRegisterAddressOffset(
+                portPeripheralModule.name,
+                instanceName,
                 instanceName
             );
-
-            const auto portPeripheralRegisterGroup =
-                portPeripheralRegisterGroupIt != portPeripheralModule.registerGroupsMappedByName.end()
-                ? std::optional(portPeripheralRegisterGroupIt->second)
-                : std::nullopt;
 
             for (const auto& signal : instance.instanceSignals) {
                 if (!signal.index.has_value()) {
@@ -483,32 +462,17 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
                     for (const auto& [registerName, portRegister] : registerGroup.registersMappedByName) {
                         if (registerName == "out") {
                             // Include the port register offset
-                            padDescriptor.gpioPortAddress = (
-                                portPeripheralRegisterGroup.has_value()
-                                && portPeripheralRegisterGroup->offset.has_value()
-                            )
-                                ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
-                                : 0 + portRegister.offset;
+                            padDescriptor.gpioPortAddress = portRegisterAddressOffset + portRegister.offset;
                             continue;
                         }
 
                         if (registerName == "dir") {
-                            padDescriptor.gpioDdrAddress = (
-                                portPeripheralRegisterGroup.has_value()
-                                    && portPeripheralRegisterGroup->offset.has_value()
-                            )
-                                ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
-                                : 0 + portRegister.offset;
+                            padDescriptor.gpioDdrAddress = portRegisterAddressOffset + portRegister.offset;
                             continue;
                         }
 
                         if (registerName == "in") {
-                            padDescriptor.gpioPortInputAddress = (
-                                portPeripheralRegisterGroup.has_value()
-                                    && portPeripheralRegisterGroup->offset.has_value()
-                            )
-                                ? portPeripheralRegisterGroup->offset.value_or(0) + portRegister.offset
-                                : 0 + portRegister.offset;
+                            padDescriptor.gpioPortInputAddress = portRegisterAddressOffset + portRegister.offset;
                             continue;
                         }
                     }
@@ -595,7 +559,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
     void TargetDescriptionFile::loadTargetRegisterDescriptors() {
         const auto& modulesByName = this->modulesMappedByName;
-        const auto& peripheralModulesByName = this->peripheralModulesMappedByName;
 
         for (const auto& [moduleName, module] : modulesByName) {
             for (const auto& [registerGroupName, registerGroup] : module.registerGroupsMappedByName) {
@@ -646,60 +609,94 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
         }
     }
 
-    std::optional<FuseBitsDescriptor> TargetDescriptionFile::getFuseBitsDescriptorByName(
-        const std::string& fuseBitName
+    Targets::TargetMemoryAddress TargetDescriptionFile::getPeripheralModuleRegisterAddressOffset(
+        const std::string& moduleName,
+        const std::string& instanceName,
+        const std::string& registerGroupName
     ) const {
         const auto& peripheralModules = this->getPeripheralModulesMappedByName();
-        std::uint32_t fuseAddressOffset = 0;
+        Targets::TargetMemoryAddress addressOffset = 0;
 
-        const auto fusePeripheralModuleIt = peripheralModules.find("fuse");
-        if (fusePeripheralModuleIt != peripheralModules.end()) {
-            const auto& fusePeripheralModule = fusePeripheralModuleIt->second;
+        const auto peripheralModuleIt = peripheralModules.find(moduleName);
+        if (peripheralModuleIt != peripheralModules.end()) {
+            const auto& peripheralModule = peripheralModuleIt->second;
 
-            const auto fuseInstanceIt = fusePeripheralModule.instancesMappedByName.find("fuse");
-            if (fuseInstanceIt != fusePeripheralModule.instancesMappedByName.end()) {
-                const auto& fuseInstance = fuseInstanceIt->second;
+            const auto instanceIt = peripheralModule.instancesMappedByName.find(instanceName);
+            if (instanceIt != peripheralModule.instancesMappedByName.end()) {
+                const auto& instance = instanceIt->second;
 
-                const auto fuseRegisterGroupIt = fuseInstance.registerGroupsMappedByName.find("fuse");
-                if (fuseRegisterGroupIt != fuseInstance.registerGroupsMappedByName.end()) {
-                    fuseAddressOffset = fuseRegisterGroupIt->second.offset.value_or(0);
+                const auto registerGroupIt = instance.registerGroupsMappedByName.find(registerGroupName);
+                if (registerGroupIt != instance.registerGroupsMappedByName.end()) {
+                    addressOffset = registerGroupIt->second.offset.value_or(0);
                 }
             }
         }
 
-        const auto fuseModuleIt = this->modulesMappedByName.find("fuse");
+        return addressOffset;
+    }
 
-        if (fuseModuleIt == this->modulesMappedByName.end()) {
-            return std::nullopt;
-        }
-
-        const auto& fuseModule = fuseModuleIt->second;
-
-        const auto fuseRegisterGroupIt = fuseModule.registerGroupsMappedByName.find("fuse");
-
-        if (fuseRegisterGroupIt == fuseModule.registerGroupsMappedByName.end()) {
-            return std::nullopt;
-        }
-
-        const auto& fuseRegisterGroup = fuseRegisterGroupIt->second;
-
+    std::optional<FuseBitsDescriptor> TargetDescriptionFile::getFuseBitsDescriptorByName(
+        const std::string& fuseBitName
+    ) const {
         static const auto fuseTypesByName = std::map<std::string, FuseType>({
             {"low", FuseType::LOW},
             {"high", FuseType::HIGH},
             {"extended", FuseType::EXTENDED},
         });
 
-        for (const auto& [fuseTypeName, fuse] : fuseRegisterGroup.registersMappedByName) {
-            const auto fuseBitFieldIt = fuse.bitFieldsMappedByName.find(fuseBitName);
+        const auto fuseModuleIt = this->modulesMappedByName.find("fuse");
 
-            if (fuseBitFieldIt != fuse.bitFieldsMappedByName.end()) {
-                const auto fuseTypeIt = fuseTypesByName.find(fuseTypeName);
+        if (fuseModuleIt != this->modulesMappedByName.end()) {
+            const auto& fuseModule = fuseModuleIt->second;
+            auto fuseRegisterGroupIt = fuseModule.registerGroupsMappedByName.find("fuse");
 
-                return FuseBitsDescriptor(
-                    fuseAddressOffset + fuse.offset,
-                    fuseTypeIt != fuseTypesByName.end() ? fuseTypeIt->second : FuseType::OTHER,
-                    fuseBitFieldIt->second.mask
-                );
+            if (fuseRegisterGroupIt == fuseModule.registerGroupsMappedByName.end()) {
+                // Try the NVM_FUSES register group
+                fuseRegisterGroupIt = fuseModule.registerGroupsMappedByName.find("nvm_fuses");
+            }
+
+            if (fuseRegisterGroupIt != fuseModule.registerGroupsMappedByName.end()) {
+                const auto& fuseRegisterGroup = fuseRegisterGroupIt->second;
+
+                for (const auto& [fuseTypeName, fuse] : fuseRegisterGroup.registersMappedByName) {
+                    const auto fuseBitFieldIt = fuse.bitFieldsMappedByName.find(fuseBitName);
+
+                    if (fuseBitFieldIt != fuse.bitFieldsMappedByName.end()) {
+                        const auto fuseTypeIt = fuseTypesByName.find(fuseTypeName);
+
+                        return FuseBitsDescriptor(
+                            this->getPeripheralModuleRegisterAddressOffset("fuse", "fuse", "fuse") + fuse.offset,
+                            fuseTypeIt != fuseTypesByName.end() ? fuseTypeIt->second : FuseType::OTHER,
+                            fuseBitFieldIt->second.mask
+                        );
+                    }
+                }
+            }
+        }
+
+        // Try the NVM module
+        const auto nvmModuleIt = this->modulesMappedByName.find("nvm");
+
+        if (nvmModuleIt != this->modulesMappedByName.end()) {
+            const auto& nvmModule = nvmModuleIt->second;
+            const auto fuseRegisterGroupIt = nvmModule.registerGroupsMappedByName.find("nvm_fuses");
+
+            if (fuseRegisterGroupIt != nvmModule.registerGroupsMappedByName.end()) {
+                const auto& fuseRegisterGroup = fuseRegisterGroupIt->second;
+
+                for (const auto& [fuseTypeName, fuse] : fuseRegisterGroup.registersMappedByName) {
+                    const auto fuseBitFieldIt = fuse.bitFieldsMappedByName.find(fuseBitName);
+
+                    if (fuseBitFieldIt != fuse.bitFieldsMappedByName.end()) {
+                        const auto fuseTypeIt = fuseTypesByName.find(fuseTypeName);
+
+                        return FuseBitsDescriptor(
+                            this->getPeripheralModuleRegisterAddressOffset("nvm", "fuse", "fuse") + fuse.offset,
+                            fuseTypeIt != fuseTypesByName.end() ? fuseTypeIt->second : FuseType::OTHER,
+                            fuseBitFieldIt->second.mask
+                        );
+                    }
+                }
             }
         }
 
@@ -1215,7 +1212,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadDebugWireAndJtagTargetParameters(TargetParameters& targetParameters) const {
-        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
         const auto& propertyGroups = this->getPropertyGroupsMappedByName();
 
         // OCD attributes can be found in property groups
@@ -1283,7 +1279,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadPdiTargetParameters(TargetParameters& targetParameters) const {
-        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
         const auto& propertyGroups = this->getPropertyGroupsMappedByName();
 
         const auto pdiPropertyGroupIt = propertyGroups.find("pdi_interface");
@@ -1333,56 +1328,18 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
             targetParameters.lockRegistersPdiOffset = lockRegOffsetPropertyIt->second.value.toUInt(nullptr, 16);
         }
 
-        const auto nvmPeripheralModuleIt = peripheralModules.find("nvm");
-        if (nvmPeripheralModuleIt != peripheralModules.end()) {
-            const auto& nvmModule = nvmPeripheralModuleIt->second;
-
-            const auto nvmInstanceIt = nvmModule.instancesMappedByName.find("nvm");
-            if (nvmInstanceIt != nvmModule.instancesMappedByName.end()) {
-                const auto& nvmInstance = nvmInstanceIt->second;
-
-                const auto nvmRegisterGroupIt = nvmInstance.registerGroupsMappedByName.find("nvm");
-                if (nvmRegisterGroupIt != nvmInstance.registerGroupsMappedByName.end()) {
-                    targetParameters.nvmModuleBaseAddress = nvmRegisterGroupIt->second.offset;
-                }
-            }
-        }
-
-        const auto mcuPeripheralModuleIt = peripheralModules.find("mcu");
-        if (mcuPeripheralModuleIt != peripheralModules.end()) {
-            const auto& mcuModule = mcuPeripheralModuleIt->second;
-
-            const auto mcuInstanceIt = mcuModule.instancesMappedByName.find("mcu");
-            if (mcuInstanceIt != mcuModule.instancesMappedByName.end()) {
-                const auto& mcuInstance = mcuInstanceIt->second;
-
-                const auto mcuRegisterGroupIt = mcuInstance.registerGroupsMappedByName.find("mcu");
-                if (mcuRegisterGroupIt != mcuInstance.registerGroupsMappedByName.end()) {
-                    targetParameters.mcuModuleBaseAddress = mcuRegisterGroupIt->second.offset;
-                }
-            }
-        }
+        targetParameters.nvmModuleBaseAddress = this->getPeripheralModuleRegisterAddressOffset("nvm", "nvm", "nvm");
+        targetParameters.mcuModuleBaseAddress = this->getPeripheralModuleRegisterAddressOffset("mcu", "mcu", "mcu");
     }
 
     void TargetDescriptionFile::loadUpdiTargetParameters(TargetParameters& targetParameters) const {
         const auto& propertyGroups = this->getPropertyGroupsMappedByName();
-        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
-        const auto& modulesByName = this->getModulesMappedByName();
 
-        const auto nvmCtrlPeripheralModuleIt = peripheralModules.find("nvmctrl");
-        if (nvmCtrlPeripheralModuleIt != peripheralModules.end()) {
-            const auto& nvmCtrlModule = nvmCtrlPeripheralModuleIt->second;
-
-            const auto nvmCtrlInstanceIt = nvmCtrlModule.instancesMappedByName.find("nvmctrl");
-            if (nvmCtrlInstanceIt != nvmCtrlModule.instancesMappedByName.end()) {
-                const auto& nvmCtrlInstance = nvmCtrlInstanceIt->second;
-
-                const auto nvmCtrlRegisterGroupIt = nvmCtrlInstance.registerGroupsMappedByName.find("nvmctrl");
-                if (nvmCtrlRegisterGroupIt != nvmCtrlInstance.registerGroupsMappedByName.end()) {
-                    targetParameters.nvmModuleBaseAddress = nvmCtrlRegisterGroupIt->second.offset;
-                }
-            }
-        }
+        targetParameters.nvmModuleBaseAddress = this->getPeripheralModuleRegisterAddressOffset(
+            "nvmctrl",
+            "nvmctrl",
+            "nvmctrl"
+        );
 
         const auto updiPropertyGroupIt = propertyGroups.find("updi_interface");
         if (updiPropertyGroupIt != propertyGroups.end()) {

@@ -224,6 +224,20 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
          */
         void loadTargetRegisterDescriptors();
 
+        /**
+         * Gets the register address offset for a specific peripheral module.
+         *
+         * @param moduleName
+         * @param instanceName
+         * @param registerGroupName
+         * @return
+         */
+        Targets::TargetMemoryAddress getPeripheralModuleRegisterAddressOffset(
+            const std::string& moduleName,
+            const std::string& instanceName,
+            const std::string& registerGroupName
+        ) const;
+
         [[nodiscard]] std::optional<FuseBitsDescriptor> getFuseBitsDescriptorByName(
             const std::string& fuseBitName
         ) const;
