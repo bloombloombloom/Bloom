@@ -1670,6 +1670,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             }
         }
 
+        const auto managingProgrammingMode = type == Avr8MemoryType::FUSES && !this->programmingModeEnabled;
+        if (managingProgrammingMode) {
+            this->enableProgrammingMode();
+        }
+
         if (!excludedAddresses.empty() && (this->avoidMaskedMemoryRead || type != Avr8MemoryType::SRAM)) {
             /*
              * Driver-side masked memory read.
@@ -1770,6 +1775,10 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             )
         );
 
+        if (managingProgrammingMode) {
+            this->disableProgrammingMode();
+        }
+
         if (responseFrame.id == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Read memory command failed", responseFrame);
         }
@@ -1792,6 +1801,11 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
             if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
                 throw Exception("Cannot access AVR fuses via the debugWire interface");
             }
+        }
+
+        const auto managingProgrammingMode = type == Avr8MemoryType::FUSES && !this->programmingModeEnabled;
+        if (managingProgrammingMode) {
+            this->enableProgrammingMode();
         }
 
         const auto bytes = static_cast<TargetMemorySize>(buffer.size());
@@ -1851,6 +1865,16 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 buffer
             )
         );
+
+
+        // We must disable and re-enable programming mode, in order for the changes to the fuse bit to take effect.
+        if (type == Avr8MemoryType::FUSES) {
+            this->disableProgrammingMode();
+
+            if (!managingProgrammingMode) {
+                this->enableProgrammingMode();
+            }
+        }
 
         if (responseFrame.id == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Write memory command failed", responseFrame);

@@ -335,7 +335,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
     void Avr8::writeMemory(TargetMemoryType memoryType, std::uint32_t startAddress, const TargetMemoryBuffer& buffer) {
         if (memoryType == TargetMemoryType::FLASH && !this->programmingModeEnabled()) {
-            throw Exception("Attempted FLASH memory write with no active programming session.");
+            throw Exception("Attempted Flash memory write with no active programming session.");
         }
 
         this->avr8DebugInterface->writeMemory(memoryType, startAddress, buffer);
@@ -348,17 +348,26 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 return;
             }
 
+            if (!this->programmingModeEnabled()) {
+                throw Exception("Attempted Flash memory erase with no active programming session.");
+            }
+
             /*
              * For JTAG and UPDI targets, we must perform a chip erase. This means we could end up erasing EEPROM,
              * unless the EESAVE fuse bit has been programmed.
              *
-             * If configured to do so, we will ensure that the EESAVE fuse bit has been programmed when we start a
-             * programming session. See Avr8::enableProgrammingMode() for more.
+             * If configured to do so, we will ensure that the EESAVE fuse bit has been programmed before we perform
+             * the chip erase. The fuse will be restored to its original value at the end of the programming session.
              */
             if (
                 this->targetConfig.physicalInterface == PhysicalInterface::JTAG
                 || this->targetConfig.physicalInterface == PhysicalInterface::UPDI
             ) {
+                if (this->targetConfig.preserveEeprom) {
+                    Logger::debug("Inspecting EESAVE fuse bit");
+                    this->activeProgrammingSession->managingEesaveFuseBit = this->updateEesaveFuseBit(true);
+                }
+
                 return this->avr8DebugInterface->eraseChip();
             }
 
@@ -572,26 +581,6 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
 
         this->avr8DebugInterface->enableProgrammingMode();
         this->activeProgrammingSession = ProgrammingSession();
-
-        if (
-            this->targetConfig.preserveEeprom
-            && (
-                this->targetConfig.physicalInterface == PhysicalInterface::JTAG
-                || this->targetConfig.physicalInterface == PhysicalInterface::UPDI
-            )
-        ) {
-            Logger::debug("Inspecting EESAVE fuse bit");
-            this->activeProgrammingSession->managingEesaveFuseBit = this->updateEesaveFuseBit(true);
-
-            if (this->activeProgrammingSession->managingEesaveFuseBit) {
-                /*
-                 * We must disable and re-enable programming mode, in order for the changes to the EESAVE fuse bit to
-                 * take effect.
-                 */
-                this->avr8DebugInterface->disableProgrammingMode();
-                this->avr8DebugInterface->enableProgrammingMode();
-            }
-        }
     }
 
     void Avr8::disableProgrammingMode() {
@@ -923,76 +912,66 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             throw Exception("Could not find JTAGEN bit field in TDF.");
         }
 
-        try {
-            this->enableProgrammingMode();
-
-            const auto ocdenFuseByteValue = this->avr8DebugInterface->readMemory(
+        const auto ocdenFuseByteValue = this->avr8DebugInterface->readMemory(
+            TargetMemoryType::FUSES,
+            ocdenFuseBitsDescriptor->byteAddress,
+            1
+        ).at(0);
+        const auto jtagenFuseByteValue = jtagenFuseBitsDescriptor->byteAddress == ocdenFuseBitsDescriptor->byteAddress
+            ? ocdenFuseByteValue
+            : this->avr8DebugInterface->readMemory(
                 TargetMemoryType::FUSES,
-                ocdenFuseBitsDescriptor->byteAddress,
+                jtagenFuseBitsDescriptor->byteAddress,
                 1
-            ).at(0);
-            const auto jtagenFuseByteValue = jtagenFuseBitsDescriptor->byteAddress == ocdenFuseBitsDescriptor->byteAddress
-                ? ocdenFuseByteValue
-                : this->avr8DebugInterface->readMemory(
-                    TargetMemoryType::FUSES,
-                    jtagenFuseBitsDescriptor->byteAddress,
-                    1
-                ).at(0)
-            ;
+            ).at(0)
+        ;
 
-            Logger::debug("OCDEN fuse byte value (before update): 0x" + StringService::toHex(ocdenFuseByteValue));
+        Logger::debug("OCDEN fuse byte value (before update): 0x" + StringService::toHex(ocdenFuseByteValue));
 
-            if (!this->isFuseEnabled(*jtagenFuseBitsDescriptor, jtagenFuseByteValue)) {
-                /*
-                 * If we get here, something has gone wrong. The JTAGEN fuse should always be programmed by this point.
-                 * We wouldn't have been able to activate the JTAG physical interface if the fuse wasn't programmed.
-                 *
-                 * This means the data we have on the JTAGEN fuse bit, from the TDF, is likely incorrect. And if that's
-                 * the case, we cannot rely on the data for the OCDEN fuse bit being any better.
-                 */
-                throw Exception(
-                    "Invalid JTAGEN fuse bit value - suspected inaccuracies in TDF data. Please report this to "
-                    "Bloom developers as a matter of urgency, via " + PathService::homeDomainName() + "/report-issue"
-                );
-            }
-
-            if (this->isFuseEnabled(*ocdenFuseBitsDescriptor, ocdenFuseByteValue) == enable) {
-                Logger::debug("OCDEN fuse bit already set to desired value - aborting update operation");
-
-                this->disableProgrammingMode();
-                return;
-            }
-
-            const auto newValue = this->setFuseEnabled(*ocdenFuseBitsDescriptor, ocdenFuseByteValue, enable);
-
-            Logger::debug("New OCDEN fuse byte value (to be written): 0x" + StringService::toHex(newValue));
-
-            Logger::warning("Updating OCDEN fuse bit");
-            this->avr8DebugInterface->writeMemory(
-                TargetMemoryType::FUSES,
-                ocdenFuseBitsDescriptor->byteAddress,
-                {newValue}
+        if (!this->isFuseEnabled(*jtagenFuseBitsDescriptor, jtagenFuseByteValue)) {
+            /*
+             * If we get here, something has gone wrong. The JTAGEN fuse should always be programmed by this point.
+             * We wouldn't have been able to activate the JTAG physical interface if the fuse wasn't programmed.
+             *
+             * This means the data we have on the JTAGEN fuse bit, from the TDF, is likely incorrect. And if that's
+             * the case, we cannot rely on the data for the OCDEN fuse bit being any better.
+             */
+            throw Exception(
+                "Invalid JTAGEN fuse bit value - suspected inaccuracies in TDF data. Please report this to "
+                "Bloom developers as a matter of urgency, via " + PathService::homeDomainName() + "/report-issue"
             );
-
-            Logger::debug("Verifying OCDEN fuse bit");
-            const auto postUpdateOcdenByteValue = this->avr8DebugInterface->readMemory(
-                TargetMemoryType::FUSES,
-                ocdenFuseBitsDescriptor->byteAddress,
-                1
-            ).at(0);
-
-            if (postUpdateOcdenByteValue != newValue) {
-                throw Exception("Failed to update OCDEN fuse bit - post-update verification failed");
-            }
-
-            Logger::info("OCDEN fuse bit updated");
-
-            this->disableProgrammingMode();
-
-        } catch (const Exception& exception) {
-            this->disableProgrammingMode();
-            throw exception;
         }
+
+        if (this->isFuseEnabled(*ocdenFuseBitsDescriptor, ocdenFuseByteValue) == enable) {
+            Logger::debug("OCDEN fuse bit already set to desired value - aborting update operation");
+            return;
+        }
+
+        const auto newValue = this->setFuseEnabled(*ocdenFuseBitsDescriptor, ocdenFuseByteValue, enable);
+
+        Logger::debug("New OCDEN fuse byte value (to be written): 0x" + StringService::toHex(newValue));
+
+        Logger::warning("Updating OCDEN fuse bit");
+        this->avr8DebugInterface->writeMemory(
+            TargetMemoryType::FUSES,
+            ocdenFuseBitsDescriptor->byteAddress,
+            {newValue}
+        );
+
+        Logger::debug("Verifying OCDEN fuse bit");
+        const auto postUpdateOcdenByteValue = this->avr8DebugInterface->readMemory(
+            TargetMemoryType::FUSES,
+            ocdenFuseBitsDescriptor->byteAddress,
+            1
+        ).at(0);
+
+        if (postUpdateOcdenByteValue != newValue) {
+            throw Exception("Failed to update OCDEN fuse bit - post-update verification failed");
+        }
+
+        Logger::info("OCDEN fuse bit updated");
+
+        this->disableProgrammingMode();
     }
 
     bool Avr8::updateEesaveFuseBit(bool enable) {
@@ -1004,68 +983,44 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
             throw Exception("Could not find EESAVE bit field in TDF.");
         }
 
-        const auto managingProgrammingMode = !this->programmingModeEnabled();
+        const auto eesaveFuseByteValue = this->avr8DebugInterface->readMemory(
+            TargetMemoryType::FUSES,
+            eesaveFuseBitsDescriptor->byteAddress,
+            1
+        ).at(0);
 
-        try {
-            if (managingProgrammingMode) {
-                this->enableProgrammingMode();
-            }
+        Logger::debug("EESAVE fuse byte value (before update): 0x" + StringService::toHex(eesaveFuseByteValue));
 
-            const auto eesaveFuseByteValue = this->avr8DebugInterface->readMemory(
-                TargetMemoryType::FUSES,
-                eesaveFuseBitsDescriptor->byteAddress,
-                1
-            ).at(0);
-
-            Logger::debug("EESAVE fuse byte value (before update): 0x" + StringService::toHex(eesaveFuseByteValue));
-
-            if (this->isFuseEnabled(*eesaveFuseBitsDescriptor, eesaveFuseByteValue) == enable) {
-                Logger::debug("EESAVE fuse bit already set to desired value - aborting update operation");
-
-                if (managingProgrammingMode) {
-                    this->disableProgrammingMode();
-                }
-
-                return false;
-            }
-
-            const auto newValue = this->setFuseEnabled(*eesaveFuseBitsDescriptor, eesaveFuseByteValue, enable);
-
-            Logger::debug("New EESAVE fuse byte value (to be written): 0x" + StringService::toHex(newValue));
-
-            Logger::warning("Updating EESAVE fuse bit");
-            this->avr8DebugInterface->writeMemory(
-                TargetMemoryType::FUSES,
-                eesaveFuseBitsDescriptor->byteAddress,
-                {newValue}
-            );
-
-            Logger::debug("Verifying EESAVE fuse bit");
-            const auto postUpdateEesaveByteValue = this->avr8DebugInterface->readMemory(
-                TargetMemoryType::FUSES,
-                eesaveFuseBitsDescriptor->byteAddress,
-                1
-            ).at(0);
-
-            if (postUpdateEesaveByteValue != newValue) {
-                throw Exception("Failed to update EESAVE fuse bit - post-update verification failed");
-            }
-
-            Logger::info("EESAVE fuse bit updated");
-
-            if (managingProgrammingMode) {
-                this->disableProgrammingMode();
-            }
-
-            return true;
-
-        } catch (const Exception& exception) {
-            if (managingProgrammingMode) {
-                this->disableProgrammingMode();
-            }
-
-            throw exception;
+        if (this->isFuseEnabled(*eesaveFuseBitsDescriptor, eesaveFuseByteValue) == enable) {
+            Logger::debug("EESAVE fuse bit already set to desired value - aborting update operation");
+            return false;
         }
+
+        const auto newValue = this->setFuseEnabled(*eesaveFuseBitsDescriptor, eesaveFuseByteValue, enable);
+
+        Logger::debug("New EESAVE fuse byte value (to be written): 0x" + StringService::toHex(newValue));
+
+        Logger::warning("Updating EESAVE fuse bit");
+        this->avr8DebugInterface->writeMemory(
+            TargetMemoryType::FUSES,
+            eesaveFuseBitsDescriptor->byteAddress,
+            {newValue}
+        );
+
+        Logger::debug("Verifying EESAVE fuse bit");
+        const auto postUpdateEesaveByteValue = this->avr8DebugInterface->readMemory(
+            TargetMemoryType::FUSES,
+            eesaveFuseBitsDescriptor->byteAddress,
+            1
+        ).at(0);
+
+        if (postUpdateEesaveByteValue != newValue) {
+            throw Exception("Failed to update EESAVE fuse bit - post-update verification failed");
+        }
+
+        Logger::info("EESAVE fuse bit updated");
+
+        return true;
     }
 
     ProgramMemorySection Avr8::getProgramMemorySectionFromAddress(std::uint32_t address) {
