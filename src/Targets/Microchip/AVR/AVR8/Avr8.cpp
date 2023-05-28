@@ -366,6 +366,11 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
                 if (this->targetConfig.preserveEeprom) {
                     Logger::debug("Inspecting EESAVE fuse bit");
                     this->activeProgrammingSession->managingEesaveFuseBit = this->updateEesaveFuseBit(true);
+
+                } else {
+                    Logger::warning(
+                        "Performing chip-erase with preserveEeprom disabled. All EEPROM data will be lost!"
+                    );
                 }
 
                 return this->avr8DebugInterface->eraseChip();
