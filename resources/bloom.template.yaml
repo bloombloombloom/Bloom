@@ -1,11 +1,11 @@
 environments:
   default:
     debugTool:
-      name: "atmel-ice"
+      name: "xplained-pro"
 
     target:
-      name: "avr8"
-      physicalInterface: "debug-wire"
+      name: "atmega4809"
+      physicalInterface: "updi"
 
     debugServer:
       name: "avr-gdb-rsp"
