@@ -33,11 +33,6 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     const AVR8_PHYSICAL_INTERFACE_UPDI = 'UPDI';
     const AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE = 'DEBUG_WIRE';
 
-    protected function init()
-    {
-        parent::init();
-    }
-
     public function getSignature(): ?Signature
     {
         $byteZero = $this->getPropertyValue('signatures', 'signature0');
