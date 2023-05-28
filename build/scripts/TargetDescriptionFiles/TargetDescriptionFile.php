@@ -22,6 +22,9 @@ class TargetDescriptionFile
     public ?string $targetName = null;
     public ?string $targetArchitecture = null;
 
+    /** @var string[] */
+    public array $deviceAttributesByName = [];
+
     /** @var AddressSpace[] */
     protected array $addressSpacesById = [];
 
@@ -64,13 +67,13 @@ class TargetDescriptionFile
 
         $device = $this->xml->device;
         if (!empty($device)) {
-            $deviceAttributes = $device->attributes();
+            $this->deviceAttributesByName = current((array)$device->attributes());
 
-            if (!empty($deviceAttributes['name'])) {
+            if (!empty($this->deviceAttributesByName['name'])) {
                 $this->targetName = $device['name'];
             }
 
-            if (!empty($deviceAttributes['architecture'])) {
+            if (!empty($this->deviceAttributesByName['architecture'])) {
                 $this->targetArchitecture = stristr($device['architecture'], 'avr') !== false
                     ? self::ARCHITECTURE_AVR8 : $device['architecture'];
             }
@@ -85,11 +88,94 @@ class TargetDescriptionFile
         $this->loadPinouts();
     }
 
-    protected function stringToInt(string $value): ?int
+    protected function stringToInt(?string $value): ?int
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         return stristr($value, '0x') !== false
             ? (int) hexdec($value)
             : (strlen($value) > 0 ? (int) $value : null);
+    }
+
+    protected function getPeripheralModuleRegisterGroupOffset(
+        string $moduleName,
+        string $instanceName,
+        string $registerGroupName
+    ): ?int {
+        if (isset($this->peripheralModulesByName[$moduleName])) {
+            $module = $this->peripheralModulesByName[$moduleName];
+
+            if (isset($module->instancesMappedByName[$instanceName])) {
+                $instance = $module->instancesMappedByName[$instanceName];
+
+                if (isset($instance->registerGroupsMappedByName[$registerGroupName])) {
+                    return $instance->registerGroupsMappedByName[$registerGroupName]->offset;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function getPropertyValue(string $propertyGroupName, string $propertyName): ?string
+    {
+        if (isset($this->propertyGroupsByName[$propertyGroupName])) {
+            $propertyGroup = $this->propertyGroupsByName[$propertyGroupName];
+
+            if (isset($propertyGroup->propertiesMappedByName[$propertyName])) {
+                return $propertyGroup->propertiesMappedByName[$propertyName]->value;
+            }
+        }
+
+        return null;
+    }
+
+    protected function getMemorySegment(
+        string $addressSpaceId,
+        string $memorySegmentType,
+        ?string $memorySegmentName = null
+    ): ?MemorySegment {
+        if (isset($this->addressSpacesById[$addressSpaceId])) {
+            $addressSpace = $this->addressSpacesById[$addressSpaceId];
+
+            if (isset($addressSpace->memorySegmentsByTypeAndName[$memorySegmentType])) {
+                $memorySegmentsByName = $addressSpace->memorySegmentsByTypeAndName[$memorySegmentType];
+
+                return !is_null($memorySegmentName)
+                    ? $memorySegmentsByName[$memorySegmentName] ?? null
+                    : reset($memorySegmentsByName);
+            }
+        }
+
+        return null;
+    }
+
+    protected function getMemorySegmentSize(
+        string $addressSpaceId,
+        string $memorySegmentType,
+        ?string $memorySegmentName = null
+    ): ?int {
+        $memorySegment = $this->getMemorySegment($addressSpaceId, $memorySegmentType, $memorySegmentName);
+        return $memorySegment instanceof MemorySegment ? $this->stringToInt($memorySegment->size) : null;
+    }
+
+    protected function getModuleRegister(
+        string $moduleName,
+        string $registerGroupName,
+        string $registerName
+    ): ?Register {
+        if (isset($this->modulesByName[$moduleName])) {
+            $module = $this->modulesByName[$moduleName];
+
+            if (isset($module->registerGroupsMappedByName[$registerGroupName])) {
+                return $module->registerGroupsMappedByName[$registerGroupName]->registersMappedByName[$registerName]
+                    ?? null;
+            }
+        }
+
+        return null;
     }
 
     private function loadVariants(): void

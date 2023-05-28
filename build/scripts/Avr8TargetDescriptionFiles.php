@@ -72,10 +72,11 @@ foreach ($avrTdfs as $avrTdf) {
         $relativeDestinationFilePath .= "/" . strtoupper($avrTdf->targetArchitecture);
     }
 
-    if (!empty($avrTdf->family)) {
+    $avrFamily = $avrTdf->getFamily();
+    if (!empty($avrFamily)) {
         // Group by family
-        $destinationFilePath .= "/" . str_replace([' '] , '_', strtoupper($avrTdf->family));
-        $relativeDestinationFilePath .= "/" . str_replace([' '] , '_', strtoupper($avrTdf->family));
+        $destinationFilePath .= "/" . str_replace([' '] , '_', strtoupper($avrFamily));
+        $relativeDestinationFilePath .= "/" . str_replace([' '] , '_', strtoupper($avrFamily));
     }
 
     if (!file_exists($destinationFilePath)) {
@@ -87,14 +88,14 @@ foreach ($avrTdfs as $avrTdf) {
 
     // Copy TDF to build location
     if (copy($avrTdf->filePath, $destinationFilePath) === false) {
-        print "FATAL ERROR: Failed to TDF file to " . $destinationFilePath . "\n";
+        print "FATAL ERROR: Failed to copy TDF file to " . $destinationFilePath . "\n";
         print "Aborting\n";
         exit(1);
     }
 
     $tdfMapping[$id] = [
         'name' => $strippedTargetName,
-        'signature' => $avrTdf->signature->toHex(),
+        'signature' => $avrTdf->getSignature()->toHex(),
         'tdfPath' => $relativeDestinationFilePath,
     ];
 }

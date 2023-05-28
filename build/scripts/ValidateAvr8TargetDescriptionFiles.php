@@ -16,7 +16,7 @@ foreach ($avr8Tdfs as $targetDescriptionFile) {
 
         print "\033[31m";
         print "Validation for " . $targetDescriptionFile->filePath . " failed.\n";
-        print count($validationFailures) . " errors found:\n";
+        print count($validationFailures) . " error(s) found:\n";
         print implode("\n", $validationFailures);
         print "\n\n";
         print "\033[0m";
@@ -31,5 +31,5 @@ foreach ($avr8Tdfs as $targetDescriptionFile) {
 print "\n\n";
 print "Validated " . count($avr8Tdfs) . " TDFs. ";
 print (($failedValidationCount > 0) ? "\033[31m" : "\033[32m");
-print $failedValidationCount . " failures." . "\033[0m" . "\n";
+print $failedValidationCount . " failure(s)." . "\033[0m" . "\n";
 echo "Done\n";
