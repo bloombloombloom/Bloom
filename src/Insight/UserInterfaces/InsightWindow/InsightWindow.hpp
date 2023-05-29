@@ -11,6 +11,7 @@
 #include "src/Targets/TargetState.hpp"
 
 #include "src/Targets/TargetDescriptor.hpp"
+#include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
 #include "Widgets/Label.hpp"
