@@ -6,6 +6,7 @@
 #include <optional>
 #include <functional>
 #include <QtCore/QtCore>
+#include <QApplication>
 #include <thread>
 
 #include "src/Helpers/Thread.hpp"
@@ -35,8 +36,10 @@ namespace Bloom
      * This is the main entry-point of execution for the Bloom program. The methods within will run on the main
      * thread. If Insight is enabled, execution will be passed over to Insight::run() upon start up.
      */
-    class Application: public Thread
+    class Application: public QObject, public Thread
     {
+        Q_OBJECT
+
     public:
         static const inline VersionNumber VERSION = VersionNumber(std::string(BLOOM_VERSION));
 
@@ -51,6 +54,11 @@ namespace Bloom
 
     private:
         std::vector<std::string> arguments;
+
+        std::string qtApplicationName = "Bloom";
+        std::array<char*, 1> qtApplicationArgv = {this->qtApplicationName.data()};
+        int qtApplicationArgc = 1;
+        QApplication qtApplication;
 
         EventListenerPointer applicationEventListener = std::make_shared<EventListener>("ApplicationEventListener");
 
@@ -238,13 +246,18 @@ namespace Bloom
          */
         void stopDebugServer();
 
+        /**
+         * Dispatches any pending events. This function will be called periodically, via a QTimer.
+         */
+        void dispatchEvents();
+
 #ifndef EXCLUDE_INSIGHT
         /**
-         * Starts the Insight GUI.
+         * Activate the Insight GUI.
          *
          * This function should never be called more than once.
          */
-        void startInsight();
+        void activateInsight();
 
         /**
          * Handles requests to start the Insight GUI.

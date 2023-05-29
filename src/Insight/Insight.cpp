@@ -28,52 +28,24 @@ namespace Bloom
         const ProjectConfig& projectConfig,
         const EnvironmentConfig& environmentConfig,
         const InsightConfig& insightConfig,
-        InsightProjectSettings& insightProjectSettings
+        InsightProjectSettings& insightProjectSettings,
+        QApplication* parent
     )
-        : eventListener(eventListener)
+        : QObject(parent)
+        , eventListener(eventListener)
         , projectConfig(projectConfig)
         , environmentConfig(environmentConfig)
         , insightConfig(insightConfig)
         , insightProjectSettings(insightProjectSettings)
-        , application(
-            (
-                QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true),
-#ifndef BLOOM_DEBUG_BUILD
-                QCoreApplication::addLibraryPath(QString::fromStdString(Services::PathService::applicationDirPath() + "/plugins")),
-#endif
-                QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
-            )
-        )
     {}
-
-    void Insight::run() {
-        try {
-            this->startup();
-
-            this->threadState = ThreadState::READY;
-            Logger::info("Insight ready");
-            this->application.exec();
-
-        } catch (const Exception& exception) {
-            Logger::error("Insight encountered a fatal error. See below for errors:");
-            Logger::error(exception.getMessage());
-
-        } catch (const std::exception& exception) {
-            Logger::error("Insight encountered a fatal error. See below for errors:");
-            Logger::error(std::string(exception.what()));
-        }
-
-        this->shutdown();
-    }
 
     void Insight::showMainWindow() {
         this->mainWindow->show();
         this->mainWindow->activateWindow();
     }
 
-    void Insight::startup() {
+    void Insight::activate() {
         Logger::info("Starting Insight");
-        this->threadState = ThreadState::STARTING;
 
         this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
             std::bind(&Insight::onTargetStoppedEvent, this, std::placeholders::_1)
@@ -115,8 +87,6 @@ namespace Bloom
         if (!globalStylesheet.open(QFile::ReadOnly)) {
             throw Exception("Failed to open global stylesheet file");
         }
-
-        this->application.setStyleSheet(globalStylesheet.readAll());
 
         qRegisterMetaType<Bloom::Targets::TargetDescriptor>();
         qRegisterMetaType<Bloom::Targets::TargetPinDescriptor>();
@@ -168,22 +138,14 @@ namespace Bloom
             QString::fromStdString(Services::PathService::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-Th.ttf")
         );
 
-        /*
-         * We can't run our own event loop here - we have to use Qt's event loop. But we still need to be able to
-         * process our events. To address this, we use a QTimer to dispatch our events on an interval.
-         *
-         * This allows us to use Qt's event loop whilst still being able to process our own events.
-         */
-        auto* eventDispatchTimer = new QTimer(&(this->application));
-        QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Insight::dispatchEvents);
-        eventDispatchTimer->start(100);
-
         QObject::connect(
             this->mainWindow,
             &InsightWindow::activatedSignal,
             this,
             &Insight::onInsightWindowActivated
         );
+
+        this->mainWindow->setStyleSheet(globalStylesheet.readAll());
 
         this->mainWindow->setInsightConfig(this->insightConfig);
         this->mainWindow->setEnvironmentConfig(this->environmentConfig);
@@ -212,10 +174,6 @@ namespace Bloom
     }
 
     void Insight::shutdown() {
-        if (this->getThreadState() == ThreadState::STOPPED) {
-            return;
-        }
-
         Logger::info("Shutting down Insight");
 
         this->mainWindow->close();
@@ -230,9 +188,6 @@ namespace Bloom
                 workerThread->wait();
             }
         }
-
-        this->application.exit(0);
-        this->threadState = ThreadState::STOPPED;
     }
 
     void Insight::checkBloomVersion() {

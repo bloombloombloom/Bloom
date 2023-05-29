@@ -35,7 +35,7 @@ namespace Bloom
      *
      * The Insight component occupies the Bloom's main thread. See Application::run() for more.
      */
-    class Insight: public QObject, public Thread
+    class Insight: public QObject
     {
         Q_OBJECT
 
@@ -53,13 +53,14 @@ namespace Bloom
             const ProjectConfig& projectConfig,
             const EnvironmentConfig& environmentConfig,
             const InsightConfig& insightConfig,
-            InsightProjectSettings& insightProjectSettings
+            InsightProjectSettings& insightProjectSettings,
+            QApplication* parent
         );
 
         /**
          * Entry point for Insight.
          */
-        void run();
+        void activate();
 
         /**
          * Opens main window and obtains focus.
@@ -73,9 +74,6 @@ namespace Bloom
 
     private:
         static constexpr std::uint8_t INSIGHT_WORKER_COUNT = 3;
-        std::string qtApplicationName = "Bloom";
-        std::array<char*, 1> qtApplicationArgv = {this->qtApplicationName.data()};
-        int qtApplicationArgc = 1;
 
         ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
@@ -85,8 +83,6 @@ namespace Bloom
 
         EventListener& eventListener;
         Services::TargetControllerService targetControllerService = Services::TargetControllerService();
-
-        QApplication application;
 
         std::map<decltype(InsightWorker::id), std::pair<InsightWorker*, QThread*>> insightWorkersById;
         InsightWindow* mainWindow = new InsightWindow(
@@ -102,25 +98,12 @@ namespace Bloom
 
         InsightSignals* insightSignals = InsightSignals::instance();
 
-        void startup();
-
         /**
          * Queries the Bloom server for the latest version number. If the current version number doesn't match the
          * latest version number returned by the server, we'll display a warning in the logs to instruct the user to
          * upgrade.
          */
         void checkBloomVersion();
-
-        /**
-         * Dispatches any events currently in the queue.
-         *
-         * Because Insight is effectively a Qt application, we cannot use our own event loop. We must use Qt's event
-         * loop. We do this by utilizing a QTimer instance to call this method on an interval.
-         * See Insight::startup() for more.
-         */
-        void dispatchEvents() {
-            this->eventListener.dispatchCurrentEvents();
-        };
 
         void onInsightWindowActivated();
         void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);

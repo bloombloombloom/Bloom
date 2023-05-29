@@ -1,6 +1,7 @@
 #include "Application.hpp"
 
 #include <iostream>
+#include <QTimer>
 #include <QFile>
 #include <QJsonDocument>
 #include <unistd.h>
@@ -20,6 +21,15 @@ namespace Bloom
 
     Application::Application(std::vector<std::string>&& arguments)
         : arguments(std::move(arguments))
+        , qtApplication(
+            (
+                QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true),
+#ifndef BLOOM_DEBUG_BUILD
+                QCoreApplication::addLibraryPath(QString::fromStdString(Services::PathService::applicationDirPath() + "/plugins")),
+#endif
+                QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
+            )
+        )
     {}
 
     int Application::run() {
@@ -57,21 +67,22 @@ namespace Bloom
             this->startup();
 
 #ifndef EXCLUDE_INSIGHT
-            this->insightActivationPending = this->insightConfig->activateOnStartup;
-#endif
-
-            // Main event loop
-            while (Thread::getThreadState() == ThreadState::READY) {
-#ifndef EXCLUDE_INSIGHT
-                if (this->insightActivationPending) {
-                    this->insightActivationPending = false;
-                    this->startInsight();
-                    continue;
-                }
-#endif
-
-                this->applicationEventListener->waitAndDispatch();
+            if (this->insightConfig->activateOnStartup) {
+                this->activateInsight();
             }
+#endif
+
+            /*
+             * We can't run our own event loop here - we have to use Qt's event loop. But we still need to be able to
+             * process our events. To address this, we use a QTimer to dispatch our events on an interval.
+             *
+             * This allows us to use Qt's event loop whilst still being able to process our own events.
+             */
+            auto* eventDispatchTimer = new QTimer(&(this->qtApplication));
+            QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Application::dispatchEvents);
+            eventDispatchTimer->start(100);
+
+            this->qtApplication.exec();
 
         } catch (const InvalidConfig& exception) {
             Logger::error("Invalid project configuration (bloom.yaml) - " + exception.getMessage());
@@ -176,6 +187,7 @@ namespace Bloom
         this->stopSignalHandler();
 
         this->saveProjectSettings();
+        this->qtApplication.exit(0);
         Thread::threadState = ThreadState::STOPPED;
     }
 
@@ -498,8 +510,12 @@ namespace Bloom
         }
     }
 
+    void Application::dispatchEvents() {
+        this->applicationEventListener->dispatchCurrentEvents();
+    }
+
 #ifndef EXCLUDE_INSIGHT
-    void Application::startInsight() {
+    void Application::activateInsight() {
         assert(!this->insight);
 
         this->insight = std::make_unique<Insight>(
@@ -507,29 +523,21 @@ namespace Bloom
             this->projectConfig.value(),
             this->environmentConfig.value(),
             this->insightConfig.value(),
-            this->projectSettings.value().insightSettings
+            this->projectSettings.value().insightSettings,
+            &(this->qtApplication)
         );
 
-        /*
-         * Before letting Insight occupy the main thread, process any pending events that accumulated
-         * during startup.
-         */
-        this->applicationEventListener->dispatchCurrentEvents();
-
-        if (Thread::getThreadState() == ThreadState::READY) {
-            this->insight->run();
-            Logger::debug("Insight closed");
-        }
+        this->insight->activate();
     }
 
     void Application::onInsightActivationRequest(const Events::InsightActivationRequested&) {
         if (this->insight) {
-            // Insight has already been started
+            // Insight has already been activated
             this->insight->showMainWindow();
             return;
         }
 
-        this->insightActivationPending = true;
+        this->activateInsight();
     }
 #endif
 
@@ -540,7 +548,7 @@ namespace Bloom
 
     void Application::onTargetControllerThreadStateChanged(const Events::TargetControllerThreadStateChanged& event) {
         if (event.getState() == ThreadState::STOPPED || event.getState() == ThreadState::SHUTDOWN_INITIATED) {
-            // TargetController has unexpectedly shutdown - it must have encountered a fatal error.
+            // TargetController has unexpectedly shutdown.
             this->shutdown();
         }
     }
