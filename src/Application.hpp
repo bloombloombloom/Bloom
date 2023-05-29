@@ -159,9 +159,14 @@ namespace Bloom
         void startup();
 
         /**
-         * Will cleanly shutdown the application. This should never fail.
+         * Will cleanly shutdown the application.
          */
         void shutdown();
+
+        /**
+         * Will trigger a clean shutdown.
+         */
+        void triggerShutdown();
 
         /**
          * Extracts or generates project settings.

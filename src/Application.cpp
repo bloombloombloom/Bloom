@@ -182,19 +182,28 @@ namespace Bloom
         Thread::threadState = ThreadState::SHUTDOWN_INITIATED;
         Logger::info("Shutting down Bloom");
 
+        this->stopDebugServer();
+        this->stopTargetController();
+        this->stopSignalHandler();
+
+        try {
+            this->saveProjectSettings();
+
+        } catch (const Exception& exception) {
+            Logger::error("Failed to save project settings - " + exception.getMessage());
+        }
+
+        Thread::threadState = ThreadState::STOPPED;
+    }
+
+    void Application::triggerShutdown() {
 #ifndef EXCLUDE_INSIGHT
         if (this->insight != nullptr) {
             this->insight->shutdown();
         }
 #endif
 
-        this->stopDebugServer();
-        this->stopTargetController();
-        this->stopSignalHandler();
-
-        this->saveProjectSettings();
-        this->qtApplication.exit(0);
-        Thread::threadState = ThreadState::STOPPED;
+        this->qtApplication.exit(EXIT_SUCCESS);
     }
 
     void Application::loadProjectSettings() {
@@ -579,26 +588,26 @@ namespace Bloom
 
     void Application::onShutdownApplicationRequest(const Events::ShutdownApplication&) {
         Logger::debug("ShutdownApplication event received.");
-        this->shutdown();
+        this->triggerShutdown();
     }
 
     void Application::onTargetControllerThreadStateChanged(const Events::TargetControllerThreadStateChanged& event) {
         if (event.getState() == ThreadState::STOPPED || event.getState() == ThreadState::SHUTDOWN_INITIATED) {
             // TargetController has unexpectedly shutdown.
-            this->shutdown();
+            this->triggerShutdown();
         }
     }
 
     void Application::onDebugServerThreadStateChanged(const Events::DebugServerThreadStateChanged& event) {
         if (event.getState() == ThreadState::STOPPED || event.getState() == ThreadState::SHUTDOWN_INITIATED) {
             // DebugServer has unexpectedly shutdown - it must have encountered a fatal error.
-            this->shutdown();
+            this->triggerShutdown();
         }
     }
 
     void Application::onDebugSessionFinished(const Events::DebugSessionFinished& event) {
         if (this->environmentConfig->shutdownPostDebugSession || Services::ProcessService::isManagedByClion()) {
-            this->shutdown();
+            this->triggerShutdown();
         }
     }
 }
