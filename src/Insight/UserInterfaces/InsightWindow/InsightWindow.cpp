@@ -49,17 +49,18 @@ namespace Bloom
         this->setObjectName("main-window");
         this->setWindowTitle("Bloom Insight");
 
-        const auto defaultMinimumSize = QSize(1000, 500);
+        auto windowSize = QSize(1000, 500);
 
         if (this->insightProjectSettings.mainWindowSize.has_value()) {
-            this->setMinimumSize(
-                std::max(this->insightProjectSettings.mainWindowSize->width(), defaultMinimumSize.width()),
-                std::max(this->insightProjectSettings.mainWindowSize->height(), defaultMinimumSize.height())
+            windowSize = QSize(
+                std::max(this->insightProjectSettings.mainWindowSize->width(), windowSize.width()),
+                std::max(this->insightProjectSettings.mainWindowSize->height(), windowSize.height())
             );
-
-        } else {
-            this->setMinimumSize(defaultMinimumSize);
         }
+
+        this->setFixedSize(windowSize);
+        this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+        this->setMinimumSize(0, 0);
 
         auto mainWindowUiFile = QFile(
             QString::fromStdString(Services::PathService::compiledResourcesPath()
@@ -167,7 +168,6 @@ namespace Bloom
         auto* footerLayout = this->footer->findChild<QHBoxLayout*>();
         footerLayout->insertWidget(2, this->taskIndicator);
 
-        const auto windowSize = this->size();
         this->windowContainer->setFixedSize(windowSize);
         this->layoutContainer->setFixedSize(windowSize);
 
