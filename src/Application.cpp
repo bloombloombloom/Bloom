@@ -7,6 +7,11 @@
 #include <unistd.h>
 #include <yaml-cpp/yaml.h>
 #include <yaml-cpp/exceptions.h>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
+#include <QUrl>
+#include <QUrlQuery>
 
 #include "src/Services/ProcessService.hpp"
 
@@ -72,6 +77,7 @@ namespace Bloom
                 this->activateInsight();
             }
 #endif
+            this->checkBloomVersion();
 
             /*
              * We can't run our own event loop here - we have to use Qt's event loop. But we still need to be able to
@@ -512,6 +518,36 @@ namespace Bloom
 
     void Application::dispatchEvents() {
         this->applicationEventListener->dispatchCurrentEvents();
+    }
+
+    void Application::checkBloomVersion() {
+        const auto currentVersionNumber = Application::VERSION;
+
+        auto* networkAccessManager = new QNetworkAccessManager(this);
+        auto queryVersionEndpointUrl = QUrl(QString::fromStdString(Services::PathService::homeDomainName() + "/latest-version"));
+        queryVersionEndpointUrl.setScheme("http");
+        queryVersionEndpointUrl.setQuery(QUrlQuery({
+            {"currentVersionNumber", QString::fromStdString(currentVersionNumber.toString())}
+        }));
+
+        QObject::connect(
+            networkAccessManager,
+            &QNetworkAccessManager::finished,
+            this,
+            [this, currentVersionNumber] (QNetworkReply* response) {
+                const auto jsonResponseObject = QJsonDocument::fromJson(response->readAll()).object();
+                const auto latestVersionNumber = VersionNumber(jsonResponseObject.value("latestVersionNumber").toString());
+
+                if (latestVersionNumber > currentVersionNumber) {
+                    Logger::warning(
+                        "Bloom v" + latestVersionNumber.toString()
+                            + " is available to download - upgrade via " + Services::PathService::homeDomainName()
+                    );
+                }
+            }
+        );
+
+        networkAccessManager->get(QNetworkRequest(queryVersionEndpointUrl));
     }
 
 #ifndef EXCLUDE_INSIGHT

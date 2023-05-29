@@ -251,6 +251,13 @@ namespace Bloom
          */
         void dispatchEvents();
 
+        /**
+         * Queries the Bloom server for the latest version number. If the current version number doesn't match the
+         * latest version number returned by the server, we'll display a warning in the logs to instruct the user to
+         * upgrade.
+         */
+        void checkBloomVersion();
+
 #ifndef EXCLUDE_INSIGHT
         /**
          * Activate the Insight GUI.

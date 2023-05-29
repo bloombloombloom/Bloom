@@ -2,11 +2,6 @@
 
 #include <QTimer>
 #include <QFontDatabase>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
-#include <QUrl>
-#include <QUrlQuery>
 #include <QJsonDocument>
 
 #include "src/Services/PathService.hpp"
@@ -167,8 +162,6 @@ namespace Bloom
             workerThread->start();
         }
 
-        this->checkBloomVersion();
-
         this->mainWindow->init(this->targetControllerService.getTargetDescriptor());
         this->mainWindow->show();
     }
@@ -188,36 +181,6 @@ namespace Bloom
                 workerThread->wait();
             }
         }
-    }
-
-    void Insight::checkBloomVersion() {
-        const auto currentVersionNumber = Application::VERSION;
-
-        auto* networkAccessManager = new QNetworkAccessManager(this);
-        auto queryVersionEndpointUrl = QUrl(QString::fromStdString(Services::PathService::homeDomainName() + "/latest-version"));
-        queryVersionEndpointUrl.setScheme("http");
-        queryVersionEndpointUrl.setQuery(QUrlQuery({
-            {"currentVersionNumber", QString::fromStdString(currentVersionNumber.toString())}
-        }));
-
-        QObject::connect(
-            networkAccessManager,
-            &QNetworkAccessManager::finished,
-            this,
-            [this, currentVersionNumber] (QNetworkReply* response) {
-                const auto jsonResponseObject = QJsonDocument::fromJson(response->readAll()).object();
-                const auto latestVersionNumber = VersionNumber(jsonResponseObject.value("latestVersionNumber").toString());
-
-                if (latestVersionNumber > currentVersionNumber) {
-                    Logger::warning(
-                        "Bloom v" + latestVersionNumber.toString()
-                            + " is available to download - upgrade via " + Services::PathService::homeDomainName()
-                    );
-                }
-            }
-        );
-
-        networkAccessManager->get(QNetworkRequest(queryVersionEndpointUrl));
     }
 
     void Insight::onInsightWindowActivated() {
