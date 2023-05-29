@@ -13,4 +13,4 @@ environments:
       port: 1442
 
 insight:
-  activateOnStartup: true
+  activateOnStartup: false
