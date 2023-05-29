@@ -23,6 +23,7 @@ namespace Bloom
         : arguments(std::move(arguments))
         , qtApplication(
             (
+                Thread::blockAllSignals(),
                 QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true),
 #ifndef BLOOM_DEBUG_BUILD
                 QCoreApplication::addLibraryPath(QString::fromStdString(Services::PathService::applicationDirPath() + "/plugins")),
@@ -137,7 +138,6 @@ namespace Bloom
 
         Logger::debug("Bloom version: " + Application::VERSION.toString());
 
-        this->blockAllSignals();
         this->startSignalHandler();
 
         Logger::info("Selected environment: \"" + this->selectedEnvironmentName + "\"");

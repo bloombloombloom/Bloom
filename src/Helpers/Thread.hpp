@@ -38,7 +38,7 @@ namespace Bloom
         /**
          * Disables signal interrupts on current thread.
          */
-        void blockAllSignals() {
+        static void blockAllSignals() {
             sigset_t set = {};
             sigfillset(&set);
             sigprocmask(SIG_SETMASK, &set, NULL);
