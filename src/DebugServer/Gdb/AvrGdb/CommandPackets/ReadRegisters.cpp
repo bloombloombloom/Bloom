@@ -4,6 +4,7 @@
 #include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
 
 #include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
@@ -44,7 +45,15 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
                 }
             }
 
-            auto registerSet = targetControllerService.readRegisters(descriptorIds);
+            Targets::TargetRegisters registerSet;
+            Targets::TargetProgramCounter programCounter;
+
+            {
+                const auto atomicSession = targetControllerService.makeAtomicSession();
+
+                registerSet = targetControllerService.readRegisters(descriptorIds);
+                programCounter = targetControllerService.getProgramCounter();
+            }
 
             /*
              * Sort each register by their respective GDB register ID - this will leave us with a collection of
@@ -81,7 +90,6 @@ namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
             }
 
             // Finally, include the program counter (which GDB expects to reside at the end)
-            const auto programCounter = targetControllerService.getProgramCounter();
             registers.insert(registers.end(), static_cast<unsigned char>(programCounter));
             registers.insert(registers.end(), static_cast<unsigned char>(programCounter >> 8));
             registers.insert(registers.end(), static_cast<unsigned char>(programCounter >> 16));
