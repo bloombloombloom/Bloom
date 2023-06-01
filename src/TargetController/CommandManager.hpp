@@ -7,6 +7,7 @@
 #include "Commands/Command.hpp"
 #include "Responses/Response.hpp"
 #include "Responses/Error.hpp"
+#include "AtomicSession.hpp"
 #include "TargetControllerComponent.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -24,7 +25,8 @@ namespace Bloom::TargetController
                 && std::is_base_of_v<Responses::Response, typename CommandType::SuccessResponseType>
         auto sendCommandAndWaitForResponse(
             std::unique_ptr<CommandType> command,
-            std::chrono::milliseconds timeout
+            std::chrono::milliseconds timeout,
+            std::optional<AtomicSessionIdType> atomicSessionId = std::nullopt
         ) const {
             using SuccessResponseType = typename CommandType::SuccessResponseType;
 
@@ -33,7 +35,7 @@ namespace Bloom::TargetController
                 "Issuing " + CommandType::name + " command (ID: " + std::to_string(commandId) + ") to TargetController"
             );
 
-            TargetControllerComponent::registerCommand(std::move(command));
+            TargetControllerComponent::registerCommand(std::move(command), atomicSessionId);
 
             auto optionalResponse = TargetControllerComponent::waitForResponse(commandId, timeout);
 

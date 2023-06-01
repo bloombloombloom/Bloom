@@ -17,9 +17,12 @@
 #include "src/Helpers/ConditionVariableNotifier.hpp"
 
 #include "TargetControllerState.hpp"
+#include "AtomicSession.hpp"
 
 // Commands
 #include "Commands/Command.hpp"
+#include "Commands/StartAtomicSession.hpp"
+#include "Commands/EndAtomicSession.hpp"
 #include "Commands/Shutdown.hpp"
 #include "Commands/GetTargetDescriptor.hpp"
 #include "Commands/GetTargetState.hpp"
@@ -44,6 +47,7 @@
 
 // Responses
 #include "Responses/Response.hpp"
+#include "Responses/AtomicSessionId.hpp"
 #include "Responses/TargetDescriptor.hpp"
 #include "Responses/TargetState.hpp"
 #include "Responses/TargetRegistersRead.hpp"
@@ -88,7 +92,10 @@ namespace Bloom::TargetController
          */
         void run();
 
-        static void registerCommand(std::unique_ptr<Commands::Command> command);
+        static void registerCommand(
+            std::unique_ptr<Commands::Command> command,
+            const std::optional<AtomicSessionIdType>& atomicSessionId
+        );
 
         static std::optional<std::unique_ptr<Responses::Response>> waitForResponse(
             Commands::CommandIdType commandId,
@@ -96,9 +103,15 @@ namespace Bloom::TargetController
         );
 
     private:
-        static inline SyncSafe<
-            std::queue<std::unique_ptr<Commands::Command>>
-        > commandQueue;
+        static inline SyncSafe<std::queue<std::unique_ptr<Commands::Command>>> commandQueue;
+
+        /**
+         * We have a dedicated queue for atomic sessions.
+         *
+         * During an atomic session, all commands for the session are placed into this dedicated queue.
+         * The TargetController will only serve commands from this dedicated queue, until the atomic session ends.
+         */
+        static inline SyncSafe<std::queue<std::unique_ptr<Commands::Command>>> atomicSessionCommandQueue;
 
         static inline SyncSafe<
             std::map<Commands::CommandIdType, std::unique_ptr<Responses::Response>>
@@ -111,6 +124,8 @@ namespace Bloom::TargetController
 
         ProjectConfig projectConfig;
         EnvironmentConfig environmentConfig;
+
+        std::optional<AtomicSession> activeAtomicSession = std::nullopt;
 
         /**
          * The TargetController should be the sole owner of the target and debugTool. They are constructed and
@@ -242,6 +257,10 @@ namespace Bloom::TargetController
          */
         void releaseHardware();
 
+        void startAtomicSession();
+
+        void endActiveAtomicSession();
+
         /**
          * Extracts address ranges and groups target register descriptors.
          */
@@ -304,6 +323,8 @@ namespace Bloom::TargetController
         void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
 
         // Command handlers
+        std::unique_ptr<Responses::AtomicSessionId> handleStartAtomicSession(Commands::StartAtomicSession& command);
+        std::unique_ptr<Responses::Response> handleEndAtomicSession(Commands::EndAtomicSession& command);
         std::unique_ptr<Responses::Response> handleShutdown(Commands::Shutdown& command);
         std::unique_ptr<Responses::TargetDescriptor> handleGetTargetDescriptor(Commands::GetTargetDescriptor& command);
         std::unique_ptr<Responses::TargetState> handleGetTargetState(Commands::GetTargetState& command);

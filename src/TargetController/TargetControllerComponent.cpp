@@ -20,6 +20,8 @@ namespace Bloom::TargetController
     using Commands::CommandIdType;
 
     using Commands::Command;
+    using Commands::StartAtomicSession;
+    using Commands::EndAtomicSession;
     using Commands::Shutdown;
     using Commands::GetTargetDescriptor;
     using Commands::GetTargetState;
@@ -43,6 +45,7 @@ namespace Bloom::TargetController
     using Commands::DisableProgrammingMode;
 
     using Responses::Response;
+    using Responses::AtomicSessionId;
     using Responses::TargetRegistersRead;
     using Responses::TargetMemoryRead;
     using Responses::TargetPinStates;
@@ -81,12 +84,23 @@ namespace Bloom::TargetController
         this->shutdown();
     }
 
-    void TargetControllerComponent::registerCommand(std::unique_ptr<Command> command) {
+    void TargetControllerComponent::registerCommand(
+        std::unique_ptr<Command> command,
+        const std::optional<AtomicSessionIdType>& atomicSessionId
+    ) {
         if (TargetControllerComponent::state != TargetControllerState::ACTIVE) {
             throw Exception("Command rejected - TargetController not in active state.");
         }
 
-        auto commandQueueLock = TargetControllerComponent::commandQueue.acquireLock();
+        if (atomicSessionId.has_value()) {
+            // This command is part of an atomic session - put it in the dedicated queue
+            const auto commandQueueLock = TargetControllerComponent::atomicSessionCommandQueue.acquireLock();
+            TargetControllerComponent::atomicSessionCommandQueue.getValue().push(std::move(command));
+            TargetControllerComponent::notifier.notify();
+            return;
+        }
+
+        const auto commandQueueLock = TargetControllerComponent::commandQueue.acquireLock();
         TargetControllerComponent::commandQueue.getValue().push(std::move(command));
         TargetControllerComponent::notifier.notify();
     }
@@ -140,6 +154,14 @@ namespace Bloom::TargetController
         EventManager::registerListener(this->eventListener);
 
         // Register command handlers
+        this->registerCommandHandler<StartAtomicSession>(
+            std::bind(&TargetControllerComponent::handleStartAtomicSession, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<EndAtomicSession>(
+            std::bind(&TargetControllerComponent::handleEndAtomicSession, this, std::placeholders::_1)
+        );
+
         this->registerCommandHandler<Shutdown>(
             std::bind(&TargetControllerComponent::handleShutdown, this, std::placeholders::_1)
         );
@@ -257,6 +279,12 @@ namespace Bloom::TargetController
             this->state = TargetControllerState::INACTIVE;
             EventManager::deregisterListener(this->eventListener->getId());
 
+            if (this->activeAtomicSession.has_value()) {
+                // Reject any commands on the dedicated queue
+                this->processQueuedCommands();
+                this->endActiveAtomicSession();
+            }
+
             // Reject any commands still waiting in the queue
             this->processQueuedCommands();
 
@@ -367,7 +395,11 @@ namespace Bloom::TargetController
     void TargetControllerComponent::processQueuedCommands() {
         auto commands = std::queue<std::unique_ptr<Command>>();
 
-        {
+        if (this->activeAtomicSession.has_value()) {
+            const auto queueLock = TargetControllerComponent::atomicSessionCommandQueue.acquireLock();
+            commands.swap(TargetControllerComponent::atomicSessionCommandQueue.getValue());
+
+        } else {
             const auto queueLock = TargetControllerComponent::commandQueue.acquireLock();
             commands.swap(TargetControllerComponent::commandQueue.getValue());
         }
@@ -502,6 +534,29 @@ namespace Bloom::TargetController
             Logger::info("Closing debug tool");
             debugTool->close();
         }
+    }
+
+    void TargetControllerComponent::startAtomicSession() {
+        if (this->activeAtomicSession.has_value()) {
+            throw Exception("Atomic session already active - nested sessions are not supported");
+        }
+
+        this->activeAtomicSession.emplace();
+    }
+
+    void TargetControllerComponent::endActiveAtomicSession() {
+        if (!this->activeAtomicSession.has_value()) {
+            return;
+        }
+
+        {
+            const auto commandQueueLock = TargetControllerComponent::atomicSessionCommandQueue.acquireLock();
+            auto empty = std::queue<std::unique_ptr<Commands::Command>>();
+            TargetControllerComponent::atomicSessionCommandQueue.getValue().swap(empty);
+        }
+
+        this->activeAtomicSession.reset();
+        TargetControllerComponent::notifier.notify();
     }
 
     void TargetControllerComponent::loadRegisterDescriptors() {
@@ -643,6 +698,20 @@ namespace Bloom::TargetController
             this->target->run();
             this->fireTargetEvents();
         }
+    }
+
+    std::unique_ptr<AtomicSessionId> TargetControllerComponent::handleStartAtomicSession(StartAtomicSession& command) {
+        this->startAtomicSession();
+        return std::make_unique<AtomicSessionId>(this->activeAtomicSession->id);
+    }
+
+    std::unique_ptr<Response> TargetControllerComponent::handleEndAtomicSession(EndAtomicSession& command) {
+        if (!this->activeAtomicSession.has_value() || this->activeAtomicSession->id != command.sessionId) {
+            throw Exception("Atomic session is not active");
+        }
+
+        this->endActiveAtomicSession();
+        return std::make_unique<Response>();
     }
 
     std::unique_ptr<Response> TargetControllerComponent::handleShutdown(Shutdown& command) {

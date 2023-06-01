@@ -9,6 +9,8 @@ namespace Bloom::TargetController::Commands
         GENERIC,
         SHUTDOWN,
         GET_TARGET_DESCRIPTOR,
+        START_ATOMIC_SESSION,
+        END_ATOMIC_SESSION,
         STOP_TARGET_EXECUTION,
         RESUME_TARGET_EXECUTION,
         RESET_TARGET,

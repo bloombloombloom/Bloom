@@ -3,8 +3,10 @@
 #include <cstdint>
 #include <chrono>
 #include <optional>
+#include <functional>
 
 #include "src/TargetController/CommandManager.hpp"
+#include "src/TargetController/AtomicSession.hpp"
 
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegister.hpp"
@@ -23,6 +25,25 @@ namespace Bloom::Services
     class TargetControllerService
     {
     public:
+        /**
+         * RAII wrapper for atomic sessions.
+         */
+        class AtomicSession
+        {
+        public:
+            explicit AtomicSession(TargetControllerService& targetControllerService);
+            ~AtomicSession();
+
+            AtomicSession(const AtomicSession&) = delete;
+            AtomicSession(const AtomicSession&&) = delete;
+            AtomicSession& operator = (const AtomicSession&) = delete;
+            AtomicSession& operator = (const AtomicSession&&) = delete;
+
+        private:
+            TargetControllerService& targetControllerService;
+            TargetController::AtomicSessionIdType sessionId;
+        };
+
         TargetControllerService() = default;
 
         void setDefaultTimeout(std::chrono::milliseconds timeout) {
@@ -192,9 +213,22 @@ namespace Bloom::Services
          */
         void shutdown() const;
 
+        /**
+         * Starts a new atomic session with the TC, via an TargetControllerService::AtomicSession RAII object.
+         * The session will end when the object is destroyed.
+         *
+         * @return
+         */
+        TargetControllerService::AtomicSession makeAtomicSession();
+
     private:
         TargetController::CommandManager commandManager = TargetController::CommandManager();
 
+        std::optional<TargetController::AtomicSessionIdType> activeAtomicSessionId = std::nullopt;
+
         std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(60000);
+
+        TargetController::AtomicSessionIdType startAtomicSession();
+        void endAtomicSession(TargetController::AtomicSessionIdType sessionId);
     };
 }

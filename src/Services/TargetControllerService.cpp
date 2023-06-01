@@ -1,6 +1,8 @@
 #include "TargetControllerService.hpp"
 
 // Commands
+#include "src/TargetController/Commands/StartAtomicSession.hpp"
+#include "src/TargetController/Commands/EndAtomicSession.hpp"
 #include "src/TargetController/Commands/GetTargetDescriptor.hpp"
 #include "src/TargetController/Commands/GetTargetState.hpp"
 #include "src/TargetController/Commands/StopTargetExecution.hpp"
@@ -23,8 +25,12 @@
 #include "src/TargetController/Commands/DisableProgrammingMode.hpp"
 #include "src/TargetController/Commands/Shutdown.hpp"
 
+#include "src/Exceptions/Exception.hpp"
+
 namespace Bloom::Services
 {
+    using TargetController::Commands::StartAtomicSession;
+    using TargetController::Commands::EndAtomicSession;
     using TargetController::Commands::GetTargetDescriptor;
     using TargetController::Commands::GetTargetState;
     using TargetController::Commands::StopTargetExecution;
@@ -67,24 +73,57 @@ namespace Bloom::Services
     using Targets::TargetPinState;
     using Targets::TargetPinStateMapping;
 
+    TargetControllerService::AtomicSession::AtomicSession(TargetControllerService& targetControllerService)
+        : targetControllerService(targetControllerService)
+    {
+        if (this->targetControllerService.activeAtomicSessionId.has_value()) {
+            throw Exceptions::Exception("Atomic session already active in TargetControllerService instance.");
+        }
+
+        this->sessionId = this->targetControllerService.startAtomicSession();
+        this->targetControllerService.activeAtomicSessionId = this->sessionId;
+    }
+
+    TargetControllerService::AtomicSession::~AtomicSession() {
+        try {
+            this->targetControllerService.endAtomicSession(this->sessionId);
+
+        } catch (const std::exception& exception) {
+            Logger::error(
+                "Failed to end atomic session (ID: " + std::to_string(this->sessionId) + ") - "
+                    + std::string(exception.what())
+            );
+        }
+
+        if (
+            this->targetControllerService.activeAtomicSessionId.has_value()
+            && this->targetControllerService.activeAtomicSessionId == this->sessionId
+        ) {
+            this->targetControllerService.activeAtomicSessionId.reset();
+        }
+    }
+
     const TargetDescriptor& TargetControllerService::getTargetDescriptor() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetDescriptor>(),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         )->targetDescriptor;
     }
 
     TargetState TargetControllerService::getTargetState() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetState>(),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         )->targetState;
     }
 
     void TargetControllerService::stopTargetExecution() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<StopTargetExecution>(),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
@@ -104,7 +143,8 @@ namespace Bloom::Services
 
         this->commandManager.sendCommandAndWaitForResponse(
             std::move(resumeExecutionCommand),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
@@ -117,7 +157,8 @@ namespace Bloom::Services
 
         this->commandManager.sendCommandAndWaitForResponse(
             std::move(stepExecutionCommand),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
@@ -126,14 +167,16 @@ namespace Bloom::Services
     ) const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ReadTargetRegisters>(descriptorIds),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         )->registers;
     }
 
     void TargetControllerService::writeRegisters(const TargetRegisters& registers) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<WriteTargetRegisters>(registers),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
@@ -150,7 +193,8 @@ namespace Bloom::Services
                 bytes,
                 excludedAddressRanges
             ),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         )->data;
     }
 
@@ -161,91 +205,124 @@ namespace Bloom::Services
     ) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<WriteTargetMemory>(memoryType, startAddress, buffer),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
     void TargetControllerService::eraseMemory(Targets::TargetMemoryType memoryType) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<EraseTargetMemory>(memoryType),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
     void TargetControllerService::setBreakpoint(TargetBreakpoint breakpoint) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetBreakpoint>(breakpoint),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
     void TargetControllerService::removeBreakpoint(TargetBreakpoint breakpoint) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<RemoveBreakpoint>(breakpoint),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
     TargetProgramCounter TargetControllerService::getProgramCounter() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetProgramCounter>(),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         )->programCounter;
     }
 
     void TargetControllerService::setProgramCounter(TargetProgramCounter address) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetTargetProgramCounter>(address),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
     TargetPinStateMapping TargetControllerService::getPinStates(int variantId) const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetPinStates>(variantId),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         )->pinStatesByNumber;
     }
 
     void TargetControllerService::setPinState(TargetPinDescriptor pinDescriptor, TargetPinState pinState) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetTargetPinState>(pinDescriptor, pinState),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
     TargetStackPointer TargetControllerService::getStackPointer() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetStackPointer>(),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         )->stackPointer;
     }
 
     void TargetControllerService::resetTarget() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ResetTarget>(),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
     void TargetControllerService::enableProgrammingMode() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<EnableProgrammingMode>(),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
     void TargetControllerService::disableProgrammingMode() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<DisableProgrammingMode>(),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 
     void TargetControllerService::shutdown() const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<Shutdown>(),
-            this->defaultTimeout
+            this->defaultTimeout,
+            this->activeAtomicSessionId
+        );
+    }
+
+    TargetControllerService::AtomicSession TargetControllerService::makeAtomicSession() {
+        return AtomicSession(*this);
+    }
+
+    TargetController::AtomicSessionIdType TargetControllerService::startAtomicSession() {
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<StartAtomicSession>(),
+            this->defaultTimeout,
+            this->activeAtomicSessionId
+        )->sessionId;
+    }
+
+    void TargetControllerService::endAtomicSession(TargetController::AtomicSessionIdType sessionId) {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<EndAtomicSession>(sessionId),
+            this->defaultTimeout,
+            this->activeAtomicSessionId
         );
     }
 }
