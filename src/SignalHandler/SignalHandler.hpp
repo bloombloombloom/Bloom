@@ -4,7 +4,7 @@
 
 #include "src/Helpers/Thread.hpp"
 #include "src/EventManager/EventManager.hpp"
-#include "src/Helpers/SyncSafe.hpp"
+#include "src/Helpers/Synchronised.hpp"
 
 namespace Bloom
 {

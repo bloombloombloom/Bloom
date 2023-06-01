@@ -94,14 +94,12 @@ namespace Bloom::TargetController
 
         if (atomicSessionId.has_value()) {
             // This command is part of an atomic session - put it in the dedicated queue
-            const auto commandQueueLock = TargetControllerComponent::atomicSessionCommandQueue.acquireLock();
-            TargetControllerComponent::atomicSessionCommandQueue.getValue().push(std::move(command));
+            TargetControllerComponent::atomicSessionCommandQueue.accessor()->push(std::move(command));
             TargetControllerComponent::notifier.notify();
             return;
         }
 
-        const auto commandQueueLock = TargetControllerComponent::commandQueue.acquireLock();
-        TargetControllerComponent::commandQueue.getValue().push(std::move(command));
+        TargetControllerComponent::commandQueue.accessor()->push(std::move(command));
         TargetControllerComponent::notifier.notify();
     }
 
@@ -112,7 +110,8 @@ namespace Bloom::TargetController
         auto response = std::unique_ptr<Response>(nullptr);
 
         const auto predicate = [commandId, &response] {
-            auto& responsesByCommandId = TargetControllerComponent::responsesByCommandId.getValue();
+            // We will already hold the lock here, so we can use Synchronised::unsafeReference() here.
+            auto& responsesByCommandId = TargetControllerComponent::responsesByCommandId.unsafeReference();
             auto responseIt = responsesByCommandId.find(commandId);
 
             if (responseIt != responsesByCommandId.end()) {
@@ -125,7 +124,7 @@ namespace Bloom::TargetController
             return false;
         };
 
-        auto responsesByCommandIdLock = TargetControllerComponent::responsesByCommandId.acquireLock();
+        auto responsesByCommandIdLock = TargetControllerComponent::responsesByCommandId.lock();
 
         if (timeout.has_value()) {
             TargetControllerComponent::responsesByCommandIdCv.wait_for(
@@ -395,14 +394,11 @@ namespace Bloom::TargetController
     void TargetControllerComponent::processQueuedCommands() {
         auto commands = std::queue<std::unique_ptr<Command>>();
 
-        if (this->activeAtomicSession.has_value()) {
-            const auto queueLock = TargetControllerComponent::atomicSessionCommandQueue.acquireLock();
-            commands.swap(TargetControllerComponent::atomicSessionCommandQueue.getValue());
-
-        } else {
-            const auto queueLock = TargetControllerComponent::commandQueue.acquireLock();
-            commands.swap(TargetControllerComponent::commandQueue.getValue());
-        }
+        commands.swap(
+            this->activeAtomicSession.has_value()
+                ? *(TargetControllerComponent::atomicSessionCommandQueue.accessor())
+                : *(TargetControllerComponent::commandQueue.accessor())
+        );
 
         while (!commands.empty()) {
             const auto command = std::move(commands.front());
@@ -455,10 +451,7 @@ namespace Bloom::TargetController
         CommandIdType commandId,
         std::unique_ptr<Response> response
     ) {
-        const auto responseMappingLock = TargetControllerComponent::responsesByCommandId.acquireLock();
-        TargetControllerComponent::responsesByCommandId.getValue().insert(
-            std::pair(commandId, std::move(response))
-        );
+        TargetControllerComponent::responsesByCommandId.accessor()->emplace(commandId, std::move(response));
         TargetControllerComponent::responsesByCommandIdCv.notify_all();
     }
 
@@ -550,9 +543,9 @@ namespace Bloom::TargetController
         }
 
         {
-            const auto commandQueueLock = TargetControllerComponent::atomicSessionCommandQueue.acquireLock();
+            auto commandQueue = TargetControllerComponent::atomicSessionCommandQueue.accessor();
             auto empty = std::queue<std::unique_ptr<Commands::Command>>();
-            TargetControllerComponent::atomicSessionCommandQueue.getValue().swap(empty);
+            commandQueue->swap(empty);
         }
 
         this->activeAtomicSession.reset();

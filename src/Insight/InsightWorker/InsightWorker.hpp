@@ -9,7 +9,7 @@
 
 #include "Tasks/InsightWorkerTask.hpp"
 
-#include "src/Helpers/SyncSafe.hpp"
+#include "src/Helpers/Synchronised.hpp"
 #include "src/Services/TargetControllerService.hpp"
 
 namespace Bloom
@@ -36,8 +36,8 @@ namespace Bloom
 
     private:
         static inline std::atomic<std::uint8_t> lastWorkerId = 0;
-        static inline SyncSafe<std::map<InsightWorkerTask::IdType, QSharedPointer<InsightWorkerTask>>> queuedTasksById = {};
-        static inline SyncSafe<TaskGroups> taskGroupsInExecution = {};
+        static inline Synchronised<std::map<InsightWorkerTask::IdType, QSharedPointer<InsightWorkerTask>>> queuedTasksById = {};
+        static inline Synchronised<TaskGroups> taskGroupsInExecution = {};
 
         Services::TargetControllerService targetControllerService = Services::TargetControllerService();
 

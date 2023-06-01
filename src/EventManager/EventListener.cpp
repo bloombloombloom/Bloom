@@ -7,8 +7,7 @@ namespace Bloom
     using namespace Bloom::Events;
 
     std::set<Events::EventType> EventListener::getRegisteredEventTypes() {
-        const auto lock = this->registeredEventTypes.acquireLock();
-        return this->registeredEventTypes.getValue();
+        return *(this->registeredEventTypes.accessor());
     }
 
     void EventListener::registerEvent(SharedGenericEventPointer event) {
@@ -17,8 +16,8 @@ namespace Bloom
                 + this->name
         );
 
-        const auto queueLock = this->eventQueueByEventType.acquireLock();
-        auto& eventQueueByType = this->eventQueueByEventType.getValue();
+        auto eventQueueByTypeAccessor = this->eventQueueByEventType.accessor();
+        auto& eventQueueByType = *(eventQueueByTypeAccessor);
 
         eventQueueByType[event->getType()].push(std::move(event));
         this->eventQueueByEventTypeCV.notify_all();
@@ -30,8 +29,9 @@ namespace Bloom
 
     void EventListener::waitAndDispatch(int msTimeout) {
         {
-            auto queueLock = this->eventQueueByEventType.acquireLock();
-            const auto& eventQueueByType = this->eventQueueByEventType.getValue();
+            auto queueLock = this->eventQueueByEventType.lock();
+            const auto& eventQueueByType = this->eventQueueByEventType.unsafeReference();
+
             const auto registeredEventTypes = this->getRegisteredEventTypes();
             std::optional<SharedGenericEventPointer> event;
 
@@ -62,8 +62,12 @@ namespace Bloom
         auto callbacks = std::vector<std::function<void(const Events::Event&)>>();
 
         {
-            const auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
-            callbacks = this->eventTypeToCallbacksMapping.getValue().find(event->getType())->second;
+            const auto callbackMappingAccessor = this->eventTypeToCallbacksMapping.accessor();
+
+            const auto callbacksIt = callbackMappingAccessor->find(event->getType());
+            if (callbacksIt != callbackMappingAccessor->end()) {
+                callbacks = callbacksIt->second;
+            }
         }
 
         for (auto& callback : callbacks) {
@@ -80,11 +84,10 @@ namespace Bloom
     }
 
     std::vector<SharedGenericEventPointer> EventListener::getEvents() {
-        const auto queueLock = this->eventQueueByEventType.acquireLock();
-        auto& eventQueueByType = this->eventQueueByEventType.getValue();
+        auto eventQueueByType = this->eventQueueByEventType.accessor();
         std::vector<SharedGenericEventPointer> output;
 
-        for (auto& eventQueue: eventQueueByType) {
+        for (auto& eventQueue: *eventQueueByType) {
             while (!eventQueue.second.empty()) {
                 output.push_back(std::move(eventQueue.second.front()));
                 eventQueue.second.pop();
@@ -103,7 +106,6 @@ namespace Bloom
     }
 
     void EventListener::clearAllCallbacks() {
-        const auto lock = this->eventTypeToCallbacksMapping.acquireLock();
-        this->eventTypeToCallbacksMapping.getValue().clear();
+        this->eventTypeToCallbacksMapping.accessor()->clear();
     }
 }

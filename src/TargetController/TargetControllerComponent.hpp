@@ -13,7 +13,7 @@
 #include <QJsonArray>
 
 #include "src/Helpers/Thread.hpp"
-#include "src/Helpers/SyncSafe.hpp"
+#include "src/Helpers/Synchronised.hpp"
 #include "src/Helpers/ConditionVariableNotifier.hpp"
 
 #include "TargetControllerState.hpp"
@@ -103,7 +103,7 @@ namespace Bloom::TargetController
         );
 
     private:
-        static inline SyncSafe<std::queue<std::unique_ptr<Commands::Command>>> commandQueue;
+        static inline Synchronised<std::queue<std::unique_ptr<Commands::Command>>> commandQueue;
 
         /**
          * We have a dedicated queue for atomic sessions.
@@ -111,9 +111,9 @@ namespace Bloom::TargetController
          * During an atomic session, all commands for the session are placed into this dedicated queue.
          * The TargetController will only serve commands from this dedicated queue, until the atomic session ends.
          */
-        static inline SyncSafe<std::queue<std::unique_ptr<Commands::Command>>> atomicSessionCommandQueue;
+        static inline Synchronised<std::queue<std::unique_ptr<Commands::Command>>> atomicSessionCommandQueue;
 
-        static inline SyncSafe<
+        static inline Synchronised<
             std::map<Commands::CommandIdType, std::unique_ptr<Responses::Response>>
         > responsesByCommandId;
 

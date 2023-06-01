@@ -14,7 +14,7 @@
 #include <set>
 
 #include "src/EventManager/Events/Events.hpp"
-#include "src/Helpers/SyncSafe.hpp"
+#include "src/Helpers/Synchronised.hpp"
 #include "src/Helpers/NotifierInterface.hpp"
 
 namespace Bloom
@@ -55,13 +55,8 @@ namespace Bloom
          */
         std::set<Events::EventType> getRegisteredEventTypes();
 
-        template <class EventType>
-        bool isEventTypeRegistered() {
-            return this->registeredEventTypes.getValue().contains(EventType::type);
-        }
-
         bool isEventTypeRegistered(Events::EventType eventType) {
-            return this->registeredEventTypes.getValue().contains(eventType);
+            return this->registeredEventTypes.accessor()->contains(eventType);
         };
 
         /**
@@ -75,14 +70,12 @@ namespace Bloom
          */
         template<class EventType>
         void registerEventType() {
-            const auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-            this->registeredEventTypes.getValue().insert(EventType::type);
+            this->registeredEventTypes.accessor()->insert(EventType::type);
         }
 
         template<class EventType>
         void deRegisterEventType() {
-            const auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-            this->registeredEventTypes.getValue().erase(EventType::type);
+            this->registeredEventTypes.accessor()->erase(EventType::type);
         }
 
         /**
@@ -117,8 +110,8 @@ namespace Bloom
                 }
             ;
 
-            const auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
-            auto& mapping = this->eventTypeToCallbacksMapping.getValue();
+            auto mappingAccessor = this->eventTypeToCallbacksMapping.accessor();
+            auto& mapping = *(mappingAccessor);
 
             mapping[EventType::type].push_back(parentCallback);
             this->template registerEventType<EventType>();
@@ -137,24 +130,19 @@ namespace Bloom
             );
 
             {
-                const auto mappingLock = this->eventTypeToCallbacksMapping.acquireLock();
-                auto& mapping = this->eventTypeToCallbacksMapping.getValue();
+                auto mappingAccessor = this->eventTypeToCallbacksMapping.accessor();
+                auto& mapping = *(mappingAccessor);
 
                 if (mapping.contains(EventType::type)) {
                     mapping.at(EventType::type).clear();
                 }
             }
 
-            {
-                auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-                this->registeredEventTypes.getValue().erase(EventType::type);
-            }
+            this->registeredEventTypes.accessor()->erase(EventType::type);
 
-            const auto queueLock = this->eventQueueByEventType.acquireLock();
-            auto& eventQueueByType = this->eventQueueByEventType.getValue();
-
-            if (eventQueueByType.contains(EventType::type)) {
-                eventQueueByType.erase(EventType::type);
+            auto eventQueueByType = this->eventQueueByEventType.accessor();
+            if (eventQueueByType->contains(EventType::type)) {
+                eventQueueByType->erase(EventType::type);
             }
         }
 
@@ -210,8 +198,8 @@ namespace Bloom
 
             ReturnType output = std::nullopt;
 
-            auto queueLock = this->eventQueueByEventType.acquireLock();
-            auto& eventQueueByType = this->eventQueueByEventType.getValue();
+            auto queueLock = this->eventQueueByEventType.lock();
+            auto& eventQueueByType = this->eventQueueByEventType.unsafeReference();
 
             auto eventTypes = std::set<Events::EventType>({EventTypeA::type});
             auto eventTypesToDeRegister = std::set<Events::EventType>();
@@ -233,12 +221,11 @@ namespace Bloom
             }
 
             {
-                auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-                auto& registeredEventTypes = this->registeredEventTypes.getValue();
+                auto registeredEventTypes = this->registeredEventTypes.accessor();
 
                 for (const auto& eventType : eventTypes) {
-                    if (!registeredEventTypes.contains(eventType)) {
-                        registeredEventTypes.insert(eventType);
+                    if (!registeredEventTypes->contains(eventType)) {
+                        registeredEventTypes->insert(eventType);
                         eventTypesToDeRegister.insert(eventType);
                     }
                 }
@@ -270,11 +257,10 @@ namespace Bloom
             }
 
             if (!eventTypesToDeRegister.empty()) {
-                auto registeredEventTypesLock = this->registeredEventTypes.acquireLock();
-                auto& registeredEventTypes = this->registeredEventTypes.getValue();
+                auto registeredEventTypes = this->registeredEventTypes.accessor();
 
                 for (const auto& eventType : eventTypesToDeRegister) {
-                    registeredEventTypes.erase(eventType);
+                    registeredEventTypes->erase(eventType);
                 }
             }
 
@@ -346,7 +332,7 @@ namespace Bloom
          * Events are grouped by event type, and removed from their queue just *before* the dispatching to
          * registered handlers begins.
          */
-        SyncSafe<std::map<Events::EventType, std::queue<Events::SharedGenericEventPointer>>> eventQueueByEventType;
+        Synchronised<std::map<Events::EventType, std::queue<Events::SharedGenericEventPointer>>> eventQueueByEventType;
         std::condition_variable eventQueueByEventTypeCV;
 
         /**
@@ -357,8 +343,8 @@ namespace Bloom
          * we perform a downcast before invoking the callback. See EventListener::registerCallbackForEventType()
          * for more)
          */
-        SyncSafe<std::map<Events::EventType, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
-        SyncSafe<std::set<Events::EventType>> registeredEventTypes;
+        Synchronised<std::map<Events::EventType, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
+        Synchronised<std::set<Events::EventType>> registeredEventTypes;
 
         NotifierInterface* interruptEventNotifier = nullptr;
 

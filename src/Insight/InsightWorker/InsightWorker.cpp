@@ -36,26 +36,21 @@ namespace Bloom
     void InsightWorker::queueTask(const QSharedPointer<InsightWorkerTask>& task) {
         task->moveToThread(nullptr);
 
-        {
-            const auto taskQueueLock = InsightWorker::queuedTasksById.acquireLock();
-            InsightWorker::queuedTasksById.getValue().emplace(task->id, task);
-        }
+        InsightWorker::queuedTasksById.accessor()->emplace(task->id, task);
 
         emit InsightSignals::instance()->taskQueued(task);
     }
 
     void InsightWorker::executeTasks() {
         static const auto getQueuedTask = [] () -> std::optional<QSharedPointer<InsightWorkerTask>> {
-            const auto taskQueueLock = InsightWorker::queuedTasksById.acquireLock();
-            auto& queuedTasks = InsightWorker::queuedTasksById.getValue();
+            auto queuedTasks = InsightWorker::queuedTasksById.accessor();
 
-            if (!queuedTasks.empty()) {
-                const auto taskGroupsLock = InsightWorker::taskGroupsInExecution.acquireLock();
-                auto& taskGroupsInExecution = InsightWorker::taskGroupsInExecution.getValue();
+            if (!queuedTasks->empty()) {
+                auto taskGroupsInExecution = InsightWorker::taskGroupsInExecution.accessor();
 
                 const auto canExecuteTask = [&taskGroupsInExecution] (const QSharedPointer<InsightWorkerTask>& task) {
                     for (const auto taskGroup : task->taskGroups()) {
-                        if (taskGroupsInExecution.contains(taskGroup)) {
+                        if (taskGroupsInExecution->contains(taskGroup)) {
                             return false;
                         }
                     }
@@ -63,11 +58,11 @@ namespace Bloom
                     return true;
                 };
 
-                for (auto [queuedTaskId, task] : queuedTasks) {
+                for (auto [queuedTaskId, task] : *queuedTasks) {
                     if (canExecuteTask(task)) {
                         const auto taskGroups = task->taskGroups();
-                        taskGroupsInExecution.insert(taskGroups.begin(), taskGroups.end());
-                        queuedTasks.erase(queuedTaskId);
+                        taskGroupsInExecution->insert(taskGroups.begin(), taskGroups.end());
+                        queuedTasks->erase(queuedTaskId);
                         return task;
                     }
                 }
@@ -84,11 +79,10 @@ namespace Bloom
             task->execute(this->targetControllerService);
 
             {
-                const auto taskGroupsLock = InsightWorker::taskGroupsInExecution.acquireLock();
-                auto& taskGroupsInExecution = InsightWorker::taskGroupsInExecution.getValue();
+                auto taskGroupsInExecution = InsightWorker::taskGroupsInExecution.accessor();
 
                 for (const auto& taskGroup : task->taskGroups()) {
-                    taskGroupsInExecution.erase(taskGroup);
+                    taskGroupsInExecution->erase(taskGroup);
                 }
             }
 
