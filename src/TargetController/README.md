@@ -53,6 +53,19 @@ until a timeout has been reached. Because it is a template function, it is able 
 type at compile-time (see the `SuccessResponseType` alias in some command classes). If the TargetController responds
 with an error, or the timeout is reached, `CommandManager::sendCommandAndWaitForResponse()` will throw an exception.
 
+#### Atomic operations
+
+In some instances, we need the TargetController to service a series of commands without any interruptions (servicing of
+other commands).
+
+The TargetController allows for operations to be performed within "atomic sessions". Simply put, when the
+TargetController starts a new atomic session, any commands that are part of the session will be placed into a dedicated
+queue. When an atomic session is active, the TargetController will only process commands in the dedicated queue.
+All other commands will be processed once the atomic session has ended.
+
+The `TargetControllerService` provides an RAII wrapper for atomic sessions. See
+[Atomic sessions with the TargetControllerService](#atomic-sessions-with-the-TargetControllerService) for more.
+
 #### The TargetControllerService class
 
 The `TargetControllerService` class encapsulates the TargetController's command-response mechanism and provides a
@@ -75,6 +88,62 @@ different threads and used freely to gain access to the connected hardware, from
 All components within Bloom should use the `TargetControllerService` class to interact with the connected hardware. They
 **should not** directly issue commands via the `Bloom::TargetController::CommandManager`, unless there is a very good
 reason to do so.
+
+##### Atomic sessions with the TargetControllerService
+
+The `TargetControllerService::makeAtomicSession()` member function returns an `TargetControllerService::AtomicSession`
+RAII object, which starts an atomic session with the TargetController, at construction, and ends the session at
+destruction. This allows us to perform operations within an atomic session, in an exception-safe manner:
+
+```c++
+auto tcService = Services::TargetControllerService();
+
+{
+    const auto atomicSession = tcService.makeAtomicSession();
+
+    /*
+     * These operations will take place in the atomic session - the TC will **NOT** service any other commands until
+     * these commands have been processed (and the atomic session has ended).
+     */
+    tcService.writeMemory(...);
+    tcService.readMemory(...);
+    tcService.getProgramCounter();
+
+    /*
+     * Note: The TC does **NOT** support nested atomic sessions. Attempting to start another session in this block will
+     * result in an exception being thrown.
+     */
+    {
+        const auto nestedAtomicSession = tcService.makeAtomicSession(); // This will fail - a session is already active.
+    }
+
+    /*
+     * Also note: When using TargetControllerService::makeAtomicSession(), the returned AtomicSession object is tied to
+     * the TargetControllerService object that created it (in this example: tcService).
+     *
+     * So if you have **another** TargetControllerService object in this block, any operations performed via that
+     * object will **NOT** be part of the atomic session, and, they will deadlock the TC. So don't ever do this.
+     * You should never need more than one TargetControllerService object in a single block.
+     */
+
+    // Don't ever do this.
+    auto anotherTcService = Services::TargetControllerService();
+
+    // These operations will **NOT** be part of the atomic session, and they will cause a deadlock and timeout.
+    anotherTcService.writeMemory(...);
+    anotherTcService.readMemory(...);
+
+    /*
+     * One more thing: The AtomicSession object should **NEVER** outlive the TargetControllerService object that
+     * created it.
+     *
+     * If this happens, the AtomicSession will have a dangling reference, which will result in UB.
+     */
+}
+
+// At this point, the atomic session will have ended. The TC will now process any other commands in the queue.
+tcService.readMemory(...); // Will not be part of the atomic session
+```
 
 ### Programming mode
 
