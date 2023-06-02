@@ -8,7 +8,6 @@ namespace Bloom::TargetController::Responses
     {
         GENERIC,
         ERROR,
-        STATE,
         ATOMIC_SESSION_ID,
         TARGET_DESCRIPTOR,
         TARGET_REGISTERS_READ,
