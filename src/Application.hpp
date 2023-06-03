@@ -6,7 +6,10 @@
 #include <optional>
 #include <functional>
 #include <QtCore/QtCore>
+#include <QCoreApplication>
+#ifndef EXCLUDE_INSIGHT
 #include <QApplication>
+#endif
 #include <thread>
 
 #include "src/Helpers/Thread.hpp"
@@ -58,7 +61,11 @@ namespace Bloom
         std::string qtApplicationName = "Bloom";
         std::array<char*, 1> qtApplicationArgv = {this->qtApplicationName.data()};
         int qtApplicationArgc = 1;
+#ifndef EXCLUDE_INSIGHT
         QApplication qtApplication;
+#else
+        QCoreApplication qtApplication;
+#endif
 
         EventListenerPointer applicationEventListener = std::make_shared<EventListener>("ApplicationEventListener");
 

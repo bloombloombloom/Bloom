@@ -50,6 +50,7 @@ set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
 find_package(yaml-cpp 0.7.0 REQUIRED)
 find_package(Qt6Core REQUIRED)
 find_package(Qt6Xml REQUIRED)
+find_package(Qt6Network REQUIRED)
 
 if (NOT ${EXCLUDE_INSIGHT})
     find_package(Qt6Widgets REQUIRED)
@@ -59,7 +60,6 @@ if (NOT ${EXCLUDE_INSIGHT})
     find_package(Qt6Svg REQUIRED)
     find_package(Qt6UiTools REQUIRED)
     find_package(Qt6SvgWidgets REQUIRED)
-    find_package(Qt6Network REQUIRED)
 
     target_link_libraries(Bloom Qt6::Gui)
     target_link_libraries(Bloom Qt6::UiTools)
@@ -67,7 +67,6 @@ if (NOT ${EXCLUDE_INSIGHT})
     target_link_libraries(Bloom Qt6::Xml)
     target_link_libraries(Bloom Qt6::Svg)
     target_link_libraries(Bloom Qt6::SvgWidgets)
-    target_link_libraries(Bloom Qt6::Network)
 endif()
 
 target_link_libraries(Bloom -lstdc++fs)
@@ -78,6 +77,7 @@ target_link_libraries(Bloom -lprocps)
 target_link_libraries(Bloom ${YAML_CPP_LIBRARIES})
 target_link_libraries(Bloom Qt6::Core)
 target_link_libraries(Bloom Qt6::Xml)
+target_link_libraries(Bloom Qt6::Network)
 
 target_sources(
     Bloom

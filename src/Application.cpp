@@ -33,7 +33,11 @@ namespace Bloom
 #ifndef BLOOM_DEBUG_BUILD
                 QCoreApplication::addLibraryPath(QString::fromStdString(Services::PathService::applicationDirPath() + "/plugins")),
 #endif
-                QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
+#ifndef EXCLUDE_INSIGHT
+                    QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
+#else
+                    QCoreApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
+#endif
             )
         )
     {}
