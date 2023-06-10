@@ -39,20 +39,6 @@ namespace Bloom
             const Targets::TargetDescriptor& targetDescriptor
         );
 
-        void setEnvironmentConfig(const EnvironmentConfig& environmentConfig) {
-            this->environmentConfig = environmentConfig;
-            this->targetConfig = environmentConfig.targetConfig;
-        }
-
-        void setInsightConfig(const InsightConfig& insightConfig) {
-            this->insightConfig = insightConfig;
-        }
-
-        void init(Targets::TargetDescriptor targetDescriptor);
-
-    signals:
-        void activatedSignal();
-
     protected:
         void resizeEvent(QResizeEvent* event) override;
         void showEvent(QShowEvent* event) override;
@@ -65,9 +51,7 @@ namespace Bloom
         EnvironmentConfig environmentConfig;
         TargetConfig targetConfig;
 
-        bool activated = false;
-
-        Targets::TargetDescriptor targetDescriptor;
+        const Targets::TargetDescriptor& targetDescriptor;
         Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         QWidget* windowContainer = nullptr;
@@ -118,13 +102,10 @@ namespace Bloom
 
         void setUiDisabled(bool disable);
 
-        void activate();
         void populateVariantMenu();
         void selectDefaultVariant();
         void selectVariant(const Targets::TargetVariant* variant);
         void createPanes();
-        void destroyPanes();
-        void deactivate();
 
         void adjustPanels();
         void adjustMinimumSize();

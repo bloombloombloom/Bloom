@@ -45,6 +45,7 @@ namespace Bloom
         , targetDescriptor(targetDescriptor)
     {
         this->setObjectName("main-window");
+        this->setAttribute(Qt::WA_DeleteOnClose, true);
         this->setWindowTitle("Bloom Insight");
 
         auto windowSize = QSize(1000, 500);
@@ -169,6 +170,66 @@ namespace Bloom
         this->windowContainer->setFixedSize(windowSize);
         this->layoutContainer->setFixedSize(windowSize);
 
+        // InsightSignal connections
+        auto* insightSignals = InsightSignals::instance();
+
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::targetStateUpdated,
+            this,
+            &InsightWindow::onTargetStateUpdate
+        );
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::targetReset,
+            this,
+            [this] {
+                this->refreshProgramCounter();
+            }
+        );
+
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::programmingModeEnabled,
+            this,
+            &InsightWindow::onProgrammingModeEnabled
+        );
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::programmingModeDisabled,
+            this,
+            &InsightWindow::onProgrammingModeDisabled
+        );
+
+        this->targetNameLabel->setText(QString::fromStdString(this->targetDescriptor.name));
+        this->targetIdLabel->setText("0x" + QString::fromStdString(this->targetDescriptor.id).remove("0x").toUpper());
+
+        this->ioUnavailableWidget->hide();
+
+        this->populateVariantMenu();
+        this->variantMenu->setEnabled(true);
+
+        Logger::debug("Number of target variants supported by Insight: "
+            + std::to_string(supportedVariantsByName.size()));
+
+        if (this->supportedVariantsByName.empty()) {
+            if (this->targetDescriptor.variants.empty()) {
+                this->variantMenu->parentWidget()->hide();
+            }
+
+            this->ioUnavailableWidget->setText(
+                "GPIO inspection is not available for this target. "
+                "Please report this to Bloom developers by clicking Help -> Report An Issue"
+            );
+            this->ioUnavailableWidget->show();
+
+        } else {
+            this->selectDefaultVariant();
+        }
+
+        this->createPanes();
+        this->setUiDisabled(true);
+
         // Main menu connections
         QObject::connect(
             quitAction,
@@ -254,42 +315,6 @@ namespace Bloom
             this,
             &InsightWindow::toggleFlashInspectionPane
         );
-
-        // InsightSignal connections
-        auto* insightSignals = InsightSignals::instance();
-
-        QObject::connect(
-            insightSignals,
-            &InsightSignals::targetStateUpdated,
-            this,
-            &InsightWindow::onTargetStateUpdate
-        );
-        QObject::connect(
-            insightSignals,
-            &InsightSignals::targetReset,
-            this,
-            [this] {
-                this->refreshProgramCounter();
-            }
-        );
-
-        QObject::connect(
-            insightSignals,
-            &InsightSignals::programmingModeEnabled,
-            this,
-            &InsightWindow::onProgrammingModeEnabled
-        );
-        QObject::connect(
-            insightSignals,
-            &InsightSignals::programmingModeDisabled,
-            this,
-            &InsightWindow::onProgrammingModeDisabled
-        );
-    }
-
-    void InsightWindow::init(TargetDescriptor targetDescriptor) {
-        this->targetDescriptor = std::move(targetDescriptor);
-        this->activate();
     }
 
     void InsightWindow::resizeEvent(QResizeEvent* event) {
@@ -304,19 +329,11 @@ namespace Bloom
     }
 
     void InsightWindow::showEvent(QShowEvent* event) {
-        if (!this->activated) {
-            this->activate();
-        }
-
         this->adjustPanels();
         this->adjustMinimumSize();
     }
 
     void InsightWindow::closeEvent(QCloseEvent* event) {
-        if (this->activated) {
-            this->deactivate();
-        }
-
         return QMainWindow::closeEvent(event);
     }
 
@@ -378,40 +395,6 @@ namespace Bloom
             this->refreshIoInspectionButton->setDisabled(disable);
             this->refreshIoInspectionButton->repaint();
         }
-    }
-
-    void InsightWindow::activate() {
-        this->targetNameLabel->setText(QString::fromStdString(this->targetDescriptor.name));
-        this->targetIdLabel->setText("0x" + QString::fromStdString(this->targetDescriptor.id).remove("0x").toUpper());
-
-        this->ioUnavailableWidget->hide();
-
-        this->populateVariantMenu();
-        this->variantMenu->setEnabled(true);
-
-        Logger::debug("Number of target variants supported by Insight: "
-            + std::to_string(supportedVariantsByName.size()));
-
-        if (this->supportedVariantsByName.empty()) {
-            if (this->targetDescriptor.variants.empty()) {
-                this->variantMenu->parentWidget()->hide();
-            }
-
-            this->ioUnavailableWidget->setText(
-                "GPIO inspection is not available for this target. "
-                "Please report this to Bloom developers by clicking Help -> Report An Issue"
-            );
-            this->ioUnavailableWidget->show();
-
-        } else {
-            this->selectDefaultVariant();
-        }
-
-        this->createPanes();
-
-        this->setUiDisabled(this->targetState != TargetState::STOPPED);
-        this->activated = true;
-        emit this->activatedSignal();
     }
 
     void InsightWindow::populateVariantMenu() {
@@ -736,92 +719,6 @@ namespace Bloom
         }
     }
 
-    void InsightWindow::destroyPanes() {
-        if (this->targetRegistersSidePane != nullptr) {
-            this->targetRegistersSidePane->deactivate();
-            this->targetRegistersSidePane->deleteLater();
-            this->targetRegistersSidePane = nullptr;
-
-            this->leftPanel->setVisible(false);
-            this->targetRegistersButton->setChecked(false);
-            this->targetRegistersButton->setDisabled(true);
-        }
-
-        /*
-         * Before we destroy the memory inspection pane widgets, we take a copy of their current settings (memory
-         * regions, hex viewer settings, etc), in order to persist them through debug sessions.
-         */
-        if (this->ramInspectionPane != nullptr) {
-            this->ramInspectionPane->deactivate();
-            this->ramInspectionPane->deleteLater();
-            this->ramInspectionPane = nullptr;
-
-            this->bottomPanel->setVisible(false);
-            this->ramInspectionButton->setChecked(false);
-            this->ramInspectionButton->setDisabled(true);
-        }
-
-        if (this->eepromInspectionPane != nullptr) {
-            this->eepromInspectionPane->deactivate();
-            this->eepromInspectionPane->deleteLater();
-            this->eepromInspectionPane = nullptr;
-
-            this->bottomPanel->setVisible(false);
-            this->eepromInspectionButton->setChecked(false);
-            this->eepromInspectionButton->setDisabled(true);
-        }
-
-        if (this->flashInspectionPane != nullptr) {
-            this->flashInspectionPane->deactivate();
-            this->flashInspectionPane->deleteLater();
-            this->flashInspectionPane = nullptr;
-
-            this->bottomPanel->setVisible(false);
-            this->flashInspectionButton->setChecked(false);
-            this->flashInspectionButton->setDisabled(true);
-        }
-    }
-
-    void InsightWindow::deactivate() {
-        const auto insightProjectSettings = this->insightProjectSettings;
-        const auto childWidgets = this->findChildren<QWidget*>();
-
-        for (auto* widget : childWidgets) {
-            if (widget->windowFlags() & Qt::Window) {
-                widget->close();
-            }
-        }
-
-        if (this->selectedVariant != nullptr) {
-            this->previouslySelectedVariant = *(this->selectedVariant);
-            this->selectedVariant = nullptr;
-        }
-
-        if (this->targetPackageWidget != nullptr) {
-            this->targetPackageWidget->hide();
-            this->targetPackageWidget->deleteLater();
-            this->targetPackageWidget = nullptr;
-            this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
-        }
-
-        this->destroyPanes();
-
-        this->ioUnavailableWidget->setText("Insight deactivated");
-        this->ioUnavailableWidget->show();
-
-        this->targetStatusLabel->setText("Unknown");
-        this->programCounterValueLabel->setText("-");
-
-        this->variantMenu->clear();
-        this->variantMenu->setEnabled(false);
-
-        this->supportedVariantsByName.clear();
-
-        this->setUiDisabled(true);
-        this->activated = false;
-        this->insightProjectSettings = insightProjectSettings;
-    }
-
     void InsightWindow::adjustPanels() {
         const auto targetPackageWidgetSize = (this->targetPackageWidget != nullptr)
             ? this->targetPackageWidget->size() : QSize();
@@ -909,6 +806,7 @@ namespace Bloom
 
         } else {
             this->targetStatusLabel->setText("Unknown");
+            this->programCounterValueLabel->setText("-");
         }
     }
 

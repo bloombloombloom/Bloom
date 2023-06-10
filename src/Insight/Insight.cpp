@@ -32,14 +32,7 @@ namespace Bloom
         , environmentConfig(environmentConfig)
         , insightConfig(insightConfig)
         , insightProjectSettings(insightProjectSettings)
-    {}
-
-    void Insight::showMainWindow() {
-        this->mainWindow->show();
-        this->mainWindow->activateWindow();
-    }
-
-    void Insight::activate() {
+    {
         Logger::info("Starting Insight");
 
         this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
@@ -72,16 +65,6 @@ namespace Bloom
 
         QApplication::setQuitOnLastWindowClosed(false);
         QApplication::setStyle(new BloomProxyStyle());
-
-        auto globalStylesheet = QFile(
-            QString::fromStdString(
-                Services::PathService::compiledResourcesPath() + "/src/Insight/UserInterfaces/InsightWindow/Stylesheets/Global.qss"
-            )
-        );
-
-        if (!globalStylesheet.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open global stylesheet file");
-        }
 
         qRegisterMetaType<Bloom::Targets::TargetDescriptor>();
         qRegisterMetaType<Bloom::Targets::TargetPinDescriptor>();
@@ -133,17 +116,17 @@ namespace Bloom
             QString::fromStdString(Services::PathService::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-Th.ttf")
         );
 
-        QObject::connect(
-            this->mainWindow,
-            &InsightWindow::activatedSignal,
-            this,
-            &Insight::onInsightWindowActivated
+        auto globalStylesheet = QFile(
+            QString::fromStdString(
+                Services::PathService::compiledResourcesPath() + "/src/Insight/UserInterfaces/InsightWindow/Stylesheets/Global.qss"
+            )
         );
 
-        this->mainWindow->setStyleSheet(globalStylesheet.readAll());
+        if (!globalStylesheet.open(QFile::ReadOnly)) {
+            throw Exception("Failed to open global stylesheet file");
+        }
 
-        this->mainWindow->setInsightConfig(this->insightConfig);
-        this->mainWindow->setEnvironmentConfig(this->environmentConfig);
+        this->globalStylesheet = globalStylesheet.readAll();
 
         // Construct and start worker threads
         for (std::uint8_t i = 0; i < Insight::INSIGHT_WORKER_COUNT; ++i) {
@@ -162,14 +145,35 @@ namespace Bloom
             workerThread->start();
         }
 
-        this->mainWindow->init(this->targetControllerService.getTargetDescriptor());
+        this->activateMainWindow();
+    }
+
+    void Insight::activateMainWindow() {
+        if (this->mainWindow == nullptr) {
+            this->mainWindow = new InsightWindow(
+                this->environmentConfig,
+                this->insightConfig,
+                this->insightProjectSettings,
+                this->targetDescriptor
+            );
+
+            this->mainWindow->setStyleSheet(this->globalStylesheet);
+
+            QObject::connect(this->mainWindow, &QObject::destroyed, this, &Insight::onInsightWindowDestroyed);
+
+            this->refreshTargetState();
+        }
+
         this->mainWindow->show();
+        this->mainWindow->activateWindow();
     }
 
     void Insight::shutdown() {
         Logger::info("Shutting down Insight");
 
-        this->mainWindow->close();
+        if (this->mainWindow != nullptr) {
+            this->mainWindow->close();
+        }
 
         for (auto& [workerId, workerPair] : this->insightWorkersById) {
             auto* workerThread = workerPair.second;
@@ -183,7 +187,7 @@ namespace Bloom
         }
     }
 
-    void Insight::onInsightWindowActivated() {
+    void Insight::refreshTargetState() {
         const auto getTargetStateTask = QSharedPointer<GetTargetState>(new GetTargetState(), &QObject::deleteLater);
         QObject::connect(
             getTargetStateTask.get(),
@@ -196,6 +200,10 @@ namespace Bloom
         );
 
         InsightWorker::queueTask(getTargetStateTask);
+    }
+
+    void Insight::onInsightWindowDestroyed() {
+        this->mainWindow = nullptr;
     }
 
     void Insight::onTargetStoppedEvent(const Events::TargetExecutionStopped& event) {

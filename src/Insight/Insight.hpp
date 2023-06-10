@@ -58,14 +58,9 @@ namespace Bloom
         );
 
         /**
-         * Entry point for Insight.
-         */
-        void activate();
-
-        /**
          * Opens main window and obtains focus.
          */
-        void showMainWindow();
+        void activateMainWindow();
 
         /**
          * Shuts down Insight. Called when the user closes the Insight window or a ShutdownApplication event is fired.
@@ -84,13 +79,12 @@ namespace Bloom
         EventListener& eventListener;
         Services::TargetControllerService targetControllerService = Services::TargetControllerService();
 
+        Targets::TargetDescriptor targetDescriptor = this->targetControllerService.getTargetDescriptor();
+
+        QString globalStylesheet;
+
         std::map<decltype(InsightWorker::id), std::pair<InsightWorker*, QThread*>> insightWorkersById;
-        InsightWindow* mainWindow = new InsightWindow(
-            this->environmentConfig,
-            this->insightConfig,
-            this->insightProjectSettings,
-            this->targetControllerService.getTargetDescriptor()
-        );
+        InsightWindow* mainWindow = nullptr;
 
         Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
         bool targetStepping = false;
@@ -98,7 +92,8 @@ namespace Bloom
 
         InsightSignals* insightSignals = InsightSignals::instance();
 
-        void onInsightWindowActivated();
+        void refreshTargetState();
+        void onInsightWindowDestroyed();
         void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
         void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
         void onTargetResetEvent(const Events::TargetReset& event);

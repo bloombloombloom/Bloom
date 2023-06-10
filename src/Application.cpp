@@ -575,14 +575,12 @@ namespace Bloom
             this->projectSettings.value().insightSettings,
             &(this->qtApplication)
         );
-
-        this->insight->activate();
     }
 
     void Application::onInsightActivationRequest(const Events::InsightActivationRequested&) {
         if (this->insight) {
             // Insight has already been activated
-            this->insight->showMainWindow();
+            this->insight->activateMainWindow();
             return;
         }
 
