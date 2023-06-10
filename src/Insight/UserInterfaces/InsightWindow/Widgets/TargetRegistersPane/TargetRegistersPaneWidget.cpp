@@ -383,7 +383,7 @@ namespace Bloom::Widgets
 
         this->targetState = newState;
 
-        if (this->targetState == Targets::TargetState::RUNNING) {
+        if (this->targetState != Targets::TargetState::STOPPED) {
             this->clearInlineRegisterValues();
         }
     }

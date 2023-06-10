@@ -11,7 +11,7 @@ namespace Bloom::Widgets
 
     void TextInput::contextMenuEvent(QContextMenuEvent* event) {
         if (QMenu* menu = this->createStandardContextMenu()) {
-            menu->setAttribute(Qt::WA_DeleteOnClose);
+            menu->setAttribute(Qt::WA_DeleteOnClose, true);
 
             // Remove default icons
             for (auto& action : menu->actions()) {

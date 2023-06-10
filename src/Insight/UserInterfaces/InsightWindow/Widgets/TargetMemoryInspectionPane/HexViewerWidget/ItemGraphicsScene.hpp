@@ -66,7 +66,9 @@ namespace Bloom::Widgets
     signals:
         void ready();
         void hoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
-        void selectionChanged(const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress);
+        void selectionChanged(
+            const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress
+        );
 
     protected:
         bool enabled = true;
