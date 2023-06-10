@@ -99,6 +99,8 @@ namespace Bloom::Widgets
         // Quick sanity check to ensure the validity of persisted settings.
         this->sanitiseSettings();
 
+        this->refreshButton->setDisabled(true);
+
         this->hexViewerWidget = new HexViewerWidget(
             this->targetMemoryDescriptor,
             this->data,
