@@ -85,6 +85,10 @@ namespace Bloom
     EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environmentNode)
         : name(std::move(name))
     {
+        if (!environmentNode.IsMap()) {
+            throw Exceptions::InvalidConfig("Environment node must be in the form of a YAML mapping.");
+        }
+
         if (!environmentNode["tool"]) {
             throw Exceptions::InvalidConfig("Missing debug tool configuration.");
         }
