@@ -1,13 +1,13 @@
 environments:
   default:
-    debugTool:
+    tool:
       name: "xplained-pro"
 
     target:
       name: "atmega4809"
       physicalInterface: "updi"
 
-    debugServer:
+    server:
       name: "avr-gdb-rsp"
       ipAddress: "127.0.0.1"
       port: 1442

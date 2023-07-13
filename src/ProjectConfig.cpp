@@ -57,8 +57,8 @@ namespace Bloom
             }
         }
 
-        if (configNode["debugServer"]) {
-            this->debugServerConfig = DebugServerConfig(configNode["debugServer"]);
+        if (configNode["server"]) {
+            this->debugServerConfig = DebugServerConfig(configNode["server"]);
         }
 
         if (configNode["insight"]) {
@@ -71,6 +71,12 @@ namespace Bloom
     }
 
     InsightConfig::InsightConfig(const YAML::Node& insightNode) {
+        if (!insightNode.IsMap()) {
+            throw Exceptions::InvalidConfig(
+                "Invalid insight configuration provided - node must be in the form of a YAML mapping."
+            );
+        }
+
         if (insightNode["activateOnStartup"]) {
             this->activateOnStartup = insightNode["activateOnStartup"].as<bool>(this->activateOnStartup);
         }
@@ -79,46 +85,22 @@ namespace Bloom
     EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environmentNode)
         : name(std::move(name))
     {
-        if (!environmentNode["debugTool"]) {
+        if (!environmentNode["tool"]) {
             throw Exceptions::InvalidConfig("Missing debug tool configuration.");
-        }
-
-        if (!environmentNode["debugTool"].IsMap()) {
-            throw Exceptions::InvalidConfig(
-                "Invalid debug tool configuration provided - 'debugTool' must be of mapping type."
-            );
         }
 
         if (!environmentNode["target"]) {
             throw Exceptions::InvalidConfig("Missing target configuration.");
         }
 
-        if (!environmentNode["target"].IsMap()) {
-            throw Exceptions::InvalidConfig(
-                "Invalid target configuration provided - 'target' must be of mapping type."
-            );
-        }
-
-        this->debugToolConfig = DebugToolConfig(environmentNode["debugTool"]);
+        this->debugToolConfig = DebugToolConfig(environmentNode["tool"]);
         this->targetConfig = TargetConfig(environmentNode["target"]);
 
-        if (environmentNode["debugServer"]) {
-            if (!environmentNode["debugServer"].IsMap()) {
-                throw Exceptions::InvalidConfig(
-                    "Invalid debug server configuration provided - 'debugServer' must be of mapping type."
-                );
-            }
-
-            this->debugServerConfig = DebugServerConfig(environmentNode["debugServer"]);
+        if (environmentNode["server"]) {
+            this->debugServerConfig = DebugServerConfig(environmentNode["server"]);
         }
 
         if (environmentNode["insight"]) {
-            if (!environmentNode["insight"].IsMap()) {
-                throw Exceptions::InvalidConfig(
-                    "Invalid insight configuration provided - 'insight' must be of mapping type."
-                );
-            }
-
             this->insightConfig = InsightConfig(environmentNode["insight"]);
         }
 
@@ -130,6 +112,12 @@ namespace Bloom
     }
 
     TargetConfig::TargetConfig(const YAML::Node& targetNode) {
+        if (!targetNode.IsMap()) {
+            throw Exceptions::InvalidConfig(
+                "Invalid target configuration provided - node must be in the form of a YAML mapping."
+            );
+        }
+
         if (!targetNode["name"]) {
             throw Exceptions::InvalidConfig("No target name found.");
         }
@@ -144,6 +132,12 @@ namespace Bloom
     }
 
     DebugToolConfig::DebugToolConfig(const YAML::Node& debugToolNode) {
+        if (!debugToolNode.IsMap()) {
+            throw Exceptions::InvalidConfig(
+                "Invalid debug tool configuration provided - node must be in the form of a YAML mapping."
+            );
+        }
+
         if (!debugToolNode["name"]) {
             throw Exceptions::InvalidConfig("No debug tool name found.");
         }
@@ -153,6 +147,12 @@ namespace Bloom
     }
 
     DebugServerConfig::DebugServerConfig(const YAML::Node& debugServerNode) {
+        if (!debugServerNode.IsMap()) {
+            throw Exceptions::InvalidConfig(
+                "Invalid debug server configuration provided - node must be in the form of a YAML mapping."
+            );
+        }
+
         if (!debugServerNode["name"]) {
             throw Exceptions::InvalidConfig("No debug server name found.");
         }
