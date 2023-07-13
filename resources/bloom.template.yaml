@@ -1,5 +1,7 @@
 environments:
   default:
+    shutdownPostDebugSession: true
+
     tool:
       name: "xplained-pro"
 
