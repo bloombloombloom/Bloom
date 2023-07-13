@@ -55,12 +55,13 @@ namespace Bloom::Widgets
          *
          * @param position
          * @return
+         *  nullptr if there is no byte item at the given position.
          */
         ByteItem* byteItemAt(const QPointF& position) const;
 
         /**
-         * Returns the closest byte item from the given position on the Y-axis.
-         *         *
+         * Returns the closest byte item to the given position on the Y-axis.
+         *
          * @param yPosition
          * @return
          */

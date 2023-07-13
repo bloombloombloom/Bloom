@@ -293,7 +293,7 @@ namespace Bloom::TargetController
             this->target.reset();
             this->debugTool.reset();
             Logger::error(
-                "Failed to properly shutdown TargetController. Error: " + std::string(exception.what())
+                "Failed to properly shut down TargetController. Error: " + std::string(exception.what())
             );
         }
 
