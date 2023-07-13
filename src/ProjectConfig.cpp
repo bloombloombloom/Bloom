@@ -73,7 +73,7 @@ namespace Bloom
     InsightConfig::InsightConfig(const YAML::Node& insightNode) {
         if (!insightNode.IsMap()) {
             throw Exceptions::InvalidConfig(
-                "Invalid insight configuration provided - node must be in the form of a YAML mapping."
+                "Invalid insight configuration provided - node must take the form of a YAML mapping."
             );
         }
 
@@ -86,7 +86,7 @@ namespace Bloom
         : name(std::move(name))
     {
         if (!environmentNode.IsMap()) {
-            throw Exceptions::InvalidConfig("Environment node must be in the form of a YAML mapping.");
+            throw Exceptions::InvalidConfig("Environment node must take the form of a YAML mapping.");
         }
 
         if (!environmentNode["tool"]) {
@@ -118,7 +118,7 @@ namespace Bloom
     TargetConfig::TargetConfig(const YAML::Node& targetNode) {
         if (!targetNode.IsMap()) {
             throw Exceptions::InvalidConfig(
-                "Invalid target configuration provided - node must be in the form of a YAML mapping."
+                "Invalid target configuration provided - node must take the form of a YAML mapping."
             );
         }
 
@@ -138,7 +138,7 @@ namespace Bloom
     DebugToolConfig::DebugToolConfig(const YAML::Node& debugToolNode) {
         if (!debugToolNode.IsMap()) {
             throw Exceptions::InvalidConfig(
-                "Invalid debug tool configuration provided - node must be in the form of a YAML mapping."
+                "Invalid debug tool configuration provided - node must take the form of a YAML mapping."
             );
         }
 
@@ -153,7 +153,7 @@ namespace Bloom
     DebugServerConfig::DebugServerConfig(const YAML::Node& debugServerNode) {
         if (!debugServerNode.IsMap()) {
             throw Exceptions::InvalidConfig(
-                "Invalid debug server configuration provided - node must be in the form of a YAML mapping."
+                "Invalid debug server configuration provided - node must take the form of a YAML mapping."
             );
         }
 
