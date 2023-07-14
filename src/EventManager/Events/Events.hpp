@@ -21,6 +21,7 @@
 
 #ifndef EXCLUDE_INSIGHT
 #include "InsightActivationRequested.hpp"
+#include "InsightMainWindowClosed.hpp"
 #endif
 
 namespace Bloom::Events

@@ -126,7 +126,15 @@ namespace Bloom
 
     struct InsightConfig
     {
+        /**
+         * If true, the Insight GUI will be activated immediately at startup.
+         */
         bool activateOnStartup = false;
+
+        /**
+         * If true, Bloom will shutdown when the user closes the Insight GUI.
+         */
+        bool shutdownOnClose = false;
 
         InsightConfig() = default;
 

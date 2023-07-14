@@ -6,6 +6,7 @@
 
 #include "src/Services/PathService.hpp"
 #include "src/Logger/Logger.hpp"
+#include "src/EventManager/EventManager.hpp"
 #include "UserInterfaces/InsightWindow/BloomProxyStyle.hpp"
 
 #include "src/Application.hpp"
@@ -204,6 +205,7 @@ namespace Bloom
 
     void Insight::onInsightWindowDestroyed() {
         this->mainWindow = nullptr;
+        EventManager::triggerEvent(std::make_shared<Events::InsightMainWindowClosed>());
     }
 
     void Insight::onTargetStoppedEvent(const Events::TargetExecutionStopped& event) {

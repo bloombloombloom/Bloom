@@ -80,6 +80,10 @@ namespace Bloom
         if (insightNode["activateOnStartup"]) {
             this->activateOnStartup = insightNode["activateOnStartup"].as<bool>(this->activateOnStartup);
         }
+
+        if (insightNode["shutdownOnClose"]) {
+            this->shutdownOnClose = insightNode["shutdownOnClose"].as<bool>(this->shutdownOnClose);
+        }
     }
 
     EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environmentNode)

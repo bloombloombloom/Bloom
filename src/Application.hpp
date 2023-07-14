@@ -282,6 +282,13 @@ namespace Bloom
          * Handles requests to start the Insight GUI.
          */
         void onInsightActivationRequest(const Events::InsightActivationRequested&);
+
+        /**
+         * Performs any post-insight-closed actions.
+         *
+         * @param event
+         */
+        void onInsightMainWindowClosed(const Events::InsightMainWindowClosed& event);
 #endif
 
         /**

@@ -13,7 +13,6 @@
 #include "src/ProjectConfig.hpp"
 #include "src/ProjectSettings.hpp"
 
-#include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
 

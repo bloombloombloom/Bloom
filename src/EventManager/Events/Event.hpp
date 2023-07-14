@@ -31,6 +31,7 @@ namespace Bloom::Events
         PROGRAMMING_MODE_ENABLED,
         PROGRAMMING_MODE_DISABLED,
         INSIGHT_ACTIVATION_REQUESTED,
+        INSIGHT_MAIN_WINDOW_CLOSED,
     };
 
     class Event

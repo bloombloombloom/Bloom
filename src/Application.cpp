@@ -170,6 +170,10 @@ namespace Bloom
         applicationEventListener->registerCallbackForEventType<Events::InsightActivationRequested>(
             std::bind(&Application::onInsightActivationRequest, this, std::placeholders::_1)
         );
+
+        applicationEventListener->registerCallbackForEventType<Events::InsightMainWindowClosed>(
+            std::bind(&Application::onInsightMainWindowClosed, this, std::placeholders::_1)
+        );
 #endif
         this->startTargetController();
         this->startDebugServer();
@@ -585,6 +589,12 @@ namespace Bloom
         }
 
         this->activateInsight();
+    }
+
+    void Application::onInsightMainWindowClosed(const Events::InsightMainWindowClosed& event) {
+        if (this->insightConfig->shutdownOnClose) {
+            this->triggerShutdown();
+        }
     }
 #endif
 
