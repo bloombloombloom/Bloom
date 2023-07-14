@@ -4,7 +4,6 @@
 
 #include "DifferentialHexViewerWidgetType.hpp"
 #include "DifferentialHexViewerSharedState.hpp"
-#include "DifferentialHexViewerItemRenderer.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/SnapshotDiffSettings.hpp"
 
@@ -37,10 +36,8 @@ namespace Widgets
         DifferentialHexViewerWidgetType differentialHexViewerWidgetType;
         DifferentialHexViewerSharedState& diffHexViewerState;
         const SnapshotDiffSettings& snapshotDiffSettings;
-        DifferentialHexViewerItemRenderer* differentialHexViewerItemRenderer = nullptr;
         DifferentialItemGraphicsScene* other = nullptr;
 
-        void initRenderer() override;
         QMargins margins() override;
 
         void onOtherHoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);

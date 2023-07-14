@@ -2,8 +2,6 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ItemGraphicsView.hpp"
 
-#include "DifferentialHexViewerItemRenderer.hpp"
-
 namespace Widgets
 {
     DifferentialItemGraphicsScene::DifferentialItemGraphicsScene(
@@ -33,12 +31,6 @@ namespace Widgets
     void DifferentialItemGraphicsScene::setOther(DifferentialItemGraphicsScene* other) {
         this->other = other;
 
-        assert(this->other->differentialHexViewerItemRenderer != nullptr);
-
-        if (this->differentialHexViewerItemRenderer != nullptr) {
-            this->differentialHexViewerItemRenderer->setOther(this->other->differentialHexViewerItemRenderer);
-        }
-
         QObject::connect(
             this->other,
             &DifferentialItemGraphicsScene::hoveredAddress,
@@ -64,23 +56,6 @@ namespace Widgets
         }
 
         this->update();
-    }
-
-    void DifferentialItemGraphicsScene::initRenderer() {
-        this->differentialHexViewerItemRenderer = new DifferentialHexViewerItemRenderer(
-            this->differentialHexViewerWidgetType,
-            this->state,
-            *(this->itemIndex.get()),
-            this->views().first()
-        );
-
-        if (this->other != nullptr && this->other->differentialHexViewerItemRenderer != nullptr) {
-            this->differentialHexViewerItemRenderer->setOther(this->other->differentialHexViewerItemRenderer);
-        }
-
-        this->renderer = this->differentialHexViewerItemRenderer;
-        this->renderer->setPos(0, 0);
-        this->addItem(this->renderer);
     }
 
     QMargins DifferentialItemGraphicsScene::margins() {
