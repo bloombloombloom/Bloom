@@ -266,8 +266,12 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
                 this->activatePhysical();
 
             } catch (const Avr8CommandFailure& activationException) {
-                if (this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
-                    && activationException.code == Avr8CommandFailureCode::DEBUGWIRE_PHYSICAL_ERROR
+                if (
+                    this->targetConfig->physicalInterface == PhysicalInterface::DEBUG_WIRE
+                    && (
+                        activationException.code == Avr8CommandFailureCode::DEBUGWIRE_PHYSICAL_ERROR
+                        || activationException.code == Avr8CommandFailureCode::FAILED_TO_ENABLE_OCD
+                    )
                 ) {
                     throw DebugWirePhysicalInterfaceError(
                         "Failed to activate the debugWire physical interface - check target connection. "
