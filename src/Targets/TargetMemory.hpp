@@ -49,7 +49,7 @@ namespace Bloom::Targets
         [[nodiscard]] bool intersectsWith(const TargetMemoryAddressRange& other) const {
             return
                 (other.startAddress <= this->startAddress && other.endAddress >= this->startAddress)
-                || (other.endAddress >= this->endAddress && other.startAddress <= this->endAddress)
+                || (other.startAddress >= this->startAddress && other.startAddress <= this->endAddress)
             ;
         }
 
