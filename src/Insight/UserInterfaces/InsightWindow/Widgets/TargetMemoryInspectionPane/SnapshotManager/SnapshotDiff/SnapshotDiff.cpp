@@ -316,13 +316,29 @@ namespace Bloom::Widgets
         const auto& dataA = *(this->hexViewerDataA);
         const auto& dataB = *(this->hexViewerDataB);
 
+        static const auto isAddressExcluded = [this] (Targets::TargetMemoryAddress address) {
+            for (const auto& excludedRegion : this->excludedRegionsA) {
+                if (excludedRegion.addressRange.contains(address)) {
+                    return true;
+                }
+            }
+
+            for (const auto& excludedRegion : this->excludedRegionsB) {
+                if (excludedRegion.addressRange.contains(address)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
         const auto& memoryStartAddress = this->memoryDescriptor.addressRange.startAddress;
 
         for (Targets::TargetMemoryBuffer::size_type i = 0; i < dataA.size(); ++i) {
-            if (dataA[i] != dataB[i]) {
-                this->differentialHexViewerSharedState.differences.insert(
-                    memoryStartAddress + static_cast<Targets::TargetMemoryAddress>(i)
-                );
+            const auto address = memoryStartAddress + static_cast<Targets::TargetMemoryAddress>(i);
+
+            if (dataA[i] != dataB[i] && !isAddressExcluded(address)) {
+                this->differentialHexViewerSharedState.differences.insert(address);
             }
         }
 
