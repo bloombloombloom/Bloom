@@ -347,9 +347,9 @@ namespace Bloom
         std::cout << QJsonDocument(QJsonObject({
             {"version", QString::fromStdString(Application::VERSION.toString())},
             {"components", QJsonObject({
-                {"major", Application::VERSION.getMajor()},
-                {"minor", Application::VERSION.getMinor()},
-                {"patch", Application::VERSION.getPatch()},
+                {"major", Application::VERSION.major},
+                {"minor", Application::VERSION.minor},
+                {"patch", Application::VERSION.patch},
             })},
         })).toJson().toStdString();
 

@@ -8,24 +8,18 @@ namespace Bloom
         : major{major}
         , minor{minor}
         , patch{patch}
-    {
-        this->combined = static_cast<std::uint32_t>(
-            std::stoul(std::to_string(this->major) + std::to_string(this->minor) + std::to_string(this->patch))
-        );
-    }
+    {}
 
     VersionNumber::VersionNumber(const std::string& versionNumber)
         : VersionNumber(QString::fromStdString(versionNumber))
     {}
 
-    VersionNumber::VersionNumber(QString versionNumber) {
+    VersionNumber::VersionNumber(const QString& versionNumber) {
         const auto explodedString = versionNumber.split('.');
 
         this->major = explodedString.value(0, "0").toUShort();
         this->minor = explodedString.value(1, "0").toUShort();
         this->patch = explodedString.value(2, "0").toUShort();
-
-        this->combined = versionNumber.remove('.').toUInt();
     }
 
     std::string VersionNumber::toString() const {
