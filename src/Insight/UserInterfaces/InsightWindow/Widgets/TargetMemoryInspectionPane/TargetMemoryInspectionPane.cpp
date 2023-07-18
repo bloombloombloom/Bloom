@@ -645,7 +645,7 @@ namespace Bloom::Widgets
     }
 
     void TargetMemoryInspectionPane::onProgrammingModeDisabled() {
-        const auto disabled = this->targetState != Targets::TargetState::STOPPED;
+        const auto disabled = this->targetState != Targets::TargetState::STOPPED || !this->data.has_value();
         this->hexViewerWidget->setDisabled(disabled);
         this->refreshButton->setDisabled(disabled);
     }
