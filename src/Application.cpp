@@ -63,6 +63,10 @@ namespace Bloom
                 this->selectedEnvironmentName = std::move(firstArg);
             }
 
+            if (Services::ProcessService::isRunningAsRoot()) {
+                Logger::warning("Please don't run Bloom as root - you're asking for trouble.");
+            }
+
 #ifdef BLOOM_DEBUG_BUILD
             Logger::warning("This is a debug build - some functions may not work as expected");
 #endif
