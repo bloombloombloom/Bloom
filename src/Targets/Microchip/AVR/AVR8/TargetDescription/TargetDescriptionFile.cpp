@@ -10,17 +10,17 @@
 #include "src/Exceptions/Exception.hpp"
 #include "src/Targets/TargetDescription/Exceptions/TargetDescriptionParsingFailureException.hpp"
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
+namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
-    using Bloom::Targets::TargetDescription::RegisterGroup;
-    using Bloom::Targets::TargetDescription::AddressSpace;
-    using Bloom::Targets::TargetDescription::MemorySegment;
-    using Bloom::Targets::TargetDescription::MemorySegmentType;
-    using Bloom::Targets::TargetDescription::Register;
-    using Bloom::Targets::TargetVariant;
-    using Bloom::Targets::TargetRegisterDescriptor;
+    using Targets::TargetDescription::RegisterGroup;
+    using Targets::TargetDescription::AddressSpace;
+    using Targets::TargetDescription::MemorySegment;
+    using Targets::TargetDescription::MemorySegmentType;
+    using Targets::TargetDescription::Register;
+    using Targets::TargetVariant;
+    using Targets::TargetRegisterDescriptor;
 
     TargetDescriptionFile::TargetDescriptionFile(const std::string& targetName) {
         const auto mapping = TargetDescriptionFile::getTargetDescriptionMapping();

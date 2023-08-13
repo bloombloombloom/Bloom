@@ -8,7 +8,7 @@
 
 #include "src/Targets/TargetRegister.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class RegisterItem: public ListItem
     {

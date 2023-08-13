@@ -4,9 +4,9 @@
 
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
+namespace DebugToolDrivers::Protocols::CmsisDap
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     CmsisDapInterface::CmsisDapInterface(Usb::HidInterface&& usbHidInterface)
         : usbHidInterface(std::move(usbHidInterface))

@@ -1,6 +1,6 @@
 #include "AtmelIce.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     AtmelIce::AtmelIce()
         : EdbgDevice(

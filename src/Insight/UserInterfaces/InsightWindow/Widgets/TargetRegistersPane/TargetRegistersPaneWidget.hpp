@@ -22,7 +22,7 @@
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class TargetRegistersPaneWidget: public PaneWidget
     {

@@ -6,7 +6,7 @@
 
 #include "src/Targets/TargetDescriptor.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * The GenerateSvd class implements a structure for the "monitor svd" GDB command.

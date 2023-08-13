@@ -14,13 +14,13 @@
 #include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
-    using Bloom::Targets::TargetRegisterDescriptor;
-    using Bloom::Targets::TargetRegisterDescriptors;
-    using Bloom::Targets::TargetRegisterType;
+    using Targets::TargetRegisterDescriptor;
+    using Targets::TargetRegisterDescriptors;
+    using Targets::TargetRegisterType;
 
     RegisterHistoryWidget::RegisterHistoryWidget(
         const Targets::TargetRegisterDescriptor& registerDescriptor,

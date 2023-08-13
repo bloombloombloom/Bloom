@@ -17,13 +17,13 @@
 #include "src/Insight/InsightWorker/Tasks/ReadTargetRegisters.hpp"
 #include "src/Insight/InsightWorker/Tasks/WriteTargetRegister.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
-    using Bloom::Exceptions::Exception;
-    using Bloom::Targets::TargetRegisterDescriptor;
-    using Bloom::Targets::TargetRegisterDescriptors;
-    using Bloom::Targets::TargetRegisterType;
-    using Bloom::Targets::TargetState;
+    using Exceptions::Exception;
+    using Targets::TargetRegisterDescriptor;
+    using Targets::TargetRegisterDescriptors;
+    using Targets::TargetRegisterType;
+    using Targets::TargetState;
 
     TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
         const Targets::TargetRegisterDescriptor& registerDescriptor,

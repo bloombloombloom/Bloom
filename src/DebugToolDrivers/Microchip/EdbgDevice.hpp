@@ -12,7 +12,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgTargetPowerManagementInterface.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     /**
      * Microchip EDBG (Embedded Debugger) devices implement the CMSIS-DAP interface. As well as the CMSIS-DAP protocol,

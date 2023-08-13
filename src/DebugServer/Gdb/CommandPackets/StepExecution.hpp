@@ -7,7 +7,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * The StepExecution class implements the structure for "s" command packets. Upon receiving this command, the

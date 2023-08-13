@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace Bloom::Targets::Microchip::Avr
+namespace Targets::Microchip::Avr
 {
     /**
      * These parameters are required by the ISP interface. They can be extracted from the target's TDF.

@@ -19,7 +19,7 @@
 #include "FocusedRegionGroupItem.hpp"
 #include "StackMemoryGroupItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     /**
      * Renders hex viewer items in a QGraphicsScene.

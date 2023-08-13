@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace Bloom::TargetController::Responses
+namespace TargetController::Responses
 {
     enum class ResponseType: std::uint8_t
     {

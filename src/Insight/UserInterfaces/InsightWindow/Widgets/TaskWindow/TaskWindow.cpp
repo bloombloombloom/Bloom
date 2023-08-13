@@ -10,7 +10,7 @@
 #include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     TaskWindow::TaskWindow(QWidget* parent)
         : QWidget(parent)

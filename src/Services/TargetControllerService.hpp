@@ -17,7 +17,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Services
+namespace Services
 {
     /**
      * The TargetControllerService provides an interface to the TargetController.

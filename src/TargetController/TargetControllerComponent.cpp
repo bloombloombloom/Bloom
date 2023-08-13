@@ -11,11 +11,11 @@
 
 #include "src/Exceptions/InvalidConfig.hpp"
 
-namespace Bloom::TargetController
+namespace TargetController
 {
-    using namespace Bloom::Targets;
-    using namespace Bloom::Events;
-    using namespace Bloom::Exceptions;
+    using namespace Targets;
+    using namespace Events;
+    using namespace Exceptions;
 
     using Commands::CommandIdType;
 

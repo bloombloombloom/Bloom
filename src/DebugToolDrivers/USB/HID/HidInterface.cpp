@@ -5,9 +5,9 @@
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
-namespace Bloom::Usb
+namespace Usb
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     HidInterface::HidInterface(
         std::uint8_t interfaceNumber,

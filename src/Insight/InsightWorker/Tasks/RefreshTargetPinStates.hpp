@@ -4,34 +4,31 @@
 #include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"
 
-namespace Bloom
+class RefreshTargetPinStates: public InsightWorkerTask
 {
-    class RefreshTargetPinStates: public InsightWorkerTask
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        explicit RefreshTargetPinStates(int variantId)
-            : variantId(variantId)
-        {}
+public:
+    explicit RefreshTargetPinStates(int variantId)
+        : variantId(variantId)
+    {}
 
-        QString brief() const override {
-            return "Reading target pin states";
-        }
+    QString brief() const override {
+        return "Reading target pin states";
+    }
 
-        TaskGroups taskGroups() const override {
-            return TaskGroups({
-                TaskGroup::USES_TARGET_CONTROLLER,
-            });
-        };
-
-    signals:
-        void targetPinStatesRetrieved(Bloom::Targets::TargetPinStateMapping pinStatesByNumber);
-
-    protected:
-        void run(Services::TargetControllerService& targetControllerService) override;
-
-    private:
-        int variantId;
+    TaskGroups taskGroups() const override {
+        return TaskGroups({
+            TaskGroup::USES_TARGET_CONTROLLER,
+        });
     };
-}
+
+signals:
+    void targetPinStatesRetrieved(Targets::TargetPinStateMapping pinStatesByNumber);
+
+protected:
+    void run(Services::TargetControllerService& targetControllerService) override;
+
+private:
+    int variantId;
+};

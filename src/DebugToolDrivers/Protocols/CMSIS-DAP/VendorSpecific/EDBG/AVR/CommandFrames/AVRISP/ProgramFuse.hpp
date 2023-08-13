@@ -6,7 +6,7 @@
 
 #include "src/Targets/Microchip/AVR/Fuse.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::AvrIsp
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::AvrIsp
 {
     class ProgramFuse: public AvrIspCommandFrame<std::array<unsigned char, 5>>
     {

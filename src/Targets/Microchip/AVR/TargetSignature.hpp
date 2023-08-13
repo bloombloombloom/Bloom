@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace Bloom::Targets::Microchip::Avr
+namespace Targets::Microchip::Avr
 {
     /**
      * All AVR targets carry a three-byte signature that is *usually* unique to the target.

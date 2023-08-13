@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <cmath>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     SvgWidget::SvgWidget(QWidget* parent): QFrame(parent) {
         this->renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatioByExpanding);

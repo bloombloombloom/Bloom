@@ -3,7 +3,7 @@
 #include <QPushButton>
 #include <QString>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class PushButton: public QPushButton
     {

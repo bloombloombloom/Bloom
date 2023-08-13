@@ -5,7 +5,7 @@
 
 #include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     /**
      * The MPLAB Snap device is a hybrid device - that is, it can present itself as an "MPLAB Snap ICD" device, as well

@@ -13,7 +13,7 @@
 
 #include "RegisterDescriptor.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     /**
      * GDB target descriptor.

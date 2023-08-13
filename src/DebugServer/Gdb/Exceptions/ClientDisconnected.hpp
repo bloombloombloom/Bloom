@@ -2,7 +2,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::Exceptions
+namespace DebugServer::Gdb::Exceptions
 {
     /**
      * When a GDB RSP client unexpectedly drops the connection in the middle of an IO operation, a ClientDisconnected
@@ -11,7 +11,7 @@ namespace Bloom::DebugServer::Gdb::Exceptions
      *
      * See GdbRspDebugServer::serve() for handling code.
      */
-    class ClientDisconnected: public Bloom::Exceptions::Exception
+    class ClientDisconnected: public ::Exceptions::Exception
     {
     public:
         explicit ClientDisconnected() = default;

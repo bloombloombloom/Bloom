@@ -16,7 +16,7 @@
 #include "CurrentItem.hpp"
 #include "RegisterHistoryItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class RegisterHistoryWidget: public QWidget
     {

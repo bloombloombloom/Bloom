@@ -10,7 +10,7 @@
 #include "PinBodyWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Qfp
+namespace Widgets::InsightTargetWidgets::Qfp
 {
     enum class Position: std::uint8_t
     {

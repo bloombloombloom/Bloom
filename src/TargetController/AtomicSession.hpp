@@ -3,7 +3,7 @@
 #include <atomic>
 #include <cstdint>
 
-namespace Bloom::TargetController
+namespace TargetController
 {
     using AtomicSessionIdType = int;
     static_assert(std::atomic<AtomicSessionIdType>::is_always_lock_free);

@@ -2,7 +2,7 @@
 
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 
-namespace Bloom::Exceptions
+namespace Exceptions
 {
     class DebugWirePhysicalInterfaceError: public TargetOperationFailure
     {

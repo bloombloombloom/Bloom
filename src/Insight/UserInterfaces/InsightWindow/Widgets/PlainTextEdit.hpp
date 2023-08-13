@@ -3,7 +3,7 @@
 #include <QPlainTextEdit>
 #include <QContextMenuEvent>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class PlainTextEdit: public QPlainTextEdit
     {

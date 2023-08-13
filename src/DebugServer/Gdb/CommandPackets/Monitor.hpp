@@ -7,7 +7,7 @@
 
 #include "CommandPacket.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * This is a base class for 'qRcmd' packets - invoked by the GDB 'monitor' command.

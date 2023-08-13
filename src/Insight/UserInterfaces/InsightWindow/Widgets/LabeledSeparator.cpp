@@ -1,6 +1,6 @@
 #include "LabeledSeparator.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     LabeledSeparator::LabeledSeparator(QString title, QWidget* parent): title(std::move(title)), QWidget(parent) {
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);

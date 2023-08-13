@@ -4,7 +4,7 @@
 
 #include "Monitor.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * The BloomVersion class implements a structure for the "monitor version" GDB command.

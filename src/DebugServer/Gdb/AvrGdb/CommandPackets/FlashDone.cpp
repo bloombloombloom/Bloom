@@ -6,14 +6,14 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
+namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::OkResponsePacket;
 
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     FlashDone::FlashDone(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)

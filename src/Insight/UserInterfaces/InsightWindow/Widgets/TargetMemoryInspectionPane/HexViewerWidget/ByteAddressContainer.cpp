@@ -1,6 +1,6 @@
 #include "ByteAddressContainer.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     ByteAddressContainer::ByteAddressContainer(const HexViewerSharedState& hexViewerState)
         : hexViewerState(hexViewerState)

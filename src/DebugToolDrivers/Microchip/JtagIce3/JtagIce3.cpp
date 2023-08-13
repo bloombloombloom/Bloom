@@ -1,6 +1,6 @@
 #include "JtagIce3.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     JtagIce3::JtagIce3()
         : EdbgDevice(

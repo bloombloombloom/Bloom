@@ -8,9 +8,9 @@
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::DebugServer
+namespace DebugServer
 {
-    using namespace Bloom::Events;
+    using namespace Events;
 
     DebugServerComponent::DebugServerComponent(const DebugServerConfig& debugServerConfig)
         : debugServerConfig(debugServerConfig)

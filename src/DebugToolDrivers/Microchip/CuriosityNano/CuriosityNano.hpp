@@ -5,7 +5,7 @@
 
 #include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     /**
      * The Curiosity Nano is an evaluation board featuring an on-board debugger. The debugger is EDBG-based.

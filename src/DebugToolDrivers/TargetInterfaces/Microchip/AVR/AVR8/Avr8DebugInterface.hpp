@@ -16,7 +16,7 @@
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
+namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
 {
     /**
      * Interfacing with an AVR8 target for debugging operations can vary significantly, depending on the debug tool
@@ -26,8 +26,8 @@ namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
      *
      * Each debug tool that supports interfacing with AVR8 targets must provide an implementation
      * of this interface class. For example, the Atmel-ICE provides the EdbgAvr8Interface implementation for
-     * interfacing with AVR8 targets. See Bloom::DebugToolDrivers::AtmelIce::getAvr8DebugInterface() and
-     * Bloom::DebugTool::getAvr8DebugInterface() for more on this.
+     * interfacing with AVR8 targets. See DebugToolDrivers::AtmelIce::getAvr8DebugInterface() and
+     * DebugTool::getAvr8DebugInterface() for more on this.
      */
     class Avr8DebugInterface
     {

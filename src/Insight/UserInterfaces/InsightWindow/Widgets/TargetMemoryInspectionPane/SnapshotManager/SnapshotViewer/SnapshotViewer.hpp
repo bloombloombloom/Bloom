@@ -19,7 +19,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ContextMenuAction.hpp"
 #include "MemoryRegionItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class SnapshotViewer: public QWidget
     {

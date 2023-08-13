@@ -6,9 +6,9 @@
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/InsightWorker/Tasks/RefreshTargetPinStates.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets
+namespace Widgets::InsightTargetWidgets
 {
-    using Bloom::Targets::TargetState;
+    using Targets::TargetState;
 
     TargetPackageWidget::TargetPackageWidget(
         Targets::TargetVariant targetVariant,

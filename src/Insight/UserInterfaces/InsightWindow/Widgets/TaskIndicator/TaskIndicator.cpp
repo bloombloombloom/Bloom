@@ -5,7 +5,7 @@
 
 #include "src/Insight/InsightSignals.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     TaskIndicator::TaskIndicator(QWidget* parent)
         : QWidget(parent)

@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     StackMemoryGroupItem::StackMemoryGroupItem(
         Targets::TargetStackPointer stackPointer,

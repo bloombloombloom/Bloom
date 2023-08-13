@@ -6,7 +6,7 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class LabeledSeparator: public QWidget
     {

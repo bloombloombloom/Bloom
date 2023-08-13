@@ -8,7 +8,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
+namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
      * The FlashDone class implements the structure for the "vFlashDone" packet.

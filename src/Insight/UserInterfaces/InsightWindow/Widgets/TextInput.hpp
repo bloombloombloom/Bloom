@@ -4,7 +4,7 @@
 #include <QContextMenuEvent>
 #include <QFocusEvent>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class TextInput: public QLineEdit
     {

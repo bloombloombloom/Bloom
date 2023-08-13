@@ -3,7 +3,7 @@
 #include <QWidget>
 #include <QPainter>
 
-namespace Bloom::Widgets::InsightTargetWidgets::Dip
+namespace Widgets::InsightTargetWidgets::Dip
 {
     class BodyWidget: public QWidget
     {

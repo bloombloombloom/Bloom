@@ -4,7 +4,7 @@
 
 #include "Label.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class RotatableLabel: public Label
     {

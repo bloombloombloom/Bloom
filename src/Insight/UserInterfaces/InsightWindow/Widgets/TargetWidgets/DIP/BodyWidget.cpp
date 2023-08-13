@@ -1,6 +1,6 @@
 #include "BodyWidget.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Dip
+namespace Widgets::InsightTargetWidgets::Dip
 {
     BodyWidget::BodyWidget(QWidget* parent, std::size_t pinCount): QWidget(parent) {
         this->setObjectName("target-body");

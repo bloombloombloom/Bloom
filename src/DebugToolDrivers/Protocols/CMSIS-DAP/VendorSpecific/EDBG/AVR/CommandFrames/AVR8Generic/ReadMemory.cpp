@@ -3,7 +3,7 @@
 #include <bitset>
 #include <cmath>
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
     ReadMemory::ReadMemory(
         const Avr8MemoryType& type,

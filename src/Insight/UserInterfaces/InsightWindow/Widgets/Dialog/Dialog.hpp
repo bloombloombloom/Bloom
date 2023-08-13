@@ -7,7 +7,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class Dialog: public QDialog
     {

@@ -4,7 +4,7 @@
 
 #include "DifferentialHexViewerItemRenderer.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     DifferentialItemGraphicsScene::DifferentialItemGraphicsScene(
         DifferentialHexViewerWidgetType differentialHexViewerWidgetType,

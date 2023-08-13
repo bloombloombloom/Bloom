@@ -9,9 +9,8 @@
 #include "src/DebugServer/Gdb/Signal.hpp"
 
 #include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
@@ -20,8 +19,6 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using ResponsePackets::TargetStopped;
     using ResponsePackets::EmptyResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
-
-    using Exceptions::Exception;
 
     void CommandPacket::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         const auto packetString = std::string(this->data.begin(), this->data.end());

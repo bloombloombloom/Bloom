@@ -1,6 +1,6 @@
 #include "HexViewerItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     HexViewerItem::HexViewerItem(Targets::TargetMemoryAddress startAddress, HexViewerItem* parent)
         : startAddress(startAddress)

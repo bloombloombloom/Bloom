@@ -4,7 +4,7 @@
 
 #include "src/TargetController/Responses/TargetDescriptor.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class GetTargetDescriptor: public Command
     {

@@ -11,7 +11,7 @@
 #include "PinBodyWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Dip
+namespace Widgets::InsightTargetWidgets::Dip
 {
     enum class Position: std::uint8_t
     {

@@ -4,7 +4,7 @@
 
 #include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
+namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
      * The ReadMemoryMap class implements a structure for the "qXfer:memory-map:read::..." packet. Upon receiving this

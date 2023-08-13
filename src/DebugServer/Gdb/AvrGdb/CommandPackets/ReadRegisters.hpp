@@ -6,7 +6,7 @@
 
 #include "src/DebugServer/Gdb/RegisterDescriptor.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
+namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
      * The ReadRegisters class implements a structure for the "g" command packet. In response to this packet, the

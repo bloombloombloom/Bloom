@@ -5,7 +5,7 @@
 
 #include "Event.hpp"
 
-namespace Bloom::Events
+namespace Events
 {
     class InsightActivationRequested: public Event
     {

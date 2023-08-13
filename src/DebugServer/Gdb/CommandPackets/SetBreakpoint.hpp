@@ -9,7 +9,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * The SetBreakpoint class implements the structure for "Z" command packets. Upon receiving this command, the

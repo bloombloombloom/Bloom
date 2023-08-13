@@ -10,7 +10,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelState.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneState.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     struct TargetMemoryInspectionPaneSettings
     {

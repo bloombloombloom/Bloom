@@ -1,6 +1,6 @@
 #include "DifferentialItemGraphicsView.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     DifferentialItemGraphicsView::DifferentialItemGraphicsView(
         DifferentialHexViewerWidgetType differentialHexViewerWidgetType,

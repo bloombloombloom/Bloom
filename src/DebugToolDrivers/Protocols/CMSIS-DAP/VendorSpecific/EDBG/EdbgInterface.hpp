@@ -15,7 +15,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrame.hpp"
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg
 {
     /**
      * The EdbgInterface class implements the EDBG sub-protocol, which takes the form of numerous CMSIS-DAP vendor

@@ -9,7 +9,7 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class StackMemoryGroupItem: public GroupItem
     {

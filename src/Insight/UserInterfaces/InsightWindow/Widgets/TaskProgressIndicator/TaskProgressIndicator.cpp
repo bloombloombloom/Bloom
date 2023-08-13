@@ -4,7 +4,7 @@
 #include <QColor>
 #include <algorithm>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     TaskProgressIndicator::TaskProgressIndicator(QWidget* parent)
         : QWidget(parent)

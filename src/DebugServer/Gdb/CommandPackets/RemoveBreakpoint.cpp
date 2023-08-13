@@ -10,7 +10,7 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
@@ -19,7 +19,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using ResponsePackets::OkResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
 
-    using Exceptions::Exception;
+    using ::Exceptions::Exception;
 
     RemoveBreakpoint::RemoveBreakpoint(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)

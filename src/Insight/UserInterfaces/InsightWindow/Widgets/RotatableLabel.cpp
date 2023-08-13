@@ -2,7 +2,7 @@
 
 #include <QPainter>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     void RotatableLabel::paintEvent(QPaintEvent* event) {
         auto painter = QPainter(this);

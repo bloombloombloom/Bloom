@@ -11,7 +11,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVRISP/ReadLock.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVRISP/ProgramFuse.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     using namespace Targets::Microchip::Avr;
 

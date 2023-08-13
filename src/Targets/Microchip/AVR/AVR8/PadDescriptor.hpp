@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit
+namespace Targets::Microchip::Avr::Avr8Bit
 {
     /**
      * Pin configurations for AVR8 targets may vary across target variants. This is why we must differentiate a pin

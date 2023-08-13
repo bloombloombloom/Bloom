@@ -15,7 +15,7 @@
 #include "ListItem.hpp"
 #include "src/Helpers/DereferenceLessComparator.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ListScene: public QGraphicsScene
     {

@@ -9,7 +9,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * The RemoveBreakpoint class implements the structure for "z" command packets. Upon receiving this command, the

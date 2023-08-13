@@ -1,6 +1,6 @@
 #include "ConfirmationDialog.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     ConfirmationDialog::ConfirmationDialog(
         const QString& windowTitle,

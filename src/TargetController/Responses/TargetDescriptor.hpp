@@ -6,7 +6,7 @@
 
 #include "src/Targets/TargetDescriptor.hpp"
 
-namespace Bloom::TargetController::Responses
+namespace TargetController::Responses
 {
     class TargetDescriptor: public Response
     {

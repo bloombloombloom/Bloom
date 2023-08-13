@@ -5,7 +5,7 @@
 #include "Event.hpp"
 #include "src/Helpers/Thread.hpp"
 
-namespace Bloom::Events
+namespace Events
 {
     class TargetControllerThreadStateChanged: public Event
     {

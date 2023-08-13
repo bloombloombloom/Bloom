@@ -10,7 +10,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ClickableWidget.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class BitBodyWidget: public ClickableWidget
     {

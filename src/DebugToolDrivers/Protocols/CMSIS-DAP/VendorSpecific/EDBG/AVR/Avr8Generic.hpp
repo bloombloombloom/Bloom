@@ -4,7 +4,7 @@
 
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     struct Avr8EdbgParameter
     {

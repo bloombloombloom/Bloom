@@ -8,7 +8,7 @@
 #include "src/Targets/TargetBreakpoint.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::Events
+namespace Events
 {
     class TargetExecutionStopped: public Event
     {

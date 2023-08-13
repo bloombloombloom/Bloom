@@ -4,41 +4,38 @@
 
 #include "NotifierInterface.hpp"
 
-namespace Bloom
+/**
+ * RAII wrapper for a Linux eventfd object, used to implement the NotifierInterface.
+ */
+class EventFdNotifier: public NotifierInterface
 {
-    /**
-     * RAII wrapper for a Linux eventfd object, used to implement the NotifierInterface.
+public:
+    EventFdNotifier();
+
+    /*
+     * EventNotifier objects should not be copied.
      */
-    class EventFdNotifier: public NotifierInterface
-    {
-    public:
-        EventFdNotifier();
+    EventFdNotifier(EventFdNotifier& other) = delete;
+    EventFdNotifier& operator = (EventFdNotifier& other) = delete;
 
-        /*
-         * EventNotifier objects should not be copied.
-         */
-        EventFdNotifier(EventFdNotifier& other) = delete;
-        EventFdNotifier& operator = (EventFdNotifier& other) = delete;
+    /*
+     * TODO: Implement this. For now, use the move constructor.
+     */
+    EventFdNotifier& operator = (EventFdNotifier&& other) = delete;
 
-        /*
-         * TODO: Implement this. For now, use the move constructor.
-         */
-        EventFdNotifier& operator = (EventFdNotifier&& other) = delete;
+    EventFdNotifier(EventFdNotifier&& other) noexcept;
+    ~EventFdNotifier() noexcept override;
 
-        EventFdNotifier(EventFdNotifier&& other) noexcept;
-        ~EventFdNotifier() noexcept override;
+    [[nodiscard]] int getFileDescriptor() const {
+        return this->fileDescriptor.value();
+    }
 
-        [[nodiscard]] int getFileDescriptor() const {
-            return this->fileDescriptor.value();
-        }
+    void notify() override;
 
-        void notify() override;
+    void clear();
 
-        void clear();
+private:
+    std::optional<int> fileDescriptor;
 
-    private:
-        std::optional<int> fileDescriptor;
-
-        void close();
-    };
-}
+    void close();
+};

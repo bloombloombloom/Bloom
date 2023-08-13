@@ -6,11 +6,11 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     /**
      * @deprecated
-     * TODO: Bin this. Replace all usages with Bloom::Widgets::Dialog.
+     * TODO: Bin this. Replace all usages with Widgets::Dialog.
      */
     class ErrorDialogue: public QDialog
     {

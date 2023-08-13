@@ -12,9 +12,9 @@
 #include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
-    using Bloom::Exceptions::Exception;
+    using Exceptions::Exception;
 
     CreateSnapshotWindow::CreateSnapshotWindow(
         Targets::TargetMemoryType memoryType,

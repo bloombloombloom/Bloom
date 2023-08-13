@@ -3,7 +3,7 @@
 #include <string>
 #include <optional>
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     struct Signal
     {

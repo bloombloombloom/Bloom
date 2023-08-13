@@ -6,7 +6,7 @@
 #include "Item.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class RegisterHistoryItem: public Item
     {

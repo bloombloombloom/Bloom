@@ -37,7 +37,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/AddressType.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ItemGraphicsScene: public QGraphicsScene
     {

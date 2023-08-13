@@ -3,7 +3,7 @@
 #include <string>
 #include <filesystem>
 
-namespace Bloom::Services
+namespace Services
 {
     class PathService
     {

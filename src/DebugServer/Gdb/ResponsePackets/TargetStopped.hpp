@@ -9,7 +9,7 @@
 
 #include "src/Services/StringService.hpp"
 
-namespace Bloom::DebugServer::Gdb::ResponsePackets
+namespace DebugServer::Gdb::ResponsePackets
 {
     /**
      * The TargetStopped class implements the response packet structure for any commands that expect a "StopReply"

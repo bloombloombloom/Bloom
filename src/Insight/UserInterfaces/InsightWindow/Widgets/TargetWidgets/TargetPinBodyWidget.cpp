@@ -2,9 +2,9 @@
 
 #include "TargetPinBodyWidget.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets
+namespace Widgets::InsightTargetWidgets
 {
-    using namespace Bloom::Targets;
+    using namespace Targets;
 
     TargetPinBodyWidget::TargetPinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor)
     : QWidget(parent), pinDescriptor(std::move(pinDescriptor)) {

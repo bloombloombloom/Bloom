@@ -5,7 +5,7 @@
 
 #include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     /**
      * Like the MPLAB Snap, the PICkit 4 is a hybrid device. It can present itself as an EDBG (Embedded Debugger)

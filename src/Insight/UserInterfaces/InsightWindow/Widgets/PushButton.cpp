@@ -1,6 +1,6 @@
 #include "PushButton.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     PushButton::PushButton(QWidget* parent)
         : QPushButton(parent)

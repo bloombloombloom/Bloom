@@ -4,9 +4,9 @@
 
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     EdbgInterface::EdbgInterface(Usb::HidInterface&& cmsisHidInterface)
         : CmsisDapInterface(std::move(cmsisHidInterface))

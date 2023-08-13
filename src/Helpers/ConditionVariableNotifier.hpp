@@ -7,40 +7,37 @@
 
 #include "NotifierInterface.hpp"
 
-namespace Bloom
+/**
+ * The ConditionVariableNotifier class is an implementation of the NotifierInterface, using an
+ * std::condition_variable.
+ */
+class ConditionVariableNotifier: public NotifierInterface
 {
-    /**
-     * The ConditionVariableNotifier class is an implementation of the NotifierInterface, using an
-     * std::condition_variable.
+public:
+    ConditionVariableNotifier() = default;
+    ~ConditionVariableNotifier() override = default;
+
+    /*
+     * ConditionVariableNotifier objects should not be copied.
      */
-    class ConditionVariableNotifier: public NotifierInterface
-    {
-    public:
-        ConditionVariableNotifier() = default;
-        ~ConditionVariableNotifier() override = default;
+    ConditionVariableNotifier(ConditionVariableNotifier& other) = delete;
+    ConditionVariableNotifier& operator = (ConditionVariableNotifier& other) = delete;
 
-        /*
-         * ConditionVariableNotifier objects should not be copied.
-         */
-        ConditionVariableNotifier(ConditionVariableNotifier& other) = delete;
-        ConditionVariableNotifier& operator = (ConditionVariableNotifier& other) = delete;
+    /*
+     * TODO: Implement this.
+     */
+    ConditionVariableNotifier(ConditionVariableNotifier&& other) noexcept = delete;
+    ConditionVariableNotifier& operator = (ConditionVariableNotifier&& other) = delete;
 
-        /*
-         * TODO: Implement this.
-         */
-        ConditionVariableNotifier(ConditionVariableNotifier&& other) noexcept = delete;
-        ConditionVariableNotifier& operator = (ConditionVariableNotifier&& other) = delete;
+    void notify() override;
 
-        void notify() override;
+    /**
+     * Blocks until the contained std::conditional_variable is notified.
+     */
+    void waitForNotification(std::optional<std::chrono::milliseconds> timeout = std::nullopt);
 
-        /**
-         * Blocks until the contained std::conditional_variable is notified.
-         */
-        void waitForNotification(std::optional<std::chrono::milliseconds> timeout = std::nullopt);
-
-    private:
-        std::mutex mutex;
-        std::condition_variable conditionalVariable;
-        bool notified = false;
-    };
-}
+private:
+    std::mutex mutex;
+    std::condition_variable conditionalVariable;
+    bool notified = false;
+};

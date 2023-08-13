@@ -4,7 +4,7 @@
 #include <QDateTime>
 #include <QDate>
 
-namespace Bloom::Services
+namespace Services
 {
     /**
      * Some (maybe all) QDateTime static functions are not thread-safe and thus can result in data races.

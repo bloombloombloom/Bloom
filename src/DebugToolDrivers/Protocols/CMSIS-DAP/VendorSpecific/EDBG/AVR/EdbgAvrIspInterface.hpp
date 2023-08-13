@@ -8,7 +8,7 @@
 #include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AvrIspInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     /**
      * The EdbgAvrIspInterface implements the AVRISP EDBG/CMSIS-DAP protocol, as an AvrIspInterface.

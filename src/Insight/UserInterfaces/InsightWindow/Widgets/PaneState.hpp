@@ -4,7 +4,7 @@
 #include <QPoint>
 #include <optional>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     struct DetachedWindowState
     {

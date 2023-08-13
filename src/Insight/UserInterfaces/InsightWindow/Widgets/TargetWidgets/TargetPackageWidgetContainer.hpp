@@ -5,7 +5,7 @@
 
 #include "TargetPackageWidget.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets
+namespace Widgets::InsightTargetWidgets
 {
     class TargetPackageWidgetContainer: public QWidget
     {

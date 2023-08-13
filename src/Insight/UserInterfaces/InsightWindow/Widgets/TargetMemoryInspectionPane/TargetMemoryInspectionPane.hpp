@@ -28,7 +28,7 @@
 
 #include "TargetMemoryInspectionPaneSettings.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class TargetMemoryInspectionPane: public PaneWidget
     {
@@ -104,7 +104,7 @@ namespace Bloom::Widgets
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();
         void onTargetMemoryWritten(
-            Bloom::Targets::TargetMemoryType memoryType,
+            Targets::TargetMemoryType memoryType,
             Targets::TargetMemoryAddressRange addressRange
         );
         void onSubtaskCreated(const QSharedPointer<InsightWorkerTask>& task);

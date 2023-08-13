@@ -4,29 +4,26 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom
+class ReadStackPointer: public InsightWorkerTask
 {
-    class ReadStackPointer: public InsightWorkerTask
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        ReadStackPointer() = default;
+public:
+    ReadStackPointer() = default;
 
-        QString brief() const override {
-            return "Reading stack pointer";
-        }
+    QString brief() const override {
+        return "Reading stack pointer";
+    }
 
-        TaskGroups taskGroups() const override {
-            return TaskGroups({
-                TaskGroup::USES_TARGET_CONTROLLER,
-            });
-        };
-
-    signals:
-        void stackPointerRead(Targets::TargetStackPointer stackPointer);
-
-    protected:
-        void run(Services::TargetControllerService& targetControllerService) override;
+    TaskGroups taskGroups() const override {
+        return TaskGroups({
+            TaskGroup::USES_TARGET_CONTROLLER,
+        });
     };
-}
+
+signals:
+    void stackPointerRead(Targets::TargetStackPointer stackPointer);
+
+protected:
+    void run(Services::TargetControllerService& targetControllerService) override;
+};

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     struct Pin
     {

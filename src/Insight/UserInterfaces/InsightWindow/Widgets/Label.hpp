@@ -2,7 +2,7 @@
 
 #include <QLabel>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class Label: public QLabel
     {

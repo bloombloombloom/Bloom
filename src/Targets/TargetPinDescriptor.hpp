@@ -7,7 +7,7 @@
 #include <map>
 #include <QMetaType>
 
-namespace Bloom::Targets
+namespace Targets
 {
     enum class TargetPinType: std::uint8_t
     {
@@ -57,9 +57,9 @@ namespace Bloom::Targets
         std::optional<IoDirection> ioDirection;
     };
 
-    using TargetPinStateMapping = std::map<int, Bloom::Targets::TargetPinState>;
+    using TargetPinStateMapping = std::map<int, Targets::TargetPinState>;
 }
 
-Q_DECLARE_METATYPE(Bloom::Targets::TargetPinDescriptor)
-Q_DECLARE_METATYPE(Bloom::Targets::TargetPinState)
-Q_DECLARE_METATYPE(Bloom::Targets::TargetPinStateMapping)
+Q_DECLARE_METATYPE(Targets::TargetPinDescriptor)
+Q_DECLARE_METATYPE(Targets::TargetPinState)
+Q_DECLARE_METATYPE(Targets::TargetPinStateMapping)

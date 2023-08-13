@@ -15,10 +15,10 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Services/StringService.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     using namespace Exceptions;
-    using namespace Bloom::Exceptions;
+    using namespace ::Exceptions;
 
     using ResponsePackets::ResponsePacket;
 

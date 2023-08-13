@@ -7,7 +7,7 @@
 
 #include "src/Targets/Microchip/AVR/Fuse.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::AvrIsp
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::AvrIsp
 {
     class ReadSignature: public AvrIspCommandFrame<std::array<unsigned char, 6>>
     {

@@ -10,7 +10,7 @@
 #include "TopLevelGroupItem.hpp"
 #include "ByteItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     /**
      * This class maintains indices of hex viewer item positions and provides fast lookups for items within certain

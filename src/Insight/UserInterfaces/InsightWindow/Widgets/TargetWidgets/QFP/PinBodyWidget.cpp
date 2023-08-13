@@ -3,9 +3,9 @@
 #include <QPainter>
 #include <QEvent>
 
-namespace Bloom::Widgets::InsightTargetWidgets::Qfp
+namespace Widgets::InsightTargetWidgets::Qfp
 {
-    using namespace Bloom::Targets;
+    using namespace Targets;
 
     PinBodyWidget::PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor, bool isVertical)
     : TargetPinBodyWidget(parent, std::move(pinDescriptor)), isVertical(isVertical) {

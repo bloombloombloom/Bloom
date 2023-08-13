@@ -5,7 +5,7 @@
 #include "Event.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
-namespace Bloom::Events
+namespace Events
 {
     class RegistersWrittenToTarget: public Event
     {

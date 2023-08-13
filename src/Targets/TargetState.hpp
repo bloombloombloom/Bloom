@@ -2,7 +2,7 @@
 
 #include <QMetaType>
 
-namespace Bloom::Targets
+namespace Targets
 {
     enum class TargetState: std::uint8_t
     {
@@ -12,4 +12,4 @@ namespace Bloom::Targets
     };
 }
 
-Q_DECLARE_METATYPE(Bloom::Targets::TargetState)
+Q_DECLARE_METATYPE(Targets::TargetState)

@@ -8,7 +8,7 @@
 
 #include "BitWidget.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class BitsetWidget: public QWidget
     {

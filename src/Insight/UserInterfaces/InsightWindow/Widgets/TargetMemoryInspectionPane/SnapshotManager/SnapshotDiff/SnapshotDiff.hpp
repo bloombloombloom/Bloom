@@ -19,7 +19,7 @@
 #include "DifferentialHexViewerWidget/DifferentialHexViewerWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ContextMenuAction.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class SnapshotDiff: public QWidget
     {

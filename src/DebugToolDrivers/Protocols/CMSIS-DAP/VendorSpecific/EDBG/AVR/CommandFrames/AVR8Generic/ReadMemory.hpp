@@ -6,7 +6,7 @@
 #include "Avr8GenericCommandFrame.hpp"
 #include "../../ResponseFrames/AVR8Generic/ReadMemory.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
     class ReadMemory: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {

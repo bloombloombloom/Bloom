@@ -3,7 +3,7 @@
 #include <QHBoxLayout>
 #include <QString>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     using Targets::TargetMemoryAddressRange;
 

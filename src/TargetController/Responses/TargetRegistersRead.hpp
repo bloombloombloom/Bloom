@@ -4,7 +4,7 @@
 
 #include "src/Targets/TargetRegister.hpp"
 
-namespace Bloom::TargetController::Responses
+namespace TargetController::Responses
 {
     class TargetRegistersRead: public Response
     {

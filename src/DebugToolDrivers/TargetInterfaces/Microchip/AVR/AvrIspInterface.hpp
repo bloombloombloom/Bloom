@@ -8,7 +8,7 @@
 
 #include "src/ProjectConfig.hpp"
 
-namespace Bloom::DebugToolDrivers::TargetInterfaces::Microchip::Avr
+namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr
 {
     /**
      * Many AVRs can be programmed via an SPI interface. Some debug tools provide access to this interface via the AVR

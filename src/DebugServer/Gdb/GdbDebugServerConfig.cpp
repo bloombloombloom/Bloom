@@ -3,7 +3,7 @@
 #include "src/Helpers/YamlUtilities.hpp"
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     GdbDebugServerConfig::GdbDebugServerConfig(const DebugServerConfig& debugServerConfig)
         : DebugServerConfig(debugServerConfig)

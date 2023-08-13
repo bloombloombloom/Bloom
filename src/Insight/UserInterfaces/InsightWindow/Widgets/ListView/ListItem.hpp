@@ -8,7 +8,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ListItem: public QGraphicsItem
     {

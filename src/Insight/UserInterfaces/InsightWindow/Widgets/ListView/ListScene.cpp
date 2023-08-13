@@ -6,7 +6,7 @@
 #include <QByteArray>
 #include <algorithm>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     ListScene::ListScene(
         ListScene::ListItemSetType&& items,

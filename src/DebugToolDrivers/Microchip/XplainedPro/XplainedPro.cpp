@@ -1,6 +1,6 @@
 #include "XplainedPro.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     XplainedPro::XplainedPro()
         : EdbgDevice(

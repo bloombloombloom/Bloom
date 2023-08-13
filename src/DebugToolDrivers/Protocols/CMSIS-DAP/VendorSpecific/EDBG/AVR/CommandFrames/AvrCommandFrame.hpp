@@ -13,7 +13,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AvrResponseFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     static inline std::atomic<std::uint16_t> lastSequenceId = 0;
 

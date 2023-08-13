@@ -11,7 +11,7 @@
 #include "TargetRegister.hpp"
 #include "TargetVariant.hpp"
 
-namespace Bloom::Targets
+namespace Targets
 {
     struct TargetDescriptor
     {
@@ -56,4 +56,4 @@ namespace Bloom::Targets
     };
 }
 
-Q_DECLARE_METATYPE(Bloom::Targets::TargetDescriptor)
+Q_DECLARE_METATYPE(Targets::TargetDescriptor)

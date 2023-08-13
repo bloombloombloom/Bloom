@@ -2,7 +2,7 @@
 
 #include <QLayout>
 
-namespace Bloom::Widgets::InsightTargetWidgets
+namespace Widgets::InsightTargetWidgets
 {
     TargetPackageWidgetContainer::TargetPackageWidgetContainer(QWidget* parent): QWidget(parent) {}
 

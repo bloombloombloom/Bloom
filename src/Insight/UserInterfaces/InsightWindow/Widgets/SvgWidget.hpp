@@ -7,7 +7,7 @@
 #include <QSize>
 #include <QPropertyAnimation>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class SvgWidget: public QFrame
     {

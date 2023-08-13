@@ -9,7 +9,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/Edbg.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrResponse.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     class AvrResponseFrame
     {

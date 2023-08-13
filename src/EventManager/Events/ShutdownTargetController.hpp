@@ -4,7 +4,7 @@
 
 #include "Event.hpp"
 
-namespace Bloom::Events
+namespace Events
 {
     class ShutdownTargetController: public Event
     {

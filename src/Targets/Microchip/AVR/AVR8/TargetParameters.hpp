@@ -6,7 +6,7 @@
 #include "../TargetSignature.hpp"
 #include "Family.hpp"
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit
+namespace Targets::Microchip::Avr::Avr8Bit
 {
     /**
      * Holds all parameters that would be required for configuring a debug tool, for an AVR8 target.

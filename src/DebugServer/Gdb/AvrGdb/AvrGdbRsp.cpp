@@ -11,12 +11,12 @@
 #include "CommandPackets/FlashWrite.hpp"
 #include "CommandPackets/FlashDone.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb
+namespace DebugServer::Gdb::AvrGdb
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
-    using Bloom::Targets::TargetRegisterDescriptor;
-    using Bloom::Targets::TargetRegisterType;
+    using Targets::TargetRegisterDescriptor;
+    using Targets::TargetRegisterType;
 
     AvrGdbRsp::AvrGdbRsp(
         const DebugServerConfig& debugServerConfig,

@@ -4,7 +4,7 @@
 
 #include "src/Targets/TargetPinDescriptor.hpp"
 
-namespace Bloom::TargetController::Responses
+namespace TargetController::Responses
 {
     class TargetPinStates: public Response
     {

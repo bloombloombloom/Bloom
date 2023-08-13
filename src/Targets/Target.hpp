@@ -17,7 +17,7 @@
 
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
-namespace Bloom::Targets
+namespace Targets
 {
     /**
      * Abstract class for Targets.

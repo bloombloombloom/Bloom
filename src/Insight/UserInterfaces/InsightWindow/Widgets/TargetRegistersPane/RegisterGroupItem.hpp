@@ -11,7 +11,7 @@
 #include "RegisterItem.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class RegisterGroupItem: public ListItem
     {

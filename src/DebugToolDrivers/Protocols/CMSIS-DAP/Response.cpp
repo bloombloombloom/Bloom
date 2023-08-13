@@ -2,7 +2,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
+namespace DebugToolDrivers::Protocols::CmsisDap
 {
     Response::Response(const std::vector<unsigned char>& rawResponse) {
         if (rawResponse.empty()) {

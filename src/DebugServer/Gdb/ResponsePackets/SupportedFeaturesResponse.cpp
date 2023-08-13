@@ -1,6 +1,6 @@
 #include "SupportedFeaturesResponse.hpp"
 
-namespace Bloom::DebugServer::Gdb::ResponsePackets
+namespace DebugServer::Gdb::ResponsePackets
 {
     SupportedFeaturesResponse::SupportedFeaturesResponse(
         const std::set<std::pair<Feature, std::optional<std::string>>>& supportedFeatures

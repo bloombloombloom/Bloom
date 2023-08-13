@@ -3,7 +3,7 @@
 #include "Avr8GenericResponseFrame.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
 {
     class ReadMemory: public Avr8GenericResponseFrame
     {

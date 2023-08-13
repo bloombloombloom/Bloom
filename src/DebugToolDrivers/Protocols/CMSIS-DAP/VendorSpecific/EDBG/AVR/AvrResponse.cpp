@@ -2,9 +2,9 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     AvrResponse::AvrResponse(const std::vector<unsigned char>& rawResponse)
         : Response(rawResponse)

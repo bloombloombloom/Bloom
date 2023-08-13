@@ -17,7 +17,7 @@
 #include "BitsetWidget/BitsetWidget.hpp"
 #include "RegisterHistoryWidget/RegisterHistoryWidget.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class TargetRegisterInspectorWindow: public QWidget
     {

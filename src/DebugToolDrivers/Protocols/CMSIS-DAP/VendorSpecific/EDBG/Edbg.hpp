@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg
 {
     enum class ProtocolHandlerId: unsigned char
     {

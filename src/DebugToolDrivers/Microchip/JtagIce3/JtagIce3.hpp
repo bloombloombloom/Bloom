@@ -5,7 +5,7 @@
 
 #include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     /**
      * The JTAGICE3, from firmware version 3.x+, is an EDBG device.

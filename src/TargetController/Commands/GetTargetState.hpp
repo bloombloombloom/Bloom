@@ -3,7 +3,7 @@
 #include "Command.hpp"
 #include "src/TargetController/Responses/TargetState.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class GetTargetState: public Command
     {

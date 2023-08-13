@@ -3,7 +3,7 @@
 #include "RegionItem.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ExcludedRegionItem: public RegionItem
     {

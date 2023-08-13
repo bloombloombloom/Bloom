@@ -4,7 +4,7 @@
 #include <QScrollArea>
 #include <QMargins>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     BitBodyWidget::BitBodyWidget(
         int bitIndex,

@@ -7,13 +7,14 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
     using ResponsePackets::TargetStopped;
     using ResponsePackets::ErrorResponsePacket;
-    using Exceptions::Exception;
+
+    using ::Exceptions::Exception;
 
     void InterruptExecution::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::info("Handling InterruptExecution packet");

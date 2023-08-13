@@ -25,107 +25,104 @@
 #include "Widgets/TaskIndicator/TaskIndicator.hpp"
 #include "AboutWindow.hpp"
 
-namespace Bloom
+class InsightWindow: public QMainWindow
 {
-    class InsightWindow: public QMainWindow
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        InsightWindow(
-            const EnvironmentConfig& environmentConfig,
-            const InsightConfig& insightConfig,
-            InsightProjectSettings& insightProjectSettings,
-            const Targets::TargetDescriptor& targetDescriptor
-        );
+public:
+    InsightWindow(
+        const EnvironmentConfig& environmentConfig,
+        const InsightConfig& insightConfig,
+        InsightProjectSettings& insightProjectSettings,
+        const Targets::TargetDescriptor& targetDescriptor
+    );
 
-    protected:
-        void resizeEvent(QResizeEvent* event) override;
-        void showEvent(QShowEvent* event) override;
-        void closeEvent(QCloseEvent* event) override;
+protected:
+    void resizeEvent(QResizeEvent* event) override;
+    void showEvent(QShowEvent* event) override;
+    void closeEvent(QCloseEvent* event) override;
 
-    private:
-        InsightProjectSettings& insightProjectSettings;
+private:
+    InsightProjectSettings& insightProjectSettings;
 
-        InsightConfig insightConfig;
-        EnvironmentConfig environmentConfig;
-        TargetConfig targetConfig;
+    InsightConfig insightConfig;
+    EnvironmentConfig environmentConfig;
+    TargetConfig targetConfig;
 
-        const Targets::TargetDescriptor& targetDescriptor;
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+    const Targets::TargetDescriptor& targetDescriptor;
+    Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
-        QWidget* windowContainer = nullptr;
-        QMenuBar* mainMenuBar = nullptr;
-        QWidget* layoutContainer = nullptr;
-        QWidget* container = nullptr;
-        QMenu* variantMenu = nullptr;
-        Widgets::Label* targetNameLabel = nullptr;
-        Widgets::Label* targetIdLabel = nullptr;
-        AboutWindow* aboutWindowWidget = nullptr;
+    QWidget* windowContainer = nullptr;
+    QMenuBar* mainMenuBar = nullptr;
+    QWidget* layoutContainer = nullptr;
+    QWidget* container = nullptr;
+    QMenu* variantMenu = nullptr;
+    Widgets::Label* targetNameLabel = nullptr;
+    Widgets::Label* targetIdLabel = nullptr;
+    AboutWindow* aboutWindowWidget = nullptr;
 
-        QWidget* header = nullptr;
-        Widgets::SvgToolButton* refreshIoInspectionButton = nullptr;
+    QWidget* header = nullptr;
+    Widgets::SvgToolButton* refreshIoInspectionButton = nullptr;
 
-        QWidget* leftMenuBar = nullptr;
-        Widgets::PanelWidget* leftPanel = nullptr;
-        Widgets::TargetRegistersPaneWidget* targetRegistersSidePane = nullptr;
-        QToolButton* targetRegistersButton = nullptr;
+    QWidget* leftMenuBar = nullptr;
+    Widgets::PanelWidget* leftPanel = nullptr;
+    Widgets::TargetRegistersPaneWidget* targetRegistersSidePane = nullptr;
+    QToolButton* targetRegistersButton = nullptr;
 
-        Widgets::Label* ioUnavailableWidget = nullptr;
-        Widgets::InsightTargetWidgets::TargetPackageWidgetContainer* ioContainerWidget = nullptr;
-        Widgets::InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
+    Widgets::Label* ioUnavailableWidget = nullptr;
+    Widgets::InsightTargetWidgets::TargetPackageWidgetContainer* ioContainerWidget = nullptr;
+    Widgets::InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
 
-        QWidget* bottomMenuBar = nullptr;
-        Widgets::PanelWidget* bottomPanel = nullptr;
-        Widgets::TargetMemoryInspectionPane* ramInspectionPane = nullptr;
-        Widgets::TargetMemoryInspectionPane* eepromInspectionPane = nullptr;
-        Widgets::TargetMemoryInspectionPane* flashInspectionPane = nullptr;
-        std::map<
-            Targets::TargetMemoryType,
-            Widgets::TargetMemoryInspectionPaneSettings
-        > memoryInspectionPaneSettingsByMemoryType;
-        QToolButton* ramInspectionButton = nullptr;
-        QToolButton* eepromInspectionButton = nullptr;
-        QToolButton* flashInspectionButton = nullptr;
+    QWidget* bottomMenuBar = nullptr;
+    Widgets::PanelWidget* bottomPanel = nullptr;
+    Widgets::TargetMemoryInspectionPane* ramInspectionPane = nullptr;
+    Widgets::TargetMemoryInspectionPane* eepromInspectionPane = nullptr;
+    Widgets::TargetMemoryInspectionPane* flashInspectionPane = nullptr;
+    std::map<
+        Targets::TargetMemoryType,
+        Widgets::TargetMemoryInspectionPaneSettings
+    > memoryInspectionPaneSettingsByMemoryType;
+    QToolButton* ramInspectionButton = nullptr;
+    QToolButton* eepromInspectionButton = nullptr;
+    QToolButton* flashInspectionButton = nullptr;
 
-        QWidget* footer = nullptr;
-        Widgets::Label* targetStatusLabel = nullptr;
-        Widgets::Label* programCounterValueLabel = nullptr;
-        Widgets::TaskIndicator* taskIndicator = nullptr;
+    QWidget* footer = nullptr;
+    Widgets::Label* targetStatusLabel = nullptr;
+    Widgets::Label* programCounterValueLabel = nullptr;
+    Widgets::TaskIndicator* taskIndicator = nullptr;
 
-        std::map<QString, Targets::TargetVariant> supportedVariantsByName;
-        const Targets::TargetVariant* selectedVariant = nullptr;
-        std::optional<Targets::TargetVariant> previouslySelectedVariant;
-        bool uiDisabled = false;
+    std::map<QString, Targets::TargetVariant> supportedVariantsByName;
+    const Targets::TargetVariant* selectedVariant = nullptr;
+    std::optional<Targets::TargetVariant> previouslySelectedVariant;
+    bool uiDisabled = false;
 
-        static bool isVariantSupported(const Targets::TargetVariant& variant);
+    static bool isVariantSupported(const Targets::TargetVariant& variant);
 
-        void setUiDisabled(bool disable);
+    void setUiDisabled(bool disable);
 
-        void populateVariantMenu();
-        void selectDefaultVariant();
-        void selectVariant(const Targets::TargetVariant* variant);
-        void createPanes();
+    void populateVariantMenu();
+    void selectDefaultVariant();
+    void selectVariant(const Targets::TargetVariant* variant);
+    void createPanes();
 
-        void adjustPanels();
-        void adjustMinimumSize();
+    void adjustPanels();
+    void adjustMinimumSize();
 
-        void onTargetStateUpdate(Targets::TargetState newState);
-        void refresh();
-        void refreshPinStates();
-        void refreshProgramCounter(std::optional<std::function<void(void)>> callback = std::nullopt);
-        void openReportIssuesUrl();
-        void openGettingStartedUrl();
-        void openAboutWindow();
-        void toggleTargetRegistersPane();
-        void toggleRamInspectionPane();
-        void toggleEepromInspectionPane();
-        void toggleFlashInspectionPane();
-        void onRegistersPaneStateChanged();
-        void onRamInspectionPaneStateChanged();
-        void onEepromInspectionPaneStateChanged();
-        void onFlashInspectionPaneStateChanged();
-        void onProgrammingModeEnabled();
-        void onProgrammingModeDisabled();
-    };
-}
+    void onTargetStateUpdate(Targets::TargetState newState);
+    void refresh();
+    void refreshPinStates();
+    void refreshProgramCounter(std::optional<std::function<void(void)>> callback = std::nullopt);
+    void openReportIssuesUrl();
+    void openGettingStartedUrl();
+    void openAboutWindow();
+    void toggleTargetRegistersPane();
+    void toggleRamInspectionPane();
+    void toggleEepromInspectionPane();
+    void toggleFlashInspectionPane();
+    void onRegistersPaneStateChanged();
+    void onRamInspectionPaneStateChanged();
+    void onEepromInspectionPaneStateChanged();
+    void onFlashInspectionPaneStateChanged();
+    void onProgrammingModeEnabled();
+    void onProgrammingModeDisabled();
+};

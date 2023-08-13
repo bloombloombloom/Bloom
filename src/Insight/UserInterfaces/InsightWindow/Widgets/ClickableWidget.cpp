@@ -1,6 +1,6 @@
 #include "ClickableWidget.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     void ClickableWidget::mouseReleaseEvent(QMouseEvent* event) {
         if (event->button() == Qt::MouseButton::LeftButton) {

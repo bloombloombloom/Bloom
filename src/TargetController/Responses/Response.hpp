@@ -2,7 +2,7 @@
 
 #include "ResponseTypes.hpp"
 
-namespace Bloom::TargetController::Responses
+namespace TargetController::Responses
 {
     class Response
     {

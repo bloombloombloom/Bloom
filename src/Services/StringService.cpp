@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace Bloom::Services
+namespace Services
 {
     std::string StringService::asciiToLower(std::string str) {
         std::transform(str.begin(), str.end(), str.begin(), [] (unsigned char character) {

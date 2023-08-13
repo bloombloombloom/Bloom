@@ -26,7 +26,7 @@
 #include "src/EventManager/Events/TargetExecutionStopped.hpp"
 #include "src/EventManager/Events/TargetExecutionResumed.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     /**
      * The GdbRspDebugServer is an implementation of the GDB Remote Serial Protocol.

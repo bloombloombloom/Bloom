@@ -1,6 +1,6 @@
 #include "CuriosityNano.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     CuriosityNano::CuriosityNano()
         : EdbgDevice(

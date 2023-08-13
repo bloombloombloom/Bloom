@@ -6,7 +6,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Services
+namespace Services
 {
     ::pid_t ProcessService::getProcessId() {
         return getpid();

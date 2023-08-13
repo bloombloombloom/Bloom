@@ -9,7 +9,7 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "ByteItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ContextMenuAction: public QAction
     {

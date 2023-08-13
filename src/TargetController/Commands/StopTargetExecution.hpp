@@ -2,7 +2,7 @@
 
 #include "Command.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class StopTargetExecution: public Command
     {

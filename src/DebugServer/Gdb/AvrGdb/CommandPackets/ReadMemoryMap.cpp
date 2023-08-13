@@ -4,7 +4,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
+namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     using Services::TargetControllerService;
 

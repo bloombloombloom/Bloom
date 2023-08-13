@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace Bloom::DebugToolDrivers::TargetInterfaces
+namespace DebugToolDrivers::TargetInterfaces
 {
     /**
      * Some debug tools provide target power management functions. Those that do should expose an implementation of

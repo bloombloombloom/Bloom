@@ -4,7 +4,7 @@
 
 #include "src/Targets/TargetPinDescriptor.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class SetTargetPinState: public Command
     {

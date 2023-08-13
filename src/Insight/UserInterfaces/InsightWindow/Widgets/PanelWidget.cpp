@@ -5,7 +5,7 @@
 
 #include "PaneWidget.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     PanelWidget::PanelWidget(PanelWidgetType type, PanelState& state, QWidget* parent)
         : panelType(type)

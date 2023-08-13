@@ -5,7 +5,7 @@
 #include "HouseKeepingCommandFrame.hpp"
 #include "Parameters.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping
 {
     class GetParameter: public HouseKeepingCommandFrame<std::array<unsigned char, 5>>
     {

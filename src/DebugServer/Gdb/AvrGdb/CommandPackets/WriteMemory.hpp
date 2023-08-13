@@ -8,7 +8,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
+namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
      * The WriteMemory class implements the structure for "M" packets. Upon receiving this packet, the server is

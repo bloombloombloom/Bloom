@@ -21,7 +21,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class HexViewerWidget: public QWidget
     {

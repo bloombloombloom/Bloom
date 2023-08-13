@@ -6,7 +6,7 @@
 
 #include "src/Helpers/BiMap.hpp"
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     enum class MemorySegmentType
     {

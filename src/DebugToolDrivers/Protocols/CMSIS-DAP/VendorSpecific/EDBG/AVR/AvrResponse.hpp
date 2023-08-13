@@ -5,7 +5,7 @@
 
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Response.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     class AvrResponse: public Response
     {

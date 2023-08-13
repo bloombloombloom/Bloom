@@ -5,7 +5,7 @@
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
 {
     class GetDeviceId: public Avr8GenericResponseFrame
     {

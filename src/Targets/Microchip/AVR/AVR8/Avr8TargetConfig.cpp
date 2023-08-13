@@ -5,12 +5,12 @@
 
 #include "src/Exceptions/InvalidConfig.hpp"
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit
+namespace Targets::Microchip::Avr::Avr8Bit
 {
     Avr8TargetConfig::Avr8TargetConfig(const TargetConfig& targetConfig)
         : TargetConfig(targetConfig)
     {
-        using Bloom::Exceptions::InvalidConfig;
+        using Exceptions::InvalidConfig;
 
         const auto& targetNode = targetConfig.targetNode;
 

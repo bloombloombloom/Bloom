@@ -6,7 +6,7 @@
 
 #include "src/DebugServer/Gdb/GdbRspDebugServer.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb
+namespace DebugServer::Gdb::AvrGdb
 {
     class AvrGdbRsp: public GdbRspDebugServer
     {

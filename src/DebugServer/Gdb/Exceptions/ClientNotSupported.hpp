@@ -2,7 +2,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::Exceptions
+namespace DebugServer::Gdb::Exceptions
 {
     /**
      * In the event that the GDB debug server determines that the connected client cannot be served,
@@ -10,15 +10,15 @@ namespace Bloom::DebugServer::Gdb::Exceptions
      *
      * See GdbRspDebugServer::serve() for handling code.
      */
-    class ClientNotSupported: public Bloom::Exceptions::Exception
+    class ClientNotSupported: public ::Exceptions::Exception
     {
     public:
         explicit ClientNotSupported(const std::string& message)
-            : Bloom::Exceptions::Exception(message)
+            : ::Exceptions::Exception(message)
         {}
 
         explicit ClientNotSupported(const char* message)
-            : Bloom::Exceptions::Exception(message)
+            : ::Exceptions::Exception(message)
         {}
 
         explicit ClientNotSupported() = default;

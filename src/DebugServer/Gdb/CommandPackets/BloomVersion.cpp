@@ -11,16 +11,12 @@
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
-#include "src/Exceptions/Exception.hpp"
-
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::ResponsePacket;
-
-    using Exceptions::Exception;
 
     BloomVersion::BloomVersion(Monitor&& monitorPacket)
         : Monitor(std::move(monitorPacket))

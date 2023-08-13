@@ -10,11 +10,11 @@
 #include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
-    using Bloom::Targets::TargetMemoryDescriptor;
+    using Targets::TargetMemoryDescriptor;
 
     HexViewerWidget::HexViewerWidget(
         const TargetMemoryDescriptor& targetMemoryDescriptor,

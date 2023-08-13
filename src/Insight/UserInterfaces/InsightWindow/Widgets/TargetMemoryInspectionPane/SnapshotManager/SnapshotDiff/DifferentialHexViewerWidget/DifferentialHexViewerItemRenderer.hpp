@@ -3,7 +3,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/HexViewerItemRenderer.hpp"
 #include "DifferentialHexViewerWidgetType.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class DifferentialHexViewerItemRenderer: public HexViewerItemRenderer
     {

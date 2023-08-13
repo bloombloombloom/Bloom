@@ -8,7 +8,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/SnapshotDiffSettings.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class DifferentialItemGraphicsScene final: public ItemGraphicsScene
     {

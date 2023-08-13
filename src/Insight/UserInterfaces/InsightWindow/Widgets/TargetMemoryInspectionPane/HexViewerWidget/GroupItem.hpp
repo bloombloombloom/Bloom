@@ -11,7 +11,7 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "HexViewerSharedState.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class GroupItem: public HexViewerItem
     {

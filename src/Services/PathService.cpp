@@ -7,7 +7,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Services
+namespace Services
 {
     std::string PathService::applicationDirPath() {
         auto pathCharArray = std::array<char, PATH_MAX>();

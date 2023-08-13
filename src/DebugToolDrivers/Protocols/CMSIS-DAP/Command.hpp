@@ -5,7 +5,7 @@
 
 #include "Response.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
+namespace DebugToolDrivers::Protocols::CmsisDap
 {
     /**
      * CMSIS-DAP command.

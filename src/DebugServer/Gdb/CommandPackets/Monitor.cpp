@@ -4,7 +4,7 @@
 
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 

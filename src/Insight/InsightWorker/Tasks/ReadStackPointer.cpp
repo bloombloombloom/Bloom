@@ -1,10 +1,7 @@
 #include "ReadStackPointer.hpp"
 
-namespace Bloom
-{
-    using Services::TargetControllerService;
+using Services::TargetControllerService;
 
-    void ReadStackPointer::run(TargetControllerService& targetControllerService) {
-        emit this->stackPointerRead(targetControllerService.getStackPointer());
-    }
+void ReadStackPointer::run(TargetControllerService& targetControllerService) {
+    emit this->stackPointerRead(targetControllerService.getStackPointer());
 }

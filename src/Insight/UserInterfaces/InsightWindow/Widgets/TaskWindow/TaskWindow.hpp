@@ -11,7 +11,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/InsightWorker/Tasks/InsightWorkerTask.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class TaskWindow: public QWidget
     {

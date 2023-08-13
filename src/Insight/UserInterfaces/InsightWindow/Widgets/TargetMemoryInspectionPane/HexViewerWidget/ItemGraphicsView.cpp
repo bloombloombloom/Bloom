@@ -4,9 +4,9 @@
 
 #include "ByteItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
-    using Bloom::Targets::TargetMemoryDescriptor;
+    using Targets::TargetMemoryDescriptor;
 
     ItemGraphicsView::ItemGraphicsView(
         const TargetMemoryDescriptor& targetMemoryDescriptor,

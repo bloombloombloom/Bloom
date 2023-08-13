@@ -7,7 +7,7 @@
 
 #include "AvrResponse.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     /**
      * AVR CMSIS-DAP vendor command.

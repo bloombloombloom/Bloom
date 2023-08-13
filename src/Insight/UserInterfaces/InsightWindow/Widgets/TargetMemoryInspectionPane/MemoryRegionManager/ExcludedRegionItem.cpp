@@ -6,7 +6,7 @@
 #include "src/Exceptions/Exception.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     ExcludedRegionItem::ExcludedRegionItem(
         const ExcludedMemoryRegion& region,
@@ -23,7 +23,7 @@ namespace Bloom::Widgets
         );
 
         if (!formUiFile.open(QFile::ReadOnly)) {
-            throw Bloom::Exceptions::Exception("Failed to open excluded region item form UI file");
+            throw Exceptions::Exception("Failed to open excluded region item form UI file");
         }
 
         auto uiLoader = UiLoader(this);

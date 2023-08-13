@@ -9,7 +9,7 @@
 #include "src/Insight/InsightWorker/Tasks/InsightWorkerTask.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskWindow/TaskWindow.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class TaskIndicator: public QWidget
     {

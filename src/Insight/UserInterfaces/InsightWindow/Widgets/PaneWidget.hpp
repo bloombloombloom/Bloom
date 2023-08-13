@@ -7,7 +7,7 @@
 #include "PanelWidget.hpp"
 #include "PaneState.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class PaneWidget: public QWidget
     {

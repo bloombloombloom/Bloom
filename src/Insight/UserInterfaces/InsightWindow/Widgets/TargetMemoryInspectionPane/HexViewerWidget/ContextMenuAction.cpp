@@ -1,6 +1,6 @@
 #include "ContextMenuAction.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     ContextMenuAction::ContextMenuAction(
         const QString& text,

@@ -8,7 +8,7 @@
 
 #include "src/Services/DateTimeService.hpp"
 
-namespace Bloom::Events
+namespace Events
 {
     static_assert(std::atomic<int>::is_always_lock_free);
 

@@ -16,13 +16,13 @@
 #include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
-    using Bloom::Targets::TargetMemoryDescriptor;
-    using Bloom::Targets::TargetMemoryType;
-    using Bloom::Targets::TargetMemoryAddressRange;
+    using Targets::TargetMemoryDescriptor;
+    using Targets::TargetMemoryType;
+    using Targets::TargetMemoryAddressRange;
 
     TargetMemoryInspectionPane::TargetMemoryInspectionPane(
         const TargetMemoryDescriptor& targetMemoryDescriptor,

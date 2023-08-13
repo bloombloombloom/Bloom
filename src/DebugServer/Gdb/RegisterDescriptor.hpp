@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     using GdbRegisterId = std::uint16_t;
 
@@ -60,10 +60,10 @@ namespace std
      * class).
      */
     template<>
-    class hash<Bloom::DebugServer::Gdb::RegisterDescriptor>
+    class hash<DebugServer::Gdb::RegisterDescriptor>
     {
     public:
-        std::size_t operator () (const Bloom::DebugServer::Gdb::RegisterDescriptor& descriptor) const {
+        std::size_t operator () (const DebugServer::Gdb::RegisterDescriptor& descriptor) const {
             // We use the GDB register number as the hash, as it is unique to the register.
             return static_cast<size_t>(descriptor.id);
         }

@@ -8,7 +8,7 @@
 
 #include "src/DebugServer/Gdb/Feature.hpp"
 
-namespace Bloom::DebugServer::Gdb::ResponsePackets
+namespace DebugServer::Gdb::ResponsePackets
 {
     /**
      * The SupportedFeaturesResponse class implements the response packet structure for the "qSupported" command.

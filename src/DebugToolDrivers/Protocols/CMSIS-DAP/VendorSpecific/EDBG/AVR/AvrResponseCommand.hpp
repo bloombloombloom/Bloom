@@ -6,7 +6,7 @@
 
 #include "AvrResponse.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     /**
      * All AVR commands result in an automatic response, but that is just a response to confirm

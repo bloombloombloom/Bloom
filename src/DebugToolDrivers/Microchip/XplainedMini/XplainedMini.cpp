@@ -1,6 +1,6 @@
 #include "XplainedMini.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     XplainedMini::XplainedMini()
         : EdbgDevice(

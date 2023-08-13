@@ -6,7 +6,7 @@
 
 #include "BitBodyWidget.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     BitWidget::BitWidget(
         int bitIndex,

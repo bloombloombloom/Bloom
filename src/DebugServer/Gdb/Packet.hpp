@@ -7,7 +7,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     using RawPacket = std::vector<unsigned char>;
 

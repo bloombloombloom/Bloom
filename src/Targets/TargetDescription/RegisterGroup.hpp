@@ -7,7 +7,7 @@
 
 #include "BitField.hpp"
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     struct Register
     {

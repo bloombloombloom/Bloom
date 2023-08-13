@@ -5,7 +5,7 @@
 #include "src/DebugToolDrivers/TargetInterfaces/TargetPowerManagementInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg
 {
     class EdbgTargetPowerManagementInterface: public TargetInterfaces::TargetPowerManagementInterface
     {

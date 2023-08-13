@@ -8,7 +8,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
 {
     class GetProgramCounter: public Avr8GenericResponseFrame
     {

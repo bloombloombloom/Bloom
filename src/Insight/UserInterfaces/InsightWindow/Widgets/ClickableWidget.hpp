@@ -4,7 +4,7 @@
 #include <QEvent>
 #include <QMouseEvent>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ClickableWidget: public QFrame
     {

@@ -3,7 +3,7 @@
 #include <QMenu>
 #include <QAction>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     TextInput::TextInput(QWidget* parent)
         : QLineEdit(parent)

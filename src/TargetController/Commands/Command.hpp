@@ -8,7 +8,7 @@
 
 #include "src/TargetController/Responses/Response.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     using CommandIdType = int;
     static_assert(std::atomic<CommandIdType>::is_always_lock_free);

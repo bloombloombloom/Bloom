@@ -3,7 +3,7 @@
 #include "Avr8GenericCommandFrame.hpp"
 #include "../../ResponseFrames/AVR8Generic/GetDeviceId.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
     class GetDeviceId: public Avr8GenericCommandFrame<std::array<unsigned char, 2>>
     {

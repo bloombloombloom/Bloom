@@ -8,7 +8,7 @@
 
 #include "HexViewerItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
 #pragma pack(push, 1)
     class ByteItem: public HexViewerItem

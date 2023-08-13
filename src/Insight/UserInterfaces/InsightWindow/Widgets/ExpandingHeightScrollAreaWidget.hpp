@@ -4,7 +4,7 @@
 #include <QScrollArea>
 #include <QSize>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ExpandingHeightScrollAreaWidget: public QScrollArea
     {

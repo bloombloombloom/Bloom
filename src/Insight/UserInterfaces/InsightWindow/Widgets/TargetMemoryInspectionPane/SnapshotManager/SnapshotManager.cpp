@@ -18,9 +18,9 @@
 #include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
-    using Bloom::Exceptions::Exception;
+    using Exceptions::Exception;
 
     SnapshotManager::SnapshotManager(
         const Targets::TargetMemoryDescriptor& memoryDescriptor,

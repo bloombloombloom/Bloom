@@ -25,7 +25,7 @@
 #include "SnapshotViewer/SnapshotViewer.hpp"
 #include "SnapshotDiff/SnapshotDiff.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class SnapshotManager: public PaneWidget
     {

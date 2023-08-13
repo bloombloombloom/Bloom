@@ -41,10 +41,10 @@
 
 #include "src/Services/ProcessService.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     using namespace Exceptions;
-    using namespace Bloom::Exceptions;
+    using namespace ::Exceptions;
 
     using CommandPackets::CommandPacket;
 

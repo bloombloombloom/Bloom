@@ -2,7 +2,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     /**
      * A programming session is created upon receiving the first FlashWrite (vFlashWrite) packet from GDB.

@@ -16,14 +16,14 @@
 
 #include "src/Insight/InsightWorker/Tasks/ReadTargetRegisters.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
-    using Bloom::Targets::TargetDescriptor;
-    using Bloom::Targets::TargetRegisterDescriptor;
-    using Bloom::Targets::TargetRegisterDescriptors;
-    using Bloom::Targets::TargetRegisterType;
+    using Targets::TargetDescriptor;
+    using Targets::TargetRegisterDescriptor;
+    using Targets::TargetRegisterDescriptors;
+    using Targets::TargetRegisterType;
 
     TargetRegistersPaneWidget::TargetRegistersPaneWidget(
         const TargetDescriptor& targetDescriptor,

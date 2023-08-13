@@ -1,6 +1,6 @@
 #include "TopLevelGroupItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     TopLevelGroupItem::TopLevelGroupItem(
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,

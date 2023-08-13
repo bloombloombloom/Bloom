@@ -2,7 +2,7 @@
 
 #include <QPainter>
 
-namespace Bloom::Widgets::InsightTargetWidgets::Qfp
+namespace Widgets::InsightTargetWidgets::Qfp
 {
     void BodyWidget::paintEvent(QPaintEvent* event) {
         auto painter = QPainter(this);

@@ -7,7 +7,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * The ContinueExecution class implements a structure for "c" packets. These packets instruct the server

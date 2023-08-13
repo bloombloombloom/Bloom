@@ -8,7 +8,7 @@
 
 #include "SvgWidget.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class SvgToolButton: public QToolButton
     {

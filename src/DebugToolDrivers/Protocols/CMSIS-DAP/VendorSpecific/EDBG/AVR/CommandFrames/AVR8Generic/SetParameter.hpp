@@ -2,7 +2,7 @@
 
 #include "Avr8GenericCommandFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
     class SetParameter: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {

@@ -5,7 +5,7 @@
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVR8Generic/Avr8GenericResponseFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     enum class Avr8CommandFailureCode: std::uint8_t
     {
@@ -58,7 +58,7 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         UNKNOWN_ERROR = 0xFF,
     };
 
-    class Avr8CommandFailure: public Bloom::Exceptions::TargetOperationFailure
+    class Avr8CommandFailure: public Exceptions::TargetOperationFailure
     {
     public:
         std::optional<Avr8CommandFailureCode> code;

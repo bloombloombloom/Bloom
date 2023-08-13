@@ -3,12 +3,12 @@
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
 #include "src/Insight/InsightWorker/Tasks/SetTargetPinState.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets
+namespace Widgets::InsightTargetWidgets
 {
-    using Bloom::Targets::TargetVariant;
-    using Bloom::Targets::TargetPinDescriptor;
-    using Bloom::Targets::TargetPinType;
-    using Bloom::Targets::TargetPinState;
+    using Targets::TargetVariant;
+    using Targets::TargetPinDescriptor;
+    using Targets::TargetPinType;
+    using Targets::TargetPinState;
 
     TargetPinWidget::TargetPinWidget(
         Targets::TargetPinDescriptor pinDescriptor,

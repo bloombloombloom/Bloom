@@ -1,6 +1,6 @@
 #include "SvgToolButton.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     SvgToolButton::SvgToolButton(QWidget* parent): QToolButton(parent) {
         this->setButtonWidth(10);

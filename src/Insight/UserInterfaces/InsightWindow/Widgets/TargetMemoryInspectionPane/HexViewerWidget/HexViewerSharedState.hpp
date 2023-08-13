@@ -5,7 +5,7 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "HexViewerWidgetSettings.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ByteItem;
 

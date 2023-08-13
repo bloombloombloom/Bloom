@@ -24,7 +24,7 @@
 
 #include "Avr8TargetConfig.hpp"
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit
+namespace Targets::Microchip::Avr::Avr8Bit
 {
     class Avr8: public Target
     {
@@ -34,7 +34,7 @@ namespace Bloom::Targets::Microchip::Avr::Avr8Bit
         /*
          * The functions below implement the Target interface for AVR8 targets.
          *
-         * See the Bloom::Targets::Target abstract class for documentation on the expected behaviour of
+         * See the Targets::Target abstract class for documentation on the expected behaviour of
          * each function.
          */
 

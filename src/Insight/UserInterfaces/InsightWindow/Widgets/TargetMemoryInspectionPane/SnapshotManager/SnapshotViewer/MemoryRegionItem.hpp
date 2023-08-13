@@ -7,7 +7,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class MemoryRegionItem: public ListItem
     {

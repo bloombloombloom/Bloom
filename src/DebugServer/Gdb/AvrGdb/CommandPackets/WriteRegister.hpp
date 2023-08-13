@@ -7,7 +7,7 @@
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb::CommandPackets
+namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
      * The WriteRegister class implements the structure for "P" packets.

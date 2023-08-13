@@ -2,7 +2,7 @@
 
 #include "src/Services/DateTimeService.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     MemorySnapshotItem::MemorySnapshotItem(const MemorySnapshot& memorySnapshot)
         : memorySnapshot(memorySnapshot)

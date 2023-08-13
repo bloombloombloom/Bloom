@@ -2,7 +2,7 @@
 
 #include "DiscoveryCommandFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Discovery
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Discovery
 {
     /**
      * The query context is the type of query to execute.

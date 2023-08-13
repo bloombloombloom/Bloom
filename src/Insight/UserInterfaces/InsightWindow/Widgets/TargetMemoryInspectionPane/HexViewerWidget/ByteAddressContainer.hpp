@@ -8,7 +8,7 @@
 #include "HexViewerSharedState.hpp"
 #include "ByteAddressItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ByteAddressContainer: public QGraphicsItem
     {

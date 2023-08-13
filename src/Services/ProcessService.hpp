@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <proc/readproc.h>
 
-namespace Bloom::Services
+namespace Services
 {
     class ProcessService
     {

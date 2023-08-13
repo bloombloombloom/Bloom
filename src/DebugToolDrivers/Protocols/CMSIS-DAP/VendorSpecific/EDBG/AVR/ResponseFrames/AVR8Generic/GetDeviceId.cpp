@@ -1,6 +1,6 @@
 #include "GetDeviceId.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8Generic
 {
     GetDeviceId::GetDeviceId(const std::vector<AvrResponse>& AvrResponses)
         : Avr8GenericResponseFrame(AvrResponses)

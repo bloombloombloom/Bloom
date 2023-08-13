@@ -8,7 +8,7 @@
 
 #include "../TargetRegisterInspectorWindow.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     BitsetWidget::BitsetWidget(int byteNumber, unsigned char& byte, bool readOnly, QWidget* parent)
     : QWidget(parent), byteNumber(byteNumber), byte(byte), readOnly(readOnly) {

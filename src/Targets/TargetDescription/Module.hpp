@@ -3,7 +3,7 @@
 #include "ModuleInstance.hpp"
 #include "RegisterGroup.hpp"
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     struct Module
     {

@@ -2,7 +2,7 @@
 
 #include "Exception.hpp"
 
-namespace Bloom::Exceptions
+namespace Exceptions
 {
     class TargetControllerStartupFailure: public Exception
     {

@@ -5,7 +5,7 @@
 
 #include "EdbgControlCommandFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::EdbgControl
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::EdbgControl
 {
     class SetParameter: public EdbgControlCommandFrame<std::array<unsigned char, 6>>
     {

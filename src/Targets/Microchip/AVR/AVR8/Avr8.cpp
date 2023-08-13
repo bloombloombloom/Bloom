@@ -14,7 +14,7 @@
 #include "Exceptions/DebugWirePhysicalInterfaceError.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit
+namespace Targets::Microchip::Avr::Avr8Bit
 {
     using namespace Exceptions;
 

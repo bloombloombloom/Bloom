@@ -66,7 +66,7 @@
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
 
-namespace Bloom::TargetController
+namespace TargetController
 {
     static_assert(std::atomic<TargetControllerState>::is_always_lock_free);
 

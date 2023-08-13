@@ -1,6 +1,6 @@
 #include "TargetDescriptor.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     TargetDescriptor::TargetDescriptor(
         const Targets::TargetDescriptor& targetDescriptor,

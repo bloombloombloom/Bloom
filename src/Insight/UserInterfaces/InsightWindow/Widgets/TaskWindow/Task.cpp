@@ -4,7 +4,7 @@
 #include <QColor>
 #include <QTimer>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     Task::Task(
         const QSharedPointer<InsightWorkerTask>& task,

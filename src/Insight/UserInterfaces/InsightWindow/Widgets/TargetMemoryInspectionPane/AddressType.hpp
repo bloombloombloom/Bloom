@@ -2,11 +2,8 @@
 
 #include <cstdint>
 
-namespace Bloom
+enum class AddressType: std::uint8_t
 {
-    enum class AddressType: std::uint8_t
-    {
-        ABSOLUTE,
-        RELATIVE,
-    };
-}
+    ABSOLUTE,
+    RELATIVE,
+};

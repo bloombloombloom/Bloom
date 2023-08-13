@@ -7,9 +7,9 @@
 #include "PinWidget.hpp"
 #include "PinBodyWidget.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Qfp
+namespace Widgets::InsightTargetWidgets::Qfp
 {
-    using namespace Bloom::Targets;
+    using namespace Targets;
 
     PinWidget::PinWidget(
         const TargetPinDescriptor& pinDescriptor,

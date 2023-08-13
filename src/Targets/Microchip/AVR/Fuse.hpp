@@ -4,7 +4,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::Targets::Microchip::Avr
+namespace Targets::Microchip::Avr
 {
     enum class FuseType: std::uint8_t
     {

@@ -2,7 +2,7 @@
 
 #include "src/Helpers/BiMap.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     enum class Feature: int
     {

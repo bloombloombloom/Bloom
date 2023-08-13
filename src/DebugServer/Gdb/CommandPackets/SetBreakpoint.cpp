@@ -11,7 +11,7 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
@@ -21,7 +21,7 @@ namespace Bloom::DebugServer::Gdb::CommandPackets
     using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::EmptyResponsePacket;
 
-    using Exceptions::Exception;
+    using ::Exceptions::Exception;
 
     SetBreakpoint::SetBreakpoint(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)

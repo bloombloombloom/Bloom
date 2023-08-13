@@ -1,6 +1,6 @@
 #include "GroupItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     GroupItem::~GroupItem() {
         for (auto& byteItem : this->items) {

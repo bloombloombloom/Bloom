@@ -4,7 +4,7 @@
 
 #include "src/Targets/TargetState.hpp"
 
-namespace Bloom::TargetController::Responses
+namespace TargetController::Responses
 {
     class TargetState: public Response
     {

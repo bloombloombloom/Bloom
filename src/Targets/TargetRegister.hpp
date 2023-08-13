@@ -11,7 +11,7 @@
 
 #include "TargetMemory.hpp"
 
-namespace Bloom::Targets
+namespace Targets
 {
     using TargetRegisterDescriptorId = std::uint32_t;
     using TargetRegisterDescriptorIds = std::set<Targets::TargetRegisterDescriptorId>;
@@ -97,7 +97,7 @@ namespace Bloom::Targets
         static inline std::atomic<TargetRegisterDescriptorId> lastRegisterDescriptorId = 0;
         std::size_t getHash() const;
 
-        friend std::hash<Bloom::Targets::TargetRegisterDescriptor>;
+        friend std::hash<Targets::TargetRegisterDescriptor>;
     };
 
     struct TargetRegister
@@ -129,10 +129,10 @@ namespace std
      * class)
      */
     template<>
-    class hash<Bloom::Targets::TargetRegisterDescriptor>
+    class hash<Targets::TargetRegisterDescriptor>
     {
     public:
-        std::size_t operator()(const Bloom::Targets::TargetRegisterDescriptor& descriptor) const {
+        std::size_t operator()(const Targets::TargetRegisterDescriptor& descriptor) const {
             return descriptor.getHash();
         }
     };

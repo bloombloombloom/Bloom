@@ -19,9 +19,9 @@
 #include "src/Insight/InsightSignals.hpp"
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
-    using Bloom::Exceptions::Exception;
+    using Exceptions::Exception;
 
     SnapshotDiff::SnapshotDiff(
         MemorySnapshot& snapshotA,

@@ -1,6 +1,6 @@
 #include "XplainedNano.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     XplainedNano::XplainedNano()
         : EdbgDevice(

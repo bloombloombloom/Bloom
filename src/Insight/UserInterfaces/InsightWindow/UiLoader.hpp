@@ -3,21 +3,18 @@
 #include <QUiLoader>
 #include <QSize>
 
-namespace Bloom
+class UiLoader: public QUiLoader
 {
-    class UiLoader: public QUiLoader
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        explicit UiLoader(QObject* parent);
+public:
+    explicit UiLoader(QObject* parent);
 
-        QWidget* createWidget(const QString& className, QWidget* parent, const QString& name) override;
+    QWidget* createWidget(const QString& className, QWidget* parent, const QString& name) override;
 
-    private:
-        std::map<
-            QString,
-            std::function<QWidget*(QWidget* parent, const QString& name)>
-        > customWidgetConstructorsByWidgetName = {};
-    };
-}
+private:
+    std::map<
+        QString,
+        std::function<QWidget*(QWidget* parent, const QString& name)>
+    > customWidgetConstructorsByWidgetName = {};
+};

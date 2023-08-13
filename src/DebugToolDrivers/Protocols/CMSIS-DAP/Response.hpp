@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
+namespace DebugToolDrivers::Protocols::CmsisDap
 {
     class Response
     {

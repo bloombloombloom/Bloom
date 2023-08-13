@@ -7,7 +7,7 @@
 #include "RegisterGroup.hpp"
 #include "Signal.hpp"
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     struct ModuleInstance
     {

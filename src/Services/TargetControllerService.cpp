@@ -27,7 +27,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Services
+namespace Services
 {
     using TargetController::Commands::StartAtomicSession;
     using TargetController::Commands::EndAtomicSession;

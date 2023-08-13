@@ -6,7 +6,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * The EepromFill class implements a structure for the "monitor eeprom fill" GDB command.

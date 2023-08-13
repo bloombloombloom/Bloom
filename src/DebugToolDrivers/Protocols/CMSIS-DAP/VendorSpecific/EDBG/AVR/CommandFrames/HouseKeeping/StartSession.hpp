@@ -4,7 +4,7 @@
 
 #include "HouseKeepingCommandFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping
 {
     /**
      * The Start Session command begins a session with the tool.

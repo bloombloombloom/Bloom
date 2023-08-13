@@ -1,10 +1,7 @@
 #include "GetTargetState.hpp"
 
-namespace Bloom
-{
-    using Services::TargetControllerService;
+using Services::TargetControllerService;
 
-    void GetTargetState::run(TargetControllerService& targetControllerService) {
-        emit this->targetState(targetControllerService.getTargetState());
-    }
+void GetTargetState::run(TargetControllerService& targetControllerService) {
+    emit this->targetState(targetControllerService.getTargetState());
 }

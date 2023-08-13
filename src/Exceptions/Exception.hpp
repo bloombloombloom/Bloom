@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace Bloom::Exceptions
+namespace Exceptions
 {
     class Exception: public std::runtime_error
     {

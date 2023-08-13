@@ -2,9 +2,9 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::HouseKeeping
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::HouseKeeping
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     HouseKeepingResponseFrame::HouseKeepingResponseFrame(const std::vector<AvrResponse>& avrResponses)
         : AvrResponseFrame(avrResponses)

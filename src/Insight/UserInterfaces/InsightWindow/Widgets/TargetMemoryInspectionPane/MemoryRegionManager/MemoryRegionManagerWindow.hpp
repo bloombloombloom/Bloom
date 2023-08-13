@@ -21,7 +21,7 @@
 #include "FocusedRegionItem.hpp"
 #include "ExcludedRegionItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class MemoryRegionManagerWindow: public QWidget
     {

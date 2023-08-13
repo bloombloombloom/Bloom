@@ -2,7 +2,7 @@
 
 #include "src/EventManager/EventManager.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     DebugSession::DebugSession(
         Connection&& connection,

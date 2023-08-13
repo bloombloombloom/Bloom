@@ -7,9 +7,9 @@
 #include "src/Logger/Logger.hpp"
 #include "src/Services/PathService.hpp"
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     const std::string& TargetDescriptionFile::getTargetName() const {
         return this->targetName;

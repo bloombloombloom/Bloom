@@ -3,7 +3,7 @@
 #include <QVBoxLayout>
 #include <cassert>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     DifferentialHexViewerWidget::DifferentialHexViewerWidget(
         DifferentialHexViewerWidgetType type,

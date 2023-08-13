@@ -10,7 +10,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListScene.hpp"
 #include "src/Services/PathService.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     RegisterGroupItem::RegisterGroupItem(
         QString name,

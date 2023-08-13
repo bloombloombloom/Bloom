@@ -5,7 +5,7 @@
 #include "Avr8GenericCommandFrame.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
     class WriteMemory: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {

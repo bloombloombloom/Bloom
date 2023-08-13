@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit
+namespace Targets::Microchip::Avr::Avr8Bit
 {
     /**
      * Information relating to a specific AVR8 programming session.

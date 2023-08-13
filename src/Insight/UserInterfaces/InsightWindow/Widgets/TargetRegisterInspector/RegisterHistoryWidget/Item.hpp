@@ -4,7 +4,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class Item: public ClickableWidget
     {

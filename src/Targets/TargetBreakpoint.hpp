@@ -4,7 +4,7 @@
 
 #include "TargetMemory.hpp"
 
-namespace Bloom::Targets
+namespace Targets
 {
     enum class TargetBreakCause: int
     {

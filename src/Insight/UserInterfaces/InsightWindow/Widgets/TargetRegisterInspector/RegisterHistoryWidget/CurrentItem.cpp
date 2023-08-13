@@ -3,7 +3,7 @@
 #include <QStyle>
 #include <QVBoxLayout>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     CurrentItem::CurrentItem(
         const Targets::TargetMemoryBuffer& registerValue,

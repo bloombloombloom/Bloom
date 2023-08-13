@@ -9,7 +9,7 @@
 
 #include "PanelState.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     Q_NAMESPACE
 

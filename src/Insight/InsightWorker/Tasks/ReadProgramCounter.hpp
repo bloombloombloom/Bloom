@@ -4,29 +4,26 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom
+class ReadProgramCounter: public InsightWorkerTask
 {
-    class ReadProgramCounter: public InsightWorkerTask
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        ReadProgramCounter() = default;
+public:
+    ReadProgramCounter() = default;
 
-        QString brief() const override {
-            return "Reading program counter";
-        }
+    QString brief() const override {
+        return "Reading program counter";
+    }
 
-        TaskGroups taskGroups() const override {
-            return TaskGroups({
-                TaskGroup::USES_TARGET_CONTROLLER,
-            });
-        };
-
-    signals:
-        void programCounterRead(Targets::TargetProgramCounter programCounter);
-
-    protected:
-        void run(Services::TargetControllerService& targetControllerService) override;
+    TaskGroups taskGroups() const override {
+        return TaskGroups({
+            TaskGroup::USES_TARGET_CONTROLLER,
+        });
     };
-}
+
+signals:
+    void programCounterRead(Targets::TargetProgramCounter programCounter);
+
+protected:
+    void run(Services::TargetControllerService& targetControllerService) override;
+};

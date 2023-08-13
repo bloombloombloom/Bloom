@@ -5,7 +5,7 @@
 
 #include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     /**
      * The Power Debugger device is very similar to the Atmel-ICE. It is an EDBG device.

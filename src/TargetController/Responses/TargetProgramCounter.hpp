@@ -6,7 +6,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::TargetController::Responses
+namespace TargetController::Responses
 {
     class TargetProgramCounter: public Response
     {

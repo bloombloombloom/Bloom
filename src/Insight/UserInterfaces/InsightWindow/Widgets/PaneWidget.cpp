@@ -1,6 +1,6 @@
 #include "PaneWidget.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     PaneWidget::PaneWidget(PaneState& state, PanelWidget* parent)
         : state(state)

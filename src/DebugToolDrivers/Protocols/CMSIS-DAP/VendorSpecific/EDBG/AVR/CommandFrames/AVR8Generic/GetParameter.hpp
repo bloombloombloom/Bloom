@@ -4,7 +4,7 @@
 
 #include "Avr8GenericCommandFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::Avr8Generic
 {
     class GetParameter: public Avr8GenericCommandFrame<std::array<unsigned char, 5>>
     {

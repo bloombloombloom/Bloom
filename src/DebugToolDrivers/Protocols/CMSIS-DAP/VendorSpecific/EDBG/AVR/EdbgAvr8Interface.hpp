@@ -15,7 +15,7 @@
 #include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     /**
      * The EdbgAvr8Interface implements the AVR8 Generic EDBG/CMSIS-DAP protocol, as an Avr8DebugInterface.

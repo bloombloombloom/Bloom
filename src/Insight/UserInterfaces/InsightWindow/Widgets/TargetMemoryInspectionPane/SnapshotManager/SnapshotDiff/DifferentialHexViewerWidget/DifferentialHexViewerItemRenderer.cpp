@@ -6,7 +6,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ByteAddressContainer.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     DifferentialHexViewerItemRenderer::DifferentialHexViewerItemRenderer(
         DifferentialHexViewerWidgetType differentialHexViewerWidgetType,

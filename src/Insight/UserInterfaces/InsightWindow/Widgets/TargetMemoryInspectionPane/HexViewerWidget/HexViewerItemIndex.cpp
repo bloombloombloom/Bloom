@@ -3,7 +3,7 @@
 #include <cassert>
 #include <cmath>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     HexViewerItemIndex::HexViewerItemIndex(
         const TopLevelGroupItem* topLevelGroupItem,

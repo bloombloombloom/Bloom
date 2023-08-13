@@ -11,7 +11,7 @@
 
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
+namespace DebugToolDrivers::Protocols::CmsisDap
 {
     /**
      * The CmsisDapInterface class implements the CMSIS-DAP protocol.

@@ -2,7 +2,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::Exceptions
+namespace DebugServer::Gdb::Exceptions
 {
     /**
      * The GDB debug server spends most of its time in a blocking state, waiting for a new connection or for some data
@@ -13,7 +13,7 @@ namespace Bloom::DebugServer::Gdb::Exceptions
      * For more on how the GDB server implementation allows for interruptions, see the "Servicing events" section in
      * src/DebugServer/README.md.
      */
-    class DebugServerInterrupted: public Bloom::Exceptions::Exception
+    class DebugServerInterrupted: public ::Exceptions::Exception
     {
     public:
         explicit DebugServerInterrupted() = default;

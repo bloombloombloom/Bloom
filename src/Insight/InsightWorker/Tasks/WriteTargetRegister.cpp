@@ -1,10 +1,7 @@
 #include "WriteTargetRegister.hpp"
 
-namespace Bloom
-{
-    using Services::TargetControllerService;
+using Services::TargetControllerService;
 
-    void WriteTargetRegister::run(TargetControllerService& targetControllerService) {
-        targetControllerService.writeRegisters({this->targetRegister});
-    }
+void WriteTargetRegister::run(TargetControllerService& targetControllerService) {
+    targetControllerService.writeRegisters({this->targetRegister});
 }

@@ -11,7 +11,7 @@
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets
+namespace Widgets::InsightTargetWidgets
 {
     /**
      * Each custom target package widget should be derived from this class.

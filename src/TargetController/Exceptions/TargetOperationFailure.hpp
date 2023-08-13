@@ -2,7 +2,7 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::Exceptions
+namespace Exceptions
 {
     class TargetOperationFailure: public Exception
     {

@@ -7,14 +7,14 @@
 
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
     using ResponsePackets::OkResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
 
-    using Exceptions::Exception;
+    using ::Exceptions::Exception;
 
     Detach::Detach(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)

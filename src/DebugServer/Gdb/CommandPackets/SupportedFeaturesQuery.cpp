@@ -8,18 +8,16 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/Logger/Logger.hpp"
-#include "src/Exceptions/Exception.hpp"
 #include "src/DebugServer/Gdb/Exceptions/ClientNotSupported.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
     using ResponsePackets::SupportedFeaturesResponse;
     using ResponsePackets::ErrorResponsePacket;
 
-    using Bloom::Exceptions::Exception;
-    using Gdb::Exceptions::ClientNotSupported;
+    using Exceptions::ClientNotSupported;
 
     SupportedFeaturesQuery::SupportedFeaturesQuery(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)

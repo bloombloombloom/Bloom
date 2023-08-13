@@ -4,7 +4,7 @@
 
 #include "src/TargetController/Responses/TargetProgramCounter.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class GetTargetProgramCounter: public Command
     {

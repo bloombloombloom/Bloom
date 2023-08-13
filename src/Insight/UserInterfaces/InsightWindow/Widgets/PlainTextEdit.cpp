@@ -3,7 +3,7 @@
 #include <QMenu>
 #include <QAction>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     PlainTextEdit::PlainTextEdit(QWidget* parent)
         : QPlainTextEdit(parent)

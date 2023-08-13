@@ -4,7 +4,7 @@
 #include <QHBoxLayout>
 #include <QByteArray>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     RegisterHistoryItem::RegisterHistoryItem(
         const Targets::TargetMemoryBuffer& registerValue,

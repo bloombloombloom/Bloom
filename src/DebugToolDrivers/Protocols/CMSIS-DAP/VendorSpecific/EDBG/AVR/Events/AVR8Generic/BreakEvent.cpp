@@ -2,11 +2,11 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
-    using Bloom::Targets::TargetBreakCause;
+    using Targets::TargetBreakCause;
 
     BreakEvent::BreakEvent(const AvrEvent& event)
         : AvrEvent(event)

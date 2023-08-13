@@ -2,7 +2,7 @@
 
 #include "CommandPacket.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     class Detach: public CommandPacket
     {

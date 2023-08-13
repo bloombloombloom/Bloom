@@ -2,7 +2,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/AddressType.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     struct HexViewerWidgetSettings
     {

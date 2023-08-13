@@ -4,7 +4,7 @@
 #include <QString>
 #include <map>
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     struct Property
     {

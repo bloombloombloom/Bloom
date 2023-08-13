@@ -24,7 +24,7 @@
 #include "InsightMainWindowClosed.hpp"
 #endif
 
-namespace Bloom::Events
+namespace Events
 {
     template <class EventType>
     using SharedEventPointer = std::shared_ptr<const EventType>;

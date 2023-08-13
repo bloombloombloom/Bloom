@@ -8,7 +8,7 @@
 
 #include "src/Services/TargetControllerService.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * GDB RSP command packets are sent to the server, from the GDB client. These packets carry instructions that the

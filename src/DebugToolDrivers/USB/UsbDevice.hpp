@@ -8,7 +8,7 @@
 
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
-namespace Bloom::Usb
+namespace Usb
 {
     using LibusbContext = std::unique_ptr<::libusb_context, decltype(&::libusb_exit)>;
     using LibusbDevice = std::unique_ptr<::libusb_device, decltype(&::libusb_unref_device)>;

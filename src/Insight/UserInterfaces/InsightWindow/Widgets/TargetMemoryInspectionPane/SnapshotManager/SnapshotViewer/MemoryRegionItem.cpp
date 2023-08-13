@@ -2,7 +2,7 @@
 
 #include "src/Services/DateTimeService.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     MemoryRegionItem::MemoryRegionItem(const MemoryRegion& memoryRegion)
         : memoryRegion(memoryRegion)

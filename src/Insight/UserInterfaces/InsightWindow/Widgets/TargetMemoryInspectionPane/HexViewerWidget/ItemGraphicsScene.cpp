@@ -15,7 +15,7 @@
 
 #include "src/Insight/InsightWorker/Tasks/ConstructHexViewerTopLevelGroupItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     ItemGraphicsScene::ItemGraphicsScene(
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,

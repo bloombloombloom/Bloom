@@ -7,7 +7,7 @@
 #include "ListScene.hpp"
 #include "ListItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ListView: public QGraphicsView
     {

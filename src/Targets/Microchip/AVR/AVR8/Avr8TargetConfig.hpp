@@ -8,7 +8,7 @@
 
 #include "PhysicalInterface.hpp"
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit
+namespace Targets::Microchip::Avr::Avr8Bit
 {
     /**
      * Extending the generic TargetConfig struct to accommodate AVR8 target configuration parameters.

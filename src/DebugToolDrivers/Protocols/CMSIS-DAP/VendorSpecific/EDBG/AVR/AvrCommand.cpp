@@ -1,6 +1,6 @@
 #include "AvrCommand.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     AvrCommand::AvrCommand(
         std::size_t fragmentCount,

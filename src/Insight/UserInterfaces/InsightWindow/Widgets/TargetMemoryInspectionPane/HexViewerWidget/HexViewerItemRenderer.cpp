@@ -3,7 +3,7 @@
 #include <QScrollBar>
 #include <QColor>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     HexViewerItemRenderer::HexViewerItemRenderer(
         const HexViewerSharedState& hexViewerState,

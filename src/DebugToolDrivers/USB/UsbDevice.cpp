@@ -6,9 +6,9 @@
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceNotFound.hpp"
 
-namespace Bloom::Usb
+namespace Usb
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     UsbDevice::UsbDevice(std::uint16_t vendorId, std::uint16_t productId)
         : vendorId(vendorId)

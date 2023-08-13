@@ -2,7 +2,7 @@
 
 #include <QStyle>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     Item::Item(const Targets::TargetMemoryBuffer& registerValue, QWidget* parent)
     : ClickableWidget(parent), registerValue(registerValue) {

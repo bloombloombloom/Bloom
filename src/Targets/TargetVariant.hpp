@@ -6,7 +6,7 @@
 
 #include "TargetPinDescriptor.hpp"
 
-namespace Bloom::Targets
+namespace Targets
 {
     enum class TargetPackage: std::uint8_t
     {

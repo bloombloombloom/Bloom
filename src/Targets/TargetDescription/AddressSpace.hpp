@@ -4,7 +4,7 @@
 
 #include "MemorySegment.hpp"
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     struct AddressSpace
     {

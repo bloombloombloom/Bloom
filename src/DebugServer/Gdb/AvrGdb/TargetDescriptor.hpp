@@ -2,7 +2,7 @@
 
 #include "src/DebugServer/Gdb/TargetDescriptor.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb
+namespace DebugServer::Gdb::AvrGdb
 {
     class TargetDescriptor: public DebugServer::Gdb::TargetDescriptor
     {

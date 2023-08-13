@@ -14,7 +14,7 @@
 
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::TargetController
+namespace TargetController
 {
     class CommandManager
     {

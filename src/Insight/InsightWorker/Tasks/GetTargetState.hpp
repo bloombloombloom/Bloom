@@ -4,29 +4,26 @@
 
 #include "src/Targets/TargetState.hpp"
 
-namespace Bloom
+class GetTargetState: public InsightWorkerTask
 {
-    class GetTargetState: public InsightWorkerTask
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        GetTargetState() = default;
+public:
+    GetTargetState() = default;
 
-        QString brief() const override {
-            return "Obtaining target state";
-        }
+    QString brief() const override {
+        return "Obtaining target state";
+    }
 
-        TaskGroups taskGroups() const override {
-            return TaskGroups({
-                TaskGroup::USES_TARGET_CONTROLLER,
-            });
-        };
-
-    signals:
-        void targetState(Targets::TargetState state);
-
-    protected:
-        void run(Services::TargetControllerService& targetControllerService) override;
+    TaskGroups taskGroups() const override {
+        return TaskGroups({
+            TaskGroup::USES_TARGET_CONTROLLER,
+        });
     };
-}
+
+signals:
+    void targetState(Targets::TargetState state);
+
+protected:
+    void run(Services::TargetControllerService& targetControllerService) override;
+};

@@ -8,29 +8,26 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 #include "src/Helpers/EnumToStringMappings.hpp"
 
-namespace Bloom
+class RetrieveMemorySnapshots: public InsightWorkerTask
 {
-    class RetrieveMemorySnapshots: public InsightWorkerTask
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        RetrieveMemorySnapshots(Targets::TargetMemoryType memoryType);
+public:
+    RetrieveMemorySnapshots(Targets::TargetMemoryType memoryType);
 
-        QString brief() const override {
-            return "Loading saved " + EnumToStringMappings::targetMemoryTypes.at(this->memoryType).toUpper()
-                + " memory snapshots";
-        }
+    QString brief() const override {
+        return "Loading saved " + EnumToStringMappings::targetMemoryTypes.at(this->memoryType).toUpper()
+            + " memory snapshots";
+    }
 
-    signals:
-        void memorySnapshotsRetrieved(std::vector<MemorySnapshot> snapshots);
+signals:
+    void memorySnapshotsRetrieved(std::vector<MemorySnapshot> snapshots);
 
-    protected:
-        void run(Services::TargetControllerService& targetControllerService) override;
+protected:
+    void run(Services::TargetControllerService& targetControllerService) override;
 
-    private:
-        Targets::TargetMemoryType memoryType;
+private:
+    Targets::TargetMemoryType memoryType;
 
-        std::vector<MemorySnapshot> getSnapshots(Targets::TargetMemoryType memoryType);
-    };
-}
+    std::vector<MemorySnapshot> getSnapshots(Targets::TargetMemoryType memoryType);
+};

@@ -41,11 +41,11 @@
 // AVR events
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Events/AVR8Generic/BreakEvent.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    using namespace Bloom::Targets::Microchip::Avr;
+    using namespace Targets::Microchip::Avr;
     using namespace Avr8Bit;
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     using CommandFrames::Avr8Generic::Stop;
     using CommandFrames::Avr8Generic::Run;
@@ -72,19 +72,19 @@ namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using CommandFrames::Avr8Generic::EraseMemory;
     using CommandFrames::Avr8Generic::DisableDebugWire;
 
-    using Bloom::Targets::TargetState;
-    using Bloom::Targets::TargetMemoryType;
-    using Bloom::Targets::TargetMemoryBuffer;
-    using Bloom::Targets::TargetMemoryAddress;
-    using Bloom::Targets::TargetMemorySize;
-    using Bloom::Targets::TargetProgramCounter;
-    using Bloom::Targets::TargetRegister;
-    using Bloom::Targets::TargetRegisterDescriptor;
-    using Bloom::Targets::TargetRegisterDescriptors;
-    using Bloom::Targets::TargetRegisterDescriptorId;
-    using Bloom::Targets::TargetRegisterDescriptorIds;
-    using Bloom::Targets::TargetRegisterType;
-    using Bloom::Targets::TargetRegisters;
+    using Targets::TargetState;
+    using Targets::TargetMemoryType;
+    using Targets::TargetMemoryBuffer;
+    using Targets::TargetMemoryAddress;
+    using Targets::TargetMemorySize;
+    using Targets::TargetProgramCounter;
+    using Targets::TargetRegister;
+    using Targets::TargetRegisterDescriptor;
+    using Targets::TargetRegisterDescriptors;
+    using Targets::TargetRegisterDescriptorId;
+    using Targets::TargetRegisterDescriptorIds;
+    using Targets::TargetRegisterType;
+    using Targets::TargetRegisters;
 
     EdbgAvr8Interface::EdbgAvr8Interface(
         EdbgInterface* edbgInterface,

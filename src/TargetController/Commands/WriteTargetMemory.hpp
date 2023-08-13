@@ -4,7 +4,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class WriteTargetMemory: public Command
     {

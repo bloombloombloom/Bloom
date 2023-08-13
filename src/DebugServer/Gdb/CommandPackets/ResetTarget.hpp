@@ -4,7 +4,7 @@
 
 #include "Monitor.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     /**
      * The ResetTarget class implements a structure for the custom reset command (triggered via the "monitor reset"

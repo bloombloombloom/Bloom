@@ -2,7 +2,7 @@
 
 #include "src/ProjectConfig.hpp"
 
-namespace Bloom::DebugServer::Gdb
+namespace DebugServer::Gdb
 {
     /**
      * Extending the generic DebugServerConfig struct to accommodate GDB debug server configuration parameters.

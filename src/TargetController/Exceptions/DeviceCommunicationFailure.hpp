@@ -2,7 +2,7 @@
 
 #include "DeviceFailure.hpp"
 
-namespace Bloom::Exceptions
+namespace Exceptions
 {
     class DeviceCommunicationFailure: public DeviceFailure
     {

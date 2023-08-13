@@ -7,7 +7,7 @@
 
 #include "src/Targets/TargetPinDescriptor.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Dip
+namespace Widgets::InsightTargetWidgets::Dip
 {
     class PinBodyWidget: public TargetPinBodyWidget
     {

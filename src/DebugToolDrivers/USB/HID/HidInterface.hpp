@@ -10,7 +10,7 @@
 #include <hidapi/hidapi.h>
 #include <hidapi/hidapi_libusb.h>
 
-namespace Bloom::Usb
+namespace Usb
 {
     /**
      * The HidInterface uses the HIDAPI library to implement communication with HID endpoints.

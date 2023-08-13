@@ -2,7 +2,7 @@
 
 #include "HouseKeepingCommandFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::HouseKeeping
 {
     /**
      * The End Session command ends the active session with the tool.

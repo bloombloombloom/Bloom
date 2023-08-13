@@ -13,7 +13,7 @@
 
 #include "ServerInterface.hpp"
 
-namespace Bloom::DebugServer
+namespace DebugServer
 {
     /**
      * The DebugServer exposes the connected target to third-party debugging software such as IDEs.

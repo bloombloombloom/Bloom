@@ -6,10 +6,10 @@
 #include "src/TargetController/Exceptions/DeviceFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     using namespace Protocols::CmsisDap::Edbg::Avr;
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     using Protocols::CmsisDap::Edbg::EdbgInterface;
     using Protocols::CmsisDap::Edbg::EdbgTargetPowerManagementInterface;

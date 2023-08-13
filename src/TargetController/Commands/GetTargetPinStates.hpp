@@ -4,7 +4,7 @@
 
 #include "src/TargetController/Responses/TargetPinStates.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class GetTargetPinStates: public Command
     {

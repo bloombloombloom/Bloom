@@ -3,7 +3,7 @@
 #include "src/TargetController/Exceptions/DeviceNotFound.hpp"
 #include "src/Services/PathService.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     MplabSnap::MplabSnap()
         : EdbgDevice(

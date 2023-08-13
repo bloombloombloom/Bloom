@@ -12,13 +12,14 @@
 #include "src/DebugServer/Gdb/Exceptions/InvalidCommandOption.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
     using ResponsePackets::ResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
-    using Bloom::Exceptions::Exception;
+
+    using ::Exceptions::Exception;
     using Exceptions::InvalidCommandOption;
 
     EepromFill::EepromFill(Monitor&& monitorPacket)

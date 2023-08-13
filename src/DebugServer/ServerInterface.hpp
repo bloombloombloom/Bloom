@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Bloom::DebugServer
+namespace DebugServer
 {
     /**
      * Every debug server must implement this interface.

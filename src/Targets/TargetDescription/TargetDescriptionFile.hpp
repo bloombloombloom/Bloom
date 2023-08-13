@@ -12,7 +12,7 @@
 #include "Pinout.hpp"
 #include "Interface.hpp"
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     /**
      * A target description file (TDF) is an XML file that describes a particular target. All supported targets come

@@ -2,9 +2,9 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Discovery
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Discovery
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     DiscoveryResponseFrame::DiscoveryResponseFrame(const std::vector<AvrResponse>& avrResponses)
         : AvrResponseFrame(avrResponses)

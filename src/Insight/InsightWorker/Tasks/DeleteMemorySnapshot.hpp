@@ -6,24 +6,21 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom
+class DeleteMemorySnapshot: public InsightWorkerTask
 {
-    class DeleteMemorySnapshot: public InsightWorkerTask
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        DeleteMemorySnapshot(const QString& snapshotId, Targets::TargetMemoryType memoryType);
+public:
+    DeleteMemorySnapshot(const QString& snapshotId, Targets::TargetMemoryType memoryType);
 
-        QString brief() const override {
-            return "Deleting memory snapshot " + this->snapshotId;
-        }
+    QString brief() const override {
+        return "Deleting memory snapshot " + this->snapshotId;
+    }
 
-    protected:
-        void run(Services::TargetControllerService& targetControllerService) override;
+protected:
+    void run(Services::TargetControllerService& targetControllerService) override;
 
-    private:
-        QString snapshotId;
-        Targets::TargetMemoryType memoryType;
-    };
-}
+private:
+    QString snapshotId;
+    Targets::TargetMemoryType memoryType;
+};

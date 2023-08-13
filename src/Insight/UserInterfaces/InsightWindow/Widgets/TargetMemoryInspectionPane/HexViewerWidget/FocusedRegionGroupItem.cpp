@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     FocusedRegionGroupItem::FocusedRegionGroupItem(
         const FocusedMemoryRegion& focusedRegion,

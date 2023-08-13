@@ -12,7 +12,7 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class CreateSnapshotWindow: public QWidget
     {

@@ -4,7 +4,7 @@
 
 #include "src/Targets/TargetBreakpoint.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class RemoveBreakpoint: public Command
     {

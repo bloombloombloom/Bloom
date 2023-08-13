@@ -10,7 +10,7 @@
 #include "BodyWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Qfp
+namespace Widgets::InsightTargetWidgets::Qfp
 {
     /**
      * QuadFlatPackageWidget implements a custom Qt widget for Quad-flat package variants.

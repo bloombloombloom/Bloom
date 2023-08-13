@@ -1,6 +1,6 @@
 #include "PowerDebugger.hpp"
 
-namespace Bloom::DebugToolDrivers
+namespace DebugToolDrivers
 {
     PowerDebugger::PowerDebugger()
         : EdbgDevice(

@@ -2,7 +2,7 @@
 
 #include "Response.hpp"
 
-namespace Bloom::TargetController::Responses
+namespace TargetController::Responses
 {
     class Error: public Response
     {

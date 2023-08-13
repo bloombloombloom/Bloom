@@ -2,7 +2,7 @@
 
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AvrResponseFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::AvrIsp
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::AvrIsp
 {
     enum class StatusCode: unsigned char
     {

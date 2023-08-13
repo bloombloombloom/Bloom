@@ -5,14 +5,14 @@
 #include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
 
-namespace Bloom::DebugServer::Gdb::AvrGdb
+namespace DebugServer::Gdb::AvrGdb
 {
-    using Bloom::Targets::TargetRegisterDescriptor;
-    using Bloom::Targets::TargetRegisterType;
+    using Targets::TargetRegisterDescriptor;
+    using Targets::TargetRegisterType;
 
-    using Bloom::Exceptions::Exception;
+    using Exceptions::Exception;
 
-    TargetDescriptor::TargetDescriptor(const Bloom::Targets::TargetDescriptor& targetDescriptor)
+    TargetDescriptor::TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
         : DebugServer::Gdb::TargetDescriptor(
             targetDescriptor,
             {

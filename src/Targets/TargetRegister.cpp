@@ -1,6 +1,6 @@
 #include "TargetRegister.hpp"
 
-namespace Bloom::Targets
+namespace Targets
 {
     std::size_t TargetRegisterDescriptor::getHash() const {
         if (!this->cachedHash.has_value()) {

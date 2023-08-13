@@ -1,6 +1,6 @@
 #include "Command.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap
+namespace DebugToolDrivers::Protocols::CmsisDap
 {
     Command::Command(unsigned char commandId)
         : id(commandId)

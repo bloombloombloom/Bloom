@@ -4,7 +4,7 @@
 
 #include "AvrIspCommandFrame.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::AvrIsp
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::CommandFrames::AvrIsp
 {
     class LeaveProgrammingMode: public AvrIspCommandFrame<std::array<unsigned char, 3>>
     {

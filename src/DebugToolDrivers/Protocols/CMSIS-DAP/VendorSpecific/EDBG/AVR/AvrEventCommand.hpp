@@ -3,7 +3,7 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
 #include "AvrEvent.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
     class AvrEventCommand: public Command
     {

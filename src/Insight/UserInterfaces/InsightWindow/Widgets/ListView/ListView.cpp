@@ -1,6 +1,6 @@
 #include "ListView.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     ListView::ListView(
         ListScene::ListItemSetType&& items,

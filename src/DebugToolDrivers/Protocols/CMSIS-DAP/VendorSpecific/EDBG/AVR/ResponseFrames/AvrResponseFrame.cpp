@@ -2,9 +2,9 @@
 
 #include "src/Exceptions/Exception.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     void AvrResponseFrame::initFromAvrResponses(const std::vector<AvrResponse>& avrResponses) {
         // Build a raw frame buffer from the AvrResponse objects and just call initFromRawFrame()

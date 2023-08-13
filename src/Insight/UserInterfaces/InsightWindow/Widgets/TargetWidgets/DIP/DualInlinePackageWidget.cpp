@@ -8,9 +8,9 @@
 
 #include "src/Services/PathService.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Dip
+namespace Widgets::InsightTargetWidgets::Dip
 {
-    using Bloom::Targets::TargetVariant;
+    using Targets::TargetVariant;
 
     DualInlinePackageWidget::DualInlinePackageWidget(
         const TargetVariant& targetVariant,

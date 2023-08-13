@@ -17,7 +17,7 @@
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PadDescriptor.hpp"
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit::TargetDescription
+namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
 {
     /**
      * Represents an AVR8 TDF. See the Targets::TargetDescription::TargetDescriptionFile close for more on TDFs.

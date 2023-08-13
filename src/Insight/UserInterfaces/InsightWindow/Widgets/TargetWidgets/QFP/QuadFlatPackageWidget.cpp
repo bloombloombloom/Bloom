@@ -11,9 +11,9 @@
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Qfp
+namespace Widgets::InsightTargetWidgets::Qfp
 {
-    using namespace Bloom::Targets;
+    using namespace Targets;
 
     QuadFlatPackageWidget::QuadFlatPackageWidget(
         const TargetVariant& targetVariant,

@@ -10,37 +10,34 @@
 
 #include "InsightWorker/Tasks/InsightWorkerTask.hpp"
 
-namespace Bloom
+/**
+ * Singleton class providing global signals to all Insight widgets that require them. The signals are emitted via
+ * the Insight class and InsightWorkerTasks.
+ */
+class InsightSignals: public QObject
 {
-    /**
-     * Singleton class providing global signals to all Insight widgets that require them. The signals are emitted via
-     * the Insight class and InsightWorkerTasks.
-     */
-    class InsightSignals: public QObject
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        static InsightSignals* instance() {
-            static auto instance = InsightSignals();
-            return &instance;
-        }
+public:
+    static InsightSignals* instance() {
+        static auto instance = InsightSignals();
+        return &instance;
+    }
 
-        InsightSignals(const InsightSignals&) = delete;
-        void operator = (const InsightSignals&) = delete;
+    InsightSignals(const InsightSignals&) = delete;
+    void operator = (const InsightSignals&) = delete;
 
-    signals:
-        void taskQueued(QSharedPointer<InsightWorkerTask> task);
-        void taskProcessed(QSharedPointer<InsightWorkerTask> task);
+signals:
+    void taskQueued(QSharedPointer<InsightWorkerTask> task);
+    void taskProcessed(QSharedPointer<InsightWorkerTask> task);
 
-        void targetStateUpdated(Bloom::Targets::TargetState newState);
-        void targetReset();
-        void targetRegistersWritten(const Bloom::Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
-        void targetMemoryWritten(Bloom::Targets::TargetMemoryType memoryType, Targets::TargetMemoryAddressRange addressRange);
-        void programmingModeEnabled();
-        void programmingModeDisabled();
+    void targetStateUpdated(Targets::TargetState newState);
+    void targetReset();
+    void targetRegistersWritten(const Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
+    void targetMemoryWritten(Targets::TargetMemoryType memoryType, Targets::TargetMemoryAddressRange addressRange);
+    void programmingModeEnabled();
+    void programmingModeDisabled();
 
-    private:
-        InsightSignals() = default;
-    };
-}
+private:
+    InsightSignals() = default;
+};

@@ -4,7 +4,7 @@
 #include <vector>
 #include <optional>
 
-namespace Bloom::Targets
+namespace Targets
 {
     using TargetMemoryAddress = std::uint32_t;
     using TargetMemorySize = std::uint32_t;

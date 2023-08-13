@@ -2,9 +2,9 @@
 
 #include <QPainter>
 
-namespace Bloom::Widgets::InsightTargetWidgets::Dip
+namespace Widgets::InsightTargetWidgets::Dip
 {
-    using namespace Bloom::Targets;
+    using namespace Targets;
 
     PinBodyWidget::PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor)
     : TargetPinBodyWidget(parent, std::move(pinDescriptor)) {

@@ -5,7 +5,7 @@
 
 #include "src/Targets/TargetRegister.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class ReadTargetRegisters: public Command
     {

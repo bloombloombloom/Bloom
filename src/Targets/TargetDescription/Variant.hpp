@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Bloom::Targets::TargetDescription
+namespace Targets::TargetDescription
 {
     struct Variant
     {

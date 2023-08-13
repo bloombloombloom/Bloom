@@ -1,8 +1,8 @@
 #include "PinWidget.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Dip
+namespace Widgets::InsightTargetWidgets::Dip
 {
-    using namespace Bloom::Targets;
+    using namespace Targets;
 
     PinWidget::PinWidget(
         const TargetPinDescriptor& pinDescriptor,

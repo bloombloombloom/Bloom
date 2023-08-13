@@ -1,6 +1,6 @@
 #include "ByteAddressItem.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     ByteAddressItem::ByteAddressItem(const HexViewerSharedState& hexViewerState, QGraphicsItem* parent)
         : hexViewerState(hexViewerState)

@@ -6,7 +6,7 @@
 #include "Dialog/Dialog.hpp"
 #include "PushButton.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class ConfirmationDialog: public Dialog
     {

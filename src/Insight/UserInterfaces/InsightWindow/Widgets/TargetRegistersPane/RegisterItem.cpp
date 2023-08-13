@@ -9,7 +9,7 @@
 
 #include "src/Services/PathService.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     RegisterItem::RegisterItem(
         const Targets::TargetRegisterDescriptor& registerDescriptor

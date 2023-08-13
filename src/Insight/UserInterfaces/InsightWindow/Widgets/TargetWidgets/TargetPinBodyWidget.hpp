@@ -7,7 +7,7 @@
 #include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets
+namespace Widgets::InsightTargetWidgets
 {
     class TargetPinBodyWidget: public QWidget
     {

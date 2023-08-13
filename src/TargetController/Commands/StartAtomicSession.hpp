@@ -4,7 +4,7 @@
 
 #include "src/TargetController/Responses/AtomicSessionId.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class StartAtomicSession: public Command
     {

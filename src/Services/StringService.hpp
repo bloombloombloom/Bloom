@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace Bloom::Services
+namespace Services
 {
     class StringService
     {

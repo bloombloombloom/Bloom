@@ -7,7 +7,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class MemorySnapshotItem: public ListItem
     {

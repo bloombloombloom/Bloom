@@ -6,7 +6,7 @@
 
 #include "src/TargetController/AtomicSession.hpp"
 
-namespace Bloom::TargetController::Responses
+namespace TargetController::Responses
 {
     class AtomicSessionId: public Response
     {

@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-namespace Bloom::Targets::Microchip::Avr::Avr8Bit
+namespace Targets::Microchip::Avr::Avr8Bit
 {
     enum class PhysicalInterface: std::uint8_t
     {

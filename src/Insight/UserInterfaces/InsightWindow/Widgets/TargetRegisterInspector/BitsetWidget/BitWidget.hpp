@@ -13,7 +13,7 @@
 
 #include "BitBodyWidget.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class BitWidget: public QWidget
     {

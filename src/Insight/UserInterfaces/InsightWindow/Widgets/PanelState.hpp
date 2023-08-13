@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     struct PanelState
     {

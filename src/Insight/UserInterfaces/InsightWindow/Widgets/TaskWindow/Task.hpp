@@ -6,7 +6,7 @@
 
 #include "src/Insight/InsightWorker/Tasks/InsightWorkerTask.hpp"
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     class Task: public QWidget
     {

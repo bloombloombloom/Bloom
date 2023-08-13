@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     enum class DifferentialHexViewerWidgetType: std::uint8_t
     {

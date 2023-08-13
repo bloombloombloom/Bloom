@@ -4,7 +4,7 @@
 
 #include "src/TargetController/Responses/TargetStackPointer.hpp"
 
-namespace Bloom::TargetController::Commands
+namespace TargetController::Commands
 {
     class GetTargetStackPointer: public Command
     {

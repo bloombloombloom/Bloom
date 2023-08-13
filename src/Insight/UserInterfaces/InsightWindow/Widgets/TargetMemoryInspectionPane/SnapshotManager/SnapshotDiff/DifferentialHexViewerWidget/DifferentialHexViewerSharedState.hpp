@@ -2,7 +2,7 @@
 
 #include <unordered_set>
 
-namespace Bloom::Widgets
+namespace Widgets
 {
     struct DifferentialHexViewerSharedState
     {

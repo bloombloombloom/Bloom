@@ -13,7 +13,7 @@
 #include "BodyWidget.hpp"
 #include "src/Targets/TargetVariant.hpp"
 
-namespace Bloom::Widgets::InsightTargetWidgets::Dip
+namespace Widgets::InsightTargetWidgets::Dip
 {
     /**
      * The DualInlinePackageWidget implements a custom Qt widget for the Dual-inline package target variants.

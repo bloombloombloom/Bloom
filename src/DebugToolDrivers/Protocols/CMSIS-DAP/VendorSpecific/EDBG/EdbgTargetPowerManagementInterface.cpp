@@ -3,9 +3,9 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/EDBGControl/GetParameter.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/EDBGControl/SetParameter.hpp"
 
-namespace Bloom::DebugToolDrivers::Protocols::CmsisDap::Edbg
+namespace DebugToolDrivers::Protocols::CmsisDap::Edbg
 {
-    using namespace Bloom::Exceptions;
+    using namespace Exceptions;
 
     using Protocols::CmsisDap::Edbg::Avr::ResponseFrames::EdbgControl::EdbgControlResponseId;
 
