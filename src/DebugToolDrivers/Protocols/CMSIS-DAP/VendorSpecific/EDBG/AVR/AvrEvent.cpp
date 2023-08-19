@@ -1,4 +1,5 @@
 #include "AvrEvent.hpp"
+#include <cstdint>
 
 #include "src/Exceptions/Exception.hpp"
 

@@ -2,6 +2,7 @@
 
 #include <csignal>
 #include <cassert>
+#include <string>
 
 #include "SyncSafe.hpp"
 
