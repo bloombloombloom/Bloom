@@ -34,7 +34,7 @@ protected:
     void run(Services::TargetControllerService&) override;
 
 private:
-    const Widgets::HexViewerSharedState& hexViewerState;
     const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
     const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
+    const Widgets::HexViewerSharedState& hexViewerState;
 };

@@ -51,10 +51,10 @@ namespace Widgets
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
         const std::optional<Targets::TargetMemoryBuffer>& data;
 
+        HexViewerWidgetSettings& settings;
+
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
-
-        HexViewerWidgetSettings& settings;
 
         QWidget* container = nullptr;
         QWidget* toolBar = nullptr;

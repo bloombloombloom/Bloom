@@ -43,8 +43,8 @@ namespace DebugServer::Gdb
         Connection& operator = (Connection&&) = delete;
 
         Connection(Connection&& other) noexcept
-            : interruptEventNotifier(other.interruptEventNotifier)
-            , socketFileDescriptor(other.socketFileDescriptor)
+            : socketFileDescriptor(other.socketFileDescriptor)
+            , interruptEventNotifier(other.interruptEventNotifier)
             , epollInstance(std::move(other.epollInstance))
             , readInterruptEnabled(other.readInterruptEnabled)
         {

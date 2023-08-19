@@ -35,8 +35,6 @@ namespace Widgets
         Q_OBJECT
 
     public:
-        TargetMemoryInspectionPaneSettings& settings;
-
         TargetMemoryInspectionPane(
             const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
             TargetMemoryInspectionPaneSettings& settings,
@@ -57,6 +55,8 @@ namespace Widgets
 
     private:
         const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
+
+        TargetMemoryInspectionPaneSettings& settings;
 
         std::optional<Targets::TargetMemoryBuffer> data;
         std::optional<Targets::TargetStackPointer> stackPointer;

@@ -44,9 +44,9 @@ namespace Targets
     {
     public:
         TargetRegisterDescriptorId id;
+        TargetRegisterType type;
         std::optional<TargetMemoryAddress> startAddress;
         TargetMemorySize size;
-        TargetRegisterType type;
         TargetMemoryType memoryType;
 
         std::optional<std::string> name;
@@ -106,8 +106,8 @@ namespace Targets
         TargetMemoryBuffer value;
 
         TargetRegister(TargetRegisterDescriptorId descriptorId, std::vector<unsigned char> value)
-            : value(std::move(value))
-            , descriptorId(descriptorId)
+            : descriptorId(descriptorId)
+            , value(std::move(value))
         {};
 
         [[nodiscard]] std::size_t size() const {

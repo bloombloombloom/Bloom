@@ -3,9 +3,9 @@
 namespace Widgets
 {
     PaneWidget::PaneWidget(PaneState& state, PanelWidget* parent)
-        : state(state)
+        : QWidget(parent)
+        , state(state)
         , parentPanel(parent)
-        , QWidget(parent)
     {
         this->setMouseTracking(false);
         this->setAttribute(Qt::WA_Hover, true);

@@ -10,9 +10,9 @@ namespace DebugServer::Gdb
         std::map<GdbRegisterId, Targets::TargetRegisterDescriptorId> targetRegisterDescriptorIdsByGdbRegisterId
     )
         : targetDescriptor(targetDescriptor)
+        , gdbRegisterDescriptorsById(gdbRegisterDescriptorsById)
         , memoryOffsetsByType(memoryOffsetsByType)
         , memoryOffsets(memoryOffsetsByType.getValues())
-        , gdbRegisterDescriptorsById(gdbRegisterDescriptorsById)
         , gdbRegisterIdsByTargetRegisterDescriptorId(gdbRegisterIdsByTargetRegisterDescriptorId)
         , targetRegisterDescriptorIdsByGdbRegisterId(targetRegisterDescriptorIdsByGdbRegisterId)
     {}

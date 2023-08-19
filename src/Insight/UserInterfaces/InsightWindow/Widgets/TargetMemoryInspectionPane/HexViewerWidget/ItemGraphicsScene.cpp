@@ -25,7 +25,8 @@ namespace Widgets
         HexViewerWidgetSettings& settings,
         QGraphicsView* parent
     )
-        : state(
+        : QGraphicsScene(parent)
+        , state(
             HexViewerSharedState(
                 targetMemoryDescriptor,
                 data,
@@ -35,7 +36,6 @@ namespace Widgets
         , focusedMemoryRegions(focusedMemoryRegions)
         , excludedMemoryRegions(excludedMemoryRegions)
         , parent(parent)
-        , QGraphicsScene(parent)
     {
         this->setObjectName("byte-widget-container");
 

@@ -8,9 +8,9 @@
 namespace Widgets
 {
     PanelWidget::PanelWidget(PanelWidgetType type, PanelState& state, QWidget* parent)
-        : panelType(type)
+        : QFrame(parent)
         , state(state)
-        , QFrame(parent)
+        , panelType(type)
     {
         this->setMouseTracking(false);
         this->setAttribute(Qt::WA_Hover, true);

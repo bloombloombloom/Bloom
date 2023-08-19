@@ -120,6 +120,7 @@ target_compile_options(
     PUBLIC -Wpessimizing-move
     PUBLIC -Wredundant-move
     PUBLIC -Wsuggest-override
+    PUBLIC -Wreorder
     PUBLIC -fno-sized-deallocation
     PUBLIC $<$<CONFIG:DEBUG>:-g>
     # PUBLIC $<$<CONFIG:DEBUG>:-O0>

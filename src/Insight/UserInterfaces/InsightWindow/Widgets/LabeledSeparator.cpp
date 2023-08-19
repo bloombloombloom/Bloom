@@ -2,7 +2,10 @@
 
 namespace Widgets
 {
-    LabeledSeparator::LabeledSeparator(QString title, QWidget* parent): title(std::move(title)), QWidget(parent) {
+    LabeledSeparator::LabeledSeparator(QString title, QWidget* parent)
+        : QWidget(parent)
+        , title(std::move(title))
+    {
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
         this->setFixedHeight(LabeledSeparator::DEFAULT_HEIGHT);
     }

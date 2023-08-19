@@ -67,13 +67,14 @@ public:
 private:
     static constexpr std::uint8_t INSIGHT_WORKER_COUNT = 3;
 
+    EventListener& eventListener;
+
     ProjectConfig projectConfig;
     EnvironmentConfig environmentConfig;
     InsightConfig insightConfig;
 
     InsightProjectSettings& insightProjectSettings;
 
-    EventListener& eventListener;
     Services::TargetControllerService targetControllerService = Services::TargetControllerService();
 
     Targets::TargetDescriptor targetDescriptor = this->targetControllerService.getTargetDescriptor();

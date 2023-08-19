@@ -18,9 +18,9 @@ namespace Widgets
         static constexpr int RIGHT_MARGIN = 5;
         static constexpr int BOTTOM_MARGIN = 5;
 
-        HexViewerItem* parent = nullptr;
-
         const Targets::TargetMemoryAddress startAddress = 0;
+
+        HexViewerItem* parent = nullptr;
 
         QPoint relativePosition = {};
 

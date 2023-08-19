@@ -96,9 +96,9 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         : edbgInterface(edbgInterface)
         , targetConfig(targetConfig)
         , family(targetFamily)
+        , configVariant(EdbgAvr8Interface::resolveConfigVariant(targetFamily, targetConfig.physicalInterface))
         , targetParameters(targetParameters)
         , targetRegisterDescriptorsById(targetRegisterDescriptorsById)
-        , configVariant(EdbgAvr8Interface::resolveConfigVariant(targetFamily, targetConfig.physicalInterface))
     {}
 
     void EdbgAvr8Interface::init() {

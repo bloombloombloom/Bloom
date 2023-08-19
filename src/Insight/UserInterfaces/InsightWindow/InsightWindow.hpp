@@ -31,9 +31,9 @@ class InsightWindow: public QMainWindow
 
 public:
     InsightWindow(
-        const EnvironmentConfig& environmentConfig,
-        const InsightConfig& insightConfig,
         InsightProjectSettings& insightProjectSettings,
+        const InsightConfig& insightConfig,
+        const EnvironmentConfig& environmentConfig,
         const Targets::TargetDescriptor& targetDescriptor
     );
 

@@ -12,8 +12,8 @@ namespace Widgets
         ListScene::ListItemSetType&& items,
         QGraphicsView* parent
     )
-        : parent(parent)
-        , QGraphicsScene(parent)
+        : QGraphicsScene(parent)
+        , parent(parent)
     {
         this->setItemIndexMethod(QGraphicsScene::NoIndex);
         this->setItems(std::move(items));

@@ -150,9 +150,9 @@ Insight::Insight(
 void Insight::activateMainWindow() {
     if (this->mainWindow == nullptr) {
         this->mainWindow = new InsightWindow(
-            this->environmentConfig,
-            this->insightConfig,
             this->insightProjectSettings,
+            this->insightConfig,
+            this->environmentConfig,
             this->targetDescriptor
         );
 

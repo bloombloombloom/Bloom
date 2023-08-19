@@ -12,8 +12,8 @@ namespace Widgets
         const Targets::TargetMemoryDescriptor& memoryDescriptor,
         QWidget* parent
     )
-        : memoryDescriptor(memoryDescriptor)
-        , ClickableWidget(parent)
+        : ClickableWidget(parent)
+        , memoryDescriptor(memoryDescriptor)
     {
         this->setObjectName("region-item");
         this->setFixedHeight(50);

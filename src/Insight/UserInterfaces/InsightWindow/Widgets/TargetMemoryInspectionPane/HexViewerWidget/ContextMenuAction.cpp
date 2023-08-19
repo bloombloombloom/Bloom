@@ -7,7 +7,7 @@ namespace Widgets
         std::optional<IsEnabledCallbackType> isEnabledCallback,
         QWidget* parent
     )
-        : isEnabledCallback(isEnabledCallback)
-        , QAction(text, parent)
+        : QAction(text, parent)
+        , isEnabledCallback(isEnabledCallback)
     {}
 }

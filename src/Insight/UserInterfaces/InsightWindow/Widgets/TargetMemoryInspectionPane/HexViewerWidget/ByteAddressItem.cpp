@@ -3,8 +3,8 @@
 namespace Widgets
 {
     ByteAddressItem::ByteAddressItem(const HexViewerSharedState& hexViewerState, QGraphicsItem* parent)
-        : hexViewerState(hexViewerState)
-        , QGraphicsItem(parent)
+        : QGraphicsItem(parent)
+        , hexViewerState(hexViewerState)
     {}
 
     void ByteAddressItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {

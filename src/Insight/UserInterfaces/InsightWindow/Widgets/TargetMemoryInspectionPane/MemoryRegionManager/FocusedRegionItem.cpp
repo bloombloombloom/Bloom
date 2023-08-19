@@ -15,7 +15,8 @@ namespace Widgets
         const Targets::TargetMemoryDescriptor& memoryDescriptor,
         QWidget* parent
     )
-        : memoryRegion(region), RegionItem(region, memoryDescriptor, parent)
+        : RegionItem(region, memoryDescriptor, parent)
+        , memoryRegion(region)
     {
         auto formUiFile = QFile(
             QString::fromStdString(Services::PathService::compiledResourcesPath()

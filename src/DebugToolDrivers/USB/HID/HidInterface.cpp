@@ -16,8 +16,8 @@ namespace Usb
         std::uint16_t productId
     )
         : interfaceNumber(interfaceNumber)
-        , vendorId(vendorId)
         , inputReportSize(inputReportSize)
+        , vendorId(vendorId)
         , productId(productId)
     {}
 

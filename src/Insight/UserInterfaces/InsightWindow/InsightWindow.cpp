@@ -30,16 +30,16 @@ using Targets::TargetPinDescriptor;
 using Targets::TargetMemoryType;
 
 InsightWindow::InsightWindow(
-    const EnvironmentConfig& environmentConfig,
-    const InsightConfig& insightConfig,
     InsightProjectSettings& insightProjectSettings,
+    const InsightConfig& insightConfig,
+    const EnvironmentConfig& environmentConfig,
     const Targets::TargetDescriptor& targetDescriptor
 )
     : QMainWindow(nullptr)
+    , insightProjectSettings(insightProjectSettings)
+    , insightConfig(insightConfig)
     , environmentConfig(environmentConfig)
     , targetConfig(environmentConfig.targetConfig)
-    , insightConfig(insightConfig)
-    , insightProjectSettings(insightProjectSettings)
     , targetDescriptor(targetDescriptor)
 {
     this->setObjectName("main-window");
