@@ -32,4 +32,4 @@ print "\n\n";
 print "Validated " . count($avr8Tdfs) . " TDFs. ";
 print (($failedValidationCount > 0) ? "\033[31m" : "\033[32m");
 print $failedValidationCount . " failure(s)." . "\033[0m" . "\n";
-echo "Done\n";
+print "Done\n";
