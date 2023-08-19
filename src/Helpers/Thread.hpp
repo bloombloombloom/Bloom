@@ -4,6 +4,7 @@
 #include <csignal>
 #include <cassert>
 #include <atomic>
+#include <string>
 
 enum class ThreadState: std::uint8_t
 {

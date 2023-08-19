@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "src/ProjectConfig.hpp"
 
 namespace DebugServer::Gdb
