@@ -12,7 +12,7 @@ namespace Bloom\BuildScripts;
 $buildPath = $argv[1] ?? null;
 if (empty($buildPath)) {
     print "Missing build path. Aborting\n";
-    die;
+    exit(1);
 }
 
 require_once __DIR__ . "/TargetDescriptionFiles/Factory.php";

@@ -21,7 +21,7 @@ namespace Services
          * @return
          */
         static std::string resourcesDirPath() {
-            return PathService::applicationDirPath() + "/../resources/";
+            return PathService::applicationDirPath() + "/../resources";
         }
 
         /**
