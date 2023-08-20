@@ -149,9 +149,45 @@ tcService.readMemory(...); // Will not be part of the atomic session
 
 When a component needs to write to the target's program memory, it must enable programming mode on the target. This can
 be done by issuing the `EnableProgrammingMode` command to the TargetController (see
-`TargetControllerService::enableProgrammingMode()`). Once programming mode has been enabled, the TargetController will
-reject any subsequent commands that involve debug operations (such as `ResumeTargetExecution`, `ReadTargetRegisters`,
-etc), until programming mode has been disabled.
+`TargetControllerService::enableProgrammingMode()`).
+
+Once programming mode has been enabled, standard debugging operations such as program flow control and RAM access will
+become unavailable. The TargetController will reject any commands that involve these operations, until programming mode
+has been disabled. The [`Command::requiresDebugMode()`](./Commands/Command.hpp) virtual member function communicates a
+particular command's requirement for the target to **not** be in programming mode.
+
+For example, the `ResumeTargetExecution` command returns `true` here, as it attempts to control program flow on the
+target, which can only be done when the target is not in programming mode:
+
+```c++
+class ResumeTargetExecution: public Command
+{
+public:
+    // ...
+    [[nodiscard]] bool requiresDebugMode() const override {
+        return true;
+    }
+};
+```
+
+On the other hand, the `ReadTargetMemory` command will only return `true` if we're reading from RAM, as RAM is the
+only memory which isn't accessible when the target is in programming mode:
+
+```c++
+class ReadTargetMemory: public Command
+{
+public:
+    Targets::TargetMemoryType memoryType;
+    Targets::TargetMemoryAddress startAddress;
+    Targets::TargetMemorySize bytes;
+
+    // ...
+
+    [[nodiscard]] bool requiresDebugMode() const override {
+        return this->memoryType == Targets::TargetMemoryType::RAM;
+    }
+};
+```
 
 The TargetController will emit `ProgrammingModeEnabled` and `ProgrammingModeDisabled` events when it enables/disables
 programming mode. Components should listen for these events to ensure that they disable any means for the user to trigger
