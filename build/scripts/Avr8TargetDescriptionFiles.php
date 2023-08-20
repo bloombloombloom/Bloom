@@ -1,7 +1,7 @@
 <?php
 /*
  * Copies AVR8 target description files to AVR_TDF_DEST_FILE_PATH, in preparation for a build, and creates a JSON
- * mapping of target signatures to file paths (relative to Bloom's binary).
+ * mapping of target signatures to file paths (relative to Bloom's resource directory).
  * The JSON mapping is compiled as a Qt resource and used for looking-up target description file paths, by target ID.
  *
  * This script should be run as part of the build process.
@@ -18,7 +18,7 @@ if (empty($buildPath)) {
 require_once __DIR__ . "/TargetDescriptionFiles/Factory.php";
 
 define("AVR_TDF_DEST_FILE_PATH", $buildPath . "/resources/TargetDescriptionFiles/AVR");
-define("AVR_TDF_DEST_RELATIVE_FILE_PATH", "../resources/TargetDescriptionFiles/AVR");
+define("AVR_TDF_DEST_RELATIVE_FILE_PATH", "TargetDescriptionFiles/AVR");
 define("AVR_TDF_MAPPING_FILE_PATH", AVR_TDF_DEST_FILE_PATH . "/Mapping.json");
 
 // Empty destination directory

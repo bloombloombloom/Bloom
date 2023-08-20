@@ -34,7 +34,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
         const auto descriptionFileObject = descriptionFileObjectIt.value().toObject();
         const auto descriptionFilePath = QString::fromStdString(
-            Services::PathService::applicationDirPath()) + "/" + descriptionFileObject.find("tdfPath")->toString();
+            Services::PathService::resourcesDirPath()) + "/" + descriptionFileObject.find("tdfPath")->toString();
 
         Logger::debug("Loading AVR8 target description file: " + descriptionFilePath.toStdString());
 
