@@ -27,14 +27,14 @@ appropriate address in program memory. The GDB server will action this command, 
 success or failure.
 
 Commands and responses are delivered in packets. The
-[`Bloom::DebugServer::Gdb::CommandPackets::CommandPacket`](./CommandPackets/CommandPacket.hpp) and
-[`Bloom::DebugServer::Gdb::ResponsePackets::ResponsePacket`](./ResponsePackets/ResponsePacket.hpp) classes are base
+[`DebugServer::Gdb::CommandPackets::CommandPacket`](./CommandPackets/CommandPacket.hpp) and
+[`DebugServer::Gdb::ResponsePackets::ResponsePacket`](./ResponsePackets/ResponsePacket.hpp) classes are base
 classes for these packets. For most GDB commands supported by this server implementation, there is a specific command
 packet class that can be found in [/src/DebugServer/Gdb/CommandPackets](./CommandPackets). When the server receives a
 command packet from the GDB client, the appropriate (`CommandPacket` derived) object is constructed, which encapsulates
 all of the relevant information for the particular command.
 
-Consider the [`Bloom::DebugServer::Gdb::CommandPackets::SetBreakpoint`](./CommandPackets/SetBreakpoint.hpp) command
+Consider the [`DebugServer::Gdb::CommandPackets::SetBreakpoint`](./CommandPackets/SetBreakpoint.hpp) command
 packet class:
 
 ```c++
@@ -119,8 +119,8 @@ functionality to be implemented in derived classes.
 
 #### GDB target descriptor
 
-The [`Bloom::DebugServer::Gdb::TargetDescriptor`](./TargetDescriptor.hpp) abstract class provides access to any
+The [`DebugServer::Gdb::TargetDescriptor`](./TargetDescriptor.hpp) abstract class provides access to any
 information that is specific to the target architecture and GDB. For example, the register mapping described above, for
-AVR targets, is implemented in [`Bloom::DebugServer::Gdb::AvrGdb::TargetDescriptor`](./AvrGdb/TargetDescriptor.hpp).
+AVR targets, is implemented in [`DebugServer::Gdb::AvrGdb::TargetDescriptor`](./AvrGdb/TargetDescriptor.hpp).
 That class is derived from the abstract `TargetDescriptor` class. It implements the AVR specific concepts that the
 server is expected to be aware of.

@@ -13,20 +13,20 @@ the TargetController, and wait for a response. The TargetController will action 
 response.
 
 All TargetController commands can be found in [src/TargetController/Commands](./Commands), and are derived from the
-[`Bloom::TargetController::Commands::Command`](./Commands/Command.hpp) base class. Responses can be found in
+[`TargetController::Commands::Command`](./Commands/Command.hpp) base class. Responses can be found in
 [src/TargetController/Responses](./Responses), and are derived from the
-[`Bloom::TargetController::Responses::Response`](./Responses/Response.hpp) base class.
+[`TargetController::Responses::Response`](./Responses/Response.hpp) base class.
 
 **NOTE:** Components within Bloom do not typically concern themselves with the TargetController command-response
 mechanism. Instead, they use the `TargetControllerService` class, which encapsulates the command-response mechanism and
 provides a simplified means for interaction with the connected hardware. For more, see
 [The TargetControllerService class](#the-TargetControllerService-class) section below.
 
-Commands can be sent to the TargetController via the [`Bloom::TargetController::CommandManager`](./CommandManager.hpp)
+Commands can be sent to the TargetController via the [`TargetController::CommandManager`](./CommandManager.hpp)
 class.
 
 For example, to read memory from the connected target, we would send the
-[`Bloom::TargetController::Commands::ReadTargetMemory`](./Commands/ReadTargetMemory.hpp) command:
+[`TargetController::Commands::ReadTargetMemory`](./Commands/ReadTargetMemory.hpp) command:
 
 ```c++
 auto tcCommandManager = TargetController::CommandManager();
@@ -86,7 +86,7 @@ The `TargetControllerService` class does not require any dependencies at constru
 different threads and used freely to gain access to the connected hardware, from any component within Bloom.
 
 All components within Bloom should use the `TargetControllerService` class to interact with the connected hardware. They
-**should not** directly issue commands via the `Bloom::TargetController::CommandManager`, unless there is a very good
+**should not** directly issue commands via the `TargetController::CommandManager`, unless there is a very good
 reason to do so.
 
 ##### Atomic sessions with the TargetControllerService
