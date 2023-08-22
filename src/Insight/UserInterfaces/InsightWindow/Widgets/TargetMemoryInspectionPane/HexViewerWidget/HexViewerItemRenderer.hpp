@@ -66,7 +66,7 @@ namespace Widgets
         static inline std::optional<QPixmap> missingDataPixmap = {};
         static inline std::optional<QPixmap> selectedMissingDataPixmap = {};
 
-        void paintItem(const HexViewerItem* item, QPainter* painter);
+        inline void paintItem(const HexViewerItem* item, QPainter* painter) __attribute__((__always_inline__));
         inline void paintByteItem(const ByteItem* item, QPainter* painter) __attribute__((__always_inline__));
         inline void paintFocusedRegionGroupItem(
             const FocusedRegionGroupItem* item,
