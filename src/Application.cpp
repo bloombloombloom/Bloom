@@ -311,15 +311,7 @@ void Application::loadProjectConfiguration() {
     this->environmentConfig = selectedEnvironmentIt->second;
 
 #ifndef EXCLUDE_INSIGHT
-    if (this->environmentConfig->insightConfig.has_value()) {
-        this->insightConfig = this->environmentConfig->insightConfig.value();
-
-    } else if (this->projectConfig->insightConfig.has_value()) {
-        this->insightConfig = this->projectConfig->insightConfig.value();
-
-    } else {
-        throw InvalidConfig("Insight configuration missing.");
-    }
+    this->insightConfig = this->environmentConfig->insightConfig.value_or(this->projectConfig->insightConfig);
 #endif
 
     if (this->environmentConfig->debugServerConfig.has_value()) {

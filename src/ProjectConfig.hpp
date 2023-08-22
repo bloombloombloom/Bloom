@@ -217,8 +217,12 @@ struct ProjectConfig
     /**
      * Application level Insight configuration. We use this as a fallback if no Insight config is provided at
      * the environment level.
+     *
+     * We don't use std::optional here because the InsightConfig has no mandatory parameters, so users may wish to
+     * omit the 'insight' node from their bloom.yaml file, entirely. In this case, Bloom should fall back to a default
+     * constructed, project-level, InsightConfig instance.
      */
-    std::optional<InsightConfig> insightConfig;
+    InsightConfig insightConfig = InsightConfig();
 
     bool debugLoggingEnabled = false;
 
