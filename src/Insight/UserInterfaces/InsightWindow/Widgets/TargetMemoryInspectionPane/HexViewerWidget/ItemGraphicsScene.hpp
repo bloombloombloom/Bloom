@@ -56,6 +56,7 @@ namespace Widgets
         void init();
         void updateStackPointer(Targets::TargetStackPointer stackPointer);
         void selectByteItems(const std::set<Targets::TargetMemoryAddress>& addresses);
+        void highlightByteItems(const std::set<Targets::TargetMemoryAddress>& addresses);
         void rebuildItemHierarchy();
         void adjustSize();
         void setEnabled(bool enabled);

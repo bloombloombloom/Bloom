@@ -237,6 +237,15 @@ namespace Widgets
         emit this->selectionChanged(this->selectedByteItemsByAddress);
     }
 
+    void ItemGraphicsScene::highlightByteItems(const std::set<std::uint32_t>& addresses) {
+        for (auto& [address, byteItem] : this->topLevelGroup->byteItemsByAddress) {
+            byteItem.highlighted = addresses.contains(address);
+        }
+
+        this->state.highlightingEnabled = !addresses.empty();
+        this->update();
+    }
+
     void ItemGraphicsScene::rebuildItemHierarchy() {
         this->topLevelGroup->rebuildItemHierarchy();
         this->itemIndex->refreshFlattenedItems();
@@ -356,6 +365,11 @@ namespace Widgets
 
         const auto button = mouseEvent->button();
         const auto mousePosition = mouseEvent->buttonDownScenePos(button);
+
+        if (this->state.highlightingEnabled) {
+            this->state.highlightingEnabled = false;
+            this->update();
+        }
 
         if (mousePosition.x() <= this->byteAddressContainer->boundingRect().width()) {
             return;

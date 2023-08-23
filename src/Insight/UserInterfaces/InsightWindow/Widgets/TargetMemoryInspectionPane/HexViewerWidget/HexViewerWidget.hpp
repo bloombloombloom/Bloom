@@ -42,6 +42,11 @@ namespace Widgets
         void refreshRegions();
         void setStackPointer(Targets::TargetStackPointer stackPointer);
         void addExternalContextMenuAction(ContextMenuAction* action);
+        void highlightBytes(const std::set<Targets::TargetMemoryAddress>& addresses);
+        void highlightBytes(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
+        void clearHighlighting();
+        void selectAndHighlightBytes(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
+        void centerOnByte(Targets::TargetMemoryAddress address);
 
     signals:
         void ready();
@@ -88,6 +93,9 @@ namespace Widgets
         void onHoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
         void onByteSelectionChanged(
             const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress
+        );
+        std::set<Targets::TargetMemoryAddress> addressRangesToAddresses(
+            const std::set<Targets::TargetMemoryAddressRange>& addressRanges
         );
     };
 }

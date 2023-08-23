@@ -72,7 +72,13 @@ namespace Widgets
         const auto position = item->position();
         const auto boundingRect = QRect(position.x(), position.y(), ByteItem::WIDTH, ByteItem::HEIGHT);
 
-        painter->setOpacity(!this->isEnabled() || (item->excluded && !item->selected) ? 0.6 : 1);
+        painter->setOpacity(
+            !this->isEnabled()
+            || (item->excluded && !item->selected)
+            || (this->hexViewerState.highlightingEnabled && !item->highlighted)
+                ? 0.6
+                : 1
+        );
 
         if (item->excluded || !this->hexViewerState.data.has_value()) {
             if (item->selected) {

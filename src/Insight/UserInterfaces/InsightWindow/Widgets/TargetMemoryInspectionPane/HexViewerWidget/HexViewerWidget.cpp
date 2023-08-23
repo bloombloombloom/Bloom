@@ -242,6 +242,28 @@ namespace Widgets
         this->byteItemGraphicsScene->addExternalContextMenuAction(action);
     }
 
+    void HexViewerWidget::highlightBytes(const std::set<Targets::TargetMemoryAddress>& addresses) {
+        this->byteItemGraphicsScene->highlightByteItems(addresses);
+    }
+
+    void HexViewerWidget::highlightBytes(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
+        this->byteItemGraphicsScene->highlightByteItems(this->addressRangesToAddresses(addressRanges));
+    }
+
+    void HexViewerWidget::clearHighlighting() {
+        this->highlightBytes(std::set<Targets::TargetMemoryAddress>());
+    }
+
+    void HexViewerWidget::selectAndHighlightBytes(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
+        const auto addresses = this->addressRangesToAddresses(addressRanges);
+        this->byteItemGraphicsScene->highlightByteItems(addresses);
+        this->byteItemGraphicsScene->selectByteItems(addresses);
+    }
+
+    void HexViewerWidget::centerOnByte(Targets::TargetMemoryAddress address) {
+        this->byteItemGraphicsView->scrollToByteItemAtAddress(address);
+    }
+
     void HexViewerWidget::resizeEvent(QResizeEvent* event) {
         this->container->setFixedSize(
             this->width(),
@@ -369,5 +391,20 @@ namespace Widgets
                 + " selected"
         );
         this->selectionCountLabel->show();
+    }
+
+    std::set<Targets::TargetMemoryAddress> HexViewerWidget::addressRangesToAddresses(
+        const std::set<Targets::TargetMemoryAddressRange>& addressRanges
+    ) {
+        auto addresses = std::set<Targets::TargetMemoryAddress>();
+        auto addressesIt = addresses.end();
+
+        for (const auto& range : addressRanges) {
+            for (auto i = range.startAddress; i <= range.endAddress; ++i) {
+                addressesIt = addresses.insert(addressesIt, i);
+            }
+        }
+
+        return addresses;
     }
 }
