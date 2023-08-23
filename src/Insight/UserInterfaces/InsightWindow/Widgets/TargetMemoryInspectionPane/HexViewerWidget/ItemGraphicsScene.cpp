@@ -485,7 +485,7 @@ namespace Widgets
     void ItemGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
         const auto key = keyEvent->key();
 
-        if (key == Qt::Key_Escape) {
+        if (key == Qt::Key_Escape && !this->selectedByteItemsByAddress.empty()) {
             this->clearByteItemSelection();
             return;
         }
