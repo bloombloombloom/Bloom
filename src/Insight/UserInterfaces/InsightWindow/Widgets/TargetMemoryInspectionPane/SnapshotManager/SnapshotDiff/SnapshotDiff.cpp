@@ -67,7 +67,7 @@ namespace Widgets
         , focusedRegionsA(snapshotA.focusedRegions)
         , excludedRegionsA(snapshotA.excludedRegions)
         , stackPointerA(snapshotA.stackPointer)
-        , hexViewerDataB(dataB)
+        , hexViewerDataB(std::move(dataB))
         , focusedRegionsB(focusedRegionsB)
         , excludedRegionsB(excludedRegionsB)
         , stackPointerB(stackPointerB)
@@ -107,7 +107,7 @@ namespace Widgets
         std::vector<ExcludedMemoryRegion> excludedRegions,
         Targets::TargetStackPointer stackPointer
     ) {
-        this->hexViewerDataB = data;
+        this->hexViewerDataB = std::move(data);
         this->focusedRegionsB = focusedRegions;
         this->excludedRegionsB = excludedRegions;
         this->stackPointerB = stackPointer;
