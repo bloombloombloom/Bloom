@@ -35,6 +35,7 @@ namespace Widgets
         void setItems(const ListScene::ListItemSetType& items);
         void addListItem(ListItem* item);
         void removeListItem(ListItem* item);
+        void clearListItems();
         void setEnabled(bool enabled);
 
     signals:

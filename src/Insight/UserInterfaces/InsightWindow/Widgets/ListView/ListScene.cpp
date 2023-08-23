@@ -49,9 +49,7 @@ namespace Widgets
     }
 
     void ListScene::setItems(const ListScene::ListItemSetType& items) {
-        for (auto& item : this->items()) {
-            this->removeItem(item);
-        }
+        this->clearListItems();
 
         this->listItems = items;
 
@@ -68,6 +66,11 @@ namespace Widgets
     void ListScene::removeListItem(ListItem* item) {
         this->listItems.erase(item);
         this->removeItem(item);
+    }
+
+    void ListScene::clearListItems() {
+        this->listItems.clear();
+        this->clear();
     }
 
     void ListScene::setEnabled(bool enabled) {
