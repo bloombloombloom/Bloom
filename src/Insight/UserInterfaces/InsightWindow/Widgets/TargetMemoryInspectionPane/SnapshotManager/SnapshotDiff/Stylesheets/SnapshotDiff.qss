@@ -41,6 +41,62 @@
     max-width: 1px;
 }
 
+#snapshot-diff #lh-side-bar {
+    border-right: 1px solid #41423f;
+}
+
+#snapshot-diff #rh-side-bar {
+    border-left: 1px solid #41423f;
+}
+
+#snapshot-diff #lh-side-bar QToolButton,
+#snapshot-diff #rh-side-bar QToolButton {
+    border: none;
+    margin: 0;
+}
+
+#snapshot-diff #lh-side-bar #change-list-btn {
+    border: none;
+    margin: 0;
+}
+
+#snapshot-diff #lh-side-bar #change-list-btn #label {
+    qproperty-bottomMargin: 1;
+    color: #999a9d;
+
+}
+
+#snapshot-diff #lh-side-bar #change-list-btn:hover {
+    background-color: #2F2F2D;
+    border: none;
+}
+
+#snapshot-diff #lh-side-bar #change-list-btn:checked {
+    background-color: #2F2F2D;
+}
+
+#snapshot-diff #left-panel {
+    border-right: 1px solid #41423f;
+    background-color: transparent;
+}
+
+/* ChangeListPane */
+#change-list-pane #title-bar {
+    background-color: transparent;
+    border-bottom: 1px solid #41423f;
+}
+
+#change-list-pane #title-bar #change-list-title-label {
+    color: #8a8a8d;
+}
+
+#change-list-pane QScrollBar {
+    margin: 0;
+    padding: 1px 0 0 6px;
+    width: 14px;
+    border-left: 1px solid #41423f;
+}
+
 #snapshot-diff #data-details-container {
     border-bottom: 1px solid #41423f;
     color: #8a8a8d;

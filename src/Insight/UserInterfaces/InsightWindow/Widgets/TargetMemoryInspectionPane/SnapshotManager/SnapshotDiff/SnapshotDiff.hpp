@@ -9,6 +9,7 @@
 
 #include "SnapshotDiffSettings.hpp"
 
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.hpp"
@@ -17,6 +18,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 #include "DifferentialHexViewerWidget/DifferentialHexViewerWidget.hpp"
+#include "ChangeListPane/ChangeListPane.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ContextMenuAction.hpp"
 
 namespace Widgets
@@ -66,6 +68,14 @@ namespace Widgets
         SvgToolButton* syncHexViewerHoverButton = nullptr;
         SvgToolButton* syncHexViewerSelectionButton = nullptr;
 
+        QToolButton* viewChangeListButton = nullptr;
+
+        PanelWidget* leftPanel = nullptr;
+        PanelState leftPanelState = PanelState(300, true);
+
+        PaneState changeListPaneState = PaneState(true, true, std::nullopt);
+        ChangeListPane* changeListPane = nullptr;
+
         QWidget* dataAContainer = nullptr;
         QWidget* dataBContainer = nullptr;
 
@@ -107,6 +117,8 @@ namespace Widgets
         void onHexViewerBReady();
 
         void refreshDifferences();
+
+        void toggleChangeListPane();
 
         void setSyncHexViewerSettingsEnabled(bool enabled);
         void setSyncHexViewerScrollEnabled(bool enabled);

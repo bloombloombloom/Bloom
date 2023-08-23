@@ -128,7 +128,12 @@ namespace Widgets
     }
 
     void SnapshotDiff::resizeEvent(QResizeEvent* event) {
-        this->container->setFixedSize(this->size());
+        const auto windowSize = this->size();
+        this->container->setFixedSize(windowSize);
+
+        const auto maxLeftPanelSize = static_cast<int>(windowSize.width() / 3);
+        this->leftPanel->setMaximumResize(maxLeftPanelSize);
+        this->leftPanel->setMinimumResize(std::min(this->leftPanel->getMinimumResize(), maxLeftPanelSize));
 
         QWidget::resizeEvent(event);
     }
@@ -176,6 +181,19 @@ namespace Widgets
         this->syncHexViewerHoverButton = toolBar->findChild<SvgToolButton*>("sync-hover-btn");
         this->syncHexViewerSelectionButton = toolBar->findChild<SvgToolButton*>("sync-selection-btn");
 
+        this->viewChangeListButton = this->container->findChild<QToolButton*>("change-list-btn");
+        this->viewChangeListButton->layout()->setContentsMargins(0, 0, 0, 0);
+
+        auto* subContainerLayout = this->container->findChild<QWidget*>(
+            "sub-container"
+        )->findChild<QHBoxLayout*>("sub-layout");
+
+        this->leftPanel = new PanelWidget(PanelWidgetType::LEFT, this->leftPanelState, this);
+        this->leftPanel->setObjectName("left-panel");
+        this->leftPanel->setMinimumResize(200);
+        this->leftPanel->setHandleSize(6);
+        subContainerLayout->insertWidget(1, this->leftPanel, 0, Qt::AlignLeft);
+
         this->dataAContainer = this->container->findChild<QWidget*>("data-a-container");
         this->dataBContainer = this->container->findChild<QWidget*>("data-b-container");
 
@@ -220,6 +238,15 @@ namespace Widgets
         snapshotAContainerLayout->addWidget(this->hexViewerWidgetA);
         snapshotBContainerLayout->addWidget(this->hexViewerWidgetB);
 
+        this->changeListPane = new ChangeListPane(
+            this->hexViewerWidgetA,
+            this->hexViewerWidgetB,
+            this->changeListPaneState,
+            this->leftPanel
+        );
+        this->leftPanel->layout()->addWidget(this->changeListPane);
+        this->viewChangeListButton->setChecked(this->changeListPane->state.activated);
+
         this->bottomBar = this->container->findChild<QWidget*>("bottom-bar");
         this->bottomBarLayout = this->bottomBar->findChild<QHBoxLayout*>();
 
@@ -239,6 +266,13 @@ namespace Widgets
         this->setSyncHexViewerScrollEnabled(this->settings.syncHexViewerScroll);
         this->setSyncHexViewerHoverEnabled(this->settings.syncHexViewerHover);
         this->setSyncHexViewerSelectionEnabled(this->settings.syncHexViewerSelection);
+
+        QObject::connect(
+            this->viewChangeListButton,
+            &QToolButton::clicked,
+            this,
+            &SnapshotDiff::toggleChangeListPane
+        );
 
         QObject::connect(
             this->syncHexViewerSettingsButton,
@@ -308,10 +342,13 @@ namespace Widgets
     }
 
     void SnapshotDiff::refreshDifferences() {
+        using Targets::TargetMemoryAddressRange;
+
         assert(this->hexViewerDataA.has_value());
         assert(this->hexViewerDataB.has_value());
 
         this->differentialHexViewerSharedState.differences.clear();
+        auto diffRanges = std::vector<TargetMemoryAddressRange>();
 
         const auto& dataA = *(this->hexViewerDataA);
         const auto& dataB = *(this->hexViewerDataB);
@@ -333,21 +370,48 @@ namespace Widgets
         };
 
         const auto& memoryStartAddress = this->memoryDescriptor.addressRange.startAddress;
+        auto lastDiffRange = std::optional<TargetMemoryAddressRange>();
 
         for (Targets::TargetMemoryBuffer::size_type i = 0; i < dataA.size(); ++i) {
             const auto address = memoryStartAddress + static_cast<Targets::TargetMemoryAddress>(i);
 
             if (dataA[i] != dataB[i] && !isAddressExcluded(address)) {
                 this->differentialHexViewerSharedState.differences.insert(address);
+
+                if (lastDiffRange.has_value() && address > 0 && lastDiffRange->endAddress == (address - 1)) {
+                    lastDiffRange->endAddress = address;
+
+                } else {
+                    if (lastDiffRange.has_value()) {
+                        diffRanges.push_back(*lastDiffRange);
+                    }
+
+                    lastDiffRange = TargetMemoryAddressRange(address, address);
+                }
             }
         }
 
-        const auto count = this->differentialHexViewerSharedState.differences.size();
+        if (lastDiffRange.has_value()) {
+            diffRanges.push_back(*lastDiffRange);
+        }
+
+        this->changeListPane->setDiffRanges(diffRanges);
         this->diffCountLabel->setText(
             count == 0
                 ? "Contents are identical"
                 : QLocale(QLocale::English).toString(count) + (count == 1 ? " difference" : " differences")
         );
+    }
+
+    void SnapshotDiff::toggleChangeListPane() {
+        if (!this->changeListPane->state.activated) {
+            this->changeListPane->activate();
+            this->viewChangeListButton->setChecked(true);
+            return;
+        }
+
+        this->changeListPane->deactivate();
+        this->viewChangeListButton->setChecked(false);
     }
 
     void SnapshotDiff::setSyncHexViewerSettingsEnabled(bool enabled) {
