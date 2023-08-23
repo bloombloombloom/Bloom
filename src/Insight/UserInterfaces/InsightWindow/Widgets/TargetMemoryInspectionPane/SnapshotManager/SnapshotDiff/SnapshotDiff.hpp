@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QShowEvent>
 #include <QResizeEvent>
+#include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QPlainTextEdit>
 #include <optional>
@@ -55,6 +56,7 @@ namespace Widgets
     protected:
         void showEvent(QShowEvent* event) override;
         void resizeEvent(QResizeEvent* event) override;
+        void keyPressEvent(QKeyEvent* keyEvent) override;
 
     private:
         SnapshotDiffSettings settings;

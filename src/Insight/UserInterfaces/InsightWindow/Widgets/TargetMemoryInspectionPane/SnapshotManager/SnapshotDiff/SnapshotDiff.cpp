@@ -138,6 +138,17 @@ namespace Widgets
         QWidget::resizeEvent(event);
     }
 
+    void SnapshotDiff::keyPressEvent(QKeyEvent* keyEvent) {
+        const auto key = keyEvent->key();
+
+        if (key == Qt::Key_Escape) {
+            this->hexViewerWidgetA->clearHighlighting();
+            this->hexViewerWidgetB->clearHighlighting();
+        }
+
+        QWidget::keyPressEvent(keyEvent);
+    }
+
     void SnapshotDiff::init() {
         this->setWindowFlag(Qt::Window);
         this->setObjectName("snapshot-diff");
