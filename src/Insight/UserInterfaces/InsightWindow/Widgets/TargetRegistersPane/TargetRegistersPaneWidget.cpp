@@ -111,6 +111,7 @@ namespace Widgets
         );
 
         this->registerListScene = this->registerListView->listScene();
+        this->registerListScene->setKeyNavigationEnabled(false);
 
         containerLayout->addWidget(this->registerListView);
 

@@ -87,6 +87,40 @@ namespace Widgets
         this->update();
     }
 
+    void ListScene::setKeyNavigationEnabled(bool enabled) {
+        this->keyNavigationEnabled = enabled;
+    }
+
+    void ListScene::selectListItem(ListItem* item, bool append) {
+        const auto selectedItemCount = this->selectedItems.size();
+        if (selectedItemCount > 0) {
+            if (!append || selectedItemCount >= this->selectionLimit) {
+                const auto itemsToRemove = append
+                    ? selectedItemCount - this->selectionLimit + 1
+                    : selectedItemCount;
+
+                auto itemIt = this->selectedItems.begin();
+                while (
+                    itemIt != this->selectedItems.end()
+                    && (selectedItemCount - this->selectedItems.size()) < itemsToRemove
+                ) {
+                    auto& item = *itemIt;
+                    item->selected = false;
+                    item->update();
+
+                    this->selectedItems.erase(itemIt++);
+                }
+            }
+        }
+
+        if (this->selectionLimit > 0) {
+            this->selectedItems.push_back(item);
+            item->selected = true;
+            item->update();
+            emit this->selectionChanged(this->selectedItems);
+        }
+    }
+
     void ListScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) {
         const auto button = mouseEvent->button();
 
@@ -106,35 +140,7 @@ namespace Widgets
             return;
         }
 
-        const auto selectedItemCount = this->selectedItems.size();
-        if (selectedItemCount > 0) {
-            const auto ctrlModifierEnabled = (mouseEvent->modifiers() & Qt::ControlModifier) != 0;
-            if (!ctrlModifierEnabled || selectedItemCount >= this->selectionLimit) {
-                const auto itemsToRemove = ctrlModifierEnabled
-                    ? selectedItemCount - this->selectionLimit + 1
-                    : selectedItemCount;
-
-                auto itemIt = this->selectedItems.begin();
-                while (
-                    itemIt != this->selectedItems.end()
-                    && (selectedItemCount - this->selectedItems.size()) < itemsToRemove
-                ) {
-                    auto& item = *itemIt;
-                    item->selected = false;
-                    item->update();
-
-                    this->selectedItems.erase(itemIt++);
-                }
-            }
-        }
-
-        if (this->selectionLimit > 0) {
-            this->selectedItems.push_back(clickedListItem);
-            clickedListItem->selected = true;
-            clickedListItem->update();
-            emit this->selectionChanged(this->selectedItems);
-        }
-
+        this->selectListItem(clickedListItem, (mouseEvent->modifiers() & Qt::ControlModifier) != 0);
         emit this->itemClicked(clickedListItem);
     }
 
@@ -179,5 +185,31 @@ namespace Widgets
         }
 
         emit this->itemContextMenu(listItem, event->screenPos());
+    }
+
+    void ListScene::keyPressEvent(QKeyEvent* keyEvent) {
+        const auto key = keyEvent->key();
+
+        if (
+            this->keyNavigationEnabled
+            && (key == Qt::Key_Up || key == Qt::Key_Down) && this->selectedItems.size() == 1
+        ) {
+            auto itemIt = this->listItems.find(this->selectedItems.front());
+            if (
+                itemIt != this->listItems.end()
+                && (
+                    (key == Qt::Key_Up && itemIt != this->listItems.begin())
+                    || (key == Qt::Key_Down && itemIt != --(this->listItems.end()))
+               )
+            ) {
+                auto* item = key == Qt::Key_Up ? *(--itemIt) : *(++itemIt);
+                this->selectListItem(item, false);
+
+                this->views().front()->ensureVisible(item);
+                return;
+            }
+        }
+
+        return QGraphicsScene::keyPressEvent(keyEvent);
     }
 }

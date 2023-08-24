@@ -37,6 +37,8 @@ namespace Widgets
         void removeListItem(ListItem* item);
         void clearListItems();
         void setEnabled(bool enabled);
+        void setKeyNavigationEnabled(bool enabled);
+        void selectListItem(ListItem* item, bool append);
 
     signals:
         void selectionChanged(const std::list<ListItem*>& selectedItems);
@@ -48,11 +50,13 @@ namespace Widgets
         void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
         void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+        void keyPressEvent(QKeyEvent* keyEvent) override;
 
     private:
         ListScene::ListItemSetType listItems;
         QGraphicsView* const parent;
         bool enabled = false;
+        bool keyNavigationEnabled = true;
         std::list<ListItem*> selectedItems;
         std::uint8_t selectionLimit = 1;
 
