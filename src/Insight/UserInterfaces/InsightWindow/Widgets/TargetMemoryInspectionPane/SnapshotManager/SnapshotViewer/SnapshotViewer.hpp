@@ -63,7 +63,7 @@ namespace Widgets
 
         void onHexViewerReady();
         void restoreSelectedBytes(
-            const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress,
+            std::set<Targets::TargetMemoryAddress> addresses,
             bool confirmationPromptEnabled
         );
     };

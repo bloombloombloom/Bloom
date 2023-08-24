@@ -56,7 +56,9 @@ namespace Widgets
         void init();
         void updateStackPointer(Targets::TargetStackPointer stackPointer);
         void selectByteItems(const std::set<Targets::TargetMemoryAddress>& addresses);
-        void highlightByteItems(const std::set<Targets::TargetMemoryAddress>& addresses);
+        void selectByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
+        void highlightByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
+        void clearByteItemHighlighting();
         void rebuildItemHierarchy();
         void adjustSize();
         void setEnabled(bool enabled);
@@ -67,9 +69,8 @@ namespace Widgets
     signals:
         void ready();
         void hoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
-        void selectionChanged(
-            const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress
-        );
+        void selectionChanged(const std::set<Targets::TargetMemoryAddress>& addresses);
+        void highlightingChanged(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
 
     protected:
         bool enabled = true;
@@ -91,6 +92,7 @@ namespace Widgets
         ByteAddressContainer* byteAddressContainer = nullptr;
 
         std::unordered_map<Targets::TargetMemoryAddress, ByteItem*> selectedByteItemsByAddress;
+        std::set<Targets::TargetMemoryAddress> selectedByteItemAddresses;
 
         QGraphicsRectItem* rubberBandRectItem = nullptr;
         std::optional<QPointF> rubberBandInitPoint = std::nullopt;
@@ -154,12 +156,15 @@ namespace Widgets
         void clearByteItemSelection();
         void selectAllByteItems();
         void setAddressType(AddressType type);
-        std::map<Targets::TargetMemoryAddress, ByteItem*> sortedByteItemsByAddress();
+        std::set<Targets::TargetMemoryAddress> excludedAddresses();
         void copyAddressesToClipboard(AddressType type);
         void copyHexValuesToClipboard(bool withDelimiters);
         void copyDecimalValuesToClipboard();
         void copyBinaryBitStringToClipboard(bool withDelimiters);
         void copyValueMappingToClipboard();
         void copyAsciiValueToClipboard();
+        std::set<Targets::TargetMemoryAddress> addressRangesToAddresses(
+            const std::set<Targets::TargetMemoryAddressRange>& addressRanges
+        );
     };
 }

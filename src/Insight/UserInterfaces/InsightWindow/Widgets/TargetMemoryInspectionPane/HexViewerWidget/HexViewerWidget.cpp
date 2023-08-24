@@ -242,22 +242,17 @@ namespace Widgets
         this->byteItemGraphicsScene->addExternalContextMenuAction(action);
     }
 
-    void HexViewerWidget::highlightBytes(const std::set<Targets::TargetMemoryAddress>& addresses) {
-        this->byteItemGraphicsScene->highlightByteItems(addresses);
-    }
-
-    void HexViewerWidget::highlightBytes(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
-        this->byteItemGraphicsScene->highlightByteItems(this->addressRangesToAddresses(addressRanges));
+    void HexViewerWidget::highlightByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
+        this->byteItemGraphicsScene->highlightByteItemRanges(addressRanges);
     }
 
     void HexViewerWidget::clearHighlighting() {
-        this->highlightBytes(std::set<Targets::TargetMemoryAddress>());
+        this->byteItemGraphicsScene->clearByteItemHighlighting();
     }
 
     void HexViewerWidget::selectAndHighlightBytes(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
-        const auto addresses = this->addressRangesToAddresses(addressRanges);
-        this->byteItemGraphicsScene->highlightByteItems(addresses);
-        this->byteItemGraphicsScene->selectByteItems(addresses);
+        this->byteItemGraphicsScene->highlightByteItemRanges(addressRanges);
+        this->byteItemGraphicsScene->selectByteItemRanges(addressRanges);
     }
 
     void HexViewerWidget::centerOnByte(Targets::TargetMemoryAddress address) {
@@ -377,9 +372,9 @@ namespace Widgets
     }
 
     void HexViewerWidget::onByteSelectionChanged(
-        const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress
+        const std::set<Targets::TargetMemoryAddress>& selectedByteItemAddresses
     ) {
-        const auto selectionCount = selectedByteItemsByAddress.size();
+        const auto selectionCount = selectedByteItemAddresses.size();
 
         if (selectionCount == 0) {
             this->selectionCountLabel->hide();

@@ -215,18 +215,18 @@ namespace Widgets
         InsightWorker::queueTask(constructHexViewerTopLevelGroupItem);
     }
 
-    void ItemGraphicsScene::updateStackPointer(std::uint32_t stackPointer) {
+    void ItemGraphicsScene::updateStackPointer(Targets::TargetStackPointer stackPointer) {
         this->state.currentStackPointer = stackPointer;
         this->rebuildItemHierarchy();
     }
 
-    void ItemGraphicsScene::selectByteItems(const std::set<std::uint32_t>& addresses) {
-        this->selectedByteItemsByAddress.clear();
+    void ItemGraphicsScene::selectByteItems(const std::set<Targets::TargetMemoryAddress>& addresses) {
+        this->selectedByteItemAddresses.clear();
 
         for (auto& [address, byteItem] : this->topLevelGroup->byteItemsByAddress) {
             if (addresses.contains(address)) {
                 byteItem.selected = true;
-                this->selectedByteItemsByAddress.insert(std::pair(byteItem.startAddress, &byteItem));
+                this->selectedByteItemAddresses.insert(byteItem.startAddress);
 
             } else if (byteItem.selected) {
                 byteItem.selected = false;
@@ -234,16 +234,37 @@ namespace Widgets
         }
 
         this->update();
-        emit this->selectionChanged(this->selectedByteItemsByAddress);
+        emit this->selectionChanged(addresses);
     }
 
-    void ItemGraphicsScene::highlightByteItems(const std::set<std::uint32_t>& addresses) {
-        for (auto& [address, byteItem] : this->topLevelGroup->byteItemsByAddress) {
-            byteItem.highlighted = addresses.contains(address);
+    void ItemGraphicsScene::selectByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
+        return this->selectByteItems(this->addressRangesToAddresses(addressRanges));
+    }
+
+    void ItemGraphicsScene::highlightByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
+        /*
+         * Don't bother updating the byte items if addressRanges is empty - updating the this->state.highlightingEnabled
+         * flag will prevent the highlighting, and the byte items will be updated the next time we actually want to
+         * highlight something.
+         *
+         * Not pretty but it saves a lot of cycles.
+         */
+        if (!addressRanges.empty()) {
+            const auto addresses = this->addressRangesToAddresses(addressRanges);
+            for (auto& [address, byteItem] : this->topLevelGroup->byteItemsByAddress) {
+                byteItem.highlighted = addresses.contains(address);
+            }
         }
 
-        this->state.highlightingEnabled = !addresses.empty();
+        this->state.highlightingEnabled = !addressRanges.empty();
+        this->state.highlightedAddressRanges = std::move(addressRanges);
         this->update();
+
+        emit this->highlightingChanged(addressRanges);
+    }
+
+    void ItemGraphicsScene::clearByteItemHighlighting() {
+        this->highlightByteItemRanges({});
     }
 
     void ItemGraphicsScene::rebuildItemHierarchy() {
@@ -323,7 +344,7 @@ namespace Widgets
 
     void ItemGraphicsScene::addExternalContextMenuAction(ContextMenuAction* action) {
         QObject::connect(action, &QAction::triggered, this, [this, action] () {
-            emit action->invoked(this->selectedByteItemsByAddress);
+            emit action->invoked(this->selectedByteItemAddresses);
         });
 
         this->externalContextMenuActions.push_back(action);
@@ -367,8 +388,7 @@ namespace Widgets
         const auto mousePosition = mouseEvent->buttonDownScenePos(button);
 
         if (this->state.highlightingEnabled) {
-            this->state.highlightingEnabled = false;
-            this->update();
+            this->clearByteItemHighlighting();
         }
 
         if (mousePosition.x() <= this->byteAddressContainer->boundingRect().width()) {
@@ -424,12 +444,12 @@ namespace Widgets
                     this->toggleByteItemSelection(byteItem);
                 }
 
-                emit this->selectionChanged(this->selectedByteItemsByAddress);
+                emit this->selectionChanged(this->selectedByteItemAddresses);
                 return;
             }
 
             this->toggleByteItemSelection(*clickedByteItem);
-            emit this->selectionChanged(this->selectedByteItemsByAddress);
+            emit this->selectionChanged(this->selectedByteItemAddresses);
         }
     }
 
@@ -463,7 +483,7 @@ namespace Widgets
             for (auto& byteItem : items) {
                 this->selectByteItem(*byteItem);
             }
-            emit this->selectionChanged(this->selectedByteItemsByAddress);
+            emit this->selectionChanged(this->selectedByteItemAddresses);
         }
 
         auto* hoveredByteItem = this->itemIndex->byteItemAt(mousePosition);
@@ -485,7 +505,7 @@ namespace Widgets
     void ItemGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
         const auto key = keyEvent->key();
 
-        if (key == Qt::Key_Escape && !this->selectedByteItemsByAddress.empty()) {
+        if (key == Qt::Key_Escape && !this->selectedByteItemAddresses.empty()) {
             this->clearByteItemSelection();
             return;
         }
@@ -514,7 +534,7 @@ namespace Widgets
             return;
         }
 
-        const auto itemsSelected = !this->selectedByteItemsByAddress.empty();
+        const auto itemsSelected = !this->selectedByteItemAddresses.empty();
 
         auto* menu = new QMenu(this->parent);
         menu->setLayoutDirection(Qt::LayoutDirection::LeftToRight);
@@ -548,7 +568,7 @@ namespace Widgets
                     itemsSelected
                     && (
                         !externalAction->isEnabledCallback.has_value()
-                        || externalAction->isEnabledCallback.value()(this->selectedByteItemsByAddress)
+                        || externalAction->isEnabledCallback.value()(this->selectedByteItemAddresses)
                     )
 
                 );
@@ -620,12 +640,12 @@ namespace Widgets
 
     void ItemGraphicsScene::selectByteItem(ByteItem& byteItem) {
         byteItem.selected = true;
-        this->selectedByteItemsByAddress.insert(std::pair(byteItem.startAddress, &byteItem));
+        this->selectedByteItemAddresses.insert(byteItem.startAddress);
     }
 
     void ItemGraphicsScene::deselectByteItem(ByteItem& byteItem) {
         byteItem.selected = false;
-        this->selectedByteItemsByAddress.erase(byteItem.startAddress);
+        this->selectedByteItemAddresses.erase(byteItem.startAddress);
     }
 
     void ItemGraphicsScene::toggleByteItemSelection(ByteItem& byteItem) {
@@ -638,23 +658,24 @@ namespace Widgets
     }
 
     void ItemGraphicsScene::clearByteItemSelection() {
-        for (auto& [address, byteItem] : this->selectedByteItemsByAddress) {
-            byteItem->selected = false;
+        for (const auto& address : this->selectedByteItemAddresses) {
+            auto& byteItem = this->topLevelGroup->byteItemsByAddress.at(address);
+            byteItem.selected = false;
         }
 
-        this->selectedByteItemsByAddress.clear();
+        this->selectedByteItemAddresses.clear();
         this->update();
-        emit this->selectionChanged(this->selectedByteItemsByAddress);
+        emit this->selectionChanged(this->selectedByteItemAddresses);
     }
 
     void ItemGraphicsScene::selectAllByteItems() {
         for (auto& [address, byteItem] : this->topLevelGroup->byteItemsByAddress) {
             byteItem.selected = true;
-            this->selectedByteItemsByAddress.insert(std::pair(byteItem.startAddress, &byteItem));
+            this->selectedByteItemAddresses.insert(byteItem.startAddress);
         }
 
         this->update();
-        emit this->selectionChanged(this->selectedByteItemsByAddress);
+        emit this->selectionChanged(this->selectedByteItemAddresses);
     }
 
     void ItemGraphicsScene::setAddressType(AddressType type) {
@@ -666,34 +687,31 @@ namespace Widgets
         this->byteAddressContainer->invalidateChildItemCaches();
     }
 
-    std::map<Targets::TargetMemoryAddress, ByteItem*> ItemGraphicsScene::sortedByteItemsByAddress() {
-        auto sortedByteItemsByAddress = std::map<Targets::TargetMemoryAddress, ByteItem*>();
-        std::transform(
-            this->selectedByteItemsByAddress.begin(),
-            this->selectedByteItemsByAddress.end(),
-            std::inserter(sortedByteItemsByAddress, sortedByteItemsByAddress.end()),
-            [] (const decltype(this->selectedByteItemsByAddress)::value_type& pair) {
-                return pair;
-            }
-        );
+    std::set<Targets::TargetMemoryAddress> ItemGraphicsScene::excludedAddresses() {
+        auto output = std::set<Targets::TargetMemoryAddress>();
 
-        return sortedByteItemsByAddress;
+        for (const auto& excludedRegion : this->excludedMemoryRegions) {
+            const auto regionAddresses = excludedRegion.addressRange.addresses();
+            output.insert(regionAddresses.begin(), regionAddresses.end());
+        }
+
+        return output;
     }
 
     void ItemGraphicsScene::copyAddressesToClipboard(AddressType type) {
-        if (this->selectedByteItemsByAddress.empty()) {
+        if (this->selectedByteItemAddresses.empty()) {
             return;
         }
 
         auto data = QString();
         const auto memoryStartAddress = this->state.memoryDescriptor.addressRange.startAddress;
 
-        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
+        for (const auto& address : this->selectedByteItemAddresses) {
             data.append(
                 "0x" + QString::number(
                     type == AddressType::RELATIVE
-                        ? byteItem->startAddress - memoryStartAddress
-                        : byteItem->startAddress,
+                        ? address - memoryStartAddress
+                        : address,
                     16
                 ).rightJustified(8, '0').toUpper() + "\n"
             );
@@ -703,16 +721,17 @@ namespace Widgets
     }
 
     void ItemGraphicsScene::copyHexValuesToClipboard(bool withDelimiters) {
-        if (this->selectedByteItemsByAddress.empty()) {
+        if (this->selectedByteItemAddresses.empty()) {
             return;
         }
 
+        const auto excludedAddresses = this->excludedAddresses();
         auto data = QString();
 
-        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
-            const unsigned char byteValue = byteItem->excluded
+        for (const auto& address : this->selectedByteItemAddresses) {
+            const unsigned char byteValue = excludedAddresses.contains(address)
                 ? 0x00
-                : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+                : (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
 
             data.append(
                 withDelimiters
@@ -725,16 +744,17 @@ namespace Widgets
     }
 
     void ItemGraphicsScene::copyDecimalValuesToClipboard() {
-        if (this->selectedByteItemsByAddress.empty() || !this->state.data.has_value()) {
+        if (this->selectedByteItemAddresses.empty() || !this->state.data.has_value()) {
             return;
         }
 
+        const auto excludedAddresses = this->excludedAddresses();
         auto data = QString();
 
-        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
-            const unsigned char byteValue = byteItem->excluded
+        for (const auto& address : this->selectedByteItemAddresses) {
+            const unsigned char byteValue = excludedAddresses.contains(address)
                 ? 0x00
-                : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+                : (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
             data.append(QString::number(byteValue, 10) + "\n");
         }
 
@@ -742,16 +762,17 @@ namespace Widgets
     }
 
     void ItemGraphicsScene::copyBinaryBitStringToClipboard(bool withDelimiters) {
-        if (this->selectedByteItemsByAddress.empty()) {
+        if (this->selectedByteItemAddresses.empty()) {
             return;
         }
 
+        const auto excludedAddresses = this->excludedAddresses();
         auto data = QString();
 
-        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
-            const unsigned char byteValue = byteItem->excluded
+        for (const auto& address : this->selectedByteItemAddresses) {
+            const unsigned char byteValue = excludedAddresses.contains(address)
                 ? 0x00
-                : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+                : (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
 
             data.append(
                 withDelimiters
@@ -764,16 +785,17 @@ namespace Widgets
     }
 
     void ItemGraphicsScene::copyValueMappingToClipboard() {
-        if (this->selectedByteItemsByAddress.empty() || !this->state.data.has_value()) {
+        if (this->selectedByteItemAddresses.empty() || !this->state.data.has_value()) {
             return;
         }
 
+        const auto excludedAddresses = this->excludedAddresses();
         auto data = QJsonObject();
 
-        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
-            const unsigned char byteValue = byteItem->excluded
+        for (const auto& address : this->selectedByteItemAddresses) {
+            const unsigned char byteValue = excludedAddresses.contains(address)
                 ? 0x00
-                : (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+                : (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
 
             data.insert(
                 "0x" + QString::number(address, 16).rightJustified(8, '0').toUpper(),
@@ -785,17 +807,18 @@ namespace Widgets
     }
 
     void ItemGraphicsScene::copyAsciiValueToClipboard() {
-        if (this->selectedByteItemsByAddress.empty() || !this->state.data.has_value()) {
+        if (this->selectedByteItemAddresses.empty() || !this->state.data.has_value()) {
             return;
         }
 
+        const auto excludedAddresses = this->excludedAddresses();
         auto data = QString();
 
-        for (const auto& [address, byteItem] : this->sortedByteItemsByAddress()) {
+        for (const auto& address : this->selectedByteItemAddresses) {
             const unsigned char byteValue =
-                (*this->state.data)[byteItem->startAddress - this->state.memoryDescriptor.addressRange.startAddress];
+                (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
 
-            if (byteItem->excluded || byteValue < 32 || byteValue > 126) {
+            if (excludedAddresses.contains(address) || byteValue < 32 || byteValue > 126) {
                 continue;
             }
 
@@ -803,5 +826,18 @@ namespace Widgets
         }
 
         QApplication::clipboard()->setText(std::move(data));
+    }
+
+    std::set<Targets::TargetMemoryAddress> ItemGraphicsScene::addressRangesToAddresses(
+        const std::set<Targets::TargetMemoryAddressRange>& addressRanges
+    ) {
+        auto addresses = std::set<Targets::TargetMemoryAddress>();
+
+        for (const auto& range : addressRanges) {
+            const auto rangeAddresses = range.addresses();
+            addresses.insert(rangeAddresses.begin(), rangeAddresses.end());
+        }
+
+        return addresses;
     }
 }

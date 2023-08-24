@@ -128,7 +128,7 @@ namespace Widgets
         void setSyncHexViewerSelectionEnabled(bool enabled);
 
         void restoreSelectedBytes(
-            const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress,
+            std::set<Targets::TargetMemoryAddress> addresses,
             bool confirmationPromptEnabled
         );
     };

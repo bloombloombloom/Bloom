@@ -85,7 +85,7 @@ namespace Widgets
 
         this->restoreBytesAction = new ContextMenuAction(
             "Restore Selection",
-            [this] (const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>&) {
+            [this] (const std::set<Targets::TargetMemoryAddress>&) {
                 return this->memoryDescriptor.access.writeableDuringDebugSession;
             },
             this
@@ -95,8 +95,8 @@ namespace Widgets
             this->restoreBytesAction,
             &ContextMenuAction::invoked,
             this,
-            [this] (const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress) {
-                this->restoreSelectedBytes(selectedByteItemsByAddress, true);
+            [this] (const std::set<Targets::TargetMemoryAddress>& selectedByteItemAddresses) {
+                this->restoreSelectedBytes(selectedByteItemAddresses, true);
             }
         );
     }
@@ -446,20 +446,20 @@ namespace Widgets
     }
 
     void SnapshotDiff::restoreSelectedBytes(
-        const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress,
+        std::set<Targets::TargetMemoryAddress> addresses,
         bool confirmationPromptEnabled
     ) {
-        auto sortedByteItemsByAddress = std::map<Targets::TargetMemoryAddress, ByteItem*>();
-
-        for (const auto& pair : selectedByteItemsByAddress) {
-            if (pair.second->excluded) {
-                continue;
-            }
-
-            sortedByteItemsByAddress.insert(pair);
+        auto excludedAddresses = std::set<Targets::TargetMemoryAddress>();
+        for (const auto& excludedRegion : this->excludedRegionsA) {
+            const auto regionAddresses = excludedRegion.addressRange.addresses();
+            excludedAddresses.insert(regionAddresses.begin(), regionAddresses.end());
         }
 
-        if (sortedByteItemsByAddress.empty()) {
+        std::erase_if(addresses, [excludedAddresses] (const auto& address) {
+            return excludedAddresses.contains(address);
+        });
+
+        if (addresses.empty()) {
             // The user has only selected bytes that are within an excluded region - nothing to do here
             return;
         }
@@ -467,8 +467,7 @@ namespace Widgets
         if (confirmationPromptEnabled) {
             auto* confirmationDialog = new ConfirmationDialog(
                 "Restore selected bytes",
-                "This operation will write " + QString::number(sortedByteItemsByAddress.size())
-                    + " byte(s) to the target's "
+                "This operation will write " + QString::number(addresses.size()) + " byte(s) to the target's "
                     + EnumToStringMappings::targetMemoryTypes.at(this->memoryDescriptor.type).toUpper()
                     + ".<br/><br/>Are you sure you want to proceed?",
                 "Proceed",
@@ -480,8 +479,8 @@ namespace Widgets
                 confirmationDialog,
                 &ConfirmationDialog::confirmed,
                 this,
-                [this, selectedByteItemsByAddress] {
-                    this->restoreSelectedBytes(selectedByteItemsByAddress, false);
+                [this, addresses] {
+                    this->restoreSelectedBytes(addresses, false);
                 }
             );
 
@@ -491,10 +490,10 @@ namespace Widgets
 
         auto writeBlocks = std::vector<WriteTargetMemory::Block>();
 
-        Targets::TargetMemoryAddress blockStartAddress = sortedByteItemsByAddress.begin()->first;
+        Targets::TargetMemoryAddress blockStartAddress = *(addresses.begin());
         Targets::TargetMemoryAddress blockEndAddress = blockStartAddress;
 
-        for (const auto& [address, byteItem] : sortedByteItemsByAddress) {
+        for (const auto& address : addresses) {
             if (address > (blockEndAddress + 1)) {
                 // Commit the block
                 const auto dataBeginOffset = blockStartAddress - this->memoryDescriptor.addressRange.startAddress;

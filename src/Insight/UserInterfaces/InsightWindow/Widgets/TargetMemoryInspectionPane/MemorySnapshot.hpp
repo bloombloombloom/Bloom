@@ -43,6 +43,7 @@ public:
     QJsonObject toJson() const;
 
     bool isCompatible(const Targets::TargetMemoryDescriptor& memoryDescriptor) const;
+    std::set<Targets::TargetMemoryAddress> excludedAddresses() const;
 
     virtual ~MemorySnapshot() = default;
 

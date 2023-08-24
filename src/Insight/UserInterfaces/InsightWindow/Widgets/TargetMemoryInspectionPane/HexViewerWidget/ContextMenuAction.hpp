@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <functional>
 #include <QString>
+#include <set>
 #include <optional>
 
 #include "src/Targets/TargetMemory.hpp"
@@ -28,7 +29,7 @@ namespace Widgets
          * always be enabled.
          */
         using IsEnabledCallbackType = std::function<
-            bool(const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>&)
+            bool(const std::set<Targets::TargetMemoryAddress>&)
         >;
 
     public:
@@ -41,6 +42,6 @@ namespace Widgets
         );
 
     signals:
-        void invoked(const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress);
+        void invoked(const std::set<Targets::TargetMemoryAddress>& selectedByteItemAddresses);
     };
 }

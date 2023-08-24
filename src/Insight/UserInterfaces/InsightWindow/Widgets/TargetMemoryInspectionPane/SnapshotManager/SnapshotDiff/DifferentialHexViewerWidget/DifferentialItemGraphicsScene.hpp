@@ -41,8 +41,7 @@ namespace Widgets
         QMargins margins() override;
 
         void onOtherHoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
-        void onOtherSelectionChanged(
-            const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress
-        );
+        void onOtherSelectionChanged(const std::set<Targets::TargetMemoryAddress>& addresses);
+        void onOtherHighlightedByteRangesChanged(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
     };
 }

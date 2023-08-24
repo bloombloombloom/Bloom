@@ -138,3 +138,14 @@ bool MemorySnapshot::isCompatible(const Targets::TargetMemoryDescriptor& memoryD
 
     return true;
 }
+
+std::set<Targets::TargetMemoryAddress> MemorySnapshot::excludedAddresses() const {
+    auto output = std::set<Targets::TargetMemoryAddress>();
+
+    for (const auto& excludedRegion : this->excludedRegions) {
+        const auto regionAddresses = excludedRegion.addressRange.addresses();
+        output.insert(regionAddresses.begin(), regionAddresses.end());
+    }
+
+    return output;
+}

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <set>
 #include <optional>
 
 namespace Targets
@@ -59,6 +60,17 @@ namespace Targets
 
         [[nodiscard]] bool contains(const TargetMemoryAddressRange& addressRange) const {
             return this->startAddress <= addressRange.startAddress && this->endAddress >= addressRange.endAddress;
+        }
+
+        std::set<Targets::TargetMemoryAddress> addresses() const {
+            auto addresses = std::set<Targets::TargetMemoryAddress>();
+            auto addressesIt = addresses.end();
+
+            for (auto i = this->startAddress; i <= this->endAddress; ++i) {
+                addressesIt = addresses.insert(addressesIt, i);
+            }
+
+            return addresses;
         }
     };
 

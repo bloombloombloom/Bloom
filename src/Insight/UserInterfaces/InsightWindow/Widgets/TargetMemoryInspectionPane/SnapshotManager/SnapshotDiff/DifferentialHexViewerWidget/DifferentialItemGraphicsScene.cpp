@@ -44,6 +44,13 @@ namespace Widgets
             this,
             &DifferentialItemGraphicsScene::onOtherSelectionChanged
         );
+
+        QObject::connect(
+            this->other,
+            &DifferentialItemGraphicsScene::highlightingChanged,
+            this,
+            &DifferentialItemGraphicsScene::onOtherHighlightedByteRangesChanged
+        );
     }
 
     ByteItem* DifferentialItemGraphicsScene::byteItemAtViewportTop() {
@@ -97,23 +104,27 @@ namespace Widgets
     }
 
     void DifferentialItemGraphicsScene::onOtherSelectionChanged(
-        const std::unordered_map<Targets::TargetMemoryAddress, ByteItem*>& selectedByteItemsByAddress
+        const std::set<Targets::TargetMemoryAddress>& addresses
     ) {
         if (!this->snapshotDiffSettings.syncHexViewerSelection || this->diffHexViewerState.syncingSelection) {
             return;
         }
 
         this->diffHexViewerState.syncingSelection = true;
-        this->clearByteItemSelection();
+        this->selectByteItems(addresses);
+        this->diffHexViewerState.syncingSelection = false;
+    }
 
-        for (const auto& [address, otherByteItem] : selectedByteItemsByAddress) {
-            auto& byteItem = this->topLevelGroup->byteItemsByAddress.at(address);
-            byteItem.selected = true;
-            this->selectedByteItemsByAddress.insert(std::pair(byteItem.startAddress, &byteItem));
+    void DifferentialItemGraphicsScene::onOtherHighlightedByteRangesChanged(
+        const std::set<Targets::TargetMemoryAddressRange>& addressRanges
+    ) {
+        if (this->diffHexViewerState.syncingHighlightedRanges) {
+            return;
         }
 
-        emit this->selectionChanged(this->selectedByteItemsByAddress);
-        this->diffHexViewerState.syncingSelection = false;
+        this->diffHexViewerState.syncingHighlightedRanges = true;
+        this->highlightByteItemRanges(addressRanges);
+        this->diffHexViewerState.syncingHighlightedRanges = false;
 
         this->update();
     }
