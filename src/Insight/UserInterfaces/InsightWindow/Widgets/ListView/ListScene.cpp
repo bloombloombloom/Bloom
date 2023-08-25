@@ -65,10 +65,12 @@ namespace Widgets
 
     void ListScene::removeListItem(ListItem* item) {
         this->listItems.erase(item);
+        this->selectedItems.remove(item);
         this->removeItem(item);
     }
 
     void ListScene::clearListItems() {
+        this->selectedItems.clear();
         this->listItems.clear();
         this->clear();
     }
