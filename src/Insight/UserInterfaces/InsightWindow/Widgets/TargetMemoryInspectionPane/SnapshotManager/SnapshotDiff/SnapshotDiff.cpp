@@ -407,10 +407,12 @@ namespace Widgets
         }
 
         this->changeListPane->setDiffRanges(diffRanges);
+
+        const auto diffCount = this->differentialHexViewerSharedState.differences.size();
         this->diffCountLabel->setText(
-            count == 0
+            diffCount == 0
                 ? "Contents are identical"
-                : QLocale(QLocale::English).toString(count) + (count == 1 ? " difference" : " differences")
+                : QLocale(QLocale::English).toString(diffCount) + (diffCount == 1 ? " difference" : " differences")
         );
     }
 
