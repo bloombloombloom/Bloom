@@ -116,7 +116,7 @@ namespace Widgets
     void ChangeListPane::refreshChangeListViewSize() {
         this->changeListView->setFixedWidth(
             this->container->width() - (
-                this->changeListView->verticalScrollBar()->isVisible() ? this->parentPanel->getHandleSize() : 0
+                this->changeListView->verticalScrollBar()->maximum() > 0 ? this->parentPanel->getHandleSize() : 0
             )
         );
     }
