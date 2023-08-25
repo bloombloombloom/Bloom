@@ -42,6 +42,6 @@ namespace Widgets
 
         void onOtherHoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
         void onOtherSelectionChanged(const std::set<Targets::TargetMemoryAddress>& addresses);
-        void onOtherHighlightedByteRangesChanged(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
+        void onOtherHighlightedPrimaryByteRangesChanged(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
     };
 }

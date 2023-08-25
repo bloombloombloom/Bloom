@@ -106,10 +106,10 @@ namespace Widgets
 
         const auto* item = dynamic_cast<ChangeListItem*>(selectedItems.front());
 
-        this->hexViewerWidgetA->selectAndHighlightBytes({item->addressRange});
+        this->hexViewerWidgetA->highlightPrimaryByteItemRanges({item->addressRange});
         this->hexViewerWidgetA->centerOnByte(item->addressRange.startAddress);
 
-        this->hexViewerWidgetB->selectAndHighlightBytes({item->addressRange});
+        this->hexViewerWidgetB->highlightPrimaryByteItemRanges({item->addressRange});
         this->hexViewerWidgetB->centerOnByte(item->addressRange.startAddress);
     }
 

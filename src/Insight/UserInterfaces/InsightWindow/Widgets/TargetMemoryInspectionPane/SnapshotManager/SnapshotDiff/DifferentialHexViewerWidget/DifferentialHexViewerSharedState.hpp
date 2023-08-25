@@ -12,6 +12,6 @@ namespace Widgets
         bool syncingScroll = false;
         bool syncingHover = false;
         bool syncingSelection = false;
-        bool syncingHighlightedRanges = false;
+        bool syncingHighlightedPrimaryRanges = false;
     };
 }

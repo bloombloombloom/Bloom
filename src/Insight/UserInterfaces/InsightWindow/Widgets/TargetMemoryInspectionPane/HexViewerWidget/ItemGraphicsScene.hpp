@@ -57,7 +57,7 @@ namespace Widgets
         void updateStackPointer(Targets::TargetStackPointer stackPointer);
         void selectByteItems(const std::set<Targets::TargetMemoryAddress>& addresses);
         void selectByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
-        void highlightByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
+        void highlightPrimaryByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
         void clearByteItemHighlighting();
         void rebuildItemHierarchy();
         void adjustSize();
@@ -70,7 +70,7 @@ namespace Widgets
         void ready();
         void hoveredAddress(const std::optional<Targets::TargetMemoryAddress>& address);
         void selectionChanged(const std::set<Targets::TargetMemoryAddress>& addresses);
-        void highlightingChanged(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
+        void primaryHighlightingChanged(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
 
     protected:
         bool enabled = true;

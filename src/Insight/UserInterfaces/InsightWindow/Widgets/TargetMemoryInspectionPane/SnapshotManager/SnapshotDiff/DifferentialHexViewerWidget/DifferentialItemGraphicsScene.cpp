@@ -47,9 +47,9 @@ namespace Widgets
 
         QObject::connect(
             this->other,
-            &DifferentialItemGraphicsScene::highlightingChanged,
+            &DifferentialItemGraphicsScene::primaryHighlightingChanged,
             this,
-            &DifferentialItemGraphicsScene::onOtherHighlightedByteRangesChanged
+            &DifferentialItemGraphicsScene::onOtherHighlightedPrimaryByteRangesChanged
         );
     }
 
@@ -115,16 +115,16 @@ namespace Widgets
         this->diffHexViewerState.syncingSelection = false;
     }
 
-    void DifferentialItemGraphicsScene::onOtherHighlightedByteRangesChanged(
+    void DifferentialItemGraphicsScene::onOtherHighlightedPrimaryByteRangesChanged(
         const std::set<Targets::TargetMemoryAddressRange>& addressRanges
     ) {
-        if (this->diffHexViewerState.syncingHighlightedRanges) {
+        if (this->diffHexViewerState.syncingHighlightedPrimaryRanges) {
             return;
         }
 
-        this->diffHexViewerState.syncingHighlightedRanges = true;
-        this->highlightByteItemRanges(addressRanges);
-        this->diffHexViewerState.syncingHighlightedRanges = false;
+        this->diffHexViewerState.syncingHighlightedPrimaryRanges = true;
+        this->highlightPrimaryByteItemRanges(addressRanges);
+        this->diffHexViewerState.syncingHighlightedPrimaryRanges = false;
 
         this->update();
     }

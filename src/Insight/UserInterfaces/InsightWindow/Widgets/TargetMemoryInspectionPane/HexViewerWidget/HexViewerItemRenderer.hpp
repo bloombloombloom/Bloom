@@ -31,6 +31,7 @@ namespace Widgets
 
         HexViewerItemRenderer(
             const HexViewerSharedState& hexViewerState,
+            const TopLevelGroupItem& topLevelGroupItem,
             const HexViewerItemIndex& itemIndex,
             const QGraphicsView* view
         );
@@ -43,6 +44,7 @@ namespace Widgets
 
     protected:
         const HexViewerSharedState& hexViewerState;
+        const TopLevelGroupItem& topLevelGroupItem;
         const HexViewerItemIndex& itemIndex;
 
         const QGraphicsView* view;
@@ -53,11 +55,13 @@ namespace Widgets
 
         static inline std::vector<QPixmap> standardPixmapsByValue = {};
         static inline std::vector<QPixmap> selectedPixmapsByValue = {};
+        static inline std::vector<QPixmap> primaryHighlightedPixmapsByValue = {};
         static inline std::vector<QPixmap> groupedPixmapsByValue = {};
         static inline std::vector<QPixmap> stackMemoryPixmapsByValue = {};
         static inline std::vector<QPixmap> changedMemoryPixmapsByValue = {};
         static inline std::vector<QPixmap> standardAsciiPixmapsByValue = {};
         static inline std::vector<QPixmap> selectedAsciiPixmapsByValue = {};
+        static inline std::vector<QPixmap> primaryHighlightedAsciiPixmapsByValue = {};
         static inline std::vector<QPixmap> groupedAsciiPixmapsByValue = {};
         static inline std::vector<QPixmap> stackMemoryAsciiPixmapsByValue = {};
         static inline std::vector<QPixmap> changedMemoryAsciiPixmapsByValue = {};
@@ -65,9 +69,15 @@ namespace Widgets
         static inline std::vector<QPixmap> hoveredPrimaryAsciiPixmapsByValue = {};
         static inline std::optional<QPixmap> missingDataPixmap = {};
         static inline std::optional<QPixmap> selectedMissingDataPixmap = {};
+        static inline std::optional<QPixmap> primaryHighlightedMissingDataPixmap = {};
 
         inline void paintItem(const HexViewerItem* item, QPainter* painter) __attribute__((__always_inline__));
         inline void paintByteItem(const ByteItem* item, QPainter* painter) __attribute__((__always_inline__));
+        inline void paintPrimaryHighlightBorder(
+            const ByteItem* startItem,
+            const ByteItem* endItem,
+            QPainter* painter
+        ) __attribute__((__always_inline__));
         inline void paintFocusedRegionGroupItem(
             const FocusedRegionGroupItem* item,
             QPainter* painter

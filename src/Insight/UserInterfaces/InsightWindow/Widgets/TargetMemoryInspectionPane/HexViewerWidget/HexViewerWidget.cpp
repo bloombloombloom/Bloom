@@ -242,17 +242,14 @@ namespace Widgets
         this->byteItemGraphicsScene->addExternalContextMenuAction(action);
     }
 
-    void HexViewerWidget::highlightByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
-        this->byteItemGraphicsScene->highlightByteItemRanges(addressRanges);
+    void HexViewerWidget::highlightPrimaryByteItemRanges(
+        const std::set<Targets::TargetMemoryAddressRange>& addressRanges
+    ) {
+        this->byteItemGraphicsScene->highlightPrimaryByteItemRanges(addressRanges);
     }
 
     void HexViewerWidget::clearHighlighting() {
         this->byteItemGraphicsScene->clearByteItemHighlighting();
-    }
-
-    void HexViewerWidget::selectAndHighlightBytes(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
-        this->byteItemGraphicsScene->highlightByteItemRanges(addressRanges);
-        this->byteItemGraphicsScene->selectByteItemRanges(addressRanges);
     }
 
     void HexViewerWidget::centerOnByte(Targets::TargetMemoryAddress address) {

@@ -241,7 +241,9 @@ namespace Widgets
         return this->selectByteItems(this->addressRangesToAddresses(addressRanges));
     }
 
-    void ItemGraphicsScene::highlightByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges) {
+    void ItemGraphicsScene::highlightPrimaryByteItemRanges(
+        const std::set<Targets::TargetMemoryAddressRange>& addressRanges
+    ) {
         /*
          * Don't bother updating the byte items if addressRanges is empty - updating the this->state.highlightingEnabled
          * flag will prevent the highlighting, and the byte items will be updated the next time we actually want to
@@ -252,19 +254,19 @@ namespace Widgets
         if (!addressRanges.empty()) {
             const auto addresses = this->addressRangesToAddresses(addressRanges);
             for (auto& [address, byteItem] : this->topLevelGroup->byteItemsByAddress) {
-                byteItem.highlighted = addresses.contains(address);
+                byteItem.primaryHighlighted = addresses.contains(address);
             }
         }
 
         this->state.highlightingEnabled = !addressRanges.empty();
-        this->state.highlightedAddressRanges = std::move(addressRanges);
+        this->state.highlightedPrimaryAddressRanges = std::move(addressRanges);
         this->update();
 
-        emit this->highlightingChanged(addressRanges);
+        emit this->primaryHighlightingChanged(addressRanges);
     }
 
     void ItemGraphicsScene::clearByteItemHighlighting() {
-        this->highlightByteItemRanges({});
+        this->highlightPrimaryByteItemRanges({});
     }
 
     void ItemGraphicsScene::rebuildItemHierarchy() {
@@ -353,6 +355,7 @@ namespace Widgets
     void ItemGraphicsScene::initRenderer() {
         this->renderer = new HexViewerItemRenderer(
             this->state,
+            *(this->topLevelGroup.get()),
             *(this->itemIndex.get()),
             this->views().first()
         );

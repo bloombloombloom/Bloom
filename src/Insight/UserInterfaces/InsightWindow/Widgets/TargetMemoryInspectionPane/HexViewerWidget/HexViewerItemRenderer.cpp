@@ -2,15 +2,18 @@
 
 #include <QScrollBar>
 #include <QColor>
+#include <QPainterPath>
 
 namespace Widgets
 {
     HexViewerItemRenderer::HexViewerItemRenderer(
         const HexViewerSharedState& hexViewerState,
+        const TopLevelGroupItem& topLevelGroupItem,
         const HexViewerItemIndex& itemIndex,
         const QGraphicsView* view
     )
         : hexViewerState(hexViewerState)
+        , topLevelGroupItem(topLevelGroupItem)
         , itemIndex(itemIndex)
         , view(view)
         , viewport(view->viewport())
@@ -24,11 +27,10 @@ namespace Widgets
     }
 
     void HexViewerItemRenderer::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-        const auto vScrollBarValue = this->view->verticalScrollBar()->value();
-        const auto visibleItems = this->itemIndex.items(
-            vScrollBarValue,
-            vScrollBarValue + this->viewport->size().height()
-        );
+        const auto viewportYStart = this->view->verticalScrollBar()->value();
+        const auto viewportYEnd = viewportYStart + this->viewport->size().height();
+
+        const auto visibleItems = this->itemIndex.items(viewportYStart, viewportYEnd);
 
         painter->setRenderHints(QPainter::RenderHint::Antialiasing, false);
 
@@ -45,6 +47,26 @@ namespace Widgets
         for (auto& item : visibleItems) {
             painter->setOpacity(1);
             this->paintItem(item, painter);
+        }
+
+        if (this->hexViewerState.highlightingEnabled) {
+            for (const auto& range : this->hexViewerState.highlightedPrimaryAddressRanges) {
+                const auto& startItem = this->topLevelGroupItem.byteItemsByAddress.at(range.startAddress);
+                const auto& endItem = this->topLevelGroupItem.byteItemsByAddress.at(range.endAddress);
+
+                const auto startItemY = startItem.position().y();
+                const auto endItemY = endItem.position().y();
+
+                if (startItemY > viewportYEnd) {
+                    break;
+                }
+
+                if (startItemY != endItemY || endItemY < viewportYStart) {
+                    continue;
+                }
+
+                this->paintPrimaryHighlightBorder(&startItem, &endItem, painter);
+            }
         }
     }
 
@@ -75,7 +97,7 @@ namespace Widgets
         painter->setOpacity(
             !this->isEnabled()
             || (item->excluded && !item->selected)
-            || (this->hexViewerState.highlightingEnabled && !item->highlighted)
+            || (this->hexViewerState.highlightingEnabled && !item->primaryHighlighted)
                 ? 0.6
                 : 1
         );
@@ -83,6 +105,11 @@ namespace Widgets
         if (item->excluded || !this->hexViewerState.data.has_value()) {
             if (item->selected) {
                 painter->drawPixmap(boundingRect, HexViewerItemRenderer::selectedMissingDataPixmap.value());
+                return;
+            }
+
+            if (this->hexViewerState.highlightingEnabled && item->primaryHighlighted) {
+                painter->drawPixmap(boundingRect, HexViewerItemRenderer::primaryHighlightedMissingDataPixmap.value());
                 return;
             }
 
@@ -100,6 +127,14 @@ namespace Widgets
                 painter->drawPixmap(
                     boundingRect,
                     HexViewerItemRenderer::selectedAsciiPixmapsByValue[value]
+                );
+                return;
+            }
+
+            if (this->hexViewerState.highlightingEnabled && item->primaryHighlighted) {
+                painter->drawPixmap(
+                    boundingRect,
+                    HexViewerItemRenderer::primaryHighlightedAsciiPixmapsByValue[value]
                 );
                 return;
             }
@@ -148,6 +183,14 @@ namespace Widgets
             return;
         }
 
+        if (this->hexViewerState.highlightingEnabled && item->primaryHighlighted) {
+            painter->drawPixmap(
+                boundingRect,
+                HexViewerItemRenderer::primaryHighlightedPixmapsByValue[value]
+            );
+            return;
+        }
+
         if (item->changed) {
             painter->drawPixmap(
                 boundingRect,
@@ -184,6 +227,34 @@ namespace Widgets
             boundingRect,
             HexViewerItemRenderer::standardPixmapsByValue[value]
         );
+    }
+
+    void HexViewerItemRenderer::paintPrimaryHighlightBorder(
+        const ByteItem* startItem,
+        const ByteItem* endItem,
+        QPainter* painter
+    ) {
+        constexpr auto padding = 6;
+        constexpr auto rectRadius = 4;
+
+        const auto startItemPos = startItem->position();
+        const auto endItemPos = endItem->position();
+        const auto endItemSize = endItem->size();
+
+        auto painterPath = QPainterPath();
+        painterPath.addRoundedRect(
+            startItemPos.x() - padding,
+            startItemPos.y() - padding,
+            (endItemPos.x() + endItemSize.width()) - startItemPos.x() + (padding * 2),
+            (endItemPos.y() + endItemSize.height()) - startItemPos.y() + (padding * 2),
+            rectRadius,
+            rectRadius
+        );
+
+        painter->setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
+        painter->setPen(QPen(QColor(0x78, 0x78, 0x78), 2));
+        painter->setBrush(Qt::BrushStyle::NoBrush);
+        painter->drawPath(painterPath);
     }
 
     void HexViewerItemRenderer::paintFocusedRegionGroupItem(const FocusedRegionGroupItem* item, QPainter* painter) {
@@ -517,8 +588,8 @@ namespace Widgets
         }
 
         static constexpr auto standardBackgroundColor = QColor(0x32, 0x33, 0x30, 0);
-        static constexpr auto highlightedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
         static constexpr auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
+        static constexpr auto primaryHighlightedBackgroundColor = QColor(0x3B, 0x59, 0x37, 255);
         static constexpr auto groupedBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
         static constexpr auto stackMemoryBackgroundColor = QColor(0x44, 0x44, 0x41, 200);
         static constexpr auto stackMemoryBarColor = QColor(0x67, 0x57, 0x20, 255);
@@ -545,8 +616,8 @@ namespace Widgets
         auto standardTemplatePixmap = QPixmap(byteItemSize);
         standardTemplatePixmap.fill(standardBackgroundColor);
 
-        auto highlightedTemplatePixmap = QPixmap(byteItemSize);
-        highlightedTemplatePixmap.fill(highlightedBackgroundColor);
+        auto primaryHighlightedTemplatePixmap = QPixmap(byteItemSize);
+        primaryHighlightedTemplatePixmap.fill(primaryHighlightedBackgroundColor);
 
         auto selectedTemplatePixmap = QPixmap(byteItemSize);
         selectedTemplatePixmap.fill(selectedBackgroundColor);
@@ -602,6 +673,16 @@ namespace Widgets
                 painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
 
                 HexViewerItemRenderer::selectedPixmapsByValue.emplace_back(std::move(selectedPixmap));
+            }
+
+            {
+                auto primaryHighlightedPixmap = primaryHighlightedTemplatePixmap;
+                auto painter = QPainter(&primaryHighlightedPixmap);
+                painter.setFont(font);
+                painter.setPen(standardFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
+
+                HexViewerItemRenderer::primaryHighlightedPixmapsByValue.emplace_back(std::move(primaryHighlightedPixmap));
             }
 
             {
@@ -665,6 +746,18 @@ namespace Widgets
             }
 
             {
+                auto primaryHighlightedAsciiPixmap = primaryHighlightedTemplatePixmap;
+                auto painter = QPainter(&primaryHighlightedAsciiPixmap);
+                painter.setFont(font);
+                painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
+                painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
+
+                HexViewerItemRenderer::primaryHighlightedAsciiPixmapsByValue.emplace_back(
+                    std::move(primaryHighlightedAsciiPixmap)
+                );
+            }
+
+            {
                 auto groupedAsciiPixmap = groupedTemplatePixmap;
                 auto painter = QPainter(&groupedAsciiPixmap);
                 painter.setFont(font);
@@ -719,6 +812,14 @@ namespace Widgets
         {
             HexViewerItemRenderer::selectedMissingDataPixmap = selectedTemplatePixmap;
             auto painter = QPainter(&HexViewerItemRenderer::selectedMissingDataPixmap.value());
+            painter.setFont(font);
+            painter.setPen(standardFontColor);
+            painter.drawText(byteItemRect, Qt::AlignCenter, "??");
+        }
+
+        {
+            HexViewerItemRenderer::primaryHighlightedMissingDataPixmap = primaryHighlightedTemplatePixmap;
+            auto painter = QPainter(&HexViewerItemRenderer::primaryHighlightedMissingDataPixmap.value());
             painter.setFont(font);
             painter.setPen(standardFontColor);
             painter.drawText(byteItemRect, Qt::AlignCenter, "??");

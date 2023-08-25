@@ -25,7 +25,7 @@ namespace Widgets
         bool grouped:1 = false;
         bool stackMemory:1 = false;
         bool changed:1 = false;
-        bool highlighted:1 = false;
+        bool primaryHighlighted:1 = false;
 
         explicit ByteItem(Targets::TargetMemoryAddress address);
 

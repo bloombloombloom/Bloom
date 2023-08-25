@@ -20,7 +20,7 @@ namespace Widgets
         ByteItem* hoveredByteItem = nullptr;
         std::optional<Targets::TargetStackPointer> currentStackPointer;
         bool highlightingEnabled = false;
-        std::set<Targets::TargetMemoryAddressRange> highlightedAddressRanges;
+        std::set<Targets::TargetMemoryAddressRange> highlightedPrimaryAddressRanges;
 
         HexViewerSharedState(
             const Targets::TargetMemoryDescriptor& memoryDescriptor,
