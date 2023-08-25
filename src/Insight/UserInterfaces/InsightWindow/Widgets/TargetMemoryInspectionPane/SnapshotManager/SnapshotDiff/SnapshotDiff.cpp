@@ -177,7 +177,7 @@ namespace Widgets
 
         // Set ideal window size
         this->setFixedSize(1600, 910);
-        this->setMinimumSize(700, 600);
+        this->setMinimumSize(800, 600);
         this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
         auto uiLoader = UiLoader(this);
