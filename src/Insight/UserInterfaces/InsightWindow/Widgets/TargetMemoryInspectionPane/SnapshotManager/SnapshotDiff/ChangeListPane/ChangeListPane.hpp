@@ -7,6 +7,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
+#include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/DifferentialHexViewerWidget/DifferentialHexViewerWidget.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
@@ -42,6 +43,7 @@ namespace Widgets
         DifferentialHexViewerWidget* hexViewerWidgetB;
 
         QWidget* container = nullptr;
+        Label* placeHolderLabel = nullptr;
 
         ListView* changeListView = nullptr;
         ListScene* changeListScene = nullptr;

@@ -44,6 +44,8 @@ namespace Widgets
         this->container->setFixedSize(this->size());
         this->container->setContentsMargins(0, 0, 0, 0);
 
+        this->placeHolderLabel = this->container->findChild<Label*>("placeholder-label");
+
         auto* containerLayout = this->container->findChild<QVBoxLayout*>();
 
         this->changeListView = new ListView({}, this);
@@ -115,6 +117,9 @@ namespace Widgets
         }
 
         this->changeListScene->refreshGeometry();
+
+        this->changeListView->setVisible(!diffRanges.empty());
+        this->placeHolderLabel->setVisible(diffRanges.empty());
 
         // Trigger a resize event
         this->resize(this->size());

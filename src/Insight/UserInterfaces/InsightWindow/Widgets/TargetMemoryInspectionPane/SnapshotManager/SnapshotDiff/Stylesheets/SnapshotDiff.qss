@@ -97,6 +97,11 @@
     border-left: 1px solid #41423f;
 }
 
+#change-list-pane #placeholder-label {
+    color: #737375;
+    font-size: 14px;
+}
+
 #snapshot-diff #data-details-container {
     border-bottom: 1px solid #41423f;
     color: #8a8a8d;
