@@ -146,6 +146,73 @@ namespace Widgets
         return output;
     }
 
+    const ByteItem* HexViewerItemIndex::leftMostByteItemWithinRange(int yStart, int yEnd) const {
+        const ByteItem* leftMostByteItem = nullptr;
+        auto leftMostByteItemXPos = 0;
+
+        for (const auto* item : this->items(yStart, yEnd)) {
+            const auto itemPos = item->position();
+
+            /*
+             * Remember, the HexViewerItemIndex::items() function can return items that are outside the given range,
+             * depending on the grid size of the Y-axis index.
+             *
+             * We need to ensure that we exclude those items here.
+             */
+            if (itemPos.y() < yStart) {
+                continue;
+            }
+
+            if (itemPos.y() > yEnd) {
+                break;
+            }
+
+            const auto* byteItem = dynamic_cast<const ByteItem*>(item);
+
+            if (byteItem == nullptr) {
+                continue;
+            }
+
+            if (leftMostByteItem == nullptr || itemPos.x() < leftMostByteItemXPos) {
+                leftMostByteItem = byteItem;
+                leftMostByteItemXPos = itemPos.x();
+            }
+        }
+
+        return leftMostByteItem;
+    }
+
+    const ByteItem* HexViewerItemIndex::rightMostByteItemWithinRange(int yStart, int yEnd) const {
+        const ByteItem* rightMostByteItem = nullptr;
+        auto rightMostByteItemXPos = 0;
+
+        for (const auto* item : this->items(yStart, yEnd)) {
+            const auto itemPos = item->position();
+
+            if (itemPos.y() < yStart) {
+                continue;
+            }
+
+            if (itemPos.y() > yEnd) {
+                break;
+            }
+
+            const auto* byteItem = dynamic_cast<const ByteItem*>(item);
+
+            if (byteItem == nullptr) {
+                continue;
+            }
+
+            const auto itemXPos = item->position().x() + item->size().width();
+            if (rightMostByteItem == nullptr || itemXPos > rightMostByteItemXPos) {
+                rightMostByteItem = byteItem;
+                rightMostByteItemXPos = itemXPos;
+            }
+        }
+
+        return rightMostByteItem;
+    }
+
     void HexViewerItemIndex::refreshFlattenedItems() {
         this->flattenedItems = this->topLevelGroupItem->flattenedItems();
     }

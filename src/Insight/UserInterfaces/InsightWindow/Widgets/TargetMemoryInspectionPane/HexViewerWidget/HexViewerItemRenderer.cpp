@@ -61,7 +61,7 @@ namespace Widgets
                     break;
                 }
 
-                if (startItemY != endItemY || endItemY < viewportYStart) {
+                if (endItemY < viewportYStart) {
                     continue;
                 }
 
@@ -242,14 +242,34 @@ namespace Widgets
         const auto endItemSize = endItem->size();
 
         auto painterPath = QPainterPath();
-        painterPath.addRoundedRect(
-            startItemPos.x() - padding,
-            startItemPos.y() - padding,
-            (endItemPos.x() + endItemSize.width()) - startItemPos.x() + (padding * 2),
-            (endItemPos.y() + endItemSize.height()) - startItemPos.y() + (padding * 2),
-            rectRadius,
-            rectRadius
-        );
+
+        if (startItemPos.y() != endItemPos.y()) {
+            // The highlighted range spans more than one line - draw the border around all lines containing the range
+            const auto leftMostItem = this->itemIndex.leftMostByteItemWithinRange(startItemPos.y(), endItemPos.y());
+            const auto leftMostItemPos = leftMostItem->position();
+
+            const auto* rightMostItem = this->itemIndex.rightMostByteItemWithinRange(startItemPos.y(), endItemPos.y());
+            const auto rightMostItemPos = rightMostItem->position();
+
+            painterPath.addRoundedRect(
+                leftMostItemPos.x() - padding,
+                startItemPos.y() - padding,
+                (rightMostItemPos.x() + rightMostItem->size().width()) - leftMostItemPos.x() + (padding * 2),
+                (endItemPos.y() + endItemSize.height()) - startItemPos.y() + (padding * 2),
+                rectRadius,
+                rectRadius
+            );
+
+        } else {
+            painterPath.addRoundedRect(
+                startItemPos.x() - padding,
+                startItemPos.y() - padding,
+                (endItemPos.x() + endItemSize.width()) - startItemPos.x() + (padding * 2),
+                (endItemPos.y() + endItemSize.height()) - startItemPos.y() + (padding * 2),
+                rectRadius,
+                rectRadius
+            );
+        }
 
         painter->setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
         painter->setPen(QPen(QColor(0x78, 0x78, 0x78), 2));

@@ -75,6 +75,24 @@ namespace Widgets
          */
         std::vector<ByteItem*> intersectingByteItems(const QRectF& rect) const;
 
+        /**
+         * Returns the left-most (smallest position on the X-axis) byte item, within a Y-axis range.
+         *
+         * @param yStart
+         * @param yEnd
+         * @return
+         */
+        const ByteItem* leftMostByteItemWithinRange(int yStart, int yEnd) const;
+
+        /**
+         * Returns the right-most (largest position on the X-axis) byte item, within a Y-axis range.
+         *
+         * @param yStart
+         * @param yEnd
+         * @return
+         */
+        const ByteItem* rightMostByteItemWithinRange(int yStart, int yEnd) const;
+
         void refreshFlattenedItems();
         void refreshIndex();
 
