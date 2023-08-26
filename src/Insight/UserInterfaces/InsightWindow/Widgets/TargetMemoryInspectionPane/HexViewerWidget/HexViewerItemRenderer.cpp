@@ -272,7 +272,7 @@ namespace Widgets
         }
 
         painter->setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
-        painter->setPen(QPen(QColor(0x78, 0x78, 0x78), 2));
+        painter->setPen(QPen(QColor(0x58, 0x58, 0x58), 2));
         painter->setBrush(Qt::BrushStyle::NoBrush);
         painter->drawPath(painterPath);
     }
