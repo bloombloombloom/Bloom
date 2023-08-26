@@ -44,7 +44,13 @@ namespace Widgets
             startYPosition += listItem->size.height();
         }
 
-        this->setSceneRect(0, 0, viewportWidth, std::max(viewportHeight, startYPosition));
+        /*
+         * Due to a bug in Qt, we must subtract 2 from the scene rect width, to account for margins on the vertical
+         * scrollbar.
+         *
+         * See https://bugreports.qt.io/browse/QTBUG-99189 for more on this.
+         */
+        this->setSceneRect(0, 0, viewportWidth - 2, std::max(viewportHeight, startYPosition));
         this->update();
     }
 
