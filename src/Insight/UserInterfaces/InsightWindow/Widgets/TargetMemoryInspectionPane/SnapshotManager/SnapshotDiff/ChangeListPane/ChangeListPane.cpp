@@ -69,6 +69,41 @@ namespace Widgets
             &ChangeListPane::onItemSelectionChanged
         );
 
+        QObject::connect(
+            this->changeListScene,
+            &ListScene::itemContextMenu,
+            this,
+            &ChangeListPane::onItemContextMenu
+        );
+
+        QObject::connect(
+            this->selectBytesAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                if (this->selectedChangeListItem == nullptr) {
+                    return;
+                }
+
+                const auto addresses = this->selectedChangeListItem->addressRange.addresses();
+                this->hexViewerWidgetA->selectByteItems(addresses);
+                this->hexViewerWidgetB->selectByteItems(addresses);
+            }
+        );
+
+        QObject::connect(
+            this->restoreBytesAction,
+            &QAction::triggered,
+            this,
+            [this] {
+                if (this->selectedChangeListItem == nullptr) {
+                    return;
+                }
+
+                emit this->restoreBytesRequested(this->selectedChangeListItem->addressRange.addresses());
+            }
+        );
+
         this->show();
     }
 
@@ -83,6 +118,10 @@ namespace Widgets
 
         // Trigger a resize event
         this->resize(this->size());
+    }
+
+    void ChangeListPane::setRestoreEnabled(bool restoreEnabled) {
+        this->restoreEnabled = restoreEnabled;
     }
 
     void ChangeListPane::resizeEvent(QResizeEvent* event) {
@@ -105,12 +144,32 @@ namespace Widgets
         }
 
         const auto* item = dynamic_cast<ChangeListItem*>(selectedItems.front());
+        assert(item != nullptr);
+
+        this->selectedChangeListItem = item;
 
         this->hexViewerWidgetA->highlightPrimaryByteItemRanges({item->addressRange});
         this->hexViewerWidgetA->centerOnByte(item->addressRange.startAddress);
 
         this->hexViewerWidgetB->highlightPrimaryByteItemRanges({item->addressRange});
         this->hexViewerWidgetB->centerOnByte(item->addressRange.startAddress);
+    }
+
+    void ChangeListPane::onItemContextMenu(ListItem *item, QPoint sourcePosition) {
+        auto* changeListItem = dynamic_cast<ChangeListItem*>(item);
+
+        if (changeListItem == nullptr) {
+            return;
+        }
+
+        auto* menu = new QMenu(this);
+
+        menu->addAction(this->selectBytesAction);
+        menu->addSeparator();
+        menu->addAction(this->restoreBytesAction);
+        this->restoreBytesAction->setEnabled(this->restoreEnabled);
+
+        menu->exec(sourcePosition);
     }
 
     void ChangeListPane::refreshChangeListViewSize() {

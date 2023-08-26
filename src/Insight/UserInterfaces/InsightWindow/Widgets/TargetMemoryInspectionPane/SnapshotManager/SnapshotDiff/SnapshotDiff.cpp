@@ -27,6 +27,7 @@ namespace Widgets
         MemorySnapshot& snapshotA,
         MemorySnapshot& snapshotB,
         const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        Targets::TargetState currentTargetState,
         QWidget* parent
     )
         : QWidget(parent)
@@ -39,8 +40,10 @@ namespace Widgets
         , focusedRegionsB(snapshotB.focusedRegions)
         , excludedRegionsB(snapshotB.excludedRegions)
         , stackPointerB(snapshotB.stackPointer)
+        , comparingWithCurrent(false)
     {
         this->init();
+        this->onTargetStateChanged(currentTargetState);
 
         this->setWindowTitle(
             "Comparing snapshot \"" + snapshotA.name + "\" with snapshot \"" + snapshotB.name + "\""
@@ -59,6 +62,7 @@ namespace Widgets
         std::vector<ExcludedMemoryRegion> excludedRegionsB,
         Targets::TargetStackPointer stackPointerB,
         const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        Targets::TargetState currentTargetState,
         QWidget* parent
     )
         : QWidget(parent)
@@ -71,8 +75,10 @@ namespace Widgets
         , focusedRegionsB(focusedRegionsB)
         , excludedRegionsB(excludedRegionsB)
         , stackPointerB(stackPointerB)
+        , comparingWithCurrent(true)
     {
         this->init();
+        this->onTargetStateChanged(currentTargetState);
 
         this->setWindowTitle(
             "Comparing snapshot \"" + snapshotA.name + "\" with current memory"
@@ -86,7 +92,9 @@ namespace Widgets
         this->restoreBytesAction = new ContextMenuAction(
             "Restore Selection",
             [this] (const std::set<Targets::TargetMemoryAddress>&) {
-                return this->memoryDescriptor.access.writeableDuringDebugSession;
+                return
+                    this->memoryDescriptor.access.writeableDuringDebugSession
+                    && this->targetState == Targets::TargetState::STOPPED;
             },
             this
         );
@@ -97,6 +105,15 @@ namespace Widgets
             this,
             [this] (const std::set<Targets::TargetMemoryAddress>& selectedByteItemAddresses) {
                 this->restoreSelectedBytes(selectedByteItemAddresses, true);
+            }
+        );
+
+        QObject::connect(
+            this->changeListPane,
+            &ChangeListPane::restoreBytesRequested,
+            this,
+            [this] (const std::set<Targets::TargetMemoryAddress>& addresses) {
+                this->restoreSelectedBytes(addresses, true);
             }
         );
     }
@@ -255,6 +272,13 @@ namespace Widgets
             this->changeListPaneState,
             this->leftPanel
         );
+
+        this->changeListPane->setRestoreEnabled(
+            this->comparingWithCurrent
+            && this->memoryDescriptor.access.writeableDuringDebugSession
+            && this->targetState == Targets::TargetState::STOPPED
+        );
+
         this->leftPanel->layout()->addWidget(this->changeListPane);
         this->viewChangeListButton->setChecked(this->changeListPane->state.activated);
 
@@ -319,6 +343,15 @@ namespace Widgets
             [this] {
                 this->setSyncHexViewerSelectionEnabled(!this->settings.syncHexViewerSelection);
             }
+        );
+
+        auto* insightSignals = InsightSignals::instance();
+
+        QObject::connect(
+            insightSignals,
+            &InsightSignals::targetStateUpdated,
+            this,
+            &SnapshotDiff::onTargetStateChanged
         );
 
         QObject::connect(this->hexViewerWidgetA, &HexViewerWidget::ready, this, &SnapshotDiff::onHexViewerAReady);
@@ -556,5 +589,15 @@ namespace Widgets
 
         this->taskProgressIndicator->addTask(writeMemoryTask);
         InsightWorker::queueTask(writeMemoryTask);
+    }
+
+    void SnapshotDiff::onTargetStateChanged(Targets::TargetState newState) {
+        this->targetState = newState;
+
+        this->changeListPane->setRestoreEnabled(
+            this->comparingWithCurrent
+            && this->memoryDescriptor.access.writeableDuringDebugSession
+            && this->targetState == Targets::TargetState::STOPPED
+        );
     }
 }

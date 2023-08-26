@@ -33,6 +33,7 @@ namespace Widgets
             MemorySnapshot& snapshotA,
             MemorySnapshot& snapshotB,
             const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            Targets::TargetState currentTargetState,
             QWidget* parent = nullptr
         );
 
@@ -43,6 +44,7 @@ namespace Widgets
             std::vector<ExcludedMemoryRegion> excludedRegionsB,
             Targets::TargetStackPointer stackPointerB,
             const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            Targets::TargetState currentTargetState,
             QWidget* parent = nullptr
         );
 
@@ -62,6 +64,7 @@ namespace Widgets
         SnapshotDiffSettings settings;
 
         const Targets::TargetMemoryDescriptor& memoryDescriptor;
+        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         QWidget* container = nullptr;
 
@@ -103,6 +106,8 @@ namespace Widgets
         DifferentialHexViewerWidget* hexViewerWidgetB = nullptr;
         HexViewerWidgetSettings hexViewerWidgetSettingsB = HexViewerWidgetSettings();
 
+        bool comparingWithCurrent = false;
+
         ContextMenuAction* restoreBytesAction = nullptr;
 
         QWidget* bottomBar = nullptr;
@@ -131,5 +136,7 @@ namespace Widgets
             std::set<Targets::TargetMemoryAddress> addresses,
             bool confirmationPromptEnabled
         );
+
+        void onTargetStateChanged(Targets::TargetState newState);
     };
 }

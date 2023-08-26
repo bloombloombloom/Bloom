@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QResizeEvent>
 #include <QShowEvent>
+#include <QAction>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
@@ -27,6 +28,10 @@ namespace Widgets
         );
 
         void setDiffRanges(const std::vector<Targets::TargetMemoryAddressRange>& diffRanges);
+        void setRestoreEnabled(bool restoreEnabled);
+
+    signals:
+        void restoreBytesRequested(const std::set<Targets::TargetMemoryAddress>& addresses);
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
@@ -41,7 +46,15 @@ namespace Widgets
         ListView* changeListView = nullptr;
         ListScene* changeListScene = nullptr;
 
+        const ChangeListItem* selectedChangeListItem = nullptr;
+
+        QAction* selectBytesAction = new QAction("Select", this);
+        QAction* restoreBytesAction = new QAction("Restore", this);
+
+        bool restoreEnabled = false;
+
         void onItemSelectionChanged(const std::list<ListItem*>& selectedItems);
+        void onItemContextMenu(ListItem* item, QPoint sourcePosition);
         void refreshChangeListViewSize();
     };
 }

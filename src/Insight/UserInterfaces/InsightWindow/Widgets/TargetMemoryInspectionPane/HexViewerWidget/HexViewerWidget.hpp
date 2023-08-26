@@ -42,6 +42,7 @@ namespace Widgets
         void refreshRegions();
         void setStackPointer(Targets::TargetStackPointer stackPointer);
         void addExternalContextMenuAction(ContextMenuAction* action);
+        void selectByteItems(const std::set<Targets::TargetMemoryAddress>& addresses);
         void highlightPrimaryByteItemRanges(const std::set<Targets::TargetMemoryAddressRange>& addressRanges);
         void clearHighlighting();
         void centerOnByte(Targets::TargetMemoryAddress address);

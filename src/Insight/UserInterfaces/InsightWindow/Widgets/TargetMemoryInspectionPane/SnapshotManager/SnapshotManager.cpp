@@ -364,6 +364,7 @@ namespace Widgets
                     snapshotItA.value(),
                     snapshotItB.value(),
                     this->memoryDescriptor,
+                    this->targetState,
                     this
                 )
             );
@@ -411,6 +412,7 @@ namespace Widgets
                 this->excludedMemoryRegions,
                 this->stackPointer.value_or(0),
                 this->memoryDescriptor,
+                this->targetState,
                 this
             )
         );
