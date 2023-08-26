@@ -103,28 +103,6 @@ QToolTip {
     font-size: 14px;
 }
 
-QScrollBar:vertical {
-    background-color: transparent;
-    width: 12px;
-    margin: 1px;
-}
-
-QScrollBar:handle:vertical {
-    border: none;
-    background-color: rgba(69, 69, 66, 0.6);
-    min-height: 30px;
-}
-
-QScrollBar:handle:vertical:hover {
-    background-color: rgba(69, 69, 66, 0.91);
-}
-
-QScrollBar::add-line:vertical,
-QScrollBar::sub-line:vertical {
-    border: none;
-    background: none;
-}
-
 /* Left-side panel */
 #left-side-menu-bar {
     max-width: 22px;
