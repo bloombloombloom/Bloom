@@ -39,14 +39,14 @@ namespace Widgets
 
         auto* parentItem = firstItem->parent;
         while (parentItem != nullptr) {
-            painter->setOpacity(1);
             this->paintItem(parentItem, painter);
             parentItem = parentItem->parent;
+            painter->setOpacity(1);
         }
 
         for (auto& item : visibleItems) {
-            painter->setOpacity(1);
             this->paintItem(item, painter);
+            painter->setOpacity(1);
         }
 
         if (this->hexViewerState.highlightingEnabled) {
