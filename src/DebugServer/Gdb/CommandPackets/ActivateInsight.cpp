@@ -29,7 +29,7 @@ namespace DebugServer::Gdb::CommandPackets
             EventManager::triggerEvent(std::make_shared<Events::InsightActivationRequested>());
 
             debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
-                "Insight requested\n"
+                "The Insight GUI will be with you shortly.\n"
             )));
 
         } catch (const Exception& exception) {
