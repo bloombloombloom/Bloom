@@ -380,6 +380,9 @@ namespace DebugServer::Gdb
             // Server was interrupted
             Logger::debug("GDB RSP interrupted");
             return;
+
+        } catch (const Exception& exception) {
+            Logger::error("Failed to interrupt execution - " + exception.getMessage());
         }
     }
 }

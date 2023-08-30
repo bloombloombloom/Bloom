@@ -27,20 +27,14 @@ namespace DebugServer::Gdb::CommandPackets
         try {
             targetControllerService.stopTargetExecution();
             debugSession.connection.writePacket(TargetStopped(Signal::INTERRUPTED));
+            debugSession.waitingForBreak = false;
 
         } catch (const Exception& exception) {
             Logger::error("Failed to interrupt execution - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            /*
+             * We don't send an error response to GDB here, as GDB will behave as if the target is stopped. By not
+             * responding, GDB will just assume the interrupt request was ignored, keeping it in-sync with Bloom.
+             */
         }
-
-        /*
-         * Whenever we respond to an interrupt signal, GDB always assumes that target execution has stopped. Even if we
-         * respond with an error packet.
-         *
-         * Because of this, we always set the DebugSession::waitingForBreak flag to false, even if we failed to
-         * interrupt target execution. This way, we won't end up sending an unexpected stop reply packet to GDB, when
-         * the target does eventually stop (for some other reason).
-         */
-        debugSession.waitingForBreak = false;
     }
 }
