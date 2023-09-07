@@ -7,4 +7,5 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/Avr8TargetConfig.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/PhysicalInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/TargetDescription/TargetDescriptionFile.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/OpcodeDecoder/Decoder.cpp
 )

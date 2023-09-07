@@ -1,10 +1,9 @@
 #pragma once
 
-#include <string>
-#include <bitset>
-#include <limits>
-#include <vector>
-#include <numeric>
+#include <cstdint>
+#include <cstddef>
+#include <array>
+#include <type_traits>
 
 namespace Services
 {
