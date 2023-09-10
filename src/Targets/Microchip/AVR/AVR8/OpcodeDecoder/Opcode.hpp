@@ -161,6 +161,9 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
      * @tparam wordSize
      *  The word size of the instruction. AVR8 instructions are either 1 or 2 words.
      *
+     * @tparam mnemonic
+     *  The instruction's mnemonic.
+     *
      * @tparam canChangeProgramFlow
      *  Whether the instruction **can** change program flow.
      *
@@ -228,6 +231,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
         FixedString instructionName,
         std::uint32_t expectedOpcode,
         int wordSize,
+        Instruction::Mnemonic mnemonic,
         bool canChangeProgramFlow,
         OptionalInstructionParameter sourceRegisterParameter = std::nullopt,
         OptionalInstructionParameter destinationRegisterParameter = std::nullopt,
@@ -454,6 +458,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
             instructionName,
             expectedOpcode,
             wordSize,
+            mnemonic,
             canChangeProgramFlow,
             sourceRegisterParameter,
             destinationRegisterParameter,
@@ -518,6 +523,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
                 SelfType::name,
                 opcode,
                 byteSize,
+                mnemonic,
                 canChangeProgramFlow
             );
 

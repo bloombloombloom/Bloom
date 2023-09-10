@@ -3,6 +3,7 @@
 #include <array>
 
 #include "Opcode.hpp"
+#include "Instruction.hpp"
 #include "src/Services/BitsetService.hpp"
 
 namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
@@ -11,6 +12,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ADC",
         0b0001110000000000,
         1,
+        Instruction::Mnemonic::ADC,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -23,6 +25,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ADD",
         0b0000110000000000,
         1,
+        Instruction::Mnemonic::ADD,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -35,6 +38,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ADIW",
         0b1001011000000000,
         1,
+        Instruction::Mnemonic::ADIW,
         false,
         std::nullopt,
         RegisterParameter(24, true, {5, 2}),
@@ -48,6 +52,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "AND",
         0b0010000000000000,
         1,
+        Instruction::Mnemonic::AND,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -60,6 +65,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ANDI",
         0b0111000000000000,
         1,
+        Instruction::Mnemonic::ANDI,
         false,
         std::nullopt,
         RegisterParameter({7, 4}),
@@ -73,6 +79,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ASR",
         0b1001010000000101,
         1,
+        Instruction::Mnemonic::ASR,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -82,6 +89,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BCLR",
         0b1001010010001000,
         1,
+        Instruction::Mnemonic::BCLR,
         false,
         std::nullopt,
         std::nullopt,
@@ -96,6 +104,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BLD",
         0b1111100000000000,
         1,
+        Instruction::Mnemonic::BLD,
         false,
         std::nullopt,
         RegisterParameter({8, 5}),
@@ -109,6 +118,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRBC",
         0b1111010000000000,
         1,
+        Instruction::Mnemonic::BRBC,
         true,
         std::nullopt,
         std::nullopt,
@@ -123,6 +133,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRBS",
         0b1111000000000000,
         1,
+        Instruction::Mnemonic::BRBS,
         true,
         std::nullopt,
         std::nullopt,
@@ -137,6 +148,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRCC",
         0b1111010000000000,
         1,
+        Instruction::Mnemonic::BRCC,
         true,
         std::nullopt,
         std::nullopt,
@@ -149,6 +161,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRCS",
         0b1111000000000000,
         1,
+        Instruction::Mnemonic::BRCS,
         true,
         std::nullopt,
         std::nullopt,
@@ -161,6 +174,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BREAK",
         0b1001010110011000,
         1,
+        Instruction::Mnemonic::BREAK,
         false
     >;
 
@@ -168,6 +182,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BREQ",
         0b1111000000000001,
         1,
+        Instruction::Mnemonic::BREQ,
         true,
         std::nullopt,
         std::nullopt,
@@ -180,6 +195,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRGE",
         0b1111010000000100,
         1,
+        Instruction::Mnemonic::BRGE,
         true,
         std::nullopt,
         std::nullopt,
@@ -192,6 +208,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRHC",
         0b1111010000000101,
         1,
+        Instruction::Mnemonic::BRHC,
         true,
         std::nullopt,
         std::nullopt,
@@ -204,6 +221,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRHS",
         0b1111000000000101,
         1,
+        Instruction::Mnemonic::BRHS,
         true,
         std::nullopt,
         std::nullopt,
@@ -216,6 +234,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRID",
         0b1111010000000111,
         1,
+        Instruction::Mnemonic::BRID,
         true,
         std::nullopt,
         std::nullopt,
@@ -228,6 +247,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRIE",
         0b1111000000000111,
         1,
+        Instruction::Mnemonic::BRIE,
         true,
         std::nullopt,
         std::nullopt,
@@ -240,6 +260,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRLO",
         0b1111000000000000,
         1,
+        Instruction::Mnemonic::BRLO,
         true,
         std::nullopt,
         std::nullopt,
@@ -252,6 +273,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRLT",
         0b1111000000000100,
         1,
+        Instruction::Mnemonic::BRLT,
         true,
         std::nullopt,
         std::nullopt,
@@ -264,6 +286,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRMI",
         0b1111000000000010,
         1,
+        Instruction::Mnemonic::BRMI,
         true,
         std::nullopt,
         std::nullopt,
@@ -276,6 +299,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRNE",
         0b1111010000000001,
         1,
+        Instruction::Mnemonic::BRNE,
         true,
         std::nullopt,
         std::nullopt,
@@ -288,6 +312,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRPL",
         0b1111010000000010,
         1,
+        Instruction::Mnemonic::BRPL,
         true,
         std::nullopt,
         std::nullopt,
@@ -300,6 +325,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRSH",
         0b1111010000000000,
         1,
+        Instruction::Mnemonic::BRSH,
         true,
         std::nullopt,
         std::nullopt,
@@ -312,6 +338,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRTC",
         0b1111010000000110,
         1,
+        Instruction::Mnemonic::BRTC,
         true,
         std::nullopt,
         std::nullopt,
@@ -324,6 +351,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRTS",
         0b1111000000000110,
         1,
+        Instruction::Mnemonic::BRTS,
         true,
         std::nullopt,
         std::nullopt,
@@ -336,6 +364,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRVC",
         0b1111010000000011,
         1,
+        Instruction::Mnemonic::BRVC,
         true,
         std::nullopt,
         std::nullopt,
@@ -348,6 +377,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BRVS",
         0b1111000000000011,
         1,
+        Instruction::Mnemonic::BRVS,
         true,
         std::nullopt,
         std::nullopt,
@@ -360,6 +390,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BSET",
         0b1001010000001000,
         1,
+        Instruction::Mnemonic::BSET,
         false,
         std::nullopt,
         std::nullopt,
@@ -374,6 +405,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "BST",
         0b1111101000000000,
         1,
+        Instruction::Mnemonic::BST,
         false,
         RegisterParameter({8, 5}),
         std::nullopt,
@@ -387,6 +419,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CALL",
         0b10010100000011100000000000000000,
         2,
+        Instruction::Mnemonic::CALL,
         true,
         std::nullopt,
         std::nullopt,
@@ -401,6 +434,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CBI",
         0b1001100000000000,
         1,
+        Instruction::Mnemonic::CBI,
         false,
         std::nullopt,
         RegisterParameter({7, 5}),
@@ -414,6 +448,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CBR",
         0b0111000000000000,
         1,
+        Instruction::Mnemonic::CBR,
         false,
         std::nullopt,
         RegisterParameter({7, 4}),
@@ -427,6 +462,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CLC",
         0b1001010010001000,
         1,
+        Instruction::Mnemonic::CLC,
         false
     >;
 
@@ -434,6 +470,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CLH",
         0b1001010011011000,
         1,
+        Instruction::Mnemonic::CLH,
         false
     >;
 
@@ -441,6 +478,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CLI",
         0b1001010011111000,
         1,
+        Instruction::Mnemonic::CLI,
         false
     >;
 
@@ -448,6 +486,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CLN",
         0b1001010010101000,
         1,
+        Instruction::Mnemonic::CLN,
         false
     >;
 
@@ -455,6 +494,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CLR",
         0b0010010000000000,
         1,
+        Instruction::Mnemonic::CLR,
         false,
         std::nullopt,
         RegisterParameter({9, 10})
@@ -464,6 +504,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CLS",
         0b1001010011001000,
         1,
+        Instruction::Mnemonic::CLS,
         false
     >;
 
@@ -471,6 +512,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CLT",
         0b1001010011101000,
         1,
+        Instruction::Mnemonic::CLT,
         false
     >;
 
@@ -478,6 +520,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CLV",
         0b1001010010111000,
         1,
+        Instruction::Mnemonic::CLV,
         false
     >;
 
@@ -485,6 +528,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CLZ",
         0b1001010010011000,
         1,
+        Instruction::Mnemonic::CLZ,
         false
     >;
 
@@ -492,6 +536,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "COM",
         0b1001010000000000,
         1,
+        Instruction::Mnemonic::COM,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -501,6 +546,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CP",
         0b0001010000000000,
         1,
+        Instruction::Mnemonic::CP,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -513,6 +559,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CPC",
         0b0000010000000000,
         1,
+        Instruction::Mnemonic::CPC,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -525,6 +572,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CPI",
         0b0011000000000000,
         1,
+        Instruction::Mnemonic::CPI,
         false,
         RegisterParameter({7, 4}),
         std::nullopt,
@@ -538,6 +586,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "CPSE",
         0b0001000000000000,
         1,
+        Instruction::Mnemonic::CPSE,
         true,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -559,6 +608,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "DEC",
         0b1001010000001010,
         1,
+        Instruction::Mnemonic::DEC,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -568,6 +618,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "DES",
         0b1001010000001011,
         1,
+        Instruction::Mnemonic::DES,
         false,
         std::nullopt,
         std::nullopt,
@@ -578,6 +629,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "EICALL",
         0b1001010100011001,
         1,
+        Instruction::Mnemonic::EICALL,
         true
     >;
 
@@ -585,6 +637,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "EIJMP",
         0b1001010000011001,
         1,
+        Instruction::Mnemonic::EIJMP,
         true
     >;
 
@@ -592,6 +645,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ELPM",
         0b1001010111011000,
         1,
+        Instruction::Mnemonic::ELPM,
         false
     >;
 
@@ -599,6 +653,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ELPM",
         0b1001000000000110,
         1,
+        Instruction::Mnemonic::ELPM,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -608,6 +663,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ELPM",
         0b1001000000000111,
         1,
+        Instruction::Mnemonic::ELPM,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -617,6 +673,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "EOR",
         0b0010010000000000,
         1,
+        Instruction::Mnemonic::EOR,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -629,6 +686,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "FMUL",
         0b0000001100001000,
         1,
+        Instruction::Mnemonic::FMUL,
         false,
         RegisterParameter({2, 3}),
         RegisterParameter({6, 3})
@@ -638,6 +696,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "FMULS",
         0b0000001110000000,
         1,
+        Instruction::Mnemonic::FMULS,
         false,
         RegisterParameter({2, 3}),
         RegisterParameter({6, 3})
@@ -647,6 +706,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "FMULSU",
         0b0000001110001000,
         1,
+        Instruction::Mnemonic::FMULSU,
         false,
         RegisterParameter({2, 3}),
         RegisterParameter({6, 3})
@@ -656,6 +716,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ICALL",
         0b1001010100001001,
         1,
+        Instruction::Mnemonic::ICALL,
         true
     >;
 
@@ -663,6 +724,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "IJMP",
         0b1001010000001001,
         1,
+        Instruction::Mnemonic::IJMP,
         true
     >;
 
@@ -670,6 +732,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "IN",
         0b1011000000000000,
         1,
+        Instruction::Mnemonic::IN,
         false,
         std::nullopt,
         RegisterParameter({8, 5}),
@@ -688,6 +751,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "INC",
         0b1001010000000011,
         1,
+        Instruction::Mnemonic::INC,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -697,6 +761,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "JMP",
         0b10010100000011000000000000000000,
         2,
+        Instruction::Mnemonic::JMP,
         true,
         std::nullopt,
         std::nullopt,
@@ -711,6 +776,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LAC",
         0b1001001000000110,
         1,
+        Instruction::Mnemonic::LAC,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -720,6 +786,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LAS",
         0b1001001000000101,
         1,
+        Instruction::Mnemonic::LAS,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -729,6 +796,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LAT",
         0b1001001000000111,
         1,
+        Instruction::Mnemonic::LAT,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -738,6 +806,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LD",
         0b1001000000001100,
         1,
+        Instruction::Mnemonic::LD,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -747,6 +816,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LD",
         0b1001000000001101,
         1,
+        Instruction::Mnemonic::LD,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -756,6 +826,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LD",
         0b1001000000001110,
         1,
+        Instruction::Mnemonic::LD,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -765,6 +836,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LD",
         0b1000000000001000,
         1,
+        Instruction::Mnemonic::LD,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -774,6 +846,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LD",
         0b1001000000001001,
         1,
+        Instruction::Mnemonic::LD,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -783,6 +856,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LD",
         0b1001000000001010,
         1,
+        Instruction::Mnemonic::LD,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -792,6 +866,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LDD",
         0b1000000000001000,
         1,
+        Instruction::Mnemonic::LDD,
         false,
         std::nullopt,
         RegisterParameter({8, 5}),
@@ -812,6 +887,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LD",
         0b1000000000000000,
         1,
+        Instruction::Mnemonic::LD,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -821,6 +897,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LD",
         0b1001000000000001,
         1,
+        Instruction::Mnemonic::LD,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -830,6 +907,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LD",
         0b1001000000000010,
         1,
+        Instruction::Mnemonic::LD,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -839,6 +917,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LDD",
         0b1000000000000000,
         1,
+        Instruction::Mnemonic::LDD,
         false,
         std::nullopt,
         RegisterParameter({8, 5}),
@@ -859,6 +938,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LDI",
         0b1110000000000000,
         1,
+        Instruction::Mnemonic::LDI,
         false,
         std::nullopt,
         RegisterParameter(16, false, {7, 4}),
@@ -872,6 +952,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LDS",
         0b10010000000000000000000000000000,
         2,
+        Instruction::Mnemonic::LDS,
         false,
         std::nullopt,
         RegisterParameter({24, 5}),
@@ -888,6 +969,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LDS",
         0b1010000000000000,
         1,
+        Instruction::Mnemonic::LDS,
         false,
         std::nullopt,
         RegisterParameter({7, 4}),
@@ -907,6 +989,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LPM",
         0b1001010111001000,
         1,
+        Instruction::Mnemonic::LPM,
         false
     >;
 
@@ -914,6 +997,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LPM",
         0b1001000000000100,
         1,
+        Instruction::Mnemonic::LPM,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -923,6 +1007,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LPM",
         0b1001000000000101,
         1,
+        Instruction::Mnemonic::LPM,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -932,6 +1017,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LSL",
         0b0000110000000000,
         1,
+        Instruction::Mnemonic::LSL,
         false,
         std::nullopt,
         RegisterParameter({9, 10})
@@ -941,6 +1027,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "LSR",
         0b1001010000000110,
         1,
+        Instruction::Mnemonic::LSR,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -950,6 +1037,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "MOV",
         0b0010110000000000,
         1,
+        Instruction::Mnemonic::MOV,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -962,6 +1050,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "MOVW",
         0b0000000100000000,
         1,
+        Instruction::Mnemonic::MOVW,
         false,
         RegisterParameter(0, true, {3, 4}),
         RegisterParameter(0, true, {7, 4})
@@ -971,6 +1060,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "MUL",
         0b1001110000000000,
         1,
+        Instruction::Mnemonic::MUL,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -983,6 +1073,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "MULS",
         0b0000001000000000,
         1,
+        Instruction::Mnemonic::MULS,
         false,
         RegisterParameter({3, 4}),
         RegisterParameter({7, 4})
@@ -992,6 +1083,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "MULSU",
         0b0000001100000000,
         1,
+        Instruction::Mnemonic::MULSU,
         false,
         RegisterParameter({2, 3}),
         RegisterParameter({6, 3})
@@ -1001,6 +1093,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "NEG",
         0b1001010000000001,
         1,
+        Instruction::Mnemonic::NEG,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -1010,6 +1103,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "NOP",
         0b0000000000000000,
         1,
+        Instruction::Mnemonic::NOP,
         false
     >;
 
@@ -1017,6 +1111,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "OR",
         0b0010100000000000,
         1,
+        Instruction::Mnemonic::OR,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -1029,6 +1124,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ORI",
         0b0110000000000000,
         1,
+        Instruction::Mnemonic::ORI,
         false,
         std::nullopt,
         RegisterParameter({7, 4}),
@@ -1042,6 +1138,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "OUT",
         0b1011100000000000,
         1,
+        Instruction::Mnemonic::OUT,
         false,
         RegisterParameter({8, 5}),
         std::nullopt,
@@ -1060,6 +1157,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "POP",
         0b1001000000001111,
         1,
+        Instruction::Mnemonic::POP,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1068,6 +1166,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "PUSH",
         0b1001001000001111,
         1,
+        Instruction::Mnemonic::PUSH,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1076,6 +1175,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "RCALL",
         0b1101000000000000,
         1,
+        Instruction::Mnemonic::RCALL,
         true,
         std::nullopt,
         std::nullopt,
@@ -1088,6 +1188,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "RET",
         0b1001010100001000,
         1,
+        Instruction::Mnemonic::RET,
         true
     >;
 
@@ -1095,6 +1196,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "RETI",
         0b1001010100011000,
         1,
+        Instruction::Mnemonic::RETI,
         true
     >;
 
@@ -1102,6 +1204,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "RJMP",
         0b1100000000000000,
         1,
+        Instruction::Mnemonic::RJMP,
         true,
         std::nullopt,
         std::nullopt,
@@ -1114,6 +1217,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ROL",
         0b0001110000000000,
         1,
+        Instruction::Mnemonic::ROL,
         false,
         std::nullopt,
         RegisterParameter({9, 10})
@@ -1123,6 +1227,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ROR",
         0b1001010000000111,
         1,
+        Instruction::Mnemonic::ROR,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -1132,6 +1237,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SBC",
         0b0000100000000000,
         1,
+        Instruction::Mnemonic::SBC,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -1144,6 +1250,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SBCI",
         0b0100000000000000,
         1,
+        Instruction::Mnemonic::SBCI,
         false,
         std::nullopt,
         RegisterParameter(16, false, {7, 4}),
@@ -1157,6 +1264,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SBI",
         0b1001101000000000,
         1,
+        Instruction::Mnemonic::SBI,
         false,
         std::nullopt,
         std::nullopt,
@@ -1172,6 +1280,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SBIC",
         0b1001100100000000,
         1,
+        Instruction::Mnemonic::SBIC,
         true,
         std::nullopt,
         std::nullopt,
@@ -1190,6 +1299,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SBIS",
         0b1001101100000000,
         1,
+        Instruction::Mnemonic::SBIS,
         true,
         std::nullopt,
         std::nullopt,
@@ -1208,6 +1318,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SBIW",
         0b1001011100000000,
         1,
+        Instruction::Mnemonic::SBIW,
         false,
         std::nullopt,
         RegisterParameter(24, true, {5, 2}),
@@ -1221,6 +1332,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SBR",
         0b0110000000000000,
         1,
+        Instruction::Mnemonic::SBR,
         false,
         std::nullopt,
         RegisterParameter(16, true, {7, 4}),
@@ -1234,6 +1346,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SBRC",
         0b1111110000000000,
         1,
+        Instruction::Mnemonic::SBRC,
         true,
         RegisterParameter({8, 5}),
         std::nullopt,
@@ -1252,6 +1365,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SBRS",
         0b1111111000000000,
         1,
+        Instruction::Mnemonic::SBRS,
         true,
         RegisterParameter({8, 5}),
         std::nullopt,
@@ -1270,6 +1384,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SEC",
         0b1001010000001000,
         1,
+        Instruction::Mnemonic::SEC,
         false
     >;
 
@@ -1277,6 +1392,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SEH",
         0b1001010001011000,
         1,
+        Instruction::Mnemonic::SEH,
         false
     >;
 
@@ -1284,6 +1400,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SEI",
         0b1001010001111000,
         1,
+        Instruction::Mnemonic::SEI,
         false
     >;
 
@@ -1291,6 +1408,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SEN",
         0b1001010000101000,
         1,
+        Instruction::Mnemonic::SEN,
         false
     >;
 
@@ -1298,6 +1416,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SER",
         0b1110111100001111,
         1,
+        Instruction::Mnemonic::SER,
         false,
         std::nullopt,
         RegisterParameter({7, 4})
@@ -1307,6 +1426,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SES",
         0b1001010001001000,
         1,
+        Instruction::Mnemonic::SES,
         false
     >;
 
@@ -1314,6 +1434,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SET",
         0b1001010001101000,
         1,
+        Instruction::Mnemonic::SET,
         false
     >;
 
@@ -1321,6 +1442,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SEV",
         0b1001010000111000,
         1,
+        Instruction::Mnemonic::SEV,
         false
     >;
 
@@ -1328,6 +1450,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SEZ",
         0b1001010000011000,
         1,
+        Instruction::Mnemonic::SEZ,
         false
     >;
 
@@ -1335,6 +1458,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SLEEP",
         0b1001010110001000,
         1,
+        Instruction::Mnemonic::SLEEP,
         false
     >;
 
@@ -1342,6 +1466,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SPM",
         0b1001010111101000,
         1,
+        Instruction::Mnemonic::SPM,
         false
     >;
 
@@ -1349,6 +1474,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SPM",
         0b1001010111111000,
         1,
+        Instruction::Mnemonic::SPM,
         false
     >;
 
@@ -1356,6 +1482,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ST",
         0b1001001000001100,
         1,
+        Instruction::Mnemonic::ST,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1364,6 +1491,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ST",
         0b1001001000001101,
         1,
+        Instruction::Mnemonic::ST,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1372,6 +1500,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ST",
         0b1001001000001110,
         1,
+        Instruction::Mnemonic::ST,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1380,6 +1509,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ST",
         0b1000001000001000,
         1,
+        Instruction::Mnemonic::ST,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1388,6 +1518,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ST",
         0b1001001000001001,
         1,
+        Instruction::Mnemonic::ST,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1396,6 +1527,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ST",
         0b1001001000001010,
         1,
+        Instruction::Mnemonic::ST,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1404,6 +1536,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "STD",
         0b1000001000001000,
         1,
+        Instruction::Mnemonic::STD,
         false,
         RegisterParameter({8, 5}),
         std::nullopt,
@@ -1425,6 +1558,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ST",
         0b1000001000000000,
         1,
+        Instruction::Mnemonic::ST,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1433,6 +1567,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ST",
         0b1001001000000001,
         1,
+        Instruction::Mnemonic::ST,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1441,6 +1576,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "ST",
         0b1001001000000010,
         1,
+        Instruction::Mnemonic::ST,
         false,
         RegisterParameter({8, 5})
     >;
@@ -1449,6 +1585,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "STD",
         0b1000001000000000,
         1,
+        Instruction::Mnemonic::STD,
         false,
         RegisterParameter({8, 5}),
         std::nullopt,
@@ -1470,6 +1607,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "STS",
         0b10010010000000000000000000000000,
         2,
+        Instruction::Mnemonic::STS,
         false,
         RegisterParameter({24, 5}),
         std::nullopt,
@@ -1486,6 +1624,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "STS",
         0b1010100000000000,
         1,
+        Instruction::Mnemonic::STS,
         false,
         RegisterParameter({7, 4}),
         std::nullopt,
@@ -1507,6 +1646,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SUB",
         0b0001100000000000,
         1,
+        Instruction::Mnemonic::SUB,
         false,
         RegisterParameter(std::to_array<Services::BitsetService::BitFieldRange>({
             {9, 1},
@@ -1519,6 +1659,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SUBI",
         0b0101000000000000,
         1,
+        Instruction::Mnemonic::SUBI,
         false,
         std::nullopt,
         RegisterParameter({7, 4}),
@@ -1532,6 +1673,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "SWAP",
         0b1001010000000010,
         1,
+        Instruction::Mnemonic::SWAP,
         false,
         std::nullopt,
         RegisterParameter({8, 5})
@@ -1541,6 +1683,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "TST",
         0b0010000000000000,
         1,
+        Instruction::Mnemonic::TST,
         false,
         std::nullopt,
         RegisterParameter({9, 10})
@@ -1550,6 +1693,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "WDR",
         0b1001010110101000,
         1,
+        Instruction::Mnemonic::WDR,
         false
     >;
 
@@ -1557,6 +1701,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         "XCH",
         0b1001001000000100,
         1,
+        Instruction::Mnemonic::XCH,
         false,
         RegisterParameter({8, 5})
     >;
