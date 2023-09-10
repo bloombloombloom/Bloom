@@ -30,5 +30,17 @@ namespace DebugServer::Gdb
                 );
             }
         }
+
+        if (debugServerConfig.debugServerNode["rangeSteppingEnabled"]) {
+            if (YamlUtilities::isCastable<bool>(debugServerConfig.debugServerNode["rangeSteppingEnabled"])) {
+                this->rangeSteppingEnabled = debugServerConfig.debugServerNode["rangeSteppingEnabled"].as<bool>();
+
+            } else {
+                Logger::error(
+                    "Invalid GDB debug server config parameter ('rangeSteppingEnabled') provided - value must be "
+                    "castable to a boolean. The parameter will be ignored."
+                );
+            }
+        }
     }
 }

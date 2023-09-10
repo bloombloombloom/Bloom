@@ -26,6 +26,15 @@ namespace DebugServer::Gdb
          */
         std::string listeningAddress = "127.0.0.1";
 
+        /**
+         * Controls Bloom's range stepping functionality.
+         *
+         * If this is set to true, the GDB server will service "vCont;r" commands from GDB.
+         *
+         * This parameter is optional. If not specified, the default value set here will be used.
+         */
+        bool rangeSteppingEnabled = true;
+
         explicit GdbDebugServerConfig(const DebugServerConfig& debugServerConfig);
     };
 }
