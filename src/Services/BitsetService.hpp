@@ -48,7 +48,9 @@ namespace Services
             auto output = SubjectType{0};
 
             for (const auto& range : ranges) {
-                output = (output << range.length) | BitsetService::extractBitField(subject, range);
+                output = static_cast<SubjectType>(
+                    (output << range.length) | BitsetService::extractBitField(subject, range)
+                );
             }
 
             return output;
