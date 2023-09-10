@@ -46,7 +46,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         std::reverse(this->registerValue.begin(), this->registerValue.end());
     }
 
-    void WriteRegister::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void WriteRegister::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::info("Handling WriteRegister packet");
 
         try {

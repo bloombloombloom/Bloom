@@ -29,6 +29,7 @@ target_sources(
         # AVR GDB RSP Server
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/AvrGdbRsp.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/TargetDescriptor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/DebugSession.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/ReadRegisters.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/ReadRegister.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/WriteRegister.cpp
@@ -38,6 +39,10 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashErase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashWrite.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashDone.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContSupportedActionsQuery.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContContinueExecution.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContStepExecution.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContRangeStep.cpp
 )
 
 if (NOT EXCLUDE_INSIGHT)

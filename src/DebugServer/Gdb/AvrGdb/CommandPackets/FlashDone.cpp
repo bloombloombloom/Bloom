@@ -19,7 +19,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         : CommandPacket(rawPacket)
     {}
 
-    void FlashDone::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void FlashDone::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::info("Handling FlashDone packet");
 
         try {

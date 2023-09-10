@@ -40,6 +40,7 @@
 #include "ResponsePackets/TargetStopped.hpp"
 
 #include "src/Services/ProcessService.hpp"
+#include "src/Services/StringService.hpp"
 
 namespace DebugServer::Gdb
 {
@@ -135,7 +136,7 @@ namespace DebugServer::Gdb
     }
 
     void GdbRspDebugServer::close() {
-        this->activeDebugSession.reset();
+        this->endDebugSession();
 
         if (this->serverSocketFileDescriptor.has_value()) {
             ::close(this->serverSocketFileDescriptor.value());
@@ -144,19 +145,14 @@ namespace DebugServer::Gdb
 
     void GdbRspDebugServer::run() {
         try {
-            if (!this->activeDebugSession.has_value()) {
+            if (this->getActiveDebugSession() == nullptr) {
                 Logger::info("Waiting for GDB RSP connection");
 
                 auto connection = this->waitForConnection();
 
                 Logger::info("Accepted GDP RSP connection from " + connection.getIpAddress());
 
-                this->activeDebugSession.emplace(
-                    std::move(connection),
-                    this->getSupportedFeatures(),
-                    this->getGdbTargetDescriptor(),
-                    this->debugServerConfig
-                );
+                this->startDebugSession(std::move(connection));
 
                 this->targetControllerService.stopTargetExecution();
                 this->targetControllerService.resetTarget();
@@ -165,29 +161,29 @@ namespace DebugServer::Gdb
             const auto commandPacket = this->waitForCommandPacket();
 
             if (commandPacket) {
-                commandPacket->handle(this->activeDebugSession.value(), this->targetControllerService);
+                commandPacket->handle(*(this->getActiveDebugSession()), this->targetControllerService);
             }
 
         } catch (const ClientDisconnected&) {
             Logger::info("GDB RSP client disconnected");
-            this->activeDebugSession.reset();
+            this->endDebugSession();
             return;
 
         } catch (const ClientCommunicationError& exception) {
             Logger::error(
                 "GDB RSP client communication error - " + exception.getMessage() + " - closing connection"
             );
-            this->activeDebugSession.reset();
+            this->endDebugSession();
             return;
 
         } catch (const ClientNotSupported& exception) {
             Logger::error("Invalid GDB RSP client - " + exception.getMessage() + " - closing connection");
-            this->activeDebugSession.reset();
+            this->endDebugSession();
             return;
 
         } catch (const DebugSessionInitialisationFailure& exception) {
             Logger::warning("GDB debug session initialisation failure - " + exception.getMessage());
-            this->activeDebugSession.reset();
+            this->endDebugSession();
             return;
 
         } catch (const DebugServerInterrupted&) {
@@ -219,14 +215,15 @@ namespace DebugServer::Gdb
     }
 
     std::unique_ptr<CommandPacket> GdbRspDebugServer::waitForCommandPacket() {
-        const auto rawPackets = this->activeDebugSession->connection.readRawPackets();
+        auto* debugSession = this->getActiveDebugSession();
+        const auto rawPackets = debugSession->connection.readRawPackets();
 
         if (rawPackets.size() > 1) {
             const auto& firstRawPacket = rawPackets.front();
 
             if (firstRawPacket.size() == 5 && firstRawPacket[1] == 0x03) {
                 // Interrupt packet that came in too quickly before another packet
-                this->activeDebugSession->pendingInterrupt = true;
+                debugSession->pendingInterrupt = true;
             }
 
             // We only process the last packet - any others will probably be duplicates from an impatient client.
@@ -312,68 +309,55 @@ namespace DebugServer::Gdb
         return std::make_unique<CommandPacket>(rawPacket);
     }
 
-    std::set<std::pair<Feature, std::optional<std::string>>> GdbRspDebugServer::getSupportedFeatures() {
-        return {
-            {Feature::SOFTWARE_BREAKPOINTS, std::nullopt},
-        };
-    }
+    void GdbRspDebugServer::onTargetExecutionStopped(const Events::TargetExecutionStopped& stoppedEvent) {
+        using Services::StringService;
 
-    void GdbRspDebugServer::onTargetExecutionStopped(const Events::TargetExecutionStopped&) {
+        auto* debugSession = this->getActiveDebugSession();
+
         try {
-            if (this->activeDebugSession.has_value() && this->activeDebugSession->waitingForBreak) {
-                this->activeDebugSession->connection.writePacket(
-                    ResponsePackets::TargetStopped(Signal::TRAP)
-                );
-                this->activeDebugSession->waitingForBreak = false;
+            if (debugSession != nullptr && debugSession->waitingForBreak) {
+                this->handleTargetStoppedGdbResponse(stoppedEvent.programCounter);
             }
 
         } catch (const ClientDisconnected&) {
             Logger::info("GDB RSP client disconnected");
-            this->activeDebugSession.reset();
+            this->endDebugSession();
             return;
 
         } catch (const ClientCommunicationError& exception) {
             Logger::error(
                 "GDB RSP client communication error - " + exception.getMessage() + " - closing connection"
             );
-            this->activeDebugSession.reset();
+            this->endDebugSession();
             return;
 
         } catch (const DebugServerInterrupted&) {
             // Server was interrupted
             Logger::debug("GDB RSP interrupted");
             return;
+        } catch (const Exception& exception) {
+            Logger::error("Failed to handle target execution stopped event - " + exception.getMessage());
         }
     }
 
     void GdbRspDebugServer::onTargetExecutionResumed(const Events::TargetExecutionResumed&) {
+        auto* debugSession = this->getActiveDebugSession();
+
         try {
-            if (
-                this->activeDebugSession.has_value()
-                && this->activeDebugSession->pendingInterrupt
-                && this->activeDebugSession->waitingForBreak
-            ) {
-                Logger::info("Servicing pending interrupt");
-                this->targetControllerService.stopTargetExecution();
-
-                this->activeDebugSession->connection.writePacket(
-                    ResponsePackets::TargetStopped(Signal::INTERRUPTED)
-                );
-
-                this->activeDebugSession->pendingInterrupt = false;
-                this->activeDebugSession->waitingForBreak = false;
+            if (debugSession != nullptr) {
+                this->handleTargetResumedGdbResponse();
             }
 
         } catch (const ClientDisconnected&) {
             Logger::info("GDB RSP client disconnected");
-            this->activeDebugSession.reset();
+            this->endDebugSession();
             return;
 
         } catch (const ClientCommunicationError& exception) {
             Logger::error(
                 "GDB RSP client communication error - " + exception.getMessage() + " - closing connection"
             );
-            this->activeDebugSession.reset();
+            this->endDebugSession();
             return;
 
         } catch (const DebugServerInterrupted&) {
@@ -382,7 +366,35 @@ namespace DebugServer::Gdb
             return;
 
         } catch (const Exception& exception) {
-            Logger::error("Failed to interrupt execution - " + exception.getMessage());
+            Logger::error("Failed to handle target execution resumed event - " + exception.getMessage());
+        }
+    }
+
+    void GdbRspDebugServer::handleTargetStoppedGdbResponse(Targets::TargetProgramCounter programAddress) {
+        auto* debugSession = this->getActiveDebugSession();
+
+        if (debugSession->activeRangeSteppingSession.has_value()) {
+            debugSession->terminateRangeSteppingSession(this->targetControllerService);
+        }
+
+        debugSession->connection.writePacket(ResponsePackets::TargetStopped(Signal::TRAP));
+        debugSession->waitingForBreak = false;
+    }
+
+    void GdbRspDebugServer::handleTargetResumedGdbResponse() {
+        auto* debugSession = this->getActiveDebugSession();
+
+        if (debugSession->waitingForBreak && debugSession->pendingInterrupt) {
+            Logger::info("Servicing pending interrupt");
+            this->targetControllerService.stopTargetExecution();
+
+            if (debugSession->activeRangeSteppingSession.has_value()) {
+                debugSession->terminateRangeSteppingSession(this->targetControllerService);
+            }
+
+            debugSession->connection.writePacket(ResponsePackets::TargetStopped(Signal::INTERRUPTED));
+            debugSession->pendingInterrupt = false;
+            debugSession->waitingForBreak = false;
         }
     }
 }

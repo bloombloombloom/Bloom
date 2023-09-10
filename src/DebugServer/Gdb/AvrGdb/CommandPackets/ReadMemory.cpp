@@ -62,7 +62,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         }
     }
 
-    void ReadMemory::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void ReadMemory::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::info("Handling ReadMemory packet");
 
         try {

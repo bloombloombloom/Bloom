@@ -18,7 +18,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         explicit ReadRegister(const RawPacket& rawPacket);
 
         void handle(
-            DebugSession& debugSession,
+            Gdb::DebugSession& debugSession,
             Services::TargetControllerService& targetControllerService
         ) override;
     };

@@ -6,6 +6,7 @@
 #include <vector>
 #include <queue>
 #include <optional>
+#include <memory>
 
 #include "src/DebugServer/ServerInterface.hpp"
 
@@ -127,10 +128,25 @@ namespace DebugServer::Gdb
         std::optional<int> serverSocketFileDescriptor;
 
         /**
-         * When a connection with a GDB client is established, a new instance of the DebugSession class is created and
-         * held here. A value of std::nullopt means there is no active debug session present.
+         * Should start a new debug session for the newly established `connection`.
+         *
+         * @param connection
+         * @return
          */
-        std::optional<DebugSession> activeDebugSession;
+        virtual DebugSession* startDebugSession(Connection&& connection) = 0;
+
+        /**
+         * Should end the currently active debug session, if one exists.
+         */
+        virtual void endDebugSession() = 0;
+
+        /**
+         * Should return a non-owning pointer of the currently active debug session. Or nullptr if there is no active
+         * session.
+         *
+         * @return
+         */
+        virtual DebugSession* getActiveDebugSession() = 0;
 
         /**
          * Waits for a GDB client to connect on the listening socket.
@@ -162,19 +178,6 @@ namespace DebugServer::Gdb
         virtual std::unique_ptr<CommandPackets::CommandPacket> resolveCommandPacket(const RawPacket& rawPacket);
 
         /**
-         * Should return a set of GDB features supported by the GDB server. Each supported feature may come with an
-         * optional value.
-         *
-         * The set of features returned by this function will be stored against the active debug session object.
-         *
-         * Derived GDB server implementations may override this function to include any features that are specific to
-         * those implementations.
-         *
-         * @return
-         */
-        virtual std::set<std::pair<Feature, std::optional<std::string>>> getSupportedFeatures();
-
-        /**
          * Should return the GDB target descriptor for the connected target.
          *
          * NOTE: This function returns a target descriptor specific to GDB and the target. It's not the same data
@@ -189,11 +192,14 @@ namespace DebugServer::Gdb
          * If the GDB client is currently waiting for the target execution to stop, this event handler will issue
          * a "stop reply" packet to the client once the target execution stops.
          */
-        void onTargetExecutionStopped(const Events::TargetExecutionStopped&);
+        void onTargetExecutionStopped(const Events::TargetExecutionStopped& stoppedEvent);
 
         /**
          * Services any pending interrupts.
          */
         void onTargetExecutionResumed(const Events::TargetExecutionResumed&);
+
+        virtual void handleTargetStoppedGdbResponse(Targets::TargetProgramCounter programAddress);
+        virtual void handleTargetResumedGdbResponse();
     };
 }

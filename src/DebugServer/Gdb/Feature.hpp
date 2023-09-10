@@ -10,6 +10,7 @@ namespace DebugServer::Gdb
         HARDWARE_BREAKPOINTS,
         PACKET_SIZE,
         MEMORY_MAP_READ,
+        VCONT_ACTIONS_QUERY,
     };
 
     static inline BiMap<Feature, std::string> getGdbFeatureToNameMapping() {
@@ -18,6 +19,7 @@ namespace DebugServer::Gdb
             {Feature::SOFTWARE_BREAKPOINTS, "swbreak"},
             {Feature::PACKET_SIZE, "PacketSize"},
             {Feature::MEMORY_MAP_READ, "qXfer:memory-map:read"},
+            {Feature::VCONT_ACTIONS_QUERY, "vContSupported"},
         };
     }
 }

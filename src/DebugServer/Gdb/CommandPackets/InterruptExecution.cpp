@@ -26,8 +26,13 @@ namespace DebugServer::Gdb::CommandPackets
 
         try {
             targetControllerService.stopTargetExecution();
-            debugSession.connection.writePacket(TargetStopped(Signal::INTERRUPTED));
+
+            if (debugSession.activeRangeSteppingSession.has_value()) {
+                debugSession.terminateRangeSteppingSession(targetControllerService);
+            }
+
             debugSession.waitingForBreak = false;
+            debugSession.connection.writePacket(TargetStopped(Signal::INTERRUPTED));
 
         } catch (const Exception& exception) {
             Logger::error("Failed to interrupt execution - " + exception.getMessage());

@@ -37,6 +37,12 @@ namespace Services
         return str;
     }
 
+    std::string StringService::toHex(std::uint32_t value) {
+        auto stream = std::stringstream();
+        stream << std::hex << std::setfill('0') << std::setw(8) << static_cast<unsigned int>(value);
+        return stream.str();
+    }
+
     std::string StringService::toHex(unsigned char value) {
         auto stream = std::stringstream();
         stream << std::hex << std::setfill('0') << std::setw(2) << static_cast<unsigned int>(value);

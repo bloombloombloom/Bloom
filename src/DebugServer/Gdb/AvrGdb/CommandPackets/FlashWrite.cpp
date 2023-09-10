@@ -48,7 +48,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         this->buffer = Targets::TargetMemoryBuffer(colonIt + 1, this->data.end());
     }
 
-    void FlashWrite::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void FlashWrite::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::info("Handling FlashWrite packet");
 
         try {

@@ -2,14 +2,19 @@
 
 #include <cstdint>
 #include <optional>
+#include <set>
 
 #include "TargetDescriptor.hpp"
 #include "GdbDebugServerConfig.hpp"
 #include "Connection.hpp"
 #include "Feature.hpp"
 #include "ProgrammingSession.hpp"
+#include "RangeSteppingSession.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetBreakpoint.hpp"
+
+#include "src/Services/TargetControllerService.hpp"
 
 namespace DebugServer::Gdb
 {
@@ -38,6 +43,22 @@ namespace DebugServer::Gdb
         const GdbDebugServerConfig& serverConfig;
 
         /**
+         * During a debug session, we can set two types of breakpoints: internal and external.
+         *
+         * - Internal breakpoints are set by Bloom's GDB server, for reasons that are specific to Bloom's internals.
+         *   For example, we use internal breakpoints to facilitate range stepping sessions, where we place
+         *   intercepting breakpoints in places where we suspect the target will leave the stepping range.
+         *
+         * - External breakpoints are requested by the connected client (GDB), typically on behalf of the user.
+         *   Sometimes GDB will set some internal breakpoints of its own, but from our perspective these are considered
+         *   to be external breakpoints.
+         *
+         * We track internal and external breakpoints separately.
+         */
+        std::set<Targets::TargetMemoryAddress> internalBreakpointAddresses;
+        std::set<Targets::TargetMemoryAddress> externalBreakpointAddresses;
+
+        /**
          * When the GDB client is waiting for the target to halt, this is set to true so we know when to notify the
          * client.
          */
@@ -60,6 +81,14 @@ namespace DebugServer::Gdb
          */
         std::optional<ProgrammingSession> programmingSession = std::nullopt;
 
+        /**
+         * When we're range stepping, we maintain a range stepping session, which holds all info related to that
+         * particular range stepping session.
+         *
+         * This member should only be populated during a range stepping session.
+         */
+        std::optional<RangeSteppingSession> activeRangeSteppingSession = std::nullopt;
+
         DebugSession(
             Connection&& connection,
             const std::set<std::pair<Feature, std::optional<std::string>>>& supportedFeatures,
@@ -73,6 +102,35 @@ namespace DebugServer::Gdb
         DebugSession& operator = (const DebugSession& other) = delete;
         DebugSession& operator = (DebugSession&& other) = delete;
 
-        ~DebugSession();
+        virtual ~DebugSession();
+
+        virtual void setInternalBreakpoint(
+            const Targets::TargetBreakpoint& breakpoint,
+            Services::TargetControllerService& targetControllerService
+        );
+
+        virtual void removeInternalBreakpoint(
+            const Targets::TargetBreakpoint& breakpoint,
+            Services::TargetControllerService& targetControllerService
+        );
+
+        virtual void setExternalBreakpoint(
+            const Targets::TargetBreakpoint& breakpoint,
+            Services::TargetControllerService& targetControllerService
+        );
+
+        virtual void removeExternalBreakpoint(
+            const Targets::TargetBreakpoint& breakpoint,
+            Services::TargetControllerService& targetControllerService
+        );
+
+        virtual void startRangeSteppingSession(
+            RangeSteppingSession&& session,
+            Services::TargetControllerService& targetControllerService
+        );
+
+        virtual void terminateRangeSteppingSession(
+            Services::TargetControllerService& targetControllerService
+        );
     };
 }

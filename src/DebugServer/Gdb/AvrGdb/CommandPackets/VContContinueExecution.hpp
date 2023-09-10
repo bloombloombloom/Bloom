@@ -1,22 +1,19 @@
 #pragma once
 
 #include <cstdint>
-#include <optional>
 
 #include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
-#include "src/DebugServer/Gdb/TargetDescriptor.hpp"
-
-#include "src/Targets/TargetMemory.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     /**
-     * The FlashDone class implements the structure for the "vFlashDone" packet.
+     * The VContContinueExecution class implements a structure for "vCont;c" and "vCont;C" packets. These packets
+     * instruct the server to continue execution on the target.
      */
-    class FlashDone: public Gdb::CommandPackets::CommandPacket
+    class VContContinueExecution: public Gdb::CommandPackets::CommandPacket
     {
     public:
-        explicit FlashDone(const RawPacket& rawPacket);
+        explicit VContContinueExecution(const RawPacket& rawPacket);
 
         void handle(
             Gdb::DebugSession& debugSession,

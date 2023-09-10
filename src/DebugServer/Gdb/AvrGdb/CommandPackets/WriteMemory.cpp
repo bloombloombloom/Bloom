@@ -68,7 +68,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         }
     }
 
-    void WriteMemory::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void WriteMemory::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::info("Handling WriteMemory packet");
 
         try {

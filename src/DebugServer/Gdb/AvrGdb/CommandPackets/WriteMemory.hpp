@@ -35,7 +35,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         explicit WriteMemory(const RawPacket& rawPacket, const Gdb::TargetDescriptor& gdbTargetDescriptor);
 
         void handle(
-            DebugSession& debugSession,
+            Gdb::DebugSession& debugSession,
             Services::TargetControllerService& targetControllerService
         ) override;
     };

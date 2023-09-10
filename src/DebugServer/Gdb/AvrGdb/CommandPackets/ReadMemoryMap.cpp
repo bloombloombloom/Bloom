@@ -50,7 +50,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         }
     }
 
-    void ReadMemoryMap::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void ReadMemoryMap::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::info("Handling ReadMemoryMap packet");
 
         using Targets::TargetMemoryType;

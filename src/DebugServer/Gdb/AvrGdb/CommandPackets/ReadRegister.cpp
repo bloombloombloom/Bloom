@@ -34,7 +34,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         );
     }
 
-    void ReadRegister::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void ReadRegister::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
         Logger::info("Handling ReadRegister packet");
 
         try {

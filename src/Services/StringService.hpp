@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 #include <vector>
 
 namespace Services
@@ -15,6 +16,7 @@ namespace Services
         static bool isAscii(const std::string& str);
         static std::string replaceUnprintable(std::string str);
 
+        static std::string toHex(std::uint32_t value);
         static std::string toHex(unsigned char value);
         static std::string toHex(const std::vector<unsigned char>& data);
         static std::string toHex(const std::string& data);
