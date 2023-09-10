@@ -25,7 +25,7 @@ void Logger::log(const LogEntry& logEntry) {
 
     // Print the timestamp and id in a green font color:
     std::cout << "\033[32m";
-    std::cout << logEntry.timestamp.toString("yyyy-MM-dd hh:mm:ss ").toStdString()
+    std::cout << logEntry.timestamp.toString("yyyy-MM-dd hh:mm:ss.zzz ").toStdString()
         + timezoneAbbreviation;
 
     if (!logEntry.threadName.empty()) {
