@@ -8,7 +8,7 @@
 
 namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Exceptions
 {
-class DecodeFailure: public ::Exceptions::Exception
+    class DecodeFailure: public ::Exceptions::Exception
     {
     public:
         Targets::TargetMemoryAddress byteAddress;

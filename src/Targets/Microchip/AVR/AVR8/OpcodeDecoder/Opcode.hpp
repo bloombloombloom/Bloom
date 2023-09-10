@@ -167,7 +167,8 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
      * @tparam canChangeProgramFlow
      *  Whether the instruction **can** change program flow.
      *
-     *  If it can change the program counter to anything other than PC + 1, this should be set to true.
+     *  If the instruction can change the program counter to anything other than PC + n, where n is the word size of
+     *  the instruction, then this should be set to true.
      *
      * @tparam sourceRegisterParameter
      *  If the instruction encodes a source register parameter (like the OR instruction), this should be provided here.
@@ -476,7 +477,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
 
         /**
          * We hold a single instance of the instruction name here, as a const static member, and then pass it by
-         * reference to any new instances of the OpcodeDecoder::Instruction struct (which holds a reference).
+         * reference to any new instances of the OpcodeDecoder::Instruction struct (which holds a const reference).
          */
         static const inline std::string name = instructionName.value;
 
