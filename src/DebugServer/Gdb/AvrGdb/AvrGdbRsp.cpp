@@ -176,7 +176,8 @@ namespace DebugServer::Gdb::AvrGdb
                  * The target stopped due to an intercepting breakpoint, but we're still within the stepping range,
                  * which can only mean that we weren't sure where this instruction would lead to.
                  *
-                 * We must perform a single step and see what happens.
+                 * We must perform a single step and see what happens. If the instruction takes us out of the stepping
+                 * range, we'll end the session and report back to GDB.
                  */
                 Logger::debug("Reached intercepting breakpoint within stepping range");
                 Logger::debug("Attempting single step from 0x" + StringService::toHex(programAddress));
@@ -191,7 +192,7 @@ namespace DebugServer::Gdb::AvrGdb
                  * We performed a single step once and we're still within the stepping range, so we're good to
                  * continue the range stepping session.
                  */
-                Logger::debug("Completed single step from an intercepted address - PC still within stepping range");
+                Logger::debug("Completed single step - PC still within stepping range");
                 Logger::debug("Continuing range stepping");
 
                 activeRangeSteppingSession->singleStepping = false;

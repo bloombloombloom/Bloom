@@ -205,7 +205,16 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             }
 
             debugSession.startRangeSteppingSession(std::move(rangeSteppingSession), targetControllerService);
-            targetControllerService.continueTargetExecution(std::nullopt, std::nullopt);
+
+            /*
+             * GDB expects us to start the range stepping session with a single step, and then only continue if the
+             * single step didn't immediately take us out of the stepping range.
+             *
+             * So we kick off a single step here, then let AvrGdbRsp::handleTargetStoppedGdbResponse() determine if
+             * we should continue. See that member function for more.
+             */
+            debugSession.activeRangeSteppingSession->singleStepping = true;
+            targetControllerService.stepTargetExecution(std::nullopt);
             debugSession.waitingForBreak = true;
 
         } catch (const Exception& exception) {

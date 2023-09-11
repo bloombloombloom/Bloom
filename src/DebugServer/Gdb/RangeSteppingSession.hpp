@@ -28,8 +28,8 @@ namespace DebugServer::Gdb
         std::set<Targets::TargetMemoryAddress> interceptedAddresses;
 
         /**
-         * Whether we're currently performing a single step, in this session, to observe the behaviour of a particular
-         * instruction.
+         * Whether we're currently performing a single step, in this session, to start the session or observe the
+         * behaviour of a particular instruction.
          *
          * See AvrGdbRsp::handleTargetStoppedGdbResponse() for more.
          */
