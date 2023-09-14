@@ -21,9 +21,8 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
         auto dataIt = data.begin();
         const auto dataEndIt = data.end();
 
-        while(dataIt != dataEndIt) {
+        while (std::distance(dataIt, dataEndIt) >= 2) {
             auto opcodeMatched = false;
-            const auto wordAvailable = std::distance(dataIt, dataEndIt) >= 2;
 
             for (const auto& decoder : decoders) {
                 auto instruction = decoder(dataIt, dataEndIt);
@@ -43,17 +42,11 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
                 if (throwOnFailure) {
                     throw Exceptions::DecodeFailure(
                         instructionByteAddress,
-                        wordAvailable
-                            ? static_cast<std::uint32_t>(*(dataIt + 1) << 8) | *dataIt
-                            : *dataIt
+                        static_cast<std::uint32_t>(*(dataIt + 1) << 8) | *dataIt
                     );
                 }
 
                 output.insert(std::pair(instructionByteAddress, std::nullopt));
-
-                if (!wordAvailable) {
-                    break;
-                }
 
                 dataIt += 2;
                 instructionByteAddress += 2;
