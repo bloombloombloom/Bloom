@@ -1689,6 +1689,32 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Opcodes
         RegisterParameter({9, 10})
     >;
 
+    /*
+     * So apparently, some AVRs treat the undefined 0xFFFF opcode as 0xFFF7 (SBRS R31, 7).
+     *
+     * See https://www.avrfreaks.net/s/topic/a5C3l000000UL4NEAW/t094785
+     *
+     * For this reason, we have to define it here.
+     */
+    using UndefinedOrErased = Opcode<
+        "????",
+        0b1111111111111111,
+        1,
+        Instruction::Mnemonic::UNDEFINED,
+        true,
+        std::nullopt,
+        std::nullopt,
+        std::nullopt,
+        std::nullopt,
+        std::nullopt,
+        std::nullopt,
+        std::nullopt,
+        std::nullopt,
+        std::nullopt,
+        std::nullopt,
+        true
+    >;
+
     using Wdr = Opcode<
         "WDR",
         0b1001010110101000,

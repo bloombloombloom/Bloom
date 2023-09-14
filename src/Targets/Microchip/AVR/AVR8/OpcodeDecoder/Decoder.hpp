@@ -49,7 +49,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
                 const Targets::TargetMemoryBuffer::const_iterator&
            )
         >;
-        using OpcodeDecoders = std::array<Decoder::OpcodeDecoderFunction, 144>;
+        using OpcodeDecoders = std::array<Decoder::OpcodeDecoderFunction, 145>;
 
         static OpcodeDecoders opcodeDecoders();
     };

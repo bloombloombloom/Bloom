@@ -19,6 +19,13 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
             MUL, MULS, MULSU, NEG, NOP, OR, ORI, OUT, POP, PUSH, RCALL, RET, RETI, RJMP, ROL, ROR, SBC, SBCI, SBI,
             SBIC, SBIS, SBIW, SBR, SBRC, SBRS, SEC, SEH, SEI, SEN, SER, SES, SET, SEV, SEZ, SLEEP, SPM, ST, STD, STS,
             SUB, SUBI, SWAP, TST, WDR, XCH,
+
+            /*
+             * For undefined opcodes that we've had to define, because the hardware doesn't treat them as undefined.
+             *
+             * For example, see the 0xFFFF opcode.
+             */
+            UNDEFINED,
         };
 
         const std::string& name;

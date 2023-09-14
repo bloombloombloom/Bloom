@@ -23,6 +23,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
 
         while(dataIt != dataEndIt) {
             auto opcodeMatched = false;
+            const auto wordAvailable = std::distance(dataIt, dataEndIt) >= 2;
 
             for (const auto& decoder : decoders) {
                 auto instruction = decoder(dataIt, dataEndIt);
@@ -42,7 +43,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
                 if (throwOnFailure) {
                     throw Exceptions::DecodeFailure(
                         instructionByteAddress,
-                        std::distance(dataIt, dataEndIt) >= 2
+                        wordAvailable
                             ? static_cast<std::uint32_t>(*(dataIt + 1) << 8) | *dataIt
                             : *dataIt
                     );
@@ -50,7 +51,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
 
                 output.insert(std::pair(instructionByteAddress, std::nullopt));
 
-                if (std::distance(dataIt, dataEndIt) < 2) {
+                if (!wordAvailable) {
                     break;
                 }
 
@@ -69,6 +70,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder
          * I've used the same order that is used in the AVR implementation of GDB.
          */
         return Decoder::OpcodeDecoders({
+            std::bind(&Opcodes::UndefinedOrErased::decode, std::placeholders::_1, std::placeholders::_2),
             std::bind(&Opcodes::Clc::decode, std::placeholders::_1, std::placeholders::_2),
             std::bind(&Opcodes::Clh::decode, std::placeholders::_1, std::placeholders::_2),
             std::bind(&Opcodes::Cli::decode, std::placeholders::_1, std::placeholders::_2),
