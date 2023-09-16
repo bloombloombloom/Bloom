@@ -88,7 +88,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 debugSession.terminateRangeSteppingSession(targetControllerService);
             }
 
-            if (this->startAddress == this->endAddress || (this->endAddress - this->startAddress) == 2) {
+            if (this->startAddress == this->endAddress || (this->endAddress - this->startAddress) <= 2) {
                 // Single step requested. No need for a range step here.
                 targetControllerService.stepTargetExecution(std::nullopt);
                 debugSession.waitingForBreak = true;
