@@ -31,14 +31,14 @@ namespace DebugServer::Gdb
             }
         }
 
-        if (debugServerConfig.debugServerNode["rangeSteppingEnabled"]) {
-            if (YamlUtilities::isCastable<bool>(debugServerConfig.debugServerNode["rangeSteppingEnabled"])) {
-                this->rangeSteppingEnabled = debugServerConfig.debugServerNode["rangeSteppingEnabled"].as<bool>();
+        if (debugServerConfig.debugServerNode["rangeStepping"]) {
+            if (YamlUtilities::isCastable<bool>(debugServerConfig.debugServerNode["rangeStepping"])) {
+                this->rangeStepping = debugServerConfig.debugServerNode["rangeStepping"].as<bool>();
 
             } else {
                 Logger::error(
-                    "Invalid GDB debug server config parameter ('rangeSteppingEnabled') provided - value must be "
-                    "castable to a boolean. The parameter will be ignored."
+                    "Invalid GDB debug server config parameter ('rangeStepping') provided - value must be castable to "
+                    "a boolean. The parameter will be ignored."
                 );
             }
         }

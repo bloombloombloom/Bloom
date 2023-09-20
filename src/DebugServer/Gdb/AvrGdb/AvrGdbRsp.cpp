@@ -124,7 +124,7 @@ namespace DebugServer::Gdb::AvrGdb
                 return std::make_unique<VContStepExecution>(rawPacket);
             }
 
-            if (this->debugServerConfig.rangeSteppingEnabled) {
+            if (this->debugServerConfig.rangeStepping) {
                 if (rawPacketString.find("vCont;r") == 0) {
                     return std::make_unique<VContRangeStep>(rawPacket);
                 }
