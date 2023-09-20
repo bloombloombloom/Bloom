@@ -8,6 +8,7 @@ environments:
     target:
       name: "atmega4809"
       physicalInterface: "updi"
+      hardwareBreakpoints: true
 
     server:
       name: "avr-gdb-rsp"
