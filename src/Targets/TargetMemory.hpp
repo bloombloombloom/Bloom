@@ -9,7 +9,6 @@ namespace Targets
 {
     using TargetMemoryAddress = std::uint32_t;
     using TargetMemorySize = std::uint32_t;
-    using TargetProgramCounter = TargetMemoryAddress;
     using TargetStackPointer = TargetMemoryAddress;
     using TargetMemoryBuffer = std::vector<unsigned char>;
 

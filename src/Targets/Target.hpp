@@ -210,14 +210,14 @@ namespace Targets
          *
          * @return
          */
-        virtual TargetProgramCounter getProgramCounter() = 0;
+        virtual TargetMemoryAddress getProgramCounter() = 0;
 
         /**
          * Should update the program counter on the target.
          *
          * @param programCounter
          */
-        virtual void setProgramCounter(TargetProgramCounter programCounter) = 0;
+        virtual void setProgramCounter(TargetMemoryAddress programCounter) = 0;
 
         /**
          * Should fetch the current stack pointer value.

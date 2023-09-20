@@ -20,7 +20,7 @@ public:
     QString description;
     Targets::TargetMemoryType memoryType;
     Targets::TargetMemoryBuffer data;
-    Targets::TargetProgramCounter programCounter;
+    Targets::TargetMemoryAddress programCounter;
     Targets::TargetStackPointer stackPointer;
     QDateTime createdDate = Services::DateTimeService::currentDateTime();
 
@@ -32,7 +32,7 @@ public:
         const QString& description,
         Targets::TargetMemoryType memoryType,
         const Targets::TargetMemoryBuffer& data,
-        Targets::TargetProgramCounter programCounter,
+        Targets::TargetMemoryAddress programCounter,
         Targets::TargetStackPointer stackPointer,
         const std::vector<FocusedMemoryRegion>& focusedRegions,
         const std::vector<ExcludedMemoryRegion>& excludedRegions

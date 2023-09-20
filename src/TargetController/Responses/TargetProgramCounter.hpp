@@ -13,9 +13,9 @@ namespace TargetController::Responses
     public:
         static constexpr ResponseType type = ResponseType::TARGET_PROGRAM_COUNTER;
 
-        Targets::TargetProgramCounter programCounter;
+        Targets::TargetMemoryAddress programCounter;
 
-        explicit TargetProgramCounter(Targets::TargetProgramCounter programCounter)
+        explicit TargetProgramCounter(Targets::TargetMemoryAddress programCounter)
             : programCounter(programCounter)
         {}
 

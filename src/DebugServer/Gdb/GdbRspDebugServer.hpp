@@ -199,7 +199,7 @@ namespace DebugServer::Gdb
          */
         void onTargetExecutionResumed(const Events::TargetExecutionResumed&);
 
-        virtual void handleTargetStoppedGdbResponse(Targets::TargetProgramCounter programAddress);
+        virtual void handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress);
         virtual void handleTargetResumedGdbResponse();
     };
 }

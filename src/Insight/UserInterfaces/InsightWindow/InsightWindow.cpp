@@ -854,7 +854,7 @@ void InsightWindow::refreshProgramCounter(std::optional<std::function<void(void)
         readProgramCounterTask.get(),
         &ReadProgramCounter::programCounterRead,
         this,
-        [this] (Targets::TargetProgramCounter programCounter) {
+        [this] (Targets::TargetMemoryAddress programCounter) {
             this->programCounterValueLabel->setText(
                 "0x" + QString::number(programCounter, 16).toUpper() + " (" + QString::number(programCounter) + ")"
             );

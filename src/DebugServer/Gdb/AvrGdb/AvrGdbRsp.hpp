@@ -45,7 +45,7 @@ namespace DebugServer::Gdb::AvrGdb
          */
         std::set<std::pair<Feature, std::optional<std::string>>> getSupportedFeatures();
 
-        void handleTargetStoppedGdbResponse(Targets::TargetProgramCounter programAddress) override;
+        void handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress) override;
 
     private:
         TargetDescriptor gdbTargetDescriptor;

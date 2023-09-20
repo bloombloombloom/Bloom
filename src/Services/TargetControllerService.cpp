@@ -64,7 +64,6 @@ namespace Services
     using Targets::TargetMemorySize;
     using Targets::TargetMemoryAddressRange;
     using Targets::TargetMemoryBuffer;
-    using Targets::TargetProgramCounter;
     using Targets::TargetStackPointer;
 
     using Targets::TargetBreakpoint;
@@ -237,7 +236,7 @@ namespace Services
         );
     }
 
-    TargetProgramCounter TargetControllerService::getProgramCounter() const {
+    TargetMemoryAddress TargetControllerService::getProgramCounter() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetProgramCounter>(),
             this->defaultTimeout,
@@ -245,7 +244,7 @@ namespace Services
         )->programCounter;
     }
 
-    void TargetControllerService::setProgramCounter(TargetProgramCounter address) const {
+    void TargetControllerService::setProgramCounter(TargetMemoryAddress address) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<SetTargetProgramCounter>(address),
             this->defaultTimeout,

@@ -165,14 +165,14 @@ namespace Services
          *
          * @return
          */
-        Targets::TargetProgramCounter getProgramCounter() const;
+        Targets::TargetMemoryAddress getProgramCounter() const;
 
         /**
          * Sets the target's program counter to the given address.
          *
          * @param address
          */
-        void setProgramCounter(Targets::TargetProgramCounter address) const;
+        void setProgramCounter(Targets::TargetMemoryAddress address) const;
 
         /**
          * Retrieves the pin states for a particular target variant.

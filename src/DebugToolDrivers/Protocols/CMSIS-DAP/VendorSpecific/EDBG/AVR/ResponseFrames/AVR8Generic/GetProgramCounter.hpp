@@ -17,7 +17,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8
             : Avr8GenericResponseFrame(avrResponses)
         {}
 
-        Targets::TargetProgramCounter extractProgramCounter() const {
+        Targets::TargetMemoryAddress extractProgramCounter() const {
             /*
              * The payload for the PC Read command should always consist of six bytes. Thr first two being the
              * command ID and version, the other four being the PC. The four PC bytes are little-endian.
@@ -27,7 +27,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr::ResponseFrames::Avr8
                     "frame - unexpected payload size.");
             }
 
-            return static_cast<Targets::TargetProgramCounter>(
+            return static_cast<Targets::TargetMemoryAddress>(
                 this->payload[5] << 24 | this->payload[4] << 16 | this->payload[3] << 8 | this->payload[2]
             ) * 2;
         }

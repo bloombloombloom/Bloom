@@ -52,7 +52,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         try {
             if (this->registerId == TargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID) {
                 targetControllerService.setProgramCounter(
-                    static_cast<Targets::TargetProgramCounter>(
+                    static_cast<Targets::TargetMemoryAddress>(
                         (this->registerValue.size() >= 1 ? this->registerValue[0] : 0x00) << 24
                         | (this->registerValue.size() >= 2 ? this->registerValue[1] : 0x00) << 16
                         | (this->registerValue.size() >= 3 ? this->registerValue[2] : 0x00) << 8

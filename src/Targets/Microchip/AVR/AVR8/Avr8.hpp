@@ -59,11 +59,11 @@ namespace Targets::Microchip::Avr::Avr8Bit
         void step() override;
         void reset() override;
 
-        void setSoftwareBreakpoint(TargetProgramCounter address) override;
-        void removeSoftwareBreakpoint(TargetProgramCounter address) override;
+        void setSoftwareBreakpoint(TargetMemoryAddress address) override;
+        void removeSoftwareBreakpoint(TargetMemoryAddress address) override;
 
-        void setHardwareBreakpoint(TargetProgramCounter address) override;
-        void removeHardwareBreakpoint(TargetProgramCounter address) override;
+        void setHardwareBreakpoint(TargetMemoryAddress address) override;
+        void removeHardwareBreakpoint(TargetMemoryAddress address) override;
         void clearAllBreakpoints() override;
 
         void writeRegisters(TargetRegisters registers) override;
@@ -84,8 +84,8 @@ namespace Targets::Microchip::Avr::Avr8Bit
 
         TargetState getState() override;
 
-        TargetProgramCounter getProgramCounter() override;
-        void setProgramCounter(TargetProgramCounter programCounter) override;
+        TargetMemoryAddress getProgramCounter() override;
+        void setProgramCounter(TargetMemoryAddress programCounter) override;
 
         TargetStackPointer getStackPointer() override;
 

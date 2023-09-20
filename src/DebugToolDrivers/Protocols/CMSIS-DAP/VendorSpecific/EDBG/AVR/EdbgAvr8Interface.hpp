@@ -142,7 +142,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          *
          * @return
          */
-        Targets::TargetProgramCounter getProgramCounter() override;
+        Targets::TargetMemoryAddress getProgramCounter() override;
 
         /**
          * Issues the "PC Write" command to the debug tool, setting the program counter on the target.
@@ -150,7 +150,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * @param programCounter
          *  The byte address to set as the program counter.
          */
-        void setProgramCounter(Targets::TargetProgramCounter programCounter) override;
+        void setProgramCounter(Targets::TargetMemoryAddress programCounter) override;
 
         /**
          * Issues the "Get ID" command to the debug tool, to extract the signature from the target.

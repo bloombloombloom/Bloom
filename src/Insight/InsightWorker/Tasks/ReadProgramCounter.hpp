@@ -22,7 +22,7 @@ public:
     };
 
 signals:
-    void programCounterRead(Targets::TargetProgramCounter programCounter);
+    void programCounterRead(Targets::TargetMemoryAddress programCounter);
 
 protected:
     void run(Services::TargetControllerService& targetControllerService) override;

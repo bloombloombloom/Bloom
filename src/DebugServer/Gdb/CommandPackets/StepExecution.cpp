@@ -17,7 +17,7 @@ namespace DebugServer::Gdb::CommandPackets
         : CommandPacket(rawPacket)
     {
         if (this->data.size() > 2) {
-            this->fromAddress = static_cast<Targets::TargetProgramCounter>(
+            this->fromAddress = static_cast<Targets::TargetMemoryAddress>(
                 std::stoi(std::string(this->data.begin() + 2, this->data.end()), nullptr, 16)
             );
         }

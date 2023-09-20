@@ -142,7 +142,7 @@ namespace DebugServer::Gdb::AvrGdb
         };
     }
 
-    void AvrGdbRsp::handleTargetStoppedGdbResponse(Targets::TargetProgramCounter programAddress) {
+    void AvrGdbRsp::handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress) {
         using Services::StringService;
 
         Logger::debug("Target stopped at byte address: 0x" + StringService::toHex(programAddress));

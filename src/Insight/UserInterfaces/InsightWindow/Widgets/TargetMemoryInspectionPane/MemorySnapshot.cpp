@@ -12,7 +12,7 @@ MemorySnapshot::MemorySnapshot(
     const QString& description,
     Targets::TargetMemoryType memoryType,
     const Targets::TargetMemoryBuffer& data,
-    Targets::TargetProgramCounter programCounter,
+    Targets::TargetMemoryAddress programCounter,
     Targets::TargetStackPointer stackPointer,
     const std::vector<FocusedMemoryRegion>& focusedRegions,
     const std::vector<ExcludedMemoryRegion>& excludedRegions
@@ -50,7 +50,7 @@ MemorySnapshot::MemorySnapshot(const QJsonObject& jsonObject) {
     this->name = jsonObject.find("name")->toString();
     this->description = jsonObject.find("description")->toString();
     this->memoryType = EnumToStringMappings::targetMemoryTypes.at(jsonObject.find("memoryType")->toString());
-    this->programCounter = static_cast<Targets::TargetProgramCounter>(jsonObject.find("programCounter")->toInteger());
+    this->programCounter = static_cast<Targets::TargetMemoryAddress>(jsonObject.find("programCounter")->toInteger());
     this->stackPointer = static_cast<Targets::TargetStackPointer>(jsonObject.find("stackPointer")->toInteger());
     this->createdDate.setSecsSinceEpoch(jsonObject.find("createdTimestamp")->toInteger());
 

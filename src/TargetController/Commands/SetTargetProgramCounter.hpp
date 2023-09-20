@@ -14,9 +14,9 @@ namespace TargetController::Commands
         static constexpr CommandType type = CommandType::SET_TARGET_PROGRAM_COUNTER;
         static const inline std::string name = "SetTargetProgramCounter";
 
-        Targets::TargetProgramCounter address = 0;
+        Targets::TargetMemoryAddress address = 0;
 
-        explicit SetTargetProgramCounter(Targets::TargetProgramCounter address)
+        explicit SetTargetProgramCounter(Targets::TargetMemoryAddress address)
             : address(address)
         {};
 

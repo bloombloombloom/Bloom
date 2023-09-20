@@ -16,10 +16,10 @@ namespace Events
         static constexpr EventType type = EventType::TARGET_EXECUTION_STOPPED;
         static const inline std::string name = "TargetExecutionStopped";
 
-        Targets::TargetProgramCounter programCounter;
+        Targets::TargetMemoryAddress programCounter;
         Targets::TargetBreakCause breakCause;
 
-        TargetExecutionStopped(Targets::TargetProgramCounter programCounter, Targets::TargetBreakCause breakCause)
+        TargetExecutionStopped(Targets::TargetMemoryAddress programCounter, Targets::TargetBreakCause breakCause)
             : programCounter(programCounter)
             , breakCause(breakCause)
         {}

@@ -45,8 +45,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 : commandData.end()
         );
 
-        this->startAddress = static_cast<Targets::TargetProgramCounter>(std::stoi(startAddressHex, nullptr, 16));
-        this->endAddress = static_cast<Targets::TargetProgramCounter>(std::stoi(endAddressHex, nullptr, 16));
+        this->startAddress = static_cast<Targets::TargetMemoryAddress>(std::stoi(startAddressHex, nullptr, 16));
+        this->endAddress = static_cast<Targets::TargetMemoryAddress>(std::stoi(endAddressHex, nullptr, 16));
     }
 
     void VContRangeStep::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {

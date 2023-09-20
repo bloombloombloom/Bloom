@@ -46,7 +46,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             }
 
             Targets::TargetRegisters registerSet;
-            Targets::TargetProgramCounter programCounter;
+            Targets::TargetMemoryAddress programCounter;
 
             {
                 const auto atomicSession = targetControllerService.makeAtomicSession();

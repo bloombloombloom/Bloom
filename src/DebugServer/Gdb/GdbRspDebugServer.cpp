@@ -370,7 +370,7 @@ namespace DebugServer::Gdb
         }
     }
 
-    void GdbRspDebugServer::handleTargetStoppedGdbResponse(Targets::TargetProgramCounter programAddress) {
+    void GdbRspDebugServer::handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress) {
         auto* debugSession = this->getActiveDebugSession();
 
         if (debugSession->activeRangeSteppingSession.has_value()) {

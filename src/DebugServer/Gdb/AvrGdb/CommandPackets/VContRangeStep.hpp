@@ -16,8 +16,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     class VContRangeStep: public Gdb::CommandPackets::CommandPacket
     {
     public:
-        Targets::TargetProgramCounter startAddress;
-        Targets::TargetProgramCounter endAddress;
+        Targets::TargetMemoryAddress startAddress;
+        Targets::TargetMemoryAddress endAddress;
 
         explicit VContRangeStep(const RawPacket& rawPacket);
 

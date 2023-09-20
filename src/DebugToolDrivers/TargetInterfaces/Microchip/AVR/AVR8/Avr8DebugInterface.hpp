@@ -133,14 +133,14 @@ namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          *
          * @return
          */
-        virtual Targets::TargetProgramCounter getProgramCounter() = 0;
+        virtual Targets::TargetMemoryAddress getProgramCounter() = 0;
 
         /**
          * Should update the program counter value on the target.
          *
          * @param programCounter
          */
-        virtual void setProgramCounter(Targets::TargetProgramCounter programCounter) = 0;
+        virtual void setProgramCounter(Targets::TargetMemoryAddress programCounter) = 0;
 
         /**
          * Should read the requested registers from the target.

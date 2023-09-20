@@ -81,7 +81,6 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using Targets::TargetMemoryBuffer;
     using Targets::TargetMemoryAddress;
     using Targets::TargetMemorySize;
-    using Targets::TargetProgramCounter;
     using Targets::TargetRegister;
     using Targets::TargetRegisterDescriptor;
     using Targets::TargetRegisterDescriptors;
@@ -279,7 +278,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
     }
 
-    TargetProgramCounter EdbgAvr8Interface::getProgramCounter() {
+    TargetMemoryAddress EdbgAvr8Interface::getProgramCounter() {
         if (this->targetState != TargetState::STOPPED) {
             this->stop();
         }
@@ -295,7 +294,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return responseFrame.extractProgramCounter();
     }
 
-    void EdbgAvr8Interface::setProgramCounter(TargetProgramCounter programCounter) {
+    void EdbgAvr8Interface::setProgramCounter(TargetMemoryAddress programCounter) {
         if (this->targetState != TargetState::STOPPED) {
             this->stop();
         }
