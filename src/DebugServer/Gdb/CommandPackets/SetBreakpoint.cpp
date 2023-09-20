@@ -65,7 +65,7 @@ namespace DebugServer::Gdb::CommandPackets
                 return;
             }
 
-            debugSession.setExternalBreakpoint(TargetBreakpoint(this->address), targetControllerService);
+            debugSession.setExternalBreakpoint(this->address, targetControllerService);
             debugSession.connection.writePacket(OkResponsePacket());
 
         } catch (const Exception& exception) {

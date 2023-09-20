@@ -16,5 +16,6 @@ namespace TargetController::Responses
         TARGET_PIN_STATES,
         TARGET_STACK_POINTER,
         TARGET_PROGRAM_COUNTER,
+        BREAKPOINT,
     };
 }

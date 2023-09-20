@@ -111,18 +111,32 @@ namespace Targets
         virtual void reset() = 0;
 
         /**
-         * Should set a breakpoint on the target, at the given address.
+         * Should set a software breakpoint on the target, at the given address.
          *
          * @param address
          */
-        virtual void setBreakpoint(TargetMemoryAddress address) = 0;
+        virtual void setSoftwareBreakpoint(TargetMemoryAddress address) = 0;
 
         /**
-         * Should remove a breakpoint at the given address.
+         * Should remove a software breakpoint at the given address.
          *
          * @param address
          */
-        virtual void removeBreakpoint(TargetMemoryAddress address) = 0;
+        virtual void removeSoftwareBreakpoint(TargetMemoryAddress address) = 0;
+
+        /**
+         * Should set a hardware breakpoint on the target, at the given address.
+         *
+         * @param address
+         */
+        virtual void setHardwareBreakpoint(TargetMemoryAddress address) = 0;
+
+        /**
+         * Should remove a hardware breakpoint at the given address.
+         *
+         * @param address
+         */
+        virtual void removeHardwareBreakpoint(TargetMemoryAddress address) = 0;
 
         /**
          * Should clear all breakpoints on the target.

@@ -19,6 +19,7 @@
 
 #include "src/Targets/Microchip/AVR/Fuse.hpp"
 #include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetBreakpoint.hpp"
 
 #include "TargetDescription/TargetDescriptionFile.hpp"
 
@@ -58,8 +59,11 @@ namespace Targets::Microchip::Avr::Avr8Bit
         void step() override;
         void reset() override;
 
-        void setBreakpoint(TargetProgramCounter address) override;
-        void removeBreakpoint(TargetProgramCounter address) override;
+        void setSoftwareBreakpoint(TargetProgramCounter address) override;
+        void removeSoftwareBreakpoint(TargetProgramCounter address) override;
+
+        void setHardwareBreakpoint(TargetProgramCounter address) override;
+        void removeHardwareBreakpoint(TargetProgramCounter address) override;
         void clearAllBreakpoints() override;
 
         void writeRegisters(TargetRegisters registers) override;
@@ -142,6 +146,8 @@ namespace Targets::Microchip::Avr::Avr8Bit
         void loadTargetRegisterDescriptors();
 
         void loadTargetMemoryDescriptors();
+
+        BreakpointResources getBreakpointResources();
 
         /**
          * Checks if a particular fuse is enabled in the given fuse byte value. Takes the target's fuse enable strategy

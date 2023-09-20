@@ -134,6 +134,10 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
         this->variantName = StringService::asciiToLower(targetNode["variantName"].as<std::string>());
     }
 
+    if (targetNode["hardwareBreakpoints"]) {
+        this->hardwareBreakpoints = targetNode["hardwareBreakpoints"].as<bool>(this->hardwareBreakpoints);
+    }
+
     this->targetNode = targetNode;
 }
 

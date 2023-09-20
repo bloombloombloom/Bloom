@@ -218,12 +218,15 @@ namespace Services
         );
     }
 
-    void TargetControllerService::setBreakpoint(TargetBreakpoint breakpoint) const {
-        this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<SetBreakpoint>(breakpoint),
+    Targets::TargetBreakpoint TargetControllerService::setBreakpoint(
+        Targets::TargetMemoryAddress address,
+        Targets::TargetBreakpoint::Type preferredType
+    ) const {
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<SetBreakpoint>(address, preferredType),
             this->defaultTimeout,
             this->activeAtomicSessionId
-        );
+        )->breakpoint;
     }
 
     void TargetControllerService::removeBreakpoint(TargetBreakpoint breakpoint) const {

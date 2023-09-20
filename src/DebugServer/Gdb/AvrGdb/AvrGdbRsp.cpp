@@ -159,7 +159,7 @@ namespace DebugServer::Gdb::AvrGdb
              *
              * We need to figure out why, and determine whether the stop should be reported to GDB.
              */
-            if (this->activeDebugSession->externalBreakpointAddresses.contains(programAddress)) {
+            if (this->activeDebugSession->externalBreakpointsByAddress.contains(programAddress)) {
                 /*
                  * The target stopped due to an external breakpoint, set by GDB.
                  *

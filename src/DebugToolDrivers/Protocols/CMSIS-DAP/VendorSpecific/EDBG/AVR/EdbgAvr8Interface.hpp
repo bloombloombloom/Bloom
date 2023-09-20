@@ -164,18 +164,36 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
          * byte address.
          *
          * @param address
-         *  The byte address to position the breakpoint.
+         *  The byte address to place the breakpoint.
          */
-        void setBreakpoint(Targets::TargetMemoryAddress address) override;
+        void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
 
         /**
-         * Issues the "Software Breakpoint Clear" command to the debug tool, clearing any breakpoint at the given
-         * byte address.
+         * Issues the "Software Breakpoint Clear" command to the debug tool, clearing any software breakpoint at the
+         * given byte address.
          *
          * @param address
          *  The byte address of the breakpoint to clear.
          */
-        void clearBreakpoint(Targets::TargetMemoryAddress address) override;
+        void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
+
+        /**
+         * Issues the "Hardware Breakpoint Set" command to the debug tool, setting a hardware breakpoint at the given
+         * byte address.
+         *
+         * @param address
+         *  The byte address to place the breakpoint.
+         */
+        void setHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
+
+        /**
+         * Issues the "Hardware Breakpoint Clear" command to the debug tool, clearing any hardware breakpoint at the
+         * given byte address.
+         *
+         * @param address
+         *  The byte address of the breakpoint to clear.
+         */
+        void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
 
         /**
          * Issues the "Software Breakpoint Clear All" command to the debug tool, clearing all software breakpoints
@@ -344,6 +362,12 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         bool targetAttached = false;
 
         bool programmingModeEnabled = false;
+
+        /**
+         * Every hardware breakpoint is assigned a "breakpoint number", which we need to keep track of in order to
+         * clear a hardware breakpoint.
+         */
+        std::map<Targets::TargetMemoryAddress, std::uint8_t> hardwareBreakpointNumbersByAddress;
 
         /**
          * Sends the necessary target parameters to the debug tool.

@@ -27,63 +27,83 @@ namespace DebugServer::Gdb
     }
 
     void DebugSession::setInternalBreakpoint(
-        const Targets::TargetBreakpoint& breakpoint,
+        Targets::TargetMemoryAddress address,
         Services::TargetControllerService& targetControllerService
     ) {
-        if (this->internalBreakpointAddresses.contains(breakpoint.address)) {
+        if (this->internalBreakpointsByAddress.contains(address)) {
             return;
         }
 
-        if (!this->externalBreakpointAddresses.contains(breakpoint.address)) {
-            targetControllerService.setBreakpoint(breakpoint);
+        const auto externalBreakpointIt = this->externalBreakpointsByAddress.find(address);
+
+        if (externalBreakpointIt != this->externalBreakpointsByAddress.end()) {
+            // We already have an external breakpoint at this address
+            this->internalBreakpointsByAddress.insert(std::pair(address, externalBreakpointIt->second));
+            return;
         }
 
-        this->internalBreakpointAddresses.insert(breakpoint.address);
+        this->internalBreakpointsByAddress.insert(
+            std::pair(
+                address,
+                targetControllerService.setBreakpoint(address, Targets::TargetBreakpoint::Type::HARDWARE)
+            )
+        );
     }
 
     void DebugSession::removeInternalBreakpoint(
-        const Targets::TargetBreakpoint& breakpoint,
+        Targets::TargetMemoryAddress address,
         Services::TargetControllerService& targetControllerService
     ) {
-        if (!this->internalBreakpointAddresses.contains(breakpoint.address)) {
+        const auto breakpointIt = this->internalBreakpointsByAddress.find(address);
+        if (breakpointIt == this->internalBreakpointsByAddress.end()) {
             return;
         }
 
-        if (!this->externalBreakpointAddresses.contains(breakpoint.address)) {
-            targetControllerService.removeBreakpoint(breakpoint);
+        if (!this->externalBreakpointsByAddress.contains(address)) {
+            targetControllerService.removeBreakpoint(breakpointIt->second);
         }
 
-        this->internalBreakpointAddresses.erase(breakpoint.address);
+        this->internalBreakpointsByAddress.erase(breakpointIt);
     }
 
     void DebugSession::setExternalBreakpoint(
-        const Targets::TargetBreakpoint& breakpoint,
+        Targets::TargetMemoryAddress address,
         Services::TargetControllerService& targetControllerService
     ) {
-        if (this->externalBreakpointAddresses.contains(breakpoint.address)) {
+        if (this->externalBreakpointsByAddress.contains(address)) {
             return;
         }
 
-        if (!this->internalBreakpointAddresses.contains(breakpoint.address)) {
-            targetControllerService.setBreakpoint(breakpoint);
+        const auto internalBreakpointIt = this->internalBreakpointsByAddress.find(address);
+
+        if (internalBreakpointIt != this->internalBreakpointsByAddress.end()) {
+            // We already have an internal breakpoint at this address
+            this->externalBreakpointsByAddress.insert(std::pair(address, internalBreakpointIt->second));
+            return;
         }
 
-        this->externalBreakpointAddresses.insert(breakpoint.address);
+        this->externalBreakpointsByAddress.insert(
+            std::pair(
+                address,
+                targetControllerService.setBreakpoint(address, Targets::TargetBreakpoint::Type::HARDWARE)
+            )
+        );
     }
 
     void DebugSession::removeExternalBreakpoint(
-        const Targets::TargetBreakpoint& breakpoint,
+        Targets::TargetMemoryAddress address,
         Services::TargetControllerService& targetControllerService
     ) {
-        if (!this->externalBreakpointAddresses.contains(breakpoint.address)) {
+        const auto breakpointIt = this->externalBreakpointsByAddress.find(address);
+        if (breakpointIt == this->externalBreakpointsByAddress.end()) {
             return;
         }
 
-        if (!this->internalBreakpointAddresses.contains(breakpoint.address)) {
-            targetControllerService.removeBreakpoint(breakpoint);
+        if (!this->internalBreakpointsByAddress.contains(address)) {
+            targetControllerService.removeBreakpoint(breakpointIt->second);
         }
 
-        this->externalBreakpointAddresses.erase(breakpoint.address);
+        this->externalBreakpointsByAddress.erase(breakpointIt);
     }
 
     void DebugSession::startRangeSteppingSession(
@@ -91,7 +111,7 @@ namespace DebugServer::Gdb
         Services::TargetControllerService& targetControllerService
     ) {
         for (const auto& interceptAddress : session.interceptedAddresses) {
-            this->setInternalBreakpoint(Targets::TargetBreakpoint(interceptAddress), targetControllerService);
+            this->setInternalBreakpoint(interceptAddress, targetControllerService);
         }
 
         this->activeRangeSteppingSession = std::move(session);
@@ -104,7 +124,7 @@ namespace DebugServer::Gdb
 
         // Clear all intercepting breakpoints
         for (const auto& interceptAddress : this->activeRangeSteppingSession->interceptedAddresses) {
-            this->removeInternalBreakpoint(Targets::TargetBreakpoint(interceptAddress), targetControllerService);
+            this->removeInternalBreakpoint(interceptAddress, targetControllerService);
         }
 
         this->activeRangeSteppingSession.reset();

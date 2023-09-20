@@ -34,6 +34,8 @@
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/SetSoftwareBreakpoints.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/ClearAllSoftwareBreakpoints.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/ClearSoftwareBreakpoints.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/SetHardwareBreakpoint.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/ClearHardwareBreakpoint.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/EnterProgrammingMode.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/LeaveProgrammingMode.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/EraseMemory.hpp"
@@ -58,6 +60,8 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
     using CommandFrames::Avr8Generic::SetSoftwareBreakpoints;
     using CommandFrames::Avr8Generic::ClearSoftwareBreakpoints;
     using CommandFrames::Avr8Generic::ClearAllSoftwareBreakpoints;
+    using CommandFrames::Avr8Generic::SetHardwareBreakpoint;
+    using CommandFrames::Avr8Generic::ClearHardwareBreakpoint;
     using CommandFrames::Avr8Generic::ReadMemory;
     using CommandFrames::Avr8Generic::EnterProgrammingMode;
     using CommandFrames::Avr8Generic::LeaveProgrammingMode;
@@ -346,7 +350,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         return responseFrame.extractSignature(this->targetConfig.physicalInterface);
     }
 
-    void EdbgAvr8Interface::setBreakpoint(TargetMemoryAddress address) {
+    void EdbgAvr8Interface::setSoftwareBreakpoint(TargetMemoryAddress address) {
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             SetSoftwareBreakpoints({address})
         );
@@ -356,7 +360,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
     }
 
-    void EdbgAvr8Interface::clearBreakpoint(TargetMemoryAddress address) {
+    void EdbgAvr8Interface::clearSoftwareBreakpoint(TargetMemoryAddress address) {
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ClearSoftwareBreakpoints({address})
         );
@@ -364,6 +368,55 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         if (responseFrame.id == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Clear software breakpoint command failed", responseFrame);
         }
+    }
+
+    void EdbgAvr8Interface::setHardwareBreakpoint(TargetMemoryAddress address) {
+        static const auto getAvailableBreakpointNumbers = [this] () {
+            auto breakpointNumbers = std::set<std::uint8_t>({1, 2, 3});
+
+            for (const auto& [address, allocatedNumber] : this->hardwareBreakpointNumbersByAddress) {
+                breakpointNumbers.erase(allocatedNumber);
+            }
+
+            return breakpointNumbers;
+        };
+
+        const auto availableBreakpointNumbers = getAvailableBreakpointNumbers();
+
+        if (availableBreakpointNumbers.empty()) {
+            throw Exception("Maximum hardware breakpoints have been allocated");
+        }
+
+        const auto breakpointNumber = *(availableBreakpointNumbers.begin());
+
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+            SetHardwareBreakpoint(address, breakpointNumber)
+        );
+
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Set hardware breakpoint command failed", responseFrame);
+        }
+
+        this->hardwareBreakpointNumbersByAddress.insert(std::pair(address, breakpointNumber));
+    }
+
+    void EdbgAvr8Interface::clearHardwareBreakpoint(TargetMemoryAddress address) {
+        const auto breakpointNumberIt = this->hardwareBreakpointNumbersByAddress.find(address);
+
+        if (breakpointNumberIt == this->hardwareBreakpointNumbersByAddress.end()) {
+            Logger::error("No hardware breakpoint at byte address 0x" + Services::StringService::toHex(address));
+            return;
+        }
+
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+            ClearHardwareBreakpoint(breakpointNumberIt->second)
+        );
+
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure("AVR8 Clear hardware breakpoint command failed", responseFrame);
+        }
+
+        this->hardwareBreakpointNumbersByAddress.erase(address);
     }
 
     void EdbgAvr8Interface::clearAllBreakpoints() {

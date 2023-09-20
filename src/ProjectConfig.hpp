@@ -52,6 +52,11 @@ struct TargetConfig
     std::optional<std::string> variantName;
 
     /**
+     * Determines whether Bloom will make use of the target's hardware breakpoint resources (if available).
+     */
+    bool hardwareBreakpoints = true;
+
+    /**
      * For extracting any target specific configuration. See Avr8TargetConfig::Avr8TargetConfig() and
      * Avr8::preActivationConfigure() for an example of this.
      */

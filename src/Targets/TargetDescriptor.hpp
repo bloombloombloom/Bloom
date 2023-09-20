@@ -10,6 +10,7 @@
 #include "TargetMemory.hpp"
 #include "TargetRegister.hpp"
 #include "TargetVariant.hpp"
+#include "TargetBreakpoint.hpp"
 
 namespace Targets
 {
@@ -20,6 +21,7 @@ namespace Targets
         std::string vendorName;
         std::map<TargetMemoryType, TargetMemoryDescriptor> memoryDescriptorsByType;
         std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor> registerDescriptorsById;
+        BreakpointResources breakpointResources;
         std::vector<TargetVariant> variants;
 
         TargetMemoryType programMemoryType;
@@ -30,6 +32,7 @@ namespace Targets
             const std::string& vendorName,
             const std::map<TargetMemoryType, TargetMemoryDescriptor>& memoryDescriptorsByType,
             const std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor>& registerDescriptorsById,
+            const BreakpointResources& breakpointResources,
             const std::vector<TargetVariant>& variants,
             TargetMemoryType programMemoryType
         )
@@ -38,6 +41,7 @@ namespace Targets
             , vendorName(vendorName)
             , memoryDescriptorsByType(memoryDescriptorsByType)
             , registerDescriptorsById(registerDescriptorsById)
+            , breakpointResources(breakpointResources)
             , variants(variants)
             , programMemoryType(programMemoryType)
         {}

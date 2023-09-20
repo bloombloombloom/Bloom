@@ -55,6 +55,7 @@
 #include "Responses/TargetPinStates.hpp"
 #include "Responses/TargetStackPointer.hpp"
 #include "Responses/TargetProgramCounter.hpp"
+#include "Responses/Breakpoint.hpp"
 
 #include "src/DebugToolDrivers/DebugTools.hpp"
 #include "src/Targets/Target.hpp"
@@ -160,6 +161,12 @@ namespace TargetController
          * Memory address ranges for target registers, mapped by the register memory type.
          */
         std::map<Targets::TargetMemoryType, Targets::TargetMemoryAddressRange> registerAddressRangeByMemoryType;
+
+        /**
+         * The TargetController keeps track of all installed breakpoints.
+         */
+        std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> softwareBreakpointsByAddress;
+        std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> hardwareBreakpointsByAddress;
 
         /**
          * Registers a handler function for a particular command type.
@@ -339,7 +346,7 @@ namespace TargetController
         std::unique_ptr<Responses::Response> handleWriteTargetMemory(Commands::WriteTargetMemory& command);
         std::unique_ptr<Responses::Response> handleEraseTargetMemory(Commands::EraseTargetMemory& command);
         std::unique_ptr<Responses::Response> handleStepTargetExecution(Commands::StepTargetExecution& command);
-        std::unique_ptr<Responses::Response> handleSetBreakpoint(Commands::SetBreakpoint& command);
+        std::unique_ptr<Responses::Breakpoint> handleSetBreakpoint(Commands::SetBreakpoint& command);
         std::unique_ptr<Responses::Response> handleRemoveBreakpoint(Commands::RemoveBreakpoint& command);
         std::unique_ptr<Responses::Response> handleSetProgramCounter(Commands::SetTargetProgramCounter& command);
         std::unique_ptr<Responses::TargetPinStates> handleGetTargetPinStates(Commands::GetTargetPinStates& command);

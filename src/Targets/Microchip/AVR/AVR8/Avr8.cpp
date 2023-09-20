@@ -268,6 +268,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
             "Microchip",
             this->targetMemoryDescriptorsByType,
             this->targetRegisterDescriptorsById,
+            this->getBreakpointResources(),
             {},
             Targets::TargetMemoryType::FLASH
         );
@@ -304,12 +305,20 @@ namespace Targets::Microchip::Avr::Avr8Bit
         this->avr8DebugInterface->reset();
     }
 
-    void Avr8::setBreakpoint(std::uint32_t address) {
-        this->avr8DebugInterface->setBreakpoint(address);
+    void Avr8::setSoftwareBreakpoint(TargetMemoryAddress address) {
+        this->avr8DebugInterface->setSoftwareBreakpoint(address);
     }
 
-    void Avr8::removeBreakpoint(std::uint32_t address) {
-        this->avr8DebugInterface->clearBreakpoint(address);
+    void Avr8::removeSoftwareBreakpoint(TargetMemoryAddress address) {
+        this->avr8DebugInterface->clearSoftwareBreakpoint(address);
+    }
+
+    void Avr8::setHardwareBreakpoint(TargetMemoryAddress address) {
+        this->avr8DebugInterface->setHardwareBreakpoint(address);
+    }
+
+    void Avr8::removeHardwareBreakpoint(TargetMemoryAddress address) {
+        this->avr8DebugInterface->clearHardwareBreakpoint(address);
     }
 
     void Avr8::clearAllBreakpoints() {
@@ -685,6 +694,33 @@ namespace Targets::Microchip::Avr::Avr8Bit
                 )
             ));
         }
+    }
+
+    BreakpointResources Avr8::getBreakpointResources() {
+        auto maxHardwareBreakpoints = 0;
+
+        switch (this->targetConfig.physicalInterface) {
+            case PhysicalInterface::JTAG: {
+                maxHardwareBreakpoints = this->family == Family::XMEGA ? 2 : 3;
+                break;
+            }
+            case PhysicalInterface::PDI: {
+                maxHardwareBreakpoints = 2;
+                break;
+            }
+            case PhysicalInterface::UPDI: {
+                maxHardwareBreakpoints = 1;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return BreakpointResources(
+            maxHardwareBreakpoints,
+            std::nullopt
+        );
     }
 
     bool Avr8::isFuseEnabled(const FuseBitsDescriptor& descriptor, unsigned char fuseByteValue) const {

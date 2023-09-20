@@ -7,6 +7,7 @@
 #include "Responses/Error.hpp"
 
 #include "src/Services/ProcessService.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
@@ -51,6 +52,7 @@ namespace TargetController
     using Responses::TargetPinStates;
     using Responses::TargetStackPointer;
     using Responses::TargetProgramCounter;
+    using Responses::Breakpoint;
 
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
@@ -504,6 +506,17 @@ namespace TargetController
 
         Logger::info("Target ID: " + targetDescriptor.id);
         Logger::info("Target name: " + targetDescriptor.name);
+
+        if (!this->environmentConfig.targetConfig.hardwareBreakpoints) {
+            Logger::warning("Hardware breakpoints have been disabled");
+
+        } else if (targetDescriptor.breakpointResources.maximumHardwareBreakpoints.has_value()) {
+            Logger::info(
+                "Available hardware breakpoints: " + std::to_string(
+                    *(targetDescriptor.breakpointResources.maximumHardwareBreakpoints)
+                )
+            );
+        }
     }
 
     void TargetControllerComponent::releaseHardware() {
@@ -877,13 +890,76 @@ namespace TargetController
         return std::make_unique<Response>();
     }
 
-    std::unique_ptr<Response> TargetControllerComponent::handleSetBreakpoint(SetBreakpoint& command) {
-        this->target->setBreakpoint(command.breakpoint.address);
-        return std::make_unique<Response>();
+    std::unique_ptr<Breakpoint> TargetControllerComponent::handleSetBreakpoint(SetBreakpoint& command) {
+        using Targets::TargetBreakpoint;
+        using Services::StringService;
+
+        auto breakpoint = TargetBreakpoint(command.address, TargetBreakpoint::Type::SOFTWARE);
+
+        const auto& targetBreakpointResources = this->getTargetDescriptor().breakpointResources;
+        if (
+            command.preferredType == Targets::TargetBreakpoint::Type::HARDWARE
+            && this->environmentConfig.targetConfig.hardwareBreakpoints
+        ) {
+            static auto exhaustedResourcesWarning = false;
+
+            if (
+                !targetBreakpointResources.maximumHardwareBreakpoints.has_value()
+                || this->hardwareBreakpointsByAddress.size() < *(targetBreakpointResources.maximumHardwareBreakpoints)
+            ) {
+                exhaustedResourcesWarning = true;
+
+                Logger::debug(
+                    "Installing hardware breakpoint at byte address 0x" + StringService::toHex(command.address)
+                );
+
+                this->target->setHardwareBreakpoint(command.address);
+                this->hardwareBreakpointsByAddress.insert(std::pair(command.address, breakpoint));
+
+                breakpoint.type = TargetBreakpoint::Type::HARDWARE;
+                return std::make_unique<Breakpoint>(breakpoint);
+            }
+
+            if (exhaustedResourcesWarning) {
+                exhaustedResourcesWarning = false;
+                Logger::warning(
+                    "Hardware breakpoint resources have been exhausted. Falling back to software breakpoints"
+                );
+            }
+        }
+
+        Logger::debug(
+            "Installing software breakpoint at byte address 0x" + StringService::toHex(command.address)
+        );
+
+        this->target->setSoftwareBreakpoint(command.address);
+        this->softwareBreakpointsByAddress.insert(std::pair(command.address, breakpoint));
+
+        return std::make_unique<Breakpoint>(breakpoint);
     }
 
     std::unique_ptr<Response> TargetControllerComponent::handleRemoveBreakpoint(RemoveBreakpoint& command) {
-        this->target->removeBreakpoint(command.breakpoint.address);
+        using Services::StringService;
+
+        if (command.breakpoint.type == Targets::TargetBreakpoint::Type::HARDWARE) {
+            assert(this->environmentConfig.targetConfig.hardwareBreakpoints);
+
+            Logger::debug(
+                "Removing hardware breakpoint at byte address 0x" + StringService::toHex(command.breakpoint.address)
+            );
+
+            this->target->removeHardwareBreakpoint(command.breakpoint.address);
+            this->hardwareBreakpointsByAddress.erase(command.breakpoint.address);
+
+        } else {
+            Logger::debug(
+                "Removing software breakpoint at byte address 0x" + StringService::toHex(command.breakpoint.address)
+            );
+
+            this->target->removeSoftwareBreakpoint(command.breakpoint.address);
+            this->softwareBreakpointsByAddress.erase(command.breakpoint.address);
+        }
+
         return std::make_unique<Response>();
     }
 

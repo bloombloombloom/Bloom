@@ -142,9 +142,16 @@ namespace Services
         /**
          * Requests the TargetController to set a breakpoint on the target.
          *
-         * @param breakpoint
+         * @param address
+         * @param preferredType
+         *
+         * @return
+         *  The installed breakpoint.
          */
-        void setBreakpoint(Targets::TargetBreakpoint breakpoint) const;
+        Targets::TargetBreakpoint setBreakpoint(
+            Targets::TargetMemoryAddress address,
+            Targets::TargetBreakpoint::Type preferredType = Targets::TargetBreakpoint::Type::HARDWARE
+        ) const;
 
         /**
          * Requests the TargetController to remove a breakpoint from the target.

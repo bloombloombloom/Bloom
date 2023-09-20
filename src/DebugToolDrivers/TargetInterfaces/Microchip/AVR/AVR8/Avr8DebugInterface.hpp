@@ -100,14 +100,28 @@ namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8
          *
          * @param address
          */
-        virtual void setBreakpoint(Targets::TargetMemoryAddress address) = 0;
+        virtual void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
 
         /**
          * Should remove a software breakpoint at a given address.
          *
          * @param address
          */
-        virtual void clearBreakpoint(Targets::TargetMemoryAddress address) = 0;
+        virtual void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
+
+        /**
+         * Should set a hardware breakpoint at a given address.
+         *
+         * @param address
+         */
+        virtual void setHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
+
+        /**
+         * Should remove a hardware breakpoint at a given address.
+         *
+         * @param address
+         */
+        virtual void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
 
         /**
          * Should remove all software and hardware breakpoints on the target.

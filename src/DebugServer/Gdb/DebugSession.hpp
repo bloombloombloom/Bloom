@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <optional>
-#include <set>
+#include <map>
 
 #include "TargetDescriptor.hpp"
 #include "GdbDebugServerConfig.hpp"
@@ -55,8 +55,8 @@ namespace DebugServer::Gdb
          *
          * We track internal and external breakpoints separately.
          */
-        std::set<Targets::TargetMemoryAddress> internalBreakpointAddresses;
-        std::set<Targets::TargetMemoryAddress> externalBreakpointAddresses;
+        std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> internalBreakpointsByAddress;
+        std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> externalBreakpointsByAddress;
 
         /**
          * When the GDB client is waiting for the target to halt, this is set to true so we know when to notify the
@@ -105,22 +105,22 @@ namespace DebugServer::Gdb
         virtual ~DebugSession();
 
         virtual void setInternalBreakpoint(
-            const Targets::TargetBreakpoint& breakpoint,
+            Targets::TargetMemoryAddress address,
             Services::TargetControllerService& targetControllerService
         );
 
         virtual void removeInternalBreakpoint(
-            const Targets::TargetBreakpoint& breakpoint,
+            Targets::TargetMemoryAddress address,
             Services::TargetControllerService& targetControllerService
         );
 
         virtual void setExternalBreakpoint(
-            const Targets::TargetBreakpoint& breakpoint,
+            Targets::TargetMemoryAddress address,
             Services::TargetControllerService& targetControllerService
         );
 
         virtual void removeExternalBreakpoint(
-            const Targets::TargetBreakpoint& breakpoint,
+            Targets::TargetMemoryAddress address,
             Services::TargetControllerService& targetControllerService
         );
 
