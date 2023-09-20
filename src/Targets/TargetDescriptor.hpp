@@ -25,12 +25,12 @@ namespace Targets
         TargetMemoryType programMemoryType;
 
         TargetDescriptor(
-            std::string id,
-            std::string name,
-            std::string vendorName,
-            std::map<TargetMemoryType, TargetMemoryDescriptor> memoryDescriptorsByType,
-            std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor> registerDescriptorsById,
-            std::vector<TargetVariant> variants,
+            const std::string& id,
+            const std::string& name,
+            const std::string& vendorName,
+            const std::map<TargetMemoryType, TargetMemoryDescriptor>& memoryDescriptorsByType,
+            const std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor>& registerDescriptorsById,
+            const std::vector<TargetVariant>& variants,
             TargetMemoryType programMemoryType
         )
             : name(name)

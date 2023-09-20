@@ -456,8 +456,8 @@ namespace TargetController
     }
 
     void TargetControllerComponent::acquireHardware() {
-        auto debugToolName = this->environmentConfig.debugToolConfig.name;
-        auto targetName = this->environmentConfig.targetConfig.name;
+        const auto& debugToolName = this->environmentConfig.debugToolConfig.name;
+        const auto& targetName = this->environmentConfig.targetConfig.name;
 
         static const auto supportedDebugTools = this->getSupportedDebugTools();
         static const auto supportedTargets = this->getSupportedTargets();

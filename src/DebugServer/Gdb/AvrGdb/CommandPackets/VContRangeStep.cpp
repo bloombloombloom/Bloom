@@ -25,13 +25,6 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             throw Exception("Unexpected VContRangeStep packet size");
         }
 
-        /*
-         * A single vCont packet can consist of multiple actions - we don't accommodate this ATM. We only focus on
-         * the first action in the packet.
-         *
-         * We also ignore the thread id (as it's not necessary here).
-         */
-
         const auto commandData = std::string(this->data.begin() + 7, this->data.end());
 
         const auto delimiterPosition = commandData.find(',');
@@ -107,7 +100,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             Logger::debug(
                 "Inspecting " + std::to_string(instructionsByAddress.size()) + " instructions within stepping range "
                 "(byte addresses) 0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"
-                + StringService::toHex(addressRange.endAddress) + ", in preparation for new range stepping session"
+                    + StringService::toHex(addressRange.endAddress) + ", in preparation for new range stepping session"
             );
 
             for (const auto& [instructionAddress, instruction] : instructionsByAddress) {
@@ -118,9 +111,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                      */
                     Logger::error(
                         "Failed to decode AVR8 opcode at byte address 0x" + StringService::toHex(instructionAddress)
-                        + " - the instruction will have to be intercepted. Please enable debug logging, reproduce "
-                        "this message and report as an issue via " + Services::PathService::homeDomainName()
-                        + "/report-issue"
+                            + " - the instruction will have to be intercepted. Please enable debug logging, reproduce "
+                            "this message and report as an issue via " + Services::PathService::homeDomainName()
+                            + "/report-issue"
                     );
 
                     /*
@@ -145,7 +138,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                          */
                         Logger::debug(
                             "Intercepting CCPF instruction (\"" + instruction->name + "\") at byte address 0x"
-                            + StringService::toHex(instructionAddress)
+                                + StringService::toHex(instructionAddress)
                         );
                         rangeSteppingSession.interceptedAddresses.insert(instructionAddress);
                         continue;
@@ -166,7 +159,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                         Logger::debug(
                             "Intercepting CCPF instruction (\"" + instruction->name + "\") with invalid destination "
                             "byte address (0x" + StringService::toHex(*destinationAddress) + "), at byte address 0x"
-                            + StringService::toHex(instructionAddress)
+                                + StringService::toHex(instructionAddress)
                         );
                         rangeSteppingSession.interceptedAddresses.insert(instructionAddress);
                         continue;
@@ -183,8 +176,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                          * destination address.
                          */
                         Logger::debug(
-                            "Intercepting CCPF instruction (\"" + instruction->name + "\") at destination byte address "
-                            "0x" + StringService::toHex(*destinationAddress)
+                            "Intercepting destination byte address 0x" + StringService::toHex(*destinationAddress)
+                                + " of CCPF instruction (\"" + instruction->name + "\") at byte address 0x"
+                                + StringService::toHex(instructionAddress)
                         );
                         rangeSteppingSession.interceptedAddresses.insert(*destinationAddress);
                     }
@@ -198,7 +192,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                      */
                     Logger::debug(
                         "Intercepting subsequent instruction at byte address 0x"
-                        + StringService::toHex(subsequentInstructionAddress)
+                            + StringService::toHex(subsequentInstructionAddress)
                     );
                     rangeSteppingSession.interceptedAddresses.insert(subsequentInstructionAddress);
                 }
