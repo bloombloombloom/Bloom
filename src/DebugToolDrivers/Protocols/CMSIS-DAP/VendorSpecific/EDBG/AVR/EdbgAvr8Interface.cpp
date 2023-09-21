@@ -426,6 +426,11 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         if (responseFrame.id == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure("AVR8 Clear all software breakpoints command failed", responseFrame);
         }
+
+        // Clear all hardware breakpoints
+        for (const auto& [address, breakpointNumber] : this->hardwareBreakpointNumbersByAddress) {
+            this->clearHardwareBreakpoint(address);
+        }
     }
 
     TargetRegisters EdbgAvr8Interface::readRegisters(const TargetRegisterDescriptorIds& descriptorIds) {
