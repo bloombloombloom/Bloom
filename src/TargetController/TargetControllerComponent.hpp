@@ -151,6 +151,9 @@ namespace TargetController
          */
         Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
 
+        /**
+         * Target descriptor cache.
+         */
         std::optional<const Targets::TargetDescriptor> targetDescriptor;
 
         /**
