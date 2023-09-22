@@ -62,6 +62,7 @@
 #include "src/Targets/Targets.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemoryCache.hpp"
 
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
@@ -167,6 +168,16 @@ namespace TargetController
          */
         std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> softwareBreakpointsByAddress;
         std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> hardwareBreakpointsByAddress;
+
+        /**
+         * The target's program memory cache.
+         *
+         * If program caching is enabled, all program memory reads will be serviced by the cache, if we have the data.
+         *
+         * We use std::unique_ptr here due to delayed construction (we construct this after activating the target
+         * and obtaining the target descriptor).
+         */
+        std::unique_ptr<Targets::TargetMemoryCache> programMemoryCache = nullptr;
 
         /**
          * Registers a handler function for a particular command type.

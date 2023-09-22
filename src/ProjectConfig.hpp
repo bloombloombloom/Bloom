@@ -57,6 +57,11 @@ struct TargetConfig
     bool hardwareBreakpoints = true;
 
     /**
+     * Determines whether Bloom will employ a cache for the target's program memory.
+     */
+    bool programMemoryCache = true;
+
+    /**
      * For extracting any target specific configuration. See Avr8TargetConfig::Avr8TargetConfig() and
      * Avr8::preActivationConfigure() for an example of this.
      */

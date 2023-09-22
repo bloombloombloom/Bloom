@@ -517,6 +517,10 @@ namespace TargetController
                 )
             );
         }
+
+        this->programMemoryCache = std::make_unique<Targets::TargetMemoryCache>(
+            targetDescriptor.memoryDescriptorsByType.at(targetDescriptor.programMemoryType)
+        );
     }
 
     void TargetControllerComponent::releaseHardware() {
@@ -795,6 +799,42 @@ namespace TargetController
     }
 
     std::unique_ptr<TargetMemoryRead> TargetControllerComponent::handleReadTargetMemory(ReadTargetMemory& command) {
+        const auto& targetDescriptor = this->getTargetDescriptor();
+        if (
+            command.memoryType == targetDescriptor.programMemoryType
+            && this->environmentConfig.targetConfig.programMemoryCache
+        ) {
+            assert(this->programMemoryCache);
+
+
+            if (!this->programMemoryCache->contains(command.startAddress, command.bytes)) {
+                Logger::debug(
+                    "Program memory cache miss at 0x" + Services::StringService::toHex(command.startAddress) + ", "
+                        + std::to_string(command.bytes) + " bytes"
+                );
+
+                /*
+                 * TODO: We're currently ignoring command.excludedAddressRanges when populating the program
+                 *       memory cache. This isn't a big deal, so I'll sort it later.
+                 */
+                this->programMemoryCache->insert(
+                    command.startAddress,
+                    this->target->readMemory(
+                        command.memoryType,
+                        command.startAddress,
+                        std::max(
+                            command.bytes,
+                            targetDescriptor.memoryDescriptorsByType.at(command.memoryType).pageSize.value_or(0)
+                        )
+                    )
+                );
+            }
+
+            return std::make_unique<TargetMemoryRead>(
+                this->programMemoryCache->fetch(command.startAddress, command.bytes)
+            );
+        }
+
         return std::make_unique<TargetMemoryRead>(
             command.bytes > 0
                 ? this->target->readMemory(
@@ -819,6 +859,14 @@ namespace TargetController
         }
 
         this->target->writeMemory(command.memoryType, bufferStartAddress, buffer);
+
+        if (
+            command.memoryType == targetDescriptor.programMemoryType
+            && this->environmentConfig.targetConfig.programMemoryCache
+        ) {
+            this->programMemoryCache->insert(bufferStartAddress, buffer);
+        }
+
         EventManager::triggerEvent(
             std::make_shared<Events::MemoryWrittenToTarget>(command.memoryType, bufferStartAddress, bufferSize)
         );
@@ -866,11 +914,17 @@ namespace TargetController
     }
 
     std::unique_ptr<Response> TargetControllerComponent::handleEraseTargetMemory(EraseTargetMemory& command) {
-        if (
-            command.memoryType == this->getTargetDescriptor().programMemoryType
-            && !this->target->programmingModeEnabled()
-        ) {
-            throw Exception("Cannot erase program memory - programming mode not enabled.");
+        if (command.memoryType == this->getTargetDescriptor().programMemoryType) {
+            if (!this->target->programmingModeEnabled()) {
+                throw Exception("Cannot erase program memory - programming mode not enabled.");
+            }
+
+            if (this->environmentConfig.targetConfig.programMemoryCache) {
+                assert(this->programMemoryCache);
+
+                Logger::debug("Clearing program memory cache");
+                this->programMemoryCache->clear();
+            }
         }
 
         this->target->eraseMemory(command.memoryType);

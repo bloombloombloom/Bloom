@@ -138,6 +138,10 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
         this->hardwareBreakpoints = targetNode["hardwareBreakpoints"].as<bool>(this->hardwareBreakpoints);
     }
 
+    if (targetNode["programMemoryCache"]) {
+        this->programMemoryCache = targetNode["programMemoryCache"].as<bool>(this->programMemoryCache);
+    }
+
     this->targetNode = targetNode;
 }
 
