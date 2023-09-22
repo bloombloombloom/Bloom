@@ -183,6 +183,7 @@ namespace Services
         TargetMemoryType memoryType,
         TargetMemoryAddress startAddress,
         TargetMemorySize bytes,
+        bool bypassCache,
         const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) const {
         return this->commandManager.sendCommandAndWaitForResponse(
@@ -190,6 +191,7 @@ namespace Services
                 memoryType,
                 startAddress,
                 bytes,
+                bypassCache,
                 excludedAddressRanges
             ),
             this->defaultTimeout,

@@ -21,17 +21,25 @@ namespace TargetController::Commands
         Targets::TargetMemoryType memoryType;
         Targets::TargetMemoryAddress startAddress;
         Targets::TargetMemorySize bytes;
+
+        /**
+         * Currently, we only cache program memory. This flag has no effect when reading from other memories.
+         */
+        bool bypassCache;
+
         std::set<Targets::TargetMemoryAddressRange> excludedAddressRanges;
 
         ReadTargetMemory(
             Targets::TargetMemoryType memoryType,
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemorySize bytes,
-            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
+            bool bypassCache = false,
+            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         )
             : memoryType(memoryType)
             , startAddress(startAddress)
             , bytes(bytes)
+            , bypassCache(bypassCache)
             , excludedAddressRanges(excludedAddressRanges)
         {};
 

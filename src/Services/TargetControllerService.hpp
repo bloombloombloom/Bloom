@@ -109,6 +109,7 @@ namespace Services
          * @param memoryType
          * @param startAddress
          * @param bytes
+         * @param bypassCache
          * @param excludedAddressRanges
          * @return
          */
@@ -116,6 +117,7 @@ namespace Services
             Targets::TargetMemoryType memoryType,
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemorySize bytes,
+            bool bypassCache = false,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) const;
 

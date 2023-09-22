@@ -62,6 +62,7 @@ void CaptureMemorySnapshot::run(TargetControllerService& targetControllerService
                 (memorySize - this->data->size()) >= readSize
                     ? readSize
                     : static_cast<Targets::TargetMemorySize>(memorySize - this->data->size()),
+                true,
                 {}
             );
 

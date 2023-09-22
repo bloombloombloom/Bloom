@@ -802,6 +802,7 @@ namespace TargetController
         const auto& targetDescriptor = this->getTargetDescriptor();
         if (
             command.memoryType == targetDescriptor.programMemoryType
+            && !command.bypassCache
             && this->environmentConfig.targetConfig.programMemoryCache
         ) {
             assert(this->programMemoryCache);

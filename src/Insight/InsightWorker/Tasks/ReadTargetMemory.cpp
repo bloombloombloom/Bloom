@@ -43,6 +43,7 @@ void ReadTargetMemory::run(TargetControllerService& targetControllerService) {
             (this->size - data.size()) >= readSize
                 ? readSize
                 : static_cast<Targets::TargetMemorySize>(this->size - data.size()),
+            true,
             this->excludedAddressRanges
         );
 
