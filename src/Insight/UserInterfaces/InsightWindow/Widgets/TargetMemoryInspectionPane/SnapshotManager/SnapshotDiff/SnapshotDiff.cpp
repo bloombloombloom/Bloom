@@ -397,7 +397,7 @@ namespace Widgets
         const auto& dataA = *(this->hexViewerDataA);
         const auto& dataB = *(this->hexViewerDataB);
 
-        static const auto isAddressExcluded = [this] (Targets::TargetMemoryAddress address) {
+        const auto isAddressExcluded = [this] (Targets::TargetMemoryAddress address) {
             for (const auto& excludedRegion : this->excludedRegionsA) {
                 if (excludedRegion.addressRange.contains(address)) {
                     return true;
