@@ -5,7 +5,8 @@
 #include <set>
 #include <QSize>
 #include <QString>
-#include <QEvent>
+#include <QResizeEvent>
+#include <QKeyEvent>
 #include <QScrollArea>
 #include <optional>
 
@@ -36,6 +37,7 @@ namespace Widgets
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
+        void keyPressEvent(QKeyEvent* event) override;
 
     private:
         Targets::TargetRegisterDescriptor registerDescriptor;

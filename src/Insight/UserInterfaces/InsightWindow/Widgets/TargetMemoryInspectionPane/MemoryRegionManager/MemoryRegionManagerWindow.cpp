@@ -145,6 +145,22 @@ namespace Widgets
         }
     }
 
+    void MemoryRegionManagerWindow::keyPressEvent(QKeyEvent* event) {
+        const auto key = event->key();
+
+        if (key == Qt::Key_Enter || key == Qt::Key_Return) {
+            this->applyButton->click();
+            return;
+        }
+
+        if (key == Qt::Key_Escape) {
+            this->close();
+            return;
+        }
+
+        QWidget::keyPressEvent(event);
+    }
+
     void MemoryRegionManagerWindow::clearRegions() {
         this->selectedRegion = nullptr;
 

@@ -102,6 +102,22 @@ namespace Widgets
         QWidget::showEvent(event);
     }
 
+    void CreateSnapshotWindow::keyPressEvent(QKeyEvent* event) {
+        const auto key = event->key();
+
+        if (key == Qt::Key_Enter || key == Qt::Key_Return) {
+            this->captureButton->click();
+            return;
+        }
+
+        if (key == Qt::Key_Escape) {
+            this->close();
+            return;
+        }
+
+        QWidget::keyPressEvent(event);
+    }
+
     bool CreateSnapshotWindow::captureEnabled() {
         if (this->targetState != Targets::TargetState::STOPPED) {
             return false;

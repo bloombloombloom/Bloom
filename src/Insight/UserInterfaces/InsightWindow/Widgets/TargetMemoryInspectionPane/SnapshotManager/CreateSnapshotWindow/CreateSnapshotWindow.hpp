@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QShowEvent>
+#include <QKeyEvent>
 #include <QPlainTextEdit>
 #include <QCheckBox>
 #include <optional>
@@ -38,6 +39,7 @@ namespace Widgets
 
     protected:
         void showEvent(QShowEvent* event) override;
+        void keyPressEvent(QKeyEvent* event) override;
 
     private:
         QWidget* container = nullptr;

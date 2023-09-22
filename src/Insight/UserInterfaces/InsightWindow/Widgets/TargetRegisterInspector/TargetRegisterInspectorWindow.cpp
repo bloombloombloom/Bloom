@@ -221,6 +221,31 @@ namespace Widgets
         );
     }
 
+    void TargetRegisterInspectorWindow::keyPressEvent(QKeyEvent* event) {
+        const auto key = event->key();
+
+        if ((event->modifiers() & Qt::ControlModifier) != 0 && key == Qt::Key_R) {
+            this->refreshValueButton->click();
+            return;
+        }
+
+        if (
+            (event->modifiers() & Qt::ControlModifier) != 0
+            && (key == Qt::Key_Enter || key == Qt::Key_Return)
+            && this->registerValueTextInput->hasFocus()
+        ) {
+            this->applyButton->click();
+            return;
+        }
+
+        if (key == Qt::Key_Escape) {
+            this->close();
+            return;
+        }
+
+        QWidget::keyPressEvent(event);
+    }
+
     bool TargetRegisterInspectorWindow::registerSupported(const Targets::TargetRegisterDescriptor& descriptor) {
         return (descriptor.size > 0 && descriptor.size <= 8);
     }

@@ -4,6 +4,7 @@
 #include <set>
 #include <vector>
 #include <QShowEvent>
+#include <QKeyEvent>
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QStackedLayout>
@@ -42,6 +43,7 @@ namespace Widgets
 
     protected:
         void showEvent(QShowEvent* event) override;
+        void keyPressEvent(QKeyEvent* event) override;
 
     private:
         const Targets::TargetMemoryDescriptor& memoryDescriptor;
