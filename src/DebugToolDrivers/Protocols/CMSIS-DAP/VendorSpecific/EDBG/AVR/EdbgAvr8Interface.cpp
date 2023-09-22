@@ -428,8 +428,8 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         // Clear all hardware breakpoints
-        for (const auto& [address, breakpointNumber] : this->hardwareBreakpointNumbersByAddress) {
-            this->clearHardwareBreakpoint(address);
+        while (!this->hardwareBreakpointNumbersByAddress.empty()) {
+            this->clearHardwareBreakpoint(this->hardwareBreakpointNumbersByAddress.begin()->first);
         }
     }
 
