@@ -685,6 +685,17 @@ namespace TargetController
         Logger::info("Programming mode disabled");
 
         EventManager::triggerEvent(std::make_shared<Events::ProgrammingModeDisabled>());
+
+        Logger::info("Restoring breakpoints");
+        this->target->stop();
+
+        for (const auto& [address, breakpoint] : this->softwareBreakpointsByAddress) {
+            this->target->setSoftwareBreakpoint(address);
+        }
+
+        for (const auto& [address, breakpoint] : this->hardwareBreakpointsByAddress) {
+            this->target->setHardwareBreakpoint(address);
+        }
     }
 
     const Targets::TargetDescriptor& TargetControllerComponent::getTargetDescriptor() {
