@@ -33,7 +33,7 @@ namespace DebugServer::Gdb
          *
          * This parameter is optional. If not specified, the default value set here will be used.
          */
-        bool rangeStepping = true;
+        bool rangeStepping = false;
 
         explicit GdbDebugServerConfig(const DebugServerConfig& debugServerConfig);
     };

@@ -14,7 +14,7 @@ environments:
       name: "avr-gdb-rsp"
       ipAddress: "127.0.0.1"
       port: 1442
-      rangeStepping: true
+      rangeStepping: false
 
 insight:
   activateOnStartup: false
