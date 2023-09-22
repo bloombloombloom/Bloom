@@ -191,22 +191,22 @@ QToolButton::menu-indicator {
     image: none;
 }
 
-Bloom--Widgets--LabeledSeparator {
+Widgets--LabeledSeparator {
     qproperty-lineColor: #454545;
     color: #a6a6a6;
 }
 
-Bloom--Widgets--SvgToolButton QMenu::item {
+Widgets--SvgToolButton QMenu::item {
     padding-left: 10px;
     min-width: 250px;
 }
 
-Bloom--Widgets--PushButton[styleName="primary"] {
+Widgets--PushButton[styleName="primary"] {
     background-color: rgba(53, 60, 65, 1);
     border: 1px solid rgba(69, 76, 82, 1);
 }
 
-Bloom--Widgets--PushButton[styleName="primary"]:disabled {
+Widgets--PushButton[styleName="primary"]:disabled {
     background-color: rgba(53, 60, 65, 0.25);
     border: 1px solid rgba(69, 76, 82, 0.5);
 

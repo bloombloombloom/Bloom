@@ -49,7 +49,7 @@
     border: none;
 }
 
-#region-selector-tool-bar Bloom--Widgets--SvgToolButton QMenu::item {
+#region-selector-tool-bar Widgets--SvgToolButton QMenu::item {
     padding-left: 25px;
 }
 
