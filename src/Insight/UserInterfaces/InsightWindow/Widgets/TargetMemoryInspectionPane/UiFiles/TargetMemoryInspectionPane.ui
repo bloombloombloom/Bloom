@@ -109,18 +109,12 @@
                                         <property name="checkable">
                                             <bool>true</bool>
                                         </property>
-                                        <property name="checked">
-                                            <bool>true</bool>
-                                        </property>
                                     </action>
                                     <action name="refresh-activation">
                                         <property name="text">
                                             <string>After opening this pane</string>
                                         </property>
                                         <property name="checkable">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="checked">
                                             <bool>true</bool>
                                         </property>
                                     </action>
