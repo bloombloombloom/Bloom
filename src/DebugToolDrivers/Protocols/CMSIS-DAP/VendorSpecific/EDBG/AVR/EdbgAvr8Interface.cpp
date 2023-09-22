@@ -886,6 +886,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap::Edbg::Avr
         }
 
         this->programmingModeEnabled = true;
+        this->hardwareBreakpointNumbersByAddress.clear();
     }
 
     void EdbgAvr8Interface::disableProgrammingMode() {
