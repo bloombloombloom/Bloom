@@ -1,6 +1,7 @@
 #include "ProjectConfig.hpp"
 
 #include "src/Services/StringService.hpp"
+#include "src/Services/PathService.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
@@ -55,6 +56,13 @@ ProjectConfig::ProjectConfig(const YAML::Node& configNode) {
         }
     }
 
+    if (configNode["debugServer"]) {
+        Logger::warning(
+            "The 'debugServer' key was renamed to 'server' in v1.0.0. Please update your bloom.yaml configuration. "
+            "See " + Services::PathService::homeDomainName() + "/docs/v1-0-0-migration for more."
+        );
+    }
+
     if (configNode["server"]) {
         this->debugServerConfig = DebugServerConfig(configNode["server"]);
     }
@@ -89,6 +97,28 @@ EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environ
 {
     if (!environmentNode.IsMap()) {
         throw Exceptions::InvalidConfig("Environment node must take the form of a YAML mapping.");
+    }
+
+    static auto warn = true;
+
+    if (warn) {
+        if (environmentNode["debugTool"] && !environmentNode["tool"]) {
+            Logger::warning(
+                "The 'debugTool' key was renamed to 'tool' in v1.0.0. Please update your bloom.yaml configuration. "
+                "Bloom will fail to start up until this is resolved. See "
+                    + Services::PathService::homeDomainName() + "/docs/v1-0-0-migration for more."
+            );
+        }
+
+        if (environmentNode["debugServer"] && !environmentNode["server"]) {
+            Logger::warning(
+                "The 'debugTool' key was renamed to 'tool' in v1.0.0. Please update your bloom.yaml configuration. "
+                "Bloom will fail to start up until this is resolved. See "
+                    + Services::PathService::homeDomainName() + "/docs/v1-0-0-migration for more."
+            );
+        }
+
+        warn = false;
     }
 
     if (!environmentNode["tool"]) {
