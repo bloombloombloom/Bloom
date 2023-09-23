@@ -183,19 +183,6 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                         rangeSteppingSession.interceptedAddresses.insert(*destinationAddress);
                     }
                 }
-
-                const auto subsequentInstructionAddress = instructionAddress + instruction->byteSize;
-                if (subsequentInstructionAddress >= addressRange.endAddress) {
-                    /*
-                     * Once this instruction has been executed, we'll end up outside the stepping range (so we'll want
-                     * to stop there and report back to GDB).
-                     */
-                    Logger::debug(
-                        "Intercepting subsequent instruction at byte address 0x"
-                            + StringService::toHex(subsequentInstructionAddress)
-                    );
-                    rangeSteppingSession.interceptedAddresses.insert(subsequentInstructionAddress);
-                }
             }
 
             debugSession.startRangeSteppingSession(std::move(rangeSteppingSession), targetControllerService);

@@ -196,7 +196,10 @@ namespace DebugServer::Gdb::AvrGdb
                 Logger::debug("Continuing range stepping");
 
                 activeRangeSteppingSession->singleStepping = false;
-                this->targetControllerService.continueTargetExecution(std::nullopt, std::nullopt);
+                this->targetControllerService.continueTargetExecution(
+                    std::nullopt,
+                    activeRangeSteppingSession->range.endAddress
+                );
                 return;
             }
 
