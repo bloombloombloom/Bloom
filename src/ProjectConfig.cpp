@@ -71,8 +71,13 @@ ProjectConfig::ProjectConfig(const YAML::Node& configNode) {
         this->insightConfig = InsightConfig(configNode["insight"]);
     }
 
+    // Old param name, will remove later
     if (configNode["debugLoggingEnabled"]) {
-        this->debugLoggingEnabled = configNode["debugLoggingEnabled"].as<bool>(this->debugLoggingEnabled);
+        this->debugLogging = configNode["debugLoggingEnabled"].as<bool>(this->debugLogging);
+    }
+
+    if (configNode["debugLogging"]) {
+        this->debugLogging = configNode["debugLogging"].as<bool>(this->debugLogging);
     }
 }
 

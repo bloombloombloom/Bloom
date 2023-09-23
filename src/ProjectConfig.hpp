@@ -234,7 +234,7 @@ struct ProjectConfig
      */
     InsightConfig insightConfig = InsightConfig();
 
-    bool debugLoggingEnabled = false;
+    bool debugLogging = false;
 
     /**
      * Obtains config parameters from YAML node.
