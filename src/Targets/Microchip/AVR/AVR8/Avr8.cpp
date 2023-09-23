@@ -697,7 +697,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
     }
 
     BreakpointResources Avr8::getBreakpointResources() {
-        auto maxHardwareBreakpoints = 0;
+        auto maxHardwareBreakpoints = static_cast<std::uint16_t>(0);
 
         switch (this->targetConfig.physicalInterface) {
             case PhysicalInterface::JTAG: {
@@ -719,7 +719,11 @@ namespace Targets::Microchip::Avr::Avr8Bit
 
         return BreakpointResources(
             maxHardwareBreakpoints,
-            std::nullopt
+            std::nullopt,
+            std::min(
+                static_cast<std::uint16_t>(this->targetConfig.reserveSteppingBreakpoint ? 1 : 0),
+                maxHardwareBreakpoints
+            )
         );
     }
 

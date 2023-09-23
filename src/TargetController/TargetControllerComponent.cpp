@@ -510,12 +510,23 @@ namespace TargetController
         if (!this->environmentConfig.targetConfig.hardwareBreakpoints) {
             Logger::warning("Hardware breakpoints have been disabled");
 
-        } else if (targetDescriptor.breakpointResources.maximumHardwareBreakpoints.has_value()) {
-            Logger::info(
-                "Available hardware breakpoints: " + std::to_string(
-                    *(targetDescriptor.breakpointResources.maximumHardwareBreakpoints)
-                )
-            );
+        } else {
+            const auto& breakpointResources = targetDescriptor.breakpointResources;
+            if (breakpointResources.maximumHardwareBreakpoints.has_value()) {
+                Logger::info(
+                    "Available hardware breakpoints: " + std::to_string(
+                        *(breakpointResources.maximumHardwareBreakpoints)
+                    )
+                );
+            }
+
+            if (breakpointResources.reservedHardwareBreakpoints > 0) {
+                Logger::info(
+                    "Reserved hardware breakpoints: " + std::to_string(
+                        breakpointResources.reservedHardwareBreakpoints
+                    )
+                );
+            }
         }
 
         this->programMemoryCache = std::make_unique<Targets::TargetMemoryCache>(
@@ -971,7 +982,8 @@ namespace TargetController
 
             if (
                 !targetBreakpointResources.maximumHardwareBreakpoints.has_value()
-                || this->hardwareBreakpointsByAddress.size() < *(targetBreakpointResources.maximumHardwareBreakpoints)
+                || this->hardwareBreakpointsByAddress.size() < (*(targetBreakpointResources.maximumHardwareBreakpoints)
+                    - targetBreakpointResources.reservedHardwareBreakpoints)
             ) {
                 exhaustedResourcesWarning = true;
 

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <cassert>
 
 #include "TargetMemory.hpp"
 
@@ -40,13 +41,21 @@ namespace Targets
     {
         std::optional<std::uint16_t> maximumHardwareBreakpoints;
         std::optional<std::uint16_t> maximumSoftwareBreakpoints;
+        std::uint16_t reservedHardwareBreakpoints;
 
         BreakpointResources(
             std::optional<std::uint16_t> maximumHardwareBreakpoints,
-            std::optional<std::uint16_t> maximumSoftwareBreakpoints
+            std::optional<std::uint16_t> maximumSoftwareBreakpoints,
+            std::uint16_t reservedHardwareBreakpoints
         )
             : maximumHardwareBreakpoints(maximumHardwareBreakpoints)
             , maximumSoftwareBreakpoints(maximumSoftwareBreakpoints)
-        {}
+            , reservedHardwareBreakpoints(reservedHardwareBreakpoints)
+        {
+            assert(
+                !this->maximumHardwareBreakpoints.has_value()
+                || this->maximumHardwareBreakpoints >= this->reservedHardwareBreakpoints
+            );
+        }
     };
 }
