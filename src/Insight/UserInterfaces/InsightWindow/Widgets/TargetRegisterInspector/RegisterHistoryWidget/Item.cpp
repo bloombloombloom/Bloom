@@ -18,8 +18,9 @@ namespace Widgets
 
     void Item::setSelected(bool selected) {
         this->setProperty("selected", selected);
-        this->style()->unpolish(this);
-        this->style()->polish(this);
+
+        // TODO: This is a horrible hack. It will be binned when I rewrite this widget to use ListView
+        this->setStyleSheet(this->styleSheet());
 
         if (selected) {
             emit this->selected(this);

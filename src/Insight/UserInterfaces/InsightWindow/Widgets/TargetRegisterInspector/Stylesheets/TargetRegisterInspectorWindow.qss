@@ -102,6 +102,11 @@
     color: #8a8a8d;
 }
 
+#target-register-history-widget #register-history-item[selected=true] #value-label,
+#target-register-history-widget #register-history-item[selected=true] #description-label {
+    color: #afb1b3;
+}
+
 #target-register-history-widget #separator-label {
     /*font-style: italic;*/
     color: #8a8a8d;

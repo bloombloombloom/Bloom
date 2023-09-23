@@ -85,6 +85,12 @@
     color: #8a8a8d;
 }
 
+#region-selector #region-item[selected=true] #address-label,
+#region-selector #region-item[selected=true] #type-label,
+#region-selector #region-item[selected=true] #time-label {
+    color: #afb1b3;
+}
+
 #region-selector #region-item #type-label,
 #region-selector #region-item #time-label {
     font-size: 13px;
