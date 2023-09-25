@@ -163,22 +163,6 @@ namespace Widgets
         );
 
         this->setSceneRect(0, 0, this->getSceneWidth(), 0);
-
-        static const auto hoverRectBackgroundColor = QColor(0x8E, 0x8B, 0x83, 45);
-
-        this->hoverRectX->setBrush(hoverRectBackgroundColor);
-        this->hoverRectY->setBrush(hoverRectBackgroundColor);
-        this->hoverRectX->setPen(Qt::NoPen);
-        this->hoverRectY->setPen(Qt::NoPen);
-
-        this->hoverRectX->setVisible(false);
-        this->hoverRectY->setVisible(false);
-
-        this->hoverRectX->setZValue(100);
-        this->hoverRectY->setZValue(100);
-
-        this->addItem(this->hoverRectX);
-        this->addItem(this->hoverRectY);
     }
 
     void ItemGraphicsScene::init() {
@@ -279,14 +263,6 @@ namespace Widgets
         const auto margins = this->margins();
         const auto width = this->getSceneWidth();
         const auto availableWidth = width - ByteAddressContainer::WIDTH - margins.left() - margins.right();
-
-        auto hoverRectX = this->hoverRectX->rect();
-        hoverRectX.setWidth(width);
-        this->hoverRectX->setRect(hoverRectX);
-
-        auto hoverRectY = this->hoverRectY->rect();
-        hoverRectY.setHeight(this->views().first()->viewport()->height() + (ByteItem::HEIGHT * 2));
-        this->hoverRectY->setRect(hoverRectY);
 
         this->topLevelGroup->adjustItemPositions(availableWidth);
         this->itemIndex->refreshIndex();
@@ -602,32 +578,11 @@ namespace Widgets
         this->state.hoveredByteItem = &byteItem;
         this->update();
 
-        if (this->state.settings.highlightHoveredRowAndCol) {
-            const auto byteItemScenePos = byteItem.position();
-            this->hoverRectX->setPos(0, byteItemScenePos.y());
-            this->hoverRectY->setPos(
-                byteItemScenePos.x(),
-                std::max(this->getScrollbarValue() - ByteItem::HEIGHT, 0)
-            );
-
-            this->hoverRectX->setVisible(true);
-            this->hoverRectY->setVisible(true);
-            this->hoverRectX->update();
-            this->hoverRectY->update();
-        }
-
         emit this->hoveredAddress(byteItem.startAddress);
     }
 
     void ItemGraphicsScene::onByteItemLeave() {
-        if (this->state.hoveredByteItem != nullptr) {
-            this->state.hoveredByteItem = nullptr;
-        }
-
-        this->hoverRectX->setVisible(false);
-        this->hoverRectY->setVisible(false);
-        this->hoverRectX->update();
-        this->hoverRectY->update();
+        this->state.hoveredByteItem = nullptr;
         this->update();
 
         emit this->hoveredAddress(std::nullopt);

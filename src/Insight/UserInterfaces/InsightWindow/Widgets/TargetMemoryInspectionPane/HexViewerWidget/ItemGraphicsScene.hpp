@@ -97,9 +97,6 @@ namespace Widgets
         QGraphicsRectItem* rubberBandRectItem = nullptr;
         std::optional<QPointF> rubberBandInitPoint = std::nullopt;
 
-        QGraphicsRectItem* hoverRectX = new QGraphicsRectItem(QRect(0, 0, 0, ByteItem::HEIGHT));
-        QGraphicsRectItem* hoverRectY = new QGraphicsRectItem(QRect(0, 0, ByteItem::WIDTH, 0));
-
         // Context menu actions
         QAction* selectAllByteItemsAction = new QAction("Select All", this);
         QAction* deselectByteItemsAction = new QAction("Deselect All", this);

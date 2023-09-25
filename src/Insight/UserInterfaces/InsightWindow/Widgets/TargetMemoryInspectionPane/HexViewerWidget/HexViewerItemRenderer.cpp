@@ -27,8 +27,9 @@ namespace Widgets
     }
 
     void HexViewerItemRenderer::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+        const auto viewportSize = this->viewport->size();
         const auto viewportYStart = this->view->verticalScrollBar()->value();
-        const auto viewportYEnd = viewportYStart + this->viewport->size().height();
+        const auto viewportYEnd = viewportYStart + viewportSize.height();
 
         const auto visibleItems = this->itemIndex.items(viewportYStart, viewportYEnd);
 
@@ -67,6 +68,21 @@ namespace Widgets
 
                 this->paintPrimaryHighlightBorder(&startItem, &endItem, painter);
             }
+        }
+
+        if (
+            this->hexViewerState.hoveredByteItem != nullptr
+            && this->hexViewerState.settings.highlightHoveredRowAndCol
+        ) {
+            static const auto hoverRectBackgroundColor = QColor(0x8E, 0x8B, 0x83, 45);
+
+            painter->setBrush(hoverRectBackgroundColor);
+            painter->setPen(Qt::NoPen);
+
+            const auto byteItemScenePos = this->hexViewerState.hoveredByteItem->position();
+
+            painter->drawRect(0, byteItemScenePos.y(), viewportSize.width(), ByteItem::HEIGHT);
+            painter->drawRect(byteItemScenePos.x(), viewportYStart, ByteItem::WIDTH, viewportSize.height());
         }
     }
 
