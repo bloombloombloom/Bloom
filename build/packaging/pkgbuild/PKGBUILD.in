@@ -10,7 +10,7 @@ package(){
   depends=(
     'fontconfig>=2.11.94'
     'freetype2>=2.6'
-    'gcc-libs>=11.2.0'
+    'gcc-libs>=13.2.0'
     'glibc>=2.18'
     'libgl'
     'libglvnd'
