@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 PLAYGROUND_DIR=@CMAKE_BINARY_DIR@/packaging/rpm/playground;
 SPECS_DIR=${PLAYGROUND_DIR}/SPECS;

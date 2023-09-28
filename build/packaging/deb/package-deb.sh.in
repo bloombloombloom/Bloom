@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 PLAYGROUND_DIR=@CMAKE_BINARY_DIR@/packaging/deb/playground;
 DEBIAN_DIR=${PLAYGROUND_DIR}/DEBIAN

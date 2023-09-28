@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 PLAYGROUND_DIR=@CMAKE_BINARY_DIR@/packaging/pkgbuild/playground;
 BUILD_ROOT_DIR=${PLAYGROUND_DIR}/build_root
