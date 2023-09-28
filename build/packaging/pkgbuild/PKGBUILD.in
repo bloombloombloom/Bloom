@@ -14,7 +14,7 @@ package(){
     'glibc>=2.18'
     'libgl'
     'libglvnd'
-    'libpng12'
+    'libpng'
     'libx11'
     'libxcb'
     'libxext'

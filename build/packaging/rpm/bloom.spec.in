@@ -26,6 +26,7 @@ Requires: libglvnd-opengl >= 1.3.3
 Requires: libstdc++ >= 11
 Requires: libX11
 Requires: libX11-xcb
+Requires: libpng
 Requires: xcb-util-wm >= 0.4.1
 Requires: xcb-util-image >= 0.4.0
 Requires: xcb-util-keysyms >= 0.4.0
