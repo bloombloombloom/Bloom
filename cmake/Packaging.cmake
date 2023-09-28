@@ -3,8 +3,18 @@ set(BLOOM_PACKAGE_FILE_NAME "Bloom-${CMAKE_PROJECT_VERSION}-Linux-x86_64")
 set(BLOOM_PACKAGE_DESCRIPTION "Debugger for AVR-based embedded systems")
 set(BLOOM_PACKAGE_CONTACT "Nav Mohammed <support@bloom.oscillate.io>")
 
+# All generated packages will install Bloom to BLOOM_INSTALLATION_PREFIX
+set(BLOOM_INSTALLATION_PREFIX "/opt/bloom")
+
 string(TOLOWER ${BLOOM_PACKAGE_NAME} BLOOM_PACKAGE_NAME_LOWER)
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/pkgbuild")
+
+# Generate Bloom's invocation script
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/bloom.sh.in"
+    "${CMAKE_BINARY_DIR}/packaging/bloom.sh"
+    @ONLY
+)
 
 # Generate the DEB control file and packaging script
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/deb")

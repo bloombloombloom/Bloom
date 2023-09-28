@@ -13,10 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 option(EXCLUDE_INSIGHT "Exclude the Insight component from this build" OFF)
 
-set(CMAKE_SKIP_BUILD_RPATH false)
-set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
-set(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib:/usr/local/lib")
-set(CMAKE_BUILD_RPATH ${CMAKE_INSTALL_RPATH})
+set(CMAKE_SKIP_RPATH true)
 set(COMPILED_RESOURCES_BUILD_DIR ${CMAKE_BINARY_DIR}/compiled_resources/)
 
 add_compile_definitions(BLOOM_VERSION="${CMAKE_PROJECT_VERSION}")
@@ -41,6 +38,8 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     # CMAKE_BUILD_RPATH needs to point to the local Qt installation, to use Gammaray during development.
     # This is because the distributed Qt binaries may not be compatible with the local installation of Gammaray
     # If you don't intend to use Gammaray, you can comment this out
+    set(CMAKE_SKIP_RPATH false)
+    set(CMAKE_SKIP_BUILD_RPATH false)
     set(CMAKE_BUILD_RPATH /opt/Qt/6.2.4/gcc_64/lib/)
 endif()
 
@@ -128,11 +127,6 @@ target_compile_options(
     PUBLIC $<$<CONFIG:RELEASE>:-Ofast>
     PUBLIC $<$<CONFIG:DEBUG>:-fno-inline>
     PUBLIC $<$<CONFIG:DEBUG>:-fkeep-static-functions>
-)
-
-target_link_options(
-    Bloom
-    PUBLIC [=[-Wl,-z,origin]=] #,--verbose
 )
 
 if (${ENABLE_SANITIZERS})

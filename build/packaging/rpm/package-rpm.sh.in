@@ -5,7 +5,7 @@ SPECS_DIR=${PLAYGROUND_DIR}/SPECS;
 SOURCES_DIR=${PLAYGROUND_DIR}/SOURCES;
 RELEASE_DIR_NAME=@BLOOM_PACKAGE_NAME_LOWER@-@CMAKE_PROJECT_VERSION@;
 RELEASE_DIR=${PLAYGROUND_DIR}/${RELEASE_DIR_NAME};
-BLOOM_INSTALLATION_PREFIX=/opt/bloom/
+BLOOM_INSTALLATION_PREFIX=@BLOOM_INSTALLATION_PREFIX@/
 BLOOM_INSTALLATION_DIR=${RELEASE_DIR}/${BLOOM_INSTALLATION_PREFIX}
 BLOOM_PACKAGE_PATH=@CMAKE_BINARY_DIR@/packaging/@BLOOM_PACKAGE_FILE_NAME@.rpm
 
@@ -37,6 +37,9 @@ cp -a @CMAKE_BINARY_DIR@/packaging/rpm/bloom.spec ${SPECS_DIR}/;
 echo "Copying Bloom binary...";
 cp -a @CMAKE_BINARY_DIR@/bin/bloom ${BLOOM_INSTALLATION_DIR}/bin/;
 
+echo "Copying Bloom invocation script...";
+cp -a @CMAKE_BINARY_DIR@/packaging/bloom.sh ${BLOOM_INSTALLATION_DIR}/bin/;
+
 echo "Copying resources...";
 cp -a @CMAKE_BINARY_DIR@/resources ${BLOOM_INSTALLATION_DIR}/;
 cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/fonts ${BLOOM_INSTALLATION_DIR}/resources/;
@@ -57,8 +60,8 @@ chmod u=rwX,g=rX,o=rX -R ${BLOOM_INSTALLATION_DIR}/resources/;
 
 chmod u=rw,g=r,o=r ${RELEASE_DIR}/usr/lib/udev/rules.d/99-bloom.rules;
 
-echo "Creating symbolic link for Bloom binary..."
-ln -s -f ${BLOOM_INSTALLATION_PREFIX}./bin/bloom ${RELEASE_DIR}/usr/bin/;
+echo "Creating symbolic link for Bloom's invocation script..."
+ln -s -f ${BLOOM_INSTALLATION_PREFIX}./bin/bloom.sh ${RELEASE_DIR}/usr/bin/bloom;
 
 echo "Creating release tarball..."
 tar -zcvf ${SOURCES_DIR}/@BLOOM_PACKAGE_NAME_LOWER@-@CMAKE_PROJECT_VERSION@.tar.gz -C ${PLAYGROUND_DIR} ./${RELEASE_DIR_NAME}
