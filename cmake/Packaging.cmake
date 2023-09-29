@@ -5,13 +5,14 @@ set(BLOOM_PACKAGE_CONTACT "Nav Mohammed <support@bloom.oscillate.io>")
 
 # All generated packages will install Bloom to BLOOM_INSTALLATION_PREFIX
 set(BLOOM_INSTALLATION_PREFIX "/opt/bloom")
+set(BLOOM_SHARED_LIBRARY_PATHS "${BLOOM_INSTALLATION_PREFIX}/lib")
 
 string(TOLOWER ${BLOOM_PACKAGE_NAME} BLOOM_PACKAGE_NAME_LOWER)
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/pkgbuild")
 
 # Generate Bloom's invocation script
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/bloom.sh.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/build/distributed/bloom.sh.in"
     "${CMAKE_BINARY_DIR}/packaging/bloom.sh"
     @ONLY
 )

@@ -4,8 +4,41 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "/opt/bloom" CACHE PATH "..." FORCE)
 endif()
 
+set(BLOOM_INSTALLATION_PREFIX ${CMAKE_INSTALL_PREFIX})
+set(BLOOM_SHARED_LIBRARY_PATHS "")
+
+# If any path prefixes passed to CMAKE contain a lib directory, include it in our invocation script (LD_LIBRARY_PATH)
+foreach(LIB_PATH ${CMAKE_PREFIX_PATH})
+    if(EXISTS "${LIB_PATH}/lib")
+        list(APPEND BLOOM_SHARED_LIBRARY_PATHS "${LIB_PATH}/lib")
+    endif()
+endforeach()
+
+list(
+    JOIN
+    BLOOM_SHARED_LIBRARY_PATHS
+    ":"
+    BLOOM_SHARED_LIBRARY_PATHS
+)
+
+# Generate Bloom's invocation script
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/build/distributed/bloom.sh.in"
+    "${CMAKE_BINARY_DIR}/bloom.sh"
+    @ONLY
+)
+
 install(
     TARGETS Bloom
+    DESTINATION "./bin"
+    PERMISSIONS
+        OWNER_EXECUTE OWNER_READ OWNER_WRITE
+        GROUP_EXECUTE GROUP_READ
+        WORLD_EXECUTE WORLD_READ
+)
+
+install(
+    FILES ${CMAKE_BINARY_DIR}/bloom.sh
     DESTINATION "./bin"
     PERMISSIONS
         OWNER_EXECUTE OWNER_READ OWNER_WRITE

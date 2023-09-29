@@ -2,6 +2,6 @@
 
 BloomInstallationDir=@BLOOM_INSTALLATION_PREFIX@
 
-LD_LIBRARY_PATH=$BloomInstallationDir/lib:$LD_LIBRARY_PATH;
+LD_LIBRARY_PATH=@BLOOM_SHARED_LIBRARY_PATHS@:$LD_LIBRARY_PATH;
 export LD_LIBRARY_PATH;
 exec $BloomInstallationDir/bin/bloom "$@";
