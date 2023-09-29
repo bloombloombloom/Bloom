@@ -117,11 +117,14 @@ sudo cmake --install ./ --prefix [SOME_OTHER_INSTALLATION_DIR];
   ```
   cmake [PATH_TO_BLOOM_SOURCE] -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=[PATH_TO_QT_INSTALLATION]/gcc_64/ -DCMAKE_CXX_COMPILER=/usr/bin/g++-10;
   ```
-- If Qt's shared objects cannot be found when running Bloom, you can either:
-  1. Set `LD_LIBRARY_PATH` before running Bloom: `export LD_LIBRARY_PATH=[PATH_TO_QT_INSTALLATION]/gcc_64/lib;` OR:
-  2. Update Bloom's RUNPATH (with a tool like `patchelf`)
-- Once you've installed Bloom, you'll need to create a symlink to Bloom's binary, in `/usr/bin/`, to run `bloom` without
-  having to supply the full path: `sudo ln -s /opt/bloom/bin/bloom /usr/bin/;`
+- We do **not** modify the RUNPATH of release builds. This means that running your release build, directly, may fail,
+  due to missing Qt shared libraries. We create an invocation script (`[INSTALL_DIR]/bin/bloom.sh`) upon installation,
+  which will set the `LD_LIBRARY_PATH` environment variable. You'll need to use that script to run a release build
+  (unless all of your shared libraries can be found in the typical locations).
+- For debug builds, we **do** modify the RUNPATH (as it's easier for me, during development), but you should note that
+  this is currently hardcoded to point to my Qt installation. See the root CMakeLists.txt for more.
+- Once you've installed Bloom, you'll need to create a symlink to Bloom's invocation script, in `/usr/bin/`, to run
+  `bloom` without having to supply the full path: `sudo ln -s /opt/bloom/bin/bloom.sh /usr/bin/bloom;`
 - If you're installing on Ubuntu 20.04 or older, you may need to move the installed udev rules, as they're expected
   to reside in `/lib/udev/rules.d` on those systems. Move them via: `sudo mv /usr/lib/udev/rules.d/99-bloom.rules /lib/udev/rules.d/;`
 
