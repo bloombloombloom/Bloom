@@ -30,7 +30,9 @@ namespace DebugServer::Gdb::CommandPackets
             Logger::info("Target reset complete");
 
             debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
-                "Target reset complete - use the 'continue' command to begin execution.\n"
+                "Target reset complete\n"
+                "Current PC: 0x" + Services::StringService::toHex(targetControllerService.getProgramCounter()) + "\n"
+                "Use the 'continue' command to begin execution\n"
             )));
 
         } catch (const Exception& exception) {
