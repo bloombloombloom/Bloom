@@ -117,7 +117,7 @@ EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environ
 
         if (environmentNode["debugServer"] && !environmentNode["server"]) {
             Logger::warning(
-                "The 'debugTool' key was renamed to 'tool' in v1.0.0. Please update your bloom.yaml configuration. "
+                "The 'debugServer' key was renamed to 'server' in v1.0.0. Please update your bloom.yaml configuration. "
                 "Bloom will fail to start up until this is resolved. See "
                     + Services::PathService::homeDomainName() + "/docs/v1-0-0-migration for more."
             );
