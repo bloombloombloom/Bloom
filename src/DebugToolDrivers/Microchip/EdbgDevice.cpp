@@ -1,18 +1,17 @@
 #include "EdbgDevice.hpp"
 
 #include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
+#include "src/DebugToolDrivers/Microchip/Protocols/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
 
 #include "src/TargetController/Exceptions/DeviceFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 namespace DebugToolDrivers
 {
-    using namespace Protocols::CmsisDap::Edbg::Avr;
-    using namespace Exceptions;
+    using namespace Microchip::Protocols::Edbg::Avr;
 
-    using Protocols::CmsisDap::Edbg::EdbgInterface;
-    using Protocols::CmsisDap::Edbg::EdbgTargetPowerManagementInterface;
+    using Exceptions::DeviceFailure;
+    using Exceptions::DeviceInitializationFailure;
 
     EdbgDevice::EdbgDevice(
         std::uint16_t vendorId,
@@ -28,6 +27,9 @@ namespace DebugToolDrivers
     {}
 
     void EdbgDevice::init() {
+        using Microchip::Protocols::Edbg::EdbgInterface;
+        using Microchip::Protocols::Edbg::EdbgTargetPowerManagementInterface;
+
         UsbDevice::init();
 
         this->detachKernelDriverFromInterface(this->cmsisHidInterfaceNumber);

@@ -3,6 +3,25 @@ target_sources(
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/USB/UsbDevice.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/USB/HID/HidInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/CmsisDapInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/Command.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/Response.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/AvrCommand.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/CommandFrames/AVR8Generic/ReadMemory.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/AvrResponse.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/ResponseFrames/AvrResponseFrame.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/ResponseFrames/AVR8Generic/Avr8GenericResponseFrame.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/ResponseFrames/AVR8Generic/GetDeviceId.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/ResponseFrames/Discovery/DiscoveryResponseFrame.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/ResponseFrames/HouseKeeping/HouseKeepingResponseFrame.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/ResponseFrames/AVRISP/AvrIspResponseFrame.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/ResponseFrames/EDBGControl/EdbgControlResponseFrame.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/AvrEvent.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/Events/AVR8Generic/BreakEvent.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/EdbgInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/EdbgTargetPowerManagementInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/EdbgAvr8Interface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/EdbgAvrIspInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/EdbgDevice.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AtmelICE/AtmelIce.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/PowerDebugger/PowerDebugger.cpp
@@ -13,23 +32,4 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/XplainedNano/XplainedNano.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/CuriosityNano/CuriosityNano.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/JtagIce3/JtagIce3.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/CmsisDapInterface.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/Command.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/Response.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/CommandFrames/AVR8Generic/ReadMemory.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrResponse.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AvrResponseFrame.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVR8Generic/Avr8GenericResponseFrame.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVR8Generic/GetDeviceId.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/Discovery/DiscoveryResponseFrame.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/HouseKeeping/HouseKeepingResponseFrame.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/AVRISP/AvrIspResponseFrame.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/ResponseFrames/EDBGControl/EdbgControlResponseFrame.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrEvent.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/Events/AVR8Generic/BreakEvent.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgTargetPowerManagementInterface.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.cpp
 )

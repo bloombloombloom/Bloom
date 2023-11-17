@@ -5,9 +5,9 @@
 #include <cstdint>
 
 #include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Response.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/Command.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/AvrCommand.hpp"
+
+#include "Response.hpp"
+#include "Command.hpp"
 
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
@@ -39,7 +39,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap
         }
 
         void setMinimumCommandTimeGap(std::chrono::milliseconds commandTimeGap) {
-            this->msSendCommandDelay = commandTimeGap;
+            this->commandDelay = commandTimeGap;
         }
 
         /**
@@ -120,10 +120,8 @@ namespace DebugToolDrivers::Protocols::CmsisDap
          * received a response from every previous command.
          *
          * Because of this, we may need to enforce a minimum time gap between sending CMSIS commands.
-         * Setting msSendCommandDelay to any value above 0 will enforce an x millisecond gap between each command
-         * being sent, where x is the value of msSendCommandDelay.
          */
-        std::chrono::milliseconds msSendCommandDelay = std::chrono::milliseconds(0);
+        std::chrono::milliseconds commandDelay = std::chrono::milliseconds(0);
         std::int64_t lastCommandSentTimeStamp = 0;
     };
 }

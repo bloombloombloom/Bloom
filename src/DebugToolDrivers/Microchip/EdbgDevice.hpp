@@ -7,10 +7,10 @@
 #include "src/DebugToolDrivers/DebugTool.hpp"
 #include "src/DebugToolDrivers/USB/UsbDevice.hpp"
 
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvr8Interface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/AVR/EdbgAvrIspInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/VendorSpecific/EDBG/EdbgTargetPowerManagementInterface.hpp"
+#include "Protocols/EDBG/EdbgInterface.hpp"
+#include "Protocols/EDBG/AVR/EdbgAvr8Interface.hpp"
+#include "Protocols/EDBG/AVR/EdbgAvrIspInterface.hpp"
+#include "Protocols/EDBG/EdbgTargetPowerManagementInterface.hpp"
 
 namespace DebugToolDrivers
 {
@@ -112,7 +112,7 @@ namespace DebugToolDrivers
          * The EdbgInterface class provides the ability to communicate with the EDBG device, using any of the EDBG
          * sub-protocols.
          */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::EdbgInterface> edbgInterface = nullptr;
+        std::unique_ptr<Microchip::Protocols::Edbg::EdbgInterface> edbgInterface = nullptr;
 
         /**
          * The EdbgAvr8Interface class implements the AVR8 Generic EDBG sub-protocol. This protocol is used to perform
@@ -120,7 +120,7 @@ namespace DebugToolDrivers
          *
          * The class implements the Avr8DebugInterface.
          */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
+        std::unique_ptr<Microchip::Protocols::Edbg::Avr::EdbgAvr8Interface> edbgAvr8Interface = nullptr;
 
         /**
          * The EdbgAvrIspInterface class implements the AVRISP EDBG sub-protocol, for interfacing with AVR targets via
@@ -133,7 +133,7 @@ namespace DebugToolDrivers
          * targets. We use the interface to inspect and update the "debugWire enable" (DWEN) fuse-bit, before making a
          * second connection attempt via the debugWire interface.
          */
-        std::unique_ptr<Protocols::CmsisDap::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
+        std::unique_ptr<Microchip::Protocols::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
 
         /**
          * The EdbgTargetPowerManagementInterface class implements the "EDBG Control" (EDBG_CTRL) sub-protocol, to
@@ -143,7 +143,7 @@ namespace DebugToolDrivers
          * EdbgDevice::getTargetPowerManagementInterface() member function.
          */
         std::unique_ptr<
-            Protocols::CmsisDap::Edbg::EdbgTargetPowerManagementInterface
+            Microchip::Protocols::Edbg::EdbgTargetPowerManagementInterface
         > targetPowerManagementInterface = nullptr;
 
         bool sessionStarted = false;
