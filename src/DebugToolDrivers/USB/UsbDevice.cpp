@@ -49,7 +49,6 @@ namespace Usb
         const int libusbStatusCode = ::libusb_open(this->libusbDevice.get(), &deviceHandle);
 
         if (libusbStatusCode < 0) {
-            // Failed to a device handle from libusb
             throw DeviceInitializationFailure(
                 "Failed to open USB device - error code " + std::to_string(libusbStatusCode) + " returned."
             );

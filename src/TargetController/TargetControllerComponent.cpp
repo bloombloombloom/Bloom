@@ -493,8 +493,8 @@ namespace TargetController
 
         if (!this->target->supportsDebugTool(this->debugTool.get())) {
             throw Exceptions::InvalidConfig(
-                "Debug tool (\"" + this->debugTool->getName() + "\") not supported by target (\""
-                    + targetDescriptor.name + "\")."
+                "Debug tool \"" + this->debugTool->getName() + "\" is not compatible with target \""
+                    + targetDescriptor.name + "\"."
             );
         }
 
