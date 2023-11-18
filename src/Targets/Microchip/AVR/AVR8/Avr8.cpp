@@ -240,6 +240,10 @@ namespace Targets::Microchip::Avr::Avr8Bit
 
     void Avr8::deactivate() {
         try {
+            if (this->avr8DebugInterface == nullptr) {
+                return;
+            }
+
             this->stop();
             this->clearAllBreakpoints();
 
