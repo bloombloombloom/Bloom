@@ -32,6 +32,13 @@ namespace Usb
         void init();
 
         /**
+         * Retrieves the device's serial number via the device descriptor.
+         *
+         * @return
+         */
+        std::string getSerialNumber() const;
+
+        /**
          * Selects a specific configuration on the device, using the configuration index.
          *
          * @param configurationIndex

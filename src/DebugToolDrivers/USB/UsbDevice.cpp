@@ -1,9 +1,11 @@
 #include "UsbDevice.hpp"
 
 #include <libusb-1.0/libusb.h>
+#include <array>
 
 #include "src/Logger/Logger.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
+#include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceNotFound.hpp"
 
 namespace Usb
@@ -54,6 +56,34 @@ namespace Usb
         }
 
         this->libusbDeviceHandle.reset(deviceHandle);
+    }
+
+    std::string UsbDevice::getSerialNumber() const {
+        assert(this->libusbDevice && this->libusbDeviceHandle);
+        struct ::libusb_device_descriptor desc = {};
+
+        auto statusCode = ::libusb_get_device_descriptor(this->libusbDevice.get(), &desc);
+        if (statusCode != 0) {
+            throw DeviceCommunicationFailure(
+                "Failed to retrieve USB device descriptor - status code: " + std::to_string(statusCode)
+            );
+        }
+
+        auto data = std::array<unsigned char, 256>();
+        const auto transferredBytes = ::libusb_get_string_descriptor_ascii(
+            this->libusbDeviceHandle.get(),
+            desc.iSerialNumber,
+            data.data(),
+            data.size()
+        );
+
+        if (transferredBytes <= 0) {
+            throw DeviceCommunicationFailure(
+                "Failed to retrieve serial number from USB device - status code: " + std::to_string(transferredBytes)
+            );
+        }
+
+        return std::string(data.begin(), data.begin() + transferredBytes);
     }
 
     void UsbDevice::setConfiguration(std::uint8_t configurationIndex) {
