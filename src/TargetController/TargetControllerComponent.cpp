@@ -362,6 +362,12 @@ namespace TargetController
                     return std::make_unique<DebugToolDrivers::JtagIce3>();
                 }
             },
+            {
+                "wch-link-e",
+                [] {
+                    return std::make_unique<DebugToolDrivers::Wch::WchLinkE>();
+                }
+            },
         };
     }
 

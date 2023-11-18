@@ -33,4 +33,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/XplainedNano/XplainedNano.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/CuriosityNano/CuriosityNano.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/JtagIce3/JtagIce3.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/WCH/Protocols/WchLink/WchLinkInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/WCH/WchLinkBase.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/WCH/WchLinkE/WchLinkE.cpp
 )
