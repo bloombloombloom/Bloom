@@ -3,7 +3,7 @@
 #include "src/TargetController/Exceptions/DeviceNotFound.hpp"
 #include "src/Services/PathService.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     MplabSnap::MplabSnap()
         : EdbgDevice(

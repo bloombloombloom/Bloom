@@ -311,55 +311,55 @@ namespace TargetController
             {
                 "atmel-ice",
                 [] {
-                    return std::make_unique<DebugToolDrivers::AtmelIce>();
+                    return std::make_unique<DebugToolDrivers::Microchip::AtmelIce>();
                 }
             },
             {
                 "power-debugger",
                 [] {
-                    return std::make_unique<DebugToolDrivers::PowerDebugger>();
+                    return std::make_unique<DebugToolDrivers::Microchip::PowerDebugger>();
                 }
             },
             {
                 "snap",
                 [] {
-                    return std::make_unique<DebugToolDrivers::MplabSnap>();
+                    return std::make_unique<DebugToolDrivers::Microchip::MplabSnap>();
                 }
             },
             {
                 "pickit-4",
                 [] {
-                    return std::make_unique<DebugToolDrivers::MplabPickit4>();
+                    return std::make_unique<DebugToolDrivers::Microchip::MplabPickit4>();
                 }
             },
             {
                 "xplained-pro",
                 [] {
-                    return std::make_unique<DebugToolDrivers::XplainedPro>();
+                    return std::make_unique<DebugToolDrivers::Microchip::XplainedPro>();
                 }
             },
             {
                 "xplained-mini",
                 [] {
-                    return std::make_unique<DebugToolDrivers::XplainedMini>();
+                    return std::make_unique<DebugToolDrivers::Microchip::XplainedMini>();
                 }
             },
             {
                 "xplained-nano",
                 [] {
-                    return std::make_unique<DebugToolDrivers::XplainedNano>();
+                    return std::make_unique<DebugToolDrivers::Microchip::XplainedNano>();
                 }
             },
             {
                 "curiosity-nano",
                 [] {
-                    return std::make_unique<DebugToolDrivers::CuriosityNano>();
+                    return std::make_unique<DebugToolDrivers::Microchip::CuriosityNano>();
                 }
             },
             {
                 "jtagice3",
                 [] {
-                    return std::make_unique<DebugToolDrivers::JtagIce3>();
+                    return std::make_unique<DebugToolDrivers::Microchip::JtagIce3>();
                 }
             },
             {

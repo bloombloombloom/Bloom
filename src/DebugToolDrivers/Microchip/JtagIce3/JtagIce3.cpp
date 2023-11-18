@@ -1,6 +1,6 @@
 #include "JtagIce3.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     JtagIce3::JtagIce3()
         : EdbgDevice(

@@ -5,7 +5,7 @@
 
 #include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     /**
      * The Atmel-ICE device is an EDBG (Embedded Debugger) device.

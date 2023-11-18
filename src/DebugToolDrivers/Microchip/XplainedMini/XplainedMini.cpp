@@ -1,6 +1,6 @@
 #include "XplainedMini.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     XplainedMini::XplainedMini()
         : EdbgDevice(

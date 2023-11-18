@@ -1,6 +1,6 @@
 #include "CuriosityNano.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     CuriosityNano::CuriosityNano()
         : EdbgDevice(

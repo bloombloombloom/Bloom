@@ -1,6 +1,6 @@
 #include "XplainedNano.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     XplainedNano::XplainedNano()
         : EdbgDevice(

@@ -6,7 +6,7 @@
 #include "src/TargetController/Exceptions/DeviceFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     using namespace Microchip::Protocols::Edbg::Avr;
 

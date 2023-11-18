@@ -1,6 +1,6 @@
 #include "PowerDebugger.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     PowerDebugger::PowerDebugger()
         : EdbgDevice(

@@ -5,7 +5,7 @@
 
 #include "src/DebugToolDrivers/Microchip/EdbgDevice.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     /**
      * The Xplained Mini is an evaluation board featuring an on-board debugger. The debugger is EDBG-based.

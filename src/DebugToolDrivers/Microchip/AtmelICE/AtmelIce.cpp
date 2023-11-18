@@ -1,6 +1,6 @@
 #include "AtmelIce.hpp"
 
-namespace DebugToolDrivers
+namespace DebugToolDrivers::Microchip
 {
     AtmelIce::AtmelIce()
         : EdbgDevice(
