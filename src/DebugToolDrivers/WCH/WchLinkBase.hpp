@@ -30,6 +30,8 @@ namespace DebugToolDrivers::Wch
 
         std::string getSerialNumber() override;
 
+        std::string getFirmwareVersionString() override;
+
     protected:
         WchLinkVariant variant;
 

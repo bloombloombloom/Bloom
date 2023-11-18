@@ -59,6 +59,10 @@ namespace DebugToolDrivers::Wch
         return UsbDevice::getSerialNumber();
     }
 
+    std::string WchLinkBase::getFirmwareVersionString() {
+        return "v" + this->getDeviceInfo().firmwareVersion.toString();
+    }
+
     const DeviceInfo& WchLinkBase::getDeviceInfo() const {
         if (!this->cachedDeviceInfo.has_value()) {
             this->cachedDeviceInfo = this->wchLinkInterface->getDeviceInfo();

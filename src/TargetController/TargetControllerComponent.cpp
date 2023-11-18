@@ -493,6 +493,7 @@ namespace TargetController
         Logger::info("Debug tool connected");
         Logger::info("Debug tool name: " + this->debugTool->getName());
         Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
+        Logger::info("Debug tool firmware version: " + this->debugTool->getFirmwareVersionString());
 
         this->target = targetIt->second(this->environmentConfig.targetConfig);
         const auto& targetDescriptor = this->getTargetDescriptor();

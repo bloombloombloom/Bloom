@@ -45,6 +45,8 @@ public:
 
     virtual std::string getSerialNumber() = 0;
 
+    virtual std::string getFirmwareVersionString() = 0;
+
     /**
      * All debug tools that support target power management functions must provide an implementation of the
      * TargetPowerManagementInterface class, via this function.

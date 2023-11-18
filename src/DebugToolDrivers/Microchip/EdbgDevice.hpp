@@ -75,6 +75,13 @@ namespace DebugToolDrivers
         std::string getSerialNumber() override;
 
         /**
+         * Retrieves the EDBG firmware version.
+         *
+         * @return
+         */
+        std::string getFirmwareVersionString() override;
+
+        /**
          * Starts a session with the EDBG device using the "Housekeeping" EDBG sub-protocol.
          */
         void startSession();

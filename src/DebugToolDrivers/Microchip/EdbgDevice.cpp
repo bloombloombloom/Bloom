@@ -121,6 +121,11 @@ namespace DebugToolDrivers
         return std::string(data.begin(), data.end());
     }
 
+    std::string EdbgDevice::getFirmwareVersionString() {
+        // TODO: Implement this
+        return "UNKNOWN";
+    }
+
     void EdbgDevice::startSession() {
         using namespace CommandFrames::HouseKeeping;
         using ResponseFrames::HouseKeeping::ResponseId;
