@@ -2,6 +2,7 @@ target_sources(
     Bloom
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/USB/UsbDevice.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/USB/UsbInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/USB/HID/HidInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/CmsisDapInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/Command.cpp
