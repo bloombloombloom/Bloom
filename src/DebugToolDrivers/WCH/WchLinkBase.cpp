@@ -1,15 +1,11 @@
 #include "WchLinkBase.hpp"
 
-#include "Protocols/WchLink/Commands/Control/GetDeviceInfo.hpp"
-
-#include "src/TargetController/Exceptions/DeviceFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 #include "src/Logger/Logger.hpp"
 
 namespace DebugToolDrivers::Wch
 {
-    using Exceptions::DeviceFailure;
     using Exceptions::DeviceInitializationFailure;
 
     WchLinkBase::WchLinkBase(
