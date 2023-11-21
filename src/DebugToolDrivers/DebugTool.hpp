@@ -3,12 +3,14 @@
 #include "TargetInterfaces/TargetPowerManagementInterface.hpp"
 
 #include "TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
+#include "TargetInterfaces/Microchip/AVR/AvrIspInterface.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Avr8TargetConfig.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
-#include "src/Targets/TargetRegister.hpp"
 
-#include "TargetInterfaces/Microchip/AVR/AvrIspInterface.hpp"
+#include "TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
+
+#include "src/Targets/TargetRegister.hpp"
 
 /**
  * A debug tool can be any device that provides access to the connected target. Debug tools are usually connected
@@ -94,6 +96,20 @@ public:
     virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface(
         const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
     ) {
+        return nullptr;
+    }
+
+    /**
+     * All debug tools that support interfacing with RISC-V targets must provide an implementation of the
+     * RiscVDebugInterface class, via this function.
+     *
+     * For debug tools that do not support this interface, a nullptr should be returned.
+     *
+     * Note: the caller of this function will not manage the lifetime of the returned instance.
+     *
+     * @return
+     */
+    virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* getRiscVDebugInterface() {
         return nullptr;
     }
 

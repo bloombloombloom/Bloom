@@ -32,6 +32,10 @@ namespace DebugToolDrivers::Wch
 
         std::string getFirmwareVersionString() override;
 
+        DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* getRiscVDebugInterface() override {
+            return this->wchLinkInterface.get();
+        }
+
     protected:
         WchLinkVariant variant;
 
