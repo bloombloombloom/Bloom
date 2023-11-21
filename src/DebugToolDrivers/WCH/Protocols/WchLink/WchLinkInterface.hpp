@@ -4,28 +4,66 @@
 #include <optional>
 #include <vector>
 
+#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 #include "src/DebugToolDrivers/USB/UsbInterface.hpp"
 
+#include "src/DebugToolDrivers/WCH/WchGeneric.hpp"
 #include "Commands/Command.hpp"
 
+#include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
 #include "src/DebugToolDrivers/WCH/DeviceInfo.hpp"
 
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
 namespace DebugToolDrivers::Wch::Protocols::WchLink
 {
-    class WchLinkInterface
+    /**
+     * The WchLinkInterface implements the WCH-Link protocol.
+     */
+    class WchLinkInterface: public TargetInterfaces::RiscV::RiscVDebugInterface
     {
     public:
         explicit WchLinkInterface(Usb::UsbInterface& usbInterface);
 
         DeviceInfo getDeviceInfo();
 
+        void activate(const Targets::RiscV::TargetParameters& targetParameters) override;
+
+        void deactivate() override;
+
+        std::string getDeviceId() override;
+
+        Targets::RiscV::DebugModule::RegisterValue readDebugModuleRegister(
+            Targets::RiscV::DebugModule::RegisterAddress address
+        ) override;
+
+        void writeDebugModuleRegister(
+            Targets::RiscV::DebugModule::RegisterAddress address,
+            Targets::RiscV::DebugModule::RegisterValue value
+        ) override;
+
     private:
         static constexpr std::uint8_t USB_ENDPOINT_IN = 0x81;
         static constexpr std::uint8_t USB_ENDPOINT_OUT = 0x01;
 
         Usb::UsbInterface& usbInterface;
+
+        /**
+         * The 'target activation' command returns a payload of 5 bytes.
+         *
+         * The last 4 bytes hold the WCH RISC-V target ID. Given that the 'target activation' command appears to be
+         * the only way to obtain the target ID, we cache it via WchLinkInterface::cachedTargetId and return the
+         * cached value in WchLinkInterface::getTargetId().
+         *
+         * As for the first byte in the payload, I'm not really sure what it is. It appears to be some kind of
+         * identifier for groups of WCH RISC-V targets. It's unclear. All I know is that it has some significance, as
+         * it's expected in the payload of some other commands, such as the command to set clock speed. For this
+         * reason, we have to keep hold of it via WchLinkInterface::cachedTargetGroupId.
+         */
+        std::optional<WchTargetId> cachedTargetId;
+        std::optional<std::uint8_t> cachedTargetGroupId;
+
+        void setClockSpeed(WchLinkTargetClockSpeed speed);
 
         template <class CommandType>
         auto sendCommandAndWaitForResponse(const CommandType& command) {
