@@ -166,7 +166,7 @@ namespace Targets::RiscV
     }
 
     TargetState RiscV::getState() {
-        return TargetState::STOPPED;
+        return this->readStatusRegister().anyRunning ? TargetState::RUNNING : TargetState::STOPPED;
     }
 
     TargetMemoryAddress RiscV::getProgramCounter() {
