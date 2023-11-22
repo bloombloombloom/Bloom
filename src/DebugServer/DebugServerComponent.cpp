@@ -14,6 +14,7 @@ namespace DebugServer
 
     DebugServerComponent::DebugServerComponent(const DebugServerConfig& debugServerConfig)
         : debugServerConfig(debugServerConfig)
+        , targetDescriptor((Services::TargetControllerService()).getTargetDescriptor())
     {}
 
     void DebugServerComponent::run() {
@@ -42,8 +43,13 @@ namespace DebugServer
             {
                 "avr-gdb-rsp",
                 [this] () -> std::unique_ptr<ServerInterface> {
+                    if (this->targetDescriptor.family != Targets::TargetFamily::AVR8) {
+                        throw Exceptions::Exception("The AVR GDB RSP server is only compatible with AVR8 targets.");
+                    }
+
                     return std::make_unique<DebugServer::Gdb::AvrGdb::AvrGdbRsp>(
                         this->debugServerConfig,
+                        this->targetDescriptor,
                         *(this->eventListener.get()),
                         this->interruptEventNotifier
                     );

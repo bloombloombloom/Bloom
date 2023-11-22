@@ -14,10 +14,17 @@
 
 namespace Targets
 {
+    enum class TargetFamily: std::uint8_t
+    {
+        AVR8,
+        RISC_V,
+    };
+
     struct TargetDescriptor
     {
-        std::string name;
         std::string id;
+        TargetFamily family;
+        std::string name;
         std::string vendorName;
         std::map<TargetMemoryType, TargetMemoryDescriptor> memoryDescriptorsByType;
         std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor> registerDescriptorsById;
@@ -28,6 +35,7 @@ namespace Targets
 
         TargetDescriptor(
             const std::string& id,
+            TargetFamily family,
             const std::string& name,
             const std::string& vendorName,
             const std::map<TargetMemoryType, TargetMemoryDescriptor>& memoryDescriptorsByType,
@@ -36,8 +44,9 @@ namespace Targets
             const std::vector<TargetVariant>& variants,
             TargetMemoryType programMemoryType
         )
-            : name(name)
-            , id(id)
+            : id(id)
+            , family(family)
+            , name(name)
             , vendorName(vendorName)
             , memoryDescriptorsByType(memoryDescriptorsByType)
             , registerDescriptorsById(registerDescriptorsById)

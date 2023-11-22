@@ -26,11 +26,12 @@ namespace DebugServer::Gdb::AvrGdb
 
     AvrGdbRsp::AvrGdbRsp(
         const DebugServerConfig& debugServerConfig,
+        const Targets::TargetDescriptor& targetDescriptor,
         EventListener& eventListener,
         EventFdNotifier& eventNotifier
     )
         : GdbRspDebugServer(debugServerConfig, eventListener, eventNotifier)
-        , gdbTargetDescriptor(TargetDescriptor(this->targetControllerService.getTargetDescriptor()))
+        , gdbTargetDescriptor(targetDescriptor)
     {}
 
     DebugSession* AvrGdbRsp::startDebugSession(Connection&& connection) {

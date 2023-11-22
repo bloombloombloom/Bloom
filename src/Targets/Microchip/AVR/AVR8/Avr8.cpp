@@ -268,6 +268,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
     TargetDescriptor Avr8::getDescriptor() {
         auto descriptor = TargetDescriptor(
             this->signature.toHex(),
+            TargetFamily::AVR8,
             this->name,
             "Microchip",
             this->targetMemoryDescriptorsByType,

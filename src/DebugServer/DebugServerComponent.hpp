@@ -7,11 +7,15 @@
 
 #include "src/Helpers/Thread.hpp"
 #include "src/ProjectConfig.hpp"
+
 #include "src/Helpers/EventFdNotifier.hpp"
 #include "src/EventManager/EventListener.hpp"
 #include "src/EventManager/Events/Events.hpp"
 
 #include "ServerInterface.hpp"
+
+#include "src/Services/TargetControllerService.hpp"
+#include "src/Targets/TargetDescriptor.hpp"
 
 namespace DebugServer
 {
@@ -46,6 +50,11 @@ namespace DebugServer
          * Project configuration for the debug server (extracted from the user project's bloom.yaml).
          */
         DebugServerConfig debugServerConfig;
+
+        /**
+         * The current target descriptor.
+         */
+        Targets::TargetDescriptor targetDescriptor;
 
         /**
          * This EventFdNotifier is injected into this->eventListener. It can be used by server implementations to

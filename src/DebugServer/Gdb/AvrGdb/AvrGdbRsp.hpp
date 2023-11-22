@@ -14,6 +14,7 @@ namespace DebugServer::Gdb::AvrGdb
     public:
         AvrGdbRsp(
             const DebugServerConfig& debugServerConfig,
+            const Targets::TargetDescriptor& targetDescriptor,
             EventListener& eventListener,
             EventFdNotifier& eventNotifier
         );
