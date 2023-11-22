@@ -29,7 +29,7 @@ namespace Targets::RiscV::DebugModule::Registers
         bool stickyUnavailableBits:1 = false;
         bool ndmResetPending:1 = false;
 
-        explicit StatusRegister(RegisterValue registerValue)
+        constexpr explicit StatusRegister(RegisterValue registerValue)
             : version(static_cast<std::uint8_t>(registerValue & 0x0F))
             , validConfigStructurePointer(static_cast<bool>(registerValue & (0x01 << 4)))
             , supportsResetHalt(static_cast<bool>(registerValue & (0x01 << 5)))
@@ -52,7 +52,7 @@ namespace Targets::RiscV::DebugModule::Registers
             , ndmResetPending(static_cast<bool>(registerValue & (0x01 << 24)))
         {}
 
-        RegisterValue value() const {
+        constexpr RegisterValue value() const {
             return RegisterValue{0}
                 | static_cast<RegisterValue>(this->version)
                 | static_cast<RegisterValue>(this->validConfigStructurePointer) << 4

@@ -6,14 +6,14 @@
 
 namespace Targets::RiscV::DebugModule::Registers
 {
-    enum HartSelectionMode: std::uint8_t
-    {
-        SINGLE = 0x00,
-        MULTI = 0x01,
-    };
-
     struct ControlRegister
     {
+        enum HartSelectionMode: std::uint8_t
+        {
+            SINGLE = 0x00,
+            MULTI = 0x01,
+        };
+
         bool debugModuleActive:1 = false;
         bool ndmReset:1 = false;
         bool clearResetHaltRequest:1 = false;
@@ -30,7 +30,7 @@ namespace Targets::RiscV::DebugModule::Registers
 
         ControlRegister() = default;
 
-        explicit ControlRegister(RegisterValue registerValue)
+        constexpr explicit ControlRegister(RegisterValue registerValue)
             : debugModuleActive(static_cast<bool>(registerValue & 0x01))
             , ndmReset(static_cast<bool>(registerValue & (0x01 << 1)))
             , clearResetHaltRequest(static_cast<bool>(registerValue & (0x01 << 2)))
@@ -46,7 +46,7 @@ namespace Targets::RiscV::DebugModule::Registers
             , haltRequest(static_cast<bool>(registerValue & static_cast<std::uint32_t>(0x01 << 31)))
         {}
 
-        RegisterValue value() const {
+        constexpr RegisterValue value() const {
             return RegisterValue{0}
                 | static_cast<RegisterValue>(this->debugModuleActive)
                 | static_cast<RegisterValue>(this->ndmReset) << 1
