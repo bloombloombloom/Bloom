@@ -12,8 +12,6 @@
 
 #include "src/Logger/Logger.hpp"
 
-#include "src/Targets/RiscV/DebugModule/Registers/ControlRegister.hpp"
-
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
 namespace DebugToolDrivers::Wch::Protocols::WchLink
