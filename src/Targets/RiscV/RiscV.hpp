@@ -111,9 +111,10 @@ namespace Targets::RiscV
         RegisterValue readRegister(Registers::RegisterNumber number);
         void writeRegister(Registers::RegisterNumber number, RegisterValue value);
 
+        void writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister& controlRegister);
+
         void writeDebugControlStatusRegister(const Registers::DebugControlStatusRegister& controlRegister);
 
-        void writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister &controlRegister);
         void executeAbstractCommand(const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister);
     };
 }

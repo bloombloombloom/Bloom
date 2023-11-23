@@ -9,6 +9,8 @@
 #include "src/Exceptions/Exception.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 
+#include "src/Services/StringService.hpp"
+
 #include "src/Logger/Logger.hpp"
 
 namespace Targets::RiscV
@@ -354,7 +356,7 @@ namespace Targets::RiscV
         this->executeAbstractCommand(command);
     }
 
-    void RiscV::writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister &controlRegister) {
+    void RiscV::writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister& controlRegister) {
         this->riscVDebugInterface->writeDebugModuleRegister(
             RegisterAddresses::CONTROL_REGISTER,
             controlRegister.value()
