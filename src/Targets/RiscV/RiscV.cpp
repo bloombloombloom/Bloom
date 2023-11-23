@@ -14,6 +14,8 @@
 namespace Targets::RiscV
 {
     using Registers::RegisterNumber;
+    using Registers::DebugControlStatusRegister;
+
     using DebugModule::Registers::RegisterAddresses;
     using DebugModule::Registers::ControlRegister;
     using DebugModule::Registers::StatusRegister;
@@ -142,7 +144,23 @@ namespace Targets::RiscV
     }
 
     void RiscV::step() {
+        auto debugControlStatusRegister = this->readDebugControlStatusRegister();
+        debugControlStatusRegister.step = true;
 
+        this->writeDebugControlStatusRegister(debugControlStatusRegister);
+
+        auto controlRegister = ControlRegister();
+        controlRegister.debugModuleActive = true;
+        controlRegister.selectedHartIndex = this->selectedHartIndex;
+        controlRegister.resumeRequest = true;
+
+        this->writeDebugModuleControlRegister(controlRegister);
+
+        controlRegister.resumeRequest = false;
+        this->writeDebugModuleControlRegister(controlRegister);
+
+        debugControlStatusRegister.step = false;
+        this->writeDebugControlStatusRegister(debugControlStatusRegister);
     }
 
     void RiscV::reset() {
@@ -295,6 +313,10 @@ namespace Targets::RiscV
         );
     }
 
+    DebugControlStatusRegister RiscV::readDebugControlStatusRegister() {
+        return DebugControlStatusRegister(this->readRegister(RegisterNumber::DEBUG_CONTROL_STATUS_REGISTER));
+    }
+
     RegisterValue RiscV::readRegister(RegisterNumber number) {
         using DebugModule::Registers::RegisterAccessControlField;
 
@@ -337,6 +359,10 @@ namespace Targets::RiscV
             RegisterAddresses::CONTROL_REGISTER,
             controlRegister.value()
         );
+    }
+
+    void RiscV::writeDebugControlStatusRegister(const DebugControlStatusRegister& controlRegister) {
+        this->writeRegister(RegisterNumber::DEBUG_CONTROL_STATUS_REGISTER, controlRegister.value());
     }
 
     void RiscV::executeAbstractCommand(

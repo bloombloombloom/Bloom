@@ -9,6 +9,8 @@
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 
 #include "src/Targets/RiscV/RiscVGeneric.hpp"
+#include "src/Targets/RiscV/Registers/DebugControlStatusRegister.hpp"
+
 #include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
 #include "src/Targets/RiscV/DebugModule/Registers/ControlRegister.hpp"
 #include "src/Targets/RiscV/DebugModule/Registers/StatusRegister.hpp"
@@ -104,10 +106,12 @@ namespace Targets::RiscV
         DebugModule::Registers::StatusRegister readDebugModuleStatusRegister();
         DebugModule::Registers::AbstractControlStatusRegister readDebugModuleAbstractControlStatusRegister();
 
+        Registers::DebugControlStatusRegister readDebugControlStatusRegister();
 
         RegisterValue readRegister(Registers::RegisterNumber number);
         void writeRegister(Registers::RegisterNumber number, RegisterValue value);
 
+        void writeDebugControlStatusRegister(const Registers::DebugControlStatusRegister& controlRegister);
 
         void writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister &controlRegister);
         void executeAbstractCommand(const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister);
