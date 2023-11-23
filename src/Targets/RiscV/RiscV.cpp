@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include "DebugModule/Registers/RegisterAddresses.hpp"
+#include "DebugModule/Registers/RegisterAccessControlField.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
@@ -12,6 +13,7 @@
 
 namespace Targets::RiscV
 {
+    using Registers::RegisterNumber;
     using DebugModule::Registers::RegisterAddresses;
     using DebugModule::Registers::ControlRegister;
     using DebugModule::Registers::StatusRegister;
@@ -55,6 +57,13 @@ namespace Targets::RiscV
         Logger::info("Selected RISC-V hart index: " + std::to_string(this->selectedHartIndex));
 
         this->stop();
+
+        auto debugControlStatusRegister = this->readDebugControlStatusRegister();
+        debugControlStatusRegister.breakUMode = true;
+        debugControlStatusRegister.breakSMode = true;
+        debugControlStatusRegister.breakMMode = true;
+
+        this->writeDebugControlStatusRegister(debugControlStatusRegister);
     }
 
     void RiscV::deactivate() {
@@ -284,6 +293,43 @@ namespace Targets::RiscV
         return AbstractControlStatusRegister(
             this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::ABSTRACT_CONTROL_STATUS_REGISTER)
         );
+    }
+
+    RegisterValue RiscV::readRegister(RegisterNumber number) {
+        using DebugModule::Registers::RegisterAccessControlField;
+
+        auto command = AbstractCommandRegister();
+        command.commandType = AbstractCommandRegister::CommandType::REGISTER_ACCESS;
+        command.control = RegisterAccessControlField(
+            number,
+            false,
+            true,
+            false,
+            false,
+            RegisterAccessControlField::RegisterSize::SIZE_32
+        ).value();
+
+        this->executeAbstractCommand(command);
+
+        return this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::ABSTRACT_DATA_0);
+    }
+
+    void RiscV::writeRegister(Registers::RegisterNumber number, RegisterValue value) {
+        using DebugModule::Registers::RegisterAccessControlField;
+
+        auto command = AbstractCommandRegister();
+        command.commandType = AbstractCommandRegister::CommandType::REGISTER_ACCESS;
+        command.control = RegisterAccessControlField(
+            number,
+            true,
+            true,
+            false,
+            false,
+            RegisterAccessControlField::RegisterSize::SIZE_32
+        ).value();
+
+        this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddresses::ABSTRACT_DATA_0, value);
+        this->executeAbstractCommand(command);
     }
 
     void RiscV::writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister &controlRegister) {
