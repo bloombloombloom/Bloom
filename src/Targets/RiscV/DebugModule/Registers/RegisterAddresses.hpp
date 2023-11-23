@@ -2,9 +2,11 @@
 
 #include <cstdint>
 
+#include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
+
 namespace Targets::RiscV::DebugModule::Registers
 {
-    enum RegisterAddresses: std::uint8_t
+    enum class RegisterAddress: ::Targets::RiscV::DebugModule::RegisterAddress
     {
         ABSTRACT_DATA_0 = 0x04,
         CONTROL_REGISTER = 0x10,

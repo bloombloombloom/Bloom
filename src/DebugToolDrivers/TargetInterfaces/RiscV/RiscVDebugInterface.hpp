@@ -3,6 +3,8 @@
 #include <cstdint>
 
 #include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
+#include "src/Targets/RiscV/DebugModule/Registers/RegisterAddresses.hpp"
+
 #include "src/Targets/RiscV/TargetParameters.hpp"
 
 namespace DebugToolDrivers::TargetInterfaces::RiscV
@@ -63,6 +65,12 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
             Targets::RiscV::DebugModule::RegisterAddress address
         ) = 0;
 
+        Targets::RiscV::DebugModule::RegisterValue readDebugModuleRegister(
+            Targets::RiscV::DebugModule::Registers::RegisterAddress address
+        ) {
+            return this->readDebugModuleRegister(static_cast<Targets::RiscV::DebugModule::RegisterAddress>(address));
+        };
+
         /**
          * Should write a value to a debug module register.
          *
@@ -76,5 +84,15 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
             Targets::RiscV::DebugModule::RegisterAddress address,
             Targets::RiscV::DebugModule::RegisterValue value
         ) = 0;
+
+        void writeDebugModuleRegister(
+            Targets::RiscV::DebugModule::Registers::RegisterAddress address,
+            Targets::RiscV::DebugModule::RegisterValue value
+        ) {
+            return this->writeDebugModuleRegister(
+                static_cast<Targets::RiscV::DebugModule::RegisterAddress>(address),
+                value
+            );
+        };
     };
 }

@@ -18,7 +18,7 @@ namespace Targets::RiscV
     using Registers::RegisterNumber;
     using Registers::DebugControlStatusRegister;
 
-    using DebugModule::Registers::RegisterAddresses;
+    using DebugModule::Registers::RegisterAddress;
     using DebugModule::Registers::ControlRegister;
     using DebugModule::Registers::StatusRegister;
     using DebugModule::Registers::AbstractControlStatusRegister;
@@ -301,17 +301,19 @@ namespace Targets::RiscV
 
     ControlRegister RiscV::readDebugModuleControlRegister() {
         return ControlRegister(
-            this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::CONTROL_REGISTER)
+            this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::CONTROL_REGISTER)
         );
     }
 
     StatusRegister RiscV::readDebugModuleStatusRegister() {
-        return StatusRegister(this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::STATUS_REGISTER));
+        return StatusRegister(
+            this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::STATUS_REGISTER)
+        );
     }
 
     AbstractControlStatusRegister RiscV::readDebugModuleAbstractControlStatusRegister() {
         return AbstractControlStatusRegister(
-            this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::ABSTRACT_CONTROL_STATUS_REGISTER)
+            this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::ABSTRACT_CONTROL_STATUS_REGISTER)
         );
     }
 
@@ -335,7 +337,7 @@ namespace Targets::RiscV
 
         this->executeAbstractCommand(command);
 
-        return this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::ABSTRACT_DATA_0);
+        return this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
     }
 
     void RiscV::writeRegister(Registers::RegisterNumber number, RegisterValue value) {
@@ -352,13 +354,13 @@ namespace Targets::RiscV
             RegisterAccessControlField::RegisterSize::SIZE_32
         ).value();
 
-        this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddresses::ABSTRACT_DATA_0, value);
+        this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0, value);
         this->executeAbstractCommand(command);
     }
 
     void RiscV::writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister& controlRegister) {
         this->riscVDebugInterface->writeDebugModuleRegister(
-            RegisterAddresses::CONTROL_REGISTER,
+            RegisterAddress::CONTROL_REGISTER,
             controlRegister.value()
         );
     }
@@ -371,7 +373,7 @@ namespace Targets::RiscV
         const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister
     ) {
         this->riscVDebugInterface->writeDebugModuleRegister(
-            RegisterAddresses::ABSTRACT_COMMAND_REGISTER,
+            RegisterAddress::ABSTRACT_COMMAND_REGISTER,
             abstractCommandRegister.value()
         );
 
