@@ -15,7 +15,7 @@ namespace Targets::RiscV::DebugModule::Registers
             SIZE_128 = 0x04,
         };
 
-        ::Targets::RiscV::Registers::RegisterNumber registerNumber;
+        RegisterNumber registerNumber;
         bool write:1 = false;
         bool transfer:1 = false;
         bool postExecute:1 = false;
@@ -25,7 +25,7 @@ namespace Targets::RiscV::DebugModule::Registers
         RegisterAccessControlField() = default;
 
         RegisterAccessControlField(
-            ::Targets::RiscV::Registers::RegisterNumber registerNumber,
+            RegisterNumber registerNumber,
             bool write,
             bool transfer,
             bool postExecute,
@@ -41,7 +41,7 @@ namespace Targets::RiscV::DebugModule::Registers
         {}
 
         constexpr explicit RegisterAccessControlField(std::uint32_t controlValue)
-            : registerNumber(static_cast<::Targets::RiscV::Registers::RegisterNumber>(controlValue & 0xFFFF))
+            : registerNumber(static_cast<RegisterNumber>(controlValue & 0xFFFF))
             , write(static_cast<bool>(controlValue & (0x01 << 16)))
             , transfer(static_cast<bool>(controlValue & (0x01 << 17)))
             , postExecute(static_cast<bool>(controlValue & (0x01 << 18)))

@@ -2,11 +2,10 @@
 
 #include <cstdint>
 
-#include "Registers/RegisterNumbers.hpp"
-
 namespace Targets::RiscV
 {
     using RegisterValue = std::uint32_t;
+    using RegisterNumber = std::uint16_t;
 
     enum class PrivilegeMode: std::uint8_t
     {

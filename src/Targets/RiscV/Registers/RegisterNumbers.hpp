@@ -6,7 +6,7 @@
 
 namespace Targets::RiscV::Registers
 {
-    enum class RegisterNumber: std::uint16_t
+    enum class RegisterNumber: ::Targets::RiscV::RegisterNumber
     {
         DEBUG_CONTROL_STATUS_REGISTER = 0x07b0,
         DEBUG_PROGRAM_COUNTER_REGISTER = 0x07b1,
