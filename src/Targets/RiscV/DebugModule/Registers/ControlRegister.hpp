@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cassert>
 
 #include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
 
@@ -47,6 +48,8 @@ namespace Targets::RiscV::DebugModule::Registers
         {}
 
         constexpr RegisterValue value() const {
+            assert(this->selectedHartIndex <= 0xFFFFF);
+
             return RegisterValue{0}
                 | static_cast<RegisterValue>(this->debugModuleActive)
                 | static_cast<RegisterValue>(this->ndmReset) << 1

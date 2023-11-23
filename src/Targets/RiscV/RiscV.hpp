@@ -95,11 +95,11 @@ namespace Targets::RiscV
         std::set<DebugModule::HartIndex> hartIndices;
         DebugModule::HartIndex selectedHartIndex = 0;
 
-        void discoverHartIndices();
+        std::set<DebugModule::HartIndex> discoverHartIndices();
 
-        DebugModule::Registers::ControlRegister readControlRegister();
-        DebugModule::Registers::StatusRegister readStatusRegister();
+        DebugModule::Registers::ControlRegister readDebugModuleControlRegister();
+        DebugModule::Registers::StatusRegister readDebugModuleStatusRegister();
 
-        void writeControlRegister(const DebugModule::Registers::ControlRegister& controlRegister);
+        void writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister &controlRegister);
     };
 }

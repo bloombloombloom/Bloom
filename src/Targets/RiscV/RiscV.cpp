@@ -6,6 +6,7 @@
 #include "DebugModule/Registers/RegisterAddresses.hpp"
 
 #include "src/Exceptions/Exception.hpp"
+#include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -30,7 +31,12 @@ namespace Targets::RiscV
     void RiscV::activate() {
         this->riscVDebugInterface->activate({});
 
-        this->discoverHartIndices();
+        this->hartIndices = this->discoverHartIndices();
+
+        if (this->hartIndices.empty()) {
+            throw Exceptions::TargetOperationFailure("Failed to discover a single RISC-V hart");
+        }
+
         Logger::debug("Discovered RISC-V harts: " + std::to_string(this->hartIndices.size()));
 
         /*
@@ -82,18 +88,18 @@ namespace Targets::RiscV
         controlRegister.selectedHartIndex = this->selectedHartIndex;
         controlRegister.resumeRequest = true;
 
-        this->writeControlRegister(controlRegister);
+        this->writeDebugModuleControlRegister(controlRegister);
 
         constexpr auto maxAttempts = 10;
-        auto statusRegister = this->readStatusRegister();
+        auto statusRegister = this->readDebugModuleStatusRegister();
 
         for (auto attempts = 1; !statusRegister.allResumeAcknowledge && attempts <= maxAttempts; ++attempts) {
             std::this_thread::sleep_for(std::chrono::microseconds(10));
-            statusRegister = this->readStatusRegister();
+            statusRegister = this->readDebugModuleStatusRegister();
         }
 
         controlRegister.resumeRequest = false;
-        this->writeControlRegister(controlRegister);
+        this->writeDebugModuleControlRegister(controlRegister);
 
         if (!statusRegister.allResumeAcknowledge) {
             throw Exceptions::Exception("Target took too long to acknowledge resume request");
@@ -106,18 +112,18 @@ namespace Targets::RiscV
         controlRegister.selectedHartIndex = this->selectedHartIndex;
         controlRegister.haltRequest = true;
 
-        this->writeControlRegister(controlRegister);
+        this->writeDebugModuleControlRegister(controlRegister);
 
         constexpr auto maxAttempts = 10;
-        auto statusRegister = this->readStatusRegister();
+        auto statusRegister = this->readDebugModuleStatusRegister();
 
         for (auto attempts = 1; !statusRegister.allHalted && attempts <= maxAttempts; ++attempts) {
             std::this_thread::sleep_for(std::chrono::microseconds(10));
-            statusRegister = this->readStatusRegister();
+            statusRegister = this->readDebugModuleStatusRegister();
         }
 
         controlRegister.haltRequest = false;
-        this->writeControlRegister(controlRegister);
+        this->writeDebugModuleControlRegister(controlRegister);
 
         if (!statusRegister.allHalted) {
             throw Exceptions::Exception("Target took too long to halt selected harts");
@@ -182,7 +188,7 @@ namespace Targets::RiscV
     }
 
     TargetState RiscV::getState() {
-        return this->readStatusRegister().anyRunning ? TargetState::RUNNING : TargetState::STOPPED;
+        return this->readDebugModuleStatusRegister().anyRunning ? TargetState::RUNNING : TargetState::STOPPED;
     }
 
     TargetMemoryAddress RiscV::getProgramCounter() {
@@ -220,7 +226,9 @@ namespace Targets::RiscV
         return false;
     }
 
-    void RiscV::discoverHartIndices() {
+    std::set<DebugModule::HartIndex> RiscV::discoverHartIndices() {
+        auto hartIndices = std::set<DebugModule::HartIndex>();
+
         /*
          * We can obtain the maximum hart index by setting all of the hartsel bits in the control register and then
          * reading the value back.
@@ -229,8 +237,8 @@ namespace Targets::RiscV
         controlRegister.debugModuleActive = true;
         controlRegister.selectedHartIndex = 0xFFFFF;
 
-        this->writeControlRegister(controlRegister);
-        controlRegister = this->readControlRegister();
+        this->writeDebugModuleControlRegister(controlRegister);
+        controlRegister = this->readDebugModuleControlRegister();
 
         for (DebugModule::HartIndex hartIndex = 0; hartIndex <= controlRegister.selectedHartIndex; ++hartIndex) {
             /*
@@ -241,34 +249,36 @@ namespace Targets::RiscV
             controlRegister.debugModuleActive = true;
             controlRegister.selectedHartIndex = hartIndex;
 
-            this->writeControlRegister(controlRegister);
+            this->writeDebugModuleControlRegister(controlRegister);
 
             /*
              * It's worth noting that some RISC-V targets **do not** set the non-existent flags. I'm not sure why.
-             * Have they just hardwired hartsel to 0 because they only support a single hart, preventing the selection
+             * Has hartsel been hardwired to 0 because they only support a single hart, preventing the selection
              * of non-existent harts?
              *
              * Relying on the maximum hart index seems to be all we can do in this case.
              */
-            if (this->readStatusRegister().anyNonExistent) {
+            if (this->readDebugModuleStatusRegister().anyNonExistent) {
                 break;
             }
 
-            this->hartIndices.insert(hartIndex);
+            hartIndices.insert(hartIndex);
         }
+
+        return hartIndices;
     }
 
-    ControlRegister RiscV::readControlRegister() {
+    ControlRegister RiscV::readDebugModuleControlRegister() {
         return ControlRegister(
             this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::CONTROL_REGISTER)
         );
     }
 
-    StatusRegister RiscV::readStatusRegister() {
+    StatusRegister RiscV::readDebugModuleStatusRegister() {
         return StatusRegister(this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::STATUS_REGISTER));
     }
 
-    void RiscV::writeControlRegister(const ControlRegister& controlRegister) {
+    void RiscV::writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister &controlRegister) {
         this->riscVDebugInterface->writeDebugModuleRegister(
             RegisterAddresses::CONTROL_REGISTER,
             controlRegister.value()

@@ -67,7 +67,7 @@ namespace TargetController
             this->startup();
 
             this->setThreadStateAndEmitEvent(ThreadState::READY);
-            Logger::debug("TargetController ready and waiting for commands");
+            Logger::debug("TargetController ready");
 
             while (this->getThreadState() == ThreadState::READY) {
                 this->fireTargetEvents();
