@@ -30,7 +30,21 @@ namespace Targets::RiscV
     void RiscV::activate() {
         this->riscVDebugInterface->activate({});
 
-        // TODO: Select a hart here.
+        this->discoverHartIndices();
+        Logger::debug("Discovered RISC-V harts: " + std::to_string(this->hartIndices.size()));
+
+        /*
+         * We only support MCUs with a single hart, for now. So select the first index and ensure that this is
+         * explicitly communicated to the user.
+         */
+        if (this->hartIndices.size() > 1) {
+            Logger::warning(
+                "Bloom only supports debugging a single RISC-V hart - selecting first available hart"
+            );
+        }
+
+        this->selectedHartIndex = *(this->hartIndices.begin());
+        Logger::info("Selected RISC-V hart index: " + std::to_string(this->selectedHartIndex));
 
         this->stop();
     }
@@ -65,6 +79,7 @@ namespace Targets::RiscV
     void RiscV::run(std::optional<TargetMemoryAddress> toAddress) {
         auto controlRegister = ControlRegister();
         controlRegister.debugModuleActive = true;
+        controlRegister.selectedHartIndex = this->selectedHartIndex;
         controlRegister.resumeRequest = true;
 
         this->writeControlRegister(controlRegister);
@@ -88,6 +103,7 @@ namespace Targets::RiscV
     void RiscV::stop() {
         auto controlRegister = ControlRegister();
         controlRegister.debugModuleActive = true;
+        controlRegister.selectedHartIndex = this->selectedHartIndex;
         controlRegister.haltRequest = true;
 
         this->writeControlRegister(controlRegister);
@@ -202,6 +218,44 @@ namespace Targets::RiscV
 
     bool RiscV::programmingModeEnabled() {
         return false;
+    }
+
+    void RiscV::discoverHartIndices() {
+        /*
+         * We can obtain the maximum hart index by setting all of the hartsel bits in the control register and then
+         * reading the value back.
+         */
+        auto controlRegister = ControlRegister();
+        controlRegister.debugModuleActive = true;
+        controlRegister.selectedHartIndex = 0xFFFFF;
+
+        this->writeControlRegister(controlRegister);
+        controlRegister = this->readControlRegister();
+
+        for (DebugModule::HartIndex hartIndex = 0; hartIndex <= controlRegister.selectedHartIndex; ++hartIndex) {
+            /*
+             * We can't just assume that everything between 0 and the maximum hart index are valid hart indices. We
+             * have to test each index until we find one that is non-existent.
+             */
+            controlRegister = ControlRegister();
+            controlRegister.debugModuleActive = true;
+            controlRegister.selectedHartIndex = hartIndex;
+
+            this->writeControlRegister(controlRegister);
+
+            /*
+             * It's worth noting that some RISC-V targets **do not** set the non-existent flags. I'm not sure why.
+             * Have they just hardwired hartsel to 0 because they only support a single hart, preventing the selection
+             * of non-existent harts?
+             *
+             * Relying on the maximum hart index seems to be all we can do in this case.
+             */
+            if (this->readStatusRegister().anyNonExistent) {
+                break;
+            }
+
+            this->hartIndices.insert(hartIndex);
+        }
     }
 
     ControlRegister RiscV::readControlRegister() {

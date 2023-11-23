@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <set>
 
 #include "src/Targets/Target.hpp"
 #include "src/DebugToolDrivers/DebugTool.hpp"
@@ -90,6 +91,11 @@ namespace Targets::RiscV
     protected:
         DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* riscVDebugInterface = nullptr;
         std::string name;
+
+        std::set<DebugModule::HartIndex> hartIndices;
+        DebugModule::HartIndex selectedHartIndex = 0;
+
+        void discoverHartIndices();
 
         DebugModule::Registers::ControlRegister readControlRegister();
         DebugModule::Registers::StatusRegister readStatusRegister();

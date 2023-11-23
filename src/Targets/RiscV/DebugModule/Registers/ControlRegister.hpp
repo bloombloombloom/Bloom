@@ -20,7 +20,7 @@ namespace Targets::RiscV::DebugModule::Registers
         bool setResetHaltRequest:1 = false;
         bool clearKeepAlive:1 = false;
         bool setKeepAlive:1 = false;
-        HartIndex selectedHartIndex:20 = 0;
+        HartIndex selectedHartIndex = 0;
         HartSelectionMode hartSelectionMode:1 = HartSelectionMode::SINGLE;
         bool acknowledgeUnavailableHarts:1 = false;
         bool acknowledgeHaveReset:1 = false;
@@ -54,7 +54,7 @@ namespace Targets::RiscV::DebugModule::Registers
                 | static_cast<RegisterValue>(this->setResetHaltRequest) << 3
                 | static_cast<RegisterValue>(this->clearKeepAlive) << 4
                 | static_cast<RegisterValue>(this->setKeepAlive) << 5
-                | static_cast<RegisterValue>(this->selectedHartIndex >> 10) << 6
+                | static_cast<RegisterValue>((this->selectedHartIndex & 0xFFFFF) >> 10) << 6
                 | static_cast<RegisterValue>(this->selectedHartIndex & 0x3FF) << 16
                 | static_cast<RegisterValue>(this->hartSelectionMode) << 26
                 | static_cast<RegisterValue>(this->acknowledgeUnavailableHarts) << 27
