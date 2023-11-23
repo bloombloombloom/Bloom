@@ -15,6 +15,8 @@ namespace Targets::RiscV
     using DebugModule::Registers::RegisterAddresses;
     using DebugModule::Registers::ControlRegister;
     using DebugModule::Registers::StatusRegister;
+    using DebugModule::Registers::AbstractControlStatusRegister;
+    using DebugModule::Registers::AbstractCommandRegister;
 
     RiscV::RiscV(const TargetConfig& targetConfig)
         : name("CH32X035C8T6") // TODO: TDF
@@ -278,10 +280,43 @@ namespace Targets::RiscV
         return StatusRegister(this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::STATUS_REGISTER));
     }
 
+    AbstractControlStatusRegister RiscV::readDebugModuleAbstractControlStatusRegister() {
+        return AbstractControlStatusRegister(
+            this->riscVDebugInterface->readDebugModuleRegister(RegisterAddresses::ABSTRACT_CONTROL_STATUS_REGISTER)
+        );
+    }
+
     void RiscV::writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister &controlRegister) {
         this->riscVDebugInterface->writeDebugModuleRegister(
             RegisterAddresses::CONTROL_REGISTER,
             controlRegister.value()
         );
+    }
+
+    void RiscV::executeAbstractCommand(
+        const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister
+    ) {
+        this->riscVDebugInterface->writeDebugModuleRegister(
+            RegisterAddresses::ABSTRACT_COMMAND_REGISTER,
+            abstractCommandRegister.value()
+        );
+
+        auto abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
+        if (abstractStatusRegister.commandError != AbstractControlStatusRegister::CommandError::NONE) {
+            throw Exceptions::Exception(
+                "Failed to execute abstract command - error: "
+                    + Services::StringService::toHex(abstractStatusRegister.commandError)
+            );
+        }
+
+        constexpr auto maxAttempts = 10;
+        for (auto attempts = 1; abstractStatusRegister.busy && attempts <= maxAttempts; ++attempts) {
+            std::this_thread::sleep_for(std::chrono::microseconds(10));
+            abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
+        }
+
+        if (abstractStatusRegister.busy) {
+            throw Exceptions::Exception("Abstract command took too long to execute");
+        }
     }
 }

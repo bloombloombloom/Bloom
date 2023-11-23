@@ -11,6 +11,8 @@
 #include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
 #include "src/Targets/RiscV/DebugModule/Registers/ControlRegister.hpp"
 #include "src/Targets/RiscV/DebugModule/Registers/StatusRegister.hpp"
+#include "src/Targets/RiscV/DebugModule/Registers/AbstractControlStatusRegister.hpp"
+#include "src/Targets/RiscV/DebugModule/Registers/AbstractCommandRegister.hpp"
 
 namespace Targets::RiscV
 {
@@ -99,7 +101,10 @@ namespace Targets::RiscV
 
         DebugModule::Registers::ControlRegister readDebugModuleControlRegister();
         DebugModule::Registers::StatusRegister readDebugModuleStatusRegister();
+        DebugModule::Registers::AbstractControlStatusRegister readDebugModuleAbstractControlStatusRegister();
+
 
         void writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister &controlRegister);
+        void executeAbstractCommand(const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister);
     };
 }
