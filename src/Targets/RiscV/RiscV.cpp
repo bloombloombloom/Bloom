@@ -223,7 +223,7 @@ namespace Targets::RiscV
     }
 
     TargetMemoryAddress RiscV::getProgramCounter() {
-        return 0;
+        return this->readRegister(RegisterNumber::DEBUG_PROGRAM_COUNTER_REGISTER);
     }
 
     void RiscV::setProgramCounter(TargetMemoryAddress programCounter) {
