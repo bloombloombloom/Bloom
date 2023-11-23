@@ -227,7 +227,8 @@ namespace Targets::RiscV
     }
 
     void RiscV::setProgramCounter(TargetMemoryAddress programCounter) {
-
+        // TODO: test this
+        this->writeRegister(RegisterNumber::DEBUG_PROGRAM_COUNTER_REGISTER, programCounter);
     }
 
     TargetStackPointer RiscV::getStackPointer() {
