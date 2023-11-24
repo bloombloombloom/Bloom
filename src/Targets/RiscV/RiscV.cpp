@@ -232,7 +232,7 @@ namespace Targets::RiscV
     }
 
     TargetStackPointer RiscV::getStackPointer() {
-        return 0;
+        return this->readRegister(Registers::RegisterNumber::STACK_POINTER_X2);
     }
 
     std::map<int, TargetPinState> RiscV::getPinStates(int variantId) {
