@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <set>
+#include <map>
 
 #include "src/Targets/Target.hpp"
 #include "src/DebugToolDrivers/DebugTool.hpp"
@@ -17,6 +18,8 @@
 #include "src/Targets/RiscV/DebugModule/Registers/StatusRegister.hpp"
 #include "src/Targets/RiscV/DebugModule/Registers/AbstractControlStatusRegister.hpp"
 #include "src/Targets/RiscV/DebugModule/Registers/AbstractCommandRegister.hpp"
+
+#include "RiscVRegisterDescriptor.hpp"
 
 namespace Targets::RiscV
 {
@@ -95,11 +98,17 @@ namespace Targets::RiscV
         bool programmingModeEnabled() override;
 
     protected:
-        DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* riscVDebugInterface = nullptr;
         std::string name;
+        std::map<TargetRegisterDescriptorId, RiscVRegisterDescriptor> registerDescriptorsById;
+
+        RiscVRegisterDescriptor stackPointerRegisterDescriptor;
+
+        DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* riscVDebugInterface = nullptr;
 
         std::set<DebugModule::HartIndex> hartIndices;
         DebugModule::HartIndex selectedHartIndex = 0;
+
+        void loadRegisterDescriptors();
 
         std::set<DebugModule::HartIndex> discoverHartIndices();
 

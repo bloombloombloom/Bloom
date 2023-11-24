@@ -26,7 +26,21 @@ namespace Targets::RiscV
 
     RiscV::RiscV(const TargetConfig& targetConfig)
         : name("CH32X035C8T6") // TODO: TDF
-    {}
+        , stackPointerRegisterDescriptor(
+            RiscVRegisterDescriptor(
+                TargetRegisterType::STACK_POINTER,
+                static_cast<RegisterNumber>(Registers::RegisterNumber::STACK_POINTER_X2),
+                4,
+                TargetMemoryType::OTHER,
+                "SP",
+                "CPU",
+                "Stack Pointer Register",
+                TargetRegisterAccess(true, true)
+            )
+        )
+    {
+        this->loadRegisterDescriptors();
+    }
 
     bool RiscV::supportsDebugTool(DebugTool* debugTool) {
         return debugTool->getRiscVDebugInterface() != nullptr;
@@ -90,7 +104,7 @@ namespace Targets::RiscV
                     )
                 }
             },
-            {},
+            {this->registerDescriptorsById.begin(), this->registerDescriptorsById.end()},
             BreakpointResources(0, 0, 0),
             {},
             TargetMemoryType::FLASH
@@ -256,6 +270,26 @@ namespace Targets::RiscV
 
     bool RiscV::programmingModeEnabled() {
         return false;
+    }
+
+    void RiscV::loadRegisterDescriptors() {
+        for (std::uint8_t i = 0; i <= 31; i++) {
+            auto generalPurposeRegisterDescriptor = RiscVRegisterDescriptor(
+                TargetRegisterType::GENERAL_PURPOSE_REGISTER,
+                static_cast<RegisterNumber>(Registers::RegisterNumberBase::GPR) + i,
+                4,
+                TargetMemoryType::OTHER,
+                "x" + std::to_string(i),
+                "CPU General Purpose",
+                std::nullopt,
+                TargetRegisterAccess(true, true)
+            );
+
+            this->registerDescriptorsById.emplace(
+                generalPurposeRegisterDescriptor.id,
+                std::move(generalPurposeRegisterDescriptor)
+            );
+        }
     }
 
     std::set<DebugModule::HartIndex> RiscV::discoverHartIndices() {
