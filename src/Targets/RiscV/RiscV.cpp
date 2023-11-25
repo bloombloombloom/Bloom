@@ -85,6 +85,7 @@ namespace Targets::RiscV
         this->enableDebugModule();
 
         this->stop();
+        this->reset();
 
         auto debugControlStatusRegister = this->readDebugControlStatusRegister();
         debugControlStatusRegister.breakUMode = true;
@@ -195,7 +196,37 @@ namespace Targets::RiscV
     }
 
     void RiscV::reset() {
+        auto controlRegister = ControlRegister();
+        controlRegister.debugModuleActive = true;
+        controlRegister.selectedHartIndex = this->selectedHartIndex;
+        controlRegister.setResetHaltRequest = true;
+        controlRegister.haltRequest = true;
+        controlRegister.ndmReset = true;
 
+        this->writeDebugModuleControlRegister(controlRegister);
+
+        controlRegister.ndmReset = false;
+        this->writeDebugModuleControlRegister(controlRegister);
+
+        constexpr auto maxAttempts = 10;
+        auto statusRegister = this->readDebugModuleStatusRegister();
+
+        for (auto attempts = 1; !statusRegister.allHaveReset && attempts <= maxAttempts; ++attempts) {
+            std::this_thread::sleep_for(std::chrono::microseconds(10));
+            statusRegister = this->readDebugModuleStatusRegister();
+        }
+
+        controlRegister = ControlRegister();
+        controlRegister.debugModuleActive = true;
+        controlRegister.selectedHartIndex = this->selectedHartIndex;
+        controlRegister.clearResetHaltRequest = true;
+        controlRegister.acknowledgeHaveReset = true;
+
+        this->writeDebugModuleControlRegister(controlRegister);
+
+        if (!statusRegister.allHaveReset) {
+            throw Exceptions::Exception("Target took too long to reset");
+        }
     }
 
     void RiscV::setSoftwareBreakpoint(TargetMemoryAddress address) {
