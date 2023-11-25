@@ -3,10 +3,12 @@
 #include <thread>
 #include <chrono>
 #include <limits>
+#include <cmath>
 
 #include "Registers/RegisterNumbers.hpp"
 #include "DebugModule/Registers/RegisterAddresses.hpp"
 #include "DebugModule/Registers/RegisterAccessControlField.hpp"
+#include "DebugModule/Registers/MemoryAccessControlField.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
@@ -260,7 +262,65 @@ namespace Targets::RiscV
         TargetMemorySize bytes,
         const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
     ) {
-        return {};
+        // TODO: excluded addresses
+
+        const auto pageSize = 4;
+        if ((startAddress % pageSize) != 0 || (bytes % pageSize) != 0) {
+            // Alignment required
+            const auto alignedStartAddress = static_cast<TargetMemoryAddress>(
+                std::floor(static_cast<float>(startAddress) / static_cast<float>(pageSize)) * pageSize
+            );
+
+            const auto alignedBytes = static_cast<TargetMemorySize>(
+                std::ceil(
+                    static_cast<float>(bytes + (startAddress - alignedStartAddress))
+                        / static_cast<float>(pageSize)
+                ) * pageSize
+            );
+
+            auto memoryBuffer = this->readMemory(
+                memoryType,
+                alignedStartAddress,
+                alignedBytes,
+                excludedAddressRanges
+            );
+
+            const auto offset = memoryBuffer.begin() + (startAddress - alignedStartAddress);
+
+            auto output = TargetMemoryBuffer();
+            output.reserve(bytes);
+            std::move(offset, offset + bytes, std::back_inserter(output));
+
+            return output;
+        }
+
+        using DebugModule::Registers::MemoryAccessControlField;
+
+        auto output = TargetMemoryBuffer();
+        output.reserve(bytes);
+
+        for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
+            auto command = AbstractCommandRegister();
+            command.commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS;
+            command.control = MemoryAccessControlField(
+                false,
+                false,
+                MemoryAccessControlField::MemorySize::SIZE_32,
+                false
+            ).value();
+
+            this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, address);
+
+            this->executeAbstractCommand(command);
+
+            const auto data = this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
+            output.emplace_back(static_cast<unsigned char>(data >> 24));
+            output.emplace_back(static_cast<unsigned char>(data >> 16));
+            output.emplace_back(static_cast<unsigned char>(data >> 8));
+            output.emplace_back(static_cast<unsigned char>(data));
+        }
+
+        return output;
     }
 
     void RiscV::writeMemory(
