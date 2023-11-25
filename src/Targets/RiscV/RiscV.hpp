@@ -118,6 +118,9 @@ namespace Targets::RiscV
 
         Registers::DebugControlStatusRegister readDebugControlStatusRegister();
 
+        void enableDebugModule();
+        void disableDebugModule();
+
         RegisterValue readRegister(RegisterNumber number);
         RegisterValue readRegister(Registers::RegisterNumber number);
         void writeRegister(RegisterNumber number, RegisterValue value);

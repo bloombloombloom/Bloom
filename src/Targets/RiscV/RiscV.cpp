@@ -75,6 +75,13 @@ namespace Targets::RiscV
         this->selectedHartIndex = *(this->hartIndices.begin());
         Logger::info("Selected RISC-V hart index: " + std::to_string(this->selectedHartIndex));
 
+        /*
+         * Disabling the debug module before enabling it will clear any state from a previous debug session that
+         * wasn't terminated properly.
+         */
+        this->disableDebugModule();
+        this->enableDebugModule();
+
         this->stop();
 
         auto debugControlStatusRegister = this->readDebugControlStatusRegister();
@@ -86,6 +93,11 @@ namespace Targets::RiscV
     }
 
     void RiscV::deactivate() {
+        if (this->getState() != TargetState::RUNNING) {
+            this->run();
+        }
+
+        this->disableDebugModule();
         this->riscVDebugInterface->deactivate();
     }
 
@@ -385,6 +397,46 @@ namespace Targets::RiscV
 
     DebugControlStatusRegister RiscV::readDebugControlStatusRegister() {
         return DebugControlStatusRegister(this->readRegister(Registers::RegisterNumber::DEBUG_CONTROL_STATUS_REGISTER));
+    }
+
+    void RiscV::enableDebugModule() {
+        auto controlRegister = ControlRegister();
+        controlRegister.debugModuleActive = true;
+        controlRegister.selectedHartIndex = this->selectedHartIndex;
+
+        this->writeDebugModuleControlRegister(controlRegister);
+
+        constexpr auto maxAttempts = 10;
+        controlRegister = this->readDebugModuleControlRegister();
+
+        for (auto attempts = 1; !controlRegister.debugModuleActive && attempts <= maxAttempts; ++attempts) {
+            std::this_thread::sleep_for(std::chrono::microseconds(10));
+            controlRegister = this->readDebugModuleControlRegister();
+        }
+
+        if (!controlRegister.debugModuleActive) {
+            throw Exceptions::Exception("Took too long to enable debug module");
+        }
+    }
+
+    void RiscV::disableDebugModule() {
+        auto controlRegister = ControlRegister();
+        controlRegister.debugModuleActive = false;
+        controlRegister.selectedHartIndex = this->selectedHartIndex;
+
+        this->writeDebugModuleControlRegister(controlRegister);
+
+        constexpr auto maxAttempts = 10;
+        controlRegister = this->readDebugModuleControlRegister();
+
+        for (auto attempts = 1; controlRegister.debugModuleActive && attempts <= maxAttempts; ++attempts) {
+            std::this_thread::sleep_for(std::chrono::microseconds(10));
+            controlRegister = this->readDebugModuleControlRegister();
+        }
+
+        if (controlRegister.debugModuleActive) {
+            throw Exceptions::Exception("Took too long to disable debug module");
+        }
     }
 
     RegisterValue RiscV::readRegister(RegisterNumber number) {
