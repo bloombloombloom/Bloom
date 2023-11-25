@@ -249,7 +249,7 @@ namespace Targets::RiscV
 
     }
 
-    TargetRegisters RiscV::readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) {
+    TargetRegisters RiscV::readRegisters(const TargetRegisterDescriptorIds& descriptorIds) {
         auto output = TargetRegisters();
 
         for (const auto& descriptorId : descriptorIds) {
@@ -291,7 +291,7 @@ namespace Targets::RiscV
         TargetMemoryType memoryType,
         TargetMemoryAddress startAddress,
         TargetMemorySize bytes,
-        const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
+        const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) {
         // TODO: excluded addresses
 

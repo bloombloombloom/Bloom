@@ -62,14 +62,14 @@ namespace Targets::RiscV
         void removeHardwareBreakpoint(TargetMemoryAddress address) override;
         void clearAllBreakpoints() override;
 
-        TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) override;
+        TargetRegisters readRegisters(const TargetRegisterDescriptorIds& descriptorIds) override;
         void writeRegisters(const TargetRegisters& registers) override;
 
         TargetMemoryBuffer readMemory(
             TargetMemoryType memoryType,
             TargetMemoryAddress startAddress,
             TargetMemorySize bytes,
-            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
+            const std::set<TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) override;
         void writeMemory(
             TargetMemoryType memoryType,
