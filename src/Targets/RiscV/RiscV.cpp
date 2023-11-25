@@ -299,17 +299,21 @@ namespace Targets::RiscV
         auto output = TargetMemoryBuffer();
         output.reserve(bytes);
 
+        /*
+         * We only need to set the address once. No need to update it as we use the post-increment function to
+         * increment the address. See MemoryAccessControlField::postIncrement
+         */
+        this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
+
         for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
             auto command = AbstractCommandRegister();
             command.commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS;
             command.control = MemoryAccessControlField(
                 false,
-                false,
+                true,
                 MemoryAccessControlField::MemorySize::SIZE_32,
                 false
             ).value();
-
-            this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, address);
 
             this->executeAbstractCommand(command);
 
