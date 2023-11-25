@@ -305,16 +305,16 @@ namespace Targets::RiscV
          */
         this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
 
-        for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
-            auto command = AbstractCommandRegister();
-            command.commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS;
-            command.control = MemoryAccessControlField(
-                false,
-                true,
-                MemoryAccessControlField::MemorySize::SIZE_32,
-                false
-            ).value();
+        auto command = AbstractCommandRegister();
+        command.commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS;
+        command.control = MemoryAccessControlField(
+            false,
+            true,
+            MemoryAccessControlField::MemorySize::SIZE_32,
+            false
+        ).value();
 
+        for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
             this->executeAbstractCommand(command);
 
             const auto data = this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
