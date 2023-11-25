@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <chrono>
+#include <limits>
 
 #include "Registers/RegisterNumbers.hpp"
 #include "DebugModule/Registers/RegisterAddresses.hpp"
@@ -203,12 +204,42 @@ namespace Targets::RiscV
 
     }
 
-    void RiscV::writeRegisters(TargetRegisters registers) {
+    TargetRegisters RiscV::readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) {
+        auto output = TargetRegisters();
 
+        for (const auto& descriptorId : descriptorIds) {
+            const auto registerValue = this->readRegister(this->registerDescriptorsById.at(descriptorId).number);
+            output.emplace_back(
+                descriptorId,
+                TargetMemoryBuffer({
+                    static_cast<unsigned char>(registerValue >> 24),
+                    static_cast<unsigned char>(registerValue >> 16),
+                    static_cast<unsigned char>(registerValue >> 8),
+                    static_cast<unsigned char>(registerValue),
+                })
+            );
+        }
+
+        return output;
     }
 
-    TargetRegisters RiscV::readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) {
-        return {};
+    void RiscV::writeRegisters(const TargetRegisters& registers) {
+        for (const auto& targetRegister : registers) {
+            if ((targetRegister.value.size() * 8) > std::numeric_limits<std::uintmax_t>::digits) {
+                throw Exceptions::Exception("Register value bit width exceeds that of std::uintmax_t");
+            }
+
+            auto registerValue = std::uintmax_t{0};
+
+            for (const auto& registerByte : targetRegister.value) {
+                registerValue = (registerValue << 8) | registerByte;
+            }
+
+            this->writeRegister(
+                this->registerDescriptorsById.at(targetRegister.descriptorId).number,
+                static_cast<RegisterValue>(registerValue) // TODO: Support larger register values
+            );
+        }
     }
 
     TargetMemoryBuffer RiscV::readMemory(
