@@ -103,9 +103,13 @@ namespace Targets
     struct TargetRegister
     {
         TargetRegisterDescriptorId descriptorId;
+
+        /**
+         * Register values should be in MSB form
+         */
         TargetMemoryBuffer value;
 
-        TargetRegister(TargetRegisterDescriptorId descriptorId, std::vector<unsigned char> value)
+        TargetRegister(TargetRegisterDescriptorId descriptorId, TargetMemoryBuffer value)
             : descriptorId(descriptorId)
             , value(std::move(value))
         {};

@@ -330,12 +330,12 @@ namespace Targets::Microchip::Avr::Avr8Bit
         this->avr8DebugInterface->clearAllBreakpoints();
     }
 
-    void Avr8::writeRegisters(TargetRegisters registers) {
-        this->avr8DebugInterface->writeRegisters(registers);
-    }
-
     TargetRegisters Avr8::readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) {
         return this->avr8DebugInterface->readRegisters(descriptorIds);
+    }
+
+    void Avr8::writeRegisters(const TargetRegisters& registers) {
+        this->avr8DebugInterface->writeRegisters(registers);
     }
 
     TargetMemoryBuffer Avr8::readMemory(

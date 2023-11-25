@@ -66,7 +66,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
         void removeHardwareBreakpoint(TargetMemoryAddress address) override;
         void clearAllBreakpoints() override;
 
-        void writeRegisters(TargetRegisters registers) override;
+        void writeRegisters(const TargetRegisters& registers) override;
         TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) override;
 
         TargetMemoryBuffer readMemory(

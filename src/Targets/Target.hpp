@@ -146,13 +146,6 @@ namespace Targets
         virtual void clearAllBreakpoints() = 0;
 
         /**
-         * Should update the value of the given registers.
-         *
-         * @param registers
-         */
-        virtual void writeRegisters(TargetRegisters registers) = 0;
-
-        /**
          * Should read register values of the registers described by the given descriptors.
          *
          * @param descriptorIds
@@ -160,6 +153,13 @@ namespace Targets
          * @return
          */
         virtual TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) = 0;
+
+        /**
+         * Should update the value of the given registers.
+         *
+         * @param registers
+         */
+        virtual void writeRegisters(const TargetRegisters& registers) = 0;
 
         /**
          * Should read memory from the target.
