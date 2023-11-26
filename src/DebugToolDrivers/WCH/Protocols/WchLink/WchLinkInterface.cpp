@@ -4,6 +4,7 @@
 
 #include "Commands/Control/GetDeviceInfo.hpp"
 #include "Commands/Control/AttachTarget.hpp"
+#include "Commands/Control/DetachTarget.hpp"
 #include "Commands/SetClockSpeed.hpp"
 #include "Commands/DebugModuleInterfaceOperation.hpp"
 
@@ -63,7 +64,11 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
     }
 
     void WchLinkInterface::deactivate() {
-        // TODO: implement this
+        const auto response = this->sendCommandAndWaitForResponse(Commands::Control::DetachTarget());
+
+        if (response.payload.size() != 1) {
+            throw Exceptions::DeviceCommunicationFailure("Unexpected response payload size for DetachTarget command");
+        }
     }
 
     std::string WchLinkInterface::getDeviceId() {
