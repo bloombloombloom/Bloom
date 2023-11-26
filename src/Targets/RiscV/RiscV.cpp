@@ -293,21 +293,15 @@ namespace Targets::RiscV
         TargetMemorySize bytes,
         const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) {
+        using DebugModule::Registers::MemoryAccessControlField;
+
         // TODO: excluded addresses
 
         const auto pageSize = 4;
         if ((startAddress % pageSize) != 0 || (bytes % pageSize) != 0) {
             // Alignment required
-            const auto alignedStartAddress = static_cast<TargetMemoryAddress>(
-                std::floor(static_cast<float>(startAddress) / static_cast<float>(pageSize)) * pageSize
-            );
-
-            const auto alignedBytes = static_cast<TargetMemorySize>(
-                std::ceil(
-                    static_cast<float>(bytes + (startAddress - alignedStartAddress))
-                        / static_cast<float>(pageSize)
-                ) * pageSize
-            );
+            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, pageSize);
+            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), pageSize);
 
             auto memoryBuffer = this->readMemory(
                 memoryType,
@@ -324,8 +318,6 @@ namespace Targets::RiscV
 
             return output;
         }
-
-        using DebugModule::Registers::MemoryAccessControlField;
 
         auto output = TargetMemoryBuffer();
         output.reserve(bytes);
