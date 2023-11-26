@@ -363,7 +363,70 @@ namespace Targets::RiscV
         TargetMemoryAddress startAddress,
         const TargetMemoryBuffer& buffer
     ) {
+        using DebugModule::Registers::MemoryAccessControlField;
 
+        const auto pageSize = 4;
+        const auto bytes = static_cast<TargetMemorySize>(buffer.size());
+        if ((startAddress % pageSize) != 0 || (bytes % pageSize) != 0) {
+            /*
+             * Alignment required
+             *
+             * To align the write operation, we read the front and back offset bytes and use them to construct an
+             * aligned buffer.
+             */
+            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, pageSize);
+            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), pageSize);
+
+            auto alignedBuffer = TargetMemoryBuffer();
+            alignedBuffer.reserve(alignedBytes);
+
+            if (alignedStartAddress < startAddress) {
+                // Read the offset bytes required to align the start address
+                alignedBuffer = this->readMemory(
+                    memoryType,
+                    alignedStartAddress,
+                    (startAddress - alignedStartAddress)
+                );
+            }
+
+            alignedBuffer.insert(alignedBuffer.end(), buffer.begin(), buffer.end());
+            assert(alignedBytes > bytes);
+
+            // Read the offset bytes required to align the buffer size
+            const auto dataBack = this->readMemory(
+                memoryType,
+                startAddress + bytes,
+                alignedBytes - bytes - (startAddress - alignedStartAddress)
+            );
+            alignedBuffer.insert(alignedBuffer.end(), dataBack.begin(), dataBack.end());
+
+            return this->writeMemory(memoryType, alignedStartAddress, alignedBuffer);
+        }
+
+        this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
+
+        auto command = AbstractCommandRegister();
+        command.commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS;
+        command.control = MemoryAccessControlField(
+            true,
+            true,
+            MemoryAccessControlField::MemorySize::SIZE_32,
+            false
+        ).value();
+
+        for (TargetMemoryAddress offset = 0; offset < buffer.size(); offset += 4) {
+            this->riscVDebugInterface->writeDebugModuleRegister(
+                RegisterAddress::ABSTRACT_DATA_0,
+                static_cast<RegisterValue>(
+                    (buffer[offset] << 24)
+                    | (buffer[offset + 1] << 16)
+                    | (buffer[offset + 2] << 8)
+                    | (buffer[offset + 3])
+                )
+            );
+
+            this->executeAbstractCommand(command);
+        }
     }
 
     void RiscV::eraseMemory(TargetMemoryType memoryType) {
@@ -618,5 +681,17 @@ namespace Targets::RiscV
         if (abstractStatusRegister.busy) {
             throw Exceptions::Exception("Abstract command took too long to execute");
         }
+    }
+
+    TargetMemoryAddress RiscV::alignMemoryAddress(TargetMemoryAddress address, TargetMemoryAddress alignTo) {
+        return static_cast<TargetMemoryAddress>(
+            std::floor(static_cast<float>(address) / static_cast<float>(alignTo))
+        ) * alignTo;
+    }
+
+    TargetMemorySize RiscV::alignMemorySize(TargetMemorySize size, TargetMemorySize alignTo) {
+        return static_cast<TargetMemorySize>(
+            std::ceil(static_cast<float>(size) / static_cast<float>(alignTo))
+        ) * alignTo;
     }
 }

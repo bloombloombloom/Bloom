@@ -131,5 +131,8 @@ namespace Targets::RiscV
         void writeDebugControlStatusRegister(const Registers::DebugControlStatusRegister& controlRegister);
 
         void executeAbstractCommand(const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister);
+
+        TargetMemoryAddress alignMemoryAddress(TargetMemoryAddress address, TargetMemoryAddress alignTo);
+        TargetMemorySize alignMemorySize(TargetMemorySize size, TargetMemorySize alignTo);
     };
 }
