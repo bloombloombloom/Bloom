@@ -341,10 +341,10 @@ namespace Targets::RiscV
             this->executeAbstractCommand(command);
 
             const auto data = this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
-            output.emplace_back(static_cast<unsigned char>(data >> 24));
-            output.emplace_back(static_cast<unsigned char>(data >> 16));
-            output.emplace_back(static_cast<unsigned char>(data >> 8));
             output.emplace_back(static_cast<unsigned char>(data));
+            output.emplace_back(static_cast<unsigned char>(data >> 8));
+            output.emplace_back(static_cast<unsigned char>(data >> 16));
+            output.emplace_back(static_cast<unsigned char>(data >> 24));
         }
 
         return output;
@@ -410,10 +410,10 @@ namespace Targets::RiscV
             this->riscVDebugInterface->writeDebugModuleRegister(
                 RegisterAddress::ABSTRACT_DATA_0,
                 static_cast<RegisterValue>(
-                    (buffer[offset] << 24)
-                    | (buffer[offset + 1] << 16)
-                    | (buffer[offset + 2] << 8)
-                    | (buffer[offset + 3])
+                    (buffer[offset + 3] << 24)
+                    | (buffer[offset + 2] << 16)
+                    | (buffer[offset + 1] << 8)
+                    | (buffer[offset])
                 )
             );
 
