@@ -497,14 +497,14 @@ namespace Targets::RiscV
         controlRegister.selectedHartIndex = 0xFFFFF;
 
         this->writeDebugModuleControlRegister(controlRegister);
-        controlRegister = this->readDebugModuleControlRegister();
+        const auto maxHartIndex = this->readDebugModuleControlRegister().selectedHartIndex;
 
-        for (DebugModule::HartIndex hartIndex = 0; hartIndex <= controlRegister.selectedHartIndex; ++hartIndex) {
+        for (DebugModule::HartIndex hartIndex = 0; hartIndex <= maxHartIndex; ++hartIndex) {
             /*
              * We can't just assume that everything between 0 and the maximum hart index are valid hart indices. We
              * have to test each index until we find one that is non-existent.
              */
-            controlRegister = ControlRegister();
+            auto controlRegister = ControlRegister();
             controlRegister.debugModuleActive = true;
             controlRegister.selectedHartIndex = hartIndex;
 
