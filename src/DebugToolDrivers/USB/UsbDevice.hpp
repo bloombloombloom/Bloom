@@ -39,6 +39,22 @@ namespace Usb
         std::string getSerialNumber() const;
 
         /**
+         * Obtains the address of the first endpoint within a given interface and of a particular direction.
+         *
+         * @param endpointAddress
+         * @return
+         */
+        std::uint8_t getFirstEndpointAddress(std::uint8_t interfaceNumber, ::libusb_endpoint_direction direction);
+
+        /**
+         * Obtains the maximum packet size of an endpoint.
+         *
+         * @param endpointAddress
+         * @return
+         */
+        std::uint16_t getEndpointMaxPacketSize(std::uint8_t endpointAddress);
+
+        /**
          * Selects a specific configuration on the device, using the configuration index.
          *
          * @param configurationIndex

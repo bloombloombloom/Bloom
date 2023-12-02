@@ -21,8 +21,10 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
     using Targets::RiscV::DebugModule::DmiOperation;
 
-    WchLinkInterface::WchLinkInterface(Usb::UsbInterface& usbInterface)
+    WchLinkInterface::WchLinkInterface(Usb::UsbInterface& usbInterface, Usb::UsbDevice& usbDevice)
         : usbInterface(usbInterface)
+        , commandEndpointMaxPacketSize(usbDevice.getEndpointMaxPacketSize(WchLinkInterface::USB_COMMAND_ENDPOINT_OUT))
+        , dataEndpointMaxPacketSize(usbDevice.getEndpointMaxPacketSize(WchLinkInterface::USB_DATA_ENDPOINT_OUT))
     {}
 
     DeviceInfo WchLinkInterface::getDeviceInfo() {

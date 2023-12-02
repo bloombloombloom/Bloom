@@ -4,6 +4,8 @@
 #include <array>
 
 #include "src/Logger/Logger.hpp"
+#include "src/Services/StringService.hpp"
+
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceNotFound.hpp"
@@ -98,6 +100,53 @@ namespace Usb
                 "Failed to set USB configuration - error code " + std::to_string(libusbStatusCode) + " returned."
             );
         }
+    }
+
+    std::uint8_t UsbDevice::getFirstEndpointAddress(
+        std::uint8_t interfaceNumber,
+        ::libusb_endpoint_direction direction
+    ) {
+        const auto activeConfigDescriptor = this->getConfigDescriptor();
+
+        for (auto interfaceIndex = 0; interfaceIndex < activeConfigDescriptor->bNumInterfaces; ++interfaceIndex) {
+            const auto* interfaceDescriptor = (activeConfigDescriptor->interface + interfaceIndex)->altsetting;
+
+            if (interfaceDescriptor->bInterfaceNumber != interfaceNumber) {
+                continue;
+            }
+
+            for (auto endpointIndex = 0; endpointIndex < interfaceDescriptor->bNumEndpoints; ++endpointIndex) {
+                const auto* endpointDescriptor = (interfaceDescriptor->endpoint + endpointIndex);
+
+                if ((endpointDescriptor->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) != direction) {
+                    return endpointDescriptor->bEndpointAddress;
+                }
+            }
+        }
+
+        throw DeviceInitializationFailure("Failed to obtain address of USB endpoint");
+    }
+
+    std::uint16_t UsbDevice::getEndpointMaxPacketSize(std::uint8_t endpointAddress) {
+        const auto activeConfigDescriptor = this->getConfigDescriptor();
+
+        for (auto interfaceIndex = 0; interfaceIndex < activeConfigDescriptor->bNumInterfaces; ++interfaceIndex) {
+            const auto* interfaceDescriptor = (activeConfigDescriptor->interface + interfaceIndex)->altsetting;
+
+            for (auto endpointIndex = 0; endpointIndex < interfaceDescriptor->bNumEndpoints; ++endpointIndex) {
+                const auto* endpointDescriptor = (interfaceDescriptor->endpoint + endpointIndex);
+
+                if (endpointDescriptor->bEndpointAddress == endpointAddress) {
+                    return endpointDescriptor->wMaxPacketSize;
+                }
+            }
+        }
+
+        throw DeviceInitializationFailure(
+            "Failed to obtain maximum packet size of USB endpoint (address: 0x"
+                + Services::StringService::toHex(endpointAddress) + "). Endpoint not found. Selected configuration "
+                "value (" + std::to_string(activeConfigDescriptor->bConfigurationValue) + ")"
+        );
     }
 
     std::vector<LibusbDevice> UsbDevice::findMatchingDevices(std::uint16_t vendorId, std::uint16_t productId) {

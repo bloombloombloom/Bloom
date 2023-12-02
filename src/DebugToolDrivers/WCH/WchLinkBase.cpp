@@ -32,7 +32,8 @@ namespace DebugToolDrivers::Wch
         this->wchLinkUsbInterface->init();
 
         this->wchLinkInterface = std::make_unique<Protocols::WchLink::WchLinkInterface>(
-            *(this->wchLinkUsbInterface.get())
+            *(this->wchLinkUsbInterface.get()),
+            *this
         );
 
         if (this->getDeviceInfo().variant != this->variant) {

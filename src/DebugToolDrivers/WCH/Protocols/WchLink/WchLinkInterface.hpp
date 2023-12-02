@@ -3,9 +3,11 @@
 #include <memory>
 #include <optional>
 #include <vector>
+#include <utility>
 
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 #include "src/DebugToolDrivers/USB/UsbInterface.hpp"
+#include "src/DebugToolDrivers/USB/UsbDevice.hpp"
 
 #include "src/DebugToolDrivers/WCH/WchGeneric.hpp"
 #include "Commands/Command.hpp"
@@ -23,7 +25,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
     class WchLinkInterface: public TargetInterfaces::RiscV::RiscVDebugInterface
     {
     public:
-        explicit WchLinkInterface(Usb::UsbInterface& usbInterface);
+        WchLinkInterface(Usb::UsbInterface& usbInterface, Usb::UsbDevice& usbDevice);
 
         DeviceInfo getDeviceInfo();
 
@@ -43,10 +45,15 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         ) override;
 
     private:
-        static constexpr std::uint8_t USB_ENDPOINT_IN = 0x81;
-        static constexpr std::uint8_t USB_ENDPOINT_OUT = 0x01;
+        static constexpr std::uint8_t USB_COMMAND_ENDPOINT_IN = 0x81;
+        static constexpr std::uint8_t USB_COMMAND_ENDPOINT_OUT = 0x01;
+        static constexpr std::uint8_t USB_DATA_ENDPOINT_IN = 0x82;
+        static constexpr std::uint8_t USB_DATA_ENDPOINT_OUT = 0x02;
 
         Usb::UsbInterface& usbInterface;
+
+        std::uint16_t commandEndpointMaxPacketSize = 0;
+        std::uint16_t dataEndpointMaxPacketSize = 0;
 
         /**
          * The 'target activation' command returns a payload of 5 bytes.
@@ -67,9 +74,17 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
         template <class CommandType>
         auto sendCommandAndWaitForResponse(const CommandType& command) {
-            this->usbInterface.writeBulk(WchLinkInterface::USB_ENDPOINT_OUT, command.getRawCommand());
+            auto rawCommand = command.getRawCommand();
 
-            const auto rawResponse = this->usbInterface.readBulk(WchLinkInterface::USB_ENDPOINT_IN);
+            if (rawCommand.size() > this->commandEndpointMaxPacketSize) {
+                throw Exceptions::DeviceCommunicationFailure(
+                    "Raw command size exceeds maximum packet size for command endpoint"
+                );
+            }
+
+            this->usbInterface.writeBulk(WchLinkInterface::USB_COMMAND_ENDPOINT_OUT, std::move(rawCommand));
+
+            const auto rawResponse = this->usbInterface.readBulk(WchLinkInterface::USB_COMMAND_ENDPOINT_IN);
 
             if (rawResponse.size() < 3) {
                 throw Exceptions::DeviceCommunicationFailure("Invalid response size from device");
