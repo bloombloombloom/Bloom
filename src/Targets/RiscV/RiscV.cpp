@@ -51,6 +51,7 @@ namespace Targets::RiscV
 
     void RiscV::setDebugTool(DebugTool* debugTool) {
         this->riscVDebugInterface = debugTool->getRiscVDebugInterface();
+        this->riscVProgramInterface = debugTool->getRiscVProgramInterface();
     }
 
     void RiscV::activate() {
@@ -393,6 +394,10 @@ namespace Targets::RiscV
             alignedBuffer.insert(alignedBuffer.end(), dataBack.begin(), dataBack.end());
 
             return this->writeMemory(memoryType, alignedStartAddress, alignedBuffer);
+        }
+
+        if (memoryType == TargetMemoryType::FLASH && this->riscVProgramInterface != nullptr) {
+            return this->riscVProgramInterface->writeFlashMemory(startAddress, buffer);
         }
 
         this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);

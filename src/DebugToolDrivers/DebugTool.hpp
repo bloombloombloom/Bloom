@@ -9,6 +9,7 @@
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 
 #include "TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
+#include "TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
 
 #include "src/Targets/TargetRegister.hpp"
 
@@ -110,6 +111,23 @@ public:
      * @return
      */
     virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* getRiscVDebugInterface() {
+        return nullptr;
+    }
+
+    /**
+     * Some debug tools are unable to program RISC-V targets via the RISC-V debug interface. Such tools must provide
+     * an implementation of the RiscVProgramInterface, which will allow them to implement flash memory writing as a
+     * separate function, independent of the debug interface.
+     *
+     * The RISC-V target driver will forward all flash memory writes to the RiscVProgramInterface returned by this
+     * member function. If nullptr is returned, the driver will fall back to the RiscVDebugInterface for flash memory
+     * writes.
+     *
+     * Note: the caller of this function will not manage the lifetime of the returned instance.
+     *
+     * @return
+     */
+    virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVProgramInterface* getRiscVProgramInterface() {
         return nullptr;
     }
 

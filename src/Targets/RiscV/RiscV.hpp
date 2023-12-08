@@ -8,6 +8,7 @@
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
 
 #include "src/Targets/RiscV/RiscVGeneric.hpp"
 #include "src/Targets/RiscV/Registers/RegisterNumbers.hpp"
@@ -104,6 +105,7 @@ namespace Targets::RiscV
         RiscVRegisterDescriptor stackPointerRegisterDescriptor;
 
         DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* riscVDebugInterface = nullptr;
+        DebugToolDrivers::TargetInterfaces::RiscV::RiscVProgramInterface* riscVProgramInterface = nullptr;
 
         std::set<DebugModule::HartIndex> hartIndices;
         DebugModule::HartIndex selectedHartIndex = 0;
