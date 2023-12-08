@@ -358,17 +358,17 @@ namespace Targets::RiscV
     ) {
         using DebugModule::Registers::MemoryAccessControlField;
 
-        const auto pageSize = 4;
+        constexpr auto alignTo = TargetMemorySize{4};
         const auto bytes = static_cast<TargetMemorySize>(buffer.size());
-        if ((startAddress % pageSize) != 0 || (bytes % pageSize) != 0) {
+        if ((startAddress % alignTo) != 0 || (bytes % alignTo) != 0) {
             /*
              * Alignment required
              *
              * To align the write operation, we read the front and back offset bytes and use them to construct an
              * aligned buffer.
              */
-            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, pageSize);
-            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), pageSize);
+            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, alignTo);
+            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), alignTo);
 
             auto alignedBuffer = TargetMemoryBuffer();
             alignedBuffer.reserve(alignedBytes);
