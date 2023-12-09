@@ -36,6 +36,24 @@ namespace DebugToolDrivers::Wch
             return this->wchLinkInterface.get();
         }
 
+        /**
+         * WCH-Link debug tools cannot write to flash memory via the RISC-V debug interface (RiscVDebugInterface).
+         * Flash memory writes via abstract commands fail silently.
+         *
+         * We have to send a vendor-specific command to the debug tool, in order to program the target.
+         *
+         * For this reason, we have to provide an implementation of the RiscVProgramInterface, so that the RISC-V
+         * target driver forwards any flash memory writes to this implementation (instead of relying on the debug
+         * interface).
+         *
+         * The WchLinkInterface implements both the RiscVDebugInterface and the RiscVProgramInterface.
+         *
+         * @return
+         */
+        DebugToolDrivers::TargetInterfaces::RiscV::RiscVProgramInterface* getRiscVProgramInterface() override {
+            return this->wchLinkInterface.get();
+        }
+
     protected:
         WchLinkVariant variant;
 

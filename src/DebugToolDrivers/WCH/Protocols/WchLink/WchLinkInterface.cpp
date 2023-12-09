@@ -7,6 +7,7 @@
 #include "Commands/Control/DetachTarget.hpp"
 #include "Commands/SetClockSpeed.hpp"
 #include "Commands/DebugModuleInterfaceOperation.hpp"
+#include "Commands/PreparePartialFlashPageWrite.hpp"
 
 #include "src/Helpers/BiMap.hpp"
 #include "src/Services/StringService.hpp"
@@ -105,6 +106,58 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
         if (response.operationStatus != DmiOperationStatus::SUCCESS) {
             throw Exceptions::DeviceCommunicationFailure("DMI operation failed");
+        }
+    }
+
+    void WchLinkInterface::writeFlashMemory(
+        Targets::TargetMemoryAddress startAddress,
+        const Targets::TargetMemoryBuffer& buffer
+    ) {
+        const auto packetSize = Targets::TargetMemorySize{this->dataEndpointMaxPacketSize};
+        const auto bufferSize = static_cast<Targets::TargetMemorySize>(buffer.size());
+        const auto packetsRequired = static_cast<std::uint32_t>(
+            std::ceil(static_cast<float>(bufferSize) / static_cast<float>(packetSize))
+        );
+
+        for (std::uint32_t i = 0; i < packetsRequired; ++i) {
+            const auto segmentSize = static_cast<std::uint8_t>(std::min(bufferSize - (i * packetSize), packetSize));
+            const auto response = this->sendCommandAndWaitForResponse(
+                Commands::PreparePartialFlashPageWrite(startAddress + (packetSize * i), segmentSize)
+            );
+
+            if (response.payload.size() != 1) {
+                throw Exceptions::DeviceCommunicationFailure(
+                    "Unexpected response payload size for PreparePartialFlashPageWrite command"
+                );
+            }
+
+            this->usbInterface.writeBulk(
+                WchLinkInterface::USB_DATA_ENDPOINT_OUT,
+                std::vector<unsigned char>(
+                    buffer.begin() + (packetSize * i),
+                    buffer.begin() + (packetSize * i) + segmentSize
+                )
+            );
+
+            const auto rawResponse = this->usbInterface.readBulk(WchLinkInterface::USB_DATA_ENDPOINT_IN);
+
+            if (rawResponse.size() != 4) {
+                throw Exceptions::DeviceCommunicationFailure("Unexpected response size for partial flash page write");
+            }
+
+            /*
+             * I have no idea what any of these bytes mean. There's no documentation available for this.
+             *
+             * All I know is that these values indicate a successful write.
+             */
+            if (
+                rawResponse[0] != 0x41
+                || rawResponse[1] != 0x01
+                || rawResponse[2] != 0x01
+                || rawResponse[3] != 0x02
+            ) {
+                throw Exceptions::DeviceCommunicationFailure("Partial flash page write failed");
+            }
         }
     }
 

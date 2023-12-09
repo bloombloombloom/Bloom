@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
 #include "src/DebugToolDrivers/USB/UsbInterface.hpp"
 #include "src/DebugToolDrivers/USB/UsbDevice.hpp"
 
@@ -22,7 +23,9 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
     /**
      * The WchLinkInterface implements the WCH-Link protocol.
      */
-    class WchLinkInterface: public TargetInterfaces::RiscV::RiscVDebugInterface
+    class WchLinkInterface
+        : public TargetInterfaces::RiscV::RiscVDebugInterface
+        , public TargetInterfaces::RiscV::RiscVProgramInterface
     {
     public:
         WchLinkInterface(Usb::UsbInterface& usbInterface, Usb::UsbDevice& usbDevice);
@@ -42,6 +45,11 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         void writeDebugModuleRegister(
             Targets::RiscV::DebugModule::RegisterAddress address,
             Targets::RiscV::DebugModule::RegisterValue value
+        ) override;
+
+        void writeFlashMemory(
+            Targets::TargetMemoryAddress startAddress,
+            const Targets::TargetMemoryBuffer& buffer
         ) override;
 
     private:
