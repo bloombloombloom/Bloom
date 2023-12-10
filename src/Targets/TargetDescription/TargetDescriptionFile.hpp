@@ -69,51 +69,6 @@ namespace Targets::TargetDescription
          */
         [[nodiscard]] const std::string& getFamilyName() const;
 
-        /**
-         * Returns a mapping of all property groups, with the property group name being the key.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::map<std::string, PropertyGroup>& getPropertyGroupsMappedByName() const {
-            return this->propertyGroupsMappedByName;
-        }
-
-        /**
-         * Returns a mapping of all modules, with the module name being the key.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::map<std::string, Module>& getModulesMappedByName() const {
-            return this->modulesMappedByName;
-        }
-
-        /**
-         * Returns a mapping of all peripheral modules, with the peripheral module name being the key.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::map<std::string, Module>& getPeripheralModulesMappedByName() const {
-            return this->peripheralModulesMappedByName;
-        }
-
-        /**
-         * Returns all variants found in the TDF.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::vector<Variant>& getVariants() const {
-            return this->variants;
-        }
-
-        /**
-         * Returns a mapping of pinouts, with the pinout name being the key.
-         *
-         * @return
-         */
-        [[nodiscard]] const std::map<std::string, Pinout>& getPinoutsMappedByName() const {
-            return this->pinoutsMappedByName;
-        }
-
     protected:
         std::string targetName;
         std::string familyName;
@@ -145,7 +100,7 @@ namespace Targets::TargetDescription
          * @param xmlElement
          * @return
          */
-        static AddressSpace generateAddressSpaceFromXml(const QDomElement& xmlElement);
+        static AddressSpace addressSpaceFromXml(const QDomElement& xmlElement);
 
         /**
          * Constructs a MemorySegment object from an XML element.
@@ -153,7 +108,7 @@ namespace Targets::TargetDescription
          * @param xmlElement
          * @return
          */
-        static MemorySegment generateMemorySegmentFromXml(const QDomElement& xmlElement);
+        static MemorySegment memorySegmentFromXml(const QDomElement& xmlElement);
 
         /**
          * Constructs a RegisterGroup object from an XML element.
@@ -161,7 +116,7 @@ namespace Targets::TargetDescription
          * @param xmlElement
          * @return
          */
-        static RegisterGroup generateRegisterGroupFromXml(const QDomElement& xmlElement);
+        static RegisterGroup registerGroupFromXml(const QDomElement& xmlElement);
 
         /**
          * Constructs a Register object from an XML element.
@@ -169,7 +124,7 @@ namespace Targets::TargetDescription
          * @param xmlElement
          * @return
          */
-        static Register generateRegisterFromXml(const QDomElement& xmlElement);
+        static Register registerFromXml(const QDomElement& xmlElement);
 
         /**
          * Consturcts a BitField object from an XML element.
@@ -177,7 +132,7 @@ namespace Targets::TargetDescription
          * @param xmlElement
          * @return
          */
-        static BitField generateBitFieldFromXml(const QDomElement& xmlElement);
+        static BitField bitFieldFromXml(const QDomElement& xmlElement);
 
         /**
          * Extracts all address spaces and loads them into this->addressSpacesMappedById.

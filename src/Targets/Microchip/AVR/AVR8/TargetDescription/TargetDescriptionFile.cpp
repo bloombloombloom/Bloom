@@ -385,15 +385,13 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadPadDescriptors() {
-        const auto& modules = this->getModulesMappedByName();
+        const auto portModuleIt = this->modulesMappedByName.find("port");
+        const auto portModule = (portModuleIt != this->modulesMappedByName.end())
+            ? std::optional(portModuleIt->second)
+            : std::nullopt;
 
-        const auto portModuleIt = modules.find("port");
-        const auto portModule = (portModuleIt != modules.end()) ? std::optional(portModuleIt->second) : std::nullopt;
-
-        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
-
-        const auto portPeripheralModuleIt = peripheralModules.find("port");
-        if (portPeripheralModuleIt == peripheralModules.end()) {
+        const auto portPeripheralModuleIt = this->peripheralModulesMappedByName.find("port");
+        if (portPeripheralModuleIt == this->peripheralModulesMappedByName.end()) {
             return;
         }
 
@@ -484,11 +482,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadTargetVariants() {
-        auto tdVariants = this->getVariants();
-        auto tdPinoutsByName = this->getPinoutsMappedByName();
-        const auto& modules = this->getModulesMappedByName();
-
-        for (const auto& tdVariant : tdVariants) {
+        for (const auto& tdVariant : this->variants) {
             if (tdVariant.disabled) {
                 continue;
             }
@@ -514,8 +508,8 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
                 targetVariant.package = TargetPackage::SSOP;
             }
 
-            const auto tdPinoutIt = tdPinoutsByName.find(tdVariant.pinoutName);
-            if (tdPinoutIt == tdPinoutsByName.end()) {
+            const auto tdPinoutIt = this->pinoutsMappedByName.find(tdVariant.pinoutName);
+            if (tdPinoutIt == this->pinoutsMappedByName.end()) {
                 // Missing pinouts in the target description file
                 continue;
             }
@@ -558,9 +552,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadTargetRegisterDescriptors() {
-        const auto& modulesByName = this->modulesMappedByName;
-
-        for (const auto& [moduleName, module] : modulesByName) {
+        for (const auto& [moduleName, module] : this->modulesMappedByName) {
             for (const auto& [registerGroupName, registerGroup] : module.registerGroupsMappedByName) {
                 const auto peripheralRegisterGroupsIt = this->peripheralRegisterGroupsMappedByModuleRegisterGroupName.find(
                     registerGroupName
@@ -614,11 +606,10 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
         const std::string& instanceName,
         const std::string& registerGroupName
     ) const {
-        const auto& peripheralModules = this->getPeripheralModulesMappedByName();
         Targets::TargetMemoryAddress addressOffset = 0;
 
-        const auto peripheralModuleIt = peripheralModules.find(moduleName);
-        if (peripheralModuleIt != peripheralModules.end()) {
+        const auto peripheralModuleIt = this->peripheralModulesMappedByName.find(moduleName);
+        if (peripheralModuleIt != this->peripheralModulesMappedByName.end()) {
             const auto& peripheralModule = peripheralModuleIt->second;
 
             const auto instanceIt = peripheralModule.instancesMappedByName.find(instanceName);
@@ -1212,11 +1203,9 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadDebugWireAndJtagTargetParameters(TargetParameters& targetParameters) const {
-        const auto& propertyGroups = this->getPropertyGroupsMappedByName();
-
         // OCD attributes can be found in property groups
-        const auto ocdPropertyGroupIt = propertyGroups.find("ocd");
-        if (ocdPropertyGroupIt != propertyGroups.end()) {
+        const auto ocdPropertyGroupIt = this->propertyGroupsMappedByName.find("ocd");
+        if (ocdPropertyGroupIt != this->propertyGroupsMappedByName.end()) {
             const auto& ocdProperties = ocdPropertyGroupIt->second.propertiesMappedByName;
 
             const auto ocdRevisionPropertyIt = ocdProperties.find("ocd_revision");
@@ -1279,10 +1268,8 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadPdiTargetParameters(TargetParameters& targetParameters) const {
-        const auto& propertyGroups = this->getPropertyGroupsMappedByName();
-
-        const auto pdiPropertyGroupIt = propertyGroups.find("pdi_interface");
-        if (pdiPropertyGroupIt == propertyGroups.end()) {
+        const auto pdiPropertyGroupIt = this->propertyGroupsMappedByName.find("pdi_interface");
+        if (pdiPropertyGroupIt == this->propertyGroupsMappedByName.end()) {
             return;
         }
 
@@ -1333,16 +1320,14 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     }
 
     void TargetDescriptionFile::loadUpdiTargetParameters(TargetParameters& targetParameters) const {
-        const auto& propertyGroups = this->getPropertyGroupsMappedByName();
-
         targetParameters.nvmModuleBaseAddress = this->getPeripheralModuleRegisterAddressOffset(
             "nvmctrl",
             "nvmctrl",
             "nvmctrl"
         );
 
-        const auto updiPropertyGroupIt = propertyGroups.find("updi_interface");
-        if (updiPropertyGroupIt != propertyGroups.end()) {
+        const auto updiPropertyGroupIt = this->propertyGroupsMappedByName.find("updi_interface");
+        if (updiPropertyGroupIt != this->propertyGroupsMappedByName.end()) {
             const auto& updiInterfaceProperties = updiPropertyGroupIt->second.propertiesMappedByName;
 
             const auto ocdBaseAddressPropertyIt = updiInterfaceProperties.find("ocd_base_addr");

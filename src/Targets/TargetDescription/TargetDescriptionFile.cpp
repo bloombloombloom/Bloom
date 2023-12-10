@@ -54,7 +54,7 @@ namespace Targets::TargetDescription
         this->loadInterfaces(document);
     }
 
-    AddressSpace TargetDescriptionFile::generateAddressSpaceFromXml(const QDomElement& xmlElement) {
+    AddressSpace TargetDescriptionFile::addressSpaceFromXml(const QDomElement& xmlElement) {
         if (
             !xmlElement.hasAttribute("id")
             || !xmlElement.hasAttribute("name")
@@ -90,7 +90,7 @@ namespace Targets::TargetDescription
         auto& memorySegments = addressSpace.memorySegmentsByTypeAndName;
         for (int segmentIndex = 0; segmentIndex < segmentNodes.count(); segmentIndex++) {
             try {
-                auto segment = TargetDescriptionFile::generateMemorySegmentFromXml(
+                auto segment = TargetDescriptionFile::memorySegmentFromXml(
                     segmentNodes.item(segmentIndex).toElement()
                 );
 
@@ -113,7 +113,7 @@ namespace Targets::TargetDescription
         return addressSpace;
     }
 
-    MemorySegment TargetDescriptionFile::generateMemorySegmentFromXml(const QDomElement& xmlElement) {
+    MemorySegment TargetDescriptionFile::memorySegmentFromXml(const QDomElement& xmlElement) {
         if (
             !xmlElement.hasAttribute("type")
             || !xmlElement.hasAttribute("name")
@@ -163,7 +163,7 @@ namespace Targets::TargetDescription
         return segment;
     }
 
-    RegisterGroup TargetDescriptionFile::generateRegisterGroupFromXml(const QDomElement& xmlElement) {
+    RegisterGroup TargetDescriptionFile::registerGroupFromXml(const QDomElement& xmlElement) {
         if (!xmlElement.hasAttribute("name")) {
             throw Exception("Missing register group name attribute");
         }
@@ -191,7 +191,7 @@ namespace Targets::TargetDescription
         auto registerNodes = xmlElement.elementsByTagName("register");
         for (int registerIndex = 0; registerIndex < registerNodes.count(); registerIndex++) {
             try {
-                auto reg = TargetDescriptionFile::generateRegisterFromXml(
+                auto reg = TargetDescriptionFile::registerFromXml(
                     registerNodes.item(registerIndex).toElement()
                 );
                 registers.insert(std::pair(reg.name, reg));
@@ -205,7 +205,7 @@ namespace Targets::TargetDescription
         return registerGroup;
     }
 
-    Register TargetDescriptionFile::generateRegisterFromXml(const QDomElement& xmlElement) {
+    Register TargetDescriptionFile::registerFromXml(const QDomElement& xmlElement) {
         if (
             !xmlElement.hasAttribute("name")
             || !xmlElement.hasAttribute("offset")
@@ -245,7 +245,7 @@ namespace Targets::TargetDescription
         auto bitFieldNodes = xmlElement.elementsByTagName("bitfield");
         for (int bitFieldIndex = 0; bitFieldIndex < bitFieldNodes.count(); bitFieldIndex++) {
             try {
-                auto bitField = TargetDescriptionFile::generateBitFieldFromXml(
+                auto bitField = TargetDescriptionFile::bitFieldFromXml(
                     bitFieldNodes.item(bitFieldIndex).toElement()
                 );
                 bitFields.insert(std::pair(bitField.name, bitField));
@@ -259,7 +259,7 @@ namespace Targets::TargetDescription
         return reg;
     }
 
-    BitField TargetDescriptionFile::generateBitFieldFromXml(const QDomElement& xmlElement) {
+    BitField TargetDescriptionFile::bitFieldFromXml(const QDomElement& xmlElement) {
         if (!xmlElement.hasAttribute("name") || !xmlElement.hasAttribute("mask")) {
             throw Exception("Missing bit field name/mask attribute");
         }
@@ -291,7 +291,7 @@ namespace Targets::TargetDescription
 
         for (int addressSpaceIndex = 0; addressSpaceIndex < addressSpaceNodes.count(); addressSpaceIndex++) {
             try {
-                auto addressSpace = TargetDescriptionFile::generateAddressSpaceFromXml(
+                auto addressSpace = TargetDescriptionFile::addressSpaceFromXml(
                     addressSpaceNodes.item(addressSpaceIndex).toElement()
                 );
                 this->addressSpacesMappedById.insert(std::pair(addressSpace.id, addressSpace));
@@ -351,7 +351,7 @@ namespace Targets::TargetDescription
 
             auto registerGroupNodes = moduleElement.elementsByTagName("register-group");
             for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
-                auto registerGroup = TargetDescriptionFile::generateRegisterGroupFromXml(
+                auto registerGroup = TargetDescriptionFile::registerGroupFromXml(
                     registerGroupNodes.item(registerGroupIndex).toElement()
                 );
 
@@ -376,7 +376,7 @@ namespace Targets::TargetDescription
 
             auto registerGroupNodes = moduleElement.elementsByTagName("register-group");
             for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
-                auto registerGroup = TargetDescriptionFile::generateRegisterGroupFromXml(
+                auto registerGroup = TargetDescriptionFile::registerGroupFromXml(
                     registerGroupNodes.item(registerGroupIndex).toElement()
                 );
 
@@ -400,7 +400,7 @@ namespace Targets::TargetDescription
                     registerGroupIndex < registerGroupNodes.count();
                     registerGroupIndex++
                 ) {
-                    auto registerGroup = TargetDescriptionFile::generateRegisterGroupFromXml(
+                    auto registerGroup = TargetDescriptionFile::registerGroupFromXml(
                         registerGroupNodes.item(registerGroupIndex).toElement()
                     );
 
