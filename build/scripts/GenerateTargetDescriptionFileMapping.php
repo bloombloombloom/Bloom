@@ -40,7 +40,7 @@ $xmlFiles = TargetDescriptionFiles\Factory::findXmlFiles(TDF_DIR_PATH);
 print count($xmlFiles) . ' target descriptions files found in ' . TDF_DIR_PATH . PHP_EOL . PHP_EOL;
 
 $targetFamiliesByArch = [
-    TargetDescriptionFile::ARCHITECTURE_AVR8 => 'TargetFamily::AVR8',
+    TargetDescriptionFile::ARCHITECTURE_AVR8 => 'TargetFamily::AVR_8',
 ];
 
 const MAP_ENTRY_TEMPLATE = '{"@CONFIG_VALUE@", {"@TARGET_NAME@", "@CONFIG_VALUE@", @TARGET_FAMILY@, "@TDF_PATH@"}}';

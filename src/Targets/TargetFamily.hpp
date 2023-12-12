@@ -6,7 +6,7 @@ namespace Targets
 {
     enum class TargetFamily: std::uint8_t
     {
-        AVR8,
+        AVR_8,
         RISC_V,
     };
 }

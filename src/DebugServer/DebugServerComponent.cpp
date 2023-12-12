@@ -43,7 +43,7 @@ namespace DebugServer
             {
                 "avr-gdb-rsp",
                 [this] () -> std::unique_ptr<ServerInterface> {
-                    if (this->targetDescriptor.family != Targets::TargetFamily::AVR8) {
+                    if (this->targetDescriptor.family != Targets::TargetFamily::AVR_8) {
                         throw Exceptions::Exception("The AVR GDB RSP server is only compatible with AVR8 targets.");
                     }
 
