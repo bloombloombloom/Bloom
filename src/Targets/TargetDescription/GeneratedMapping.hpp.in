@@ -1,0 +1,39 @@
+#pragma once
+
+#include <string>
+#include <map>
+
+#include "src/Targets/TargetFamily.hpp"
+
+namespace Targets::TargetDescription
+{
+    struct GeneratedMapping
+    {
+        struct BriefTargetDescriptor
+        {
+            std::string targetName;
+            std::string configValue;
+            TargetFamily targetFamily;
+            std::string relativeTdfPath;
+
+            constexpr BriefTargetDescriptor(
+                const std::string& targetName,
+                const std::string& configValue,
+                TargetFamily targetFamily,
+                const std::string& relativeTdfPath
+            )
+                : targetName(targetName)
+                , configValue(configValue)
+                , targetFamily(targetFamily)
+                , relativeTdfPath(relativeTdfPath)
+            {}
+        };
+
+        /*
+         * The @MAPPING_PLACEHOLDER@ comment below will be replaced with the TDF mapping
+         */
+        static const inline std::map<std::string, BriefTargetDescriptor> map = {
+            //@MAPPING_PLACEHOLDER@
+        };
+    };
+}

@@ -11,6 +11,18 @@ namespace Targets::TargetDescription
 {
     using namespace Exceptions;
 
+    const std::map<std::string, GeneratedMapping::BriefTargetDescriptor>& TargetDescriptionFile::mapping() {
+        return GeneratedMapping::map;
+    }
+
+    TargetDescriptionFile::TargetDescriptionFile(const QString& xmlFilePath) {
+        this->init(xmlFilePath);
+    }
+
+    TargetDescriptionFile::TargetDescriptionFile(const QDomDocument& xml) {
+        this->init(xml);
+    }
+
     const std::string& TargetDescriptionFile::getTargetName() const {
         return this->targetName;
     }

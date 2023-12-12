@@ -20,6 +20,7 @@ class TargetDescriptionFile
     public ?SimpleXMLElement $xml = null;
 
     public ?string $targetName = null;
+    public ?string $configurationValue = null;
     public ?string $targetArchitecture = null;
 
     /** @var string[] */
@@ -71,6 +72,7 @@ class TargetDescriptionFile
 
             if (!empty($this->deviceAttributesByName['name'])) {
                 $this->targetName = $device['name'];
+                $this->configurationValue = strtolower($device['name']);
             }
 
             if (!empty($this->deviceAttributesByName['architecture'])) {
@@ -478,6 +480,10 @@ class TargetDescriptionFile
 
         if (empty($this->targetName)) {
             $failures[] = 'Target name not found';
+        }
+
+        if (str_contains($this->targetName, ' ')) {
+            $failures[] = 'Target name cannot contain whitespaces';
         }
 
         if (empty($this->targetArchitecture)) {

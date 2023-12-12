@@ -2,10 +2,13 @@ cmake_minimum_required(VERSION 3.22)
 
 project(Bloom LANGUAGES CXX VERSION 1.0.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://bloom.oscillate.io")
+set(CMAKE_CXX_STANDARD 20)
+
+set(AUTOGEN_BUILD_DIR ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}_autogen/)
+file(MAKE_DIRECTORY ${AUTOGEN_BUILD_DIR})
 
 set(CMAKE_VERBOSE_MAKEFILE off)
 
-set(CMAKE_CXX_STANDARD 20)
 set(ENABLE_SANITIZERS off)
 
 set(CMAKE_AUTOMOC ON)
@@ -77,12 +80,6 @@ target_link_libraries(Bloom ${YAML_CPP_LIBRARIES})
 target_link_libraries(Bloom Qt6::Core)
 target_link_libraries(Bloom Qt6::Xml)
 target_link_libraries(Bloom Qt6::Network)
-
-target_sources(
-    Bloom
-    PRIVATE
-        ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/AVR/Mapping.json
-)
 
 qt_add_resources(
     Bloom
@@ -166,15 +163,46 @@ if (${ENABLE_SANITIZERS})
     )
 endif()
 
-# Copy AVR8 TDFs to build directory and construct JSON mapping of AVR8 target signatures to TDF paths.
+# Validate TDF files
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/tdf_validation_timestamp.txt
+    COMMAND echo 'Validating target description files'
+    COMMAND php
+    ARGS
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/ValidateTargetDescriptionFiles.php
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/
+    COMMAND date > ${CMAKE_BINARY_DIR}/tdf_validation_timestamp.txt
+)
+
+# Copy TDF files to build directory and generate TDF mapping
+set(GENERATED_TDF_MAPPING_PATH "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}_autogen/GeneratedMapping.hpp")
+
+target_sources(
+    Bloom
+    PRIVATE
+        ${GENERATED_TDF_MAPPING_PATH}
+)
+
+target_compile_definitions(
+    Bloom
+    PUBLIC GENERATED_TDF_MAPPING_PATH="${GENERATED_TDF_MAPPING_PATH}"
+)
+
 add_custom_command(
     OUTPUT
-    ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/AVR/Mapping.json
+        ${GENERATED_TDF_MAPPING_PATH}
+        ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/
     DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/Avr8TargetDescriptionFiles.php
-    COMMAND echo 'Processing AVR target description files.'
-    COMMAND
-    php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/Avr8TargetDescriptionFiles.php ${CMAKE_BINARY_DIR}
+        ${CMAKE_BINARY_DIR}/tdf_validation_timestamp.txt
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/GenerateTargetDescriptionFileMapping.php
+    COMMAND echo 'Processing target description files'
+    COMMAND php
+    ARGS
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/GenerateTargetDescriptionFileMapping.php
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescription/GeneratedMapping.hpp.in
+        ${GENERATED_TDF_MAPPING_PATH}
+        ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/
 )
 
 include(./cmake/Installing.cmake)

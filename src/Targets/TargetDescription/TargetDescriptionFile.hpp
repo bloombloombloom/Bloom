@@ -12,6 +12,8 @@
 #include "Pinout.hpp"
 #include "Interface.hpp"
 
+#include GENERATED_TDF_MAPPING_PATH
+
 namespace Targets::TargetDescription
 {
     /**
@@ -37,23 +39,32 @@ namespace Targets::TargetDescription
     {
     public:
         /**
+         * Returns a mapping of target configuration values to instances of the GeneratedMapping::BriefTargetDescriptor
+         * struct.
+         *
+         * The mapping is generated pre-build.
+         *
+         * The GeneratedMapping::BriefTargetDescriptor struct holds some brief info about a particular target, such as
+         * target name, family and TDF path. See the GeneratedMapping.hpp.in template for more.
+         *
+         * @return
+         */
+        static const std::map<std::string, GeneratedMapping::BriefTargetDescriptor>& mapping();
+
+        /**
          * Will construct a TargetDescriptionFile instance from the XML of a target description file, the path to which
          * is given via xmlFilePath.
          *
          * @param xmlFilePath
          */
-        explicit TargetDescriptionFile(const QString& xmlFilePath) {
-            this->init(xmlFilePath);
-        }
+        explicit TargetDescriptionFile(const QString& xmlFilePath);
 
         /**
          * Will construct a TargetDescriptionFile instance from pre-loaded XML.
          *
          * @param xml
          */
-        explicit TargetDescriptionFile(const QDomDocument& xml) {
-            this->init(xml);
-        }
+        explicit TargetDescriptionFile(const QDomDocument& xml);
 
         /**
          * Returns the target name extracted from the TDF.
