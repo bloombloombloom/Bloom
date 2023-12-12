@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <QMetaType>
 
+#include "TargetFamily.hpp"
 #include "TargetMemory.hpp"
 #include "TargetRegister.hpp"
 #include "TargetVariant.hpp"
@@ -14,12 +15,6 @@
 
 namespace Targets
 {
-    enum class TargetFamily: std::uint8_t
-    {
-        AVR8,
-        RISC_V,
-    };
-
     struct TargetDescriptor
     {
         std::string id;
