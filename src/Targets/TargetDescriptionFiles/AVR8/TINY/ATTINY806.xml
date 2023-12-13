@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny806-MFR" package="VQFN20" pinout="QFN20" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny806-MNR" package="VQFN20" pinout="QFN20" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny806-SFR" package="SOIC20" pinout="SOIC20" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny806-SNR" package="SOIC20" pinout="SOIC20" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny806-MFR" package="VQFN20" pinout="QFN20" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny806-MNR" package="VQFN20" pinout="QFN20" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny806-SFR" package="SOIC20" pinout="SOIC20" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny806-SNR" package="SOIC20" pinout="SOIC20" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="ATtiny806" family="AVR8" architecture="AVR8X" avr-family="AVR TINY">
         <address-spaces>

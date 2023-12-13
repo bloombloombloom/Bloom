@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny24A-CCU" package="UFBGA16" pinout="BGA_16" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny24A-MMH" package="VQFN20" pinout="QFN20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny24A-MU" package="QFN20" pinout="QFN20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny24A-PU" package="PDIP14" pinout="SOIC_14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny24A-SSU" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny24A-SSN" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny24A-MF" package="QFN20" pinout="QFN20" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny24A-MM8" package="VQFN20" pinout="QFN20" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny24A-SSF" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny24A-CCU" package="UFBGA16" pinout="BGA_16" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny24A-MMH" package="VQFN20" pinout="QFN20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny24A-MU" package="QFN20" pinout="QFN20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny24A-PU" package="PDIP14" pinout="SOIC_14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny24A-SSU" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny24A-SSN" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny24A-MF" package="QFN20" pinout="QFN20" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny24A-MM8" package="VQFN20" pinout="QFN20" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny24A-SSF" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="ATtiny24A" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

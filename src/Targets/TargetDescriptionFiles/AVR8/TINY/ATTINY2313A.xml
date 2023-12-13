@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny2313A-SUR" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="SOIC20"/>
-        <variant ordercode="ATtiny2313A-SU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="SOIC20"/>
-        <variant ordercode="ATtiny2313A-PU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="PDIP20"/>
-        <variant ordercode="ATtiny2313A-MUR" tempmin="-40" tempmax="85" pinout="QFN20" package="WQFN20"/>
-        <variant ordercode="ATtiny2313A-MU" tempmin="-40" tempmax="85" pinout="QFN20" package="WQFN20"/>
-        <variant ordercode="ATtiny2313A-MMHR" tempmin="-40" tempmax="85" pinout="QFN20" package="VQFN20"/>
-        <variant ordercode="ATtiny2313A-MMH" tempmin="-40" tempmax="85" pinout="QFN20" package="VQFN20"/>
+        <variant name="ATtiny2313A-SUR" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="SOIC20"/>
+        <variant name="ATtiny2313A-SU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="SOIC20"/>
+        <variant name="ATtiny2313A-PU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="PDIP20"/>
+        <variant name="ATtiny2313A-MUR" tempmin="-40" tempmax="85" pinout="QFN20" package="WQFN20"/>
+        <variant name="ATtiny2313A-MU" tempmin="-40" tempmax="85" pinout="QFN20" package="WQFN20"/>
+        <variant name="ATtiny2313A-MMHR" tempmin="-40" tempmax="85" pinout="QFN20" package="VQFN20"/>
+        <variant name="ATtiny2313A-MMH" tempmin="-40" tempmax="85" pinout="QFN20" package="VQFN20"/>
     </variants>
     <device name="ATtiny2313A" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

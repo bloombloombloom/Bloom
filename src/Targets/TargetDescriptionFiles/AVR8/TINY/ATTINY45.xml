@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny45V-10PU" package="PDIP8" pinout="SOIC_8" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny45V-10SU" package="SOIC8" pinout="SOIC_8" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny45V-10SH" package="SOIC8" pinout="SOIC_8" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny45V-10XU" package="TSSOP8" pinout="SOIC_8" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny45V-10MU" package="MLF20" pinout="QFN_20" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny45V-20PU" package="PDIP8" pinout="SOIC_8" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
-        <variant ordercode="ATtiny45V-20SU" package="SOIC8" pinout="SOIC_8" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
-        <variant ordercode="ATtiny45V-20SH" package="SOIC8" pinout="SOIC_8" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
-        <variant ordercode="ATtiny45V-20XU" package="TSSOP8" pinout="SOIC_8" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
-        <variant ordercode="ATtiny45V-20MU" package="MLF20" pinout="QFN_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
+        <variant name="ATtiny45V-10PU" package="PDIP8" pinout="SOIC_8" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny45V-10SU" package="SOIC8" pinout="SOIC_8" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny45V-10SH" package="SOIC8" pinout="SOIC_8" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny45V-10XU" package="TSSOP8" pinout="SOIC_8" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny45V-10MU" package="MLF20" pinout="QFN_20" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny45V-20PU" package="PDIP8" pinout="SOIC_8" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
+        <variant name="ATtiny45V-20SU" package="SOIC8" pinout="SOIC_8" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
+        <variant name="ATtiny45V-20SH" package="SOIC8" pinout="SOIC_8" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
+        <variant name="ATtiny45V-20XU" package="TSSOP8" pinout="SOIC_8" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
+        <variant name="ATtiny45V-20MU" package="MLF20" pinout="QFN_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
     </variants>
     <device name="ATtiny45" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

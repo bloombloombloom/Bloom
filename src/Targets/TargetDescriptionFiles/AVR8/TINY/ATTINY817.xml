@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny817-MFR" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny817-MNR" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny817-MNRES" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny817-MFR" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny817-MNR" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny817-MNRES" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="ATtiny817" family="AVR8" architecture="AVR8X" avr-family="AVR TINY">
         <address-spaces>

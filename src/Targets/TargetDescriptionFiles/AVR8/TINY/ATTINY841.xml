@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny841-SSU" package="SOIC14" pinout="SOIC_14" speedmax="16000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.7"/>
-        <variant ordercode="ATtiny841-MU" package="MLF20" pinout="QFN_20" speedmax="16000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.7"/>
-        <variant ordercode="ATtiny841-MMH" package="VQFN20" pinout="QFN_20" speedmax="16000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.7"/>
+        <variant name="ATtiny841-SSU" package="SOIC14" pinout="SOIC_14" speedmax="16000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.7"/>
+        <variant name="ATtiny841-MU" package="MLF20" pinout="QFN_20" speedmax="16000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.7"/>
+        <variant name="ATtiny841-MMH" package="VQFN20" pinout="QFN_20" speedmax="16000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.7"/>
     </variants>
     <device name="ATtiny841" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

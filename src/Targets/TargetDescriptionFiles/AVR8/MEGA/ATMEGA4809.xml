@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega4809-AFR" package="TQFP48" pinout="QFP48" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.0" vccmin="1.8"/>
-        <variant ordercode="ATmega4809-MFR" package="UQFN48" pinout="QFN48" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.0" vccmin="1.8"/>
-        <variant ordercode="ATmega4809-PF" package="PDIP40" pinout="PDIP40" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.0" vccmin="1.8"/>
+        <variant name="ATmega4809-AFR" package="TQFP48" pinout="QFP48" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.0" vccmin="1.8"/>
+        <variant name="ATmega4809-MFR" package="UQFN48" pinout="QFN48" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.0" vccmin="1.8"/>
+        <variant name="ATmega4809-PF" package="PDIP40" pinout="PDIP40" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.0" vccmin="1.8"/>
     </variants>
     <device name="ATmega4809" family="AVR8" architecture="AVR8X" avr-family="AVR MEGA">
         <address-spaces>

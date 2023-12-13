@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny461A-PU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="PDIP20"/>
-        <variant ordercode="ATtiny461A-SUR" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="SOIC20"/>
-        <variant ordercode="ATtiny461A-SU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="SOIC20"/>
-        <variant ordercode="ATtiny461A-XU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="TSSOP20"/>
-        <variant ordercode="ATtiny461A-XUR" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="TSSOP20"/>
-        <variant ordercode="ATtiny461A-MUR" tempmin="-40" tempmax="85" pinout="QFN32" package="VQFN32"/>
-        <variant ordercode="ATtiny461A-MU" tempmin="-40" tempmax="85" pinout="QFN32" package="VQFN32"/>
+        <variant name="ATtiny461A-PU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="PDIP20"/>
+        <variant name="ATtiny461A-SUR" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="SOIC20"/>
+        <variant name="ATtiny461A-SU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="SOIC20"/>
+        <variant name="ATtiny461A-XU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="TSSOP20"/>
+        <variant name="ATtiny461A-XUR" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_TSSOP_20" package="TSSOP20"/>
+        <variant name="ATtiny461A-MUR" tempmin="-40" tempmax="85" pinout="QFN32" package="VQFN32"/>
+        <variant name="ATtiny461A-MU" tempmin="-40" tempmax="85" pinout="QFN32" package="VQFN32"/>
     </variants>
     <device name="ATtiny461A" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

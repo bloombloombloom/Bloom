@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="AT90PWM2B-16SU" package="SOIC24" pinout="SOIC24" tempmax="85" tempmin="-40"/>
+        <variant name="AT90PWM2B-16SU" package="SOIC24" pinout="SOIC24" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="AT90PWM2B" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

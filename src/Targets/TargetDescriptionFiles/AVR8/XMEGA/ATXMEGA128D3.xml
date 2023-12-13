@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATxmega128D3-AU" package="TQFP64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega128D3-MH" package="QFN64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega128D3-AN" package="TQFP64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega128D3-MN" package="QFN64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega128D3-AU" package="TQFP64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega128D3-MH" package="QFN64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega128D3-AN" package="TQFP64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega128D3-MN" package="QFN64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
     </variants>
     <device name="ATxmega128D3" family="AVR8" architecture="AVR8_XMEGA" avr-family="AVR XMEGA">
         <address-spaces>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny861V-10MU" package="MLF32" pinout="QFN_32" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny861V-10PU" package="PDIP20" pinout="SOIC_20" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny861V-10SU" package="SOIC20" pinout="SOIC_20" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny861-20MU" package="MLF32" pinout="QFN_32" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
-        <variant ordercode="ATtiny861-20PU" package="PDIP20" pinout="SOIC_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
-        <variant ordercode="ATtiny861-20SU" package="SOIC20" pinout="SOIC_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
+        <variant name="ATtiny861V-10MU" package="MLF32" pinout="QFN_32" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny861V-10PU" package="PDIP20" pinout="SOIC_20" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny861V-10SU" package="SOIC20" pinout="SOIC_20" speedmax="10000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny861-20MU" package="MLF32" pinout="QFN_32" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
+        <variant name="ATtiny861-20PU" package="PDIP20" pinout="SOIC_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
+        <variant name="ATtiny861-20SU" package="SOIC20" pinout="SOIC_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="2.7"/>
     </variants>
     <device name="ATtiny861" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

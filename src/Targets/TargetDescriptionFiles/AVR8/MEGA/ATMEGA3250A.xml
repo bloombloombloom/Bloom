@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega3250A-AU" package="TQFP100" pinout="QFP_100" tempmax="85" tempmin="-40"/>
+        <variant name="ATmega3250A-AU" package="TQFP100" pinout="QFP_100" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="ATmega3250A" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

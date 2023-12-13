@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny84A-CCU" package="UFBGA16" pinout="BGA_16" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny84A-MMH" package="VQFN20" pinout="QFN_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny84A-MU" package="QFN20" pinout="QFN_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny84A-PU" package="PDIP14" pinout="SOIC_14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny84A-SSU" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny84A-SSF" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny84A-CCU" package="UFBGA16" pinout="BGA_16" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny84A-MMH" package="VQFN20" pinout="QFN_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny84A-MU" package="QFN20" pinout="QFN_20" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny84A-PU" package="PDIP14" pinout="SOIC_14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny84A-SSU" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny84A-SSF" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="ATtiny84A" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

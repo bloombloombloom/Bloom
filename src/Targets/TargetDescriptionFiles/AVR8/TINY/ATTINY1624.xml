@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny1624-SSFR" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny1624-SSUR" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny1624-SSFR" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny1624-SSUR" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="ATtiny1624" family="AVR8" architecture="AVR8X" avr-family="tinyAVR 2">
         <address-spaces>

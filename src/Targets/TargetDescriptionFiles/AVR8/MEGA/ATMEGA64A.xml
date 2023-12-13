@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega64A-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega64A-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega64A-AN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega64A-MN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega64A-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega64A-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega64A-AN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega64A-MN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
     </variants>
     <device name="ATmega64A" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

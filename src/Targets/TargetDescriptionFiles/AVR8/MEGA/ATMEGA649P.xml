@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega649P-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP64" package="TQFP64" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega649P-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN64" package="QFN64" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega649P-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP64" package="TQFP64" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega649P-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN64" package="QFN64" vccmin="1.8" vccmax="5.5"/>
     </variants>
     <device name="ATmega649P" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

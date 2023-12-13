@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATxmega32D4-AU" package="TQFP44" pinout="QFN_QFP_44" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega32D4-MH" package="VQFN44" pinout="QFN_QFP_44" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega32D4-CU" package="VFBGA49" pinout="BGA_49" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega32D4-AN" package="TQFP44" pinout="QFN_QFP_44" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega32D4-M7" package="VFBGA49" pinout="BGA_49" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega32D4-AU" package="TQFP44" pinout="QFN_QFP_44" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega32D4-MH" package="VQFN44" pinout="QFN_QFP_44" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega32D4-CU" package="VFBGA49" pinout="BGA_49" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega32D4-AN" package="TQFP44" pinout="QFN_QFP_44" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega32D4-M7" package="VFBGA49" pinout="BGA_49" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
     </variants>
     <device name="ATxmega32D4" family="AVR8" architecture="AVR8_XMEGA" avr-family="AVR XMEGA">
         <address-spaces>

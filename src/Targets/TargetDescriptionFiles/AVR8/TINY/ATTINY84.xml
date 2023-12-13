@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny84-20PU" package="PDIP14" pinout="SOIC_14" tempmax="85" tempmin="-40"/>
-        <variant ordercode="ATtiny84V-10SSU" package="SOIC14" pinout="SOIC_14" tempmax="85" tempmin="-40"/>
-        <variant ordercode="ATtiny84-20MU" package="QFN20" pinout="QFN_20" tempmax="85" tempmin="-40"/>
+        <variant name="ATtiny84-20PU" package="PDIP14" pinout="SOIC_14" tempmax="85" tempmin="-40"/>
+        <variant name="ATtiny84V-10SSU" package="SOIC14" pinout="SOIC_14" tempmax="85" tempmin="-40"/>
+        <variant name="ATtiny84-20MU" package="QFN20" pinout="QFN_20" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="ATtiny84" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

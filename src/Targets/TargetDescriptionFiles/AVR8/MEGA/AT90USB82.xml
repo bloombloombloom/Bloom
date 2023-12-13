@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="AT90USB82-MU" package="VQFN32" pinout="QFN32" tempmax="85" tempmin="-40"/>
+        <variant name="AT90USB82-MU" package="VQFN32" pinout="QFN32" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="AT90USB82" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

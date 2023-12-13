@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega168A-AU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP32" package="TQFP32" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega168A-MMH" tempmin="-40" tempmax="85" speedmax="20000000" pinout="QFN28" package="QFN28" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega168A-MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="QFN32" package="QFN32" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega168A-PU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="PDIP28" package="PDIP28" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega168A-AU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP32" package="TQFP32" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega168A-MMH" tempmin="-40" tempmax="85" speedmax="20000000" pinout="QFN28" package="QFN28" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega168A-MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="QFN32" package="QFN32" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega168A-PU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="PDIP28" package="PDIP28" vccmin="1.8" vccmax="5.5"/>
     </variants>
     <device name="ATmega168A" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

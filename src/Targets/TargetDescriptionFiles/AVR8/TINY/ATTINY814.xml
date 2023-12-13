@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny814-SSFR" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny814-SSNR" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny814-SSNRES" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny814-SSFR" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny814-SSNR" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny814-SSNRES" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="105" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="ATtiny814" family="AVR8" architecture="AVR8X" avr-family="AVR TINY">
         <address-spaces>

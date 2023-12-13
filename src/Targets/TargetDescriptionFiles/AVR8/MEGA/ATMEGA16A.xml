@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega16A-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44" package="TQFP44" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega16A-PU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="PDIP40" package="PDIP40" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega16A-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44" package="QFN44" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega16A-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44" package="TQFP44" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega16A-PU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="PDIP40" package="PDIP40" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega16A-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44" package="QFN44" vccmin="2.7" vccmax="5.5"/>
     </variants>
     <device name="ATmega16A" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

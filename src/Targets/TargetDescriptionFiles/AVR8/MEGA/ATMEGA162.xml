@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega162-PU" tempmin="-40" tempmax="85" pinout="DIP40" package="DIP40"/>
-        <variant ordercode="ATmega162-AU" tempmin="-40" tempmax="85" pinout="QFP_QFN_44" package="TQFP44"/>
-        <variant ordercode="ATmega162-MU" tempmin="-40" tempmax="85" pinout="QFP_QFN_44" package="VQFN44"/>
+        <variant name="ATmega162-PU" tempmin="-40" tempmax="85" pinout="DIP40" package="DIP40"/>
+        <variant name="ATmega162-AU" tempmin="-40" tempmax="85" pinout="QFP_QFN_44" package="TQFP44"/>
+        <variant name="ATmega162-MU" tempmin="-40" tempmax="85" pinout="QFP_QFN_44" package="VQFN44"/>
     </variants>
     <device name="ATmega162" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

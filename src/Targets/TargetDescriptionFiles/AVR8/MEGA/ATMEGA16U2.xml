@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega16U2-AU" speedmax="16000000" tempmin="-40" tempmax="85" vccmin="2.7" vccmax="5.5" package="TQFP32" pinout="QFP32"/>
-        <variant ordercode="ATmega16U2-MU" speedmax="16000000" tempmin="-40" tempmax="85" vccmin="2.7" vccmax="5.5" package="QFN32" pinout="QFP32"/>
+        <variant name="ATmega16U2-AU" speedmax="16000000" tempmin="-40" tempmax="85" vccmin="2.7" vccmax="5.5" package="TQFP32" pinout="QFP32"/>
+        <variant name="ATmega16U2-MU" speedmax="16000000" tempmin="-40" tempmax="85" vccmin="2.7" vccmax="5.5" package="QFN32" pinout="QFP32"/>
     </variants>
     <device name="ATmega16U2" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

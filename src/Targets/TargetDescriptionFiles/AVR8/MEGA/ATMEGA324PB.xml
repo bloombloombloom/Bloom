@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega324PB-AU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega324PB-AUR" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega324PB-MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="VQFN44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega324PB-MUR" tempmin="-40" tempmax="85" speedmax="20000000" pinout="VQFN44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega324PB-AN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega324PB-ANR" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega324PB-MN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="VQFN44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega324PB-MNR" tempmin="-40" tempmax="105" speedmax="20000000" pinout="VQFN44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega324PB-AU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega324PB-AUR" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega324PB-MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="VQFN44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega324PB-MUR" tempmin="-40" tempmax="85" speedmax="20000000" pinout="VQFN44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega324PB-AN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega324PB-ANR" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega324PB-MN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="VQFN44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega324PB-MNR" tempmin="-40" tempmax="105" speedmax="20000000" pinout="VQFN44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
     </variants>
     <device name="ATmega324PB" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

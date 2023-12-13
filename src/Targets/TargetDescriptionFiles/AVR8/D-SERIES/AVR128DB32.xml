@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="AVR128DB32" package="QFN32" pinout="QFN32" speedmax="32000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="AVR128DB32" package="QFN32" pinout="QFN32" speedmax="32000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="AVR128DB32" family="AVR8" architecture="AVR8X" avr-family="AVR DB">
         <address-spaces>

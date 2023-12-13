@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega329PV-10AU" tempmin="-40" tempmax="85" speedmax="10000000" pinout="TQFP64" package="TQFP64" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega329PV-10MU" tempmin="-40" tempmax="85" speedmax="10000000" pinout="QFN64" package="QFN64" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega329P-20AU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega329P-20MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="QFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega329P-20AN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP64" package="TQFP64 " vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega329P-20MN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="QFN64" package="QFN64" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega329PV-10AU" tempmin="-40" tempmax="85" speedmax="10000000" pinout="TQFP64" package="TQFP64" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega329PV-10MU" tempmin="-40" tempmax="85" speedmax="10000000" pinout="QFN64" package="QFN64" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega329P-20AU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega329P-20MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="QFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega329P-20AN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP64" package="TQFP64 " vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega329P-20MN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="QFN64" package="QFN64" vccmin="1.8" vccmax="5.5"/>
     </variants>
     <device name="ATmega329P" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

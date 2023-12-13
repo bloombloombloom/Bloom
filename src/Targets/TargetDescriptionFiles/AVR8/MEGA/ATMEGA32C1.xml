@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega32C1-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN32" package="TQFP32" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega32C1-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN32" package="QFN32" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega32C1-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN32" package="TQFP32" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega32C1-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN32" package="QFN32" vccmin="2.7" vccmax="5.5"/>
     </variants>
     <device name="ATmega32C1" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

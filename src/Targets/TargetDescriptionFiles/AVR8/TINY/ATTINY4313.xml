@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny4313-PU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="PDIP20"/>
-        <variant ordercode="ATtiny4313-SU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="SOIC20"/>
-        <variant ordercode="ATtiny4313-SUR" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="SOIC20"/>
-        <variant ordercode="ATtiny4313-MMH" tempmin="-40" tempmax="85" pinout="QFN20" package="VQFN20"/>
-        <variant ordercode="ATtiny4313-MMHR" tempmin="-40" tempmax="85" pinout="QFN20" package="VQFN20"/>
-        <variant ordercode="ATtiny4313-MU" tempmin="-40" tempmax="85" pinout="QFN20" package="WQFN20"/>
-        <variant ordercode="ATtiny4313-MUR" tempmin="-40" tempmax="85" pinout="QFN20" package="WQFN20"/>
+        <variant name="ATtiny4313-PU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="PDIP20"/>
+        <variant name="ATtiny4313-SU" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="SOIC20"/>
+        <variant name="ATtiny4313-SUR" tempmin="-40" tempmax="85" pinout="PDIP_SOIC_20" package="SOIC20"/>
+        <variant name="ATtiny4313-MMH" tempmin="-40" tempmax="85" pinout="QFN20" package="VQFN20"/>
+        <variant name="ATtiny4313-MMHR" tempmin="-40" tempmax="85" pinout="QFN20" package="VQFN20"/>
+        <variant name="ATtiny4313-MU" tempmin="-40" tempmax="85" pinout="QFN20" package="WQFN20"/>
+        <variant name="ATtiny4313-MUR" tempmin="-40" tempmax="85" pinout="QFN20" package="WQFN20"/>
     </variants>
     <device name="ATtiny4313" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega649V-8AU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFP64" package="TQFP64" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega649V-8MU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="QFN64" package="QFN64" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega649-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP64" package="TQFP64 " vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega649-16MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega649V-8AU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFP64" package="TQFP64" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega649V-8MU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="QFN64" package="QFN64" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega649-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP64" package="TQFP64 " vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega649-16MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
     </variants>
     <device name="ATmega649" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

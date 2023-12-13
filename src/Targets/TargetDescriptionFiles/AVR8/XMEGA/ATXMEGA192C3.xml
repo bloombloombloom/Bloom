@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATXMEGA192C3-AU" package="TQFP64" speedmax="32000000" pinout="QFP_QFN_64" tempmax="0" tempmin="0" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATXMEGA192C3-MH" package="QFN64" speedmax="32000000" pinout="QFP_QFN_64" tempmax="0" tempmin="0" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATXMEGA192C3-AU" package="TQFP64" speedmax="32000000" pinout="QFP_QFN_64" tempmax="0" tempmin="0" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATXMEGA192C3-MH" package="QFN64" speedmax="32000000" pinout="QFP_QFN_64" tempmax="0" tempmin="0" vccmax="3.6" vccmin="1.6"/>
     </variants>
     <device name="ATxmega192C3" family="AVR8" architecture="AVR8_XMEGA" avr-family="AVR XMEGA">
         <address-spaces>

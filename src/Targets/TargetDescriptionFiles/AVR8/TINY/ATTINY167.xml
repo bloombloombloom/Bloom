@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny167-SU" tempmin="-40" tempmax="85" pinout="SOIC20" package="SOIC20"/>
-        <variant ordercode="ATtiny167-MU" tempmin="-40" tempmax="85" pinout="VQFN32" package="VQFN32"/>
-        <variant ordercode="ATtiny167-MMU" tempmin="-40" tempmax="85" pinout="QFN20" package="QFN20"/>
+        <variant name="ATtiny167-SU" tempmin="-40" tempmax="85" pinout="SOIC20" package="SOIC20"/>
+        <variant name="ATtiny167-MU" tempmin="-40" tempmax="85" pinout="VQFN32" package="VQFN32"/>
+        <variant name="ATtiny167-MMU" tempmin="-40" tempmax="85" pinout="QFN20" package="QFN20"/>
     </variants>
     <device name="ATtiny167" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

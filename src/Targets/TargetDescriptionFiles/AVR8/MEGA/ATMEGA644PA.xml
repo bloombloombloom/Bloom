@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega644PA-AU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP_QFN_44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega644PA-PU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="PDIP40" package="PDIP40" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega644PA-MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP_QFN_44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega644PA-AN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP_QFN_44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega644PA-PN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="PDIP40" package="PDIP40" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega644PA-MN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP_QFN_44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega644PA-AU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP_QFN_44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega644PA-PU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="PDIP40" package="PDIP40" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega644PA-MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP_QFN_44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega644PA-AN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP_QFN_44" package="TQFP44" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega644PA-PN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="PDIP40" package="PDIP40" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega644PA-MN" tempmin="-40" tempmax="105" speedmax="20000000" pinout="TQFP_QFN_44" package="VQFN44" vccmin="1.8" vccmax="5.5"/>
     </variants>
     <device name="ATmega644PA" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

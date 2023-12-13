@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega32U4-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP44" package="TQFP44" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega32U4RC-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP44" package="TQFP44" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega32U4-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN44" package="QFN44" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega32U4RC-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN44" package="QFN44" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega32U4-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP44" package="TQFP44" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega32U4RC-AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP44" package="TQFP44" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega32U4-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN44" package="QFN44" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega32U4RC-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN44" package="QFN44" vccmin="2.7" vccmax="5.5"/>
     </variants>
     <device name="ATmega32U4" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny87-SU" tempmin="-40" tempmax="85" pinout="SOIC20" package="SOIC20"/>
-        <variant ordercode="ATtiny87-MU" tempmin="-40" tempmax="85" pinout="VQFN32" package="VQFN32"/>
+        <variant name="ATtiny87-SU" tempmin="-40" tempmax="85" pinout="SOIC20" package="SOIC20"/>
+        <variant name="ATtiny87-MU" tempmin="-40" tempmax="85" pinout="VQFN32" package="VQFN32"/>
     </variants>
     <device name="ATtiny87" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

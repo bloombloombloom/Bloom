@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATxmega8E5-AU" package="TQFP32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega8E5-MU" package="VQFN32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega8E5-M4U" package="UQFN32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega8E5-AN" package="TQFP32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega8E5-MN" package="VQFN32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega8E5-M4N" package="UQFN32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega8E5-AU" package="TQFP32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega8E5-MU" package="VQFN32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega8E5-M4U" package="UQFN32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega8E5-AN" package="TQFP32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega8E5-MN" package="VQFN32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega8E5-M4N" package="UQFN32" pinout="QFP_QFN_32" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
     </variants>
     <device name="ATxmega8E5" family="AVR8" architecture="AVR8_XMEGA" avr-family="AVR XMEGA">
         <address-spaces>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny43U-SU" package="SOIC20" pinout="SOIC20" tempmax="85" tempmin="-40"/>
-        <variant ordercode="ATtiny43U-MU" package="WQFN20" pinout="QFN20" tempmax="85" tempmin="-40"/>
+        <variant name="ATtiny43U-SU" package="SOIC20" pinout="SOIC20" tempmax="85" tempmin="-40"/>
+        <variant name="ATtiny43U-MU" package="WQFN20" pinout="QFN20" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="ATtiny43U" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

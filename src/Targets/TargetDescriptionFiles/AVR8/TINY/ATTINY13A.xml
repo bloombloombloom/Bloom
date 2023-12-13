@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny13A-PU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="PDIP8" pinout="PDIP_SOIC_8"/>
-        <variant ordercode="ATtiny13A-SH" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
-        <variant ordercode="ATtiny13A-SSH" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
-        <variant ordercode="ATtiny13A-SSU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
-        <variant ordercode="ATtiny13A-SU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
-        <variant ordercode="ATtiny13A-MMU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="MLF10" pinout="MLF10"/>
-        <variant ordercode="ATtiny13A-MU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="MLF20" pinout="MLF20"/>
-        <variant ordercode="ATtiny13A-SN" speedmax="20000000" tempmin="-40" tempmax="105" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
-        <variant ordercode="ATtiny13A-SS7" speedmax="20000000" tempmin="-40" tempmax="105" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
-        <variant ordercode="ATtiny13A-SF" speedmax="20000000" tempmin="-40" tempmax="125" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
-        <variant ordercode="ATtiny13A-MMF" speedmax="20000000" tempmin="-40" tempmax="125" vccmin="1.8" vccmax="5.5" package="MLF10" pinout="MLF10"/>
+        <variant name="ATtiny13A-PU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="PDIP8" pinout="PDIP_SOIC_8"/>
+        <variant name="ATtiny13A-SH" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
+        <variant name="ATtiny13A-SSH" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
+        <variant name="ATtiny13A-SSU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
+        <variant name="ATtiny13A-SU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
+        <variant name="ATtiny13A-MMU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="MLF10" pinout="MLF10"/>
+        <variant name="ATtiny13A-MU" speedmax="20000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="MLF20" pinout="MLF20"/>
+        <variant name="ATtiny13A-SN" speedmax="20000000" tempmin="-40" tempmax="105" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
+        <variant name="ATtiny13A-SS7" speedmax="20000000" tempmin="-40" tempmax="105" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
+        <variant name="ATtiny13A-SF" speedmax="20000000" tempmin="-40" tempmax="125" vccmin="1.8" vccmax="5.5" package="SOIC8" pinout="PDIP_SOIC_8"/>
+        <variant name="ATtiny13A-MMF" speedmax="20000000" tempmin="-40" tempmax="125" vccmin="1.8" vccmax="5.5" package="MLF10" pinout="MLF10"/>
     </variants>
     <device name="ATtiny13A" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

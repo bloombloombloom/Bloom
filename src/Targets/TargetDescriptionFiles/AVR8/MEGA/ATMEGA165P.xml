@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega165P-AU" tempmin="-40" tempmax="85" pinout="QFP_QFN_64" package="TQFP64"/>
-        <variant ordercode="ATmega165P-MU" tempmin="-40" tempmax="85" pinout="QFP_QFN_64" package="VQFN64"/>
+        <variant name="ATmega165P-AU" tempmin="-40" tempmax="85" pinout="QFP_QFN_64" package="TQFP64"/>
+        <variant name="ATmega165P-MU" tempmin="-40" tempmax="85" pinout="QFP_QFN_64" package="VQFN64"/>
     </variants>
     <device name="ATmega165P" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny828-MU" package="VQFN32" pinout="QFP_QFN_32" tempmax="85" tempmin="-40"/>
-        <variant ordercode="ATtiny828-AU" package="TQFP32" pinout="QFP_QFN_32" tempmax="85" tempmin="-40"/>
+        <variant name="ATtiny828-MU" package="VQFN32" pinout="QFP_QFN_32" tempmax="85" tempmin="-40"/>
+        <variant name="ATtiny828-AU" package="TQFP32" pinout="QFP_QFN_32" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="ATtiny828" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

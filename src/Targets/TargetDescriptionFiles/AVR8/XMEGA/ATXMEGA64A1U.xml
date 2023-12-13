@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATxmega64A1U-AU" package="TQFP100" pinout="TQFP100" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega64A1U-CU" package="BGA100" pinout="BGA100" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega64A1U-C7U" package="BGA100" pinout="BGA100" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega64A1U-AN" package="TQFP100" pinout="TQFP100" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega64A1U-AU" package="TQFP100" pinout="TQFP100" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega64A1U-CU" package="BGA100" pinout="BGA100" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega64A1U-C7U" package="BGA100" pinout="BGA100" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATxmega64A1U-AN" package="TQFP100" pinout="TQFP100" speedmax="32000000" tempmax="105" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
     </variants>
     <device name="ATxmega64A1U" family="AVR8" architecture="AVR8_XMEGA" avr-family="AVR XMEGA">
         <address-spaces>

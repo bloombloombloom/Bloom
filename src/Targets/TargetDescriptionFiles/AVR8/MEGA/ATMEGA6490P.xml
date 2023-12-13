@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega6490P-AU" package="TQFP100" pinout="QFP100" tempmax="85" tempmin="-40"/>
+        <variant name="ATmega6490P-AU" package="TQFP100" pinout="QFP100" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="ATmega6490P" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

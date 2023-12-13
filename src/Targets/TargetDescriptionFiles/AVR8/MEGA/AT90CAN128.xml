@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="AT90CAN128-16AI" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="AT90CAN128-16MI" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="AT90CAN128-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="AT90CAN128-16MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="AT90CAN128-16AI" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="AT90CAN128-16MI" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="AT90CAN128-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="AT90CAN128-16MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
     </variants>
     <device name="AT90CAN128" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

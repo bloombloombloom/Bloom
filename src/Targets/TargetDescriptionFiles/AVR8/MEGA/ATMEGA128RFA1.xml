@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega128RFA1-ZU" tempmin="-40" tempmax="85" pinout="QFN64" package="QFN64"/>
+        <variant name="ATmega128RFA1-ZU" tempmin="-40" tempmax="85" pinout="QFN64" package="QFN64"/>
     </variants>
     <device name="ATmega128RFA1" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

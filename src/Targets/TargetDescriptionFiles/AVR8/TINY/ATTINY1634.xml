@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny1634-SU" package="SOIC20" pinout="SOIC_20" tempmax="85" tempmin="-40"/>
-        <variant ordercode="ATtiny1634-MU" package="WQFN20" pinout="QFN_20" tempmax="85" tempmin="-40"/>
+        <variant name="ATtiny1634-SU" package="SOIC20" pinout="SOIC_20" tempmax="85" tempmin="-40"/>
+        <variant name="ATtiny1634-MU" package="WQFN20" pinout="QFN_20" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="ATtiny1634" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

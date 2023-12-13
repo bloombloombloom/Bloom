@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATtiny48-MMU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="QFN28" pinout="QFN28"/>
-        <variant ordercode="ATtiny48-MMH" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="QFN28" pinout="QFN28"/>
-        <variant ordercode="ATtiny48-PU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="PDIP28" pinout="PDIP28"/>
-        <variant ordercode="ATtiny48-AU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="TQFP32" pinout="TQFP_QFN_32"/>
-        <variant ordercode="ATtiny48-CCU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="UFBGA32" pinout="UFBGA32"/>
-        <variant ordercode="ATtiny48-MU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="QFN32" pinout="TQFP_QFN_32"/>
+        <variant name="ATtiny48-MMU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="QFN28" pinout="QFN28"/>
+        <variant name="ATtiny48-MMH" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="QFN28" pinout="QFN28"/>
+        <variant name="ATtiny48-PU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="PDIP28" pinout="PDIP28"/>
+        <variant name="ATtiny48-AU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="TQFP32" pinout="TQFP_QFN_32"/>
+        <variant name="ATtiny48-CCU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="UFBGA32" pinout="UFBGA32"/>
+        <variant name="ATtiny48-MU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5" package="QFN32" pinout="TQFP_QFN_32"/>
     </variants>
     <device name="ATtiny48" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>

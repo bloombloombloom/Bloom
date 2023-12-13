@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega32L-8AU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFPQFN44" package="TQFP44" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega32L-8PU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="PDIP40" package="PDIP40" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega32L-8MU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFPQFN44" package="QFN44" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega32-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44" package="TQFP44" vccmin="4.5" vccmax="5.5"/>
-        <variant ordercode="ATmega32-16PU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="PDIP40" package="PDIP40" vccmin="4.5" vccmax="5.5"/>
-        <variant ordercode="ATmega32-16MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44" package="QFN44" vccmin="4.5" vccmax="5.5"/>
+        <variant name="ATmega32L-8AU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFPQFN44" package="TQFP44" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega32L-8PU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="PDIP40" package="PDIP40" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega32L-8MU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFPQFN44" package="QFN44" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega32-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44" package="TQFP44" vccmin="4.5" vccmax="5.5"/>
+        <variant name="ATmega32-16PU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="PDIP40" package="PDIP40" vccmin="4.5" vccmax="5.5"/>
+        <variant name="ATmega32-16MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44" package="QFN44" vccmin="4.5" vccmax="5.5"/>
     </variants>
     <device name="ATmega32" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

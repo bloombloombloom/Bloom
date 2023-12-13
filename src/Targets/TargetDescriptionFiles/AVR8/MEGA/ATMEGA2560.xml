@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega2560V-8AU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFP100" package="TQFP100" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega2560V-8CU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="CBGA100" package="CBGA100" vccmin="1.8" vccmax="5.5"/>
-        <variant ordercode="ATmega2560-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP100" package="TQFP100" vccmin="4.5" vccmax="5.5"/>
-        <variant ordercode="ATmega2560-16CU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="CBGA100" package="CBGA100" vccmin="4.5" vccmax="5.5"/>
+        <variant name="ATmega2560V-8AU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFP100" package="TQFP100" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega2560V-8CU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="CBGA100" package="CBGA100" vccmin="1.8" vccmax="5.5"/>
+        <variant name="ATmega2560-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFP100" package="TQFP100" vccmin="4.5" vccmax="5.5"/>
+        <variant name="ATmega2560-16CU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="CBGA100" package="CBGA100" vccmin="4.5" vccmax="5.5"/>
     </variants>
     <device name="ATmega2560" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

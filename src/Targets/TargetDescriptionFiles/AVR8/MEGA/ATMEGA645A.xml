@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega645A-AU" package="TQFP64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
-        <variant ordercode="ATmega645A-MU" package="VQFN64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
+        <variant name="ATmega645A-AU" package="TQFP64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
+        <variant name="ATmega645A-MU" package="VQFN64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="ATmega645A" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

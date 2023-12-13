@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATXMEGA32A4-AU" package="TQFP44" speedmax="32000000" pinout="QFP_QFN_44" tempmax="0" tempmin="0" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATXMEGA32A4-MH" package="VQFN44" speedmax="32000000" pinout="QFP_QFN_44" tempmax="0" tempmin="0" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATXMEGA32A4-AU" package="TQFP44" speedmax="32000000" pinout="QFP_QFN_44" tempmax="0" tempmin="0" vccmax="3.6" vccmin="1.6"/>
+        <variant name="ATXMEGA32A4-MH" package="VQFN44" speedmax="32000000" pinout="QFP_QFN_44" tempmax="0" tempmin="0" vccmax="3.6" vccmin="1.6"/>
     </variants>
     <device name="ATxmega32A4" family="AVR8" architecture="AVR8_XMEGA" avr-family="AVR XMEGA">
         <address-spaces>

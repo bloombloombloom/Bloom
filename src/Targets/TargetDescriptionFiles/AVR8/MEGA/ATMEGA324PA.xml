@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega324PA-AU" package="TQFP44" pinout="QFN_QFP_44" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATmega324PA-PU" package="PDIP40" pinout="PDIP_40" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATmega324PA-MU" package="VQFN44" pinout="QFN_QFP_44" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATmega324PA-MCH" package="DRQFN44" pinout="DRQFN_44" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATmega324PA-CU" package="VFBGA49" pinout="BGA_49" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATmega324PA-AU" package="TQFP44" pinout="QFN_QFP_44" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATmega324PA-PU" package="PDIP40" pinout="PDIP_40" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATmega324PA-MU" package="VQFN44" pinout="QFN_QFP_44" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATmega324PA-MCH" package="DRQFN44" pinout="DRQFN_44" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATmega324PA-CU" package="VFBGA49" pinout="BGA_49" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="ATmega324PA" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

@@ -193,10 +193,6 @@ class TargetDescriptionFile
             $variantAttributes = $variantElement->attributes();
             $variant = new Variant();
 
-            if (!empty($variantAttributes['ordercode'])) {
-                $variant->name = $variantAttributes['ordercode'];
-            }
-
             if (!empty($variantAttributes['name'])) {
                 $variant->name = $variantAttributes['name'];
             }

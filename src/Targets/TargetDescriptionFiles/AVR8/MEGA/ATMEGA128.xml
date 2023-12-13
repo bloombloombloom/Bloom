@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATmega128L-8AU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFPQFN64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega128L-8MU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFPQFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
-        <variant ordercode="ATmega128-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN64" package="TQFP64" vccmin="4.5" vccmax="5.5"/>
-        <variant ordercode="ATmega128-16MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN64" package="QFN64" vccmin="4.5" vccmax="5.5"/>
-        <variant ordercode="ATmega128L-8AN" tempmin="-40" tempmax="105" speedmax="8000000" pinout="TQFPQFN64" package="TQFP64" vccmin="3.0" vccmax="5.5"/>
-        <variant ordercode="ATmega128L-8MN" tempmin="-40" tempmax="105" speedmax="8000000" pinout="TQFPQFN64" package="QFN64" vccmin="3.0" vccmax="5.5"/>
-        <variant ordercode="ATmega128-16AN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64" package="TQFP64" vccmin="4.5" vccmax="5.5"/>
-        <variant ordercode="ATmega128-16MN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64" package="QFN64" vccmin="4.5" vccmax="5.5"/>
+        <variant name="ATmega128L-8AU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFPQFN64" package="TQFP64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega128L-8MU" tempmin="-40" tempmax="85" speedmax="8000000" pinout="TQFPQFN64" package="QFN64" vccmin="2.7" vccmax="5.5"/>
+        <variant name="ATmega128-16AU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN64" package="TQFP64" vccmin="4.5" vccmax="5.5"/>
+        <variant name="ATmega128-16MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN64" package="QFN64" vccmin="4.5" vccmax="5.5"/>
+        <variant name="ATmega128L-8AN" tempmin="-40" tempmax="105" speedmax="8000000" pinout="TQFPQFN64" package="TQFP64" vccmin="3.0" vccmax="5.5"/>
+        <variant name="ATmega128L-8MN" tempmin="-40" tempmax="105" speedmax="8000000" pinout="TQFPQFN64" package="QFN64" vccmin="3.0" vccmax="5.5"/>
+        <variant name="ATmega128-16AN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64" package="TQFP64" vccmin="4.5" vccmax="5.5"/>
+        <variant name="ATmega128-16MN" tempmin="-40" tempmax="105" speedmax="16000000" pinout="TQFPQFN64" package="QFN64" vccmin="4.5" vccmax="5.5"/>
     </variants>
     <device name="ATmega128" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>

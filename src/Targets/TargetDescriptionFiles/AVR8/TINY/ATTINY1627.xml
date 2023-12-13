@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file schema-version="4.4">
     <variants>
-        <variant ordercode="ATtiny1627-MFR" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
-        <variant ordercode="ATtiny1627-MUR" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny1627-MFR" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant name="ATtiny1627-MUR" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="85" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="ATtiny1627" family="AVR8" architecture="AVR8X" avr-family="tinyAVR 2">
         <address-spaces>

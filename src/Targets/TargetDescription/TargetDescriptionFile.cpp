@@ -471,8 +471,8 @@ namespace Targets::TargetDescription
             try {
                 auto variantXml = variantNodes.item(variantIndex).toElement();
 
-                if (!variantXml.hasAttribute("ordercode")) {
-                    throw Exception("Missing ordercode attribute");
+                if (!variantXml.hasAttribute("name")) {
+                    throw Exception("Missing name attribute");
                 }
 
                 if (!variantXml.hasAttribute("package")) {
@@ -484,7 +484,7 @@ namespace Targets::TargetDescription
                 }
 
                 auto variant = Variant();
-                variant.name = variantXml.attribute("ordercode").toStdString();
+                variant.name = variantXml.attribute("name").toStdString();
                 variant.pinoutName = variantXml.attribute("pinout").toLower().toStdString();
                 variant.package = variantXml.attribute("package").toUpper().toStdString();
 

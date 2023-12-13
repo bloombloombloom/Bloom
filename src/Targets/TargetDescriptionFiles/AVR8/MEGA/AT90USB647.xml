@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="AT90USB647-AU" package="TQFP64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
-        <variant ordercode="AT90USB647-MU" package="VQFN64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
+        <variant name="AT90USB647-AU" package="TQFP64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
+        <variant name="AT90USB647-MU" package="VQFN64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
     </variants>
     <device name="AT90USB647" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
