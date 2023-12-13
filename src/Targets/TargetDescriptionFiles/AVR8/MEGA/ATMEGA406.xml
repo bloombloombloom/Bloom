@@ -3,7 +3,7 @@
     <variants>
         <variant ordercode="ATmega406-1AAU" package="LQFP48" pinout="QFP48" tempmax="85" tempmin="-40"/>
     </variants>
-    <device name="ATmega406" architecture="AVR8" family="megaAVR">
+    <device name="ATmega406" architecture="AVR8" avr-family="megaAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0xa000">
                 <memory-segment start="0x0000" size="0xa000" type="flash" rw="RW" exec="1" name="FLASH"

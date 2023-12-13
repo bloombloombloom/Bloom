@@ -38,7 +38,7 @@
         <variant ordercode="ATtiny25V-20MF" package="MLF20" pinout="QFN_20" speedmax="20000000" tempmax="125"
                  tempmin="-40" vccmax="5.5" vccmin="2.7"/>
     </variants>
-    <device name="ATtiny25" architecture="AVR8" family="tinyAVR">
+    <device name="ATtiny25" architecture="AVR8" avr-family="tinyAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x0800">
                 <memory-segment start="0x0000" size="0x0800" type="flash" rw="RW" exec="1" name="FLASH"

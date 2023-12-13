@@ -6,7 +6,7 @@
         <variant ordercode="ATmega3209-MFR" package="UQFN48" pinout="QFN48" speedmax="20000000" tempmax="105"
                  tempmin="-40" vccmax="5.0" vccmin="1.8"/>
     </variants>
-    <device architecture="AVR8X" family="AVR MEGA" name="ATmega3209">
+    <device architecture="AVR8X" avr-family="AVR MEGA" name="ATmega3209" family="AVR8">
         <address-spaces>
             <address-space endianness="little" id="data" name="data" size="0x10000" start="0x0000">
                 <memory-segment exec="0" name="EEPROM" pagesize="0x40" rw="RW" size="0x0100" start="0x00001400"

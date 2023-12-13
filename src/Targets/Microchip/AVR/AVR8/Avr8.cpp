@@ -23,7 +23,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
         , targetDescriptionFile(TargetDescription::TargetDescriptionFile(this->targetConfig.name))
         , signature(this->targetDescriptionFile.getTargetSignature())
         , name(this->targetDescriptionFile.getTargetName())
-        , family(this->targetDescriptionFile.getFamily())
+        , family(this->targetDescriptionFile.getAvrFamily())
         , targetParameters(this->targetDescriptionFile.getTargetParameters())
         , supportedPhysicalInterfaces(this->targetDescriptionFile.getSupportedPhysicalInterfaces())
         , padDescriptorsByName(this->targetDescriptionFile.getPadDescriptorsMappedByName())

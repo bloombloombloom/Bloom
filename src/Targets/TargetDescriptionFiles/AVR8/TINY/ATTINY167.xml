@@ -5,7 +5,7 @@
         <variant ordercode="ATtiny167-MU" tempmin="-40" tempmax="85" pinout="VQFN32" package="VQFN32"/>
         <variant ordercode="ATtiny167-MMU" tempmin="-40" tempmax="85" pinout="QFN20" package="QFN20"/>
     </variants>
-    <device name="ATtiny167" architecture="AVR8" family="tinyAVR">
+    <device name="ATtiny167" architecture="AVR8" avr-family="tinyAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x4000">
                 <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="FLASH"

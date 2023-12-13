@@ -18,7 +18,7 @@
         <variant ordercode="ATtiny44A-SSF" package="SOIC14" pinout="SOIC_14" speedmax="20000000" tempmax="125"
                  tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
-    <device name="ATtiny44A" architecture="AVR8" family="tinyAVR">
+    <device name="ATtiny44A" architecture="AVR8" avr-family="tinyAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x1000">
                 <memory-segment start="0x0000" size="0x1000" type="flash" rw="RW" exec="1" name="FLASH"

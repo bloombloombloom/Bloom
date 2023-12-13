@@ -27,8 +27,19 @@ namespace Targets::TargetDescription
         return this->targetName;
     }
 
-    const std::string& TargetDescriptionFile::getFamilyName() const {
-        return this->familyName;
+    TargetFamily TargetDescriptionFile::getFamily() const {
+        static const auto familiesByName = std::map<std::string, TargetFamily> {
+            {"AVR8", TargetFamily::AVR_8},
+            {"RISCV", TargetFamily::RISC_V},
+        };
+
+        const auto familyIt = familiesByName.find(this->familyName);
+
+        if (familyIt == familiesByName.end()) {
+            throw Exception("Failed to resolve target family - invalid family name");
+        }
+
+        return familyIt->second;
     }
 
     void TargetDescriptionFile::init(const QString& xmlFilePath) {

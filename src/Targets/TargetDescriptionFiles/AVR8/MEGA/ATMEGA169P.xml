@@ -14,7 +14,7 @@
         <variant ordercode="ATmega169P-16MCH" tempmin="-40" tempmax="85" speedmax="16000000" pinout="DRQFN64"
                  package="DRQFN64" vccmin="2.7" vccmax="5.5"/>
     </variants>
-    <device name="ATmega169P" architecture="AVR8" family="megaAVR">
+    <device name="ATmega169P" architecture="AVR8" avr-family="megaAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x4000">
                 <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="FLASH"

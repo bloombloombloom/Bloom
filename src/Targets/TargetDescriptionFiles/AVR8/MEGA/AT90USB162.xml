@@ -4,7 +4,7 @@
         <variant ordercode="AT90USB162-AU" package="TQFP32" pinout="QFP_QFN_32" tempmax="85" tempmin="-40"/>
         <variant ordercode="AT90USB162-MU" package="VQFN32" pinout="QFP_QFN_32" tempmax="85" tempmin="-40"/>
     </variants>
-    <device name="AT90USB162" architecture="AVR8" family="megaAVR">
+    <device name="AT90USB162" architecture="AVR8" avr-family="megaAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x4000">
                 <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="FLASH"

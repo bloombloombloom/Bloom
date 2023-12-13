@@ -14,7 +14,7 @@
         <variant ordercode="ATmega644-20MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP_QFN_44"
                  package="QFN44" vccmin="2.7" vccmax="5.5"/>
     </variants>
-    <device name="ATmega644" architecture="AVR8" family="megaAVR">
+    <device name="ATmega644" architecture="AVR8" avr-family="megaAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x10000">
                 <memory-segment start="0x0000" size="0x10000" type="flash" rw="RW" exec="1" name="FLASH"

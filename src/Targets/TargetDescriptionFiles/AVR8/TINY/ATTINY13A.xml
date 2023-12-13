@@ -24,7 +24,7 @@
         <variant ordercode="ATtiny13A-MMF" speedmax="20000000" tempmin="-40" tempmax="125" vccmin="1.8" vccmax="5.5"
                  package="MLF10" pinout="MLF10"/>
     </variants>
-    <device name="ATtiny13A" architecture="AVR8" family="tinyAVR">
+    <device name="ATtiny13A" architecture="AVR8" avr-family="tinyAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x0400">
                 <memory-segment start="0x0000" size="0x0400" type="flash" rw="RW" exec="1" name="FLASH"

@@ -14,7 +14,7 @@
         <variant ordercode="ATtiny48-MU" speedmax="12000000" tempmin="-40" tempmax="85" vccmin="1.8" vccmax="5.5"
                  package="QFN32" pinout="TQFP_QFN_32"/>
     </variants>
-    <device name="ATtiny48" architecture="AVR8" family="tinyAVR">
+    <device name="ATtiny48" architecture="AVR8" avr-family="tinyAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x1000">
                 <memory-segment start="0x0000" size="0x1000" type="flash" rw="RW" exec="1" name="FLASH"

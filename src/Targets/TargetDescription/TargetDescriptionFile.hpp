@@ -12,6 +12,8 @@
 #include "Pinout.hpp"
 #include "Interface.hpp"
 
+#include "src/Targets/TargetFamily.hpp"
+
 #include GENERATED_TDF_MAPPING_PATH
 
 namespace Targets::TargetDescription
@@ -74,11 +76,11 @@ namespace Targets::TargetDescription
         [[nodiscard]] const std::string& getTargetName() const;
 
         /**
-         * Returns the target family name extracted from the TDF.
+         * Returns the target family extracted from the TDF.
          *
          * @return
          */
-        [[nodiscard]] const std::string& getFamilyName() const;
+        [[nodiscard]] TargetFamily getFamily() const;
 
     protected:
         std::string targetName;

@@ -10,7 +10,7 @@
         <variant ordercode="ATmega2560-16CU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="CBGA100"
                  package="CBGA100" vccmin="4.5" vccmax="5.5"/>
     </variants>
-    <device name="ATmega2560" architecture="AVR8" family="megaAVR">
+    <device name="ATmega2560" architecture="AVR8" avr-family="megaAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x40000">
                 <memory-segment start="0x0000" size="0x40000" type="flash" rw="RW" exec="1" name="FLASH"

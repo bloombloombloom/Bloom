@@ -3,7 +3,7 @@
     <variants>
         <variant ordercode="AT90PWM216-16SU" package="SOIC24" pinout="SOIC24" tempmax="85" tempmin="-40"/>
     </variants>
-    <device name="AT90PWM216" architecture="AVR8" family="megaAVR">
+    <device name="AT90PWM216" architecture="AVR8" avr-family="megaAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x4000">
                 <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="FLASH"

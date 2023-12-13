@@ -51,28 +51,28 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         return null;
     }
 
-    public function getFamily(): ?string
+    public function getAvrFamily(): ?string
     {
-        if (!empty($this->deviceAttributesByName['family'])) {
-            if (stristr($this->deviceAttributesByName['family'], 'xmega') !== false) {
+        if (!empty($this->deviceAttributesByName['avr-family'])) {
+            if (stristr($this->deviceAttributesByName['avr-family'], 'xmega') !== false) {
                 return self::AVR8_FAMILY_XMEGA;
 
-            } else if (stristr($this->deviceAttributesByName['family'], 'tiny') !== false) {
+            } else if (stristr($this->deviceAttributesByName['avr-family'], 'tiny') !== false) {
                 return self::AVR8_FAMILY_TINY;
 
-            } else if (stristr($this->deviceAttributesByName['family'], 'mega') !== false) {
+            } else if (stristr($this->deviceAttributesByName['avr-family'], 'mega') !== false) {
                 return self::AVR8_FAMILY_MEGA;
 
-            } else if (strtolower(trim($this->deviceAttributesByName['family'])) == 'avr da') {
+            } else if (strtolower(trim($this->deviceAttributesByName['avr-family'])) == 'avr da') {
                 return self::AVR8_FAMILY_DA;
 
-            } else if (strtolower(trim($this->deviceAttributesByName['family'])) == 'avr db') {
+            } else if (strtolower(trim($this->deviceAttributesByName['avr-family'])) == 'avr db') {
                 return self::AVR8_FAMILY_DB;
 
-            } else if (strtolower(trim($this->deviceAttributesByName['family'])) == 'avr dd') {
+            } else if (strtolower(trim($this->deviceAttributesByName['avr-family'])) == 'avr dd') {
                 return self::AVR8_FAMILY_DD;
 
-            } else if (strtolower(trim($this->deviceAttributesByName['family'])) == 'avr ea') {
+            } else if (strtolower(trim($this->deviceAttributesByName['avr-family'])) == 'avr ea') {
                 return self::AVR8_FAMILY_EA;
             }
         }
@@ -591,7 +591,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             return $failures;
         }
 
-        $family = $this->getFamily();
+        $family = $this->getAvrFamily();
         if (is_null($family) || $family == self::AVR8_FAMILY_OTHER) {
             $failures[] = 'Unknown AVR8 family';
         }

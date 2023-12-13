@@ -41,8 +41,15 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
         Targets::TargetDescription::TargetDescriptionFile::init(descriptionFilePath);
     }
 
-    void TargetDescriptionFile::init(const QDomDocument& xml) {
-        Targets::TargetDescription::TargetDescriptionFile::init(xml);
+    void TargetDescriptionFile::init(const QDomDocument& document) {
+        Targets::TargetDescription::TargetDescriptionFile::init(document);
+
+        const auto device = document.elementsByTagName("device").item(0).toElement();
+        if (!device.isElement()) {
+            throw TargetDescriptionParsingFailureException("Device element not found.");
+        }
+
+        this->avrFamilyName = device.attributes().namedItem("avr-family").nodeValue().toLower().toStdString();
 
         this->loadSupportedPhysicalInterfaces();
         this->loadPadDescriptors();
@@ -100,16 +107,14 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
         );
     }
 
-    Family TargetDescriptionFile::getFamily() const {
+    Family TargetDescriptionFile::getAvrFamily() const {
         static const auto targetFamiliesByName = TargetDescriptionFile::getFamilyNameToEnumMapping();
 
-        const auto& familyName = this->getFamilyName();
-
-        if (familyName.empty()) {
+        if (this->avrFamilyName.empty()) {
             throw Exception("Could not find target family name in target description file.");
         }
 
-        const auto familyIt = targetFamiliesByName.find(familyName);
+        const auto familyIt = targetFamiliesByName.find(this->avrFamilyName);
 
         if (familyIt == targetFamiliesByName.end()) {
             throw Exception("Unknown family name in target description file.");

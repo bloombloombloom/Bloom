@@ -10,7 +10,7 @@
         <variant ordercode="ATmega329-16MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="QFN64"
                  package="QFN64" vccmin="2.7" vccmax="5.5"/>
     </variants>
-    <device name="ATmega329" architecture="AVR8" family="megaAVR">
+    <device name="ATmega329" architecture="AVR8" avr-family="megaAVR" family="AVR8">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x8000">
                 <memory-segment start="0x0000" size="0x8000" type="flash" rw="RW" exec="1" name="FLASH"

@@ -46,7 +46,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
          *
          * @param xml
          */
-        void init(const QDomDocument& xml) override;
+        void init(const QDomDocument& document) override;
 
         /**
          * Loads the AVR8 target description JSON mapping file.
@@ -67,7 +67,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
          *
          * @return
          */
-        [[nodiscard]] Family getFamily() const;
+        [[nodiscard]] Family getAvrFamily() const;
 
         /**
          * Constructs an instance of TargetParameters, for the AVR8 target, with data from the TDF.
@@ -197,6 +197,7 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
             };
         };
 
+        std::string avrFamilyName;
         std::set<PhysicalInterface> supportedPhysicalInterfaces;
 
         std::map<std::string, PadDescriptor> padDescriptorsByName;

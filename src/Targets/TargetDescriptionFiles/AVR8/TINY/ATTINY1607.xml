@@ -6,7 +6,7 @@
         <variant ordercode="ATtiny1607-MRF" package="VQFN24" pinout="QFN24" speedmax="20000000" tempmax="125"
                  tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
-    <device architecture="AVR8X" family="AVR TINY" name="ATtiny1607">
+    <device architecture="AVR8X" avr-family="AVR TINY" name="ATtiny1607" family="AVR8">
         <address-spaces>
             <address-space endianness="little" id="data" name="data" size="0xC000" start="0x0000">
                 <memory-segment exec="0" name="EEPROM" pagesize="0x20" rw="RW" size="0x0100" start="0x00001400"

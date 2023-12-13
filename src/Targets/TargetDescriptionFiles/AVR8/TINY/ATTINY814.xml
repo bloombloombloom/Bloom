@@ -8,7 +8,7 @@
         <variant ordercode="ATtiny814-SSNRES" package="SOIC14" pinout="SOIC14" speedmax="20000000" tempmax="105"
                  tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
-    <device architecture="AVR8X" family="AVR TINY" name="ATtiny814">
+    <device architecture="AVR8X" avr-family="AVR TINY" name="ATtiny814" family="AVR8">
         <address-spaces>
             <address-space endianness="little" id="data" name="data" size="0xA000" start="0x0000">
                 <memory-segment exec="0" name="EEPROM" pagesize="0x20" rw="RW" size="0x0080" start="0x00001400"

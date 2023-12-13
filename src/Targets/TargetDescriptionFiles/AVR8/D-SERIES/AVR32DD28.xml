@@ -10,7 +10,7 @@
                vccmax="5.5"
                vccmin="1.8"/>
    </variants>
-   <device architecture="AVR8X" family="AVR DD" name="AVR32DD28">
+   <device architecture="AVR8X" avr-family="AVR DD" name="AVR32DD28" family="AVR8">
       <address-spaces>
          <address-space endianness="little"
                         id="data"

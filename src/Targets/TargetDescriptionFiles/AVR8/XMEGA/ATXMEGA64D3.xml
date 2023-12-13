@@ -10,7 +10,7 @@
         <variant ordercode="ATxmega64D3-MN" package="QFN64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="105"
                  tempmin="-40" vccmax="3.6" vccmin="1.6"/>
     </variants>
-    <device name="ATxmega64D3" architecture="AVR8_XMEGA" family="AVR XMEGA">
+    <device name="ATxmega64D3" architecture="AVR8_XMEGA" avr-family="AVR XMEGA" family="AVR8">
         <address-spaces>
             <address-space name="prog" id="prog" start="0x0000" size="0x11000" endianness="little">
                 <memory-segment start="0x0000" size="0x10000" type="flash" rw="RW" exec="1" name="APP_SECTION"
