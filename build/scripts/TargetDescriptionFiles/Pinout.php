@@ -1,20 +1,14 @@
 <?php
 namespace Bloom\BuildScripts\TargetDescriptionFiles;
 
+require_once __DIR__ . "/PinoutType.php";
 require_once __DIR__ . "/Pin.php";
 
 class Pinout
 {
-    const TYPE_SOIC = 'SOIC';
-    const TYPE_SSOP = 'SSOP';
-    const TYPE_DIP = 'DIP';
-    const TYPE_QFN = 'QFN';
-    const TYPE_QFP = 'QFP';
-    const TYPE_BGA = 'BGA';
-
     public ?string $name = null;
     public ?string $function = null;
-    public ?string $type = null;
+    public ?PinoutType $type = null;
 
     /**
      * The name of the pinouts typically include the number of pins. We extract this if we can, so that we can

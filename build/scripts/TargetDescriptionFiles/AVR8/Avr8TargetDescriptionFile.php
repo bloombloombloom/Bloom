@@ -7,6 +7,8 @@ use Bloom\BuildScripts\TargetDescriptionFiles\Register;
 use Bloom\BuildScripts\TargetDescriptionFiles\TargetDescriptionFile;
 
 require_once __DIR__ . "/../TargetDescriptionFile.php";
+require_once __DIR__ . "/AvrFamily.php";
+require_once __DIR__ . "/AvrPhysicalInterface.php";
 require_once __DIR__ . "/Signature.php";
 require_once __DIR__ . "/TargetParameters.php";
 require_once __DIR__ . "/DebugWireParameters.php";
@@ -18,21 +20,6 @@ require_once __DIR__ . "/FuseBitsDescriptor.php";
 
 class Avr8TargetDescriptionFile extends TargetDescriptionFile
 {
-    const AVR8_FAMILY_MEGA = 'MEGA';
-    const AVR8_FAMILY_TINY = 'TINY';
-    const AVR8_FAMILY_XMEGA = 'XMEGA';
-    const AVR8_FAMILY_DB = 'DB';
-    const AVR8_FAMILY_DA = 'DA';
-    const AVR8_FAMILY_DD = 'DD';
-    const AVR8_FAMILY_EA = 'EA';
-    const AVR8_FAMILY_OTHER = 'OTHER';
-
-    const AVR8_PHYSICAL_INTERFACE_ISP = 'ISP';
-    const AVR8_PHYSICAL_INTERFACE_JTAG = 'JTAG';
-    const AVR8_PHYSICAL_INTERFACE_PDI = 'PDI';
-    const AVR8_PHYSICAL_INTERFACE_UPDI = 'UPDI';
-    const AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE = 'DEBUG_WIRE';
-
     public function getSignature(): ?Signature
     {
         $byteZero = $this->getPropertyValue('signatures', 'signature0');
@@ -51,43 +38,43 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         return null;
     }
 
-    public function getAvrFamily(): ?string
+    public function getAvrFamily(): ?AvrFamily
     {
         if (!empty($this->deviceAttributesByName['avr-family'])) {
             if (stristr($this->deviceAttributesByName['avr-family'], 'xmega') !== false) {
-                return self::AVR8_FAMILY_XMEGA;
+                return AvrFamily::XMEGA;
 
             } else if (stristr($this->deviceAttributesByName['avr-family'], 'tiny') !== false) {
-                return self::AVR8_FAMILY_TINY;
+                return AvrFamily::TINY;
 
             } else if (stristr($this->deviceAttributesByName['avr-family'], 'mega') !== false) {
-                return self::AVR8_FAMILY_MEGA;
+                return AvrFamily::MEGA;
 
             } else if (strtolower(trim($this->deviceAttributesByName['avr-family'])) == 'avr da') {
-                return self::AVR8_FAMILY_DA;
+                return AvrFamily::DA;
 
             } else if (strtolower(trim($this->deviceAttributesByName['avr-family'])) == 'avr db') {
-                return self::AVR8_FAMILY_DB;
+                return AvrFamily::DB;
 
             } else if (strtolower(trim($this->deviceAttributesByName['avr-family'])) == 'avr dd') {
-                return self::AVR8_FAMILY_DD;
+                return AvrFamily::DD;
 
             } else if (strtolower(trim($this->deviceAttributesByName['avr-family'])) == 'avr ea') {
-                return self::AVR8_FAMILY_EA;
+                return AvrFamily::EA;
             }
         }
 
-        return self::AVR8_FAMILY_OTHER;
+        return null;
     }
 
     public function getSupportedPhysicalInterfaces(): array
     {
         $physicalInterfacesByName = [
-            'isp' => self::AVR8_PHYSICAL_INTERFACE_ISP,
-            'debugwire' => self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE,
-            'updi' => self::AVR8_PHYSICAL_INTERFACE_UPDI,
-            'pdi' => self::AVR8_PHYSICAL_INTERFACE_PDI,
-            'jtag' => self::AVR8_PHYSICAL_INTERFACE_JTAG,
+            'isp' => AvrPhysicalInterface::ISP,
+            'debugwire' => AvrPhysicalInterface::DEBUG_WIRE,
+            'updi' => AvrPhysicalInterface::UPDI,
+            'pdi' => AvrPhysicalInterface::PDI,
+            'jtag' => AvrPhysicalInterface::JTAG,
         ];
 
         return array_filter(
@@ -102,10 +89,10 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public function getSupportedDebugPhysicalInterfaces(): array
     {
         $physicalInterfacesByName = [
-            'debugwire' => self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE,
-            'updi' => self::AVR8_PHYSICAL_INTERFACE_UPDI,
-            'pdi' => self::AVR8_PHYSICAL_INTERFACE_PDI,
-            'jtag' => self::AVR8_PHYSICAL_INTERFACE_JTAG,
+            'debugwire' => AvrPhysicalInterface::DEBUG_WIRE,
+            'updi' => AvrPhysicalInterface::UPDI,
+            'pdi' => AvrPhysicalInterface::PDI,
+            'jtag' => AvrPhysicalInterface::JTAG,
         ];
 
         return array_filter(
@@ -592,7 +579,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         }
 
         $family = $this->getAvrFamily();
-        if (is_null($family) || $family == self::AVR8_FAMILY_OTHER) {
+        if (is_null($family)) {
             $failures[] = 'Unknown AVR8 family';
         }
 
@@ -665,7 +652,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $failures[] = 'Missing eeprom start address.';
         }
 
-        if (in_array(self::AVR8_PHYSICAL_INTERFACE_DEBUG_WIRE, $debugPhysicalInterfaces)) {
+        if (in_array(AvrPhysicalInterface::DEBUG_WIRE, $debugPhysicalInterfaces)) {
             $debugWireParameters = $this->getDebugWireParameters();
             $ispParameters = $this->getIspParameters();
 
@@ -685,7 +672,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 $failures[] = 'Missing oscillator calibration register address.';
             }
 
-            if (!in_array(self::AVR8_PHYSICAL_INTERFACE_ISP, $physicalInterfaces)) {
+            if (!in_array(AvrPhysicalInterface::ISP, $physicalInterfaces)) {
                 $failures[] = 'Missing ISP interface for debugWire target.';
             }
 
@@ -755,8 +742,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         }
 
         if (
-            in_array(self::AVR8_PHYSICAL_INTERFACE_JTAG, $debugPhysicalInterfaces)
-            && $family == self::AVR8_FAMILY_MEGA
+            in_array(AvrPhysicalInterface::JTAG, $debugPhysicalInterfaces)
+            && $family == AvrFamily::MEGA
         ) {
             $jtagParameters = $this->getJtagParameters();
 
@@ -785,7 +772,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
-        if (in_array(self::AVR8_PHYSICAL_INTERFACE_PDI, $debugPhysicalInterfaces)) {
+        if (in_array(AvrPhysicalInterface::PDI, $debugPhysicalInterfaces)) {
             $pdiParameters = $this->getPdiParameters();
 
             if (is_null($pdiParameters->appSectionPdiOffset)) {
@@ -833,7 +820,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
-        if (in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $debugPhysicalInterfaces)) {
+        if (in_array(AvrPhysicalInterface::UPDI, $debugPhysicalInterfaces)) {
             $updiParameters = $this->getUpdiParameters();
             if (is_null($updiParameters->nvmModuleBaseAddress)) {
                 $failures[] = 'Missing NVM base address.';
@@ -879,8 +866,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         }
 
         if (
-            in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_JTAG, $debugPhysicalInterfaces)
-            || in_array(Avr8TargetDescriptionFile::AVR8_PHYSICAL_INTERFACE_UPDI, $debugPhysicalInterfaces)
+            in_array(AvrPhysicalInterface::JTAG, $debugPhysicalInterfaces)
+            || in_array(AvrPhysicalInterface::UPDI, $debugPhysicalInterfaces)
         ) {
             if (empty($this->getFuseBitsDescriptor('eesave'))) {
                 $failures[] = 'Could not find EESAVE fuse bit field for JTAG/UPDI target.';

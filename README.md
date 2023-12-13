@@ -80,7 +80,7 @@ repositories.
 - libhidapi (0.11.2 or later) (`libhidapi-dev`)
 - yaml-cpp (version 0.7.0 or later) (`libyaml-cpp-dev`)
 - libprocps (`libprocps-dev`)
-- PHP CLI version 8 or later, with the xml extension (`php8.0-cli`, `php8.0-xml`)
+- PHP CLI version 8.2 or later, with the xml extension (`php8.2-cli`, `php8.2-xml`)
 - Qt Version 6.2.4 or later (see note below)
 
 When installing Qt, it's best to install via the Qt installer: https://www.qt.io/download

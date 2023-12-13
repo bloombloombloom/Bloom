@@ -439,25 +439,7 @@ class TargetDescriptionFile
 
             $pinout->name = isset($pinoutAttrs['name']) ? $pinoutAttrs['name'] : null;
             $pinout->function = isset($pinoutAttrs['function']) ? $pinoutAttrs['function'] : null;
-
-            if (stristr($pinout->name, Pinout::TYPE_DIP) !== false) {
-                $pinout->type = Pinout::TYPE_DIP;
-
-            } else if (stristr($pinout->name, Pinout::TYPE_SOIC) !== false) {
-                $pinout->type = Pinout::TYPE_SOIC;
-
-            } else if (stristr($pinout->name, Pinout::TYPE_SSOP) !== false) {
-                $pinout->type = Pinout::TYPE_SSOP;
-
-            } else if (stristr($pinout->name, Pinout::TYPE_QFN) !== false) {
-                $pinout->type = Pinout::TYPE_QFN;
-
-            } else if (stristr($pinout->name, Pinout::TYPE_QFP) !== false) {
-                $pinout->type = Pinout::TYPE_QFP;
-
-            } else if (stristr($pinout->name, Pinout::TYPE_BGA) !== false) {
-                $pinout->type = Pinout::TYPE_BGA;
-            }
+            $pinout->type = PinoutType::tryFrom($pinout->name);
 
             // Attempt to extract the number of expected pins for this pinout, from the pinout name
             $expectedPinCount = filter_var($pinout->name, FILTER_SANITIZE_NUMBER_INT);
@@ -531,7 +513,7 @@ class TargetDescriptionFile
                 $failures[] = 'Could not deduce expected pin count for pinout "' . $pinout->name . '"';
             }
 
-            if (in_array($pinout->type, [Pinout::TYPE_DIP, Pinout::TYPE_QFN, Pinout::TYPE_SOIC])) {
+            if (in_array($pinout->type, [PinoutType::DIP, PinoutType::QFN, PinoutType::SOIC])) {
                 foreach ($pinout->pins as $index => $pin) {
                     if (is_null($pin->position)) {
                         $failures[] = 'Missing/invalid pin position for pin (index: ' . $index . ').';
@@ -543,13 +525,14 @@ class TargetDescriptionFile
                 }
             }
 
-            if (in_array($pinout->type, [Pinout::TYPE_SOIC, Pinout::TYPE_DIP, Pinout::TYPE_SSOP])
+            if (
+                in_array($pinout->type, [PinoutType::SOIC, PinoutType::DIP, PinoutType::SSOP])
                 && count($pinout->pins) % 2 != 0
             ) {
                 $failures[] = 'DIP/SOIC/SSOP pinout (' . $pinout->name . ') pin count is not a multiple of two.';
             }
 
-            if (in_array($pinout->type, [Pinout::TYPE_QFN, Pinout::TYPE_QFP]) && count($pinout->pins) % 4 != 0) {
+            if (in_array($pinout->type, [PinoutType::QFN, PinoutType::QFP]) && count($pinout->pins) % 4 != 0) {
                 $failures[] = 'QFP/QFN pinout (' . $pinout->name . ') pin count is not a multiple of four.';
             }
         }
