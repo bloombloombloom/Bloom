@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="ATxmega256A3BU-AU" package="TQFP64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="85"
-                 tempmin="-40" vccmax="3.6" vccmin="1.6"/>
-        <variant ordercode="ATxmega256A3BU-MH" package="QFN64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="85"
-                 tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant ordercode="ATxmega256A3BU-AU" package="TQFP64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
+        <variant ordercode="ATxmega256A3BU-MH" package="QFN64" pinout="QFP_QFN_64" speedmax="32000000" tempmax="85" tempmin="-40" vccmax="3.6" vccmin="1.6"/>
     </variants>
     <device name="ATxmega256A3BU" family="AVR8" architecture="AVR8_XMEGA" avr-family="AVR XMEGA">
         <address-spaces>
             <address-space name="prog" id="prog" start="0x00000" size="0x42000" endianness="little">
-                <memory-segment start="0x00000" size="0x40000" type="flash" rw="RW" exec="1" name="APP_SECTION"
-                                pagesize="512"/>
-                <memory-segment start="0x3E000" size="0x2000" type="flash" rw="RW" exec="1" name="APPTABLE_SECTION"
-                                pagesize="512"/>
-                <memory-segment start="0x40000" size="0x2000" type="flash" rw="RW" exec="1" name="BOOT_SECTION"
-                                pagesize="512"/>
+                <memory-segment start="0x00000" size="0x40000" type="flash" rw="RW" exec="1" name="APP_SECTION" pagesize="512"/>
+                <memory-segment start="0x3E000" size="0x2000" type="flash" rw="RW" exec="1" name="APPTABLE_SECTION" pagesize="512"/>
+                <memory-segment start="0x40000" size="0x2000" type="flash" rw="RW" exec="1" name="BOOT_SECTION" pagesize="512"/>
             </address-space>
             <address-space name="data" id="data" start="0x0000" size="0x6000" endianness="little">
                 <memory-segment start="0x0000" size="0x1000" type="io" rw="RW" exec="0" name="IO"/>
@@ -22,8 +17,7 @@
                 <memory-segment start="0x2000" size="0x4000" type="ram" rw="RW" exec="0" name="INTERNAL_SRAM"/>
             </address-space>
             <address-space name="eeprom" id="eeprom" start="0x00000" size="0x1000">
-                <memory-segment start="0x00000" size="0x1000" type="eeprom" rw="RW" exec="0" name="EEPROM"
-                                pagesize="32"/>
+                <memory-segment start="0x00000" size="0x1000" type="eeprom" rw="RW" exec="0" name="EEPROM" pagesize="32"/>
             </address-space>
             <address-space name="signatures" id="signatures" start="0x0000" size="0x0003">
                 <memory-segment start="0x0000" size="0x0003" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
@@ -35,12 +29,10 @@
                 <memory-segment start="0x0000" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
             </address-space>
             <address-space name="user_signatures" id="user_signatures" start="0x0000" size="0x0200">
-                <memory-segment start="0x0000" size="0x0200" type="user_signatures" rw="RW" exec="0"
-                                name="USER_SIGNATURES" pagesize="512"/>
+                <memory-segment start="0x0000" size="0x0200" type="user_signatures" rw="RW" exec="0" name="USER_SIGNATURES" pagesize="512"/>
             </address-space>
             <address-space name="prod_signatures" id="prod_signatures" start="0x0000" size="0x0034">
-                <memory-segment start="0x0000" size="0x0034" type="other" rw="R" exec="0" name="PROD_SIGNATURES"
-                                pagesize="512"/>
+                <memory-segment start="0x0000" size="0x0034" type="other" rw="R" exec="0" name="PROD_SIGNATURES" pagesize="512"/>
             </address-space>
         </address-spaces>
         <peripherals>
@@ -613,14 +605,12 @@
             </module>
             <module name="LOCKBIT" id="I6570" version="XMEGAAU">
                 <instance name="LOCKBIT">
-                    <register-group address-space="lockbits" offset="0x00" name-in-module="NVM_LOCKBITS"
-                                    name="LOCKBIT"/>
+                    <register-group address-space="lockbits" offset="0x00" name-in-module="NVM_LOCKBITS" name="LOCKBIT"/>
                 </instance>
             </module>
             <module name="SIGROW" id="I6570" version="XMEGAAU">
                 <instance name="PROD_SIGNATURES">
-                    <register-group address-space="prod_signatures" offset="0x00"
-                                    name-in-module="NVM_PROD_SIGNATURES" name="PROD_SIGNATURES"/>
+                    <register-group address-space="prod_signatures" offset="0x00" name-in-module="NVM_PROD_SIGNATURES" name="PROD_SIGNATURES"/>
                 </instance>
             </module>
         </peripherals>
@@ -765,8 +755,7 @@
                 </register>
                 <register caption="Prescaler Control Register" name="PSCTRL" offset="0x01" size="1">
                     <bitfield caption="Prescaler A Division Factor" mask="0x7C" name="PSADIV" values="CLK_PSADIV"/>
-                    <bitfield caption="Prescaler B and C Division factor" mask="0x03" name="PSBCDIV"
-                              values="CLK_PSBCDIV"/>
+                    <bitfield caption="Prescaler B and C Division factor" mask="0x03" name="PSBCDIV" values="CLK_PSBCDIV"/>
                 </register>
                 <register caption="Lock register" name="LOCK" offset="0x02" size="1">
                     <bitfield caption="Clock System Lock" mask="0x01" name="LOCK"/>
@@ -919,8 +908,7 @@
                     <bitfield caption="Frequency Range" mask="0xC0" name="FRQRANGE" values="OSC_FRQRANGE"/>
                     <bitfield caption="32.768 kHz XTAL OSC Low-power Mode" mask="0x20" name="X32KLPM"/>
                     <bitfield caption="16 MHz Crystal Oscillator High Power mode" mask="0x10" name="XOSCPWR"/>
-                    <bitfield caption="External Oscillator Selection and Startup Time" mask="0x0F" name="XOSCSEL"
-                              values="OSC_XOSCSEL"/>
+                    <bitfield caption="External Oscillator Selection and Startup Time" mask="0x0F" name="XOSCSEL" values="OSC_XOSCSEL"/>
                 </register>
                 <register caption="Oscillator Failure Detection Register" name="XOSCFAIL" offset="0x03" size="1">
                     <bitfield caption="PLL Failure Detection Interrupt Flag" mask="0x08" name="PLLFDIF"/>
@@ -928,18 +916,15 @@
                     <bitfield caption="XOSC Failure Detection Interrupt Flag" mask="0x02" name="XOSCFDIF"/>
                     <bitfield caption="XOSC Failure Detection Enable" mask="0x01" name="XOSCFDEN"/>
                 </register>
-                <register caption="32.768 kHz Internal Oscillator Calibration Register" name="RC32KCAL" offset="0x04"
-                          size="1"/>
+                <register caption="32.768 kHz Internal Oscillator Calibration Register" name="RC32KCAL" offset="0x04" size="1"/>
                 <register caption="PLL Control Register" name="PLLCTRL" offset="0x05" size="1">
                     <bitfield caption="Clock Source" mask="0xC0" name="PLLSRC" values="OSC_PLLSRC"/>
                     <bitfield caption="Divide by 2" mask="0x20" name="PLLDIV"/>
                     <bitfield caption="Multiplication Factor" mask="0x1F" name="PLLFAC"/>
                 </register>
                 <register caption="DFLL Control Register" name="DFLLCTRL" offset="0x06" size="1">
-                    <bitfield caption="32 MHz DFLL Calibration Reference" mask="0x06" name="RC32MCREF"
-                              values="OSC_RC32MCREF"/>
-                    <bitfield caption="2 MHz DFLL Calibration Reference" mask="0x01" name="RC2MCREF"
-                              values="OSC_RC2MCREF"/>
+                    <bitfield caption="32 MHz DFLL Calibration Reference" mask="0x06" name="RC32MCREF" values="OSC_RC32MCREF"/>
+                    <bitfield caption="2 MHz DFLL Calibration Reference" mask="0x01" name="RC2MCREF" values="OSC_RC2MCREF"/>
                 </register>
             </register-group>
             <value-group caption="Oscillator Frequency Range" name="OSC_FRQRANGE">
@@ -1107,12 +1092,10 @@
                 </register>
                 <register caption="Clock and Event Out Register" name="CLKEVOUT" offset="0x04" size="1">
                     <bitfield caption="Peripheral Clock Output Port" mask="0x03" name="CLKOUT" values="PORTCFG_CLKOUT"/>
-                    <bitfield caption="Peripheral Clock Output Select" mask="0x0C" name="CLKOUTSEL"
-                              values="PORTCFG_CLKOUTSEL"/>
+                    <bitfield caption="Peripheral Clock Output Select" mask="0x0C" name="CLKOUTSEL" values="PORTCFG_CLKOUTSEL"/>
                     <bitfield caption="Event Output Port" mask="0x30" name="EVOUT" values="PORTCFG_EVOUT"/>
                     <bitfield caption="RTC Clock Output" mask="0x40" name="RTCOUT"/>
-                    <bitfield caption="Peripheral Clock and Event Output pin Select" mask="0x80" name="CLKEVPIN"
-                              values="PORTCFG_CLKEVPIN"/>
+                    <bitfield caption="Peripheral Clock and Event Output pin Select" mask="0x80" name="CLKEVPIN" values="PORTCFG_CLKEVPIN"/>
                 </register>
                 <register caption="Event Output Select" name="EVOUTSEL" offset="0x06" size="1">
                     <bitfield caption="Event Output Select" mask="0x07" name="EVOUTSEL" values="PORTCFG_EVOUTSEL"/>
@@ -1253,8 +1236,7 @@
                     <bitfield caption="32-kHz Crystal Oscillator High Power Mode" mask="0x20" name="HIGHESR"/>
                     <bitfield caption="32-kHz Crystal Oscillator Output Selection" mask="0x10" name="XOSCSEL"/>
                     <bitfield caption="Crystal Oscillator Enable" mask="0x08" name="XOSCEN"/>
-                    <bitfield caption="Crystal Oscillator Failure Detection Monitor Enable" mask="0x04"
-                              name="XOSCFDEN"/>
+                    <bitfield caption="Crystal Oscillator Failure Detection Monitor Enable" mask="0x04" name="XOSCFDEN"/>
                     <bitfield caption="Access Enable" mask="0x02" name="ACCEN"/>
                     <bitfield caption="Reset" mask="0x01" name="RESET"/>
                 </register>
@@ -1284,19 +1266,14 @@
                     <bitfield caption="Block Transfer Pending" mask="0x40" name="CHPEND"/>
                     <bitfield caption="Block Transfer Error Interrupt Flag" mask="0x20" name="ERRIF"/>
                     <bitfield caption="Transaction Complete Interrupt Flag" mask="0x10" name="TRNIF"/>
-                    <bitfield caption="Transfer Error Interrupt Level" mask="0x0C" name="ERRINTLVL"
-                              values="DMA_CH_ERRINTLVL"/>
-                    <bitfield caption="Transaction Complete Interrupt Level" mask="0x03" name="TRNINTLVL"
-                              values="DMA_CH_TRNINTLVL"/>
+                    <bitfield caption="Transfer Error Interrupt Level" mask="0x0C" name="ERRINTLVL" values="DMA_CH_ERRINTLVL"/>
+                    <bitfield caption="Transaction Complete Interrupt Level" mask="0x03" name="TRNINTLVL" values="DMA_CH_TRNINTLVL"/>
                 </register>
                 <register caption="Address Control" name="ADDRCTRL" offset="0x02" size="1">
-                    <bitfield caption="Channel Source Address Reload" mask="0xC0" name="SRCRELOAD"
-                              values="DMA_CH_SRCRELOAD"/>
+                    <bitfield caption="Channel Source Address Reload" mask="0xC0" name="SRCRELOAD" values="DMA_CH_SRCRELOAD"/>
                     <bitfield caption="Channel Source Address Mode" mask="0x30" name="SRCDIR" values="DMA_CH_SRCDIR"/>
-                    <bitfield caption="Channel Destination Address Reload" mask="0x0C" name="DESTRELOAD"
-                              values="DMA_CH_DESTRELOAD"/>
-                    <bitfield caption="Channel Destination Address Mode" mask="0x03" name="DESTDIR"
-                              values="DMA_CH_DESTDIR"/>
+                    <bitfield caption="Channel Destination Address Reload" mask="0x0C" name="DESTRELOAD" values="DMA_CH_DESTRELOAD"/>
+                    <bitfield caption="Channel Destination Address Mode" mask="0x03" name="DESTDIR" values="DMA_CH_DESTDIR"/>
                 </register>
                 <register caption="Channel Trigger Source" name="TRIGSRC" offset="0x03" size="1">
                     <bitfield caption="Channel Trigger Source" mask="0xFF" name="TRIGSRC" values="DMA_CH_TRIGSRC"/>
@@ -1510,8 +1487,7 @@
                     <bitfield caption="Event Channel 7 Multiplexer" mask="0xFF" name="CHMUX" values="EVSYS_CHMUX"/>
                 </register>
                 <register caption="Channel 0 Control Register" name="CH0CTRL" offset="0x08" size="1">
-                    <bitfield caption="Quadrature Decoder Index Recognition Mode" mask="0x60" name="QDIRM"
-                              values="EVSYS_QDIRM"/>
+                    <bitfield caption="Quadrature Decoder Index Recognition Mode" mask="0x60" name="QDIRM" values="EVSYS_QDIRM"/>
                     <bitfield caption="Quadrature Decoder Index Enable" mask="0x10" name="QDIEN"/>
                     <bitfield caption="Quadrature Decoder Enable" mask="0x08" name="QDEN"/>
                     <bitfield caption="Digital Filter" mask="0x07" name="DIGFILT" values="EVSYS_DIGFILT"/>
@@ -1520,8 +1496,7 @@
                     <bitfield caption="Digital Filter" mask="0x07" name="DIGFILT" values="EVSYS_DIGFILT"/>
                 </register>
                 <register caption="Channel 2 Control Register" name="CH2CTRL" offset="0x0A" size="1">
-                    <bitfield caption="Quadrature Decoder Index Recognition Mode" mask="0x60" name="QDIRM"
-                              values="EVSYS_QDIRM"/>
+                    <bitfield caption="Quadrature Decoder Index Recognition Mode" mask="0x60" name="QDIRM" values="EVSYS_QDIRM"/>
                     <bitfield caption="Quadrature Decoder Index Enable" mask="0x10" name="QDIEN"/>
                     <bitfield caption="Quadrature Decoder Enable" mask="0x08" name="QDEN"/>
                     <bitfield caption="Digital Filter" mask="0x07" name="DIGFILT" values="EVSYS_DIGFILT"/>
@@ -1530,8 +1505,7 @@
                     <bitfield caption="Digital Filter" mask="0x07" name="DIGFILT" values="EVSYS_DIGFILT"/>
                 </register>
                 <register caption="Channel 4 Control Register" name="CH4CTRL" offset="0x0C" size="1">
-                    <bitfield caption="Quadrature Decoder Index Recognition Mode" mask="0x60" name="QDIRM"
-                              values="EVSYS_QDIRM"/>
+                    <bitfield caption="Quadrature Decoder Index Recognition Mode" mask="0x60" name="QDIRM" values="EVSYS_QDIRM"/>
                     <bitfield caption="Quadrature Decoder Index Enable" mask="0x10" name="QDIEN"/>
                     <bitfield caption="Quadrature Decoder Enable" mask="0x08" name="QDEN"/>
                     <bitfield caption="Digital Filter" mask="0x07" name="DIGFILT" values="EVSYS_DIGFILT"/>
@@ -1810,12 +1784,9 @@
                     <bitfield caption="Input Mode Select" mask="0x03" name="INPUTMODE" values="ADC_CH_INPUTMODE"/>
                 </register>
                 <register caption="MUX Control" name="MUXCTRL" offset="0x01" size="1">
-                    <bitfield caption="MUX selection on Positive ADC input" mask="0x78" name="MUXPOS"
-                              values="ADC_CH_MUXPOS"/>
-                    <bitfield caption="MUX selection on Internal ADC input" mask="0x78" name="MUXINT"
-                              values="ADC_CH_MUXINT"/>
-                    <bitfield caption="MUX selection on Negative ADC input" mask="0x07" name="MUXNEG"
-                              values="ADC_CH_MUXNEG"/>
+                    <bitfield caption="MUX selection on Positive ADC input" mask="0x78" name="MUXPOS" values="ADC_CH_MUXPOS"/>
+                    <bitfield caption="MUX selection on Internal ADC input" mask="0x78" name="MUXINT" values="ADC_CH_MUXINT"/>
+                    <bitfield caption="MUX selection on Negative ADC input" mask="0x07" name="MUXNEG" values="ADC_CH_MUXNEG"/>
                 </register>
                 <register caption="Channel Interrupt Control Register" name="INTCTRL" offset="0x02" size="1">
                     <bitfield caption="Interrupt Mode" mask="0x0C" name="INTMODE" values="ADC_CH_INTMODE"/>
@@ -2186,8 +2157,7 @@
                     <bitfield caption="Synchronization Busy Flag" mask="0x01" name="SYNCBUSY"/>
                 </register>
                 <register caption="Interrupt Control Register" name="INTCTRL" offset="0x02" size="1">
-                    <bitfield caption="Compare Match Interrupt Level" mask="0x0C" name="COMPINTLVL"
-                              values="RTC32_COMPINTLVL"/>
+                    <bitfield caption="Compare Match Interrupt Level" mask="0x0C" name="COMPINTLVL" values="RTC32_COMPINTLVL"/>
                     <bitfield caption="Overflow Interrupt Level" mask="0x03" name="OVFINTLVL" values="RTC32_OVFINTLVL"/>
                 </register>
                 <register caption="Interrupt Flags" name="INTFLAGS" offset="0x03" size="1">
@@ -2490,8 +2460,7 @@
                 <value caption="1023 bytes buffer size" name="1023" value="0x07"/>
             </value-group>
             <interrupt-group name="USB">
-                <interrupt index="0" name="BUSEVENT"
-                           caption="SOF, suspend, resume, reset bus event interrupts, crc, underflow, overflow and stall error interrupts"/>
+                <interrupt index="0" name="BUSEVENT" caption="SOF, suspend, resume, reset bus event interrupts, crc, underflow, overflow and stall error interrupts"/>
                 <interrupt index="1" name="TRNCOMPL" caption="Transaction complete interrupt"/>
             </interrupt-group>
         </module>
@@ -2638,14 +2607,10 @@
                     <bitfield caption="Overflow interrupt level" mask="0x03" name="OVFINTLVL" values="TC_OVFINTLVL"/>
                 </register>
                 <register caption="Interrupt Control Register B" name="INTCTRLB" offset="0x07" size="1">
-                    <bitfield caption="Compare or Capture D Interrupt Level" mask="0xC0" name="CCDINTLVL"
-                              values="TC_CCDINTLVL"/>
-                    <bitfield caption="Compare or Capture C Interrupt Level" mask="0x30" name="CCCINTLVL"
-                              values="TC_CCCINTLVL"/>
-                    <bitfield caption="Compare or Capture B Interrupt Level" mask="0x0C" name="CCBINTLVL"
-                              values="TC_CCBINTLVL"/>
-                    <bitfield caption="Compare or Capture A Interrupt Level" mask="0x03" name="CCAINTLVL"
-                              values="TC_CCAINTLVL"/>
+                    <bitfield caption="Compare or Capture D Interrupt Level" mask="0xC0" name="CCDINTLVL" values="TC_CCDINTLVL"/>
+                    <bitfield caption="Compare or Capture C Interrupt Level" mask="0x30" name="CCCINTLVL" values="TC_CCCINTLVL"/>
+                    <bitfield caption="Compare or Capture B Interrupt Level" mask="0x0C" name="CCBINTLVL" values="TC_CCBINTLVL"/>
+                    <bitfield caption="Compare or Capture A Interrupt Level" mask="0x03" name="CCAINTLVL" values="TC_CCAINTLVL"/>
                 </register>
                 <register caption="Control Register F Clear" name="CTRLFCLR" offset="0x08" size="1">
                     <bitfield caption="Command" mask="0x0C" name="CMD"/>
@@ -2718,10 +2683,8 @@
                     <bitfield caption="Overflow interrupt level" mask="0x03" name="OVFINTLVL" values="TC_OVFINTLVL"/>
                 </register>
                 <register caption="Interrupt Control Register B" name="INTCTRLB" offset="0x07" size="1">
-                    <bitfield caption="Compare or Capture B Interrupt Level" mask="0x0C" name="CCBINTLVL"
-                              values="TC_CCBINTLVL"/>
-                    <bitfield caption="Compare or Capture A Interrupt Level" mask="0x03" name="CCAINTLVL"
-                              values="TC_CCAINTLVL"/>
+                    <bitfield caption="Compare or Capture B Interrupt Level" mask="0x0C" name="CCBINTLVL" values="TC_CCBINTLVL"/>
+                    <bitfield caption="Compare or Capture A Interrupt Level" mask="0x03" name="CCAINTLVL" values="TC_CCAINTLVL"/>
                 </register>
                 <register caption="Control Register F Clear" name="CTRLFCLR" offset="0x08" size="1">
                     <bitfield caption="Command" mask="0x0C" name="CMD"/>
@@ -2899,20 +2862,14 @@
                     <bitfield caption="Byte Mode" mask="0x03" name="BYTEM" values="TC2_BYTEM"/>
                 </register>
                 <register caption="Interrupt Control Register A" name="INTCTRLA" offset="0x06" size="1">
-                    <bitfield caption="High Byte Underflow Interrupt Level" mask="0x0C" name="HUNFINTLVL"
-                              values="TC2_HUNFINTLVL"/>
-                    <bitfield caption="Low Byte Underflow interrupt level" mask="0x03" name="LUNFINTLVL"
-                              values="TC2_LUNFINTLVL"/>
+                    <bitfield caption="High Byte Underflow Interrupt Level" mask="0x0C" name="HUNFINTLVL" values="TC2_HUNFINTLVL"/>
+                    <bitfield caption="Low Byte Underflow interrupt level" mask="0x03" name="LUNFINTLVL" values="TC2_LUNFINTLVL"/>
                 </register>
                 <register caption="Interrupt Control Register B" name="INTCTRLB" offset="0x07" size="1">
-                    <bitfield caption="Low Byte Compare D Interrupt Level" mask="0xC0" name="LCMPDINTLVL"
-                              values="TC2_LCMPDINTLVL"/>
-                    <bitfield caption="Low Byte Compare C Interrupt Level" mask="0x30" name="LCMPCINTLVL"
-                              values="TC2_LCMPCINTLVL"/>
-                    <bitfield caption="Low Byte Compare B Interrupt Level" mask="0x0C" name="LCMPBINTLVL"
-                              values="TC2_LCMPBINTLVL"/>
-                    <bitfield caption="Low Byte Compare A Interrupt Level" mask="0x03" name="LCMPAINTLVL"
-                              values="TC2_LCMPAINTLVL"/>
+                    <bitfield caption="Low Byte Compare D Interrupt Level" mask="0xC0" name="LCMPDINTLVL" values="TC2_LCMPDINTLVL"/>
+                    <bitfield caption="Low Byte Compare C Interrupt Level" mask="0x30" name="LCMPCINTLVL" values="TC2_LCMPCINTLVL"/>
+                    <bitfield caption="Low Byte Compare B Interrupt Level" mask="0x0C" name="LCMPBINTLVL" values="TC2_LCMPBINTLVL"/>
+                    <bitfield caption="Low Byte Compare A Interrupt Level" mask="0x03" name="LCMPAINTLVL" values="TC2_LCMPAINTLVL"/>
                 </register>
                 <register caption="Control Register F" name="CTRLF" offset="0x09" size="1">
                     <bitfield caption="Command" mask="0x0C" name="CMD" values="TC2_CMD"/>
@@ -3086,8 +3043,7 @@
                 <register caption="Control Register A" name="CTRLA" offset="0x03" size="1">
                     <bitfield caption="Receive Interrupt Level" mask="0x30" name="RXCINTLVL" values="USART_RXCINTLVL"/>
                     <bitfield caption="Transmit Interrupt Level" mask="0x0C" name="TXCINTLVL" values="USART_TXCINTLVL"/>
-                    <bitfield caption="Data Register Empty Interrupt Level" mask="0x03" name="DREINTLVL"
-                              values="USART_DREINTLVL"/>
+                    <bitfield caption="Data Register Empty Interrupt Level" mask="0x03" name="DREINTLVL" values="USART_DREINTLVL"/>
                 </register>
                 <register caption="Control Register B" name="CTRLB" offset="0x04" size="1">
                     <bitfield caption="Receiver Enable" mask="0x10" name="RXEN"/>
@@ -3198,8 +3154,7 @@
                 <register caption="Control Register" name="CTRL" offset="0x00" size="1">
                     <bitfield caption="Event Channel Select" mask="0x0F" name="EVSEL" values="IRDA_EVSEL"/>
                 </register>
-                <register caption="IrDA Transmitter Pulse Length Control Register" name="TXPLCTRL" offset="0x01"
-                          size="1"/>
+                <register caption="IrDA Transmitter Pulse Length Control Register" name="TXPLCTRL" offset="0x01" size="1"/>
                 <register caption="IrDA Receiver Pulse Length Control Register" name="RXPLCTRL" offset="0x02" size="1"/>
             </register-group>
             <value-group caption="Event channel selection" name="IRDA_EVSEL">
@@ -3304,10 +3259,8 @@
             <register-group caption="Lock Bits" name="NVM_LOCKBITS">
                 <register caption="Lock Bits" name="LOCKBITS" offset="0x00" size="1" initval="0xFF">
                     <bitfield caption="Boot Lock Bits - Boot Section" mask="0xC0" name="BLBB" values="FUSE_BLBB"/>
-                    <bitfield caption="Boot Lock Bits - Application Section" mask="0x30" name="BLBA"
-                              values="FUSE_BLBA"/>
-                    <bitfield caption="Boot Lock Bits - Application Table" mask="0x0C" name="BLBAT"
-                              values="FUSE_BLBAT"/>
+                    <bitfield caption="Boot Lock Bits - Application Section" mask="0x30" name="BLBA" values="FUSE_BLBA"/>
+                    <bitfield caption="Boot Lock Bits - Application Table" mask="0x0C" name="BLBAT" values="FUSE_BLBAT"/>
                     <bitfield caption="Lock Bits" mask="0x03" name="LB" values="FUSE_LB"/>
                 </register>
             </register-group>

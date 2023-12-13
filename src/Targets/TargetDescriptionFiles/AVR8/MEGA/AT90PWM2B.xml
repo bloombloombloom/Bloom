@@ -6,16 +6,11 @@
     <device name="AT90PWM2B" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x2000">
-                <memory-segment start="0x0000" size="0x2000" type="flash" rw="RW" exec="1" name="FLASH"
-                                pagesize="0x40"/>
-                <memory-segment start="0x1f00" size="0x0100" type="flash" rw="RW" exec="1" name="BOOT_SECTION_1"
-                                pagesize="0x40"/>
-                <memory-segment start="0x1e00" size="0x0200" type="flash" rw="RW" exec="1" name="BOOT_SECTION_2"
-                                pagesize="0x40"/>
-                <memory-segment start="0x1c00" size="0x0400" type="flash" rw="RW" exec="1" name="BOOT_SECTION_3"
-                                pagesize="0x40"/>
-                <memory-segment start="0x1800" size="0x0800" type="flash" rw="RW" exec="1" name="BOOT_SECTION_4"
-                                pagesize="0x40"/>
+                <memory-segment start="0x0000" size="0x2000" type="flash" rw="RW" exec="1" name="FLASH" pagesize="0x40"/>
+                <memory-segment start="0x1f00" size="0x0100" type="flash" rw="RW" exec="1" name="BOOT_SECTION_1" pagesize="0x40"/>
+                <memory-segment start="0x1e00" size="0x0200" type="flash" rw="RW" exec="1" name="BOOT_SECTION_2" pagesize="0x40"/>
+                <memory-segment start="0x1c00" size="0x0400" type="flash" rw="RW" exec="1" name="BOOT_SECTION_3" pagesize="0x40"/>
+                <memory-segment start="0x1800" size="0x0800" type="flash" rw="RW" exec="1" name="BOOT_SECTION_4" pagesize="0x40"/>
             </address-space>
             <address-space endianness="little" name="signatures" id="signatures" start="0" size="3">
                 <memory-segment start="0" size="3" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
@@ -32,8 +27,7 @@
                 <memory-segment name="IRAM" start="0x0100" size="0x0200" type="ram" external="false"/>
             </address-space>
             <address-space endianness="little" name="eeprom" id="eeprom" start="0x0000" size="0x0200">
-                <memory-segment start="0x0000" size="0x0200" type="eeprom" rw="RW" exec="0" name="EEPROM"
-                                pagesize="0x04"/>
+                <memory-segment start="0x0000" size="0x0200" type="eeprom" rw="RW" exec="0" name="EEPROM" pagesize="0x04"/>
             </address-space>
             <address-space size="0x40" start="0x00" endianness="little" name="io" id="io"/>
             <address-space endianness="little" name="osccal" id="osccal" start="0" size="1">
@@ -43,8 +37,7 @@
         <peripherals>
             <module name="PORT">
                 <instance name="PORTB" caption="I/O Port">
-                    <register-group name="PORTB" name-in-module="PORTB" offset="0x00" address-space="data"
-                                    caption="I/O Port"/>
+                    <register-group name="PORTB" name-in-module="PORTB" offset="0x00" address-space="data" caption="I/O Port"/>
                     <signals>
                         <signal function="PORTB" group="P" index="0" pad="PB0"/>
                         <signal function="PORTB" group="P" index="1" pad="PB1"/>
@@ -57,8 +50,7 @@
                     </signals>
                 </instance>
                 <instance name="PORTD" caption="I/O Port">
-                    <register-group name="PORTD" name-in-module="PORTD" offset="0x00" address-space="data"
-                                    caption="I/O Port"/>
+                    <register-group name="PORTD" name-in-module="PORTD" offset="0x00" address-space="data" caption="I/O Port"/>
                     <signals>
                         <signal function="PORTD" group="P" index="0" pad="PD0"/>
                         <signal function="PORTD" group="P" index="1" pad="PD1"/>
@@ -71,8 +63,7 @@
                     </signals>
                 </instance>
                 <instance name="PORTE" caption="I/O Port">
-                    <register-group name="PORTE" name-in-module="PORTE" offset="0x00" address-space="data"
-                                    caption="I/O Port"/>
+                    <register-group name="PORTE" name-in-module="PORTE" offset="0x00" address-space="data" caption="I/O Port"/>
                     <signals>
                         <signal function="PORTE" group="P" index="0" pad="PE0"/>
                         <signal function="PORTE" group="P" index="1" pad="PE1"/>
@@ -82,32 +73,27 @@
             </module>
             <module name="BOOT_LOAD">
                 <instance name="BOOT_LOAD" caption="Bootloader">
-                    <register-group name="BOOT_LOAD" name-in-module="BOOT_LOAD" offset="0x00" address-space="data"
-                                    caption="Bootloader"/>
+                    <register-group name="BOOT_LOAD" name-in-module="BOOT_LOAD" offset="0x00" address-space="data" caption="Bootloader"/>
                 </instance>
             </module>
             <module name="EUSART">
                 <instance name="EUSART" caption="Extended USART">
-                    <register-group name="EUSART" name-in-module="EUSART" offset="0x00" address-space="data"
-                                    caption="Extended USART"/>
+                    <register-group name="EUSART" name-in-module="EUSART" offset="0x00" address-space="data" caption="Extended USART"/>
                 </instance>
             </module>
             <module name="AC">
                 <instance name="AC" caption="Analog Comparator">
-                    <register-group name="AC" name-in-module="AC" offset="0x00" address-space="data"
-                                    caption="Analog Comparator"/>
+                    <register-group name="AC" name-in-module="AC" offset="0x00" address-space="data" caption="Analog Comparator"/>
                 </instance>
             </module>
             <module name="DAC">
                 <instance name="DAC" caption="Digital-to-Analog Converter">
-                    <register-group name="DAC" name-in-module="DAC" offset="0x00" address-space="data"
-                                    caption="Digital-to-Analog Converter"/>
+                    <register-group name="DAC" name-in-module="DAC" offset="0x00" address-space="data" caption="Digital-to-Analog Converter"/>
                 </instance>
             </module>
             <module name="CPU">
                 <instance name="CPU" caption="CPU Registers">
-                    <register-group name="CPU" name-in-module="CPU" offset="0x00" address-space="data"
-                                    caption="CPU Registers"/>
+                    <register-group name="CPU" name-in-module="CPU" offset="0x00" address-space="data" caption="CPU Registers"/>
                     <parameters>
                         <param name="CORE_VERSION" value="V2E"/>
                     </parameters>
@@ -115,78 +101,65 @@
             </module>
             <module name="TC8">
                 <instance name="TC0" caption="Timer/Counter, 8-bit">
-                    <register-group name="TC0" name-in-module="TC0" offset="0x00" address-space="data"
-                                    caption="Timer/Counter, 8-bit"/>
+                    <register-group name="TC0" name-in-module="TC0" offset="0x00" address-space="data" caption="Timer/Counter, 8-bit"/>
                 </instance>
             </module>
             <module name="TC16">
                 <instance name="TC1" caption="Timer/Counter, 16-bit">
-                    <register-group name="TC1" name-in-module="TC1" offset="0x00" address-space="data"
-                                    caption="Timer/Counter, 16-bit"/>
+                    <register-group name="TC1" name-in-module="TC1" offset="0x00" address-space="data" caption="Timer/Counter, 16-bit"/>
                 </instance>
             </module>
             <module name="ADC">
                 <instance name="ADC" caption="Analog-to-Digital Converter">
-                    <register-group name="ADC" name-in-module="ADC" offset="0x00" address-space="data"
-                                    caption="Analog-to-Digital Converter"/>
+                    <register-group name="ADC" name-in-module="ADC" offset="0x00" address-space="data" caption="Analog-to-Digital Converter"/>
                 </instance>
             </module>
             <module name="USART">
                 <instance name="USART" caption="USART">
-                    <register-group name="USART" name-in-module="USART" offset="0x00" address-space="data"
-                                    caption="USART"/>
+                    <register-group name="USART" name-in-module="USART" offset="0x00" address-space="data" caption="USART"/>
                 </instance>
             </module>
             <module name="SPI">
                 <instance name="SPI" caption="Serial Peripheral Interface">
-                    <register-group name="SPI" name-in-module="SPI" offset="0x00" address-space="data"
-                                    caption="Serial Peripheral Interface"/>
+                    <register-group name="SPI" name-in-module="SPI" offset="0x00" address-space="data" caption="Serial Peripheral Interface"/>
                 </instance>
             </module>
             <module name="WDT">
                 <instance name="WDT" caption="Watchdog Timer">
-                    <register-group name="WDT" name-in-module="WDT" offset="0x00" address-space="data"
-                                    caption="Watchdog Timer"/>
+                    <register-group name="WDT" name-in-module="WDT" offset="0x00" address-space="data" caption="Watchdog Timer"/>
                 </instance>
             </module>
             <module name="EXINT">
                 <instance name="EXINT" caption="External Interrupts">
-                    <register-group name="EXINT" name-in-module="EXINT" offset="0x00" address-space="data"
-                                    caption="External Interrupts"/>
+                    <register-group name="EXINT" name-in-module="EXINT" offset="0x00" address-space="data" caption="External Interrupts"/>
                 </instance>
             </module>
             <module name="EEPROM">
                 <instance name="EEPROM" caption="EEPROM">
-                    <register-group name="EEPROM" name-in-module="EEPROM" offset="0x00" address-space="data"
-                                    caption="EEPROM"/>
+                    <register-group name="EEPROM" name-in-module="EEPROM" offset="0x00" address-space="data" caption="EEPROM"/>
                 </instance>
             </module>
             <module name="PSC">
                 <instance name="PSC0" caption="Power Stage Controller">
-                    <register-group name="PSC0" name-in-module="PSC0" offset="0x00" address-space="data"
-                                    caption="Power Stage Controller"/>
+                    <register-group name="PSC0" name-in-module="PSC0" offset="0x00" address-space="data" caption="Power Stage Controller"/>
                 </instance>
                 <instance name="PSC2" caption="Power Stage Controller">
-                    <register-group name="PSC2" name-in-module="PSC2" offset="0x00" address-space="data"
-                                    caption="Power Stage Controller"/>
+                    <register-group name="PSC2" name-in-module="PSC2" offset="0x00" address-space="data" caption="Power Stage Controller"/>
                 </instance>
             </module>
             <module name="FUSE">
                 <instance name="FUSE" caption="Fuses">
-                    <register-group name="FUSE" name-in-module="FUSE" offset="0" address-space="fuses"
-                                    caption="Fuses"/>
+                    <register-group name="FUSE" name-in-module="FUSE" offset="0" address-space="fuses" caption="Fuses"/>
                 </instance>
             </module>
             <module name="LOCKBIT">
                 <instance name="LOCKBIT" caption="Lockbits">
-                    <register-group name="LOCKBIT" name-in-module="LOCKBIT" offset="0" address-space="lockbits"
-                                    caption="Lockbits"/>
+                    <register-group name="LOCKBIT" name-in-module="LOCKBIT" offset="0" address-space="lockbits" caption="Lockbits"/>
                 </instance>
             </module>
         </peripherals>
         <interrupts>
-            <interrupt index="0" name="RESET"
-                       caption="External Pin, Power-on Reset, Brown-out Reset, Watchdog Reset and JTAG AVR Reset"/>
+            <interrupt index="0" name="RESET" caption="External Pin, Power-on Reset, Brown-out Reset, Watchdog Reset and JTAG AVR Reset"/>
             <interrupt index="1" name="PSC2_CAPT" caption="PSC2 Capture Event"/>
             <interrupt index="2" name="PSC2_EC" caption="PSC2 End Cycle"/>
             <interrupt index="3" name="PSC1_CAPT" caption="PSC1 Capture Event"/>
@@ -275,8 +248,7 @@
                 <property name="IspReadOsccal_pollIndex" value="4"/>
             </property-group>
             <property-group name="PP_INTERFACE">
-                <property name="PpControlStack"
-                          value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
+                <property name="PpControlStack" value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
                 <property name="PpEnterProgMode_stabDelay" value="100"/>
                 <property name="PpEnterProgMode_progModeDelay" value="0"/>
                 <property name="PpEnterProgMode_latchCycles" value="5"/>
@@ -337,8 +309,7 @@
                 <property name="IspReadOsccal_pollIndex" value="4"/>
             </property-group>
             <property-group name="PP_INTERFACE_STK600">
-                <property name="PpControlStack"
-                          value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
+                <property name="PpControlStack" value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
                 <property name="PpEnterProgMode_stabDelay" value="100"/>
                 <property name="PpEnterProgMode_progModeDelay" value="0"/>
                 <property name="PpEnterProgMode_latchCycles" value="5"/>
@@ -382,8 +353,7 @@
                     <bitfield caption="Serial program downloading (SPI) enabled" mask="0x20" name="SPIEN"/>
                     <bitfield caption="Watch-dog Timer always on" mask="0x10" name="WDTON"/>
                     <bitfield caption="Preserve EEPROM through the Chip Erase cycle" mask="0x08" name="EESAVE"/>
-                    <bitfield caption="Brown-out Detector Trigger Level" mask="0x07" name="BODLEVEL"
-                              values="ENUM_BODLEVEL"/>
+                    <bitfield caption="Brown-out Detector Trigger Level" mask="0x07" name="BODLEVEL" values="ENUM_BODLEVEL"/>
                 </register>
                 <register caption="" name="LOW" offset="0x00" size="1" initval="0x62">
                     <bitfield caption="Divide clock by 8 internally" mask="0x80" name="CKDIV8"/>
@@ -392,112 +362,59 @@
                 </register>
             </register-group>
             <value-group caption="" name="ENUM_SUT_CKSEL">
-                <value caption="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" name="EXTCLK_6CK_14CK_0MS"
-                       value="0x00"/>
-                <value caption="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4.1 ms" name="EXTCLK_6CK_14CK_4MS1"
-                       value="0x10"/>
-                <value caption="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 65 ms" name="EXTCLK_6CK_14CK_65MS"
-                       value="0x20"/>
-                <value caption="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms"
-                       name="INTRCOSC_8MHZ_6CK_14CK_0MS" value="0x02"/>
-                <value caption="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4.1 ms"
-                       name="INTRCOSC_8MHZ_6CK_14CK_4MS1" value="0x12"/>
-                <value caption="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 65 ms"
-                       name="INTRCOSC_8MHZ_6CK_14CK_65MS" value="0x22"/>
-                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms"
-                       name="EXTXOSC_0MHZ4_0MHZ9_258CK_14CK_4MS1" value="0x08"/>
-                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms"
-                       name="EXTXOSC_0MHZ4_0MHZ9_258CK_14CK_65MS" value="0x18"/>
-                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms"
-                       name="EXTXOSC_0MHZ4_0MHZ9_1KCK_14CK_0MS" value="0x28"/>
-                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms"
-                       name="EXTXOSC_0MHZ4_0MHZ9_1KCK_14CK_4MS1" value="0x38"/>
-                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms"
-                       name="EXTXOSC_0MHZ4_0MHZ9_1KCK_14CK_65MS" value="0x09"/>
-                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms"
-                       name="EXTXOSC_0MHZ4_0MHZ9_16KCK_14CK_0MS" value="0x19"/>
-                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms"
-                       name="EXTXOSC_0MHZ4_0MHZ9_16KCK_14CK_4MS1" value="0x29"/>
-                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms"
-                       name="EXTXOSC_0MHZ4_0MHZ9_16KCK_14CK_65MS" value="0x39"/>
-                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms"
-                       name="EXTXOSC_0MHZ9_3MHZ_258CK_14CK_4MS1" value="0x0A"/>
-                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms"
-                       name="EXTXOSC_0MHZ9_3MHZ_258CK_14CK_65MS" value="0x1A"/>
-                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms"
-                       name="EXTXOSC_0MHZ9_3MHZ_1KCK_14CK_0MS" value="0x2A"/>
-                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms"
-                       name="EXTXOSC_0MHZ9_3MHZ_1KCK_14CK_4MS1" value="0x3A"/>
-                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms"
-                       name="EXTXOSC_0MHZ9_3MHZ_1KCK_14CK_65MS" value="0x0B"/>
-                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms"
-                       name="EXTXOSC_0MHZ9_3MHZ_16KCK_14CK_0MS" value="0x1B"/>
-                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms"
-                       name="EXTXOSC_0MHZ9_3MHZ_16KCK_14CK_4MS1" value="0x2B"/>
-                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms"
-                       name="EXTXOSC_0MHZ9_3MHZ_16KCK_14CK_65MS" value="0x3B"/>
-                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms"
-                       name="EXTXOSC_3MHZ_8MHZ_258CK_14CK_4MS1" value="0x0C"/>
-                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms"
-                       name="EXTXOSC_3MHZ_8MHZ_258CK_14CK_65MS" value="0x1C"/>
-                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms"
-                       name="EXTXOSC_3MHZ_8MHZ_1KCK_14CK_0MS" value="0x2C"/>
-                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms"
-                       name="EXTXOSC_3MHZ_8MHZ_1KCK_14CK_4MS1" value="0x3C"/>
-                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms"
-                       name="EXTXOSC_3MHZ_8MHZ_1KCK_14CK_65MS" value="0x0D"/>
-                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms"
-                       name="EXTXOSC_3MHZ_8MHZ_16KCK_14CK_0MS" value="0x1D"/>
-                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms"
-                       name="EXTXOSC_3MHZ_8MHZ_16KCK_14CK_4MS1" value="0x2D"/>
-                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms"
-                       name="EXTXOSC_3MHZ_8MHZ_16KCK_14CK_65MS" value="0x3D"/>
-                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms"
-                       name="EXTXOSC_8MHZ_XX_258CK_14CK_4MS1" value="0x0E"/>
-                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms"
-                       name="EXTXOSC_8MHZ_XX_258CK_14CK_65MS" value="0x1E"/>
-                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms"
-                       name="EXTXOSC_8MHZ_XX_1KCK_14CK_0MS" value="0x2E"/>
-                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms"
-                       name="EXTXOSC_8MHZ_XX_1KCK_14CK_4MS1" value="0x3E"/>
-                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms"
-                       name="EXTXOSC_8MHZ_XX_1KCK_14CK_65MS" value="0x0F"/>
-                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms"
-                       name="EXTXOSC_8MHZ_XX_16KCK_14CK_0MS" value="0x1F"/>
-                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms"
-                       name="EXTXOSC_8MHZ_XX_16KCK_14CK_4MS1" value="0x2F"/>
-                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms"
-                       name="EXTXOSC_8MHZ_XX_16KCK_14CK_65MS" value="0x3F"/>
-                <value caption="PLL clock 16 MHz; Rc. Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms"
-                       name="PLLCLK_16MHZ_1KCK_14CK_0MS" value="0x03"/>
-                <value caption="PLL clock 16 MHz; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4.1 ms"
-                       name="PLLCLK_16MHZ_1KCK_14CK_4MS1" value="0x13"/>
-                <value caption="PLL clock 16 MHz; Start-up time PWRDWN/RESET: 1K CK/14 CK + 65 ms"
-                       name="PLLCLK_16MHZ_1KCK_14CK_65MS" value="0x23"/>
-                <value caption="PLL clock 16 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms"
-                       name="PLLCLK_16MHZ_16KCK_14CK_0MS" value="0x33"/>
-                <value caption="PLL clock /4; PLL input: Ext. Clock; Start-up time PWRDWN/RESET: 6K CK/14 CK + 0 ms"
-                       name="PLLCLK_PLLIN_EXTCLK_6KCK_14CK_0MS" value="0x01"/>
-                <value caption="PLL clock /4; PLL input: Ext. Clock; Start-up time PWRDWN/RESET: 6K CK/14 CK + 4 ms"
-                       name="PLLCLK_PLLIN_EXTCLK_6KCK_14CK_4MS" value="0x11"/>
-                <value caption="PLL clock /4; PLL input: Ext. Clock; Start-up time PWRDWN/RESET: 6K CK/14 CK + 64 ms"
-                       name="PLLCLK_PLLIN_EXTCLK_6KCK_14CK_64MS" value="0x21"/>
-                <value caption="PLL clock /4; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms"
-                       name="PLLCLK_PLLIN_EXTXOSC_1KCK_14CK_0MS" value="0x05"/>
-                <value caption="PLL clock /4; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms"
-                       name="PLLCLK_PLLIN_EXTXOSC_1KCK_14CK_4MS" value="0x15"/>
-                <value caption="PLL clock /4; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4 ms"
-                       name="PLLCLK_PLLIN_EXTXOSC_16KCK_14CK_4MS" value="0x25"/>
-                <value caption="PLL clock /4; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 16K CK/14 CK + 64 ms"
-                       name="PLLCLK_PLLIN_EXTXOSC_16KCK_14CK_64MS" value="0x35"/>
-                <value caption="Ext. Crystal Osc.; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms"
-                       name="EXTXOSC_PLLIN_EXTXOSC_1KCK_14CK_0MS" value="0x04"/>
-                <value caption="Ext. Crystal Osc.; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms"
-                       name="EXTXOSC_PLLIN_EXTXOSC_1KCK_14CK_4MS" value="0x14"/>
-                <value caption="Ext. Crystal Osc.; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4 ms"
-                       name="EXTXOSC_PLLIN_EXTXOSC_16KCK_14CK_4MS" value="0x24"/>
-                <value caption="Ext. Crystal Osc.; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 16K CK/14 CK + 64 ms"
-                       name="EXTXOSC_PLLIN_EXTXOSC_16KCK_14CK_64MS" value="0x34"/>
+                <value caption="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" name="EXTCLK_6CK_14CK_0MS" value="0x00"/>
+                <value caption="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4.1 ms" name="EXTCLK_6CK_14CK_4MS1" value="0x10"/>
+                <value caption="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 65 ms" name="EXTCLK_6CK_14CK_65MS" value="0x20"/>
+                <value caption="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" name="INTRCOSC_8MHZ_6CK_14CK_0MS" value="0x02"/>
+                <value caption="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4.1 ms" name="INTRCOSC_8MHZ_6CK_14CK_4MS1" value="0x12"/>
+                <value caption="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 65 ms" name="INTRCOSC_8MHZ_6CK_14CK_65MS" value="0x22"/>
+                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" name="EXTXOSC_0MHZ4_0MHZ9_258CK_14CK_4MS1" value="0x08"/>
+                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" name="EXTXOSC_0MHZ4_0MHZ9_258CK_14CK_65MS" value="0x18"/>
+                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" name="EXTXOSC_0MHZ4_0MHZ9_1KCK_14CK_0MS" value="0x28"/>
+                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" name="EXTXOSC_0MHZ4_0MHZ9_1KCK_14CK_4MS1" value="0x38"/>
+                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" name="EXTXOSC_0MHZ4_0MHZ9_1KCK_14CK_65MS" value="0x09"/>
+                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" name="EXTXOSC_0MHZ4_0MHZ9_16KCK_14CK_0MS" value="0x19"/>
+                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" name="EXTXOSC_0MHZ4_0MHZ9_16KCK_14CK_4MS1" value="0x29"/>
+                <value caption="Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" name="EXTXOSC_0MHZ4_0MHZ9_16KCK_14CK_65MS" value="0x39"/>
+                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" name="EXTXOSC_0MHZ9_3MHZ_258CK_14CK_4MS1" value="0x0A"/>
+                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" name="EXTXOSC_0MHZ9_3MHZ_258CK_14CK_65MS" value="0x1A"/>
+                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" name="EXTXOSC_0MHZ9_3MHZ_1KCK_14CK_0MS" value="0x2A"/>
+                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" name="EXTXOSC_0MHZ9_3MHZ_1KCK_14CK_4MS1" value="0x3A"/>
+                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" name="EXTXOSC_0MHZ9_3MHZ_1KCK_14CK_65MS" value="0x0B"/>
+                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" name="EXTXOSC_0MHZ9_3MHZ_16KCK_14CK_0MS" value="0x1B"/>
+                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" name="EXTXOSC_0MHZ9_3MHZ_16KCK_14CK_4MS1" value="0x2B"/>
+                <value caption="Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" name="EXTXOSC_0MHZ9_3MHZ_16KCK_14CK_65MS" value="0x3B"/>
+                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" name="EXTXOSC_3MHZ_8MHZ_258CK_14CK_4MS1" value="0x0C"/>
+                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" name="EXTXOSC_3MHZ_8MHZ_258CK_14CK_65MS" value="0x1C"/>
+                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" name="EXTXOSC_3MHZ_8MHZ_1KCK_14CK_0MS" value="0x2C"/>
+                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" name="EXTXOSC_3MHZ_8MHZ_1KCK_14CK_4MS1" value="0x3C"/>
+                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" name="EXTXOSC_3MHZ_8MHZ_1KCK_14CK_65MS" value="0x0D"/>
+                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" name="EXTXOSC_3MHZ_8MHZ_16KCK_14CK_0MS" value="0x1D"/>
+                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" name="EXTXOSC_3MHZ_8MHZ_16KCK_14CK_4MS1" value="0x2D"/>
+                <value caption="Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" name="EXTXOSC_3MHZ_8MHZ_16KCK_14CK_65MS" value="0x3D"/>
+                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" name="EXTXOSC_8MHZ_XX_258CK_14CK_4MS1" value="0x0E"/>
+                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" name="EXTXOSC_8MHZ_XX_258CK_14CK_65MS" value="0x1E"/>
+                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" name="EXTXOSC_8MHZ_XX_1KCK_14CK_0MS" value="0x2E"/>
+                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" name="EXTXOSC_8MHZ_XX_1KCK_14CK_4MS1" value="0x3E"/>
+                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" name="EXTXOSC_8MHZ_XX_1KCK_14CK_65MS" value="0x0F"/>
+                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" name="EXTXOSC_8MHZ_XX_16KCK_14CK_0MS" value="0x1F"/>
+                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" name="EXTXOSC_8MHZ_XX_16KCK_14CK_4MS1" value="0x2F"/>
+                <value caption="Ext. Crystal Osc. 8.0-    MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" name="EXTXOSC_8MHZ_XX_16KCK_14CK_65MS" value="0x3F"/>
+                <value caption="PLL clock 16 MHz; Rc. Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms" name="PLLCLK_16MHZ_1KCK_14CK_0MS" value="0x03"/>
+                <value caption="PLL clock 16 MHz; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4.1 ms" name="PLLCLK_16MHZ_1KCK_14CK_4MS1" value="0x13"/>
+                <value caption="PLL clock 16 MHz; Start-up time PWRDWN/RESET: 1K CK/14 CK + 65 ms" name="PLLCLK_16MHZ_1KCK_14CK_65MS" value="0x23"/>
+                <value caption="PLL clock 16 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" name="PLLCLK_16MHZ_16KCK_14CK_0MS" value="0x33"/>
+                <value caption="PLL clock /4; PLL input: Ext. Clock; Start-up time PWRDWN/RESET: 6K CK/14 CK + 0 ms" name="PLLCLK_PLLIN_EXTCLK_6KCK_14CK_0MS" value="0x01"/>
+                <value caption="PLL clock /4; PLL input: Ext. Clock; Start-up time PWRDWN/RESET: 6K CK/14 CK + 4 ms" name="PLLCLK_PLLIN_EXTCLK_6KCK_14CK_4MS" value="0x11"/>
+                <value caption="PLL clock /4; PLL input: Ext. Clock; Start-up time PWRDWN/RESET: 6K CK/14 CK + 64 ms" name="PLLCLK_PLLIN_EXTCLK_6KCK_14CK_64MS" value="0x21"/>
+                <value caption="PLL clock /4; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms" name="PLLCLK_PLLIN_EXTXOSC_1KCK_14CK_0MS" value="0x05"/>
+                <value caption="PLL clock /4; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" name="PLLCLK_PLLIN_EXTXOSC_1KCK_14CK_4MS" value="0x15"/>
+                <value caption="PLL clock /4; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4 ms" name="PLLCLK_PLLIN_EXTXOSC_16KCK_14CK_4MS" value="0x25"/>
+                <value caption="PLL clock /4; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 16K CK/14 CK + 64 ms" name="PLLCLK_PLLIN_EXTXOSC_16KCK_14CK_64MS" value="0x35"/>
+                <value caption="Ext. Crystal Osc.; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms" name="EXTXOSC_PLLIN_EXTXOSC_1KCK_14CK_0MS" value="0x04"/>
+                <value caption="Ext. Crystal Osc.; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" name="EXTXOSC_PLLIN_EXTXOSC_1KCK_14CK_4MS" value="0x14"/>
+                <value caption="Ext. Crystal Osc.; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4 ms" name="EXTXOSC_PLLIN_EXTXOSC_16KCK_14CK_4MS" value="0x24"/>
+                <value caption="Ext. Crystal Osc.; PLL input: Ext. Crystal Osc.; Start-up time PWRDWN/RESET: 16K CK/14 CK + 64 ms" name="EXTXOSC_PLLIN_EXTXOSC_16KCK_14CK_64MS" value="0x34"/>
             </value-group>
             <value-group caption="" name="ENUM_BODLEVEL">
                 <value caption="Brown-out detection disabled" name="DISABLED" value="0x07"/>
@@ -578,10 +495,8 @@
                     <bitfield caption="EUSART Extended data bits" mask="0xFF" name="EUDR"/>
                 </register>
                 <register caption="EUSART Control and Status Register A" name="EUCSRA" offset="0xC8" size="1">
-                    <bitfield caption="EUSART Control and Status Register A Bits" mask="0xF0" name="UTxS"
-                              values="COMM_TRANS_CHAR_SIZE"/>
-                    <bitfield caption="EUSART Control and Status Register A Bits" mask="0x0F" name="URxS"
-                              values="COMM_TRANS_CHAR_SIZE2"/>
+                    <bitfield caption="EUSART Control and Status Register A Bits" mask="0xF0" name="UTxS" values="COMM_TRANS_CHAR_SIZE"/>
+                    <bitfield caption="EUSART Control and Status Register A Bits" mask="0x0F" name="URxS" values="COMM_TRANS_CHAR_SIZE2"/>
                 </register>
                 <register caption="EUSART Control Register B" name="EUCSRB" offset="0xC9" size="1">
                     <bitfield caption="EUSART Enable Bit" mask="0x10" name="EUSART"/>
@@ -646,16 +561,14 @@
                 <register caption="Analog Comparator 1 Control Register" name="AC1CON" offset="0xAE" size="1">
                     <bitfield caption="Analog Comparator 1 Enable Bit" mask="0x80" name="AC1EN"/>
                     <bitfield caption="Analog Comparator 1 Interrupt Enable Bit" mask="0x40" name="AC1IE"/>
-                    <bitfield caption="Analog Comparator 1 Interrupt Select Bit" mask="0x30" name="AC1IS"
-                              values="ANALOG_COMP_INTERRUPT"/>
+                    <bitfield caption="Analog Comparator 1 Interrupt Select Bit" mask="0x30" name="AC1IS" values="ANALOG_COMP_INTERRUPT"/>
                     <bitfield caption="Analog Comparator 1 Interrupt Capture Enable Bit" mask="0x08" name="AC1ICE"/>
                     <bitfield caption="Analog Comparator 1 Multiplexer Register" mask="0x07" name="AC1M"/>
                 </register>
                 <register caption="Analog Comparator 2 Control Register" name="AC2CON" offset="0xAF" size="1">
                     <bitfield caption="Analog Comparator 2 Enable Bit" mask="0x80" name="AC2EN"/>
                     <bitfield caption="Analog Comparator 2 Interrupt Enable Bit" mask="0x40" name="AC2IE"/>
-                    <bitfield caption="Analog Comparator 2 Interrupt Select Bit" mask="0x30" name="AC2IS"
-                              values="ANALOG_COMP_INTERRUPT"/>
+                    <bitfield caption="Analog Comparator 2 Interrupt Select Bit" mask="0x30" name="AC2IS" values="ANALOG_COMP_INTERRUPT"/>
                     <bitfield caption="Analog Comparator 2 Multiplexer Register" mask="0x07" name="AC2M"/>
                 </register>
                 <register caption="Analog Comparator Status Register" name="ACSR" offset="0x50" size="1" ocd-rw="R">
@@ -682,8 +595,7 @@
                 </register>
                 <register caption="DAC Control Register" name="DACON" offset="0xAA" size="1">
                     <bitfield caption="DAC Auto Trigger Enable Bit" mask="0x80" name="DAATE"/>
-                    <bitfield caption="DAC Trigger Selection Bits" mask="0x70" name="DATS"
-                              values="ANALOG_DAC_AUTO_TRIGGER"/>
+                    <bitfield caption="DAC Trigger Selection Bits" mask="0x70" name="DATS" values="ANALOG_DAC_AUTO_TRIGGER"/>
                     <bitfield caption="DAC Left Adjust" mask="0x04" name="DALA"/>
                     <bitfield caption="DAC Output Enable" mask="0x02" name="DAOE"/>
                     <bitfield caption="DAC Enable Bit" mask="0x01" name="DAEN"/>
@@ -725,8 +637,7 @@
                     <bitfield caption="External Reset Flag" mask="0x02" name="EXTRF"/>
                     <bitfield caption="Power-on reset flag" mask="0x01" name="PORF"/>
                 </register>
-                <register caption="Oscillator Calibration Value" name="OSCCAL" offset="0x66" size="1" mask="0x7F"
-                          ocd-rw="R">
+                <register caption="Oscillator Calibration Value" name="OSCCAL" offset="0x66" size="1" mask="0x7F" ocd-rw="R">
                     <bitfield caption="Oscillator Calibration " mask="0xFF" name="OSCCAL"/>
                 </register>
                 <register caption="" name="CLKPR" offset="0x61" size="1" ocd-rw="R">
@@ -800,14 +711,11 @@
         <module caption="Timer/Counter, 8-bit" name="TC8">
             <register-group caption="Timer/Counter, 8-bit" name="TC0">
                 <register caption="Timer/Counter0 Interrupt Mask Register" name="TIMSK0" offset="0x6E" size="1">
-                    <bitfield caption="Timer/Counter0 Output Compare Match B Interrupt Enable" mask="0x04"
-                              name="OCIE0B"/>
-                    <bitfield caption="Timer/Counter0 Output Compare Match A Interrupt Enable" mask="0x02"
-                              name="OCIE0A"/>
+                    <bitfield caption="Timer/Counter0 Output Compare Match B Interrupt Enable" mask="0x04" name="OCIE0B"/>
+                    <bitfield caption="Timer/Counter0 Output Compare Match A Interrupt Enable" mask="0x02" name="OCIE0A"/>
                     <bitfield caption="Timer/Counter0 Overflow Interrupt Enable" mask="0x01" name="TOIE0"/>
                 </register>
-                <register caption="Timer/Counter0 Interrupt Flag register" name="TIFR0" offset="0x35" size="1"
-                          ocd-rw="R">
+                <register caption="Timer/Counter0 Interrupt Flag register" name="TIFR0" offset="0x35" size="1" ocd-rw="R">
                     <bitfield caption="Timer/Counter0 Output Compare Flag 0B" mask="0x04" name="OCF0B"/>
                     <bitfield caption="Timer/Counter0 Output Compare Flag 0A" mask="0x02" name="OCF0A"/>
                     <bitfield caption="Timer/Counter0 Overflow Flag" mask="0x01" name="TOV0"/>
@@ -853,14 +761,11 @@
             <register-group caption="Timer/Counter, 16-bit" name="TC1">
                 <register caption="Timer/Counter Interrupt Mask Register" name="TIMSK1" offset="0x6F" size="1">
                     <bitfield caption="Timer/Counter1 Input Capture Interrupt Enable" mask="0x20" name="ICIE1"/>
-                    <bitfield caption="Timer/Counter1 Output CompareB Match Interrupt Enable" mask="0x04"
-                              name="OCIE1B"/>
-                    <bitfield caption="Timer/Counter1 Output CompareA Match Interrupt Enable" mask="0x02"
-                              name="OCIE1A"/>
+                    <bitfield caption="Timer/Counter1 Output CompareB Match Interrupt Enable" mask="0x04" name="OCIE1B"/>
+                    <bitfield caption="Timer/Counter1 Output CompareA Match Interrupt Enable" mask="0x02" name="OCIE1A"/>
                     <bitfield caption="Timer/Counter1 Overflow Interrupt Enable" mask="0x01" name="TOIE1"/>
                 </register>
-                <register caption="Timer/Counter Interrupt Flag register" name="TIFR1" offset="0x36" size="1"
-                          ocd-rw="R">
+                <register caption="Timer/Counter Interrupt Flag register" name="TIFR1" offset="0x36" size="1" ocd-rw="R">
                     <bitfield caption="Input Capture Flag 1" mask="0x20" name="ICF1"/>
                     <bitfield caption="Output Compare Flag 1B" mask="0x04" name="OCF1B"/>
                     <bitfield caption="Output Compare Flag 1A" mask="0x02" name="OCF1A"/>
@@ -875,8 +780,7 @@
                     <bitfield caption="Input Capture 1 Noise Canceler" mask="0x80" name="ICNC1"/>
                     <bitfield caption="Input Capture 1 Edge Select" mask="0x40" name="ICES1"/>
                     <bitfield caption="Waveform Generation Mode" mask="0x18" name="WGM1" lsb="2"/>
-                    <bitfield caption="Prescaler source of Timer/Counter 1" mask="0x07" name="CS1"
-                              values="CLK_SEL_3BIT_EXT"/>
+                    <bitfield caption="Prescaler source of Timer/Counter 1" mask="0x07" name="CS1" values="CLK_SEL_3BIT_EXT"/>
                 </register>
                 <register caption="Timer/Counter1 Control Register C" name="TCCR1C" offset="0x82" size="1" ocd-rw="">
                     <bitfield caption="" mask="0x80" name="FOC1A"/>
@@ -885,12 +789,9 @@
                 <register caption="Timer/Counter1 Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF">
                     <bitfield caption="Timer/Counter1" mask="0xFFFF" name="TCNT1"/>
                 </register>
-                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1A" offset="0x88" size="2"
-                          mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1B" offset="0x8A" size="2"
-                          mask="0xFFFF"/>
-                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x86" size="2"
-                          mask="0xFFFF">
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1A" offset="0x88" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Output Compare Register Bytes" name="OCR1B" offset="0x8A" size="2" mask="0xFFFF"/>
+                <register caption="Timer/Counter1 Input Capture Register Bytes" name="ICR1" offset="0x86" size="2" mask="0xFFFF">
                     <bitfield caption="Timer/Counter1 Input Capture" mask="0xFFFF" name="ICR1"/>
                 </register>
                 <register caption="General Timer/Counter Control Register" name="GTCCR" offset="0x43" size="1">
@@ -966,8 +867,7 @@
                 <value caption="AREF, Internal Vref turned off" name="VAL_0x00" value="0x00"/>
                 <value caption="AVCC with external capacitor at AREF pin" name="VAL_0x01" value="0x01"/>
                 <value caption="Reserved" name="VAL_0x02" value="0x02"/>
-                <value caption="Internal 2.56V Voltage Reference with external capacitor at AREF pin" name="VAL_0x03"
-                       value="0x03"/>
+                <value caption="Internal 2.56V Voltage Reference with external capacitor at AREF pin" name="VAL_0x03" value="0x03"/>
             </value-group>
         </module>
         <module caption="USART" name="USART">
@@ -1053,8 +953,7 @@
                 <register caption="Watchdog Timer Control Register" name="WDTCSR" offset="0x60" size="1" ocd-rw="R">
                     <bitfield caption="Watchdog Timeout Interrupt Flag" mask="0x80" name="WDIF"/>
                     <bitfield caption="Watchdog Timeout Interrupt Enable" mask="0x40" name="WDIE"/>
-                    <bitfield caption="Watchdog Timer Prescaler Bits" mask="0x27" name="WDP"
-                              values="WDOG_TIMER_PRESCALE_4BITS"/>
+                    <bitfield caption="Watchdog Timer Prescaler Bits" mask="0x27" name="WDP" values="WDOG_TIMER_PRESCALE_4BITS"/>
                     <bitfield caption="Watchdog Change Enable" mask="0x10" name="WDCE"/>
                     <bitfield caption="Watch Dog Enable" mask="0x08" name="WDE"/>
                 </register>
@@ -1075,14 +974,10 @@
         <module caption="External Interrupts" name="EXINT">
             <register-group caption="External Interrupts" name="EXINT">
                 <register caption="External Interrupt Control Register A" name="EICRA" offset="0x69" size="1">
-                    <bitfield caption="External Interrupt Sense Control Bit" mask="0xC0" name="ISC3"
-                              values="INTERRUPT_SENSE_CONTROL"/>
-                    <bitfield caption="External Interrupt Sense Control Bit" mask="0x30" name="ISC2"
-                              values="INTERRUPT_SENSE_CONTROL"/>
-                    <bitfield caption="External Interrupt Sense Control Bit" mask="0x0C" name="ISC1"
-                              values="INTERRUPT_SENSE_CONTROL"/>
-                    <bitfield caption="External Interrupt Sense Control Bit" mask="0x03" name="ISC0"
-                              values="INTERRUPT_SENSE_CONTROL"/>
+                    <bitfield caption="External Interrupt Sense Control Bit" mask="0xC0" name="ISC3" values="INTERRUPT_SENSE_CONTROL"/>
+                    <bitfield caption="External Interrupt Sense Control Bit" mask="0x30" name="ISC2" values="INTERRUPT_SENSE_CONTROL"/>
+                    <bitfield caption="External Interrupt Sense Control Bit" mask="0x0C" name="ISC1" values="INTERRUPT_SENSE_CONTROL"/>
+                    <bitfield caption="External Interrupt Sense Control Bit" mask="0x03" name="ISC0" values="INTERRUPT_SENSE_CONTROL"/>
                 </register>
                 <register caption="External Interrupt Mask Register" name="EIMSK" offset="0x3D" size="1">
                     <bitfield caption="External Interrupt Request Enable" mask="0x07" name="INT"/>

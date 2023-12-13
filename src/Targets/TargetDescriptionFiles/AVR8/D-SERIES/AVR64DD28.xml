@@ -1,32 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <target-description-file>
     <variants>
-        <variant ordercode="AVR64DD28" package="SOIC28" pinout="SOIC28MVIO" speedmax="32000000" tempmax="125"
-                 tempmin="-40" vccmax="5.5" vccmin="1.8"/>
+        <variant ordercode="AVR64DD28" package="SOIC28" pinout="SOIC28MVIO" speedmax="32000000" tempmax="125" tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
     <device name="AVR64DD28" family="AVR8" architecture="AVR8X" avr-family="AVR DD">
         <address-spaces>
             <address-space endianness="little" id="data" name="data" size="0x10000" start="0x0000">
-                <memory-segment exec="0" name="EEPROM" pagesize="0x1" rw="RW" size="0x0100" start="0x00001400"
-                                type="eeprom"/>
-                <memory-segment exec="0" name="FUSES" pagesize="0x1" rw="RW" size="0x10" start="0x00001050"
-                                type="fuses"/>
+                <memory-segment exec="0" name="EEPROM" pagesize="0x1" rw="RW" size="0x0100" start="0x00001400" type="eeprom"/>
+                <memory-segment exec="0" name="FUSES" pagesize="0x1" rw="RW" size="0x10" start="0x00001050" type="fuses"/>
                 <memory-segment exec="0" name="INTERNAL_SRAM" rw="RW" size="0x2000" start="0x6000" type="ram"/>
                 <memory-segment exec="0" name="IO" rw="RW" size="0x103F" start="0x00000000" type="io"/>
-                <memory-segment exec="0" name="LOCKBITS" pagesize="0x1" rw="RW" size="0x4" start="0x00001040"
-                                type="lockbits"/>
-                <memory-segment exec="0" name="MAPPED_PROGMEM" pagesize="0x200" rw="RW" size="0x8000"
-                                start="0x00008000" type="other"/>
-                <memory-segment exec="0" name="PROD_SIGNATURES" pagesize="0x80" rw="R" size="0x7D"
-                                start="0x00001103" type="signatures"/>
-                <memory-segment exec="0" name="SIGNATURES" pagesize="0x80" rw="R" size="0x3" start="0x00001100"
-                                type="signatures"/>
-                <memory-segment exec="0" name="USER_SIGNATURES" pagesize="0x20" rw="RW" size="0x20"
-                                start="0x00001080" type="user_signatures"/>
+                <memory-segment exec="0" name="LOCKBITS" pagesize="0x1" rw="RW" size="0x4" start="0x00001040" type="lockbits"/>
+                <memory-segment exec="0" name="MAPPED_PROGMEM" pagesize="0x200" rw="RW" size="0x8000" start="0x00008000" type="other"/>
+                <memory-segment exec="0" name="PROD_SIGNATURES" pagesize="0x80" rw="R" size="0x7D" start="0x00001103" type="signatures"/>
+                <memory-segment exec="0" name="SIGNATURES" pagesize="0x80" rw="R" size="0x3" start="0x00001100" type="signatures"/>
+                <memory-segment exec="0" name="USER_SIGNATURES" pagesize="0x20" rw="RW" size="0x20" start="0x00001080" type="user_signatures"/>
             </address-space>
             <address-space endianness="little" id="prog" name="prog" size="0x10000" start="0x0000">
-                <memory-segment exec="1" name="PROGMEM" pagesize="0x200" rw="RW" size="0x10000" start="0x00000000"
-                                type="flash"/>
+                <memory-segment exec="1" name="PROGMEM" pagesize="0x200" rw="RW" size="0x10000" start="0x00000000" type="flash"/>
             </address-space>
         </address-spaces>
         <peripherals>
@@ -79,36 +70,26 @@
                 <instance name="CCL">
                     <register-group address-space="data" name="CCL" name-in-module="CCL" offset="0x01C0"/>
                     <signals>
-                        <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL_ALT1" group="LUT0_IN" index="0"
-                                pad="PA0"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL_ALT1" group="LUT0_IN" index="0" pad="PA0"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL" group="LUT0_IN" index="0" pad="PA0"/>
-                        <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL_ALT1" group="LUT0_IN" index="1"
-                                pad="PA1"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL_ALT1" group="LUT0_IN" index="1" pad="PA1"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL" group="LUT0_IN" index="1" pad="PA1"/>
-                        <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL_ALT1" group="LUT0_IN" index="2"
-                                pad="PA2"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL_ALT1" group="LUT0_IN" index="2" pad="PA2"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL" group="LUT0_IN" index="2" pad="PA2"/>
-                        <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL_ALT1" group="LUT0_OUT" index="0"
-                                pad="PA6"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL_ALT1" group="LUT0_OUT" index="0" pad="PA6"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT0" function="CCL" group="LUT0_OUT" index="0" pad="PA3"/>
-                        <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL_ALT1" group="LUT1_IN" index="0"
-                                pad="PC0"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL_ALT1" group="LUT1_IN" index="0" pad="PC0"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL" group="LUT1_IN" index="0" pad="PC0"/>
-                        <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL_ALT1" group="LUT1_IN" index="1"
-                                pad="PC1"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL_ALT1" group="LUT1_IN" index="1" pad="PC1"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL" group="LUT1_IN" index="1" pad="PC1"/>
-                        <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL_ALT1" group="LUT1_IN" index="2"
-                                pad="PC2"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL_ALT1" group="LUT1_IN" index="2" pad="PC2"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL" group="LUT1_IN" index="2" pad="PC2"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT1" function="CCL" group="LUT1_OUT" index="0" pad="PC3"/>
-                        <signal field="PORTMUX.CCLROUTEA.LUT2" function="CCL_ALT1" group="LUT2_IN" index="1"
-                                pad="PD1"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT2" function="CCL_ALT1" group="LUT2_IN" index="1" pad="PD1"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT2" function="CCL" group="LUT2_IN" index="1" pad="PD1"/>
-                        <signal field="PORTMUX.CCLROUTEA.LUT2" function="CCL_ALT1" group="LUT2_IN" index="2"
-                                pad="PD2"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT2" function="CCL_ALT1" group="LUT2_IN" index="2" pad="PD2"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT2" function="CCL" group="LUT2_IN" index="2" pad="PD2"/>
-                        <signal field="PORTMUX.CCLROUTEA.LUT2" function="CCL_ALT1" group="LUT2_OUT" index="0"
-                                pad="PD6"/>
+                        <signal field="PORTMUX.CCLROUTEA.LUT2" function="CCL_ALT1" group="LUT2_OUT" index="0" pad="PD6"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT2" function="CCL" group="LUT2_OUT" index="0" pad="PD3"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT3" function="CCL" group="LUT3_IN" index="0" pad="PF0"/>
                         <signal field="PORTMUX.CCLROUTEA.LUT3" function="CCL" group="LUT3_IN" index="1" pad="PF1"/>
@@ -160,18 +141,12 @@
                 <instance name="EVSYS">
                     <register-group address-space="data" name="EVSYS" name-in-module="EVSYS" offset="0x0200"/>
                     <signals>
-                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTA" function="EVSYS_ALT1" group="EVOUT" index="0"
-                                pad="PA7"/>
-                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTA" function="EVSYS" group="EVOUT" index="0"
-                                pad="PA2"/>
-                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTC" function="EVSYS" group="EVOUT" index="2"
-                                pad="PC2"/>
-                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTD" function="EVSYS_ALT1" group="EVOUT" index="3"
-                                pad="PD7"/>
-                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTD" function="EVSYS" group="EVOUT" index="3"
-                                pad="PD2"/>
-                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTF" function="EVSYS_ALT1" group="EVOUT" index="5"
-                                pad="PF7"/>
+                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTA" function="EVSYS_ALT1" group="EVOUT" index="0" pad="PA7"/>
+                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTA" function="EVSYS" group="EVOUT" index="0" pad="PA2"/>
+                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTC" function="EVSYS" group="EVOUT" index="2" pad="PC2"/>
+                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTD" function="EVSYS_ALT1" group="EVOUT" index="3" pad="PD7"/>
+                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTD" function="EVSYS" group="EVOUT" index="3" pad="PD2"/>
+                        <signal field="PORTMUX.EVSYSROUTEA.EVOUTF" function="EVSYS_ALT1" group="EVOUT" index="5" pad="PF7"/>
                     </signals>
                 </instance>
             </module>
@@ -356,16 +331,12 @@
                         <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT4" group="WOA" pad="PA4"/>
                         <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT2" group="WOA" pad="PF0"/>
                         <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0" group="WOA" pad="PA4"/>
-                        <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT4" group="WOB" index="1"
-                                pad="PA5"/>
-                        <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT2" group="WOB" index="1"
-                                pad="PF1"/>
+                        <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT4" group="WOB" index="1" pad="PA5"/>
+                        <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT2" group="WOB" index="1" pad="PF1"/>
                         <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0" group="WOB" index="1" pad="PA5"/>
-                        <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT4" group="WOC" index="2"
-                                pad="PD4"/>
+                        <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT4" group="WOC" index="2" pad="PD4"/>
                         <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0" group="WOC" index="2" pad="PA6"/>
-                        <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT4" group="WOD" index="3"
-                                pad="PD5"/>
+                        <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0_ALT4" group="WOD" index="3" pad="PD5"/>
                         <signal field="PORTMUX.TCDROUTEA.TCD0" function="TCD0" group="WOD" index="3" pad="PA7"/>
                     </signals>
                 </instance>
@@ -538,18 +509,15 @@
                 <register caption="Interrupt Control" initval="0x00" name="INTCTRL" offset="0x6" rw="RW" size="1">
                     <mode name="NORMAL">
                         <bitfield caption="Interrupt Enable" mask="0x1" name="CMP" rw="RW"/>
-                        <bitfield caption="Interrupt Mode" mask="0x30" name="INTMODE" rw="RW"
-                                  values="AC_NORMAL_INTMODE"/>
+                        <bitfield caption="Interrupt Mode" mask="0x30" name="INTMODE" rw="RW" values="AC_NORMAL_INTMODE"/>
                     </mode>
                     <mode name="WINDOW"/>
                 </register>
                 <register caption="Mux Control A" initval="0x00" name="MUXCTRL" offset="0x2" rw="RW" size="1">
                     <bitfield caption="AC Output Initial Value" mask="0x40" name="INITVAL" rw="RW" values="AC_INITVAL"/>
                     <bitfield caption="Invert AC Output" mask="0x80" name="INVERT" rw="RW"/>
-                    <bitfield caption="Negative Input MUX Selection" mask="0x7" name="MUXNEG" rw="RW"
-                              values="AC_MUXNEG"/>
-                    <bitfield caption="Positive Input MUX Selection" mask="0x38" name="MUXPOS" rw="RW"
-                              values="AC_MUXPOS"/>
+                    <bitfield caption="Negative Input MUX Selection" mask="0x7" name="MUXNEG" rw="RW" values="AC_MUXNEG"/>
+                    <bitfield caption="Positive Input MUX Selection" mask="0x38" name="MUXPOS" rw="RW" values="AC_MUXPOS"/>
                 </register>
                 <register caption="Status" initval="0x00" name="STATUS" offset="0x7" rw="RW" size="1">
                     <bitfield caption="Analog Comparator Interrupt Flag" mask="0x1" name="CMPIF" rw="RW"/>
@@ -563,8 +531,7 @@
                 <value caption="Large hysteresis" name="LARGE" value="0x03"/>
             </value-group>
             <value-group caption="Power profile select" name="AC_POWER">
-                <value caption="Power profile 0, Shortest response time, highest consumption" name="PROFILE0"
-                       value="0x0"/>
+                <value caption="Power profile 0, Shortest response time, highest consumption" name="PROFILE0" value="0x0"/>
                 <value caption="Power profile 1" name="PROFILE1" value="0x1"/>
                 <value caption="Power profile 2" name="PROFILE2" value="0x2"/>
             </value-group>
@@ -611,10 +578,8 @@
                     <bitfield caption="Clock Pre-scaler" mask="0xf" name="PRESC" rw="RW" values="ADC_PRESC"/>
                 </register>
                 <register caption="Control D" initval="0x00" name="CTRLD" offset="0x03" rw="RW" size="1">
-                    <bitfield caption="Initial Delay Selection" mask="0xe0" name="INITDLY" rw="RW"
-                              values="ADC_INITDLY"/>
-                    <bitfield caption="Sampling Delay Selection" mask="0xf" name="SAMPDLY" rw="RW"
-                              values="ADC_SAMPDLY"/>
+                    <bitfield caption="Initial Delay Selection" mask="0xe0" name="INITDLY" rw="RW" values="ADC_INITDLY"/>
+                    <bitfield caption="Sampling Delay Selection" mask="0xf" name="SAMPDLY" rw="RW" values="ADC_SAMPDLY"/>
                 </register>
                 <register caption="Control E" initval="0x00" name="CTRLE" offset="0x04" rw="RW" size="1">
                     <bitfield caption="Window Comparator Mode" mask="0x7" name="WINCM" rw="RW" values="ADC_WINCM"/>
@@ -634,12 +599,10 @@
                     <bitfield caption="Window Comparator Flag" mask="0x2" name="WCMP" rw="RW"/>
                 </register>
                 <register caption="Negative mux input" initval="0x00" name="MUXNEG" offset="0x09" rw="RW" size="1">
-                    <bitfield caption="Analog Channel Selection Bits" mask="0x7f" name="MUXNEG" rw="RW"
-                              values="ADC_MUXNEG"/>
+                    <bitfield caption="Analog Channel Selection Bits" mask="0x7f" name="MUXNEG" rw="RW" values="ADC_MUXNEG"/>
                 </register>
                 <register caption="Positive mux input" initval="0x00" name="MUXPOS" offset="0x08" rw="RW" size="1">
-                    <bitfield caption="Analog Channel Selection Bits" mask="0x7f" name="MUXPOS" rw="RW"
-                              values="ADC_MUXPOS"/>
+                    <bitfield caption="Analog Channel Selection Bits" mask="0x7f" name="MUXPOS" rw="RW" values="ADC_MUXPOS"/>
                 </register>
                 <register caption="ADC Accumulator Result" name="RES" offset="0x10" rw="R" size="2"/>
                 <register caption="Sample Control" initval="0x00" name="SAMPCTRL" offset="0x05" rw="RW" size="1">
@@ -774,23 +737,18 @@
                 <register caption="Control B" initval="0x00" name="CTRLB" offset="0x1" rw="RW" size="1">
                     <bitfield caption="Bod level" mask="0x7" name="LVL" rw="R" values="BOD_LVL"/>
                 </register>
-                <register caption="Voltage level monitor interrupt Control" initval="0x00" name="INTCTRL" offset="0x9"
-                          rw="RW" size="1">
+                <register caption="Voltage level monitor interrupt Control" initval="0x00" name="INTCTRL" offset="0x9" rw="RW" size="1">
                     <bitfield caption="Configuration" mask="0x6" name="VLMCFG" rw="RW" values="BOD_VLMCFG"/>
                     <bitfield caption="voltage level monitor interrrupt enable" mask="0x1" name="VLMIE" rw="RW"/>
                 </register>
-                <register caption="Voltage level monitor interrupt Flags" initval="0x00" name="INTFLAGS" offset="0xA"
-                          rw="RW" size="1">
+                <register caption="Voltage level monitor interrupt Flags" initval="0x00" name="INTFLAGS" offset="0xA" rw="RW" size="1">
                     <bitfield caption="Voltage level monitor interrupt flag" mask="0x1" name="VLMIF" rw="RW"/>
                 </register>
-                <register caption="Voltage level monitor status" initval="0x00" name="STATUS" offset="0xB" rw="RW"
-                          size="1">
+                <register caption="Voltage level monitor status" initval="0x00" name="STATUS" offset="0xB" rw="RW" size="1">
                     <bitfield caption="Voltage level monitor status" mask="0x1" name="VLMS" rw="R" values="BOD_VLMS"/>
                 </register>
-                <register caption="Voltage level monitor Control" initval="0x00" name="VLMCTRLA" offset="0x8" rw="RW"
-                          size="1">
-                    <bitfield caption="voltage level monitor level" mask="0x3" name="VLMLVL" rw="RW"
-                              values="BOD_VLMLVL"/>
+                <register caption="Voltage level monitor Control" initval="0x00" name="VLMCTRLA" offset="0x8" rw="RW" size="1">
+                    <bitfield caption="voltage level monitor level" mask="0x3" name="VLMLVL" rw="RW" values="BOD_VLMLVL"/>
                 </register>
             </register-group>
             <value-group caption="Operation in active mode select" name="BOD_ACTIVE">
@@ -861,44 +819,32 @@
                     <bitfield caption="Output Enable" mask="0x40" name="OUTEN" rw="RW"/>
                 </register>
                 <register caption="LUT 0 Control B" initval="0x00" name="LUT0CTRLB" offset="0x9" rw="RW" size="1">
-                    <bitfield caption="LUT Input 0 Source Selection" mask="0xf" name="INSEL0" rw="RW"
-                              values="CCL_INSEL0"/>
-                    <bitfield caption="LUT Input 1 Source Selection" mask="0xf0" name="INSEL1" rw="RW"
-                              values="CCL_INSEL1"/>
+                    <bitfield caption="LUT Input 0 Source Selection" mask="0xf" name="INSEL0" rw="RW" values="CCL_INSEL0"/>
+                    <bitfield caption="LUT Input 1 Source Selection" mask="0xf0" name="INSEL1" rw="RW" values="CCL_INSEL1"/>
                 </register>
                 <register caption="LUT 1 Control B" initval="0x00" name="LUT1CTRLB" offset="0xd" rw="RW" size="1">
-                    <bitfield caption="LUT Input 0 Source Selection" mask="0xf" name="INSEL0" rw="RW"
-                              values="CCL_INSEL0"/>
-                    <bitfield caption="LUT Input 1 Source Selection" mask="0xf0" name="INSEL1" rw="RW"
-                              values="CCL_INSEL1"/>
+                    <bitfield caption="LUT Input 0 Source Selection" mask="0xf" name="INSEL0" rw="RW" values="CCL_INSEL0"/>
+                    <bitfield caption="LUT Input 1 Source Selection" mask="0xf0" name="INSEL1" rw="RW" values="CCL_INSEL1"/>
                 </register>
                 <register caption="LUT 2 Control B" initval="0x00" name="LUT2CTRLB" offset="0x11" rw="RW" size="1">
-                    <bitfield caption="LUT Input 0 Source Selection" mask="0xf" name="INSEL0" rw="RW"
-                              values="CCL_INSEL0"/>
-                    <bitfield caption="LUT Input 1 Source Selection" mask="0xf0" name="INSEL1" rw="RW"
-                              values="CCL_INSEL1"/>
+                    <bitfield caption="LUT Input 0 Source Selection" mask="0xf" name="INSEL0" rw="RW" values="CCL_INSEL0"/>
+                    <bitfield caption="LUT Input 1 Source Selection" mask="0xf0" name="INSEL1" rw="RW" values="CCL_INSEL1"/>
                 </register>
                 <register caption="LUT 3 Control B" initval="0x00" name="LUT3CTRLB" offset="0x15" rw="RW" size="1">
-                    <bitfield caption="LUT Input 0 Source Selection" mask="0xf" name="INSEL0" rw="RW"
-                              values="CCL_INSEL0"/>
-                    <bitfield caption="LUT Input 1 Source Selection" mask="0xf0" name="INSEL1" rw="RW"
-                              values="CCL_INSEL1"/>
+                    <bitfield caption="LUT Input 0 Source Selection" mask="0xf" name="INSEL0" rw="RW" values="CCL_INSEL0"/>
+                    <bitfield caption="LUT Input 1 Source Selection" mask="0xf0" name="INSEL1" rw="RW" values="CCL_INSEL1"/>
                 </register>
                 <register caption="LUT 0 Control C" initval="0x00" name="LUT0CTRLC" offset="0xa" rw="RW" size="1">
-                    <bitfield caption="LUT Input 2 Source Selection" mask="0xf" name="INSEL2" rw="RW"
-                              values="CCL_INSEL2"/>
+                    <bitfield caption="LUT Input 2 Source Selection" mask="0xf" name="INSEL2" rw="RW" values="CCL_INSEL2"/>
                 </register>
                 <register caption="LUT 1 Control C" initval="0x00" name="LUT1CTRLC" offset="0xe" rw="RW" size="1">
-                    <bitfield caption="LUT Input 2 Source Selection" mask="0xf" name="INSEL2" rw="RW"
-                              values="CCL_INSEL2"/>
+                    <bitfield caption="LUT Input 2 Source Selection" mask="0xf" name="INSEL2" rw="RW" values="CCL_INSEL2"/>
                 </register>
                 <register caption="LUT 2 Control C" initval="0x00" name="LUT2CTRLC" offset="0x12" rw="RW" size="1">
-                    <bitfield caption="LUT Input 2 Source Selection" mask="0xf" name="INSEL2" rw="RW"
-                              values="CCL_INSEL2"/>
+                    <bitfield caption="LUT Input 2 Source Selection" mask="0xf" name="INSEL2" rw="RW" values="CCL_INSEL2"/>
                 </register>
                 <register caption="LUT 3 Control C" initval="0x00" name="LUT3CTRLC" offset="0x16" rw="RW" size="1">
-                    <bitfield caption="LUT Input 2 Source Selection" mask="0xf" name="INSEL2" rw="RW"
-                              values="CCL_INSEL2"/>
+                    <bitfield caption="LUT Input 2 Source Selection" mask="0xf" name="INSEL2" rw="RW" values="CCL_INSEL2"/>
                 </register>
                 <register caption="Truth 0" initval="0x00" name="TRUTH0" offset="0xb" rw="RW" size="1">
                     <bitfield caption="Truth Table" mask="0xff" name="TRUTH" rw="RW"/>
@@ -923,14 +869,10 @@
                     <bitfield caption="Run in Standby" mask="0x40" name="RUNSTDBY" rw="RW"/>
                 </register>
                 <register caption="Interrupt Control 0" initval="0x00" name="INTCTRL0" offset="0x5" rw="RW" size="1">
-                    <bitfield caption="Interrupt Mode for LUT0" mask="0x3" name="INTMODE0" rw="RW"
-                              values="CCL_INTMODE0"/>
-                    <bitfield caption="Interrupt Mode for LUT1" mask="0xc" name="INTMODE1" rw="RW"
-                              values="CCL_INTMODE1"/>
-                    <bitfield caption="Interrupt Mode for LUT2" mask="0x30" name="INTMODE2" rw="RW"
-                              values="CCL_INTMODE2"/>
-                    <bitfield caption="Interrupt Mode for LUT3" mask="0xc0" name="INTMODE3" rw="RW"
-                              values="CCL_INTMODE3"/>
+                    <bitfield caption="Interrupt Mode for LUT0" mask="0x3" name="INTMODE0" rw="RW" values="CCL_INTMODE0"/>
+                    <bitfield caption="Interrupt Mode for LUT1" mask="0xc" name="INTMODE1" rw="RW" values="CCL_INTMODE1"/>
+                    <bitfield caption="Interrupt Mode for LUT2" mask="0x30" name="INTMODE2" rw="RW" values="CCL_INTMODE2"/>
+                    <bitfield caption="Interrupt Mode for LUT3" mask="0xc0" name="INTMODE3" rw="RW" values="CCL_INTMODE3"/>
                 </register>
                 <register caption="Interrupt Flags" initval="0x00" name="INTFLAGS" offset="0x7" rw="RW" size="1">
                     <bitfield caption="Interrupt Flag" mask="0xf" name="INT" rw="RW"/>
@@ -1041,17 +983,14 @@
                 </register>
                 <register caption="MCLK Control C" initval="0x00" name="MCLKCTRLC" offset="0x02" rw="RW" size="1">
                     <bitfield caption="Clock Failure Detect Enable" mask="0x1" name="CFDEN" rw="RW"/>
-                    <bitfield caption="Clock Failure Detect Source" mask="0xc" name="CFDSRC" rw="RW"
-                              values="CLKCTRL_CFDSRC"/>
+                    <bitfield caption="Clock Failure Detect Source" mask="0xc" name="CFDSRC" rw="RW" values="CLKCTRL_CFDSRC"/>
                     <bitfield caption="Clock Failure Detect Test" mask="0x2" name="CFDTST" rw="W"/>
                 </register>
-                <register caption="MCLK Interrupt Control" initval="0x00" name="MCLKINTCTRL" offset="0x03" rw="RW"
-                          size="1">
+                <register caption="MCLK Interrupt Control" initval="0x00" name="MCLKINTCTRL" offset="0x03" rw="RW" size="1">
                     <bitfield caption="Clock Failure Detect Interrupt Enable" mask="0x1" name="CFD" rw="RW"/>
                     <bitfield caption="Interrupt type" mask="0x80" name="INTTYPE" rw="RW" values="CLKCTRL_INTTYPE"/>
                 </register>
-                <register caption="MCLK Interrupt Flags" initval="0x00" name="MCLKINTFLAGS" offset="0x04" rw="RW"
-                          size="1">
+                <register caption="MCLK Interrupt Flags" initval="0x00" name="MCLKINTFLAGS" offset="0x04" rw="RW" size="1">
                     <bitfield caption="Clock Failure Detect Interrupt Flag" mask="0x1" name="CFD" rw="RW"/>
                 </register>
                 <register caption="MCLK Status" initval="0x00" name="MCLKSTATUS" offset="0x05" rw="RW" size="1">
@@ -1139,8 +1078,7 @@
             </value-group>
             <value-group caption="Source select" name="CLKCTRL_SOURCE">
                 <value caption="High frequency internal oscillator as PLL source" name="OSCHF" value="0x0"/>
-                <value caption="High frequency external clock or external high frequency oscillator as PLL source"
-                       name="XOSCHF" value="0x1"/>
+                <value caption="High frequency external clock or external high frequency oscillator as PLL source" name="XOSCHF" value="0x1"/>
             </value-group>
             <value-group caption="Start-up Time Select select" name="CLKCTRL_CSUTHF">
                 <value caption="256 XOSCHF cycles" name="256" value="0x0"/>
@@ -1166,8 +1104,7 @@
         </module>
         <module caption="CPU" id="cpu_avr_xt_v1" name="CPU">
             <register-group caption="CPU" name="CPU" size="0x10">
-                <register caption="Configuration Change Protection" initval="0x00" name="CCP" offset="0x4" rw="RW"
-                          size="1">
+                <register caption="Configuration Change Protection" initval="0x00" name="CCP" offset="0x4" rw="RW" size="1">
                     <bitfield caption="CCP signature" mask="0xff" name="CCP" rw="RW" values="CPU_CCP"/>
                 </register>
                 <register caption="Stack Pointer High" initval="0x3F" name="SPH" offset="0xE" rw="RW" size="1"/>
@@ -1195,12 +1132,10 @@
                     <bitfield caption="Interrupt Vector Select" mask="0x40" name="IVSEL" rw="RW"/>
                     <bitfield caption="Round-robin Scheduling Enable" mask="0x1" name="LVL0RR" rw="RW"/>
                 </register>
-                <register caption="Interrupt Level 0 Priority" initval="0x00" name="LVL0PRI" offset="0x2" rw="RW"
-                          size="1">
+                <register caption="Interrupt Level 0 Priority" initval="0x00" name="LVL0PRI" offset="0x2" rw="RW" size="1">
                     <bitfield caption="Interrupt Level Priority" mask="0xff" name="LVL0PRI" rw="RW"/>
                 </register>
-                <register caption="Interrupt Level 1 Priority Vector" initval="0x00" name="LVL1VEC" offset="0x3" rw="RW"
-                          size="1">
+                <register caption="Interrupt Level 1 Priority Vector" initval="0x00" name="LVL1VEC" offset="0x3" rw="RW" size="1">
                     <bitfield caption="Interrupt Vector with High Priority" mask="0xff" name="LVL1VEC" rw="RW"/>
                 </register>
                 <register caption="Status" initval="0x00" name="STATUS" offset="0x1" rw="RW" size="1">
@@ -1246,134 +1181,102 @@
         <module caption="Event System" id="chip" name="EVSYS">
             <register-group caption="Event System" name="EVSYS" size="0x40">
                 <register caption="Multiplexer Channel 0" initval="0x00" name="CHANNEL0" offset="0x10" rw="RW" size="1">
-                    <bitfield caption="Channel 0 generator select" mask="0xff" name="CHANNEL0" rw="RW"
-                              values="EVSYS_CHANNEL0"/>
+                    <bitfield caption="Channel 0 generator select" mask="0xff" name="CHANNEL0" rw="RW" values="EVSYS_CHANNEL0"/>
                 </register>
                 <register caption="Multiplexer Channel 1" initval="0x00" name="CHANNEL1" offset="0x11" rw="RW" size="1">
-                    <bitfield caption="Channel 1 generator select" mask="0xff" name="CHANNEL1" rw="RW"
-                              values="EVSYS_CHANNEL1"/>
+                    <bitfield caption="Channel 1 generator select" mask="0xff" name="CHANNEL1" rw="RW" values="EVSYS_CHANNEL1"/>
                 </register>
                 <register caption="Multiplexer Channel 2" initval="0x00" name="CHANNEL2" offset="0x12" rw="RW" size="1">
-                    <bitfield caption="Channel 2 generator select" mask="0xff" name="CHANNEL2" rw="RW"
-                              values="EVSYS_CHANNEL2"/>
+                    <bitfield caption="Channel 2 generator select" mask="0xff" name="CHANNEL2" rw="RW" values="EVSYS_CHANNEL2"/>
                 </register>
                 <register caption="Multiplexer Channel 3" initval="0x00" name="CHANNEL3" offset="0x13" rw="RW" size="1">
-                    <bitfield caption="Channel 3 generator select" mask="0xff" name="CHANNEL3" rw="RW"
-                              values="EVSYS_CHANNEL3"/>
+                    <bitfield caption="Channel 3 generator select" mask="0xff" name="CHANNEL3" rw="RW" values="EVSYS_CHANNEL3"/>
                 </register>
                 <register caption="Multiplexer Channel 4" initval="0x00" name="CHANNEL4" offset="0x14" rw="RW" size="1">
-                    <bitfield caption="Channel 4 generator select" mask="0xff" name="CHANNEL4" rw="RW"
-                              values="EVSYS_CHANNEL4"/>
+                    <bitfield caption="Channel 4 generator select" mask="0xff" name="CHANNEL4" rw="RW" values="EVSYS_CHANNEL4"/>
                 </register>
                 <register caption="Multiplexer Channel 5" initval="0x00" name="CHANNEL5" offset="0x15" rw="RW" size="1">
-                    <bitfield caption="Channel 5 generator select" mask="0xff" name="CHANNEL5" rw="RW"
-                              values="EVSYS_CHANNEL5"/>
+                    <bitfield caption="Channel 5 generator select" mask="0xff" name="CHANNEL5" rw="RW" values="EVSYS_CHANNEL5"/>
                 </register>
                 <register caption="Software Event A" initval="0x00" name="SWEVENTA" offset="0x00" rw="RW" size="1">
-                    <bitfield caption="Software event on channel select" mask="0xff" name="SWEVENTA" rw="W"
-                              values="EVSYS_SWEVENTA"/>
+                    <bitfield caption="Software event on channel select" mask="0xff" name="SWEVENTA" rw="W" values="EVSYS_SWEVENTA"/>
                 </register>
                 <register caption="Software Event B" initval="0x00" name="SWEVENTB" offset="0x01" rw="RW" size="1">
-                    <bitfield caption="Software event on channel select" mask="0x3" name="SWEVENTB" rw="W"
-                              values="EVSYS_SWEVENTB"/>
+                    <bitfield caption="Software event on channel select" mask="0x3" name="SWEVENTB" rw="W" values="EVSYS_SWEVENTB"/>
                 </register>
                 <register caption="User 12 - ADC0" initval="0x00" name="USERADC0START" offset="0x28" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 0 - CCL0 Event A" initval="0x00" name="USERCCLLUT0A" offset="0x20" rw="RW"
-                          size="1">
+                <register caption="User 0 - CCL0 Event A" initval="0x00" name="USERCCLLUT0A" offset="0x20" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 1 - CCL0 Event B" initval="0x00" name="USERCCLLUT0B" offset="0x21" rw="RW"
-                          size="1">
+                <register caption="User 1 - CCL0 Event B" initval="0x00" name="USERCCLLUT0B" offset="0x21" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 2 - CCL1 Event A" initval="0x00" name="USERCCLLUT1A" offset="0x22" rw="RW"
-                          size="1">
+                <register caption="User 2 - CCL1 Event A" initval="0x00" name="USERCCLLUT1A" offset="0x22" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 3 - CCL1 Event B" initval="0x00" name="USERCCLLUT1B" offset="0x23" rw="RW"
-                          size="1">
+                <register caption="User 3 - CCL1 Event B" initval="0x00" name="USERCCLLUT1B" offset="0x23" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 4 - CCL2 Event A" initval="0x00" name="USERCCLLUT2A" offset="0x24" rw="RW"
-                          size="1">
+                <register caption="User 4 - CCL2 Event A" initval="0x00" name="USERCCLLUT2A" offset="0x24" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 5 - CCL2 Event B" initval="0x00" name="USERCCLLUT2B" offset="0x25" rw="RW"
-                          size="1">
+                <register caption="User 5 - CCL2 Event B" initval="0x00" name="USERCCLLUT2B" offset="0x25" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 6 - CCL3 Event A" initval="0x00" name="USERCCLLUT3A" offset="0x26" rw="RW"
-                          size="1">
+                <register caption="User 6 - CCL3 Event A" initval="0x00" name="USERCCLLUT3A" offset="0x26" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 7 - CCL3 Event B" initval="0x00" name="USERCCLLUT3B" offset="0x27" rw="RW"
-                          size="1">
+                <register caption="User 7 - CCL3 Event B" initval="0x00" name="USERCCLLUT3B" offset="0x27" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 13 - EVOUTA" initval="0x00" name="USEREVSYSEVOUTA" offset="0x29" rw="RW"
-                          size="1">
+                <register caption="User 13 - EVOUTA" initval="0x00" name="USEREVSYSEVOUTA" offset="0x29" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 15 - EVOUTC" initval="0x00" name="USEREVSYSEVOUTC" offset="0x2A" rw="RW"
-                          size="1">
+                <register caption="User 15 - EVOUTC" initval="0x00" name="USEREVSYSEVOUTC" offset="0x2A" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 16 - EVOUTD" initval="0x00" name="USEREVSYSEVOUTD" offset="0x2B" rw="RW"
-                          size="1">
+                <register caption="User 16 - EVOUTD" initval="0x00" name="USEREVSYSEVOUTD" offset="0x2B" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 18 - EVOUTF" initval="0x00" name="USEREVSYSEVOUTF" offset="0x2C" rw="RW"
-                          size="1">
+                <register caption="User 18 - EVOUTF" initval="0x00" name="USEREVSYSEVOUTF" offset="0x2C" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 26 - TCA0 Event A" initval="0x00" name="USERTCA0CNTA" offset="0x2F" rw="RW"
-                          size="1">
+                <register caption="User 26 - TCA0 Event A" initval="0x00" name="USERTCA0CNTA" offset="0x2F" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 27 - TCA0 Event B" initval="0x00" name="USERTCA0CNTB" offset="0x30" rw="RW"
-                          size="1">
+                <register caption="User 27 - TCA0 Event B" initval="0x00" name="USERTCA0CNTB" offset="0x30" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 30 - TCB0 Event A" initval="0x00" name="USERTCB0CAPT" offset="0x31" rw="RW"
-                          size="1">
+                <register caption="User 30 - TCB0 Event A" initval="0x00" name="USERTCB0CAPT" offset="0x31" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 31 - TCB0 Event B" initval="0x00" name="USERTCB0COUNT" offset="0x32" rw="RW"
-                          size="1">
+                <register caption="User 31 - TCB0 Event B" initval="0x00" name="USERTCB0COUNT" offset="0x32" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 32 - TCB1 Event A" initval="0x00" name="USERTCB1CAPT" offset="0x33" rw="RW"
-                          size="1">
+                <register caption="User 32 - TCB1 Event A" initval="0x00" name="USERTCB1CAPT" offset="0x33" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 33 - TCB1 Event B" initval="0x00" name="USERTCB1COUNT" offset="0x34" rw="RW"
-                          size="1">
+                <register caption="User 33 - TCB1 Event B" initval="0x00" name="USERTCB1COUNT" offset="0x34" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 34 - TCB2 Event A" initval="0x00" name="USERTCB2CAPT" offset="0x35" rw="RW"
-                          size="1">
+                <register caption="User 34 - TCB2 Event A" initval="0x00" name="USERTCB2CAPT" offset="0x35" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 35 - TCB2 Event B" initval="0x00" name="USERTCB2COUNT" offset="0x36" rw="RW"
-                          size="1">
+                <register caption="User 35 - TCB2 Event B" initval="0x00" name="USERTCB2COUNT" offset="0x36" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 40 - TCD0 Event A" initval="0x00" name="USERTCD0INPUTA" offset="0x37" rw="RW"
-                          size="1">
+                <register caption="User 40 - TCD0 Event A" initval="0x00" name="USERTCD0INPUTA" offset="0x37" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 41 - TCD0 Event B" initval="0x00" name="USERTCD0INPUTB" offset="0x38" rw="RW"
-                          size="1">
+                <register caption="User 41 - TCD0 Event B" initval="0x00" name="USERTCD0INPUTB" offset="0x38" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 20 - USART0" initval="0x00" name="USERUSART0IRDA" offset="0x2D" rw="RW"
-                          size="1">
+                <register caption="User 20 - USART0" initval="0x00" name="USERUSART0IRDA" offset="0x2D" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
-                <register caption="User 21 - USART1" initval="0x00" name="USERUSART1IRDA" offset="0x2E" rw="RW"
-                          size="1">
+                <register caption="User 21 - USART1" initval="0x00" name="USERUSART1IRDA" offset="0x2E" rw="RW" size="1">
                     <bitfield caption="User channel select" mask="0xff" name="USER" rw="RW" values="EVSYS_USER"/>
                 </register>
             </register-group>
@@ -1399,15 +1302,11 @@
                 <value caption="USART 0 XCK" name="USART0_XCK" value="0x60"/>
                 <value caption="USART 1 XCK" name="USART1_XCK" value="0x61"/>
                 <value caption="SPI 0 SCK" name="SPI0_SCK" value="0x68"/>
-                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF"
-                       value="0x80"/>
+                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF" value="0x80"/>
                 <value caption="Timer/Counter A0 high byte timer underflow" name="TCA0_HUNF" value="0x81"/>
-                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0"
-                       value="0x84"/>
-                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1"
-                       value="0x85"/>
-                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2"
-                       value="0x86"/>
+                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0" value="0x84"/>
+                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1" value="0x85"/>
+                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2" value="0x86"/>
                 <value caption="Timer/Counter B0 capture" name="TCB0_CAPT" value="0xA0"/>
                 <value caption="Timer/Counter B0 overflow" name="TCB0_OVF" value="0xA1"/>
                 <value caption="Timer/Counter B1 capture" name="TCB1_CAPT" value="0xA2"/>
@@ -1447,15 +1346,11 @@
                 <value caption="USART 0 XCK" name="USART0_XCK" value="0x60"/>
                 <value caption="USART 1 XCK" name="USART1_XCK" value="0x61"/>
                 <value caption="SPI 0 SCK" name="SPI0_SCK" value="0x68"/>
-                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF"
-                       value="0x80"/>
+                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF" value="0x80"/>
                 <value caption="Timer/Counter A0 high byte timer underflow" name="TCA0_HUNF" value="0x81"/>
-                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0"
-                       value="0x84"/>
-                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1"
-                       value="0x85"/>
-                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2"
-                       value="0x86"/>
+                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0" value="0x84"/>
+                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1" value="0x85"/>
+                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2" value="0x86"/>
                 <value caption="Timer/Counter B0 capture" name="TCB0_CAPT" value="0xA0"/>
                 <value caption="Timer/Counter B0 overflow" name="TCB0_OVF" value="0xA1"/>
                 <value caption="Timer/Counter B1 capture" name="TCB1_CAPT" value="0xA2"/>
@@ -1500,15 +1395,11 @@
                 <value caption="USART 0 XCK" name="USART0_XCK" value="0x60"/>
                 <value caption="USART 1 XCK" name="USART1_XCK" value="0x61"/>
                 <value caption="SPI 0 SCK" name="SPI0_SCK" value="0x68"/>
-                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF"
-                       value="0x80"/>
+                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF" value="0x80"/>
                 <value caption="Timer/Counter A0 high byte timer underflow" name="TCA0_HUNF" value="0x81"/>
-                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0"
-                       value="0x84"/>
-                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1"
-                       value="0x85"/>
-                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2"
-                       value="0x86"/>
+                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0" value="0x84"/>
+                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1" value="0x85"/>
+                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2" value="0x86"/>
                 <value caption="Timer/Counter B0 capture" name="TCB0_CAPT" value="0xA0"/>
                 <value caption="Timer/Counter B0 overflow" name="TCB0_OVF" value="0xA1"/>
                 <value caption="Timer/Counter B1 capture" name="TCB1_CAPT" value="0xA2"/>
@@ -1551,15 +1442,11 @@
                 <value caption="USART 0 XCK" name="USART0_XCK" value="0x60"/>
                 <value caption="USART 1 XCK" name="USART1_XCK" value="0x61"/>
                 <value caption="SPI 0 SCK" name="SPI0_SCK" value="0x68"/>
-                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF"
-                       value="0x80"/>
+                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF" value="0x80"/>
                 <value caption="Timer/Counter A0 high byte timer underflow" name="TCA0_HUNF" value="0x81"/>
-                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0"
-                       value="0x84"/>
-                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1"
-                       value="0x85"/>
-                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2"
-                       value="0x86"/>
+                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0" value="0x84"/>
+                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1" value="0x85"/>
+                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2" value="0x86"/>
                 <value caption="Timer/Counter B0 capture" name="TCB0_CAPT" value="0xA0"/>
                 <value caption="Timer/Counter B0 overflow" name="TCB0_OVF" value="0xA1"/>
                 <value caption="Timer/Counter B1 capture" name="TCB1_CAPT" value="0xA2"/>
@@ -1597,15 +1484,11 @@
                 <value caption="USART 0 XCK" name="USART0_XCK" value="0x60"/>
                 <value caption="USART 1 XCK" name="USART1_XCK" value="0x61"/>
                 <value caption="SPI 0 SCK" name="SPI0_SCK" value="0x68"/>
-                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF"
-                       value="0x80"/>
+                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF" value="0x80"/>
                 <value caption="Timer/Counter A0 high byte timer underflow" name="TCA0_HUNF" value="0x81"/>
-                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0"
-                       value="0x84"/>
-                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1"
-                       value="0x85"/>
-                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2"
-                       value="0x86"/>
+                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0" value="0x84"/>
+                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1" value="0x85"/>
+                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2" value="0x86"/>
                 <value caption="Timer/Counter B0 capture" name="TCB0_CAPT" value="0xA0"/>
                 <value caption="Timer/Counter B0 overflow" name="TCB0_OVF" value="0xA1"/>
                 <value caption="Timer/Counter B1 capture" name="TCB1_CAPT" value="0xA2"/>
@@ -1641,15 +1524,11 @@
                 <value caption="USART 0 XCK" name="USART0_XCK" value="0x60"/>
                 <value caption="USART 1 XCK" name="USART1_XCK" value="0x61"/>
                 <value caption="SPI 0 SCK" name="SPI0_SCK" value="0x68"/>
-                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF"
-                       value="0x80"/>
+                <value caption="Timer/Counter A0 overflow / low byte timer underflow" name="TCA0_OVF_LUNF" value="0x80"/>
                 <value caption="Timer/Counter A0 high byte timer underflow" name="TCA0_HUNF" value="0x81"/>
-                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0"
-                       value="0x84"/>
-                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1"
-                       value="0x85"/>
-                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2"
-                       value="0x86"/>
+                <value caption="Timer/Counter A0 compare 0 / low byte timer compare 0" name="TCA0_CMP0_LCMP0" value="0x84"/>
+                <value caption="Timer/Counter A0 compare 1 / low byte timer compare 1" name="TCA0_CMP1_LCMP1" value="0x85"/>
+                <value caption="Timer/Counter A0 compare 2 / low byte timer compare 2" name="TCA0_CMP2_LCMP2" value="0x86"/>
                 <value caption="Timer/Counter B0 capture" name="TCB0_CAPT" value="0xA0"/>
                 <value caption="Timer/Counter B0 overflow" name="TCB0_OVF" value="0xA1"/>
                 <value caption="Timer/Counter B1 capture" name="TCB1_CAPT" value="0xA2"/>
@@ -1690,13 +1569,10 @@
         <module caption="Fuses" id="chip" name="FUSE">
             <register-group caption="Fuses" name="FUSE" size="0x09">
                 <register caption="BOD Configuration" initval="0x00" name="BODCFG" offset="0x1" rw="RW" size="1">
-                    <bitfield caption="BOD Operation in Active Mode" mask="0xc" name="ACTIVE" rw="RW"
-                              values="FUSE_ACTIVE"/>
+                    <bitfield caption="BOD Operation in Active Mode" mask="0xc" name="ACTIVE" rw="RW" values="FUSE_ACTIVE"/>
                     <bitfield caption="BOD Level" mask="0xe0" name="LVL" rw="RW" values="FUSE_LVL"/>
-                    <bitfield caption="BOD Sample Frequency" mask="0x10" name="SAMPFREQ" rw="RW"
-                              values="FUSE_SAMPFREQ"/>
-                    <bitfield caption="BOD Operation in Sleep Mode" mask="0x3" name="SLEEP" rw="RW"
-                              values="FUSE_SLEEP"/>
+                    <bitfield caption="BOD Sample Frequency" mask="0x10" name="SAMPFREQ" rw="RW" values="FUSE_SAMPFREQ"/>
+                    <bitfield caption="BOD Operation in Sleep Mode" mask="0x3" name="SLEEP" rw="RW" values="FUSE_SLEEP"/>
                 </register>
                 <register caption="Boot Section Size" initval="0x00" name="BOOTSIZE" offset="0x8" rw="RW" size="1"/>
                 <register caption="Code Section Size" initval="0x00" name="CODESIZE" offset="0x7" rw="RW" size="1"/>
@@ -1707,28 +1583,23 @@
                     <bitfield caption="CRC Select" mask="0x20" name="CRCSEL" rw="RW" values="FUSE_CRCSEL"/>
                     <bitfield caption="CRC Source" mask="0xc0" name="CRCSRC" rw="RW" values="FUSE_CRCSRC"/>
                     <bitfield caption="EEPROM Save" mask="0x1" name="EESAVE" rw="RW"/>
-                    <bitfield caption="Reset Pin Configuration" mask="0x8" name="RSTPINCFG" rw="RW"
-                              values="FUSE_RSTPINCFG"/>
-                    <bitfield caption="UPDI Pin Configuration" mask="0x10" name="UPDIPINCFG" rw="RW"
-                              values="FUSE_UPDIPINCFG"/>
+                    <bitfield caption="Reset Pin Configuration" mask="0x8" name="RSTPINCFG" rw="RW" values="FUSE_RSTPINCFG"/>
+                    <bitfield caption="UPDI Pin Configuration" mask="0x10" name="UPDIPINCFG" rw="RW" values="FUSE_UPDIPINCFG"/>
                 </register>
                 <register caption="System Configuration 1" initval="0x08" name="SYSCFG1" offset="0x6" rw="RW" size="1">
-                    <bitfield caption="MVIO System Configuration" mask="0x18" name="MVSYSCFG" rw="RW"
-                              values="FUSE_MVSYSCFG"/>
+                    <bitfield caption="MVIO System Configuration" mask="0x18" name="MVSYSCFG" rw="RW" values="FUSE_MVSYSCFG"/>
                     <bitfield caption="Startup Time" mask="0x7" name="SUT" rw="RW" values="FUSE_SUT"/>
                 </register>
                 <register caption="Watchdog Configuration" initval="0x00" name="WDTCFG" offset="0x0" rw="RW" size="1">
                     <bitfield caption="Watchdog Timeout Period" mask="0xf" name="PERIOD" rw="RW" values="FUSE_PERIOD"/>
-                    <bitfield caption="Watchdog Window Timeout Period" mask="0xf0" name="WINDOW" rw="RW"
-                              values="FUSE_WINDOW"/>
+                    <bitfield caption="Watchdog Window Timeout Period" mask="0xf0" name="WINDOW" rw="RW" values="FUSE_WINDOW"/>
                 </register>
             </register-group>
             <value-group caption="BOD Operation in Active Mode select" name="FUSE_ACTIVE">
                 <value caption="BOD disabled" name="DISABLE" value="0x00"/>
                 <value caption="BOD enabled in continuous mode" name="ENABLE" value="0x01"/>
                 <value caption="BOD enabled in sampled mode" name="SAMPLE" value="0x02"/>
-                <value caption="BOD enabled in continuous mode. Execution is halted at wake-up until BOD is running."
-                       name="ENABLEWAIT" value="0x03"/>
+                <value caption="BOD enabled in continuous mode. Execution is halted at wake-up until BOD is running." name="ENABLEWAIT" value="0x03"/>
             </value-group>
             <value-group caption="BOD Level select" name="FUSE_LVL">
                 <value caption="1.9V" name="BODLEVEL0" value="0x00"/>
@@ -1754,8 +1625,7 @@
                 <value caption="Enable CRC32" name="CRC32" value="0x1"/>
             </value-group>
             <value-group caption="CRC Source select" name="FUSE_CRCSRC">
-                <value caption="CRC of full Flash (boot, application code and application data)" name="FLASH"
-                       value="0x0"/>
+                <value caption="CRC of full Flash (boot, application code and application data)" name="FLASH" value="0x0"/>
                 <value caption="CRC of boot section" name="BOOT" value="0x1"/>
                 <value caption="CRC of application code and boot sections" name="BOOTAPP" value="0x2"/>
                 <value caption="No CRC" name="NOCRC" value="0x3"/>
@@ -1853,8 +1723,7 @@
                     <bitfield caption="Application Code Write Protect" mask="0x1" name="APPCODEWP" rw="RW"/>
                     <bitfield caption="Application Data Write Protect" mask="0x4" name="APPDATAWP" rw="RW"/>
                     <bitfield caption="Boot Read Protect" mask="0x2" name="BOOTRP" rw="RW"/>
-                    <bitfield caption="Flash Mapping in Data space" mask="0x30" name="FLMAP" rw="RW"
-                              values="NVMCTRL_FLMAP"/>
+                    <bitfield caption="Flash Mapping in Data space" mask="0x30" name="FLMAP" rw="RW" values="NVMCTRL_FLMAP"/>
                     <bitfield caption="Flash Mapping Lock" mask="0x80" name="FLMAPLOCK" rw="RW"/>
                 </register>
                 <register caption="Data" name="DATA" offset="0x06" rw="RW" size="2"/>
@@ -1901,10 +1770,8 @@
                 <value caption="No Error" name="NOERROR" value="0x0"/>
                 <value caption="Write command not selected" name="ILLEGALCMD" value="0x1"/>
                 <value caption="Write to section not allowed" name="ILLEGALSADDR" value="0x2"/>
-                <value caption="Selecting new write command while write command already seleted" name="DOUBLESELECT"
-                       value="0x3"/>
-                <value caption="Starting a new programming operation before previous is completed" name="ONGOINGPROG"
-                       value="0x4"/>
+                <value caption="Selecting new write command while write command already seleted" name="DOUBLESELECT" value="0x3"/>
+                <value caption="Starting a new programming operation before previous is completed" name="ONGOINGPROG" value="0x4"/>
             </value-group>
         </module>
         <module caption="I/O Ports" id="gpio_ports_avr_v2_port" name="PORT">
@@ -2000,14 +1867,10 @@
         <module caption="Port Multiplexer" id="chip" name="PORTMUX">
             <register-group caption="Port Multiplexer" name="PORTMUX" size="0x10">
                 <register caption="CCL route A" initval="0x00" name="CCLROUTEA" offset="0x01" rw="RW" size="1">
-                    <bitfield caption="CCL Look-Up Table 0 Signals" mask="0x1" name="LUT0" rw="RW"
-                              values="PORTMUX_LUT0"/>
-                    <bitfield caption="CCL Look-Up Table 1 Signals" mask="0x2" name="LUT1" rw="RW"
-                              values="PORTMUX_LUT1"/>
-                    <bitfield caption="CCL Look-Up Table 2 Signals" mask="0x4" name="LUT2" rw="RW"
-                              values="PORTMUX_LUT2"/>
-                    <bitfield caption="CCL Look-Up Table 3 Signals" mask="0x8" name="LUT3" rw="RW"
-                              values="PORTMUX_LUT3"/>
+                    <bitfield caption="CCL Look-Up Table 0 Signals" mask="0x1" name="LUT0" rw="RW" values="PORTMUX_LUT0"/>
+                    <bitfield caption="CCL Look-Up Table 1 Signals" mask="0x2" name="LUT1" rw="RW" values="PORTMUX_LUT1"/>
+                    <bitfield caption="CCL Look-Up Table 2 Signals" mask="0x4" name="LUT2" rw="RW" values="PORTMUX_LUT2"/>
+                    <bitfield caption="CCL Look-Up Table 3 Signals" mask="0x8" name="LUT3" rw="RW" values="PORTMUX_LUT3"/>
                 </register>
                 <register caption="EVSYS route A" initval="0x00" name="EVSYSROUTEA" offset="0x00" rw="RW" size="1">
                     <bitfield caption="Event Output A" mask="0x1" name="EVOUTA" rw="RW" values="PORTMUX_EVOUTA"/>
@@ -2177,12 +2040,10 @@
                 <register caption="PIT Debug control" initval="0x00" name="PITDBGCTRL" offset="0x15" rw="RW" size="1">
                     <bitfield caption="Run in debug" mask="0x1" name="DBGRUN" rw="RW"/>
                 </register>
-                <register caption="PIT Interrupt Control" initval="0x00" name="PITINTCTRL" offset="0x12" rw="RW"
-                          size="1">
+                <register caption="PIT Interrupt Control" initval="0x00" name="PITINTCTRL" offset="0x12" rw="RW" size="1">
                     <bitfield caption="Periodic Interrupt" mask="0x1" name="PI" rw="RW"/>
                 </register>
-                <register caption="PIT Interrupt Flags" initval="0x00" name="PITINTFLAGS" offset="0x13" rw="RW"
-                          size="1">
+                <register caption="PIT Interrupt Flags" initval="0x00" name="PITINTFLAGS" offset="0x13" rw="RW" size="1">
                     <bitfield caption="Periodic Interrupt" mask="0x1" name="PI" rw="RW"/>
                 </register>
                 <register caption="PIT Status" initval="0x00" name="PITSTATUS" offset="0x11" rw="R" size="1">
@@ -2274,8 +2135,7 @@
                     <bitfield caption="Sleep mode" mask="0x6" name="SMODE" rw="RW" values="SLPCTRL_SMODE"/>
                 </register>
                 <register caption="Control B" initval="0x00" name="VREGCTRL" offset="0x1" rw="RW" size="1">
-                    <bitfield caption="High Temperature Low Leakage Enable" mask="0x10" name="HTLLEN" rw="RW"
-                              values="SLPCTRL_HTLLEN"/>
+                    <bitfield caption="High Temperature Low Leakage Enable" mask="0x10" name="HTLLEN" rw="RW" values="SLPCTRL_HTLLEN"/>
                     <bitfield caption="Performance Mode" mask="0x7" name="PMODE" rw="RW" values="SLPCTRL_PMODE"/>
                 </register>
             </register-group>
@@ -2371,8 +2231,7 @@
                     <bitfield caption="Compare 0 Enable" mask="0x10" name="CMP0EN" rw="RW"/>
                     <bitfield caption="Compare 1 Enable" mask="0x20" name="CMP1EN" rw="RW"/>
                     <bitfield caption="Compare 2 Enable" mask="0x40" name="CMP2EN" rw="RW"/>
-                    <bitfield caption="Waveform generation mode" mask="0x7" name="WGMODE" rw="RW"
-                              values="TCA_SINGLE_WGMODE"/>
+                    <bitfield caption="Waveform generation mode" mask="0x7" name="WGMODE" rw="RW" values="TCA_SINGLE_WGMODE"/>
                 </register>
                 <register caption="Control C" initval="0x00" name="CTRLC" offset="0x02" rw="RW" size="1">
                     <bitfield caption="Compare 0 Waveform Output Value" mask="0x1" name="CMP0OV" rw="RW"/>
@@ -2490,8 +2349,7 @@
                 <register caption="Low Count" name="LCNT" offset="0x20" rw="RW" size="1"/>
                 <register caption="Low Period" name="LPER" offset="0x26" rw="RW" size="1"/>
             </register-group>
-            <register-group caption="16-bit Timer/Counter Type A" class="union" name="TCA" size="0x40"
-                            union-tag="TCA.SINGLE.CTRLD.SPLITM">
+            <register-group caption="16-bit Timer/Counter Type A" class="union" name="TCA" size="0x40" union-tag="TCA.SINGLE.CTRLD.SPLITM">
                 <register-group name="SINGLE" name-in-module="TCA_SINGLE" offset="0" union-tag-value="0"/>
                 <register-group name="SPLIT" name-in-module="TCA_SPLIT" offset="0" union-tag-value="1"/>
             </register-group>
@@ -2527,13 +2385,11 @@
                 <value caption="Count on positive edge event" name="CNT_POSEDGE" value="0x00"/>
                 <value caption="Count on any edge event" name="CNT_ANYEDGE" value="0x01"/>
                 <value caption="Count on prescaled clock while event line is 1." name="CNT_HIGHLVL" value="0x02"/>
-                <value caption="Count on prescaled clock. Event controls count direction. Up-count when event line is 0, down-count when event line is 1."
-                       name="UPDOWN" value="0x03"/>
+                <value caption="Count on prescaled clock. Event controls count direction. Up-count when event line is 0, down-count when event line is 1." name="UPDOWN" value="0x03"/>
             </value-group>
             <value-group caption="Event Action B select" name="TCA_SINGLE_EVACTB">
                 <value caption="No Action" name="NONE" value="0x00"/>
-                <value caption="Count on prescaled clock. Event controls count direction. Up-count when event line is 0, down-count when event line is 1."
-                       name="UPDOWN" value="0x03"/>
+                <value caption="Count on prescaled clock. Event controls count direction. Up-count when event line is 0, down-count when event line is 1." name="UPDOWN" value="0x03"/>
                 <value caption="Restart counter at positive edge event" name="RESTART_POSEDGE" value="0x04"/>
                 <value caption="Restart counter on any edge event" name="RESTART_ANYEDGE" value="0x05"/>
                 <value caption="Restart counter while event line is 1." name="RESTART_HIGHLVL" value="0x06"/>
@@ -2626,18 +2482,15 @@
                     <bitfield caption="clock select" mask="0x60" name="CLKSEL" rw="RW" values="TCD_CLKSEL"/>
                     <bitfield caption="counter prescaler" mask="0x18" name="CNTPRES" rw="RW" values="TCD_CNTPRES"/>
                     <bitfield caption="Enable" mask="0x1" name="ENABLE" rw="RW"/>
-                    <bitfield caption="Synchronization prescaler" mask="0x6" name="SYNCPRES" rw="RW"
-                              values="TCD_SYNCPRES"/>
+                    <bitfield caption="Synchronization prescaler" mask="0x6" name="SYNCPRES" rw="RW" values="TCD_SYNCPRES"/>
                 </register>
                 <register caption="Control B" initval="0x00" name="CTRLB" offset="0x01" rw="RW" size="1">
                     <bitfield caption="Waveform generation mode" mask="0x3" name="WGMODE" rw="RW" values="TCD_WGMODE"/>
                 </register>
                 <register caption="Control C" initval="0x00" name="CTRLC" offset="0x02" rw="RW" size="1">
                     <bitfield caption="Auto update" mask="0x2" name="AUPDATE" rw="RW"/>
-                    <bitfield caption="Compare C output select" mask="0x40" name="CMPCSEL" rw="RW"
-                              values="TCD_CMPCSEL"/>
-                    <bitfield caption="Compare D output select" mask="0x80" name="CMPDSEL" rw="RW"
-                              values="TCD_CMPDSEL"/>
+                    <bitfield caption="Compare C output select" mask="0x40" name="CMPCSEL" rw="RW" values="TCD_CMPCSEL"/>
+                    <bitfield caption="Compare D output select" mask="0x80" name="CMPDSEL" rw="RW" values="TCD_CMPDSEL"/>
                     <bitfield caption="Compare output value override" mask="0x1" name="CMPOVR" rw="RW"/>
                     <bitfield caption="Fifty percent waveform" mask="0x8" name="FIFTY" rw="RW"/>
                 </register>
@@ -2780,17 +2633,14 @@
                 <value caption="Asynchronous Event output qualification enabled" name="ASYNC" value="0x2"/>
             </value-group>
             <value-group caption="edge select select" name="TCD_EDGE">
-                <value caption="The falling edge or low level of event generates retrigger or fault action"
-                       name="FALL_LOW" value="0x0"/>
-                <value caption="The rising edge or high level of event generates retrigger or fault action"
-                       name="RISE_HIGH" value="0x1"/>
+                <value caption="The falling edge or low level of event generates retrigger or fault action" name="FALL_LOW" value="0x0"/>
+                <value caption="The rising edge or high level of event generates retrigger or fault action" name="RISE_HIGH" value="0x1"/>
             </value-group>
             <value-group caption="Input mode select" name="TCD_INPUTMODE">
                 <value caption="Input has no actions" name="NONE" value="0x00"/>
                 <value caption="Stop output, jump to opposite compare cycle and wait" name="JMPWAIT" value="0x01"/>
                 <value caption="Stop output, execute opposite compare cycle and wait" name="EXECWAIT" value="0x02"/>
-                <value caption="stop output, execute opposite compare cycle while fault active" name="EXECFAULT"
-                       value="0x03"/>
+                <value caption="stop output, execute opposite compare cycle while fault active" name="EXECFAULT" value="0x03"/>
                 <value caption="Stop all outputs, maintain frequency" name="FREQ" value="0x04"/>
                 <value caption="Stop all outputs, execute dead time while fault active" name="EXECDT" value="0x05"/>
                 <value caption="Stop all outputs, jump to next compare cycle and wait" name="WAIT" value="0x06"/>
@@ -2804,8 +2654,7 @@
             <register-group caption="Two-Wire Interface" name="TWI" size="0x10">
                 <register caption="Control A" initval="0x00" name="CTRLA" offset="0x0" rw="RW" size="1">
                     <bitfield caption="Fast-mode Plus Enable" mask="0x2" name="FMPEN" rw="RW" values="TWI_FMPEN"/>
-                    <bitfield caption="Input voltage transition level" mask="0x40" name="INPUTLVL" rw="RW"
-                              values="TWI_INPUTLVL"/>
+                    <bitfield caption="Input voltage transition level" mask="0x40" name="INPUTLVL" rw="RW" values="TWI_INPUTLVL"/>
                     <bitfield caption="SDA Hold Time" mask="0xc" name="SDAHOLD" rw="RW" values="TWI_SDAHOLD"/>
                     <bitfield caption="SDA Setup Time" mask="0x10" name="SDASETUP" rw="RW" values="TWI_SDASETUP"/>
                 </register>
@@ -2815,8 +2664,7 @@
                 <register caption="Dual Mode Control" initval="0x00" name="DUALCTRL" offset="0x1" rw="RW" size="1">
                     <bitfield caption="Enable" mask="0x1" name="ENABLE" rw="RW"/>
                     <bitfield caption="Fast-mode Plus Enable" mask="0x2" name="FMPEN" rw="RW" values="TWI_FMPEN"/>
-                    <bitfield caption="Input voltage transition level" mask="0x40" name="INPUTLVL" rw="RW"
-                              values="TWI_INPUTLVL"/>
+                    <bitfield caption="Input voltage transition level" mask="0x40" name="INPUTLVL" rw="RW" values="TWI_INPUTLVL"/>
                     <bitfield caption="SDA Hold Time" mask="0xc" name="SDAHOLD" rw="RW" values="TWI_SDAHOLD"/>
                 </register>
                 <register caption="Host Address" initval="0x00" name="MADDR" offset="0x7" rw="RW" size="1">
@@ -2903,8 +2751,7 @@
             </value-group>
             <value-group caption="Debug Run select" name="TWI_DBGRUN">
                 <value caption="The peripheral is halted in Break Debug mode and ignores events" name="HALT" value="0"/>
-                <value caption="The peripheral will continue to run in Break Debug mode when the CPU is halted"
-                       name="RUN" value="1"/>
+                <value caption="The peripheral will continue to run in Break Debug mode when the CPU is halted" name="RUN" value="1"/>
             </value-group>
             <value-group caption="Inactive Bus Time-Out select" name="TWI_TIMEOUT">
                 <value caption="Bus time-out disabled. I2C." name="DISABLED" value="0"/>
@@ -2919,10 +2766,8 @@
             <value-group caption="Command select" name="TWI_MCMD">
                 <value caption="No action" name="NOACT" value="0"/>
                 <value caption="Execute Acknowledge Action followed by repeated Start." name="REPSTART" value="1"/>
-                <value caption="DIR=0: Execute Acknowledge Action followed by a byte read operation. DIR=1: Execute"
-                       name="RECVTRANS" value="2"/>
-                <value caption="Execute Acknowledge Action followed by issuing a Stop condition." name="STOP"
-                       value="3"/>
+                <value caption="DIR=0: Execute Acknowledge Action followed by a byte read operation. DIR=1: Execute" name="RECVTRANS" value="2"/>
+                <value caption="Execute Acknowledge Action followed by issuing a Stop condition." name="STOP" value="3"/>
             </value-group>
             <value-group caption="Bus State select" name="TWI_BUSSTATE">
                 <value caption="Unknown bus state" name="UNKNOWN" value="0"/>
@@ -2940,17 +2785,14 @@
                 <value caption="Address detection generated the interrupt on APIF flag" name="ADR" value="1"/>
             </value-group>
         </module>
-        <module caption="Universal Synchronous and Asynchronous Receiver and Transmitter" id="uart_autobd_v4"
-                name="USART">
-            <register-group caption="Universal Synchronous and Asynchronous Receiver and Transmitter" name="USART"
-                            size="0x10">
+        <module caption="Universal Synchronous and Asynchronous Receiver and Transmitter" id="uart_autobd_v4" name="USART">
+            <register-group caption="Universal Synchronous and Asynchronous Receiver and Transmitter" name="USART" size="0x10">
                 <register caption="Baud Rate" initval="0x0000" name="BAUD" offset="0x8" rw="RW" size="2"/>
                 <register caption="Control A" initval="0x00" name="CTRLA" offset="0x5" rw="RW" size="1">
                     <bitfield caption="Auto-baud Error Interrupt Enable" mask="0x4" name="ABEIE" rw="RW"/>
                     <bitfield caption="Data Register Empty Interrupt Enable" mask="0x20" name="DREIE" rw="RW"/>
                     <bitfield caption="Loop-back Mode Enable" mask="0x8" name="LBME" rw="RW"/>
-                    <bitfield caption="RS485 Mode internal transmitter" mask="0x1" name="RS485" rw="RW"
-                              values="USART_RS485"/>
+                    <bitfield caption="RS485 Mode internal transmitter" mask="0x1" name="RS485" rw="RW" values="USART_RS485"/>
                     <bitfield caption="Receive Complete Interrupt Enable" mask="0x80" name="RXCIE" rw="RW"/>
                     <bitfield caption="Receiver Start Frame Interrupt Enable" mask="0x10" name="RXSIE" rw="RW"/>
                     <bitfield caption="Transmit Complete Interrupt Enable" mask="0x40" name="TXCIE" rw="RW"/>
@@ -2965,19 +2807,15 @@
                 </register>
                 <register caption="Control C" initval="0x03" name="CTRLC" offset="0x7" rw="RW" size="1">
                     <mode name="MSPI">
-                        <bitfield caption="Communication Mode" mask="0xc0" name="CMODE" rw="RW"
-                                  values="USART_MSPI_CMODE"/>
+                        <bitfield caption="Communication Mode" mask="0xc0" name="CMODE" rw="RW" values="USART_MSPI_CMODE"/>
                         <bitfield caption="SPI Host Mode, Clock Phase" mask="0x2" name="UCPHA" rw="RW"/>
                         <bitfield caption="SPI Host Mode, Data Order" mask="0x4" name="UDORD" rw="RW"/>
                     </mode>
                     <mode name="NORMAL">
-                        <bitfield caption="Character Size" mask="0x7" name="CHSIZE" rw="RW"
-                                  values="USART_NORMAL_CHSIZE"/>
-                        <bitfield caption="Communication Mode" mask="0xc0" name="CMODE" rw="RW"
-                                  values="USART_NORMAL_CMODE"/>
+                        <bitfield caption="Character Size" mask="0x7" name="CHSIZE" rw="RW" values="USART_NORMAL_CHSIZE"/>
+                        <bitfield caption="Communication Mode" mask="0xc0" name="CMODE" rw="RW" values="USART_NORMAL_CMODE"/>
                         <bitfield caption="Parity Mode" mask="0x30" name="PMODE" rw="RW" values="USART_NORMAL_PMODE"/>
-                        <bitfield caption="Stop Bit Mode" mask="0x8" name="SBMODE" rw="RW"
-                                  values="USART_NORMAL_SBMODE"/>
+                        <bitfield caption="Stop Bit Mode" mask="0x8" name="SBMODE" rw="RW" values="USART_NORMAL_SBMODE"/>
                     </mode>
                 </register>
                 <register caption="Control D" initval="0x00" name="CTRLD" offset="0xA" rw="RW" size="1">
@@ -3000,8 +2838,7 @@
                 <register caption="Receive Data Low Byte" initval="0x00" name="RXDATAL" offset="0x0" rw="R" size="1">
                     <bitfield caption="RX Data" mask="0xff" name="DATA" rw="R"/>
                 </register>
-                <register caption="IRCOM Receiver Pulse Length Control" initval="0x00" name="RXPLCTRL" offset="0xE"
-                          rw="RW" size="1">
+                <register caption="IRCOM Receiver Pulse Length Control" initval="0x00" name="RXPLCTRL" offset="0xE" rw="RW" size="1">
                     <bitfield caption="Receiver Pulse Lenght" mask="0x7f" name="RXPL" rw="RW"/>
                 </register>
                 <register caption="Status" initval="0x00" name="STATUS" offset="0x4" rw="RW" size="1">
@@ -3019,8 +2856,7 @@
                 <register caption="Transmit Data Low Byte" initval="0x00" name="TXDATAL" offset="0x2" rw="RW" size="1">
                     <bitfield caption="Transmit Data Register" mask="0xff" name="DATA" rw="RW"/>
                 </register>
-                <register caption="IRCOM Transmitter Pulse Length Control" initval="0x00" name="TXPLCTRL" offset="0xD"
-                          rw="RW" size="1">
+                <register caption="IRCOM Transmitter Pulse Length Control" initval="0x00" name="TXPLCTRL" offset="0xD" rw="RW" size="1">
                     <bitfield caption="Transmit pulse length" mask="0xff" name="TXPL" rw="RW"/>
                 </register>
             </register-group>
