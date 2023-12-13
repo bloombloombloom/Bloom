@@ -2,17 +2,24 @@
 
 namespace Bloom\BuildScripts;
 
-define('TDF_DIR_PATH', $argv[1] ?? null);
+define('TDF_PATH', $argv[1] ?? null);
 
-if (empty(TDF_DIR_PATH)) {
-    print 'Missing TDF directory path. Aborting\n';
+if (empty(TDF_PATH)) {
+    print 'Missing TDF path. Aborting\n';
     exit(1);
 }
 
 require_once __DIR__ . '/TargetDescriptionFiles/Factory.php';
 
-$xmlFiles = TargetDescriptionFiles\Factory::findXmlFiles(TDF_DIR_PATH);
-print count($xmlFiles) . ' target descriptions files found in ' . TDF_DIR_PATH . PHP_EOL . PHP_EOL;
+$xmlFiles = [];
+
+if (is_dir(TDF_PATH)) {
+    $xmlFiles = TargetDescriptionFiles\Factory::findXmlFiles(TDF_PATH);
+    print count($xmlFiles) . ' target descriptions files found in ' . TDF_PATH . PHP_EOL . PHP_EOL;
+
+} else {
+    $xmlFiles = [new \SplFileInfo(TDF_PATH)];
+}
 
 $processedTargetConfigValues = [];
 $failedValidationCount = 0;
