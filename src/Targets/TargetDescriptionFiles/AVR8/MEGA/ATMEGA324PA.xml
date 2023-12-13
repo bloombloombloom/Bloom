@@ -12,7 +12,7 @@
         <variant ordercode="ATmega324PA-CU" package="VFBGA49" pinout="BGA_49" speedmax="20000000" tempmax="85"
                  tempmin="-40" vccmax="5.5" vccmin="1.8"/>
     </variants>
-    <device name="ATmega324PA" architecture="AVR8" avr-family="megaAVR" family="AVR8">
+    <device name="ATmega324PA" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x8000">
                 <memory-segment start="0x0000" size="0x8000" type="flash" rw="RW" exec="1" name="FLASH"

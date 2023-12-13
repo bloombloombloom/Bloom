@@ -4,7 +4,7 @@
         <variant ordercode="ATtiny1634-SU" package="SOIC20" pinout="SOIC_20" tempmax="85" tempmin="-40"/>
         <variant ordercode="ATtiny1634-MU" package="WQFN20" pinout="QFN_20" tempmax="85" tempmin="-40"/>
     </variants>
-    <device name="ATtiny1634" architecture="AVR8" avr-family="tinyAVR" family="AVR8">
+    <device name="ATtiny1634" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x4000">
                 <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="FLASH"

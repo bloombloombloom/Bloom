@@ -5,7 +5,7 @@
         <variant ordercode="ATtiny44-20SSU" package="SOIC14" pinout="SOIC_14" tempmax="85" tempmin="-40"/>
         <variant ordercode="ATtiny44-20MU" package="WQFN20" pinout="QFN_20" tempmax="85" tempmin="-40"/>
     </variants>
-    <device name="ATtiny44" architecture="AVR8" avr-family="tinyAVR" family="AVR8">
+    <device name="ATtiny44" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x1000">
                 <memory-segment start="0x0000" size="0x1000" type="flash" rw="RW" exec="1" name="FLASH"

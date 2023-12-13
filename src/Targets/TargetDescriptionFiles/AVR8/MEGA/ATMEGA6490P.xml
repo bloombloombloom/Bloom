@@ -3,7 +3,7 @@
     <variants>
         <variant ordercode="ATmega6490P-AU" package="TQFP100" pinout="QFP100" tempmax="85" tempmin="-40"/>
     </variants>
-    <device name="ATmega6490P" architecture="AVR8" avr-family="megaAVR" family="AVR8">
+    <device name="ATmega6490P" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x10000">
                 <memory-segment start="0x0000" size="0x10000" type="flash" rw="RW" exec="1" name="FLASH"

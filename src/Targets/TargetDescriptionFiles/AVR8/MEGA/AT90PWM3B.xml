@@ -4,7 +4,7 @@
         <variant ordercode="AT90PWM3B-SU" package="SOIC32" pinout="SOIC32" tempmax="85" tempmin="-40"/>
         <variant ordercode="AT90PWM3B-MU" package="QFN32" pinout="QFN32" tempmax="85" tempmin="-40"/>
     </variants>
-    <device name="AT90PWM3B" architecture="AVR8" avr-family="megaAVR" family="AVR8">
+    <device name="AT90PWM3B" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x2000">
                 <memory-segment start="0x0000" size="0x2000" type="flash" rw="RW" exec="1" name="FLASH"

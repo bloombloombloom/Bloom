@@ -6,7 +6,7 @@
         <variant ordercode="ATXMEGA16A4-MH" package="VQFN44" speedmax="32000000" pinout="QFP_QFN_44" tempmax="0"
                  tempmin="0" vccmax="3.6" vccmin="1.6"/>
     </variants>
-    <device name="ATxmega16A4" architecture="AVR8_XMEGA" avr-family="AVR XMEGA" family="AVR8">
+    <device name="ATxmega16A4" family="AVR8" architecture="AVR8_XMEGA" avr-family="AVR XMEGA">
         <address-spaces>
             <address-space name="prog" id="prog" start="0x0000" size="0x5000" endianness="little">
                 <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="APP_SECTION"

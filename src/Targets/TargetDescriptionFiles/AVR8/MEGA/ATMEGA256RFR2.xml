@@ -10,7 +10,7 @@
         <variant ordercode="ATmega256RFR2-ZFR" package="QFN64" pinout="QFN64" speedmax="16000000" tempmax="125"
                  tempmin="-40" vccmax="3.6" vccmin="1.8"/>
     </variants>
-    <device name="ATmega256RFR2" architecture="AVR8" avr-family="megaAVR" family="AVR8">
+    <device name="ATmega256RFR2" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x40000">
                 <memory-segment start="0x0000" size="0x40000" type="flash" rw="RW" exec="1" name="FLASH"

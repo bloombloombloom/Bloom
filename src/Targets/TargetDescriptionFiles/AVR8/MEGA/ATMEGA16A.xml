@@ -8,7 +8,7 @@
         <variant ordercode="ATmega16A-MU" tempmin="-40" tempmax="85" speedmax="16000000" pinout="TQFPQFN44"
                  package="QFN44" vccmin="2.7" vccmax="5.5"/>
     </variants>
-    <device name="ATmega16A" architecture="AVR8" avr-family="megaAVR" family="AVR8">
+    <device name="ATmega16A" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x4000">
                 <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="FLASH"

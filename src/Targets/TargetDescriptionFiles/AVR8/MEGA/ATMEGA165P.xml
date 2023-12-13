@@ -4,7 +4,7 @@
         <variant ordercode="ATmega165P-AU" tempmin="-40" tempmax="85" pinout="QFP_QFN_64" package="TQFP64"/>
         <variant ordercode="ATmega165P-MU" tempmin="-40" tempmax="85" pinout="QFP_QFN_64" package="VQFN64"/>
     </variants>
-    <device name="ATmega165P" architecture="AVR8" avr-family="megaAVR" family="AVR8">
+    <device name="ATmega165P" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x4000">
                 <memory-segment start="0x0000" size="0x4000" type="flash" rw="RW" exec="1" name="FLASH"

@@ -6,7 +6,7 @@
         <variant ordercode="ATXMEGA64A1-CU" package="CBGA100" pinout="BGA100" speedmax="32000000" tempmax="0"
                  tempmin="0" vccmax="3.6" vccmin="1.6"/>
     </variants>
-    <device name="ATxmega64A1" architecture="AVR8_XMEGA" avr-family="AVR XMEGA" family="AVR8">
+    <device name="ATxmega64A1" family="AVR8" architecture="AVR8_XMEGA" avr-family="AVR XMEGA">
         <address-spaces>
             <address-space name="prog" id="prog" start="0x0000" size="0x11000" endianness="little">
                 <memory-segment start="0x0000" size="0x10000" type="flash" rw="RW" exec="1" name="APP_SECTION"
@@ -21,8 +21,8 @@
                 <memory-segment start="0x1000" size="0x000800" type="eeprom" rw="RW" exec="0" name="MAPPED_EEPROM"/>
                 <memory-segment start="0x2000" size="0x001000" type="ram" rw="RW" exec="0" name="INTERNAL_SRAM"/>
                 <!-- We don't support external SRAM (for now) -->
-<!--                <memory-segment start="0x3000" size="0xFFCFFF" type="ram" rw="RW" exec="0" name="EXTERNAL_SRAM"-->
-<!--                                external="true"/>-->
+                <!--                <memory-segment start="0x3000" size="0xFFCFFF" type="ram" rw="RW" exec="0" name="EXTERNAL_SRAM"-->
+                <!--                                external="true"/>-->
             </address-space>
             <address-space name="eeprom" id="eeprom" start="0x0000" size="0x0800">
                 <memory-segment start="0x0000" size="0x0800" type="eeprom" rw="RW" exec="0" name="EEPROM"

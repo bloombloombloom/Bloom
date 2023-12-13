@@ -8,7 +8,7 @@
         <variant ordercode="ATmega1284-MU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="TQFP_QFN_44"
                  package="QFN44" vccmin="1.8" vccmax="5.5"/>
     </variants>
-    <device name="ATmega1284" architecture="AVR8" avr-family="megaAVR" family="AVR8">
+    <device name="ATmega1284" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x20000">
                 <memory-segment start="0x0000" size="0x20000" type="flash" rw="RW" exec="1" name="FLASH"

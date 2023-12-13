@@ -10,7 +10,7 @@
         <variant ordercode="ATmega48A-PU" tempmin="-40" tempmax="85" speedmax="20000000" pinout="PDIP28"
                  package="PDIP28" vccmin="1.8" vccmax="5.5"/>
     </variants>
-    <device name="ATmega48A" architecture="AVR8" avr-family="megaAVR" family="AVR8">
+    <device name="ATmega48A" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x1000">
                 <memory-segment start="0x0000" size="0x1000" type="flash" rw="RW" exec="1" name="FLASH"

@@ -9,7 +9,7 @@
         <variant ordercode="ATtiny461A-MUR" tempmin="-40" tempmax="85" pinout="QFN32" package="VQFN32"/>
         <variant ordercode="ATtiny461A-MU" tempmin="-40" tempmax="85" pinout="QFN32" package="VQFN32"/>
     </variants>
-    <device name="ATtiny461A" architecture="AVR8" avr-family="tinyAVR" family="AVR8">
+    <device name="ATtiny461A" family="AVR8" architecture="AVR8" avr-family="tinyAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x1000">
                 <memory-segment start="0x0000" size="0x1000" type="flash" rw="RW" exec="1" name="FLASH"

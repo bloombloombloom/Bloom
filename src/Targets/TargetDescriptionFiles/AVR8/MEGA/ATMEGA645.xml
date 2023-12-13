@@ -4,7 +4,7 @@
         <variant ordercode="ATmega645-AU" package="TQFP64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
         <variant ordercode="ATmega645-MU" package="VQFN64" pinout="QFP_QFN_64" tempmax="85" tempmin="-40"/>
     </variants>
-    <device name="ATmega645" architecture="AVR8" avr-family="megaAVR" family="AVR8">
+    <device name="ATmega645" family="AVR8" architecture="AVR8" avr-family="megaAVR">
         <address-spaces>
             <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0x10000">
                 <memory-segment start="0x0000" size="0x10000" type="flash" rw="RW" exec="1" name="FLASH"

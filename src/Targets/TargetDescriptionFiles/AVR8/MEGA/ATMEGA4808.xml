@@ -8,7 +8,7 @@
         <variant ordercode="ATmega4808-XFR" package="SSOP28" pinout="SSOP28" speedmax="20000000" tempmax="105"
                  tempmin="-40" vccmax="5.0" vccmin="1.8"/>
     </variants>
-    <device architecture="AVR8X" avr-family="AVR MEGA" name="ATmega4808" family="AVR8">
+    <device name="ATmega4808" family="AVR8" architecture="AVR8X" avr-family="AVR MEGA">
         <address-spaces>
             <address-space endianness="little" id="data" name="data" size="0x10000" start="0x0000">
                 <memory-segment exec="0" name="EEPROM" pagesize="0x40" rw="RW" size="0x0100" start="0x00001400"
