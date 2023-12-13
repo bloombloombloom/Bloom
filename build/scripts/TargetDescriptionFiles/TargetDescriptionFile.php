@@ -4,6 +4,7 @@ namespace Bloom\BuildScripts\TargetDescriptionFiles;
 use Exception;
 use SimpleXMLElement;
 
+require_once __DIR__ . "/TargetFamily.php";
 require_once __DIR__ . "/Variant.php";
 require_once __DIR__ . "/AddressSpace.php";
 require_once __DIR__ . "/PropertyGroup.php";
@@ -20,6 +21,7 @@ class TargetDescriptionFile
     public ?SimpleXMLElement $xml = null;
 
     public ?string $targetName = null;
+    public ?TargetFamily $targetFamily = null;
     public ?string $configurationValue = null;
     public ?string $targetArchitecture = null;
 
@@ -73,6 +75,10 @@ class TargetDescriptionFile
             if (!empty($this->deviceAttributesByName['name'])) {
                 $this->targetName = $device['name'];
                 $this->configurationValue = strtolower($device['name']);
+            }
+
+            if (!empty($this->deviceAttributesByName['family'])) {
+                $this->targetFamily = TargetFamily::tryFrom($device['family']);
             }
 
             if (!empty($this->deviceAttributesByName['architecture'])) {
@@ -484,6 +490,10 @@ class TargetDescriptionFile
 
         if (str_contains($this->targetName, ' ')) {
             $failures[] = 'Target name cannot contain whitespaces';
+        }
+
+        if (empty($this->targetFamily)) {
+            $failures[] = 'Missing/invalid target family';
         }
 
         if (empty($this->targetArchitecture)) {
