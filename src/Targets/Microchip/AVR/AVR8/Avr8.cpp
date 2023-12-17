@@ -18,9 +18,9 @@ namespace Targets::Microchip::Avr::Avr8Bit
 {
     using namespace Exceptions;
 
-    Avr8::Avr8(const TargetConfig& targetConfig)
+    Avr8::Avr8(const TargetConfig& targetConfig, TargetDescription::TargetDescriptionFile&& targetDescriptionFile)
         : targetConfig(Avr8TargetConfig(targetConfig))
-        , targetDescriptionFile(TargetDescription::TargetDescriptionFile(this->targetConfig.name))
+        , targetDescriptionFile(std::move(targetDescriptionFile))
         , signature(this->targetDescriptionFile.getTargetSignature())
         , name(this->targetDescriptionFile.getTargetName())
         , family(this->targetDescriptionFile.getAvrFamily())

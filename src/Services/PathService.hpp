@@ -52,6 +52,15 @@ namespace Services
         }
 
         /**
+         * Returns the path to the directory containing Bloom's target description files.
+         *
+         * @return
+         */
+        static std::string targetDescriptionDirPath() {
+            return PathService::resourcesDirPath() + "/TargetDescriptionFiles";
+        }
+
+        /**
          * Returns the path to the current project's settings file.
          *
          * @return

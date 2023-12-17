@@ -4,8 +4,12 @@
 #include <typeindex>
 #include <algorithm>
 
+#include "src/Targets/Microchip/AVR/AVR8/TargetDescription/TargetDescriptionFile.hpp"
+#include "src/Targets/RiscV/TargetDescription/TargetDescriptionFile.hpp"
+
 #include "Responses/Error.hpp"
 
+#include "src/Services/PathService.hpp"
 #include "src/Services/ProcessService.hpp"
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
@@ -371,32 +375,30 @@ namespace TargetController
         };
     }
 
-    std::map<
-        std::string,
-        std::function<std::unique_ptr<Targets::Target>(const TargetConfig&)>
-    > TargetControllerComponent::getSupportedTargets() {
-        using Avr8TargetDescriptionFile = Targets::Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile;
+    std::unique_ptr<Targets::Target> TargetControllerComponent::constructTargetFromBrief(
+        const TargetDescription::GeneratedMapping::BriefTargetDescriptor &targetBrief
+    ) {
+        using Services::PathService;
 
-        auto mapping = std::map<std::string, std::function<std::unique_ptr<Targets::Target>(const TargetConfig&)>>();
-
-        // Include all targets from AVR8 target description files
-        const auto avr8PdMapping = Avr8TargetDescriptionFile::getTargetDescriptionMapping();
-
-        for (auto mapIt = avr8PdMapping.begin(); mapIt != avr8PdMapping.end(); ++mapIt) {
-            const auto mappingObject = mapIt.value().toObject();
-            const auto targetName = mappingObject.find("name").value().toString().toLower().toStdString();
-
-            if (!mapping.contains(targetName)) {
-                mapping.insert({
-                    targetName,
-                    [targetName] (const TargetConfig& targetConfig) {
-                        return std::make_unique<Targets::Microchip::Avr::Avr8Bit::Avr8>(targetConfig);
-                    }
-                });
-            }
+        if (targetBrief.targetFamily == TargetFamily::AVR_8) {
+            return std::make_unique<Microchip::Avr::Avr8Bit::Avr8>(
+                this->environmentConfig.targetConfig,
+                Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile(
+                    PathService::targetDescriptionDirPath() + "/" + targetBrief.relativeTdfPath
+                )
+            );
         }
 
-        return mapping;
+        if (targetBrief.targetFamily == TargetFamily::RISC_V) {
+            return std::make_unique<RiscV::RiscV>(
+                this->environmentConfig.targetConfig,
+                RiscV::TargetDescription::TargetDescriptionFile(
+                    PathService::targetDescriptionDirPath() + "/" + targetBrief.relativeTdfPath
+                )
+            );
+        }
+
+        throw Exception("Cannot construct target instance - invalid target family in BriefTargetDescriptor");
     }
 
     void TargetControllerComponent::processQueuedCommands() {
@@ -468,10 +470,10 @@ namespace TargetController
         const auto& targetName = this->environmentConfig.targetConfig.name;
 
         static const auto supportedDebugTools = this->getSupportedDebugTools();
-        static const auto supportedTargets = this->getSupportedTargets();
+        static const auto targetsByConfigValue = TargetDescription::TargetDescriptionFile::mapping();
 
         const auto debugToolIt = supportedDebugTools.find(debugToolName);
-        const auto targetIt = supportedTargets.find(targetName);
+        const auto targetBriefIt = targetsByConfigValue.find(targetName);
 
         if (debugToolIt == supportedDebugTools.end()) {
             throw Exceptions::InvalidConfig(
@@ -479,7 +481,7 @@ namespace TargetController
             );
         }
 
-        if (targetIt == supportedTargets.end()) {
+        if (targetBriefIt == targetsByConfigValue.end()) {
             throw Exceptions::InvalidConfig(
                 "Target name (\"" + targetName + "\") not recognised. Please check your configuration!"
             );
@@ -495,7 +497,7 @@ namespace TargetController
         Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
         Logger::info("Debug tool firmware version: " + this->debugTool->getFirmwareVersionString());
 
-        this->target = targetIt->second(this->environmentConfig.targetConfig);
+        this->target = this->constructTargetFromBrief(targetBriefIt->second);
         const auto& targetDescriptor = this->getTargetDescriptor();
 
         if (!this->target->supportsDebugTool(this->debugTool.get())) {

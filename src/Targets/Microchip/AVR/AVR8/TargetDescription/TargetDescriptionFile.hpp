@@ -34,26 +34,12 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     {
     public:
         /**
-         * Will resolve the target description file using the target description JSON mapping and a given target name.
-         *
-         * @param targetName
-         */
-        TargetDescriptionFile(const std::string& targetName);
-
-        /**
          * Extends TDF initialisation to include the loading of physical interfaces for debugging AVR8 targets, among
          * other things.
          *
          * @param xml
          */
-        void init(const QDomDocument& document) override;
-
-        /**
-         * Loads the AVR8 target description JSON mapping file.
-         *
-         * @return
-         */
-        static QJsonObject getTargetDescriptionMapping();
+        explicit TargetDescriptionFile(const std::string& xmlFilePath);
 
         /**
          * Extracts the AVR8 target signature from the TDF.

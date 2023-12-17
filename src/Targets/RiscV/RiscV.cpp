@@ -27,8 +27,11 @@ namespace Targets::RiscV
     using DebugModule::Registers::AbstractControlStatusRegister;
     using DebugModule::Registers::AbstractCommandRegister;
 
-    RiscV::RiscV(const TargetConfig& targetConfig)
-        : name("CH32X035C8T6") // TODO: TDF
+    RiscV::RiscV(
+        const TargetConfig& targetConfig,
+        TargetDescription::TargetDescriptionFile&& targetDescriptionFile
+    )
+        : targetDescriptionFile(targetDescriptionFile)
         , stackPointerRegisterDescriptor(
             RiscVRegisterDescriptor(
                 TargetRegisterType::STACK_POINTER,
@@ -107,10 +110,10 @@ namespace Targets::RiscV
 
     TargetDescriptor RiscV::getDescriptor() {
         return TargetDescriptor(
-            "TDF ID",
+            this->targetDescriptionFile.getTargetId(),
             TargetFamily::RISC_V,
-            this->name,
-            "TDF VENDOR NAME",
+            this->targetDescriptionFile.getTargetName(),
+            this->targetDescriptionFile.getVendorName(),
             {
                 {
                     Targets::TargetMemoryType::FLASH,

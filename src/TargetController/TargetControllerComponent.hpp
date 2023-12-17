@@ -246,12 +246,14 @@ namespace TargetController
         std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> getSupportedDebugTools();
 
         /**
-         * Constructs a mapping of supported target names to lambdas. The lambdas should instantiate and return an
-         * instance to the appropriate Target class.
+         * Constructs a Target instance from a BriefTargetDescriptor object.
          *
+         * @param targetBrief
          * @return
          */
-        std::map<std::string, std::function<std::unique_ptr<Targets::Target>(const TargetConfig&)>> getSupportedTargets();
+        std::unique_ptr<Targets::Target> constructTargetFromBrief(
+            const Targets::TargetDescription::GeneratedMapping::BriefTargetDescriptor& targetBrief
+        );
 
         /**
          * Processes any pending commands in the queue.

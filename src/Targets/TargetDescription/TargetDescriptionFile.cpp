@@ -15,7 +15,7 @@ namespace Targets::TargetDescription
         return GeneratedMapping::map;
     }
 
-    TargetDescriptionFile::TargetDescriptionFile(const QString& xmlFilePath) {
+    TargetDescriptionFile::TargetDescriptionFile(const std::string& xmlFilePath) {
         this->init(xmlFilePath);
     }
 
@@ -24,7 +24,7 @@ namespace Targets::TargetDescription
     }
 
     const std::string& TargetDescriptionFile::getTargetName() const {
-        return this->targetName;
+        return this->deviceAttribute("name");
     }
 
     TargetFamily TargetDescriptionFile::getFamily() const {
@@ -33,7 +33,7 @@ namespace Targets::TargetDescription
             {"RISCV", TargetFamily::RISC_V},
         };
 
-        const auto familyIt = familiesByName.find(this->familyName);
+        const auto familyIt = familiesByName.find(this->deviceAttribute("family"));
 
         if (familyIt == familiesByName.end()) {
             throw Exception("Failed to resolve target family - invalid family name");
@@ -42,8 +42,8 @@ namespace Targets::TargetDescription
         return familyIt->second;
     }
 
-    void TargetDescriptionFile::init(const QString& xmlFilePath) {
-        auto file = QFile(xmlFilePath);
+    void TargetDescriptionFile::init(const std::string& xmlFilePath) {
+        auto file = QFile(QString::fromStdString(xmlFilePath));
         if (!file.exists()) {
             // This can happen if someone has been messing with the Resources directory.
             throw Exception("Failed to load target description file - file not found");
@@ -65,8 +65,16 @@ namespace Targets::TargetDescription
             throw TargetDescriptionParsingFailureException("Device element not found.");
         }
 
-        this->targetName = device.attributes().namedItem("name").nodeValue().toStdString();
-        this->familyName = device.attributes().namedItem("family").nodeValue().toLower().toStdString();
+        const auto deviceAttributes = device.attributes();
+        for (auto i = 0; i < deviceAttributes.length(); ++i) {
+            const auto deviceAttribute = deviceAttributes.item(i);
+            this->deviceAttributesByName.insert(
+                std::pair(
+                    deviceAttribute.nodeName().toStdString(),
+                    deviceAttribute.nodeValue().toStdString()
+                )
+            );
+        }
 
         this->loadAddressSpaces(document);
         this->loadPropertyGroups(document);
@@ -304,6 +312,16 @@ namespace Targets::TargetDescription
         }
 
         return bitField;
+    }
+
+    const std::string& TargetDescriptionFile::deviceAttribute(const std::string& attributeName) const {
+        const auto attributeIt = this->deviceAttributesByName.find(attributeName);
+
+        if (attributeIt == this->deviceAttributesByName.end()) {
+            throw Exception("Missing target device attribute (\"" + attributeName + "\")");
+        }
+
+        return attributeIt->second;
     }
 
     void TargetDescriptionFile::loadAddressSpaces(const QDomDocument& document) {

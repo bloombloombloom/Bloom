@@ -59,7 +59,7 @@ namespace Targets::TargetDescription
          *
          * @param xmlFilePath
          */
-        explicit TargetDescriptionFile(const QString& xmlFilePath);
+        explicit TargetDescriptionFile(const std::string& xmlFilePath);
 
         /**
          * Will construct a TargetDescriptionFile instance from pre-loaded XML.
@@ -83,9 +83,7 @@ namespace Targets::TargetDescription
         [[nodiscard]] TargetFamily getFamily() const;
 
     protected:
-        std::string targetName;
-        std::string familyName;
-
+        std::map<std::string, std::string> deviceAttributesByName;
         std::map<std::string, AddressSpace> addressSpacesMappedById;
         std::map<std::string, PropertyGroup> propertyGroupsMappedByName;
         std::map<std::string, Module> modulesMappedByName;
@@ -104,8 +102,8 @@ namespace Targets::TargetDescription
         TargetDescriptionFile& operator = (const TargetDescriptionFile& other) = default;
         TargetDescriptionFile& operator = (TargetDescriptionFile&& other) = default;
 
-        virtual void init(const QDomDocument& document);
-        void init(const QString& xmlFilePath);
+        void init(const std::string& xmlFilePath);
+        void init(const QDomDocument& document);
 
         /**
          * Constructs an AddressSpace object from an XML element.
@@ -146,6 +144,14 @@ namespace Targets::TargetDescription
          * @return
          */
         static BitField bitFieldFromXml(const QDomElement& xmlElement);
+
+        /**
+         * Fetches a device attribute value by name. Throws an exception if the attribute is not found.
+         *
+         * @param attributeName
+         * @return
+         */
+        const std::string& deviceAttribute(const std::string& attributeName) const;
 
         /**
          * Extracts all address spaces and loads them into this->addressSpacesMappedById.

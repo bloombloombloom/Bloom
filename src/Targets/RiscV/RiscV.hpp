@@ -7,6 +7,8 @@
 #include "src/Targets/Target.hpp"
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
+#include "TargetDescription/TargetDescriptionFile.hpp"
+
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
 
@@ -27,7 +29,10 @@ namespace Targets::RiscV
     class RiscV: public Target
     {
     public:
-        explicit RiscV(const TargetConfig& targetConfig);
+        explicit RiscV(
+            const TargetConfig& targetConfig,
+            TargetDescription::TargetDescriptionFile&& targetDescriptionFile
+        );
 
         /*
          * The functions below implement the Target interface for RISC-V targets.
@@ -99,7 +104,8 @@ namespace Targets::RiscV
         bool programmingModeEnabled() override;
 
     protected:
-        std::string name;
+        TargetDescription::TargetDescriptionFile targetDescriptionFile;
+
         std::map<TargetRegisterDescriptorId, RiscVRegisterDescriptor> registerDescriptorsById;
 
         RiscVRegisterDescriptor stackPointerRegisterDescriptor;

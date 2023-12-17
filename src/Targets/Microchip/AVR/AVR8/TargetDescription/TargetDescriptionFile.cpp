@@ -1,9 +1,5 @@
 #include "TargetDescriptionFile.hpp"
 
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
-
 #include "src/Services/PathService.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -22,52 +18,13 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     using Targets::TargetVariant;
     using Targets::TargetRegisterDescriptor;
 
-    TargetDescriptionFile::TargetDescriptionFile(const std::string& targetName) {
-        const auto mapping = TargetDescriptionFile::getTargetDescriptionMapping();
-        const auto descriptionFileObjectIt = mapping.find(QString::fromStdString(targetName).toLower());
-
-        if (descriptionFileObjectIt == mapping.end()) {
-            throw Exception(
-                "Failed to resolve target description file for target \"" + targetName + "\" - unknown target name."
-            );
-        }
-
-        const auto descriptionFileObject = descriptionFileObjectIt.value().toObject();
-        const auto descriptionFilePath = QString::fromStdString(
-            Services::PathService::resourcesDirPath()) + "/" + descriptionFileObject.find("tdfPath")->toString();
-
-        Logger::debug("Loading AVR8 target description file: " + descriptionFilePath.toStdString());
-
-        Targets::TargetDescription::TargetDescriptionFile::init(descriptionFilePath);
-    }
-
-    void TargetDescriptionFile::init(const QDomDocument& document) {
-        Targets::TargetDescription::TargetDescriptionFile::init(document);
-
-        const auto device = document.elementsByTagName("device").item(0).toElement();
-        if (!device.isElement()) {
-            throw TargetDescriptionParsingFailureException("Device element not found.");
-        }
-
-        this->avrFamilyName = device.attributes().namedItem("avr-family").nodeValue().toLower().toStdString();
-
+    TargetDescriptionFile::TargetDescriptionFile(const std::string& xmlFilePath)
+        : Targets::TargetDescription::TargetDescriptionFile(xmlFilePath)
+    {
         this->loadSupportedPhysicalInterfaces();
         this->loadPadDescriptors();
         this->loadTargetVariants();
         this->loadTargetRegisterDescriptors();
-    }
-
-    QJsonObject TargetDescriptionFile::getTargetDescriptionMapping() {
-        auto mappingFile = QFile(
-            QString::fromStdString(Services::PathService::resourcesDirPath() + "/TargetDescriptionFiles/AVR/Mapping.json")
-        );
-
-        if (!mappingFile.exists()) {
-            throw Exception("Failed to load AVR target description mapping - mapping file not found");
-        }
-
-        mappingFile.open(QIODevice::ReadOnly);
-        return QJsonDocument::fromJson(mappingFile.readAll()).object();
     }
 
     TargetSignature TargetDescriptionFile::getTargetSignature() const {
@@ -110,11 +67,9 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     Family TargetDescriptionFile::getAvrFamily() const {
         static const auto targetFamiliesByName = TargetDescriptionFile::getFamilyNameToEnumMapping();
 
-        if (this->avrFamilyName.empty()) {
-            throw Exception("Could not find target family name in target description file.");
-        }
-
-        const auto familyIt = targetFamiliesByName.find(this->avrFamilyName);
+        const auto familyIt = targetFamiliesByName.find(
+            QString::fromStdString(this->deviceAttribute("avr-family")).toLower().toStdString()
+        );
 
         if (familyIt == targetFamiliesByName.end()) {
             throw Exception("Unknown family name in target description file.");

@@ -30,7 +30,10 @@ namespace Targets::Microchip::Avr::Avr8Bit
     class Avr8: public Target
     {
     public:
-        explicit Avr8(const TargetConfig& targetConfig);
+        explicit Avr8(
+            const TargetConfig& targetConfig,
+            TargetDescription::TargetDescriptionFile&& targetDescriptionFile
+        );
 
         /*
          * The functions below implement the Target interface for AVR8 targets.
