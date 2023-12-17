@@ -4,6 +4,8 @@ namespace Bloom\BuildScripts\TargetDescriptionFiles;
 use Bloom\BuildScripts\TargetDescriptionFiles\Avr8\Avr8TargetDescriptionFile;
 
 require_once __DIR__ . "/TargetDescriptionFile.php";
+require_once __DIR__ . "/TargetFamily.php";
+
 require_once __DIR__ . "/AVR8/Avr8TargetDescriptionFile.php";
 
 class Factory
@@ -18,7 +20,7 @@ class Factory
     {
         $tdf = new TargetDescriptionFile($filePath);
 
-        if ($tdf->targetArchitecture == TargetDescriptionFile::ARCHITECTURE_AVR8) {
+        if ($tdf->targetFamily == TargetFamily::AVR_8) {
             return new Avr8TargetDescriptionFile($filePath);
         }
 

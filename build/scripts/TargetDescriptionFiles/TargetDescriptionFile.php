@@ -15,15 +15,12 @@ require_once __DIR__ . "/Pinout.php";
 
 class TargetDescriptionFile
 {
-    const ARCHITECTURE_AVR8 = 'AVR8';
-
     public string $filePath;
     public ?SimpleXMLElement $xml = null;
 
     public ?string $targetName = null;
     public ?TargetFamily $targetFamily = null;
     public ?string $configurationValue = null;
-    public ?string $targetArchitecture = null;
 
     /** @var string[] */
     public array $deviceAttributesByName = [];
@@ -79,11 +76,6 @@ class TargetDescriptionFile
 
             if (!empty($this->deviceAttributesByName['family'])) {
                 $this->targetFamily = TargetFamily::tryFrom($device['family']);
-            }
-
-            if (!empty($this->deviceAttributesByName['architecture'])) {
-                $this->targetArchitecture = stristr($device['architecture'], 'avr') !== false
-                    ? self::ARCHITECTURE_AVR8 : $device['architecture'];
             }
         }
 
@@ -472,10 +464,6 @@ class TargetDescriptionFile
 
         if (empty($this->targetFamily)) {
             $failures[] = 'Missing/invalid target family';
-        }
-
-        if (empty($this->targetArchitecture)) {
-            $failures[] = 'Target architecture not found';
         }
 
         if (empty($this->variants)) {

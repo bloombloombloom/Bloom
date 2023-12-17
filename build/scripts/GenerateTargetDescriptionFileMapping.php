@@ -3,6 +3,7 @@
 namespace Bloom\BuildScripts;
 
 use Bloom\BuildScripts\TargetDescriptionFiles\TargetDescriptionFile;
+use Bloom\BuildScripts\TargetDescriptionFiles\TargetFamily;
 
 define('TDF_DIR_PATH', $argv[1] ?? null);
 define('MAPPING_TEMPLATE_PATH', $argv[2] ?? null);
@@ -34,13 +35,16 @@ if (!file_exists(dirname(MAPPING_OUTPUT_PATH))) {
 }
 
 require_once __DIR__ . '/TargetDescriptionFiles/Factory.php';
+require_once __DIR__ . '/TargetDescriptionFiles/TargetFamily.php';
+
 require_once __DIR__ . '/TargetDescriptionFiles/AVR8/Avr8TargetDescriptionFile.php';
 
 $xmlFiles = TargetDescriptionFiles\Factory::findXmlFiles(TDF_DIR_PATH);
 print count($xmlFiles) . ' target descriptions files found in ' . TDF_DIR_PATH . PHP_EOL . PHP_EOL;
 
-$targetFamiliesByArch = [
-    TargetDescriptionFile::ARCHITECTURE_AVR8 => 'TargetFamily::AVR_8',
+$targetFamilyMapping = [
+    TargetFamily::AVR_8->value => 'TargetFamily::AVR_8',
+    TargetFamily::RISC_V->value => 'TargetFamily::RISC_V',
 ];
 
 const MAP_ENTRY_TEMPLATE = '{"@CONFIG_VALUE@", {"@TARGET_NAME@", "@CONFIG_VALUE@", @TARGET_FAMILY@, "@TDF_PATH@"}}';
@@ -53,7 +57,7 @@ foreach ($xmlFiles as $xmlFile) {
     print 'Processing ' . $xmlFilePath . PHP_EOL;
     $targetDescriptionFile = TargetDescriptionFiles\Factory::loadTdfFromFile($xmlFilePath);
 
-    $relativeTdfPath = $targetDescriptionFile->targetArchitecture . '/'
+    $relativeTdfPath = $targetDescriptionFile->targetFamily->value . '/'
         . strtoupper($targetDescriptionFile->targetName) . '.xml';
 
     $entries[] = str_replace(
@@ -61,7 +65,7 @@ foreach ($xmlFiles as $xmlFile) {
         [
             $targetDescriptionFile->configurationValue,
             $targetDescriptionFile->targetName,
-            $targetFamiliesByArch[$targetDescriptionFile->targetArchitecture],
+            $targetFamilyMapping[$targetDescriptionFile->targetFamily->value],
             $relativeTdfPath,
         ],
         MAP_ENTRY_TEMPLATE
