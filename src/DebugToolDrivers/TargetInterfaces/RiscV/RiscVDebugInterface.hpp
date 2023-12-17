@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "src/Targets/RiscV/RiscVGeneric.hpp"
 #include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
 #include "src/Targets/RiscV/DebugModule/Registers/RegisterAddresses.hpp"
 

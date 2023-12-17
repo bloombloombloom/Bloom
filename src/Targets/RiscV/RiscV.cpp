@@ -11,6 +11,7 @@
 #include "DebugModule/Registers/MemoryAccessControlField.hpp"
 
 #include "src/Exceptions/Exception.hpp"
+#include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 
 #include "src/Services/StringService.hpp"
@@ -59,6 +60,15 @@ namespace Targets::RiscV
 
     void RiscV::activate() {
         this->riscVDebugInterface->activate({});
+
+        const auto deviceId = this->riscVDebugInterface->getDeviceId();
+        const auto tdfDeviceId = this->targetDescriptionFile.getTargetId();
+        if (deviceId != tdfDeviceId) {
+            throw Exceptions::InvalidConfig(
+                "RISC-V target ID mismatch - expected " + tdfDeviceId + " but got " + deviceId +
+                    ". Please check target configuration."
+            );
+        }
 
         this->hartIndices = this->discoverHartIndices();
 
