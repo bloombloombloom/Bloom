@@ -14,7 +14,7 @@
                 <memory-segment exec="0" name="PROD_SIGNATURES" pagesize="0x80" rw="R" size="0x7D" start="0x1103" type="signatures"/>
                 <memory-segment exec="0" name="EEPROM" pagesize="0x1" rw="RW" size="0x100" start="0x1400" type="eeprom"/>
                 <memory-segment exec="0" name="INTERNAL_SRAM" rw="RW" size="0x1000" start="0x7000" type="ram"/>
-                <memory-segment exec="0" name="MAPPED_PROGMEM" pagesize="0x200" rw="RW" size="0x8000" start="0x8000" type="other"/>
+                <memory-segment exec="0" name="MAPPED_PROGMEM" pagesize="0x200" rw="RW" size="0x8000" start="0x8000" type="aliased"/>
             </address-space>
             <address-space endianness="little" id="prog" name="prog" size="0x8000" start="0x0000">
                 <memory-segment exec="1" name="PROGMEM" pagesize="0x200" rw="RW" size="0x8000" start="0x00" type="flash"/>

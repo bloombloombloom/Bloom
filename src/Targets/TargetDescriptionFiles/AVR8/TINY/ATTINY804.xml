@@ -12,7 +12,7 @@
                 <memory-segment exec="0" name="INTERNAL_SRAM" rw="RW" size="0x0200" start="0x3e00" type="ram"/>
                 <memory-segment exec="0" name="IO" rw="RW" size="0x1100" start="0x00000000" type="io"/>
                 <memory-segment exec="0" name="LOCKBITS" pagesize="0x20" rw="RW" size="0x1" start="0x0000128A" type="lockbits"/>
-                <memory-segment exec="0" name="MAPPED_PROGMEM" pagesize="0x40" rw="RW" size="0x2000" start="0x00008000" type="other"/>
+                <memory-segment exec="0" name="MAPPED_PROGMEM" pagesize="0x40" rw="RW" size="0x2000" start="0x00008000" type="aliased"/>
                 <memory-segment exec="0" name="PROD_SIGNATURES" pagesize="0x40" rw="R" size="0x3D" start="0x00001103" type="signatures"/>
                 <memory-segment exec="0" name="SIGNATURES" pagesize="0x40" rw="R" size="0x3" start="0x00001100" type="signatures"/>
                 <memory-segment exec="0" name="USER_SIGNATURES" pagesize="0x20" rw="RW" size="0x20" start="0x00001300" type="user_signatures"/>
