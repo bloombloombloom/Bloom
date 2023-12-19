@@ -8,17 +8,19 @@
 
 namespace Targets::TargetDescription
 {
-    enum class MemorySegmentType
+    enum class MemorySegmentType: std::uint8_t
     {
+        ALIASED,
         REGISTERS,
-        IO,
         EEPROM,
-        RAM,
         FLASH,
-        SIGNATURES,
         FUSES,
+        IO,
+        RAM,
         LOCKBITS,
         OSCCAL,
+        SIGNATURES,
+        USER_SIGNATURES,
     };
 
     struct MemorySegment
@@ -34,15 +36,17 @@ namespace Targets::TargetDescription
          * not defined in here should be ignored.
          */
         static const inline BiMap<std::string, MemorySegmentType> typesMappedByName = {
+            {"aliased", MemorySegmentType::ALIASED},
             {"regs", MemorySegmentType::REGISTERS},
-            {"io", MemorySegmentType::IO},
             {"eeprom", MemorySegmentType::EEPROM},
-            {"ram", MemorySegmentType::RAM},
             {"flash", MemorySegmentType::FLASH},
-            {"signatures", MemorySegmentType::SIGNATURES},
             {"fuses", MemorySegmentType::FUSES},
+            {"io", MemorySegmentType::IO},
+            {"ram", MemorySegmentType::RAM},
             {"lockbits", MemorySegmentType::LOCKBITS},
             {"osccal", MemorySegmentType::OSCCAL},
+            {"signatures", MemorySegmentType::SIGNATURES},
+            {"user_signatures", MemorySegmentType::USER_SIGNATURES},
         };
     };
 }
