@@ -37,7 +37,7 @@
                 <memory-segment start="0x0000" size="0x0200" type="user_signatures" rw="RW" exec="0" name="USER_SIGNATURES" pagesize="512"/>
             </address-space>
             <address-space name="prod_signatures" id="prod_signatures" start="0x0000" size="0x0040">
-                <memory-segment start="0x0000" size="0x0040" type="other" rw="R" exec="0" name="PROD_SIGNATURES" pagesize="512"/>
+                <memory-segment start="0x0000" size="0x0040" type="signatures" rw="R" exec="0" name="PROD_SIGNATURES" pagesize="512"/>
             </address-space>
         </address-spaces>
         <peripherals>
