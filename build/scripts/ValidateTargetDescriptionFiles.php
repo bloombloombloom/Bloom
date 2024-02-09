@@ -1,6 +1,9 @@
 <?php
 
-namespace Bloom\BuildScripts;
+use Targets\TargetDescriptionFiles\Services\DiscoveryService;
+use Targets\TargetDescriptionFiles\Services\Xml\XmlService;
+use Targets\TargetDescriptionFiles\Services\ValidationService;
+use Targets\TargetDescriptionFiles\Avr8\Avr8TargetDescriptionFile;
 
 define('TDF_PATH', $argv[1] ?? null);
 
@@ -9,12 +12,27 @@ if (empty(TDF_PATH)) {
     exit(1);
 }
 
-require_once __DIR__ . '/TargetDescriptionFiles/Factory.php';
+if (!file_exists(TDF_PATH)) {
+    print 'Invalid TDF path - "' . TDF_PATH . '" does not exist' . PHP_EOL;
+    exit(1);
+}
+
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/DiscoveryService.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/Xml/XmlService.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/ValidationService.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/AVR8/Services/ValidationService.php';
+
+$xmlService = new XmlService();
+
+$validationService = new ValidationService();
+$avrValidationService = new \Targets\TargetDescriptionFiles\AVR8\Services\ValidationService();
 
 $xmlFiles = [];
 
 if (is_dir(TDF_PATH)) {
-    $xmlFiles = TargetDescriptionFiles\Factory::findXmlFiles(TDF_PATH);
+    $discoveryService = new DiscoveryService();
+
+    $xmlFiles = $discoveryService->findTargetDescriptionFiles(TDF_PATH);
     print count($xmlFiles) . ' target descriptions files found in ' . TDF_PATH . PHP_EOL . PHP_EOL;
 
 } else {
@@ -28,12 +46,18 @@ foreach ($xmlFiles as $xmlFile) {
     $xmlFilePath = $xmlFile->getPathname();
 
     print 'Processing ' . $xmlFilePath . PHP_EOL;
-    $targetDescriptionFile = TargetDescriptionFiles\Factory::loadTdfFromFile($xmlFilePath);
 
-    $validationFailures = $targetDescriptionFile->validate();
-    if (in_array($targetDescriptionFile->configurationValue, $processedTargetConfigValues)) {
+    $xmlDocument = new \DOMDocument();
+    $xmlDocument->load($xmlFilePath);
+    $targetDescriptionFile = $xmlService->fromXml($xmlDocument);
+
+    $validationFailures = $targetDescriptionFile instanceof Avr8TargetDescriptionFile
+        ? $avrValidationService->validateAvr8Tdf($targetDescriptionFile)
+        : $validationService->validateTdf($targetDescriptionFile);
+
+    if (in_array($targetDescriptionFile->getConfigurationValue(), $processedTargetConfigValues)) {
         $validationFailures[] = 'Duplicate target configuration value ("'
-            . $targetDescriptionFile->configurationValue . '")';
+            . $targetDescriptionFile->getConfigurationValue() . '")';
     }
 
     if (!empty($validationFailures)) {
@@ -52,7 +76,7 @@ foreach ($xmlFiles as $xmlFile) {
 
     print "\033[0m";
 
-    $processedTargetConfigValues[] = $targetDescriptionFile->configurationValue;
+    $processedTargetConfigValues[] = $targetDescriptionFile->getConfigurationValue();
 }
 
 print 'Validated ' . count($xmlFiles) . ' TDFs' . PHP_EOL;
