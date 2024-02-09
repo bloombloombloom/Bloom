@@ -1,9 +1,8 @@
 <?php
 
-namespace Bloom\BuildScripts;
-
-use Bloom\BuildScripts\TargetDescriptionFiles\TargetDescriptionFile;
-use Bloom\BuildScripts\TargetDescriptionFiles\TargetFamily;
+use Targets\TargetDescriptionFiles\Services\DiscoveryService;
+use Targets\TargetDescriptionFiles\Services\Xml\XmlService;
+use Targets\TargetDescriptionFiles\TargetFamily;
 
 define('TDF_DIR_PATH', $argv[1] ?? null);
 define('MAPPING_TEMPLATE_PATH', $argv[2] ?? null);
@@ -12,6 +11,11 @@ define('TDF_OUTPUT_PATH', $argv[4] ?? null);
 
 if (empty(TDF_DIR_PATH)) {
     print 'Missing TDF directory path. Aborting' . PHP_EOL;
+    exit(1);
+}
+
+if (!file_exists(TDF_DIR_PATH)) {
+    print 'Invalid TDF directory path - "' . TDF_DIR_PATH . '" does not exist' . PHP_EOL;
     exit(1);
 }
 
@@ -34,12 +38,16 @@ if (!file_exists(dirname(MAPPING_OUTPUT_PATH))) {
     mkdir(dirname(MAPPING_OUTPUT_PATH), 0700);
 }
 
-require_once __DIR__ . '/TargetDescriptionFiles/Factory.php';
-require_once __DIR__ . '/TargetDescriptionFiles/TargetFamily.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/DiscoveryService.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/Xml/XmlService.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/TargetFamily.php';
 
-require_once __DIR__ . '/TargetDescriptionFiles/AVR8/Avr8TargetDescriptionFile.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/AVR8/Avr8TargetDescriptionFile.php';
 
-$xmlFiles = TargetDescriptionFiles\Factory::findXmlFiles(TDF_DIR_PATH);
+$discoveryService = new DiscoveryService();
+$xmlService = new XmlService();
+
+$xmlFiles = $discoveryService->findTargetDescriptionFiles(TDF_DIR_PATH);
 print count($xmlFiles) . ' target descriptions files found in ' . TDF_DIR_PATH . PHP_EOL . PHP_EOL;
 
 $targetFamilyMapping = [
@@ -55,17 +63,20 @@ foreach ($xmlFiles as $xmlFile) {
     $xmlFilePath = $xmlFile->getPathname();
 
     print 'Processing ' . $xmlFilePath . PHP_EOL;
-    $targetDescriptionFile = TargetDescriptionFiles\Factory::loadTdfFromFile($xmlFilePath);
 
-    $relativeTdfPath = $targetDescriptionFile->targetFamily->value . '/'
-        . strtoupper($targetDescriptionFile->targetName) . '.xml';
+    $xmlDocument = new \DOMDocument();
+    $xmlDocument->load($xmlFilePath);
+    $targetDescriptionFile = $xmlService->fromXml($xmlDocument);
+
+    $relativeTdfPath = $targetDescriptionFile->getFamily()->value . '/'
+        . strtoupper($targetDescriptionFile->getName()) . '.xml';
 
     $entries[] = str_replace(
         ['@CONFIG_VALUE@', '@TARGET_NAME@', '@TARGET_FAMILY@', '@TDF_PATH@'],
         [
-            $targetDescriptionFile->configurationValue,
-            $targetDescriptionFile->targetName,
-            $targetFamilyMapping[$targetDescriptionFile->targetFamily->value],
+            $targetDescriptionFile->getConfigurationValue(),
+            $targetDescriptionFile->getName(),
+            $targetFamilyMapping[$targetDescriptionFile->getFamily()->value],
             $relativeTdfPath,
         ],
         MAP_ENTRY_TEMPLATE
@@ -78,7 +89,7 @@ foreach ($xmlFiles as $xmlFile) {
         mkdir($tdfDestinationDirPath, 0700, true);
     }
 
-    if (!copy($targetDescriptionFile->filePath, $tdfDestinationPath)) {
+    if (!copy($xmlFilePath, $tdfDestinationPath)) {
         print 'FATAL ERROR: Failed to copy TDF file to ' . $tdfDestinationPath . PHP_EOL;
         print 'Aborting' . PHP_EOL;
         exit(1);
