@@ -1,858 +1,601 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<target-description-file>
-    <variants>
-        <variant name="ATmega406-1AAU" package="LQFP48" pinout="QFP48" tempmax="85" tempmin="-40"/>
-    </variants>
-    <device name="ATmega406" family="AVR8" architecture="AVR8" avr-family="megaAVR">
-        <address-spaces>
-            <address-space endianness="little" name="prog" id="prog" start="0x0000" size="0xa000">
-                <memory-segment start="0x0000" size="0xa000" type="flash" rw="RW" exec="1" name="FLASH" pagesize="0x80"/>
-                <memory-segment start="0x9e00" size="0x0200" type="flash" rw="RW" exec="1" name="BOOT_SECTION_1" pagesize="0x80"/>
-                <memory-segment start="0x9c00" size="0x0400" type="flash" rw="RW" exec="1" name="BOOT_SECTION_2" pagesize="0x80"/>
-                <memory-segment start="0x9800" size="0x0800" type="flash" rw="RW" exec="1" name="BOOT_SECTION_3" pagesize="0x80"/>
-                <memory-segment start="0x9000" size="0x1000" type="flash" rw="RW" exec="1" name="BOOT_SECTION_4" pagesize="0x80"/>
-            </address-space>
-            <address-space endianness="little" name="signatures" id="signatures" start="0" size="3">
-                <memory-segment start="0" size="3" type="signatures" rw="R" exec="0" name="SIGNATURES"/>
-            </address-space>
-            <address-space endianness="little" name="fuses" id="fuses" start="0" size="0x0002">
-                <memory-segment start="0" size="0x0002" type="fuses" rw="RW" exec="0" name="FUSES"/>
-            </address-space>
-            <address-space endianness="little" name="lockbits" id="lockbits" start="0" size="0x0001">
-                <memory-segment start="0" size="0x0001" type="lockbits" rw="RW" exec="0" name="LOCKBITS"/>
-            </address-space>
-            <address-space endianness="little" name="data" id="data" start="0x0000" size="0x0900">
-                <memory-segment external="false" type="regs" size="0x0020" start="0x0000" name="REGISTERS"/>
-                <memory-segment name="MAPPED_IO" start="0x0020" size="0x00e0" type="io" external="false"/>
-                <memory-segment name="IRAM" start="0x0100" size="0x0800" type="ram" external="false"/>
-            </address-space>
-            <address-space endianness="little" name="eeprom" id="eeprom" start="0x0000" size="0x0200">
-                <memory-segment start="0x0000" size="0x0200" type="eeprom" rw="RW" exec="0" name="EEPROM" pagesize="0x04"/>
-            </address-space>
-            <address-space size="0x40" start="0x00" endianness="little" name="io" id="io"/>
-        </address-spaces>
-        <peripherals>
-            <module name="ADC">
-                <instance name="ADC" caption="Analog-to-Digital Converter">
-                    <register-group name="ADC" name-in-module="ADC" offset="0x00" address-space="data" caption="Analog-to-Digital Converter"/>
-                </instance>
-            </module>
-            <module name="EXINT">
-                <instance name="EXINT" caption="External Interrupts">
-                    <register-group name="EXINT" name-in-module="EXINT" offset="0x00" address-space="data" caption="External Interrupts"/>
-                </instance>
-            </module>
-            <module name="TC16">
-                <instance name="TC1" caption="Timer/Counter, 16-bit">
-                    <register-group name="TC1" name-in-module="TC1" offset="0x00" address-space="data" caption="Timer/Counter, 16-bit"/>
-                </instance>
-            </module>
-            <module name="WAKEUP_TIMER">
-                <instance name="WAKEUP_TIMER" caption="Wakeup Timer">
-                    <register-group name="WAKEUP_TIMER" name-in-module="WAKEUP_TIMER" offset="0x00" address-space="data" caption="Wakeup Timer"/>
-                </instance>
-            </module>
-            <module name="BATTERY_PROTECTION">
-                <instance name="BATTERY_PROTECTION" caption="Battery Protection">
-                    <register-group name="BATTERY_PROTECTION" name-in-module="BATTERY_PROTECTION" offset="0x00" address-space="data" caption="Battery Protection"/>
-                </instance>
-            </module>
-            <module name="FET">
-                <instance name="FET" caption="FET Control">
-                    <register-group name="FET" name-in-module="FET" offset="0x00" address-space="data" caption="FET Control"/>
-                </instance>
-            </module>
-            <module name="COULOMB_COUNTER">
-                <instance name="COULOMB_COUNTER" caption="Coulomb Counter">
-                    <register-group name="COULOMB_COUNTER" name-in-module="COULOMB_COUNTER" offset="0x00" address-space="data" caption="Coulomb Counter"/>
-                </instance>
-            </module>
-            <module name="CELL_BALANCING">
-                <instance name="CELL_BALANCING" caption="Cell Balancing">
-                    <register-group name="CELL_BALANCING" name-in-module="CELL_BALANCING" offset="0x00" address-space="data" caption="Cell Balancing"/>
-                </instance>
-            </module>
-            <module name="CPU">
-                <instance name="CPU" caption="CPU Registers">
-                    <register-group name="CPU" name-in-module="CPU" offset="0x00" address-space="data" caption="CPU Registers"/>
-                    <parameters>
-                        <param name="CORE_VERSION" value="V2E"/>
-                    </parameters>
-                </instance>
-            </module>
-            <module name="WDT">
-                <instance name="WDT" caption="Watchdog Timer">
-                    <register-group name="WDT" name-in-module="WDT" offset="0x00" address-space="data" caption="Watchdog Timer"/>
-                </instance>
-            </module>
-            <module name="TC8">
-                <instance name="TC0" caption="Timer/Counter, 8-bit">
-                    <register-group name="TC0" name-in-module="TC0" offset="0x00" address-space="data" caption="Timer/Counter, 8-bit"/>
-                </instance>
-            </module>
-            <module name="PORT">
-                <instance name="PORTA" caption="I/O Port">
-                    <register-group name="PORTA" name-in-module="PORTA" offset="0x00" address-space="data" caption="I/O Port"/>
-                    <signals>
-                        <signal function="PORTA" group="P" index="0" pad="PA0"/>
-                        <signal function="PORTA" group="P" index="1" pad="PA1"/>
-                        <signal function="PORTA" group="P" index="2" pad="PA2"/>
-                        <signal function="PORTA" group="P" index="3" pad="PA3"/>
-                        <signal function="PORTA" group="P" index="4" pad="PA4"/>
-                        <signal function="PORTA" group="P" index="5" pad="PA5"/>
-                        <signal function="PORTA" group="P" index="6" pad="PA6"/>
-                        <signal function="PORTA" group="P" index="7" pad="PA7"/>
-                    </signals>
-                </instance>
-                <instance name="PORTB" caption="I/O Port">
-                    <register-group name="PORTB" name-in-module="PORTB" offset="0x00" address-space="data" caption="I/O Port"/>
-                    <signals>
-                        <signal function="PORTB" group="P" index="0" pad="PB0"/>
-                        <signal function="PORTB" group="P" index="1" pad="PB1"/>
-                        <signal function="PORTB" group="P" index="2" pad="PB2"/>
-                        <signal function="PORTB" group="P" index="3" pad="PB3"/>
-                        <signal function="PORTB" group="P" index="4" pad="PB4"/>
-                        <signal function="PORTB" group="P" index="5" pad="PB5"/>
-                        <signal function="PORTB" group="P" index="6" pad="PB6"/>
-                        <signal function="PORTB" group="P" index="7" pad="PB7"/>
-                    </signals>
-                </instance>
-                <instance name="PORTC" caption="I/O Port">
-                    <register-group name="PORTC" name-in-module="PORTC" offset="0x00" address-space="data" caption="I/O Port"/>
-                    <signals>
-                        <signal function="PORTC" group="P" index="0" pad="PC0"/>
-                    </signals>
-                </instance>
-                <instance name="PORTD" caption="I/O Port">
-                    <register-group name="PORTD" name-in-module="PORTD" offset="0x00" address-space="data" caption="I/O Port"/>
-                    <signals>
-                        <signal function="PORTD" group="P" index="0" pad="PD0"/>
-                        <signal function="PORTD" group="P" index="1" pad="PD1"/>
-                    </signals>
-                </instance>
-            </module>
-            <module name="BOOT_LOAD">
-                <instance name="BOOT_LOAD" caption="Bootloader">
-                    <register-group name="BOOT_LOAD" name-in-module="BOOT_LOAD" offset="0x00" address-space="data" caption="Bootloader"/>
-                </instance>
-            </module>
-            <module name="TWI">
-                <instance name="TWI" caption="Two Wire Serial Interface">
-                    <register-group name="TWI" name-in-module="TWI" offset="0x00" address-space="data" caption="Two Wire Serial Interface"/>
-                </instance>
-            </module>
-            <module name="BANDGAP">
-                <instance name="BANDGAP" caption="Bandgap">
-                    <register-group name="BANDGAP" name-in-module="BANDGAP" offset="0x00" address-space="data" caption="Bandgap"/>
-                </instance>
-            </module>
-            <module name="EEPROM">
-                <instance name="EEPROM" caption="EEPROM">
-                    <register-group name="EEPROM" name-in-module="EEPROM" offset="0x00" address-space="data" caption="EEPROM"/>
-                </instance>
-            </module>
-            <module name="FUSE">
-                <instance name="FUSE" caption="Fuses">
-                    <register-group name="FUSE" name-in-module="FUSE" offset="0" address-space="fuses" caption="Fuses"/>
-                </instance>
-            </module>
-            <module name="LOCKBIT">
-                <instance name="LOCKBIT" caption="Lockbits">
-                    <register-group name="LOCKBIT" name-in-module="LOCKBIT" offset="0" address-space="lockbits" caption="Lockbits"/>
-                </instance>
-            </module>
-        </peripherals>
-        <interrupts>
-            <interrupt index="0" name="RESET" caption="External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset"/>
-            <interrupt index="1" name="BPINT" caption="Battery Protection Interrupt"/>
-            <interrupt index="2" name="INT0" caption="External Interrupt Request 0"/>
-            <interrupt index="3" name="INT1" caption="External Interrupt Request 1"/>
-            <interrupt index="4" name="INT2" caption="External Interrupt Request 2"/>
-            <interrupt index="5" name="INT3" caption="External Interrupt Request 3"/>
-            <interrupt index="6" name="PCINT0" caption="Pin Change Interrupt 0"/>
-            <interrupt index="7" name="PCINT1" caption="Pin Change Interrupt 1"/>
-            <interrupt index="8" name="WDT" caption="Watchdog Timeout Interrupt"/>
-            <interrupt index="9" name="WAKE_UP" caption="Wakeup timer overflow"/>
-            <interrupt index="10" name="TIM1_COMP" caption="Timer/Counter 1 Compare Match"/>
-            <interrupt index="11" name="TIM1_OVF" caption="Timer/Counter 1 Overflow"/>
-            <interrupt index="12" name="TIM0_COMPA" caption="Timer/Counter0 Compare A Match"/>
-            <interrupt index="13" name="TIM0_COMPB" caption="Timer/Counter0 Compare B Match"/>
-            <interrupt index="14" name="TIM0_OVF" caption="Timer/Counter0 Overflow"/>
-            <interrupt index="15" name="TWI_BUS_CD" caption="Two-Wire Bus Connect/Disconnect"/>
-            <interrupt index="16" name="TWI" caption="Two-Wire Serial Interface"/>
-            <interrupt index="17" name="VADC" caption="Voltage ADC Conversion Complete"/>
-            <interrupt index="18" name="CCADC_CONV" caption="Coulomb Counter ADC Conversion Complete"/>
-            <interrupt index="19" name="CCADC_REG_CUR" caption="Coloumb Counter ADC Regular Current"/>
-            <interrupt index="20" name="CCADC_ACC" caption="Coloumb Counter ADC Accumulator"/>
-            <interrupt index="21" name="EE_READY" caption="EEPROM Ready"/>
-            <interrupt index="22" name="SPM_READY" caption="Store Program Memory Ready"/>
-        </interrupts>
-        <interfaces>
-            <interface name="HVPP" type="hvpp"/>
-            <interface name="JTAG" type="megajtag"/>
-        </interfaces>
-        <property-groups>
-            <property-group name="SIGNATURES">
-                <property name="JTAGID" value="0x0950703F"/>
-                <property name="SIGNATURE0" value="0x1e"/>
-                <property name="SIGNATURE1" value="0x95"/>
-                <property name="SIGNATURE2" value="0x07"/>
+<device name="ATmega406" family="AVR8" configuration-value="atmega406" architecture="AVR8" avr-family="MEGA">
+    <property-groups>
+        <property-group key="signatures">
+            <property key="jtagid" value="0x0950703F"/>
+            <property key="signature0" value="0x1e"/>
+            <property key="signature1" value="0x95"/>
+            <property key="signature2" value="0x07"/>
+        </property-group>
+        <property-group key="ocd">
+            <property key="ocd_revision" value="3"/>
+            <property key="ocd_datareg" value="0x31"/>
+            <property key="progbase" value="0x0000"/>
+        </property-group>
+        <property-group key="jtag_interface">
+            <property key="allowfullpagestream" value="0x00"/>
+        </property-group>
+        <property-group key="pp_interface">
+            <property key="ppcontrolstack" value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
+            <property key="ppenterprogmode_stabdelay" value="100"/>
+            <property key="ppenterprogmode_progmodedelay" value="0"/>
+            <property key="ppenterprogmode_latchcycles" value="6"/>
+            <property key="ppenterprogmode_togglevtg" value="0"/>
+            <property key="ppenterprogmode_poweroffdelay" value="0"/>
+            <property key="ppenterprogmode_resetdelayms" value="0"/>
+            <property key="ppenterprogmode_resetdelayus" value="0"/>
+            <property key="ppleaveprogmode_stabdelay" value="15"/>
+            <property key="ppleaveprogmode_resetdelay" value="15"/>
+            <property key="ppchiperase_pulsewidth" value="0"/>
+            <property key="ppchiperase_polltimeout" value="10"/>
+            <property key="ppprogramflash_polltimeout" value="5"/>
+            <property key="ppprogramflash_mode" value="0x0F"/>
+            <property key="ppprogramflash_blocksize" value="256"/>
+            <property key="ppreadflash_blocksize" value="256"/>
+            <property key="ppprogrameeprom_polltimeout" value="5"/>
+            <property key="ppprogrameeprom_mode" value="0x07"/>
+            <property key="ppprogrameeprom_blocksize" value="256"/>
+            <property key="ppreadeeprom_blocksize" value="256"/>
+            <property key="ppprogramfuse_pulsewidth" value="0"/>
+            <property key="ppprogramfuse_polltimeout" value="5"/>
+            <property key="ppprogramlock_pulsewidth" value="0"/>
+            <property key="ppprogramlock_polltimeout" value="5"/>
+        </property-group>
+        <property-group key="boot_sections">
+            <property-group key="boot_section_1">
+                <property key="start_address" value="0x00009E00"/>
+                <property key="size" value="512"/>
+                <property key="page_size" value="128"/>
             </property-group>
-            <property-group name="OCD">
-                <property name="OCD_REVISION" value="3"/>
-                <property name="OCD_DATAREG" value="0x31"/>
-                <property name="PROGBASE" value="0x0000"/>
+            <property-group key="boot_section_2">
+                <property key="start_address" value="0x00009C00"/>
+                <property key="size" value="1024"/>
+                <property key="page_size" value="128"/>
             </property-group>
-            <property-group name="JTAG_INTERFACE">
-                <property name="ALLOWFULLPAGESTREAM" value="0x00"/>
+            <property-group key="boot_section_3">
+                <property key="start_address" value="0x00009800"/>
+                <property key="size" value="2048"/>
+                <property key="page_size" value="128"/>
             </property-group>
-            <property-group name="PP_INTERFACE">
-                <property name="PpControlStack" value="0x0E 0x1E 0x0F 0x1F 0x2E 0x3E 0x2F 0x3F 0x4E 0x5E 0x4F 0x5F 0x6E 0x7E 0x6F 0x7F 0x66 0x76 0x67 0x77 0x6A 0x7A 0x6B 0x7B 0xBE 0xFD 0x00 0x01 0x00 0x00 0x00 0x00"/>
-                <property name="PpEnterProgMode_stabDelay" value="100"/>
-                <property name="PpEnterProgMode_progModeDelay" value="0"/>
-                <property name="PpEnterProgMode_latchCycles" value="6"/>
-                <property name="PpEnterProgMode_toggleVtg" value="0"/>
-                <property name="PpEnterProgMode_powerOffDelay" value="0"/>
-                <property name="PpEnterProgMode_resetDelayMs" value="0"/>
-                <property name="PpEnterProgMode_resetDelayUs" value="0"/>
-                <property name="PpLeaveProgMode_stabDelay" value="15"/>
-                <property name="PpLeaveProgMode_resetDelay" value="15"/>
-                <property name="PpChipErase_pulseWidth" value="0"/>
-                <property name="PpChipErase_pollTimeout" value="10"/>
-                <property name="PpProgramFlash_pollTimeout" value="5"/>
-                <property name="PpProgramFlash_mode" value="0x0F"/>
-                <property name="PpProgramFlash_blockSize" value="256"/>
-                <property name="PpReadFlash_blockSize" value="256"/>
-                <property name="PpProgramEeprom_pollTimeout" value="5"/>
-                <property name="PpProgramEeprom_mode" value="0x07"/>
-                <property name="PpProgramEeprom_blockSize" value="256"/>
-                <property name="PpReadEeprom_blockSize" value="256"/>
-                <property name="PpProgramFuse_pulseWidth" value="0"/>
-                <property name="PpProgramFuse_pollTimeout" value="5"/>
-                <property name="PpProgramLock_pulseWidth" value="0"/>
-                <property name="PpProgramLock_pollTimeout" value="5"/>
+            <property-group key="boot_section_4">
+                <property key="start_address" value="0x00009000"/>
+                <property key="size" value="4096"/>
+                <property key="page_size" value="128"/>
             </property-group>
-        </property-groups>
-    </device>
+        </property-group>
+    </property-groups>
+    <address-spaces>
+        <address-space key="prog" start="0x00000000" size="40960" endianness="little">
+            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="40960" page-size="128" rw="RW"/>
+        </address-space>
+        <address-space key="signatures" start="0x00000000" size="3" endianness="little">
+            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00000000" size="3" rw="R"/>
+        </address-space>
+        <address-space key="fuses" start="0x00000000" size="2" endianness="little">
+            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00000000" size="2" rw="RW"/>
+        </address-space>
+        <address-space key="lockbits" start="0x00000000" size="1" endianness="little">
+            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00000000" size="1" rw="RW"/>
+        </address-space>
+        <address-space key="data" start="0x00000000" size="2304" endianness="little">
+            <memory-segment key="gp_registers" name="General Purpose Registers" type="gp_registers" start="0x00000000" size="32"/>
+            <memory-segment key="mapped_io" name="Mapped Input/Output" type="io" start="0x00000020" size="224"/>
+            <memory-segment key="internal_ram" name="Internal RAM" type="ram" start="0x00000100" size="2048"/>
+        </address-space>
+        <address-space key="eeprom" start="0x00000000" size="512" endianness="little">
+            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00000000" size="512" page-size="4" rw="RW"/>
+        </address-space>
+    </address-spaces>
+    <physical-interfaces>
+        <physical-interface name="HVPP" type="hvpp"/>
+        <physical-interface name="JTAG" type="megajtag"/>
+    </physical-interfaces>
+    <peripherals>
+        <peripheral key="adc" name="ADC" module-key="adc">
+            <register-group-reference key="adc" name="ADC" description="Analog-to-Digital Converter" register-group-key="adc" offset="0x0"/>
+        </peripheral>
+        <peripheral key="exint" name="EXINT" module-key="exint">
+            <register-group-reference key="exint" name="EXINT" description="External Interrupts" register-group-key="exint" offset="0x0"/>
+        </peripheral>
+        <peripheral key="tc1" name="TC1" module-key="tc16">
+            <register-group-reference key="tc1" name="TC1" description="Timer/Counter, 16-bit" register-group-key="tc1" offset="0x0"/>
+        </peripheral>
+        <peripheral key="wakeup_timer" name="WAKEUP_TIMER" module-key="wakeup_timer">
+            <register-group-reference key="wakeup_timer" name="WAKEUP_TIMER" description="Wakeup Timer" register-group-key="wakeup_timer" offset="0x0"/>
+        </peripheral>
+        <peripheral key="battery_protection" name="BATTERY_PROTECTION" module-key="battery_protection">
+            <register-group-reference key="battery_protection" name="BATTERY_PROTECTION" description="Battery Protection" register-group-key="battery_protection" offset="0x0"/>
+        </peripheral>
+        <peripheral key="fet" name="FET" module-key="fet">
+            <register-group-reference key="fet" name="FET" description="FET Control" register-group-key="fet" offset="0x0"/>
+        </peripheral>
+        <peripheral key="coulomb_counter" name="COULOMB_COUNTER" module-key="coulomb_counter">
+            <register-group-reference key="coulomb_counter" name="COULOMB_COUNTER" description="Coulomb Counter" register-group-key="coulomb_counter" offset="0x0"/>
+        </peripheral>
+        <peripheral key="cell_balancing" name="CELL_BALANCING" module-key="cell_balancing">
+            <register-group-reference key="cell_balancing" name="CELL_BALANCING" description="Cell Balancing" register-group-key="cell_balancing" offset="0x0"/>
+        </peripheral>
+        <peripheral key="cpu" name="CPU" module-key="cpu">
+            <register-group-reference key="cpu" name="CPU" description="CPU Registers" register-group-key="cpu" offset="0x0"/>
+        </peripheral>
+        <peripheral key="wdt" name="WDT" module-key="wdt">
+            <register-group-reference key="wdt" name="WDT" description="Watchdog Timer" register-group-key="wdt" offset="0x0"/>
+        </peripheral>
+        <peripheral key="tc0" name="TC0" module-key="tc8">
+            <register-group-reference key="tc0" name="TC0" description="Timer/Counter, 8-bit" register-group-key="tc0" offset="0x0"/>
+        </peripheral>
+        <peripheral key="porta" name="PORTA" module-key="gpio_port">
+            <register-group-reference key="porta" name="PORTA" description="I/O Port" register-group-key="porta" offset="0x0"/>
+            <signals>
+                <signal pad-id="pa0" index="0" function="PORTA" group="P"/>
+                <signal pad-id="pa1" index="1" function="PORTA" group="P"/>
+                <signal pad-id="pa2" index="2" function="PORTA" group="P"/>
+                <signal pad-id="pa3" index="3" function="PORTA" group="P"/>
+                <signal pad-id="pa4" index="4" function="PORTA" group="P"/>
+                <signal pad-id="pa5" index="5" function="PORTA" group="P"/>
+                <signal pad-id="pa6" index="6" function="PORTA" group="P"/>
+                <signal pad-id="pa7" index="7" function="PORTA" group="P"/>
+            </signals>
+        </peripheral>
+        <peripheral key="portb" name="PORTB" module-key="gpio_port">
+            <register-group-reference key="portb" name="PORTB" description="I/O Port" register-group-key="portb" offset="0x0"/>
+            <signals>
+                <signal pad-id="pb0" index="0" function="PORTB" group="P"/>
+                <signal pad-id="pb1" index="1" function="PORTB" group="P"/>
+                <signal pad-id="pb2" index="2" function="PORTB" group="P"/>
+                <signal pad-id="pb3" index="3" function="PORTB" group="P"/>
+                <signal pad-id="pb4" index="4" function="PORTB" group="P"/>
+                <signal pad-id="pb5" index="5" function="PORTB" group="P"/>
+                <signal pad-id="pb6" index="6" function="PORTB" group="P"/>
+                <signal pad-id="pb7" index="7" function="PORTB" group="P"/>
+            </signals>
+        </peripheral>
+        <peripheral key="portc" name="PORTC" module-key="gpio_port">
+            <register-group-reference key="portc" name="PORTC" description="I/O Port" register-group-key="portc" offset="0x0"/>
+            <signals>
+                <signal pad-id="pc0" index="0" function="PORTC" group="P"/>
+            </signals>
+        </peripheral>
+        <peripheral key="portd" name="PORTD" module-key="gpio_port">
+            <register-group-reference key="portd" name="PORTD" description="I/O Port" register-group-key="portd" offset="0x0"/>
+            <signals>
+                <signal pad-id="pd0" index="0" function="PORTD" group="P"/>
+                <signal pad-id="pd1" index="1" function="PORTD" group="P"/>
+            </signals>
+        </peripheral>
+        <peripheral key="boot_load" name="BOOT_LOAD" module-key="boot_load">
+            <register-group-reference key="boot_load" name="BOOT_LOAD" description="Bootloader" register-group-key="boot_load" offset="0x0"/>
+        </peripheral>
+        <peripheral key="twi" name="TWI" module-key="twi">
+            <register-group-reference key="twi" name="TWI" description="Two Wire Serial Interface" register-group-key="twi" offset="0x0"/>
+        </peripheral>
+        <peripheral key="bandgap" name="BANDGAP" module-key="bandgap">
+            <register-group-reference key="bandgap" name="BANDGAP" description="Bandgap" register-group-key="bandgap" offset="0x0"/>
+        </peripheral>
+        <peripheral key="eeprom" name="EEPROM" module-key="eeprom">
+            <register-group-reference key="eeprom" name="EEPROM" description="EEPROM" register-group-key="eeprom" offset="0x0"/>
+        </peripheral>
+        <peripheral key="fuse" name="FUSE" module-key="fuse">
+            <register-group-reference key="fuse" name="FUSE" description="Fuses" register-group-key="fuse" offset="0x0"/>
+        </peripheral>
+        <peripheral key="lockbit" name="LOCKBIT" module-key="lockbit">
+            <register-group-reference key="lockbit" name="LOCKBIT" description="Lockbits" register-group-key="lockbit" offset="0x0"/>
+        </peripheral>
+    </peripherals>
     <modules>
-        <module caption="Fuses" name="FUSE">
-            <register-group caption="Fuses" name="FUSE">
-                <register caption="" name="HIGH" offset="0x01" size="1" initval="0xFE">
-                    <bitfield caption="On-Chip Debug Enabled" mask="0x02" name="OCDEN"/>
-                    <bitfield caption="JTAG Interface Enabled" mask="0x01" name="JTAGEN"/>
+        <module key="fuse" name="FUSE" description="Fuses">
+            <register-group key="fuse" name="FUSE">
+                <register key="low" name="LOW" offset="0x0" size="1" initial-value="0xCD">
+                    <bit-field key="wdton" name="WDTON" description="Watchdog timer always on" mask="0x80"/>
+                    <bit-field key="eesave" name="EESAVE" description="Preserve EEPROM through the Chip Erase cycle" mask="0x40"/>
+                    <bit-field key="bootsz" name="BOOTSZ" description="Select boot size" mask="0x30"/>
+                    <bit-field key="bootrst" name="BOOTRST" description="Boot Reset vector Enabled" mask="0x8"/>
+                    <bit-field key="sut_cksel" name="SUT_CKSEL" description="Clock Selection" mask="0x7"/>
                 </register>
-                <register caption="" name="LOW" offset="0x00" size="1" initval="0xCD">
-                    <bitfield caption="Watchdog timer always on" mask="0x80" name="WDTON"/>
-                    <bitfield caption="Preserve EEPROM through the Chip Erase cycle" mask="0x40" name="EESAVE"/>
-                    <bitfield caption="Select boot size" mask="0x30" name="BOOTSZ" values="ENUM_BOOTSZ"/>
-                    <bitfield caption="Boot Reset vector Enabled" mask="0x08" name="BOOTRST"/>
-                    <bitfield caption="Clock Selection" mask="0x07" name="SUT_CKSEL" values="ENUM_SUT_CKSEL"/>
-                </register>
-            </register-group>
-            <value-group caption="" name="ENUM_BOOTSZ">
-                <value caption="Boot Flash size=256 words Boot address=$4F00" name="256W_4F00" value="0x03"/>
-                <value caption="Boot Flash size=512 words Boot address=$4E00" name="512W_4E00" value="0x02"/>
-                <value caption="Boot Flash size=1024 words Boot address=$4C00" name="1024W_4C00" value="0x01"/>
-                <value caption="Boot Flash size=2048 words Boot address=$4800" name="2048W_4800" value="0x00"/>
-            </value-group>
-            <value-group caption="" name="ENUM_SUT_CKSEL">
-                <value caption="Start-up time: 14 CK + 0 ms" name="14CK_0MS" value="0x00"/>
-                <value caption="Start-up time: 14 CK + 3.9 ms" name="14CK_3MS9" value="0x02"/>
-                <value caption="Start-up time: 14 CK + 62.5 ms" name="14CK_62MS5" value="0x04"/>
-                <value caption="Start-up time: 14 CK + 0 ms" name="14CK_0MS" value="0x01"/>
-                <value caption="Start-up time: 14 CK + 3.9 ms" name="14CK_3MS9" value="0x03"/>
-                <value caption="Start-up time: 14 CK + 62.5 ms" name="14CK_62MS5" value="0x05"/>
-            </value-group>
-        </module>
-        <module caption="Lockbits" name="LOCKBIT">
-            <register-group caption="Lockbits" name="LOCKBIT">
-                <register caption="" name="LOCKBIT" offset="0x00" size="1" initval="0xFF">
-                    <bitfield caption="Memory Lock" mask="0x03" name="LB" values="ENUM_LB"/>
-                    <bitfield caption="Boot Loader Protection Mode" mask="0x0C" name="BLB0" values="ENUM_BLB"/>
-                    <bitfield caption="Boot Loader Protection Mode" mask="0x30" name="BLB1" values="ENUM_BLB2"/>
-                </register>
-            </register-group>
-            <value-group caption="" name="ENUM_LB">
-                <value caption="Further programming and verification disabled" name="PROG_VER_DISABLED" value="0x00"/>
-                <value caption="Further programming disabled" name="PROG_DISABLED" value="0x02"/>
-                <value caption="No memory lock features enabled" name="NO_LOCK" value="0x03"/>
-            </value-group>
-            <value-group caption="" name="ENUM_BLB">
-                <value caption="LPM and SPM prohibited in Application Section" name="LPM_SPM_DISABLE" value="0x00"/>
-                <value caption="LPM prohibited in Application Section" name="LPM_DISABLE" value="0x01"/>
-                <value caption="SPM prohibited in Application Section" name="SPM_DISABLE" value="0x02"/>
-                <value caption="No lock on SPM and LPM in Application Section" name="NO_LOCK" value="0x03"/>
-            </value-group>
-            <value-group caption="" name="ENUM_BLB2">
-                <value caption="LPM and SPM prohibited in Boot Section" name="LPM_SPM_DISABLE" value="0x00"/>
-                <value caption="LPM prohibited in Boot Section" name="LPM_DISABLE" value="0x01"/>
-                <value caption="SPM prohibited in Boot Section" name="SPM_DISABLE" value="0x02"/>
-                <value caption="No lock on SPM and LPM in Boot Section" name="NO_LOCK" value="0x03"/>
-            </value-group>
-        </module>
-        <module caption="Analog-to-Digital Converter" name="ADC">
-            <register-group caption="Analog-to-Digital Converter" name="ADC">
-                <register caption="The VADC multiplexer Selection Register" name="VADMUX" offset="0x7C" size="1">
-                    <bitfield caption="Analog Channel and Gain Selection Bits" mask="0x0F" name="VADMUX"/>
-                </register>
-                <register caption="VADC Data Register Bytes" name="VADC" offset="0x78" size="2" mask="0x0FFF"/>
-                <register caption="The VADC Control and Status register" name="VADCSR" offset="0x7A" size="1" ocd-rw="R">
-                    <bitfield caption="VADC Enable" mask="0x08" name="VADEN"/>
-                    <bitfield caption="VADC Satrt Conversion" mask="0x04" name="VADSC"/>
-                    <bitfield caption="VADC Conversion Complete Interrupt Flag" mask="0x02" name="VADCCIF"/>
-                    <bitfield caption="VADC Conversion Complete Interrupt Enable" mask="0x01" name="VADCCIE"/>
+                <register key="high" name="HIGH" offset="0x1" size="1" initial-value="0xFE">
+                    <bit-field key="ocden" name="OCDEN" description="On-Chip Debug Enabled" mask="0x2"/>
+                    <bit-field key="jtagen" name="JTAGEN" description="JTAG Interface Enabled" mask="0x1"/>
                 </register>
             </register-group>
         </module>
-        <module caption="External Interrupts" name="EXINT">
-            <register-group caption="External Interrupts" name="EXINT">
-                <register caption="External Interrupt Control Register" name="EICRA" offset="0x69" size="1">
-                    <bitfield caption="External Interrupt Sense Control 3 Bits" mask="0xC0" name="ISC3" values="INTERRUPT_SENSE_CONTROL"/>
-                    <bitfield caption="External Interrupt Sense Control 2 Bits" mask="0x30" name="ISC2" values="INTERRUPT_SENSE_CONTROL"/>
-                    <bitfield caption="External Interrupt Sense Control 1 Bits" mask="0x0C" name="ISC1" values="INTERRUPT_SENSE_CONTROL"/>
-                    <bitfield caption="External Interrupt Sense Control 0 Bits" mask="0x03" name="ISC0" values="INTERRUPT_SENSE_CONTROL"/>
-                </register>
-                <register caption="External Interrupt Mask Register" name="EIMSK" offset="0x3D" size="1">
-                    <bitfield caption="External Interrupt Request 1 Enable" mask="0x0F" name="INT"/>
-                </register>
-                <register caption="External Interrupt Flag Register" name="EIFR" offset="0x3C" size="1" ocd-rw="R">
-                    <bitfield caption="External Interrupt Flags" mask="0x0F" name="INTF"/>
-                </register>
-                <register caption="Pin Change Interrupt Control Register" name="PCICR" offset="0x68" size="1">
-                    <bitfield caption="Pin Change Interrupt Enables" mask="0x03" name="PCIE"/>
-                </register>
-                <register caption="Pin Change Interrupt Flag Register" name="PCIFR" offset="0x3B" size="1" ocd-rw="R">
-                    <bitfield caption="Pin Change Interrupt Flags" mask="0x03" name="PCIF"/>
-                </register>
-                <register caption="Pin Change Enable Mask Register 1" name="PCMSK1" offset="0x6C" size="1" mask="0xFF"/>
-                <register caption="Pin Change Enable Mask Register 0" name="PCMSK0" offset="0x6B" size="1" mask="0xFF"/>
-            </register-group>
-            <value-group caption="Interrupt Sense Control" name="INTERRUPT_SENSE_CONTROL">
-                <value caption="Low Level of INTX" name="VAL_0x00" value="0x00"/>
-                <value caption="Any Logical Change of INTX" name="VAL_0x01" value="0x01"/>
-                <value caption="Falling Edge of INTX" name="VAL_0x02" value="0x02"/>
-                <value caption="Rising Edge of INTX" name="VAL_0x03" value="0x03"/>
-            </value-group>
-        </module>
-        <module caption="Timer/Counter, 16-bit" name="TC16">
-            <register-group caption="Timer/Counter, 16-bit" name="TC1">
-                <register caption="Timer/Counter1 Control Register B" name="TCCR1B" offset="0x81" size="1">
-                    <bitfield caption="Clear Timer/Counter on Compare Match" mask="0x08" name="CTC1"/>
-                    <bitfield caption="Clock Select1 bits" mask="0x07" name="CS1" values="CLK_SEL_3BIT"/>
-                </register>
-                <register caption="Timer Counter 1 Bytes" name="TCNT1" offset="0x84" size="2" mask="0xFFFF"/>
-                <register caption="Output Compare Register 1A Low byte" name="OCR1AL" offset="0x88" size="1" mask="0xFF"/>
-                <register caption="Output Compare Register 1A High byte" name="OCR1AH" offset="0x89" size="1" mask="0xFF"/>
-                <register caption="Timer/Counter Interrupt Mask Register" name="TIMSK1" offset="0x6F" size="1">
-                    <bitfield caption="Timer/Counter1 Output Compare Interrupt Enable" mask="0x02" name="OCIE1A"/>
-                    <bitfield caption="Timer/Counter1 Overflow Interrupt Enable" mask="0x01" name="TOIE1"/>
-                </register>
-                <register caption="Timer/Counter Interrupt Flag register" name="TIFR1" offset="0x36" size="1" ocd-rw="R">
-                    <bitfield caption="Timer/Counter1 Output Compare Flag A" mask="0x02" name="OCF1A"/>
-                    <bitfield caption="Timer/Counter1 Overflow Flag" mask="0x01" name="TOV1"/>
-                </register>
-                <register caption="General Timer/Counter Control Register" name="GTCCR" offset="0x43" size="1">
-                    <bitfield caption="Timer/Counter Synchronization Mode" mask="0x80" name="TSM"/>
-                    <bitfield caption="Prescaler Reset" mask="0x01" name="PSRSYNC"/>
-                </register>
-            </register-group>
-            <value-group caption="" name="CLK_SEL_3BIT">
-                <value caption="No Clock Source (Stopped)" name="VAL_0x00" value="0x00"/>
-                <value caption="Running, No Prescaling" name="VAL_0x01" value="0x01"/>
-                <value caption="Running, CLK/8" name="VAL_0x02" value="0x02"/>
-                <value caption="Running, CLK/32" name="VAL_0x03" value="0x03"/>
-                <value caption="Running, CLK/64" name="VAL_0x04" value="0x04"/>
-                <value caption="Running, CLK/128" name="VAL_0x05" value="0x05"/>
-                <value caption="Running, CLK/256" name="VAL_0x06" value="0x06"/>
-                <value caption="Running, CLK/1024" name="VAL_0x07" value="0x07"/>
-            </value-group>
-        </module>
-        <module caption="Wakeup Timer" name="WAKEUP_TIMER">
-            <register-group caption="Wakeup Timer" name="WAKEUP_TIMER">
-                <register caption="Wake-up Timer Control Register" name="WUTCSR" offset="0x62" size="1" ocd-rw="R">
-                    <bitfield caption="Wake-up Timer Interrupt Flag" mask="0x80" name="WUTIF"/>
-                    <bitfield caption="Wake-up Timer Interrupt Enable" mask="0x40" name="WUTIE"/>
-                    <bitfield caption="Wake-up timer Calibration Flag" mask="0x20" name="WUTCF"/>
-                    <bitfield caption="Wake-up Timer Reset" mask="0x10" name="WUTR"/>
-                    <bitfield caption="Wake-up Timer Enable" mask="0x08" name="WUTE"/>
-                    <bitfield caption="Wake-up Timer Prescaler Bits" mask="0x07" name="WUTP" values="CLK_SEL_3BIT_ONLY_PRESCALE"/>
-                </register>
-            </register-group>
-            <value-group caption="" name="CLK_SEL_3BIT_ONLY_PRESCALE">
-                <value caption="4K(Slow RC) / 1K (32kHz)" name="VAL_0x00" value="0x00"/>
-                <value caption="8K(Slow RC) / 2K (32kHz)" name="VAL_0x01" value="0x01"/>
-                <value caption="16K(Slow RC) / 4K (32kHz)" name="VAL_0x02" value="0x02"/>
-                <value caption="32K(Slow RC) / 8K (32kHz)" name="VAL_0x03" value="0x03"/>
-                <value caption="64K(Slow RC) / 16K (32kHz)" name="VAL_0x04" value="0x04"/>
-                <value caption="128K(Slow RC) / 32K (32kHz)" name="VAL_0x05" value="0x05"/>
-                <value caption="256K(Slow RC) / 64K (32kHz)" name="VAL_0x06" value="0x06"/>
-                <value caption="512K(Slow RC) / 128K (32kHz)" name="VAL_0x07" value="0x07"/>
-            </value-group>
-        </module>
-        <module caption="Battery Protection" name="BATTERY_PROTECTION">
-            <register-group caption="Battery Protection" name="BATTERY_PROTECTION">
-                <register caption="Battery Protection Parameter Lock Register" name="BPPLR" offset="0xF8" size="1" ocd-rw="R">
-                    <bitfield caption="Battery Protection Parameter Lock Enable" mask="0x02" name="BPPLE"/>
-                    <bitfield caption="Battery Protection Parameter Lock" mask="0x01" name="BPPL"/>
-                </register>
-                <register caption="Battery Protection Control Register" name="BPCR" offset="0xF7" size="1">
-                    <bitfield caption="" mask="0x08" name="DUVD"/>
-                    <bitfield caption="" mask="0x04" name="SCD"/>
-                    <bitfield caption="" mask="0x02" name="DCD"/>
-                    <bitfield caption="" mask="0x01" name="CCD"/>
-                </register>
-                <register caption="Current Battery Protection Timing Register" name="CBPTR" offset="0xF6" size="1">
-                    <bitfield caption="" mask="0xF0" name="SCPT" values="BAT_SHORT_CIRC_DELAY"/>
-                    <bitfield caption="" mask="0x0F" name="OCPT" values="BAT_OVER_CURRENT_DELAY"/>
-                </register>
-                <register caption="Battery Protection OverCurrent Detection Level Register" name="BPOCD" offset="0xF5" size="1">
-                    <bitfield caption="" mask="0xF0" name="DCDL" values="BAT_VOLT_SENSE"/>
-                    <bitfield caption="" mask="0x0F" name="CCDL" values="BAT_VOLT_SENSE"/>
-                </register>
-                <register caption="Battery Protection Short-Circuit Detection Level Register" name="BPSCD" offset="0xF4" size="1">
-                    <bitfield caption="" mask="0x0F" name="SCDL" values="BAT_VOLT_SENSE2"/>
-                </register>
-                <register caption="Battery Protection Deep Under Voltage Register" name="BPDUV" offset="0xF3" size="1">
-                    <bitfield caption="" mask="0x30" name="DUVT" values="BAT_DEEP_UNDER_DELAY"/>
-                    <bitfield caption="" mask="0x0F" name="DUDL" values="BAT_DEEP_UNDER_LEVEL"/>
-                </register>
-                <register caption="Battery Protection Interrupt Register" name="BPIR" offset="0xF2" size="1" ocd-rw="R">
-                    <bitfield caption="Deep Under-voltage Early Warning Interrupt Flag" mask="0x80" name="DUVIF"/>
-                    <bitfield caption="Charge Over-current Protection Activated Interrupt Flag" mask="0x40" name="COCIF"/>
-                    <bitfield caption="" mask="0x20" name="DOCIF"/>
-                    <bitfield caption="" mask="0x10" name="SCIF"/>
-                    <bitfield caption="Deep Under-voltage Early Warning Interrupt Enable" mask="0x08" name="DUVIE"/>
-                    <bitfield caption="" mask="0x04" name="COCIE"/>
-                    <bitfield caption="" mask="0x02" name="DOCIE"/>
-                    <bitfield caption="" mask="0x01" name="SCIE"/>
-                </register>
-            </register-group>
-            <value-group caption="" name="BAT_SHORT_CIRC_DELAY">
-                <value caption="61 us" name="VAL_0x00" value="0x00"/>
-                <value caption="122 us" name="VAL_0x01" value="0x01"/>
-                <value caption="183 us" name="VAL_0x02" value="0x02"/>
-                <value caption="244 us" name="VAL_0x03" value="0x03"/>
-                <value caption="305 us" name="VAL_0x04" value="0x04"/>
-                <value caption="366 us" name="VAL_0x05" value="0x05"/>
-                <value caption="427 us" name="VAL_0x06" value="0x06"/>
-                <value caption="488 us" name="VAL_0x07" value="0x07"/>
-                <value caption="610 us" name="VAL_0x08" value="0x08"/>
-                <value caption="732 us" name="VAL_0x09" value="0x09"/>
-                <value caption="854 us" name="VAL_0x0A" value="0x0A"/>
-                <value caption="976 us" name="VAL_0x0B" value="0x0B"/>
-                <value caption="1098 us" name="VAL_0x0C" value="0x0C"/>
-                <value caption="1220 us" name="VAL_0x0D" value="0x0D"/>
-                <value caption="1342 us" name="VAL_0x0E" value="0x0E"/>
-                <value caption="1464 us" name="VAL_0x0F" value="0x0F"/>
-            </value-group>
-            <value-group caption="" name="BAT_OVER_CURRENT_DELAY">
-                <value caption="1 ms" name="VAL_0x00" value="0x00"/>
-                <value caption="2 ms" name="VAL_0x01" value="0x01"/>
-                <value caption="4 ms" name="VAL_0x02" value="0x02"/>
-                <value caption="6 ms" name="VAL_0x03" value="0x03"/>
-                <value caption="8 ms" name="VAL_0x04" value="0x04"/>
-                <value caption="10 ms" name="VAL_0x05" value="0x05"/>
-                <value caption="12 ms" name="VAL_0x06" value="0x06"/>
-                <value caption="14 ms" name="VAL_0x07" value="0x07"/>
-                <value caption="16 ms" name="VAL_0x08" value="0x08"/>
-                <value caption="18 ms" name="VAL_0x09" value="0x09"/>
-                <value caption="20 ms" name="VAL_0x0A" value="0x0A"/>
-                <value caption="22 ms" name="VAL_0x0B" value="0x0B"/>
-                <value caption="24 ms" name="VAL_0x0C" value="0x0C"/>
-                <value caption="26 ms" name="VAL_0x0D" value="0x0D"/>
-                <value caption="28 ms" name="VAL_0x0E" value="0x0E"/>
-                <value caption="30 ms" name="VAL_0x0F" value="0x0F"/>
-            </value-group>
-            <value-group caption="" name="BAT_VOLT_SENSE">
-                <value caption="0.050V" name="VAL_0x00" value="0x00"/>
-                <value caption="0.055V" name="VAL_0x01" value="0x01"/>
-                <value caption="0.060V" name="VAL_0x02" value="0x02"/>
-                <value caption="0.065V" name="VAL_0x03" value="0x03"/>
-                <value caption="0.070V" name="VAL_0x04" value="0x04"/>
-                <value caption="0.080V" name="VAL_0x05" value="0x05"/>
-                <value caption="0.090V" name="VAL_0x06" value="0x06"/>
-                <value caption="0.100V" name="VAL_0x07" value="0x07"/>
-                <value caption="0.110V" name="VAL_0x08" value="0x08"/>
-                <value caption="0.120V" name="VAL_0x09" value="0x09"/>
-                <value caption="0.130V" name="VAL_0x0A" value="0x0A"/>
-                <value caption="0.140V" name="VAL_0x0B" value="0x0B"/>
-                <value caption="0.160V" name="VAL_0x0C" value="0x0C"/>
-                <value caption="0.180V" name="VAL_0x0D" value="0x0D"/>
-                <value caption="0.200V" name="VAL_0x0E" value="0x0E"/>
-                <value caption="0.220V" name="VAL_0x0F" value="0x0F"/>
-            </value-group>
-            <value-group caption="" name="BAT_VOLT_SENSE2">
-                <value caption="0.100V" name="VAL_0x00" value="0x00"/>
-                <value caption="0.110V" name="VAL_0x01" value="0x01"/>
-                <value caption="0.120V" name="VAL_0x02" value="0x02"/>
-                <value caption="0.130V" name="VAL_0x03" value="0x03"/>
-                <value caption="0.140V" name="VAL_0x04" value="0x04"/>
-                <value caption="0.160V" name="VAL_0x05" value="0x05"/>
-                <value caption="0.180V" name="VAL_0x06" value="0x06"/>
-                <value caption="0.200V" name="VAL_0x07" value="0x07"/>
-                <value caption="0.220V" name="VAL_0x08" value="0x08"/>
-                <value caption="0.240V" name="VAL_0x09" value="0x09"/>
-                <value caption="0.260V" name="VAL_0x0A" value="0x0A"/>
-                <value caption="0.280V" name="VAL_0x0B" value="0x0B"/>
-                <value caption="0.320V" name="VAL_0x0C" value="0x0C"/>
-                <value caption="0.360V" name="VAL_0x0D" value="0x0D"/>
-                <value caption="0.400V" name="VAL_0x0E" value="0x0E"/>
-                <value caption="0.440V" name="VAL_0x0F" value="0x0F"/>
-            </value-group>
-            <value-group caption="" name="BAT_DEEP_UNDER_DELAY">
-                <value caption="750ms" name="VAL_0x00" value="0x00"/>
-                <value caption="1000ms" name="VAL_0x01" value="0x01"/>
-                <value caption="1250ms" name="VAL_0x02" value="0x02"/>
-                <value caption="1500ms" name="VAL_0x03" value="0x03"/>
-            </value-group>
-            <value-group caption="" name="BAT_DEEP_UNDER_LEVEL">
-                <value caption="4.71V" name="VAL_0x00" value="0x00"/>
-                <value caption="5.03V" name="VAL_0x01" value="0x01"/>
-                <value caption="5.34V" name="VAL_0x02" value="0x02"/>
-                <value caption="5.66V" name="VAL_0x03" value="0x03"/>
-                <value caption="5.97V" name="VAL_0x04" value="0x04"/>
-                <value caption="6.29V" name="VAL_0x05" value="0x05"/>
-                <value caption="6.60V" name="VAL_0x06" value="0x06"/>
-                <value caption="6.91V" name="VAL_0x07" value="0x07"/>
-                <value caption="7.23V" name="VAL_0x08" value="0x08"/>
-                <value caption="7.54V" name="VAL_0x09" value="0x09"/>
-                <value caption="7.86V" name="VAL_0x0A" value="0x0A"/>
-                <value caption="8.17V" name="VAL_0x0B" value="0x0B"/>
-                <value caption="8.49V" name="VAL_0x0C" value="0x0C"/>
-                <value caption="8.80V" name="VAL_0x0D" value="0x0D"/>
-                <value caption="9.11V" name="VAL_0x0E" value="0x0E"/>
-                <value caption="9.43V" name="VAL_0x0F" value="0x0F"/>
-            </value-group>
-        </module>
-        <module caption="FET Control" name="FET">
-            <register-group caption="FET Control" name="FET">
-                <register caption="" name="FCSR" offset="0xF0" size="1">
-                    <bitfield caption="Pulse Width Modulation of OC output" mask="0x20" name="PWMOC"/>
-                    <bitfield caption="Pulse Width Modulation Modulation of OPC output" mask="0x10" name="PWMOPC"/>
-                    <bitfield caption="Current Protection Status" mask="0x08" name="CPS"/>
-                    <bitfield caption="Discharge FET Enable" mask="0x04" name="DFE"/>
-                    <bitfield caption="Charge FET Enable" mask="0x02" name="CFE"/>
-                    <bitfield caption="Precharge FET disable" mask="0x01" name="PFD"/>
+        <module key="lockbit" name="LOCKBIT" description="Lockbits">
+            <register-group key="lockbit" name="LOCKBIT">
+                <register key="lockbit" name="LOCKBIT" offset="0x0" size="1" initial-value="0xFF">
+                    <bit-field key="lb" name="LB" description="Memory Lock" mask="0x3"/>
+                    <bit-field key="blb0" name="BLB0" description="Boot Loader Protection Mode" mask="0xC"/>
+                    <bit-field key="blb1" name="BLB1" description="Boot Loader Protection Mode" mask="0x30"/>
                 </register>
             </register-group>
         </module>
-        <module caption="Coulomb Counter" name="COULOMB_COUNTER">
-            <register-group caption="Coulomb Counter" name="COULOMB_COUNTER">
-                <register caption="CC-ADC Control and Status Register A" name="CADCSRA" offset="0xE4" size="1">
-                    <bitfield caption="When the CADEN bit is cleared (zero), the CC-ADC is disabled. When the CADEN bit is set (one), the CC-ADC will continuously measure the voltage drop over the external sense resistor RSENSE. In Power-down, only the Regular Current detection is active. In Power-off, the CC-ADC is always disabled." mask="0x80" name="CADEN"/>
-                    <bitfield caption="CC_ADC Update Busy" mask="0x20" name="CADUB"/>
-                    <bitfield caption="CC_ADC Accumulate Current Select Bits" mask="0x18" name="CADAS" values="ANALOG_CADA_ACC_TIME"/>
-                    <bitfield caption="The CADSI bits determine the current sampling interval for the Regular Current detection in Power-down mode. The actual settings remain to be determined." mask="0x06" name="CADSI" values="ANALOG_CADA_ACC_TIME"/>
-                    <bitfield caption="When the CADSE bit is written to one, the ongoing CC-ADC conversion is aborted, and the CC-ADC enters Regular Current detection mode." mask="0x01" name="CADSE"/>
+        <module key="adc" name="ADC" description="Analog-to-Digital Converter">
+            <register-group key="adc" name="ADC">
+                <register key="vadc" name="VADC" description="VADC Data Register Bytes" offset="0x78" size="2"/>
+                <register key="vadcsr" name="VADCSR" description="The VADC Control and Status register" offset="0x7A" size="1">
+                    <bit-field key="vaden" name="VADEN" description="VADC Enable" mask="0x8"/>
+                    <bit-field key="vadsc" name="VADSC" description="VADC Satrt Conversion" mask="0x4"/>
+                    <bit-field key="vadccif" name="VADCCIF" description="VADC Conversion Complete Interrupt Flag" mask="0x2"/>
+                    <bit-field key="vadccie" name="VADCCIE" description="VADC Conversion Complete Interrupt Enable" mask="0x1"/>
                 </register>
-                <register caption="CC-ADC Control and Status Register B" name="CADCSRB" offset="0xE5" size="1" ocd-rw="R">
-                    <bitfield caption="" mask="0x40" name="CADACIE"/>
-                    <bitfield caption="Regular Current Interrupt Enable" mask="0x20" name="CADRCIE"/>
-                    <bitfield caption="CAD Instantenous Current Interrupt Enable" mask="0x10" name="CADICIE"/>
-                    <bitfield caption="CC-ADC Accumulate Current Interrupt Flag" mask="0x04" name="CADACIF"/>
-                    <bitfield caption="CC-ADC Accumulate Current Interrupt Flag" mask="0x02" name="CADRCIF"/>
-                    <bitfield caption="CC-ADC Instantaneous Current Interrupt Flag" mask="0x01" name="CADICIF"/>
-                </register>
-                <register caption="CC-ADC Instantaneous Current" name="CADIC" offset="0xE8" size="2" mask="0xFFFF"/>
-                <register caption="ADC Accumulate Current" name="CADAC3" offset="0xE3" size="1" mask="0xFF" ocd-rw="R"/>
-                <register caption="ADC Accumulate Current" name="CADAC2" offset="0xE2" size="1" mask="0xFF" ocd-rw="R"/>
-                <register caption="ADC Accumulate Current" name="CADAC1" offset="0xE1" size="1" mask="0xFF" ocd-rw="R"/>
-                <register caption="ADC Accumulate Current" name="CADAC0" offset="0xE0" size="1" mask="0xFF" ocd-rw="R"/>
-                <register caption="CC-ADC Regular Charge Current" name="CADRCC" offset="0xE6" size="1" mask="0xFF"/>
-                <register caption="CC-ADC Regular Discharge Current" name="CADRDC" offset="0xE7" size="1" mask="0xFF"/>
-            </register-group>
-            <value-group caption="" name="ANALOG_CADA_ACC_TIME">
-                <value caption="125ms" name="VAL_0x00" value="0x00"/>
-                <value caption="250ms" name="VAL_0x01" value="0x01"/>
-                <value caption="500ms" name="VAL_0x02" value="0x02"/>
-                <value caption="1000ms" name="VAL_0x03" value="0x03"/>
-            </value-group>
-        </module>
-        <module caption="Cell Balancing" name="CELL_BALANCING">
-            <register-group caption="Cell Balancing" name="CELL_BALANCING">
-                <register caption="Cell Balancing Control Register" name="CBCR" offset="0xF1" size="1">
-                    <bitfield caption="Cell Balancing Enables" mask="0x0F" name="CBE" lsb="1"/>
+                <register key="vadmux" name="VADMUX" description="The VADC multiplexer Selection Register" offset="0x7C" size="1">
+                    <bit-field key="vadmux" name="VADMUX" description="Analog Channel and Gain Selection Bits" mask="0xF"/>
                 </register>
             </register-group>
         </module>
-        <module caption="CPU Registers" name="CPU">
-            <register-group caption="CPU Registers" name="CPU">
-                <register caption="Status Register" name="SREG" offset="0x5F" size="1">
-                    <bitfield caption="Global Interrupt Enable" mask="0x80" name="I"/>
-                    <bitfield caption="Bit Copy Storage" mask="0x40" name="T"/>
-                    <bitfield caption="Half Carry Flag" mask="0x20" name="H"/>
-                    <bitfield caption="Sign Bit" mask="0x10" name="S"/>
-                    <bitfield caption="Two's Complement Overflow Flag" mask="0x08" name="V"/>
-                    <bitfield caption="Negative Flag" mask="0x04" name="N"/>
-                    <bitfield caption="Zero Flag" mask="0x02" name="Z"/>
-                    <bitfield caption="Carry Flag" mask="0x01" name="C"/>
+        <module key="exint" name="EXINT" description="External Interrupts">
+            <register-group key="exint" name="EXINT">
+                <register key="pcifr" name="PCIFR" description="Pin Change Interrupt Flag Register" offset="0x3B" size="1">
+                    <bit-field key="pcif" name="PCIF" description="Pin Change Interrupt Flags" mask="0x3"/>
                 </register>
-                <register caption="Stack Pointer " name="SP" offset="0x5D" size="2" mask="0xFFFF"/>
-                <register caption="MCU Control Register" name="MCUCR" offset="0x55" size="1">
-                    <bitfield caption="JTAG Disable" mask="0x80" name="JTD"/>
-                    <bitfield caption="Pull-up disable" mask="0x10" name="PUD"/>
-                    <bitfield caption="Interrupt Vector Select" mask="0x02" name="IVSEL"/>
-                    <bitfield caption="Interrupt Vector Change Enable" mask="0x01" name="IVCE"/>
+                <register key="eifr" name="EIFR" description="External Interrupt Flag Register" offset="0x3C" size="1">
+                    <bit-field key="intf" name="INTF" description="External Interrupt Flags" mask="0xF"/>
                 </register>
-                <register caption="MCU Status Register" name="MCUSR" offset="0x54" size="1">
-                    <bitfield caption="JTAG Reset Flag" mask="0x10" name="JTRF"/>
-                    <bitfield caption="Watchdog Reset Flag" mask="0x08" name="WDRF"/>
-                    <bitfield caption="Brown-out Reset Flag" mask="0x04" name="BODRF"/>
-                    <bitfield caption="External Reset Flag" mask="0x02" name="EXTRF"/>
-                    <bitfield caption="Power-on reset flag" mask="0x01" name="PORF"/>
+                <register key="eimsk" name="EIMSK" description="External Interrupt Mask Register" offset="0x3D" size="1">
+                    <bit-field key="int" name="INT" description="External Interrupt Request 1 Enable" mask="0xF"/>
                 </register>
-                <register caption="Fast Oscillator Calibration Value" name="FOSCCAL" offset="0x66" size="1" mask="0xFF"/>
-                <register caption="Sleep Mode Control Register" name="SMCR" offset="0x53" size="1">
-                    <bitfield caption="Sleep Mode Select bits" mask="0x0E" name="SM" values="CPU_SLEEP_MODE_3BITS3"/>
-                    <bitfield caption="Sleep Enable" mask="0x01" name="SE"/>
+                <register key="pcicr" name="PCICR" description="Pin Change Interrupt Control Register" offset="0x68" size="1">
+                    <bit-field key="pcie" name="PCIE" description="Pin Change Interrupt Enables" mask="0x3"/>
                 </register>
-                <register caption="General Purpose IO Register 2" name="GPIOR2" offset="0x4B" size="1" mask="0xFF"/>
-                <register caption="General Purpose IO Register 1" name="GPIOR1" offset="0x4A" size="1" mask="0xFF"/>
-                <register caption="General Purpose IO Register 0" name="GPIOR0" offset="0x3E" size="1" mask="0xFF"/>
-                <register caption="Clock Control and Status Register" name="CCSR" offset="0xC0" size="1">
-                    <bitfield caption="32 kHz Crystal Oscillator Enable" mask="0x02" name="XOE"/>
-                    <bitfield caption="Asynchronous Clock Select" mask="0x01" name="ACS"/>
+                <register key="eicra" name="EICRA" description="External Interrupt Control Register" offset="0x69" size="1">
+                    <bit-field key="isc3" name="ISC3" description="External Interrupt Sense Control 3 Bits" mask="0xC0"/>
+                    <bit-field key="isc2" name="ISC2" description="External Interrupt Sense Control 2 Bits" mask="0x30"/>
+                    <bit-field key="isc1" name="ISC1" description="External Interrupt Sense Control 1 Bits" mask="0xC"/>
+                    <bit-field key="isc0" name="ISC0" description="External Interrupt Sense Control 0 Bits" mask="0x3"/>
                 </register>
-                <register caption="Digital Input Disable Register" name="DIDR0" offset="0x7E" size="1" mask="0x0F"/>
-                <register caption="Power Reduction Register 0" name="PRR0" offset="0x64" size="1">
-                    <bitfield caption="Power Reduction TWI" mask="0x08" name="PRTWI"/>
-                    <bitfield caption="Power Reduction Timer/Counter1" mask="0x04" name="PRTIM1"/>
-                    <bitfield caption="Power Reduction Timer/Counter0" mask="0x02" name="PRTIM0"/>
-                    <bitfield caption="Power Reduction V-ADC" mask="0x01" name="PRVADC"/>
-                </register>
-            </register-group>
-            <value-group caption="" name="CPU_SLEEP_MODE_3BITS3">
-                <value caption="Idle" name="IDLE" value="0x00"/>
-                <value caption="ADC Noise Reduction (If Available)" name="ADC" value="0x01"/>
-                <value caption="Power Down" name="PDOWN" value="0x02"/>
-                <value caption="Power Save" name="PSAVE" value="0x03"/>
-                <value caption="Power Off" name="POFF" value="0x04"/>
-                <value caption="Reserved" name="VAL_0x05" value="0x05"/>
-                <value caption="Reserved" name="VAL_0x06" value="0x06"/>
-                <value caption="Reserved" name="VAL_0x07" value="0x07"/>
-            </value-group>
-        </module>
-        <module caption="Watchdog Timer" name="WDT">
-            <register-group caption="Watchdog Timer" name="WDT">
-                <register caption="Watchdog Timer Control Register" name="WDTCSR" offset="0x60" size="1" ocd-rw="R">
-                    <bitfield caption="Watchdog Timeout Interrupt Flag" mask="0x80" name="WDIF"/>
-                    <bitfield caption="Watchdog Timeout Interrupt Enable" mask="0x40" name="WDIE"/>
-                    <bitfield caption="Watchdog Timer Prescaler Bits" mask="0x27" name="WDP" values="WDOG_TIMER_PRESCALE_4BITS"/>
-                    <bitfield caption="Watchdog Change Enable" mask="0x10" name="WDCE"/>
-                    <bitfield caption="Watch Dog Enable" mask="0x08" name="WDE"/>
-                </register>
-            </register-group>
-            <value-group caption="" name="WDOG_TIMER_PRESCALE_4BITS">
-                <value caption="Oscillator Cycles 2K" name="VAL_0x00" value="0x00"/>
-                <value caption="Oscillator Cycles 4K" name="VAL_0x01" value="0x01"/>
-                <value caption="Oscillator Cycles 8K" name="VAL_0x02" value="0x02"/>
-                <value caption="Oscillator Cycles 16K" name="VAL_0x03" value="0x03"/>
-                <value caption="Oscillator Cycles 32K" name="VAL_0x04" value="0x04"/>
-                <value caption="Oscillator Cycles 64K" name="VAL_0x05" value="0x05"/>
-                <value caption="Oscillator Cycles 128K" name="VAL_0x06" value="0x06"/>
-                <value caption="Oscillator Cycles 256K" name="VAL_0x07" value="0x07"/>
-                <value caption="Oscillator Cycles 512K" name="VAL_0x08" value="0x08"/>
-                <value caption="Oscillator Cycles 1024K" name="VAL_0x09" value="0x09"/>
-            </value-group>
-        </module>
-        <module caption="Timer/Counter, 8-bit" name="TC8">
-            <register-group caption="Timer/Counter, 8-bit" name="TC0">
-                <register caption="Timer/Counter0 Control Register" name="TCCR0A" offset="0x44" size="1">
-                    <bitfield caption="Force Output Compare" mask="0xC0" name="COM0A"/>
-                    <bitfield caption="" mask="0x30" name="COM0B"/>
-                    <bitfield caption="Clock Select0 bits" mask="0x03" name="WGM0"/>
-                </register>
-                <register caption="Timer/Counter0 Control Register" name="TCCR0B" offset="0x45" size="1">
-                    <bitfield caption="Force Output Compare" mask="0x80" name="FOC0A"/>
-                    <bitfield caption="Waveform Generation Mode" mask="0x40" name="FOC0B"/>
-                    <bitfield caption="" mask="0x08" name="WGM02"/>
-                    <bitfield caption="Clock Select0 bits" mask="0x07" name="CS0" values="CLK_SEL_3BIT_EXT"/>
-                </register>
-                <register caption="Timer Counter 0" name="TCNT0" offset="0x46" size="1" mask="0xFF"/>
-                <register caption="Output compare Register A" name="OCR0A" offset="0x47" size="1">
-                    <bitfield caption="" mask="0xFF" name="OCR0A"/>
-                </register>
-                <register caption="Output compare Register B" name="OCR0B" offset="0x48" size="1">
-                    <bitfield caption="" mask="0xFF" name="OCR0B"/>
-                </register>
-                <register caption="Timer/Counter Interrupt Mask Register" name="TIMSK0" offset="0x6E" size="1">
-                    <bitfield caption="Output Compare Interrupt Enable" mask="0x04" name="OCIE0B"/>
-                    <bitfield caption="Output Compare Interrupt Enable" mask="0x02" name="OCIE0A"/>
-                    <bitfield caption="Overflow Interrupt Enable" mask="0x01" name="TOIE0"/>
-                </register>
-                <register caption="Timer/Counter Interrupt Flag register" name="TIFR0" offset="0x35" size="1" ocd-rw="R">
-                    <bitfield caption="Output Compare Flag" mask="0x04" name="OCF0B"/>
-                    <bitfield caption="Output Compare Flag" mask="0x02" name="OCF0A"/>
-                    <bitfield caption="Overflow Flag" mask="0x01" name="TOV0"/>
-                </register>
-            </register-group>
-            <value-group caption="" name="CLK_SEL_3BIT_EXT">
-                <value caption="No Clock Source (Stopped)" name="VAL_0x00" value="0x00"/>
-                <value caption="Running, No Prescaling" name="VAL_0x01" value="0x01"/>
-                <value caption="Running, CLK/8" name="VAL_0x02" value="0x02"/>
-                <value caption="Running, CLK/64" name="VAL_0x03" value="0x03"/>
-                <value caption="Running, CLK/256" name="VAL_0x04" value="0x04"/>
-                <value caption="Running, CLK/1024" name="VAL_0x05" value="0x05"/>
-                <value caption="Running, ExtClk Tn Falling Edge" name="VAL_0x06" value="0x06"/>
-                <value caption="Running, ExtClk Tn Rising Edge" name="VAL_0x07" value="0x07"/>
-            </value-group>
-        </module>
-        <module caption="I/O Port" name="PORT">
-            <register-group caption="I/O Port" name="PORTA">
-                <register caption="Port A Data Register" name="PORTA" offset="0x22" size="1" mask="0xFF"/>
-                <register caption="Port A Data Direction Register" name="DDRA" offset="0x21" size="1" mask="0xFF"/>
-                <register caption="Port A Input Pins" name="PINA" offset="0x20" size="1" mask="0xFF" ocd-rw="R"/>
-            </register-group>
-            <register-group caption="I/O Port" name="PORTB">
-                <register caption="Port B Data Register" name="PORTB" offset="0x25" size="1" mask="0xFF"/>
-                <register caption="Port B Data Direction Register" name="DDRB" offset="0x24" size="1" mask="0xFF"/>
-                <register caption="Port B Input Pins" name="PINB" offset="0x23" size="1" mask="0xFF" ocd-rw="R"/>
-            </register-group>
-            <register-group caption="I/O Port" name="PORTC">
-                <register caption="Port C Data Register" name="PORTC" offset="0x28" size="1" mask="0x01"/>
-            </register-group>
-            <register-group caption="I/O Port" name="PORTD">
-                <register caption="Data Register, Port D" name="PORTD" offset="0x2B" size="1" mask="0x03"/>
-                <register caption="Data Direction Register, Port D" name="DDRD" offset="0x2A" size="1" mask="0x03"/>
-                <register caption="Input Pins, Port D" name="PIND" offset="0x29" size="1" mask="0x03"/>
+                <register key="pcmsk0" name="PCMSK0" description="Pin Change Enable Mask Register 0" offset="0x6B" size="1"/>
+                <register key="pcmsk1" name="PCMSK1" description="Pin Change Enable Mask Register 1" offset="0x6C" size="1"/>
             </register-group>
         </module>
-        <module caption="Bootloader" name="BOOT_LOAD">
-            <register-group caption="Bootloader" name="BOOT_LOAD">
-                <register caption="Store Program Memory Control Register" name="SPMCSR" offset="0x57" size="1">
-                    <bitfield caption="SPM Interrupt Enable" mask="0x80" name="SPMIE"/>
-                    <bitfield caption="Read While Write Section Busy" mask="0x40" name="RWWSB"/>
-                    <bitfield caption="Signature Row Read" mask="0x20" name="SIGRD"/>
-                    <bitfield caption="Read While Write section read enable" mask="0x10" name="RWWSRE"/>
-                    <bitfield caption="Boot Lock Bit Set" mask="0x08" name="BLBSET"/>
-                    <bitfield caption="Page Write" mask="0x04" name="PGWRT"/>
-                    <bitfield caption="Page Erase" mask="0x02" name="PGERS"/>
-                    <bitfield caption="Store Program Memory Enable" mask="0x01" name="SPMEN"/>
+        <module key="tc16" name="TC16" description="Timer/Counter, 16-bit">
+            <register-group key="tc1" name="TC1">
+                <register key="tifr1" name="TIFR1" description="Timer/Counter Interrupt Flag register" offset="0x36" size="1">
+                    <bit-field key="ocf1a" name="OCF1A" description="Timer/Counter1 Output Compare Flag A" mask="0x2"/>
+                    <bit-field key="tov1" name="TOV1" description="Timer/Counter1 Overflow Flag" mask="0x1"/>
+                </register>
+                <register key="gtccr" name="GTCCR" description="General Timer/Counter Control Register" offset="0x43" size="1">
+                    <bit-field key="tsm" name="TSM" description="Timer/Counter Synchronization Mode" mask="0x80"/>
+                    <bit-field key="psrsync" name="PSRSYNC" description="Prescaler Reset" mask="0x1"/>
+                </register>
+                <register key="timsk1" name="TIMSK1" description="Timer/Counter Interrupt Mask Register" offset="0x6F" size="1">
+                    <bit-field key="ocie1a" name="OCIE1A" description="Timer/Counter1 Output Compare Interrupt Enable" mask="0x2"/>
+                    <bit-field key="toie1" name="TOIE1" description="Timer/Counter1 Overflow Interrupt Enable" mask="0x1"/>
+                </register>
+                <register key="tccr1b" name="TCCR1B" description="Timer/Counter1 Control Register B" offset="0x81" size="1">
+                    <bit-field key="ctc1" name="CTC1" description="Clear Timer/Counter on Compare Match" mask="0x8"/>
+                    <bit-field key="cs1" name="CS1" description="Clock Select1 bits" mask="0x7"/>
+                </register>
+                <register key="tcnt1" name="TCNT1" description="Timer Counter 1 Bytes" offset="0x84" size="2"/>
+                <register key="ocr1al" name="OCR1AL" description="Output Compare Register 1A Low byte" offset="0x88" size="1"/>
+                <register key="ocr1ah" name="OCR1AH" description="Output Compare Register 1A High byte" offset="0x89" size="1"/>
+            </register-group>
+        </module>
+        <module key="wakeup_timer" name="WAKEUP_TIMER" description="Wakeup Timer">
+            <register-group key="wakeup_timer" name="WAKEUP_TIMER">
+                <register key="wutcsr" name="WUTCSR" description="Wake-up Timer Control Register" offset="0x62" size="1">
+                    <bit-field key="wutif" name="WUTIF" description="Wake-up Timer Interrupt Flag" mask="0x80"/>
+                    <bit-field key="wutie" name="WUTIE" description="Wake-up Timer Interrupt Enable" mask="0x40"/>
+                    <bit-field key="wutcf" name="WUTCF" description="Wake-up timer Calibration Flag" mask="0x20"/>
+                    <bit-field key="wutr" name="WUTR" description="Wake-up Timer Reset" mask="0x10"/>
+                    <bit-field key="wute" name="WUTE" description="Wake-up Timer Enable" mask="0x8"/>
+                    <bit-field key="wutp" name="WUTP" description="Wake-up Timer Prescaler Bits" mask="0x7"/>
                 </register>
             </register-group>
         </module>
-        <module caption="Two Wire Serial Interface" name="TWI">
-            <register-group caption="Two Wire Serial Interface" name="TWI">
-                <register caption="TWI Bus Control and Status Register" name="TWBCSR" offset="0xBE" size="1">
-                    <bitfield caption="TWI Bus Connect/Disconnect Interrupt Flag" mask="0x80" name="TWBCIF"/>
-                    <bitfield caption="TWI Bus Connect/Disconnect Interrupt Enable" mask="0x40" name="TWBCIE"/>
-                    <bitfield caption="TWI Bus Disconnect Time-out Period" mask="0x06" name="TWBDT" values="COMM_TW_BUS_TIMEOUT"/>
-                    <bitfield caption="TWI Bus Connect/Disconnect Interrupt Polarity" mask="0x01" name="TWBCIP"/>
+        <module key="battery_protection" name="BATTERY_PROTECTION" description="Battery Protection">
+            <register-group key="battery_protection" name="BATTERY_PROTECTION">
+                <register key="bpir" name="BPIR" description="Battery Protection Interrupt Register" offset="0xF2" size="1">
+                    <bit-field key="duvif" name="DUVIF" description="Deep Under-voltage Early Warning Interrupt Flag" mask="0x80"/>
+                    <bit-field key="cocif" name="COCIF" description="Charge Over-current Protection Activated Interrupt Flag" mask="0x40"/>
+                    <bit-field key="docif" name="DOCIF" mask="0x20"/>
+                    <bit-field key="scif" name="SCIF" mask="0x10"/>
+                    <bit-field key="duvie" name="DUVIE" description="Deep Under-voltage Early Warning Interrupt Enable" mask="0x8"/>
+                    <bit-field key="cocie" name="COCIE" mask="0x4"/>
+                    <bit-field key="docie" name="DOCIE" mask="0x2"/>
+                    <bit-field key="scie" name="SCIE" mask="0x1"/>
                 </register>
-                <register caption="TWI (Slave) Address Mask Register" name="TWAMR" offset="0xBD" size="1">
-                    <bitfield caption="" mask="0xFE" name="TWAM"/>
+                <register key="bpduv" name="BPDUV" description="Battery Protection Deep Under Voltage Register" offset="0xF3" size="1">
+                    <bit-field key="duvt" name="DUVT" mask="0x30"/>
+                    <bit-field key="dudl" name="DUDL" mask="0xF"/>
                 </register>
-                <register caption="TWI Bit Rate register" name="TWBR" offset="0xB8" size="1" mask="0xFF"/>
-                <register caption="TWI Control Register" name="TWCR" offset="0xBC" size="1" ocd-rw="R">
-                    <bitfield caption="TWI Interrupt Flag" mask="0x80" name="TWINT"/>
-                    <bitfield caption="TWI Enable Acknowledge Bit" mask="0x40" name="TWEA"/>
-                    <bitfield caption="TWI Start Condition Bit" mask="0x20" name="TWSTA"/>
-                    <bitfield caption="TWI Stop Condition Bit" mask="0x10" name="TWSTO"/>
-                    <bitfield caption="TWI Write Collition Flag" mask="0x08" name="TWWC"/>
-                    <bitfield caption="TWI Enable Bit" mask="0x04" name="TWEN"/>
-                    <bitfield caption="TWI Interrupt Enable" mask="0x01" name="TWIE"/>
+                <register key="bpscd" name="BPSCD" description="Battery Protection Short-Circuit Detection Level Register" offset="0xF4" size="1">
+                    <bit-field key="scdl" name="SCDL" mask="0xF"/>
                 </register>
-                <register caption="TWI Status Register" name="TWSR" offset="0xB9" size="1" ocd-rw="R">
-                    <bitfield caption="TWI Status" mask="0xF8" name="TWS" lsb="3"/>
-                    <bitfield caption="TWI Prescaler" mask="0x03" name="TWPS" values="COMM_TWI_PRESACLE"/>
+                <register key="bpocd" name="BPOCD" description="Battery Protection OverCurrent Detection Level Register" offset="0xF5" size="1">
+                    <bit-field key="dcdl" name="DCDL" mask="0xF0"/>
+                    <bit-field key="ccdl" name="CCDL" mask="0xF"/>
                 </register>
-                <register caption="TWI Data register" name="TWDR" offset="0xBB" size="1" mask="0xFF"/>
-                <register caption="TWI (Slave) Address register" name="TWAR" offset="0xBA" size="1">
-                    <bitfield caption="TWI (Slave) Address register Bits" mask="0xFE" name="TWA"/>
-                    <bitfield caption="TWI General Call Recognition Enable Bit" mask="0x01" name="TWGCE"/>
+                <register key="cbptr" name="CBPTR" description="Current Battery Protection Timing Register" offset="0xF6" size="1">
+                    <bit-field key="scpt" name="SCPT" mask="0xF0"/>
+                    <bit-field key="ocpt" name="OCPT" mask="0xF"/>
                 </register>
-            </register-group>
-            <value-group caption="" name="COMM_TW_BUS_TIMEOUT">
-                <value caption="250ms" name="VAL_0x00" value="0x00"/>
-                <value caption="500ms" name="VAL_0x01" value="0x01"/>
-                <value caption="1000ms" name="VAL_0x02" value="0x02"/>
-                <value caption="2000ms" name="VAL_0x03" value="0x03"/>
-            </value-group>
-            <value-group caption="" name="COMM_TWI_PRESACLE">
-                <value caption="1" name="VAL_0x00" value="0x00"/>
-                <value caption="4" name="VAL_0x01" value="0x01"/>
-                <value caption="16" name="VAL_0x02" value="0x02"/>
-                <value caption="64" name="VAL_0x03" value="0x03"/>
-            </value-group>
-        </module>
-        <module caption="Bandgap" name="BANDGAP">
-            <register-group caption="Bandgap" name="BANDGAP">
-                <register caption="Bandgap Calibration of Resistor Ladder" name="BGCRR" offset="0xD1" size="1" mask="0xFF"/>
-                <register caption="Bandgap Calibration Register" name="BGCCR" offset="0xD0" size="1">
-                    <bitfield caption="Setting the BGD bit to one will disable the bandgap voltage reference. This bit must be cleared before enabling CC-ADC or V-ADC, and must remain unset while either ADC is enabled." mask="0x80" name="BGD"/>
-                    <bitfield caption="BG Calibration of PTAT Current Bits" mask="0x3F" name="BGCC"/>
+                <register key="bpcr" name="BPCR" description="Battery Protection Control Register" offset="0xF7" size="1">
+                    <bit-field key="duvd" name="DUVD" mask="0x8"/>
+                    <bit-field key="scd" name="SCD" mask="0x4"/>
+                    <bit-field key="dcd" name="DCD" mask="0x2"/>
+                    <bit-field key="ccd" name="CCD" mask="0x1"/>
+                </register>
+                <register key="bpplr" name="BPPLR" description="Battery Protection Parameter Lock Register" offset="0xF8" size="1">
+                    <bit-field key="bpple" name="BPPLE" description="Battery Protection Parameter Lock Enable" mask="0x2"/>
+                    <bit-field key="bppl" name="BPPL" description="Battery Protection Parameter Lock" mask="0x1"/>
                 </register>
             </register-group>
         </module>
-        <module caption="EEPROM" name="EEPROM">
-            <register-group caption="EEPROM" name="EEPROM">
-                <register caption="EEPROM Address Register Bytes" name="EEAR" offset="0x41" size="2" mask="0x01FF"/>
-                <register caption="EEPROM Data Register" name="EEDR" offset="0x40" size="1" mask="0xFF"/>
-                <register caption="EEPROM Control Register" name="EECR" offset="0x3F" size="1">
-                    <bitfield caption="EEPROM Programming Mode Bits" mask="0x30" name="EEPM" values="EEP_MODE"/>
-                    <bitfield caption="EEPROM Ready Interrupt Enable" mask="0x08" name="EERIE"/>
-                    <bitfield caption="EEPROM Master Programming Enable" mask="0x04" name="EEMPE"/>
-                    <bitfield caption="EEPROM Programming Enable" mask="0x02" name="EEPE"/>
-                    <bitfield caption="EEPROM Read Enable" mask="0x01" name="EERE"/>
+        <module key="fet" name="FET" description="FET Control">
+            <register-group key="fet" name="FET">
+                <register key="fcsr" name="FCSR" offset="0xF0" size="1">
+                    <bit-field key="pwmoc" name="PWMOC" description="Pulse Width Modulation of OC output" mask="0x20"/>
+                    <bit-field key="pwmopc" name="PWMOPC" description="Pulse Width Modulation Modulation of OPC output" mask="0x10"/>
+                    <bit-field key="cps" name="CPS" description="Current Protection Status" mask="0x8"/>
+                    <bit-field key="dfe" name="DFE" description="Discharge FET Enable" mask="0x4"/>
+                    <bit-field key="cfe" name="CFE" description="Charge FET Enable" mask="0x2"/>
+                    <bit-field key="pfd" name="PFD" description="Precharge FET disable" mask="0x1"/>
                 </register>
             </register-group>
-            <value-group caption="" name="EEP_MODE">
-                <value caption="Erase and Write in one operation" name="VAL_0x00" value="0x00"/>
-                <value caption="Erase Only" name="VAL_0x01" value="0x01"/>
-                <value caption="Write Only" name="VAL_0x02" value="0x02"/>
-            </value-group>
+        </module>
+        <module key="coulomb_counter" name="COULOMB_COUNTER" description="Coulomb Counter">
+            <register-group key="coulomb_counter" name="COULOMB_COUNTER">
+                <register key="cadac0" name="CADAC0" description="ADC Accumulate Current" offset="0xE0" size="1"/>
+                <register key="cadac1" name="CADAC1" description="ADC Accumulate Current" offset="0xE1" size="1"/>
+                <register key="cadac2" name="CADAC2" description="ADC Accumulate Current" offset="0xE2" size="1"/>
+                <register key="cadac3" name="CADAC3" description="ADC Accumulate Current" offset="0xE3" size="1"/>
+                <register key="cadcsra" name="CADCSRA" description="CC-ADC Control and Status Register A" offset="0xE4" size="1">
+                    <bit-field key="caden" name="CADEN" description="When the CADEN bit is cleared (zero), the CC-ADC is disabled. When the CADEN bit is set (one), the CC-ADC will continuously measure the voltage drop over the external sense resistor RSENSE. In Power-down, only the Regular Current detection is active. In Power-off, the CC-ADC is always disabled." mask="0x80"/>
+                    <bit-field key="cadub" name="CADUB" description="CC_ADC Update Busy" mask="0x20"/>
+                    <bit-field key="cadas" name="CADAS" description="CC_ADC Accumulate Current Select Bits" mask="0x18"/>
+                    <bit-field key="cadsi" name="CADSI" description="The CADSI bits determine the current sampling interval for the Regular Current detection in Power-down mode. The actual settings remain to be determined." mask="0x6"/>
+                    <bit-field key="cadse" name="CADSE" description="When the CADSE bit is written to one, the ongoing CC-ADC conversion is aborted, and the CC-ADC enters Regular Current detection mode." mask="0x1"/>
+                </register>
+                <register key="cadcsrb" name="CADCSRB" description="CC-ADC Control and Status Register B" offset="0xE5" size="1">
+                    <bit-field key="cadacie" name="CADACIE" mask="0x40"/>
+                    <bit-field key="cadrcie" name="CADRCIE" description="Regular Current Interrupt Enable" mask="0x20"/>
+                    <bit-field key="cadicie" name="CADICIE" description="CAD Instantenous Current Interrupt Enable" mask="0x10"/>
+                    <bit-field key="cadacif" name="CADACIF" description="CC-ADC Accumulate Current Interrupt Flag" mask="0x4"/>
+                    <bit-field key="cadrcif" name="CADRCIF" description="CC-ADC Accumulate Current Interrupt Flag" mask="0x2"/>
+                    <bit-field key="cadicif" name="CADICIF" description="CC-ADC Instantaneous Current Interrupt Flag" mask="0x1"/>
+                </register>
+                <register key="cadrcc" name="CADRCC" description="CC-ADC Regular Charge Current" offset="0xE6" size="1"/>
+                <register key="cadrdc" name="CADRDC" description="CC-ADC Regular Discharge Current" offset="0xE7" size="1"/>
+                <register key="cadic" name="CADIC" description="CC-ADC Instantaneous Current" offset="0xE8" size="2"/>
+            </register-group>
+        </module>
+        <module key="cell_balancing" name="CELL_BALANCING" description="Cell Balancing">
+            <register-group key="cell_balancing" name="CELL_BALANCING">
+                <register key="cbcr" name="CBCR" description="Cell Balancing Control Register" offset="0xF1" size="1">
+                    <bit-field key="cbe" name="CBE" description="Cell Balancing Enables" mask="0xF"/>
+                </register>
+            </register-group>
+        </module>
+        <module key="cpu" name="CPU" description="CPU Registers">
+            <register-group key="cpu" name="CPU">
+                <register key="gpior0" name="GPIOR0" description="General Purpose IO Register 0" offset="0x3E" size="1"/>
+                <register key="gpior1" name="GPIOR1" description="General Purpose IO Register 1" offset="0x4A" size="1"/>
+                <register key="gpior2" name="GPIOR2" description="General Purpose IO Register 2" offset="0x4B" size="1"/>
+                <register key="smcr" name="SMCR" description="Sleep Mode Control Register" offset="0x53" size="1">
+                    <bit-field key="sm" name="SM" description="Sleep Mode Select bits" mask="0xE"/>
+                    <bit-field key="se" name="SE" description="Sleep Enable" mask="0x1"/>
+                </register>
+                <register key="mcusr" name="MCUSR" description="MCU Status Register" offset="0x54" size="1">
+                    <bit-field key="jtrf" name="JTRF" description="JTAG Reset Flag" mask="0x10"/>
+                    <bit-field key="wdrf" name="WDRF" description="Watchdog Reset Flag" mask="0x8"/>
+                    <bit-field key="bodrf" name="BODRF" description="Brown-out Reset Flag" mask="0x4"/>
+                    <bit-field key="extrf" name="EXTRF" description="External Reset Flag" mask="0x2"/>
+                    <bit-field key="porf" name="PORF" description="Power-on reset flag" mask="0x1"/>
+                </register>
+                <register key="mcucr" name="MCUCR" description="MCU Control Register" offset="0x55" size="1">
+                    <bit-field key="jtd" name="JTD" description="JTAG Disable" mask="0x80"/>
+                    <bit-field key="pud" name="PUD" description="Pull-up disable" mask="0x10"/>
+                    <bit-field key="ivsel" name="IVSEL" description="Interrupt Vector Select" mask="0x2"/>
+                    <bit-field key="ivce" name="IVCE" description="Interrupt Vector Change Enable" mask="0x1"/>
+                </register>
+                <register key="sp" name="SP" description="Stack Pointer" offset="0x5D" size="2"/>
+                <register key="sreg" name="SREG" description="Status Register" offset="0x5F" size="1">
+                    <bit-field key="i" name="I" description="Global Interrupt Enable" mask="0x80"/>
+                    <bit-field key="t" name="T" description="Bit Copy Storage" mask="0x40"/>
+                    <bit-field key="h" name="H" description="Half Carry Flag" mask="0x20"/>
+                    <bit-field key="s" name="S" description="Sign Bit" mask="0x10"/>
+                    <bit-field key="v" name="V" description="Two's Complement Overflow Flag" mask="0x8"/>
+                    <bit-field key="n" name="N" description="Negative Flag" mask="0x4"/>
+                    <bit-field key="z" name="Z" description="Zero Flag" mask="0x2"/>
+                    <bit-field key="c" name="C" description="Carry Flag" mask="0x1"/>
+                </register>
+                <register key="prr0" name="PRR0" description="Power Reduction Register 0" offset="0x64" size="1">
+                    <bit-field key="prtwi" name="PRTWI" description="Power Reduction TWI" mask="0x8"/>
+                    <bit-field key="prtim1" name="PRTIM1" description="Power Reduction Timer/Counter1" mask="0x4"/>
+                    <bit-field key="prtim0" name="PRTIM0" description="Power Reduction Timer/Counter0" mask="0x2"/>
+                    <bit-field key="prvadc" name="PRVADC" description="Power Reduction V-ADC" mask="0x1"/>
+                </register>
+                <register key="fosccal" name="FOSCCAL" description="Fast Oscillator Calibration Value" offset="0x66" size="1"/>
+                <register key="didr0" name="DIDR0" description="Digital Input Disable Register" offset="0x7E" size="1"/>
+                <register key="ccsr" name="CCSR" description="Clock Control and Status Register" offset="0xC0" size="1">
+                    <bit-field key="xoe" name="XOE" description="32 kHz Crystal Oscillator Enable" mask="0x2"/>
+                    <bit-field key="acs" name="ACS" description="Asynchronous Clock Select" mask="0x1"/>
+                </register>
+            </register-group>
+        </module>
+        <module key="wdt" name="WDT" description="Watchdog Timer">
+            <register-group key="wdt" name="WDT">
+                <register key="wdtcsr" name="WDTCSR" description="Watchdog Timer Control Register" offset="0x60" size="1">
+                    <bit-field key="wdif" name="WDIF" description="Watchdog Timeout Interrupt Flag" mask="0x80"/>
+                    <bit-field key="wdie" name="WDIE" description="Watchdog Timeout Interrupt Enable" mask="0x40"/>
+                    <bit-field key="wdp" name="WDP" description="Watchdog Timer Prescaler Bits" mask="0x27"/>
+                    <bit-field key="wdce" name="WDCE" description="Watchdog Change Enable" mask="0x10"/>
+                    <bit-field key="wde" name="WDE" description="Watch Dog Enable" mask="0x8"/>
+                </register>
+            </register-group>
+        </module>
+        <module key="tc8" name="TC8" description="Timer/Counter, 8-bit">
+            <register-group key="tc0" name="TC0">
+                <register key="tifr0" name="TIFR0" description="Timer/Counter Interrupt Flag register" offset="0x35" size="1">
+                    <bit-field key="ocf0b" name="OCF0B" description="Output Compare Flag" mask="0x4"/>
+                    <bit-field key="ocf0a" name="OCF0A" description="Output Compare Flag" mask="0x2"/>
+                    <bit-field key="tov0" name="TOV0" description="Overflow Flag" mask="0x1"/>
+                </register>
+                <register key="tccr0a" name="TCCR0A" description="Timer/Counter0 Control Register" offset="0x44" size="1">
+                    <bit-field key="com0a" name="COM0A" description="Force Output Compare" mask="0xC0"/>
+                    <bit-field key="com0b" name="COM0B" mask="0x30"/>
+                    <bit-field key="wgm0" name="WGM0" description="Clock Select0 bits" mask="0x3"/>
+                </register>
+                <register key="tccr0b" name="TCCR0B" description="Timer/Counter0 Control Register" offset="0x45" size="1">
+                    <bit-field key="foc0a" name="FOC0A" description="Force Output Compare" mask="0x80"/>
+                    <bit-field key="foc0b" name="FOC0B" description="Waveform Generation Mode" mask="0x40"/>
+                    <bit-field key="wgm02" name="WGM02" mask="0x8"/>
+                    <bit-field key="cs0" name="CS0" description="Clock Select0 bits" mask="0x7"/>
+                </register>
+                <register key="tcnt0" name="TCNT0" description="Timer Counter 0" offset="0x46" size="1"/>
+                <register key="ocr0a" name="OCR0A" description="Output compare Register A" offset="0x47" size="1">
+                    <bit-field key="ocr0a" name="OCR0A" mask="0xFF"/>
+                </register>
+                <register key="ocr0b" name="OCR0B" description="Output compare Register B" offset="0x48" size="1">
+                    <bit-field key="ocr0b" name="OCR0B" mask="0xFF"/>
+                </register>
+                <register key="timsk0" name="TIMSK0" description="Timer/Counter Interrupt Mask Register" offset="0x6E" size="1">
+                    <bit-field key="ocie0b" name="OCIE0B" description="Output Compare Interrupt Enable" mask="0x4"/>
+                    <bit-field key="ocie0a" name="OCIE0A" description="Output Compare Interrupt Enable" mask="0x2"/>
+                    <bit-field key="toie0" name="TOIE0" description="Overflow Interrupt Enable" mask="0x1"/>
+                </register>
+            </register-group>
+        </module>
+        <module key="gpio_port" name="PORT" description="I/O Port">
+            <register-group key="porta" name="PORTA">
+                <register key="pina" name="PINA" description="Port A Input Pins" offset="0x20" size="1"/>
+                <register key="ddra" name="DDRA" description="Port A Data Direction Register" offset="0x21" size="1"/>
+                <register key="porta" name="PORTA" description="Port A Data Register" offset="0x22" size="1"/>
+            </register-group>
+            <register-group key="portb" name="PORTB">
+                <register key="pinb" name="PINB" description="Port B Input Pins" offset="0x23" size="1"/>
+                <register key="ddrb" name="DDRB" description="Port B Data Direction Register" offset="0x24" size="1"/>
+                <register key="portb" name="PORTB" description="Port B Data Register" offset="0x25" size="1"/>
+            </register-group>
+            <register-group key="portc" name="PORTC">
+                <register key="portc" name="PORTC" description="Port C Data Register" offset="0x28" size="1"/>
+            </register-group>
+            <register-group key="portd" name="PORTD">
+                <register key="pind" name="PIND" description="Input Pins, Port D" offset="0x29" size="1"/>
+                <register key="ddrd" name="DDRD" description="Data Direction Register, Port D" offset="0x2A" size="1"/>
+                <register key="portd" name="PORTD" description="Data Register, Port D" offset="0x2B" size="1"/>
+            </register-group>
+        </module>
+        <module key="boot_load" name="BOOT_LOAD" description="Bootloader">
+            <register-group key="boot_load" name="BOOT_LOAD">
+                <register key="spmcsr" name="SPMCSR" description="Store Program Memory Control Register" offset="0x57" size="1">
+                    <bit-field key="spmie" name="SPMIE" description="SPM Interrupt Enable" mask="0x80"/>
+                    <bit-field key="rwwsb" name="RWWSB" description="Read While Write Section Busy" mask="0x40"/>
+                    <bit-field key="sigrd" name="SIGRD" description="Signature Row Read" mask="0x20"/>
+                    <bit-field key="rwwsre" name="RWWSRE" description="Read While Write section read enable" mask="0x10"/>
+                    <bit-field key="blbset" name="BLBSET" description="Boot Lock Bit Set" mask="0x8"/>
+                    <bit-field key="pgwrt" name="PGWRT" description="Page Write" mask="0x4"/>
+                    <bit-field key="pgers" name="PGERS" description="Page Erase" mask="0x2"/>
+                    <bit-field key="spmen" name="SPMEN" description="Store Program Memory Enable" mask="0x1"/>
+                </register>
+            </register-group>
+        </module>
+        <module key="twi" name="TWI" description="Two Wire Serial Interface">
+            <register-group key="twi" name="TWI">
+                <register key="twbr" name="TWBR" description="TWI Bit Rate register" offset="0xB8" size="1"/>
+                <register key="twsr" name="TWSR" description="TWI Status Register" offset="0xB9" size="1">
+                    <bit-field key="tws" name="TWS" description="TWI Status" mask="0xF8"/>
+                    <bit-field key="twps" name="TWPS" description="TWI Prescaler" mask="0x3"/>
+                </register>
+                <register key="twar" name="TWAR" description="TWI (Slave) Address register" offset="0xBA" size="1">
+                    <bit-field key="twa" name="TWA" description="TWI (Slave) Address register Bits" mask="0xFE"/>
+                    <bit-field key="twgce" name="TWGCE" description="TWI General Call Recognition Enable Bit" mask="0x1"/>
+                </register>
+                <register key="twdr" name="TWDR" description="TWI Data register" offset="0xBB" size="1"/>
+                <register key="twcr" name="TWCR" description="TWI Control Register" offset="0xBC" size="1">
+                    <bit-field key="twint" name="TWINT" description="TWI Interrupt Flag" mask="0x80"/>
+                    <bit-field key="twea" name="TWEA" description="TWI Enable Acknowledge Bit" mask="0x40"/>
+                    <bit-field key="twsta" name="TWSTA" description="TWI Start Condition Bit" mask="0x20"/>
+                    <bit-field key="twsto" name="TWSTO" description="TWI Stop Condition Bit" mask="0x10"/>
+                    <bit-field key="twwc" name="TWWC" description="TWI Write Collition Flag" mask="0x8"/>
+                    <bit-field key="twen" name="TWEN" description="TWI Enable Bit" mask="0x4"/>
+                    <bit-field key="twie" name="TWIE" description="TWI Interrupt Enable" mask="0x1"/>
+                </register>
+                <register key="twamr" name="TWAMR" description="TWI (Slave) Address Mask Register" offset="0xBD" size="1">
+                    <bit-field key="twam" name="TWAM" mask="0xFE"/>
+                </register>
+                <register key="twbcsr" name="TWBCSR" description="TWI Bus Control and Status Register" offset="0xBE" size="1">
+                    <bit-field key="twbcif" name="TWBCIF" description="TWI Bus Connect/Disconnect Interrupt Flag" mask="0x80"/>
+                    <bit-field key="twbcie" name="TWBCIE" description="TWI Bus Connect/Disconnect Interrupt Enable" mask="0x40"/>
+                    <bit-field key="twbdt" name="TWBDT" description="TWI Bus Disconnect Time-out Period" mask="0x6"/>
+                    <bit-field key="twbcip" name="TWBCIP" description="TWI Bus Connect/Disconnect Interrupt Polarity" mask="0x1"/>
+                </register>
+            </register-group>
+        </module>
+        <module key="bandgap" name="BANDGAP" description="Bandgap">
+            <register-group key="bandgap" name="BANDGAP">
+                <register key="bgccr" name="BGCCR" description="Bandgap Calibration Register" offset="0xD0" size="1">
+                    <bit-field key="bgd" name="BGD" description="Setting the BGD bit to one will disable the bandgap voltage reference. This bit must be cleared before enabling CC-ADC or V-ADC, and must remain unset while either ADC is enabled." mask="0x80"/>
+                    <bit-field key="bgcc" name="BGCC" description="BG Calibration of PTAT Current Bits" mask="0x3F"/>
+                </register>
+                <register key="bgcrr" name="BGCRR" description="Bandgap Calibration of Resistor Ladder" offset="0xD1" size="1"/>
+            </register-group>
+        </module>
+        <module key="eeprom" name="EEPROM" description="EEPROM">
+            <register-group key="eeprom" name="EEPROM">
+                <register key="eecr" name="EECR" description="EEPROM Control Register" offset="0x3F" size="1">
+                    <bit-field key="eepm" name="EEPM" description="EEPROM Programming Mode Bits" mask="0x30"/>
+                    <bit-field key="eerie" name="EERIE" description="EEPROM Ready Interrupt Enable" mask="0x8"/>
+                    <bit-field key="eempe" name="EEMPE" description="EEPROM Master Programming Enable" mask="0x4"/>
+                    <bit-field key="eepe" name="EEPE" description="EEPROM Programming Enable" mask="0x2"/>
+                    <bit-field key="eere" name="EERE" description="EEPROM Read Enable" mask="0x1"/>
+                </register>
+                <register key="eedr" name="EEDR" description="EEPROM Data Register" offset="0x40" size="1"/>
+                <register key="eear" name="EEAR" description="EEPROM Address Register Bytes" offset="0x41" size="2"/>
+            </register-group>
         </module>
     </modules>
     <pinouts>
-        <pinout name="QFP48">
-            <pin pad="SGND" position="1"/>
-            <pin pad="PA0" position="2"/>
-            <pin pad="PA1" position="3"/>
-            <pin pad="PA2" position="4"/>
-            <pin pad="PA3" position="5"/>
-            <pin pad="VREG" position="6"/>
-            <pin pad="VCC" position="7"/>
-            <pin pad="GND" position="8"/>
-            <pin pad="PA4" position="9"/>
-            <pin pad="PA5" position="10"/>
-            <pin pad="PA6" position="11"/>
-            <pin pad="PA7" position="12"/>
-            <pin pad="RESET" position="13"/>
-            <pin pad="XTAL1" position="14"/>
-            <pin pad="XTAL2" position="15"/>
-            <pin pad="GND" position="16"/>
-            <pin pad="PB0" position="17"/>
-            <pin pad="PB1" position="18"/>
-            <pin pad="PB2" position="19"/>
-            <pin pad="PB3" position="20"/>
-            <pin pad="PB4" position="21"/>
-            <pin pad="PB5" position="22"/>
-            <pin pad="SCL" position="23"/>
-            <pin pad="SDA" position="24"/>
-            <pin pad="PB6" position="25"/>
-            <pin pad="PB7" position="26"/>
-            <pin pad="PD0" position="27"/>
-            <pin pad="PD1" position="28"/>
-            <pin pad="GND" position="29"/>
-            <pin pad="PC0" position="30"/>
-            <pin pad="BATT" position="31"/>
-            <pin pad="OPC" position="32"/>
-            <pin pad="OC" position="33"/>
-            <pin pad="VFET" position="34"/>
-            <pin pad="OD" position="35"/>
-            <pin pad="PVT1" position="36"/>
-            <pin pad="GND" position="37"/>
-            <pin pad="PV4" position="38"/>
-            <pin pad="PV3" position="39"/>
-            <pin pad="PV2" position="40"/>
-            <pin pad="PV1" position="41"/>
-            <pin pad="NV" position="42"/>
-            <pin pad="VREF" position="43"/>
-            <pin pad="VREFGND" position="44"/>
-            <pin pad="PPI" position="45"/>
-            <pin pad="PI" position="46"/>
-            <pin pad="NI" position="47"/>
-            <pin pad="NNI" position="48"/>
+        <pinout key="qfp48" name="QFP48" type="qfp">
+            <pin position="1" pad="SGND"/>
+            <pin position="2" pad="PA0"/>
+            <pin position="3" pad="PA1"/>
+            <pin position="4" pad="PA2"/>
+            <pin position="5" pad="PA3"/>
+            <pin position="6" pad="VREG"/>
+            <pin position="7" pad="VCC"/>
+            <pin position="8" pad="GND"/>
+            <pin position="9" pad="PA4"/>
+            <pin position="10" pad="PA5"/>
+            <pin position="11" pad="PA6"/>
+            <pin position="12" pad="PA7"/>
+            <pin position="13" pad="RESET"/>
+            <pin position="14" pad="XTAL1"/>
+            <pin position="15" pad="XTAL2"/>
+            <pin position="16" pad="GND"/>
+            <pin position="17" pad="PB0"/>
+            <pin position="18" pad="PB1"/>
+            <pin position="19" pad="PB2"/>
+            <pin position="20" pad="PB3"/>
+            <pin position="21" pad="PB4"/>
+            <pin position="22" pad="PB5"/>
+            <pin position="23" pad="SCL"/>
+            <pin position="24" pad="SDA"/>
+            <pin position="25" pad="PB6"/>
+            <pin position="26" pad="PB7"/>
+            <pin position="27" pad="PD0"/>
+            <pin position="28" pad="PD1"/>
+            <pin position="29" pad="GND"/>
+            <pin position="30" pad="PC0"/>
+            <pin position="31" pad="BATT"/>
+            <pin position="32" pad="OPC"/>
+            <pin position="33" pad="OC"/>
+            <pin position="34" pad="VFET"/>
+            <pin position="35" pad="OD"/>
+            <pin position="36" pad="PVT1"/>
+            <pin position="37" pad="GND"/>
+            <pin position="38" pad="PV4"/>
+            <pin position="39" pad="PV3"/>
+            <pin position="40" pad="PV2"/>
+            <pin position="41" pad="PV1"/>
+            <pin position="42" pad="NV"/>
+            <pin position="43" pad="VREF"/>
+            <pin position="44" pad="VREFGND"/>
+            <pin position="45" pad="PPI"/>
+            <pin position="46" pad="PI"/>
+            <pin position="47" pad="NI"/>
+            <pin position="48" pad="NNI"/>
         </pinout>
     </pinouts>
-</target-description-file>
+    <variants>
+        <variant name="ATmega406-1AAU" pinout-key="qfp48" package="LQFP48"/>
+    </variants>
+</device>
