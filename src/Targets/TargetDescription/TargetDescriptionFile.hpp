@@ -2,6 +2,12 @@
 
 #include <QFile>
 #include <QDomDocument>
+#include <QDomElement>
+#include <string>
+#include <optional>
+#include <functional>
+#include <map>
+#include <vector>
 
 #include "AddressSpace.hpp"
 #include "MemorySegment.hpp"
@@ -82,10 +88,14 @@ namespace Targets::TargetDescription
          */
         [[nodiscard]] TargetFamily getFamily() const;
 
+        [[nodiscard]] std::optional<std::reference_wrapper<const PropertyGroup>> tryGetPropertyGroup(
+            std::string_view keyStr
+        ) const;
+        [[nodiscard]] const PropertyGroup& getPropertyGroup(std::string_view keyStr) const;
     protected:
         std::map<std::string, std::string> deviceAttributesByName;
         std::map<std::string, AddressSpace> addressSpacesMappedById;
-        std::map<std::string, PropertyGroup> propertyGroupsMappedByName;
+        std::map<std::string, PropertyGroup, std::less<void>> propertyGroupsMappedByKey;
         std::map<std::string, Module> modulesMappedByName;
         std::map<std::string, Module> peripheralModulesMappedByName;
         std::map<std::string, std::vector<RegisterGroup>> peripheralRegisterGroupsMappedByModuleRegisterGroupName;
@@ -104,6 +114,12 @@ namespace Targets::TargetDescription
 
         void init(const std::string& xmlFilePath);
         void init(const QDomDocument& document);
+
+        static std::optional<std::string> tryGetAttribute(const QDomElement& element, const QString& attributeName);
+        static std::string getAttribute(const QDomElement& element, const QString& attributeName);
+
+        static PropertyGroup propertyGroupFromXml(const QDomElement& xmlElement);
+        static Property propertyFromXml(const QDomElement& xmlElement);
 
         /**
          * Constructs an AddressSpace object from an XML element.
@@ -157,11 +173,6 @@ namespace Targets::TargetDescription
          * Extracts all address spaces and loads them into this->addressSpacesMappedById.
          */
         void loadAddressSpaces(const QDomDocument& document);
-
-        /**
-         * Extracts all property groups and loads them into this->propertyGroupsMappedByName.
-         */
-        void loadPropertyGroups(const QDomDocument& document);
 
         /**
          * Extracts all modules and loads them into this->modulesMappedByName.

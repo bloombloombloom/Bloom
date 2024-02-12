@@ -6,10 +6,13 @@
 #include "Exceptions/TargetDescriptionParsingFailureException.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Services/PathService.hpp"
+#include "src/Services/StringService.hpp"
 
 namespace Targets::TargetDescription
 {
     using namespace Exceptions;
+
+    using Services::StringService;
 
     const std::map<std::string, GeneratedMapping::BriefTargetDescriptor>& TargetDescriptionFile::mapping() {
         return GeneratedMapping::map;
@@ -42,6 +45,31 @@ namespace Targets::TargetDescription
         return familyIt->second;
     }
 
+    std::optional<std::reference_wrapper<const PropertyGroup>> TargetDescriptionFile::tryGetPropertyGroup(
+        std::string_view keyStr
+    ) const {
+        auto keys = StringService::split(keyStr, '.');
+
+        const auto firstSubGroupIt = this->propertyGroupsMappedByKey.find(*keys.begin());
+        return firstSubGroupIt != this->propertyGroupsMappedByKey.end()
+            ? keys.size() > 1
+                ? firstSubGroupIt->second.getSubGroup(keys | std::ranges::views::drop(1))
+                : std::optional(std::cref(firstSubGroupIt->second))
+            : std::nullopt;
+    }
+
+    const PropertyGroup& TargetDescriptionFile::getPropertyGroup(std::string_view keyStr) const {
+        const auto propertyGroup = this->tryGetPropertyGroup(keyStr);
+
+        if (!propertyGroup.has_value()) {
+            throw Exception(
+                "Failed to get property group \"" + std::string(keyStr) + "\" from TDF - property group not found"
+            );
+        }
+
+        return propertyGroup->get();
+    }
+
     void TargetDescriptionFile::init(const std::string& xmlFilePath) {
         auto file = QFile(QString::fromStdString(xmlFilePath));
         if (!file.exists()) {
@@ -60,12 +88,12 @@ namespace Targets::TargetDescription
     }
 
     void TargetDescriptionFile::init(const QDomDocument& document) {
-        const auto device = document.elementsByTagName("device").item(0).toElement();
-        if (!device.isElement()) {
-            throw TargetDescriptionParsingFailureException("Device element not found.");
+        const auto deviceElement = document.documentElement();
+        if (deviceElement.nodeName() != "device") {
+            throw TargetDescriptionParsingFailureException("Root \"device\" element not found.");
         }
 
-        const auto deviceAttributes = device.attributes();
+        const auto deviceAttributes = deviceElement.attributes();
         for (auto i = 0; i < deviceAttributes.length(); ++i) {
             const auto deviceAttribute = deviceAttributes.item(i);
             this->deviceAttributesByName.insert(
@@ -76,13 +104,76 @@ namespace Targets::TargetDescription
             );
         }
 
+        for (
+            auto element = deviceElement.firstChildElement("property-groups").firstChildElement("property-group");
+            !element.isNull();
+            element = element.nextSiblingElement("property-group")
+        ) {
+            auto propertyGroup = TargetDescriptionFile::propertyGroupFromXml(element);
+            this->propertyGroupsMappedByKey.insert(
+                std::pair(propertyGroup.key, std::move(propertyGroup))
+            );
+        }
+
         this->loadAddressSpaces(document);
-        this->loadPropertyGroups(document);
         this->loadModules(document);
         this->loadPeripheralModules(document);
         this->loadVariants(document);
         this->loadPinouts(document);
         this->loadInterfaces(document);
+    }
+
+    std::optional<std::string> TargetDescriptionFile::tryGetAttribute(
+        const QDomElement& element,
+        const QString& attributeName
+    ) {
+        return element.hasAttribute(attributeName)
+            ? std::optional(element.attribute(attributeName).toStdString())
+            : std::nullopt;
+    }
+
+    std::string TargetDescriptionFile::getAttribute(const QDomElement& element, const QString& attributeName) {
+        const auto attribute = TargetDescriptionFile::tryGetAttribute(element, attributeName);
+
+        if (!attribute.has_value()) {
+            throw Exception(
+                "Failed to fetch attribute from TDF element \"" + element.nodeName().toStdString()
+                    + "\" - attribute \"" + attributeName.toStdString() + "\" not found"
+            );
+        }
+
+        return *attribute;
+    }
+
+    PropertyGroup TargetDescriptionFile::propertyGroupFromXml(const QDomElement& xmlElement) {
+        auto output = PropertyGroup(TargetDescriptionFile::getAttribute(xmlElement, "key"), {}, {});
+
+        for (
+            auto element = xmlElement.firstChildElement("property");
+            !element.isNull();
+            element = element.nextSiblingElement("property")
+        ) {
+            auto property = TargetDescriptionFile::propertyFromXml(element);
+            output.propertiesMappedByKey.insert(std::pair(property.key, std::move(property)));
+        }
+
+        for (
+            auto element = xmlElement.firstChildElement("property-group");
+            !element.isNull();
+            element = element.nextSiblingElement("property-group")
+        ) {
+            auto subGroup = TargetDescriptionFile::propertyGroupFromXml(element);
+            output.subGroupsMappedByKey.insert(std::pair(subGroup.key, std::move(subGroup)));
+        }
+
+        return output;
+    }
+
+    Property TargetDescriptionFile::propertyFromXml(const QDomElement& xmlElement) {
+        return Property(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "value")
+        );
     }
 
     AddressSpace TargetDescriptionFile::addressSpaceFromXml(const QDomElement& xmlElement) {
@@ -343,38 +434,6 @@ namespace Targets::TargetDescription
                         + exception.getMessage()
                 );
             }
-        }
-    }
-
-    void TargetDescriptionFile::loadPropertyGroups(const QDomDocument& document) {
-        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
-
-        auto propertyGroupNodes = deviceElement.elementsByTagName("property-groups").item(0).toElement()
-            .elementsByTagName("property-group");
-
-        for (int propertyGroupIndex = 0; propertyGroupIndex < propertyGroupNodes.count(); propertyGroupIndex++) {
-            auto propertyGroupElement = propertyGroupNodes.item(propertyGroupIndex).toElement();
-            auto propertyGroupName = propertyGroupElement.attributes().namedItem(
-                "name"
-            ).nodeValue().toLower().toStdString();
-            PropertyGroup propertyGroup;
-            propertyGroup.name = propertyGroupName;
-
-            auto propertyNodes = propertyGroupElement.elementsByTagName("property");
-            for (int propertyIndex = 0; propertyIndex < propertyNodes.count(); propertyIndex++) {
-                auto propertyElement = propertyNodes.item(propertyIndex).toElement();
-                auto propertyName = propertyElement.attributes().namedItem("name").nodeValue();
-
-                Property property;
-                property.name = propertyName.toStdString();
-                property.value = propertyElement.attributes().namedItem("value").nodeValue();
-
-                propertyGroup.propertiesMappedByName.insert(
-                    std::pair(propertyName.toLower().toStdString(), property)
-                );
-            }
-
-            this->propertyGroupsMappedByName.insert(std::pair(propertyGroup.name, propertyGroup));
         }
     }
 
