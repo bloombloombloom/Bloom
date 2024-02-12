@@ -53,7 +53,7 @@ namespace Targets::TargetDescription
         const auto firstSubGroupIt = this->propertyGroupsMappedByKey.find(*keys.begin());
         return firstSubGroupIt != this->propertyGroupsMappedByKey.end()
             ? keys.size() > 1
-                ? firstSubGroupIt->second.getSubGroup(keys | std::ranges::views::drop(1))
+                ? firstSubGroupIt->second.tryGetSubGroup(keys | std::ranges::views::drop(1))
                 : std::optional(std::cref(firstSubGroupIt->second))
             : std::nullopt;
     }

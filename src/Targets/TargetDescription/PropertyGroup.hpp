@@ -40,14 +40,10 @@ namespace Targets::TargetDescription
             , subGroupsMappedByKey(subGroupsMappedByKey)
         {}
 
-        std::optional<std::reference_wrapper<const PropertyGroup>> getSubGroup(std::string_view keyStr) const {
-            return this->getSubGroup(Services::StringService::split(keyStr, '.'));
-        }
-
         template <typename KeysType>
         requires
             std::ranges::sized_range<KeysType>
-        std::optional<std::reference_wrapper<const PropertyGroup>> getSubGroup(KeysType keys) const {
+        std::optional<std::reference_wrapper<const PropertyGroup>> tryGetSubGroup(KeysType keys) const {
             auto firstSubGroupIt = this->subGroupsMappedByKey.find(*(keys.begin()));
             if (firstSubGroupIt == this->subGroupsMappedByKey.end()) {
                 return std::nullopt;
@@ -55,7 +51,7 @@ namespace Targets::TargetDescription
 
             auto subGroup = std::optional(std::cref(firstSubGroupIt->second));
             for (const auto key : keys | std::ranges::views::drop(1)) {
-                subGroup = subGroup->get().getSubGroup(key);
+                subGroup = subGroup->get().tryGetSubGroup(key);
 
                 if (!subGroup.has_value()) {
                     break;
@@ -63,6 +59,22 @@ namespace Targets::TargetDescription
             }
 
             return subGroup;
+        }
+
+        std::optional<std::reference_wrapper<const PropertyGroup>> tryGetSubGroup(std::string_view keyStr) const {
+            return this->tryGetSubGroup(Services::StringService::split(keyStr, '.'));
+        }
+
+        std::optional<std::reference_wrapper<const PropertyGroup>> getSubGroup(std::string_view keyStr) const {
+            const auto propertyGroup = this->tryGetSubGroup(keyStr);
+            if (!propertyGroup.has_value()) {
+                throw Exceptions::Exception(
+                    "Failed to get subgroup \"" + std::string(keyStr)
+                        + "\" from property group in TDF - subgroup not found"
+                );
+            }
+
+            return propertyGroup->get();
         }
 
         std::optional<std::reference_wrapper<const Property>> tryGetProperty(std::string_view key) const {
