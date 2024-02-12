@@ -4,6 +4,7 @@
 #include <cctype>
 #include <sstream>
 #include <iomanip>
+#include <ranges>
 
 namespace Services
 {
@@ -69,5 +70,34 @@ namespace Services
         }
 
         return stream.str();
+    }
+
+    std::uint64_t StringService::toUint64(const std::string& str) {
+        return static_cast<std::uint64_t>(std::stoul(str, nullptr, 0));
+    }
+
+    std::uint32_t StringService::toUint32(const std::string& str) {
+        return static_cast<std::uint32_t>(StringService::toUint64(str));
+    }
+
+    std::uint16_t StringService::toUint16(const std::string& str) {
+        return static_cast<std::uint16_t>(StringService::toUint64(str));
+    }
+
+    std::uint8_t StringService::toUint8(const std::string& str) {
+        return static_cast<std::uint8_t>(StringService::toUint64(str));
+    }
+
+    std::vector<std::string_view> StringService::split(std::string_view str, char delimiter) {
+        auto range = str |
+            std::ranges::views::split(delimiter) |
+            std::ranges::views::transform([](auto&& subRange) -> std::string_view {
+                return std::string_view(
+                    subRange.begin(),
+                    static_cast<std::size_t>(std::ranges::distance(subRange))
+                );
+            });
+
+        return {std::ranges::begin(range), std::ranges::end(range)};
     }
 }
