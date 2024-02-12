@@ -123,8 +123,8 @@ std::map<std::string, std::function<int()>> Application::getCommandHandlersByCom
             std::bind(&Application::initProject, this)
         },
         {
-            "--target-list-machine",
-            std::bind(&Application::presentTargetListMachine, this)
+            "--capabilities-machine",
+            std::bind(&Application::presentCapabilitiesMachine, this)
         },
     };
 }
@@ -375,11 +375,6 @@ int Application::presentVersionText() {
 int Application::presentVersionMachineText() {
     Logger::silence();
 
-    auto insightAvailable = true;
-#ifdef EXCLUDE_INSIGHT
-    insightAvailable = false;
-#endif
-
     std::cout << QJsonDocument(QJsonObject({
         {"version", QString::fromStdString(Application::VERSION.toString())},
         {"components", QJsonObject({
@@ -387,13 +382,12 @@ int Application::presentVersionMachineText() {
             {"minor", Application::VERSION.minor},
             {"patch", Application::VERSION.patch},
         })},
-        {"insightAvailable", insightAvailable},
     })).toJson().toStdString();
 
     return EXIT_SUCCESS;
 }
 
-int Application::presentTargetListMachine() {
+int Application::presentCapabilitiesMachine() {
     using Targets::TargetFamily;
 
     Logger::silence();
@@ -403,17 +397,24 @@ int Application::presentTargetListMachine() {
         {TargetFamily::RISC_V, "RISC-V"},
     });
 
-    auto output = QJsonArray();
+    auto supportedTargets = QJsonArray();
 
     for (const auto& [configValue, descriptor] : Targets::TargetDescription::TargetDescriptionFile::mapping()) {
-        output.push_back(QJsonObject({
+        supportedTargets.push_back(QJsonObject({
             {"name" , QString::fromStdString(descriptor.targetName)},
             {"family" , targetFamilyNames.at(descriptor.targetFamily)},
             {"configurationValue" , QString::fromStdString(configValue)},
         }));
     }
 
-    std::cout << QJsonDocument(output).toJson().toStdString();
+    std::cout << QJsonDocument(QJsonObject({
+        {"supportedTargets", supportedTargets},
+#ifndef EXCLUDE_INSIGHT
+        {"insight", true},
+#else
+        {"insight", false},
+#endif
+    })).toJson().toStdString();
 
     return EXIT_SUCCESS;
 }

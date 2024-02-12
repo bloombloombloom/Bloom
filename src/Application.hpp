@@ -217,11 +217,11 @@ private:
     int presentVersionMachineText();
 
     /**
-     * Lists all supported targets, in JSON format.
+     * Presents Bloom's capabilities, in JSON format.
      *
      * @return
      */
-    int presentTargetListMachine();
+    int presentCapabilitiesMachine();
 
     /**
      * Initialises a project in the user's working directory.
