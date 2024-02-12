@@ -13,10 +13,12 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-#include "src/Services/ProcessService.hpp"
-
 #include "src/Logger/Logger.hpp"
 #include "src/Services/PathService.hpp"
+#include "src/Services/ProcessService.hpp"
+#include "src/Helpers/BiMap.hpp"
+
+#include "src/Targets/TargetDescription/TargetDescriptionFile.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 
@@ -133,6 +135,10 @@ std::map<std::string, std::function<int()>> Application::getCommandHandlersByCom
         {
             "init",
             std::bind(&Application::initProject, this)
+        },
+        {
+            "--target-list-machine",
+            std::bind(&Application::presentTargetListMachine, this)
         },
     };
 }
@@ -383,6 +389,30 @@ int Application::presentVersionMachineText() {
         })},
         {"insightAvailable", insightAvailable},
     })).toJson().toStdString();
+
+    return EXIT_SUCCESS;
+}
+
+int Application::presentTargetListMachine() {
+    Logger::silence();
+
+    using Targets::TargetFamily;
+    static const auto targetFamilyNames = BiMap<TargetFamily, QString>({
+        {TargetFamily::AVR_8, "AVR8"},
+        {TargetFamily::RISC_V, "RISC-V"},
+    });
+
+    auto output = QJsonArray();
+
+    for (const auto& [configValue, descriptor] : Targets::TargetDescription::TargetDescriptionFile::mapping()) {
+        output.push_back(QJsonObject({
+            {"name" , QString::fromStdString(descriptor.targetName)},
+            {"family" , targetFamilyNames.at(descriptor.targetFamily)},
+            {"configurationValue" , QString::fromStdString(configValue)},
+        }));
+    }
+
+    std::cout << QJsonDocument(output).toJson().toStdString();
 
     return EXIT_SUCCESS;
 }

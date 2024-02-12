@@ -217,6 +217,13 @@ private:
     int presentVersionMachineText();
 
     /**
+     * Lists all supported targets, in JSON format.
+     *
+     * @return
+     */
+    int presentTargetListMachine();
+
+    /**
      * Initialises a project in the user's working directory.
      *
      * @return
