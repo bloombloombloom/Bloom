@@ -118,8 +118,12 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $output->eepromPageSize = $eepromMemorySegment->pageSize;
         }
 
-        $output->ocdRevision = $this->stringService->tryStringToInt($this->getPropertyValue('ocd', 'ocd_revision'));
-        $output->ocdDataRegister = $this->stringService->tryStringToInt($this->getPropertyValue('ocd', 'ocd_datareg'));
+        $output->ocdRevision = $this->stringService->tryStringToInt(
+            $this->getPropertyValue('ocd', 'ocd_revision')
+        );
+        $output->ocdDataRegister = $this->stringService->tryStringToInt(
+            $this->getPropertyValue('ocd', 'ocd_datareg')
+        );
 
         $eepromPeripheral = $this->getTargetPeripheral('eeprom');
 
