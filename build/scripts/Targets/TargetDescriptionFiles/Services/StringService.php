@@ -9,7 +9,11 @@ class StringService
             return null;
         }
 
-        return stristr($value, '0x') !== false ? (int) hexdec($value) : (int) $value;
+        if (stripos($value, '0x') === 0) {
+            return ctype_xdigit(substr($value, 2)) ? (int) hexdec($value) : null;
+        }
+
+        return ctype_digit($value) ? (int) $value : null;
     }
 
     public function tryIntToHex(?int $value, int $pad = 0): string
