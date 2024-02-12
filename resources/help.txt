@@ -7,9 +7,10 @@ If no environment name or command is provided, Bloom will fall back to the envir
 If no such environment exists, Bloom will exit.
 
 Commands:
-  --help, -h          Displays this help text.
-  --version, -v       Displays Bloom's version number.
-  --version-machine   Outputs Bloom's version number in JSON format.
-  init                Creates a new Bloom project configuration file (bloom.yaml), in the working directory.
+  --help, -h              Displays this help text.
+  --version, -v           Displays Bloom's version number.
+  --version-machine       Outputs Bloom's version number in JSON format.
+  --target-list-machine   Outputs all targets and their configuration values, supported by this build, in JSON format.
+  init                    Creates a new Bloom project configuration file (bloom.yaml), in the working directory.
 
 For more information on getting started with Bloom, please visit https://bloom.oscillate.io/docs/getting-started.
