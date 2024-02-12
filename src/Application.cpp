@@ -394,9 +394,10 @@ int Application::presentVersionMachineText() {
 }
 
 int Application::presentTargetListMachine() {
+    using Targets::TargetFamily;
+
     Logger::silence();
 
-    using Targets::TargetFamily;
     static const auto targetFamilyNames = BiMap<TargetFamily, QString>({
         {TargetFamily::AVR_8, "AVR8"},
         {TargetFamily::RISC_V, "RISC-V"},
