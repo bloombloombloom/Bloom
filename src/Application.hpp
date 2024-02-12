@@ -61,9 +61,9 @@ private:
     std::array<char*, 1> qtApplicationArgv = {this->qtApplicationName.data()};
     int qtApplicationArgc = 1;
 #ifndef EXCLUDE_INSIGHT
-    QApplication qtApplication;
+    std::unique_ptr<QApplication> qtApplication = nullptr;
 #else
-    QCoreApplication qtApplication;
+    std::unique_ptr<QCoreApplication> qtApplication = nullptr;
 #endif
 
     EventListenerPointer applicationEventListener = std::make_shared<EventListener>("ApplicationEventListener");

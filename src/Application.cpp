@@ -26,20 +26,6 @@ using namespace Exceptions;
 
 Application::Application(std::vector<std::string>&& arguments)
     : arguments(std::move(arguments))
-    , qtApplication(
-        (
-            Thread::blockAllSignals(),
-            QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true),
-#ifndef BLOOM_DEBUG_BUILD
-            QCoreApplication::addLibraryPath(QString::fromStdString(Services::PathService::applicationDirPath() + "/plugins")),
-#endif
-#ifndef EXCLUDE_INSIGHT
-            QApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
-#else
-            QCoreApplication(this->qtApplicationArgc, this->qtApplicationArgv.data())
-#endif
-        )
-    )
 {}
 
 int Application::run() {
@@ -93,11 +79,11 @@ int Application::run() {
          *
          * This allows us to use Qt's event loop whilst still being able to process our own events.
          */
-        auto* eventDispatchTimer = new QTimer(&(this->qtApplication));
+        auto* eventDispatchTimer = new QTimer(this->qtApplication.get());
         QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Application::dispatchEvents);
         eventDispatchTimer->start(100);
 
-        this->qtApplication.exec();
+        this->qtApplication->exec();
 
     } catch (const InvalidConfig& exception) {
         Logger::error("Invalid project configuration (bloom.yaml) - " + exception.getMessage());
@@ -144,6 +130,20 @@ std::map<std::string, std::function<int()>> Application::getCommandHandlersByCom
 }
 
 void Application::startup() {
+    Thread::blockAllSignals();
+
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
+
+#ifndef BLOOM_DEBUG_BUILD
+    QCoreApplication::addLibraryPath(QString::fromStdString(Services::PathService::applicationDirPath() + "/plugins")),
+#endif
+
+#ifndef EXCLUDE_INSIGHT
+    this->qtApplication = std::make_unique<QApplication>(this->qtApplicationArgc, this->qtApplicationArgv.data());
+#else
+    this->qtApplication = std::make_unique<QCoreApplication>(this->qtApplicationArgc, this->qtApplicationArgv.data());
+#endif
+
     auto& applicationEventListener = this->applicationEventListener;
     EventManager::registerListener(applicationEventListener);
     applicationEventListener->registerCallbackForEventType<Events::ShutdownApplication>(
@@ -219,7 +219,7 @@ void Application::triggerShutdown() {
     }
 #endif
 
-    this->qtApplication.exit(EXIT_SUCCESS);
+    this->qtApplication->exit(EXIT_SUCCESS);
 }
 
 void Application::loadProjectSettings() {
@@ -601,7 +601,7 @@ void Application::activateInsight() {
         this->environmentConfig.value(),
         this->insightConfig.value(),
         this->projectSettings.value().insightSettings,
-        &(this->qtApplication)
+        this->qtApplication.get()
     );
 }
 
