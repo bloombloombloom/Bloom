@@ -28,45 +28,45 @@ namespace Targets::TargetDescription
     {
         std::string key;
         std::map<std::string, Property, std::less<void>> propertiesMappedByKey;
-        std::map<std::string, PropertyGroup, std::less<void>> subGroupsMappedByKey;
+        std::map<std::string, PropertyGroup, std::less<void>> subgroupsMappedByKey;
 
         PropertyGroup(
             const std::string& key,
             const std::map<std::string, Property, std::less<void>>& propertiesMappedByKey,
-            const std::map<std::string, PropertyGroup, std::less<void>>& subGroupsMappedByKey
+            const std::map<std::string, PropertyGroup, std::less<void>>& subgroupsMappedByKey
         )
             : key(key)
             , propertiesMappedByKey(propertiesMappedByKey)
-            , subGroupsMappedByKey(subGroupsMappedByKey)
+            , subgroupsMappedByKey(subgroupsMappedByKey)
         {}
 
         template <typename KeysType>
         requires
             std::ranges::sized_range<KeysType>
-        std::optional<std::reference_wrapper<const PropertyGroup>> tryGetSubGroup(KeysType keys) const {
-            auto firstSubGroupIt = this->subGroupsMappedByKey.find(*(keys.begin()));
-            if (firstSubGroupIt == this->subGroupsMappedByKey.end()) {
+        std::optional<std::reference_wrapper<const PropertyGroup>> tryGetSubgroup(KeysType keys) const {
+            auto firstSubgroupIt = this->subgroupsMappedByKey.find(*(keys.begin()));
+            if (firstSubgroupIt == this->subgroupsMappedByKey.end()) {
                 return std::nullopt;
             }
 
-            auto subGroup = std::optional(std::cref(firstSubGroupIt->second));
+            auto subgroup = std::optional(std::cref(firstSubgroupIt->second));
             for (const auto key : keys | std::ranges::views::drop(1)) {
-                subGroup = subGroup->get().tryGetSubGroup(key);
+                subgroup = subgroup->get().tryGetSubgroup(key);
 
-                if (!subGroup.has_value()) {
+                if (!subgroup.has_value()) {
                     break;
                 }
             }
 
-            return subGroup;
+            return subgroup;
         }
 
-        std::optional<std::reference_wrapper<const PropertyGroup>> tryGetSubGroup(std::string_view keyStr) const {
-            return this->tryGetSubGroup(Services::StringService::split(keyStr, '.'));
+        std::optional<std::reference_wrapper<const PropertyGroup>> tryGetSubgroup(std::string_view keyStr) const {
+            return this->tryGetSubgroup(Services::StringService::split(keyStr, '.'));
         }
 
-        std::optional<std::reference_wrapper<const PropertyGroup>> getSubGroup(std::string_view keyStr) const {
-            const auto propertyGroup = this->tryGetSubGroup(keyStr);
+        std::optional<std::reference_wrapper<const PropertyGroup>> getSubgroup(std::string_view keyStr) const {
+            const auto propertyGroup = this->tryGetSubgroup(keyStr);
             if (!propertyGroup.has_value()) {
                 throw Exceptions::Exception(
                     "Failed to get subgroup \"" + std::string(keyStr)

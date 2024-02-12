@@ -36,11 +36,11 @@ class TargetPeripheral
             $keys = explode('.', $keys);
         }
 
-        $firstLevelSubGroupId = array_shift($keys);
+        $firstLevelSubgroupId = array_shift($keys);
 
         foreach ($this->registerGroups as $registerGroup) {
-            if ($registerGroup->key === $firstLevelSubGroupId) {
-                return !empty($keys) ? $registerGroup->getSubGroup($keys) : $registerGroup;
+            if ($registerGroup->key === $firstLevelSubgroupId) {
+                return !empty($keys) ? $registerGroup->getSubgroup($keys) : $registerGroup;
             }
         }
 

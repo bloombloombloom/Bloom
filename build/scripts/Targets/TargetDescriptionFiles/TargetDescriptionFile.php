@@ -89,7 +89,7 @@ class TargetDescriptionFile
         $firstLevelGroupKey = array_shift($keys);
         foreach ($this->propertyGroups as $propertyGroup) {
             if ($propertyGroup->key === $firstLevelGroupKey) {
-                return !empty($keys) ? $propertyGroup->getSubGroup($keys) : $propertyGroup;
+                return !empty($keys) ? $propertyGroup->getSubgroup($keys) : $propertyGroup;
             }
         }
 
@@ -280,16 +280,16 @@ class TargetDescriptionFile
         $addressOffset += $registerGroup->offset ?? 0;
         $output = new TargetRegisterGroup($registerGroup->key, $registerGroup->name, $addressOffset, [], []);
 
-        foreach ($registerGroup->subGroups as $subGroup) {
-            $output->subGroups[] = $this->targetRegisterGroupFromRegisterGroup($subGroup, $addressOffset, $moduleKey);
+        foreach ($registerGroup->subgroups as $subgroup) {
+            $output->subgroups[] = $this->targetRegisterGroupFromRegisterGroup($subgroup, $addressOffset, $moduleKey);
         }
 
-        foreach ($registerGroup->subGroupReferences as $subGroupReference) {
-            $subGroup = $this->resolveRegisterGroupReference($subGroupReference, $moduleKey);
+        foreach ($registerGroup->subgroupReferences as $subgroupReference) {
+            $subgroup = $this->resolveRegisterGroupReference($subgroupReference, $moduleKey);
 
-            if ($subGroup instanceof RegisterGroup) {
-                $output->subGroups[] = $this->targetRegisterGroupFromRegisterGroup(
-                    $subGroup,
+            if ($subgroup instanceof RegisterGroup) {
+                $output->subgroups[] = $this->targetRegisterGroupFromRegisterGroup(
+                    $subgroup,
                     $addressOffset,
                     $moduleKey
                 );

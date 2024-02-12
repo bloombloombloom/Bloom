@@ -23,16 +23,16 @@ class PropertyGroup
         $this->properties = $properties;
     }
 
-    public function getSubGroup(array|string $subGroupKeys): ?PropertyGroup
+    public function getSubgroup(array|string $subgroupKeys): ?PropertyGroup
     {
-        if (is_string($subGroupKeys)) {
-            $subGroupKeys = explode('.', $subGroupKeys);
+        if (is_string($subgroupKeys)) {
+            $subgroupKeys = explode('.', $subgroupKeys);
         }
 
-        $firstLevelSubGroupKey = array_shift($subGroupKeys);
-        foreach ($this->subPropertyGroups as $subGroup) {
-            if ($subGroup->key === $firstLevelSubGroupKey) {
-                return !empty($subGroupKeys) ? $subGroup->getSubGroup($subGroupKeys) : $subGroup;
+        $firstLevelSubgroupKey = array_shift($subgroupKeys);
+        foreach ($this->subPropertyGroups as $subgroup) {
+            if ($subgroup->key === $firstLevelSubgroupKey) {
+                return !empty($subgroupKeys) ? $subgroup->getSubgroup($subgroupKeys) : $subgroup;
             }
         }
 

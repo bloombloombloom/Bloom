@@ -23,17 +23,17 @@ class TargetRegisterGroup
     public ?int $baseAddress = null;
 
     /** @var TargetRegisterGroup[] */
-    public array $subGroups = [];
+    public array $subgroups = [];
 
     /** @var TargetRegister[] */
     public array $registers = [];
 
-    public function __construct(?string $key, ?string $name, ?int $baseAddress, array $subGroups, array $registers)
+    public function __construct(?string $key, ?string $name, ?int $baseAddress, array $subgroups, array $registers)
     {
         $this->key = $key;
         $this->name = $name;
         $this->baseAddress = $baseAddress;
-        $this->subGroups = $subGroups;
+        $this->subgroups = $subgroups;
         $this->registers = $registers;
     }
 
@@ -44,7 +44,7 @@ class TargetRegisterGroup
         }
 
         $registerKey = array_pop($keys);
-        $group = !empty($keys) > 1 ? $this->getSubGroup($keys) : $this;
+        $group = !empty($keys) > 1 ? $this->getSubgroup($keys) : $this;
 
         if ($group instanceof TargetRegisterGroup) {
             foreach ($group->registers as $register) {
@@ -57,16 +57,16 @@ class TargetRegisterGroup
         return null;
     }
 
-    public function getSubGroup(array|string $subGroupKeys): ?TargetRegisterGroup
+    public function getSubgroup(array|string $subgroupKeys): ?TargetRegisterGroup
     {
-        if (is_string($subGroupKeys)) {
-            $subGroupKeys = explode('.', $subGroupKeys);
+        if (is_string($subgroupKeys)) {
+            $subgroupKeys = explode('.', $subgroupKeys);
         }
 
-        $firstLevelSubGroupKey = array_shift($subGroupKeys);
-        foreach ($this->subGroups as $subGroup) {
-            if ($subGroup->key === $firstLevelSubGroupKey) {
-                return !empty($subGroupKeys) ? $subGroup->getSubGroup($subGroupKeys) : $subGroup;
+        $firstLevelSubgroupKey = array_shift($subgroupKeys);
+        foreach ($this->subgroups as $subgroup) {
+            if ($subgroup->key === $firstLevelSubgroupKey) {
+                return !empty($subgroupKeys) ? $subgroup->getSubgroup($subgroupKeys) : $subgroup;
             }
         }
 

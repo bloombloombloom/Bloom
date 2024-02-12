@@ -208,8 +208,8 @@ class ToXmlService
 
         $children = array_merge(
             $registerGroup->registers,
-            $registerGroup->subGroups,
-            $registerGroup->subGroupReferences
+            $registerGroup->subgroups,
+            $registerGroup->subgroupReferences
         );
 
         usort(

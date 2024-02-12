@@ -17,25 +17,25 @@ class RegisterGroup
     public array $registers = [];
 
     /** @var RegisterGroup[] */
-    public array $subGroups = [];
+    public array $subgroups = [];
 
     /** @var RegisterGroupReference[] */
-    public array $subGroupReferences = [];
+    public array $subgroupReferences = [];
 
     public function __construct(
         ?string $key,
         ?string $name,
         ?int $offset,
         array $registers,
-        array $subGroups,
-        array $subGroupReferences
+        array $subgroups,
+        array $subgroupReferences
     ) {
         $this->key = $key;
         $this->name = $name;
         $this->offset = $offset;
         $this->registers = $registers;
-        $this->subGroups = $subGroups;
-        $this->subGroupReferences = $subGroupReferences;
+        $this->subgroups = $subgroups;
+        $this->subgroupReferences = $subgroupReferences;
     }
 
     public function getRegister(array|string $keys): ?Register
@@ -45,7 +45,7 @@ class RegisterGroup
         }
 
         $registerKey = array_pop($keys);
-        $group = !empty($keys) > 1 ? $this->getSubGroup($keys) : $this;
+        $group = !empty($keys) > 1 ? $this->getSubgroup($keys) : $this;
 
         if ($group instanceof RegisterGroup) {
             foreach ($group->registers as $register) {
@@ -58,16 +58,16 @@ class RegisterGroup
         return null;
     }
 
-    public function getSubGroup(array|string $subGroupKeys): ?RegisterGroup
+    public function getSubgroup(array|string $subgroupKeys): ?RegisterGroup
     {
-        if (is_string($subGroupKeys)) {
-            $subGroupKeys = explode('.', $subGroupKeys);
+        if (is_string($subgroupKeys)) {
+            $subgroupKeys = explode('.', $subgroupKeys);
         }
 
-        $firstLevelSubGroupKey = array_shift($subGroupKeys);
-        foreach ($this->subGroups as $subGroup) {
-            if ($subGroup->key === $firstLevelSubGroupKey) {
-                return !empty($subGroupKeys) ? $subGroup->getSubGroup($subGroupKeys) : $subGroup;
+        $firstLevelSubgroupKey = array_shift($subgroupKeys);
+        foreach ($this->subgroups as $subgroup) {
+            if ($subgroup->key === $firstLevelSubgroupKey) {
+                return !empty($subgroupKeys) ? $subgroup->getSubgroup($subgroupKeys) : $subgroup;
             }
         }
 

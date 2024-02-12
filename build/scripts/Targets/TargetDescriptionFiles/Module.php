@@ -30,10 +30,10 @@ class Module
             $keys = explode('.', $keys);
         }
 
-        $firstLevelSubGroupId = array_shift($keys);
+        $firstLevelSubgroupKey = array_shift($keys);
         foreach ($this->registerGroups as $registerGroup) {
-            if ($registerGroup->key === $firstLevelSubGroupId) {
-                return !empty($keys) ? $registerGroup->getSubGroup($keys) : $registerGroup;
+            if ($registerGroup->key === $firstLevelSubgroupKey) {
+                return !empty($keys) ? $registerGroup->getSubgroup($keys) : $registerGroup;
             }
         }
 

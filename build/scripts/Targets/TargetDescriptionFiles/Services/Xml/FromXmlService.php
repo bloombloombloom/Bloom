@@ -241,12 +241,12 @@ class FromXmlService
             }
 
             if ($childNode->nodeName === 'register-group') {
-                $output->subGroups[] = $this->registerGroupFromElement($childNode);
+                $output->subgroups[] = $this->registerGroupFromElement($childNode);
                 continue;
             }
 
             if ($childNode->nodeName === 'register-group-reference') {
-                $output->subGroupReferences[] = $this->registerGroupReferenceFromElement($childNode);
+                $output->subgroupReferences[] = $this->registerGroupReferenceFromElement($childNode);
             }
         }
 

@@ -50,11 +50,11 @@ namespace Targets::TargetDescription
     ) const {
         auto keys = StringService::split(keyStr, '.');
 
-        const auto firstSubGroupIt = this->propertyGroupsMappedByKey.find(*keys.begin());
-        return firstSubGroupIt != this->propertyGroupsMappedByKey.end()
+        const auto firstSubgroupIt = this->propertyGroupsMappedByKey.find(*keys.begin());
+        return firstSubgroupIt != this->propertyGroupsMappedByKey.end()
             ? keys.size() > 1
-                ? firstSubGroupIt->second.tryGetSubGroup(keys | std::ranges::views::drop(1))
-                : std::optional(std::cref(firstSubGroupIt->second))
+                ? firstSubgroupIt->second.tryGetSubgroup(keys | std::ranges::views::drop(1))
+                : std::optional(std::cref(firstSubgroupIt->second))
             : std::nullopt;
     }
 
@@ -162,8 +162,8 @@ namespace Targets::TargetDescription
             !element.isNull();
             element = element.nextSiblingElement("property-group")
         ) {
-            auto subGroup = TargetDescriptionFile::propertyGroupFromXml(element);
-            output.subGroupsMappedByKey.insert(std::pair(subGroup.key, std::move(subGroup)));
+            auto subgroup = TargetDescriptionFile::propertyGroupFromXml(element);
+            output.subgroupsMappedByKey.insert(std::pair(subgroup.key, std::move(subgroup)));
         }
 
         return output;

@@ -460,30 +460,30 @@ class ValidationService
             $processedChildKeys[] = $register->key;
         }
 
-        foreach ($registerGroup->subGroups as $subGroup) {
+        foreach ($registerGroup->subgroups as $subgroup) {
             $failures = array_merge(
                 $failures,
-                $this->validateRegisterGroup($subGroup, $moduleKey, $tdf)
+                $this->validateRegisterGroup($subgroup, $moduleKey, $tdf)
             );
 
-            if ($subGroup->key !== null && in_array($subGroup->key, $processedChildKeys)) {
-                $failures[] = 'Duplicate register sub group key ("' . $subGroup->key . '") detected';
+            if ($subgroup->key !== null && in_array($subgroup->key, $processedChildKeys)) {
+                $failures[] = 'Duplicate register sub group key ("' . $subgroup->key . '") detected';
             }
 
-            $processedChildKeys[] = $subGroup->key;
+            $processedChildKeys[] = $subgroup->key;
         }
 
-        foreach ($registerGroup->subGroupReferences as $subGroupReference) {
+        foreach ($registerGroup->subgroupReferences as $subgroupReference) {
             $failures = array_merge(
                 $failures,
-                $this->validateRegisterGroupReference($subGroupReference, $moduleKey, $tdf)
+                $this->validateRegisterGroupReference($subgroupReference, $moduleKey, $tdf)
             );
 
-            if ($subGroupReference->key !== null && in_array($subGroupReference->key, $processedChildKeys)) {
-                $failures[] = 'Duplicate register group reference key ("' . $subGroupReference->key . '") detected';
+            if ($subgroupReference->key !== null && in_array($subgroupReference->key, $processedChildKeys)) {
+                $failures[] = 'Duplicate register group reference key ("' . $subgroupReference->key . '") detected';
             }
 
-            $processedChildKeys[] = $subGroupReference->key;
+            $processedChildKeys[] = $subgroupReference->key;
         }
 
         return array_map(
