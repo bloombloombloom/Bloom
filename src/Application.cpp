@@ -408,7 +408,7 @@ int Application::presentCapabilitiesMachine() {
     }
 
     std::cout << QJsonDocument(QJsonObject({
-        {"supportedTargets", supportedTargets},
+        {"targets", supportedTargets},
 #ifndef EXCLUDE_INSIGHT
         {"insight", true},
 #else
