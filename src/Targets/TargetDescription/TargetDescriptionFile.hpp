@@ -12,6 +12,7 @@
 #include "AddressSpace.hpp"
 #include "MemorySegment.hpp"
 #include "PropertyGroup.hpp"
+#include "MemorySegmentSection.hpp"
 #include "RegisterGroup.hpp"
 #include "Module.hpp"
 #include "Variant.hpp"
@@ -92,9 +93,15 @@ namespace Targets::TargetDescription
             std::string_view keyStr
         ) const;
         [[nodiscard]] const PropertyGroup& getPropertyGroup(std::string_view keyStr) const;
+
+        [[nodiscard]] std::optional<std::reference_wrapper<const AddressSpace>> tryGetAddressSpace(
+            std::string_view key
+        ) const;
+        [[nodiscard]] const AddressSpace& getAddressSpace(std::string_view key) const;
+
     protected:
         std::map<std::string, std::string> deviceAttributesByName;
-        std::map<std::string, AddressSpace> addressSpacesMappedById;
+        std::map<std::string, AddressSpace, std::less<void>> addressSpacesByKey;
         std::map<std::string, PropertyGroup, std::less<void>> propertyGroupsMappedByKey;
         std::map<std::string, Module> modulesMappedByName;
         std::map<std::string, Module> peripheralModulesMappedByName;
@@ -138,6 +145,14 @@ namespace Targets::TargetDescription
         static MemorySegment memorySegmentFromXml(const QDomElement& xmlElement);
 
         /**
+         * Constructs a MemorySegmentSection from an XML element.
+         *
+         * @param xmlElement
+         * @return
+         */
+        static MemorySegmentSection memorySegmentSectionFromXml(const QDomElement& xmlElement);
+
+        /**
          * Constructs a RegisterGroup object from an XML element.
          *
          * @param xmlElement
@@ -168,11 +183,6 @@ namespace Targets::TargetDescription
          * @return
          */
         const std::string& deviceAttribute(const std::string& attributeName) const;
-
-        /**
-         * Extracts all address spaces and loads them into this->addressSpacesMappedById.
-         */
-        void loadAddressSpaces(const QDomDocument& document);
 
         /**
          * Extracts all modules and loads them into this->modulesMappedByName.

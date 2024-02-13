@@ -3,10 +3,15 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
-#include "Exceptions/TargetDescriptionParsingFailureException.hpp"
-#include "src/Logger/Logger.hpp"
 #include "src/Services/PathService.hpp"
 #include "src/Services/StringService.hpp"
+
+#include "src/Targets/TargetMemory.hpp"
+#include "src/Helpers/BiMap.hpp"
+#include "src/Logger/Logger.hpp"
+
+#include "src/Exceptions/Exception.hpp"
+#include "Exceptions/TargetDescriptionParsingFailureException.hpp"
 
 namespace Targets::TargetDescription
 {
@@ -70,6 +75,27 @@ namespace Targets::TargetDescription
         return propertyGroup->get();
     }
 
+    std::optional<std::reference_wrapper<const AddressSpace>> TargetDescriptionFile::tryGetAddressSpace(
+        std::string_view key
+    ) const {
+        const auto addressSpaceIt = this->addressSpacesByKey.find(key);
+        return addressSpaceIt != this->addressSpacesByKey.end()
+            ? std::optional(std::cref(addressSpaceIt->second))
+            : std::nullopt;
+    }
+
+    const AddressSpace & TargetDescriptionFile::getAddressSpace(std::string_view key) const {
+        const auto addressSpace = this->tryGetAddressSpace(key);
+
+        if (!addressSpace.has_value()) {
+            throw Exception(
+                "Failed to get address space \"" + std::string(key) + "\" from TDF - address space not found"
+            );
+        }
+
+        return addressSpace->get();
+    }
+
     void TargetDescriptionFile::init(const std::string& xmlFilePath) {
         auto file = QFile(QString::fromStdString(xmlFilePath));
         if (!file.exists()) {
@@ -115,7 +141,17 @@ namespace Targets::TargetDescription
             );
         }
 
-        this->loadAddressSpaces(document);
+        for (
+            auto element = deviceElement.firstChildElement("address-spaces").firstChildElement("address-space");
+            !element.isNull();
+            element = element.nextSiblingElement("address-space")
+        ) {
+            auto addressSpace = TargetDescriptionFile::addressSpaceFromXml(element);
+            this->addressSpacesByKey.insert(
+                std::pair(addressSpace.key, std::move(addressSpace))
+            );
+        }
+
         this->loadModules(document);
         this->loadPeripheralModules(document);
         this->loadVariants(document);
@@ -176,113 +212,115 @@ namespace Targets::TargetDescription
         );
     }
 
-    AddressSpace TargetDescriptionFile::addressSpaceFromXml(const QDomElement& xmlElement) {
-        if (
-            !xmlElement.hasAttribute("id")
-            || !xmlElement.hasAttribute("name")
-            || !xmlElement.hasAttribute("size")
-            || !xmlElement.hasAttribute("start")
-        ) {
-            throw Exception("Address space element missing id/name/size/start attributes.");
-        }
+    AddressSpace TargetDescriptionFile::addressSpaceFromXml(const QDomElement &xmlElement) {
+        static const auto endiannessByName = BiMap<std::string, TargetMemoryEndianness>({
+            {"big", TargetMemoryEndianness::BIG},
+            {"little", TargetMemoryEndianness::LITTLE},
+        });
 
-        auto addressSpace = AddressSpace();
-        addressSpace.name = xmlElement.attribute("name").toStdString();
-        addressSpace.id = xmlElement.attribute("id").toStdString();
+        const auto endiannessName = TargetDescriptionFile::tryGetAttribute(xmlElement, "endianness");
 
-        bool conversionStatus;
-        addressSpace.startAddress = xmlElement.attribute("start").toUInt(&conversionStatus, 16);
+        auto endianness = std::optional<TargetMemoryEndianness>();
+        if (endiannessName.has_value()) {
+            endianness = endiannessByName.valueAt(*endiannessName);
 
-        if (!conversionStatus) {
-            throw Exception("Failed to convert start address hex value to integer.");
-        }
-
-        addressSpace.size = xmlElement.attribute("size").toUInt(&conversionStatus, 16);
-
-        if (!conversionStatus) {
-            throw Exception("Failed to convert size hex value to integer.");
-        }
-
-        if (xmlElement.hasAttribute("endianness")) {
-            addressSpace.littleEndian = (xmlElement.attribute("endianness").toStdString() == "little");
-        }
-
-        // Create memory segment objects and add them to the mapping.
-        auto segmentNodes = xmlElement.elementsByTagName("memory-segment");
-        auto& memorySegments = addressSpace.memorySegmentsByTypeAndName;
-        for (int segmentIndex = 0; segmentIndex < segmentNodes.count(); segmentIndex++) {
-            try {
-                auto segment = TargetDescriptionFile::memorySegmentFromXml(
-                    segmentNodes.item(segmentIndex).toElement()
+            if (!endianness.has_value()) {
+                throw Exception(
+                    "Failed to extract address space from TDF - invalid endianness name \"" + *endiannessName + "\""
                 );
-
-                if (!memorySegments.contains(segment.type)) {
-                    memorySegments.insert(
-                        std::pair<
-                            MemorySegmentType,
-                            decltype(addressSpace.memorySegmentsByTypeAndName)::mapped_type
-                        >(segment.type, {}));
-                }
-
-                memorySegments.find(segment.type)->second.insert(std::pair(segment.name, segment));
-
-            } catch (const Exception& exception) {
-                Logger::debug("Failed to extract memory segment from target description element - "
-                    + exception.getMessage());
             }
         }
 
-        return addressSpace;
+        auto output = AddressSpace(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "start")),
+            StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "size")),
+            endianness,
+            {}
+        );
+
+        for (
+            auto element = xmlElement.firstChildElement("memory-segment");
+            !element.isNull();
+            element = element.nextSiblingElement("memory-segment")
+        ) {
+            auto section = TargetDescriptionFile::memorySegmentFromXml(element);
+            output.memorySegmentsByKey.insert(std::pair(section.key, std::move(section)));
+        }
+
+        return output;
     }
 
     MemorySegment TargetDescriptionFile::memorySegmentFromXml(const QDomElement& xmlElement) {
-        if (
-            !xmlElement.hasAttribute("type")
-            || !xmlElement.hasAttribute("name")
-            || !xmlElement.hasAttribute("size")
-            || !xmlElement.hasAttribute("start")
-        ) {
-            throw Exception("Missing type/name/size/start attributes");
-        }
+        static const auto typesByName = BiMap<std::string, MemorySegmentType>({
+            {"aliased", MemorySegmentType::ALIASED},
+            {"regs", MemorySegmentType::REGISTERS},
+            {"eeprom", MemorySegmentType::EEPROM},
+            {"flash", MemorySegmentType::FLASH},
+            {"fuses", MemorySegmentType::FUSES},
+            {"io", MemorySegmentType::IO},
+            {"ram", MemorySegmentType::RAM},
+            {"lockbits", MemorySegmentType::LOCKBITS},
+            {"osccal", MemorySegmentType::OSCCAL},
+            {"production_signatures", MemorySegmentType::PRODUCTION_SIGNATURES},
+            {"signatures", MemorySegmentType::SIGNATURES},
+            {"user_signatures", MemorySegmentType::USER_SIGNATURES},
+        });
 
-        auto segment = MemorySegment();
-        auto typeName = xmlElement.attribute("type").toStdString();
-        auto type = MemorySegment::typesMappedByName.valueAt(typeName);
+        const auto typeName = TargetDescriptionFile::getAttribute(xmlElement, "type");
 
+        const auto type = typesByName.valueAt(typeName);
         if (!type.has_value()) {
-            throw Exception("Unknown type: \"" + typeName + "\"");
+            throw Exception(
+                "Failed to extract memory segment from TDF - invalid memory segment type name \"" + typeName + "\""
+            );
         }
 
-        segment.type = type.value();
-        segment.name = xmlElement.attribute("name").toLower().toStdString();
+        const auto pageSize = TargetDescriptionFile::tryGetAttribute(xmlElement, "page-size");
 
-        bool conversionStatus = false;
-        segment.startAddress = xmlElement.attribute("start").toUInt(&conversionStatus, 16);
+        auto output = MemorySegment(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            *type,
+            StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "start")),
+            StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "size")),
+            pageSize.has_value()
+                ? std::optional(StringService::toUint16(*pageSize))
+                : std::nullopt,
+            {}
+        );
 
-        if (!conversionStatus) {
-            // Failed to convert startAddress hex value as string to uint16_t
-            throw Exception("Invalid start address");
+        for (
+            auto element = xmlElement.firstChildElement("section");
+            !element.isNull();
+            element = element.nextSiblingElement("section")
+        ) {
+            auto section = TargetDescriptionFile::memorySegmentSectionFromXml(element);
+            output.sectionsByKey.insert(std::pair(section.key, std::move(section)));
         }
 
-        segment.size = xmlElement.attribute("size").toUInt(&conversionStatus, 16);
+        return output;
+    }
 
-        if (!conversionStatus) {
-            // Failed to convert size hex value as string to uint16_t
-            throw Exception("Invalid size");
+    MemorySegmentSection TargetDescriptionFile::memorySegmentSectionFromXml(const QDomElement& xmlElement) {
+        auto output = MemorySegmentSection(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "start")),
+            StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "size")),
+            {}
+        );
+
+        for (
+            auto element = xmlElement.firstChildElement("section");
+            !element.isNull();
+            element = element.nextSiblingElement("section")
+        ) {
+            auto section = TargetDescriptionFile::memorySegmentSectionFromXml(element);
+            output.subSectionsByKey.insert(std::pair(section.key, std::move(section)));
         }
 
-        if (xmlElement.hasAttribute("pagesize")) {
-            // The page size can be in single byte hexadecimal form ("0x01"), or it can be in plain integer form!
-            auto pageSize = xmlElement.attribute("pagesize");
-            segment.pageSize = pageSize.toUInt(&conversionStatus, pageSize.contains("0x") ? 16 : 10);
-
-            if (!conversionStatus) {
-                // Failed to convert size hex value as string to uint16_t
-                throw Exception("Invalid size");
-            }
-        }
-
-        return segment;
+        return output;
     }
 
     RegisterGroup TargetDescriptionFile::registerGroupFromXml(const QDomElement& xmlElement) {
@@ -413,28 +451,6 @@ namespace Targets::TargetDescription
         }
 
         return attributeIt->second;
-    }
-
-    void TargetDescriptionFile::loadAddressSpaces(const QDomDocument& document) {
-        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
-
-        auto addressSpaceNodes = deviceElement.elementsByTagName("address-spaces").item(0).toElement()
-            .elementsByTagName("address-space");
-
-        for (int addressSpaceIndex = 0; addressSpaceIndex < addressSpaceNodes.count(); addressSpaceIndex++) {
-            try {
-                auto addressSpace = TargetDescriptionFile::addressSpaceFromXml(
-                    addressSpaceNodes.item(addressSpaceIndex).toElement()
-                );
-                this->addressSpacesMappedById.insert(std::pair(addressSpace.id, addressSpace));
-
-            } catch (const Exception& exception) {
-                Logger::debug(
-                    "Failed to extract address space from target description element - "
-                        + exception.getMessage()
-                );
-            }
-        }
     }
 
     void TargetDescriptionFile::loadModules(const QDomDocument& document) {
