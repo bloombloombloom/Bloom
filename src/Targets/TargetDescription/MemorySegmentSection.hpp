@@ -9,7 +9,7 @@
 #include <ranges>
 
 #include "src/Services/StringService.hpp"
-#include "src/Exceptions/Exception.hpp"
+#include "Exceptions/InvalidTargetDescriptionDataException.hpp"
 
 namespace Targets::TargetDescription
 {
@@ -67,7 +67,7 @@ namespace Targets::TargetDescription
         ) const {
             const auto propertyGroup = this->tryGetSubSection(keyStr);
             if (!propertyGroup.has_value()) {
-                throw Exceptions::Exception(
+                throw Exceptions::InvalidTargetDescriptionDataException(
                     "Failed to get memory segment sub-section \"" + std::string(keyStr)
                         + "\" from memory segment in TDF - sub-section not found"
                 );

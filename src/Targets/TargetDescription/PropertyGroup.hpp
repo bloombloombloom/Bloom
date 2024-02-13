@@ -9,7 +9,7 @@
 #include <functional>
 
 #include "src/Services/StringService.hpp"
-#include "src/Exceptions/Exception.hpp"
+#include "Exceptions/InvalidTargetDescriptionDataException.hpp"
 
 namespace Targets::TargetDescription
 {
@@ -68,7 +68,7 @@ namespace Targets::TargetDescription
         std::optional<std::reference_wrapper<const PropertyGroup>> getSubgroup(std::string_view keyStr) const {
             const auto propertyGroup = this->tryGetSubgroup(keyStr);
             if (!propertyGroup.has_value()) {
-                throw Exceptions::Exception(
+                throw Exceptions::InvalidTargetDescriptionDataException(
                     "Failed to get subgroup \"" + std::string(keyStr)
                         + "\" from property group in TDF - subgroup not found"
                 );
@@ -90,7 +90,7 @@ namespace Targets::TargetDescription
         const Property& getProperty(std::string_view key) const {
             const auto property = this->tryGetProperty(key);
             if (!property.has_value()) {
-                throw Exceptions::Exception(
+                throw Exceptions::InvalidTargetDescriptionDataException(
                     "Failed to get property \"" + std::string(key) + "\" from property group in TDF - property not found"
                 );
             }

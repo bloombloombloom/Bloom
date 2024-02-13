@@ -1,20 +1,14 @@
 #pragma once
 
-#include "src/Exceptions/Exception.hpp"
+#include "src/Exceptions/InternalFatalErrorException.hpp"
 
-namespace Exceptions
+namespace Targets::TargetDescription::Exceptions
 {
-    class TargetDescriptionParsingFailureException: public Exception
+    class TargetDescriptionParsingFailureException: public ::Exceptions::InternalFatalErrorException
     {
     public:
         explicit TargetDescriptionParsingFailureException(const std::string& message)
-        : Exception(message) {
-            this->message = "Failed to parse target description file - " + message;
-        }
-
-        explicit TargetDescriptionParsingFailureException(const char* message)
-        : Exception(message) {
-            this->message = "Failed to parse target description file - " + std::string(message);
-        }
+            : ::Exceptions::InternalFatalErrorException("Failed to parse target description file - " + message)
+        {}
     };
 }

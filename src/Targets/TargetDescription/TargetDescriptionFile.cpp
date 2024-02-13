@@ -16,6 +16,7 @@
 namespace Targets::TargetDescription
 {
     using namespace Exceptions;
+    using namespace ::Exceptions;
 
     using Services::StringService;
 

@@ -6,8 +6,9 @@
 #include <map>
 
 #include "MemorySegment.hpp"
-
 #include "src/Targets/TargetMemory.hpp"
+
+#include "Exceptions/InvalidTargetDescriptionDataException.hpp"
 
 namespace Targets::TargetDescription
 {
@@ -46,7 +47,7 @@ namespace Targets::TargetDescription
         const MemorySegment& getMemorySegment(std::string_view key) const {
             const auto segment = this->tryGetMemorySegment(key);
             if (!segment.has_value()) {
-                throw Exceptions::Exception(
+                throw Exceptions::InvalidTargetDescriptionDataException(
                     "Failed to get memory segment \"" + std::string(key)
                         + "\" from address space in TDF - segment not found"
                 );

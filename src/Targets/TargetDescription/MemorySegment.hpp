@@ -6,7 +6,7 @@
 #include "MemorySegmentSection.hpp"
 
 #include "src/Services/StringService.hpp"
-#include "src/Exceptions/Exception.hpp"
+#include "Exceptions/InvalidTargetDescriptionDataException.hpp"
 
 namespace Targets::TargetDescription
 {
@@ -72,9 +72,9 @@ namespace Targets::TargetDescription
         ) const {
             const auto propertyGroup = this->tryGetSection(keyStr);
             if (!propertyGroup.has_value()) {
-                throw Exceptions::Exception(
+                throw Exceptions::InvalidTargetDescriptionDataException(
                     "Failed to get memory segment section \"" + std::string(keyStr)
-                    + "\" from memory segment in TDF - section not found"
+                        + "\" from memory segment in TDF - section not found"
                 );
             }
 
