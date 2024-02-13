@@ -9,9 +9,9 @@
 #include <map>
 #include <vector>
 
+#include "PropertyGroup.hpp"
 #include "AddressSpace.hpp"
 #include "MemorySegment.hpp"
-#include "PropertyGroup.hpp"
 #include "MemorySegmentSection.hpp"
 #include "RegisterGroup.hpp"
 #include "Module.hpp"
@@ -102,7 +102,7 @@ namespace Targets::TargetDescription
     protected:
         std::map<std::string, std::string> deviceAttributesByName;
         std::map<std::string, AddressSpace, std::less<void>> addressSpacesByKey;
-        std::map<std::string, PropertyGroup, std::less<void>> propertyGroupsMappedByKey;
+        std::map<std::string, PropertyGroup, std::less<void>> propertyGroupsByKey;
         std::map<std::string, Module> modulesMappedByName;
         std::map<std::string, Module> peripheralModulesMappedByName;
         std::map<std::string, std::vector<RegisterGroup>> peripheralRegisterGroupsMappedByModuleRegisterGroupName;

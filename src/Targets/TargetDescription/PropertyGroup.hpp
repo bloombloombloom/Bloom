@@ -27,25 +27,25 @@ namespace Targets::TargetDescription
     struct PropertyGroup
     {
         std::string key;
-        std::map<std::string, Property, std::less<void>> propertiesMappedByKey;
-        std::map<std::string, PropertyGroup, std::less<void>> subgroupsMappedByKey;
+        std::map<std::string, Property, std::less<void>> propertiesByKey;
+        std::map<std::string, PropertyGroup, std::less<void>> subgroupByKey;
 
         PropertyGroup(
             const std::string& key,
-            const std::map<std::string, Property, std::less<void>>& propertiesMappedByKey,
-            const std::map<std::string, PropertyGroup, std::less<void>>& subgroupsMappedByKey
+            const std::map<std::string, Property, std::less<void>>& propertiesByKey,
+            const std::map<std::string, PropertyGroup, std::less<void>>& subgroupByKey
         )
             : key(key)
-            , propertiesMappedByKey(propertiesMappedByKey)
-            , subgroupsMappedByKey(subgroupsMappedByKey)
+            , propertiesByKey(propertiesByKey)
+            , subgroupByKey(subgroupByKey)
         {}
 
         template <typename KeysType>
         requires
             std::ranges::sized_range<KeysType>
         std::optional<std::reference_wrapper<const PropertyGroup>> tryGetSubgroup(KeysType keys) const {
-            auto firstSubgroupIt = this->subgroupsMappedByKey.find(*(keys.begin()));
-            if (firstSubgroupIt == this->subgroupsMappedByKey.end()) {
+            auto firstSubgroupIt = this->subgroupByKey.find(*(keys.begin()));
+            if (firstSubgroupIt == this->subgroupByKey.end()) {
                 return std::nullopt;
             }
 
@@ -78,9 +78,9 @@ namespace Targets::TargetDescription
         }
 
         std::optional<std::reference_wrapper<const Property>> tryGetProperty(std::string_view key) const {
-            const auto propertyIt = this->propertiesMappedByKey.find(key);
+            const auto propertyIt = this->propertiesByKey.find(key);
 
-            if (propertyIt == this->propertiesMappedByKey.end()) {
+            if (propertyIt == this->propertiesByKey.end()) {
                 return std::nullopt;
             }
 

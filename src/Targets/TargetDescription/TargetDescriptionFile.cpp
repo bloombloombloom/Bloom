@@ -53,10 +53,10 @@ namespace Targets::TargetDescription
     std::optional<std::reference_wrapper<const PropertyGroup>> TargetDescriptionFile::tryGetPropertyGroup(
         std::string_view keyStr
     ) const {
-        auto keys = StringService::split(keyStr, '.');
+        const auto keys = StringService::split(keyStr, '.');
 
-        const auto firstSubgroupIt = this->propertyGroupsMappedByKey.find(*keys.begin());
-        return firstSubgroupIt != this->propertyGroupsMappedByKey.end()
+        const auto firstSubgroupIt = this->propertyGroupsByKey.find(*keys.begin());
+        return firstSubgroupIt != this->propertyGroupsByKey.end()
             ? keys.size() > 1
                 ? firstSubgroupIt->second.tryGetSubgroup(keys | std::ranges::views::drop(1))
                 : std::optional(std::cref(firstSubgroupIt->second))
@@ -136,7 +136,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("property-group")
         ) {
             auto propertyGroup = TargetDescriptionFile::propertyGroupFromXml(element);
-            this->propertyGroupsMappedByKey.insert(
+            this->propertyGroupsByKey.insert(
                 std::pair(propertyGroup.key, std::move(propertyGroup))
             );
         }
@@ -190,7 +190,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("property")
         ) {
             auto property = TargetDescriptionFile::propertyFromXml(element);
-            output.propertiesMappedByKey.insert(std::pair(property.key, std::move(property)));
+            output.propertiesByKey.insert(std::pair(property.key, std::move(property)));
         }
 
         for (
@@ -199,7 +199,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("property-group")
         ) {
             auto subgroup = TargetDescriptionFile::propertyGroupFromXml(element);
-            output.subgroupsMappedByKey.insert(std::pair(subgroup.key, std::move(subgroup)));
+            output.subgroupByKey.insert(std::pair(subgroup.key, std::move(subgroup)));
         }
 
         return output;
