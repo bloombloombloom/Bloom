@@ -153,11 +153,21 @@ namespace Targets::TargetDescription
             );
         }
 
+        for (
+            auto element = deviceElement.firstChildElement("physical-interfaces")
+                .firstChildElement("physical-interface");
+            !element.isNull();
+            element = element.nextSiblingElement("physical-interface")
+        ) {
+            this->physicalInterfaces.emplace_back(
+                TargetDescriptionFile::physicalInterfaceFromXml(element)
+            );
+        }
+
         this->loadModules(document);
         this->loadPeripheralModules(document);
         this->loadVariants(document);
         this->loadPinouts(document);
-        this->loadInterfaces(document);
     }
 
     std::optional<std::string> TargetDescriptionFile::tryGetAttribute(
@@ -322,6 +332,13 @@ namespace Targets::TargetDescription
         }
 
         return output;
+    }
+
+    PhysicalInterface TargetDescriptionFile::physicalInterfaceFromXml(const QDomElement& xmlElement) {
+        return PhysicalInterface(
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            TargetDescriptionFile::getAttribute(xmlElement, "type")
+        );
     }
 
     RegisterGroup TargetDescriptionFile::registerGroupFromXml(const QDomElement& xmlElement) {
@@ -646,37 +663,6 @@ namespace Targets::TargetDescription
             } catch (const Exception& exception) {
                 Logger::debug(
                     "Failed to extract pinout from target description element - " + exception.getMessage()
-                );
-            }
-        }
-    }
-
-    void TargetDescriptionFile::loadInterfaces(const QDomDocument& document) {
-        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
-
-        auto interfaceNodes = deviceElement.elementsByTagName("interfaces").item(0).toElement()
-            .elementsByTagName("interface");
-
-        for (int interfaceIndex = 0; interfaceIndex < interfaceNodes.count(); interfaceIndex++) {
-            try {
-                auto interfaceXml = interfaceNodes.item(interfaceIndex).toElement();
-
-                if (!interfaceXml.hasAttribute("name")) {
-                    throw Exception("Missing name attribute");
-                }
-
-                auto interface = Interface();
-                interface.name = interfaceXml.attribute("name").toLower().toStdString();
-
-                if (interfaceXml.hasAttribute("type")) {
-                    interface.type = interfaceXml.attribute("type").toStdString();
-                }
-
-                this->interfacesByName.insert(std::pair(interface.name, interface));
-
-            } catch (const Exception& exception) {
-                Logger::debug(
-                    "Failed to extract interface from target description element - " + exception.getMessage()
                 );
             }
         }

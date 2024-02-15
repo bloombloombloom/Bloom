@@ -13,11 +13,11 @@
 #include "AddressSpace.hpp"
 #include "MemorySegment.hpp"
 #include "MemorySegmentSection.hpp"
+#include "PhysicalInterface.hpp"
 #include "RegisterGroup.hpp"
 #include "Module.hpp"
 #include "Variant.hpp"
 #include "Pinout.hpp"
-#include "Interface.hpp"
 
 #include "src/Targets/TargetFamily.hpp"
 
@@ -103,12 +103,12 @@ namespace Targets::TargetDescription
         std::map<std::string, std::string> deviceAttributesByName;
         std::map<std::string, AddressSpace, std::less<void>> addressSpacesByKey;
         std::map<std::string, PropertyGroup, std::less<void>> propertyGroupsByKey;
+        std::vector<PhysicalInterface> physicalInterfaces;
         std::map<std::string, Module> modulesMappedByName;
         std::map<std::string, Module> peripheralModulesMappedByName;
         std::map<std::string, std::vector<RegisterGroup>> peripheralRegisterGroupsMappedByModuleRegisterGroupName;
         std::vector<Variant> variants;
         std::map<std::string, Pinout> pinoutsMappedByName;
-        std::map<std::string, Interface> interfacesByName;
 
         TargetDescriptionFile() = default;
         virtual ~TargetDescriptionFile() = default;
@@ -151,6 +151,14 @@ namespace Targets::TargetDescription
          * @return
          */
         static MemorySegmentSection memorySegmentSectionFromXml(const QDomElement& xmlElement);
+
+        /**
+         * Constructs a PhysicalInterface from al XML element.
+         *
+         * @param xmlElement
+         * @return
+         */
+        static PhysicalInterface physicalInterfaceFromXml(const QDomElement& xmlElement);
 
         /**
          * Constructs a RegisterGroup object from an XML element.
@@ -203,10 +211,5 @@ namespace Targets::TargetDescription
          * Extracts all pinouts and loads them into this->pinoutsMappedByName.
          */
         void loadPinouts(const QDomDocument& document);
-
-        /**
-         * Extracts all interfaces and loads them into this->interfacesByName
-         */
-        void loadInterfaces(const QDomDocument& document);
     };
 }
