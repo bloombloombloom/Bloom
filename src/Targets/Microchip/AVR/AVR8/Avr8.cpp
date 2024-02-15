@@ -25,7 +25,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
         , name(this->targetDescriptionFile.getTargetName())
         , family(this->targetDescriptionFile.getAvrFamily())
         , targetParameters(this->targetDescriptionFile.getTargetParameters())
-        , supportedPhysicalInterfaces(this->targetDescriptionFile.getSupportedPhysicalInterfaces())
+        , physicalInterfaces(this->targetDescriptionFile.getPhysicalInterfaces())
         , padDescriptorsByName(this->targetDescriptionFile.getPadDescriptorsMappedByName())
         , targetVariantsById(this->targetDescriptionFile.getVariantsMappedById())
         , stackPointerRegisterDescriptor(
@@ -54,24 +54,24 @@ namespace Targets::Microchip::Avr::Avr8Bit
         )
         , fuseEnableStrategy(this->targetDescriptionFile.getFuseEnableStrategy().value_or(FuseEnableStrategy::CLEAR))
     {
-        if (!this->supportedPhysicalInterfaces.contains(this->targetConfig.physicalInterface)) {
+        if (!this->physicalInterfaces.contains(this->targetConfig.physicalInterface)) {
             /*
              * The user has selected a physical interface that does not appear to be supported by the selected
              * target.
              *
              * Bloom's target description files provide a list of supported physical interfaces for each target
-             * (which is how this->supportedPhysicalInterfaces is populated), but it's possible that this list may
+             * (which is how this->physicalInterfaces is populated), but it's possible that this list may
              * be wrong/incomplete. For this reason, we don't throw an exception here. Instead, we just present the
              * user with a warning and a list of physical interfaces known to be supported by their selected target.
              */
             const auto physicalInterfaceNames = getPhysicalInterfaceNames();
 
             const auto supportedPhysicalInterfaceList = std::accumulate(
-                this->supportedPhysicalInterfaces.begin(),
-                this->supportedPhysicalInterfaces.end(),
+                this->physicalInterfaces.begin(),
+                this->physicalInterfaces.end(),
                 std::string(),
-                [&physicalInterfaceNames] (const std::string& string, PhysicalInterface physicalInterface) {
-                    if (physicalInterface == PhysicalInterface::ISP) {
+                [&physicalInterfaceNames] (const std::string& string, TargetPhysicalInterface physicalInterface) {
+                    if (physicalInterface == TargetPhysicalInterface::ISP) {
                         /*
                          * Don't include the ISP interface in the list of supported interfaces, as doing so may
                          * mislead the user into thinking the ISP interface can be used for debugging operations.
@@ -88,15 +88,13 @@ namespace Targets::Microchip::Avr::Avr8Bit
                     + physicalInterfaceNames.at(this->targetConfig.physicalInterface) + "). Target activation "
                     "will likely fail. The target supports the following physical interfaces: \n"
                     + supportedPhysicalInterfaceList + "\n\nFor physical interface configuration values, see "
-                    + Services::PathService::homeDomainName() + "/docs/configuration/avr8-physical-interfaces. \n\n"
-                    + "If this information is incorrect, please report this to Bloom developers via "
-                    + Services::PathService::homeDomainName() + "/report-issue.\n"
+                    + Services::PathService::homeDomainName() + "/docs/configuration/target-physical-interfaces."
             );
         }
 
         if (
             this->targetConfig.manageOcdenFuseBit
-            && this->targetConfig.physicalInterface != PhysicalInterface::JTAG
+            && this->targetConfig.physicalInterface != TargetPhysicalInterface::JTAG
         ) {
             Logger::warning(
                 "The 'manageOcdenFuseBit' parameter only applies to JTAG targets. It will be ignored in this session."
@@ -136,7 +134,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
         if (
             this->targetConfig.manageDwenFuseBit
             && this->avrIspInterface == nullptr
-            && this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE
+            && this->targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
         ) {
             Logger::warning(
                 "The connected debug tool (or associated driver) does not provide any ISP interface. "
@@ -210,7 +208,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
         }
 
         if (
-            this->targetConfig.physicalInterface == PhysicalInterface::JTAG
+            this->targetConfig.physicalInterface == TargetPhysicalInterface::JTAG
             && this->targetConfig.manageOcdenFuseBit
         ) {
             Logger::debug("Attempting OCDEN fuse bit management");
@@ -248,7 +246,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
             this->clearAllBreakpoints();
 
             if (
-                this->targetConfig.physicalInterface == PhysicalInterface::JTAG
+                this->targetConfig.physicalInterface == TargetPhysicalInterface::JTAG
                 && this->targetConfig.manageOcdenFuseBit
             ) {
                 Logger::debug("Attempting OCDEN fuse bit management");
@@ -357,7 +355,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
 
     void Avr8::eraseMemory(TargetMemoryType memoryType) {
         if (memoryType == TargetMemoryType::FLASH) {
-            if (this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE) {
+            if (this->targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE) {
                 // debugWire targets do not need to be erased
                 return;
             }
@@ -374,8 +372,8 @@ namespace Targets::Microchip::Avr::Avr8Bit
              * the chip erase. The fuse will be restored to its original value at the end of the programming session.
              */
             if (
-                this->targetConfig.physicalInterface == PhysicalInterface::JTAG
-                || this->targetConfig.physicalInterface == PhysicalInterface::UPDI
+                this->targetConfig.physicalInterface == TargetPhysicalInterface::JTAG
+                || this->targetConfig.physicalInterface == TargetPhysicalInterface::UPDI
             ) {
                 if (this->targetConfig.preserveEeprom) {
                     Logger::debug("Inspecting EESAVE fuse bit");
@@ -705,15 +703,15 @@ namespace Targets::Microchip::Avr::Avr8Bit
         auto maxHardwareBreakpoints = static_cast<std::uint16_t>(0);
 
         switch (this->targetConfig.physicalInterface) {
-            case PhysicalInterface::JTAG: {
+            case TargetPhysicalInterface::JTAG: {
                 maxHardwareBreakpoints = this->family == Family::XMEGA ? 2 : 3;
                 break;
             }
-            case PhysicalInterface::PDI: {
+            case TargetPhysicalInterface::PDI: {
                 maxHardwareBreakpoints = 2;
                 break;
             }
-            case PhysicalInterface::UPDI: {
+            case TargetPhysicalInterface::UPDI: {
                 maxHardwareBreakpoints = 1;
                 break;
             }
@@ -763,7 +761,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
             );
         }
 
-        if (!this->supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)) {
+        if (!this->physicalInterfaces.contains(TargetPhysicalInterface::DEBUG_WIRE)) {
             throw Exception(
                 "Target does not support debugWire physical interface - check target configuration or "
                     "report this issue via " + Services::PathService::homeDomainName() + "/report-issue"
@@ -932,7 +930,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
         using Services::PathService;
         using Services::StringService;
 
-        if (!this->supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)) {
+        if (!this->physicalInterfaces.contains(TargetPhysicalInterface::JTAG)) {
             throw Exception(
                 "Target does not support JTAG physical interface - check target configuration or "
                     "report this issue via " + PathService::homeDomainName() + "/report-issue"

@@ -76,6 +76,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     using CommandFrames::Avr8Generic::DisableDebugWire;
 
     using Targets::TargetState;
+    using Targets::TargetPhysicalInterface;
     using Targets::TargetMemoryType;
     using Targets::TargetMemoryBuffer;
     using Targets::TargetMemoryAddress;
@@ -135,7 +136,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         this->setParameter(
             Avr8EdbgParameters::PHYSICAL_INTERFACE,
-            getAvr8PhysicalInterfaceToIdMapping().at(this->targetConfig.physicalInterface)
+            getPhysicalInterfaceToAvr8IdMapping().at(this->targetConfig.physicalInterface)
         );
 
         this->setTargetParameters();
@@ -227,7 +228,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
             } catch (const Avr8CommandFailure& activationException) {
                 if (
-                    this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE
+                    this->targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
                     && (
                         activationException.code == Avr8CommandFailureCode::DEBUGWIRE_PHYSICAL_ERROR
                         || activationException.code == Avr8CommandFailureCode::FAILED_TO_ENABLE_OCD
@@ -252,7 +253,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     void EdbgAvr8Interface::deactivate() {
         if (this->targetAttached) {
             if (
-                this->targetConfig.physicalInterface == PhysicalInterface::DEBUG_WIRE
+                this->targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
                 && this->targetConfig.disableDebugWireOnDeactivate
             ) {
                 try {
@@ -947,54 +948,54 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
     }
 
-    std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>
+    std::map<Family, std::map<TargetPhysicalInterface, Avr8ConfigVariant>>
     EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface() {
-        return std::map<Family, std::map<PhysicalInterface, Avr8ConfigVariant>>({
+        return std::map<Family, std::map<TargetPhysicalInterface, Avr8ConfigVariant>>({
             {
                 Family::MEGA,
                 {
-                    {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
-                    {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                    {TargetPhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
+                    {TargetPhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                 }
             },
             {
                 Family::TINY,
                 {
-                    {PhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
-                    {PhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                    {TargetPhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
+                    {TargetPhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
+                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                 }
             },
             {
                 Family::XMEGA,
                 {
-                    {PhysicalInterface::JTAG, Avr8ConfigVariant::XMEGA},
-                    {PhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
+                    {TargetPhysicalInterface::JTAG, Avr8ConfigVariant::XMEGA},
+                    {TargetPhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
                 }
             },
             {
                 Family::DA,
                 {
-                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                 }
             },
             {
                 Family::DB,
                 {
-                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                 }
             },
             {
                 Family::DD,
                 {
-                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                 }
             },
             {
                 Family::EA,
                 {
-                    {PhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
+                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
                 }
             },
         });
@@ -1002,7 +1003,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
     Avr8ConfigVariant EdbgAvr8Interface::resolveConfigVariant(
         Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
-        Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface
+        TargetPhysicalInterface physicalInterface
     ) {
         const auto configVariantsByFamily = EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface();
         const auto configVariantsByPhysicalInterfaceIt = configVariantsByFamily.find(targetFamily);

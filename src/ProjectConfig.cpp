@@ -153,6 +153,8 @@ EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environ
 }
 
 TargetConfig::TargetConfig(const YAML::Node& targetNode) {
+    using Targets::TargetPhysicalInterface;
+
     if (!targetNode.IsMap()) {
         throw Exceptions::InvalidConfig(
             "Invalid target configuration provided - node must take the form of a YAML mapping."
@@ -164,6 +166,31 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
     }
 
     this->name = StringService::asciiToLower(targetNode["name"].as<std::string>());
+
+    static auto physicalInterfacesByConfigName = std::map<std::string, TargetPhysicalInterface>({
+        {"debugwire", TargetPhysicalInterface::DEBUG_WIRE}, // Deprecated - left here for backwards compatibility
+        {"debug-wire", TargetPhysicalInterface::DEBUG_WIRE},
+        {"pdi", TargetPhysicalInterface::PDI},
+        {"jtag", TargetPhysicalInterface::JTAG},
+        {"updi", TargetPhysicalInterface::UPDI},
+    });
+
+    if (!targetNode["physicalInterface"]) {
+        throw Exceptions::InvalidConfig("No physical interface specified.");
+    }
+
+    const auto physicalInterfaceName = StringService::asciiToLower(targetNode["physicalInterface"].as<std::string>());
+    const auto physicalInterfaceIt = physicalInterfacesByConfigName.find(physicalInterfaceName);
+
+    if (physicalInterfaceIt == physicalInterfacesByConfigName.end()) {
+        throw Exceptions::InvalidConfig(
+            "Invalid physical interface provided (\"" + physicalInterfaceName + "\") for target. "
+                "See " + Services::PathService::homeDomainName() + "/docs/configuration/target-physical-interfaces "
+                "for valid physical interface configuration values."
+        );
+    }
+
+    this->physicalInterface = physicalInterfaceIt->second;
 
     if (targetNode["variantName"]) {
         this->variantName = StringService::asciiToLower(targetNode["variantName"].as<std::string>());

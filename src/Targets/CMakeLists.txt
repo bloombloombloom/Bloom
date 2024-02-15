@@ -4,9 +4,9 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetDescription/TargetDescriptionFile.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetRegister.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetMemoryCache.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/TargetPhysicalInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/Avr8.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/Avr8TargetConfig.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/PhysicalInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/TargetDescription/TargetDescriptionFile.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/OpcodeDecoder/Decoder.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/RiscV.cpp

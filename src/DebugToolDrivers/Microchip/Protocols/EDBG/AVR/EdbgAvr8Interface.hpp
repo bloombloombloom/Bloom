@@ -11,10 +11,10 @@
 
 #include "Avr8Generic.hpp"
 
+#include "src/Targets/TargetPhysicalInterface.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
@@ -384,7 +384,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          */
         static std::map<
             Targets::Microchip::Avr::Avr8Bit::Family,
-            std::map<Targets::Microchip::Avr::Avr8Bit::PhysicalInterface, Avr8ConfigVariant>
+            std::map<Targets::TargetPhysicalInterface, Avr8ConfigVariant>
         > getConfigVariantsByFamilyAndPhysicalInterface();
 
         /**
@@ -394,7 +394,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          */
         static Avr8ConfigVariant resolveConfigVariant(
             Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
-            Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface
+            Targets::TargetPhysicalInterface physicalInterface
         );
 
         /**

@@ -13,7 +13,6 @@
 #include "src/Targets/Microchip/AVR/Fuse.hpp"
 
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PadDescriptor.hpp"
 
@@ -123,15 +122,6 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
         [[nodiscard]] std::optional<FuseBitsDescriptor> getEesaveFuseBitsDescriptor() const;
 
         /**
-         * Returns a set of all supported physical interfaces for debugging.
-         *
-         * @return
-         */
-        [[nodiscard]] const auto& getSupportedPhysicalInterfaces() const {
-            return this->supportedPhysicalInterfaces;
-        }
-
-        /**
          * Returns a mapping of all pad descriptors extracted from TDF, mapped by name.
          *
          * @return
@@ -184,7 +174,6 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
         };
 
         std::string avrFamilyName;
-        std::set<PhysicalInterface> supportedPhysicalInterfaces;
 
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;

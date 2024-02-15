@@ -18,6 +18,7 @@
 #include "ProgrammingSession.hpp"
 
 #include "src/Targets/Microchip/AVR/Fuse.hpp"
+#include "src/Targets/TargetPhysicalInterface.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
 
@@ -119,7 +120,7 @@ namespace Targets::Microchip::Avr::Avr8Bit
 
         TargetParameters targetParameters;
 
-        std::set<PhysicalInterface> supportedPhysicalInterfaces;
+        std::set<Targets::TargetPhysicalInterface> physicalInterfaces;
         std::map<std::string, PadDescriptor> padDescriptorsByName;
         std::map<int, TargetVariant> targetVariantsById;
 

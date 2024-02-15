@@ -3,7 +3,7 @@
 #include "Avr8GenericResponseFrame.hpp"
 
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
+#include "src/Targets/TargetPhysicalInterface.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr8Generic
 {
@@ -13,7 +13,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
         explicit GetDeviceId(const std::vector<AvrResponse>& AvrResponses);
 
         Targets::Microchip::Avr::TargetSignature extractSignature(
-            Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface
+            Targets::TargetPhysicalInterface physicalInterface
         ) const;
     };
 }

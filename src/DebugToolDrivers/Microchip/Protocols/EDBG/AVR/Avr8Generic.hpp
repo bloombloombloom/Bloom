@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
+#include "src/Targets/TargetPhysicalInterface.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 {
@@ -103,14 +103,14 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         DEBUGGING = 0x02,
     };
 
-    static inline auto getAvr8PhysicalInterfaceToIdMapping() {
-        using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
+    static inline auto getPhysicalInterfaceToAvr8IdMapping() {
+        using Targets::TargetPhysicalInterface;
 
-        return std::map<PhysicalInterface, unsigned char>({
-            {PhysicalInterface::DEBUG_WIRE, 0x05},
-            {PhysicalInterface::PDI, 0x06},
-            {PhysicalInterface::JTAG, 0x04},
-            {PhysicalInterface::UPDI, 0x08},
+        return std::map<TargetPhysicalInterface, unsigned char>({
+            {TargetPhysicalInterface::DEBUG_WIRE, 0x05},
+            {TargetPhysicalInterface::PDI, 0x06},
+            {TargetPhysicalInterface::JTAG, 0x04},
+            {TargetPhysicalInterface::UPDI, 0x08},
         });
     }
 

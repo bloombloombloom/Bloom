@@ -21,7 +21,6 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     TargetDescriptionFile::TargetDescriptionFile(const std::string& xmlFilePath)
         : Targets::TargetDescription::TargetDescriptionFile(xmlFilePath)
     {
-        this->loadSupportedPhysicalInterfaces();
         this->loadPadDescriptors();
         this->loadTargetVariants();
         this->loadTargetRegisterDescriptors();
@@ -162,22 +161,22 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
             }
         }
 
-        const auto& supportedPhysicalInterfaces = this->getSupportedPhysicalInterfaces();
-
-        if (
-            supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)
-            || supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)
-        ) {
-            this->loadDebugWireAndJtagTargetParameters(targetParameters);
-        }
-
-        if (supportedPhysicalInterfaces.contains(PhysicalInterface::PDI)) {
-            this->loadPdiTargetParameters(targetParameters);
-        }
-
-        if (supportedPhysicalInterfaces.contains(PhysicalInterface::UPDI)) {
-            this->loadUpdiTargetParameters(targetParameters);
-        }
+//        const auto& supportedPhysicalInterfaces = this->getSupportedPhysicalInterfaces();
+//
+//        if (
+//            supportedPhysicalInterfaces.contains(PhysicalInterface::DEBUG_WIRE)
+//            || supportedPhysicalInterfaces.contains(PhysicalInterface::JTAG)
+//        ) {
+//            this->loadDebugWireAndJtagTargetParameters(targetParameters);
+//        }
+//
+//        if (supportedPhysicalInterfaces.contains(PhysicalInterface::PDI)) {
+//            this->loadPdiTargetParameters(targetParameters);
+//        }
+//
+//        if (supportedPhysicalInterfaces.contains(PhysicalInterface::UPDI)) {
+//            this->loadUpdiTargetParameters(targetParameters);
+//        }
 
         return targetParameters;
     }
@@ -325,23 +324,6 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
 
     std::optional<FuseBitsDescriptor> TargetDescriptionFile::getEesaveFuseBitsDescriptor() const {
         return this->getFuseBitsDescriptorByName("eesave");
-    }
-
-    void TargetDescriptionFile::loadSupportedPhysicalInterfaces() {
-        auto interfaceNamesToInterfaces = std::map<std::string, PhysicalInterface>({
-           {"updi", PhysicalInterface::UPDI},
-           {"debugwire", PhysicalInterface::DEBUG_WIRE},
-           {"jtag", PhysicalInterface::JTAG},
-           {"pdi", PhysicalInterface::PDI},
-           {"isp", PhysicalInterface::ISP},
-        });
-
-        for (const auto& [interfaceName, interface]: this->interfacesByName) {
-            const auto interfaceIt = interfaceNamesToInterfaces.find(interfaceName);
-            if (interfaceIt != interfaceNamesToInterfaces.end()) {
-                this->supportedPhysicalInterfaces.insert(interfaceIt->second);
-            }
-        }
     }
 
     void TargetDescriptionFile::loadPadDescriptors() {

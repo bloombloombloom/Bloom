@@ -6,8 +6,6 @@
 
 #include "src/ProjectConfig.hpp"
 
-#include "PhysicalInterface.hpp"
-
 namespace Targets::Microchip::Avr::Avr8Bit
 {
     /**
@@ -16,12 +14,6 @@ namespace Targets::Microchip::Avr::Avr8Bit
     struct Avr8TargetConfig: public TargetConfig
     {
     public:
-        /**
-         * The physical interface is the interface used for communication between the debug tool and the connected
-         * target.
-         */
-        PhysicalInterface physicalInterface = PhysicalInterface::DEBUG_WIRE;
-
         /**
          * Because the debugWire module requires control of the reset pin on the target, enabling this module will
          * effectively mean losing control of the reset pin. This means users won't be able to use other
@@ -99,14 +91,5 @@ namespace Targets::Microchip::Avr::Avr8Bit
         bool reserveSteppingBreakpoint = true;
 
         explicit Avr8TargetConfig(const TargetConfig& targetConfig);
-
-    private:
-        static inline auto debugPhysicalInterfacesByConfigName = std::map<std::string, PhysicalInterface>({
-            {"debugwire", PhysicalInterface::DEBUG_WIRE}, // Deprecated - left here for backwards compatibility
-            {"debug-wire", PhysicalInterface::DEBUG_WIRE},
-            {"pdi", PhysicalInterface::PDI},
-            {"jtag", PhysicalInterface::JTAG},
-            {"updi", PhysicalInterface::UPDI},
-        });
     };
 }

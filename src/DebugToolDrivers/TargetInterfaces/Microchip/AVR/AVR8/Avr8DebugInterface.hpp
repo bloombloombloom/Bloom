@@ -8,7 +8,6 @@
 
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/PhysicalInterface.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/ProgramMemorySection.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 

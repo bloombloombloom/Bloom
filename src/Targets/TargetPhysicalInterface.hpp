@@ -4,9 +4,9 @@
 #include <map>
 #include <string>
 
-namespace Targets::Microchip::Avr::Avr8Bit
+namespace Targets
 {
-    enum class PhysicalInterface: std::uint8_t
+    enum class TargetPhysicalInterface: std::uint8_t
     {
         ISP,
         JTAG,
@@ -20,5 +20,5 @@ namespace Targets::Microchip::Avr::Avr8Bit
      *
      * @return
      */
-    std::map<PhysicalInterface, std::string> getPhysicalInterfaceNames();
+    std::map<TargetPhysicalInterface, std::string> getPhysicalInterfaceNames();
 }

@@ -20,6 +20,7 @@
 #include "Pinout.hpp"
 
 #include "src/Targets/TargetFamily.hpp"
+#include "src/Targets/TargetPhysicalInterface.hpp"
 
 #include GENERATED_TDF_MAPPING_PATH
 
@@ -98,6 +99,8 @@ namespace Targets::TargetDescription
             std::string_view key
         ) const;
         [[nodiscard]] const AddressSpace& getAddressSpace(std::string_view key) const;
+
+        [[nodiscard]] std::set<Targets::TargetPhysicalInterface> getPhysicalInterfaces() const;
 
     protected:
         std::map<std::string, std::string> deviceAttributesByName;

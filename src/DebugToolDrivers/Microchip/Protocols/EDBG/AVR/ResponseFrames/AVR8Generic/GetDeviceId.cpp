@@ -7,27 +7,27 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
     {}
 
     Targets::Microchip::Avr::TargetSignature GetDeviceId::extractSignature(
-        Targets::Microchip::Avr::Avr8Bit::PhysicalInterface physicalInterface
+        Targets::TargetPhysicalInterface physicalInterface
     ) const {
-        using Targets::Microchip::Avr::Avr8Bit::PhysicalInterface;
+        using Targets::TargetPhysicalInterface;
         const auto payloadData = this->getPayloadData();
 
         switch (physicalInterface) {
-            case PhysicalInterface::DEBUG_WIRE: {
+            case TargetPhysicalInterface::DEBUG_WIRE: {
                 /*
                  * When using the DebugWire physical interface, the get device ID command will return
                  * four bytes, where the first can be ignored.
                  */
                 return Targets::Microchip::Avr::TargetSignature(payloadData[1], payloadData[2], payloadData[3]);
             }
-            case PhysicalInterface::PDI:
-            case PhysicalInterface::UPDI: {
+            case TargetPhysicalInterface::PDI:
+            case TargetPhysicalInterface::UPDI: {
                 /*
                  * When using the PDI physical interface, the signature is returned in LSB format.
                  */
                 return Targets::Microchip::Avr::TargetSignature(payloadData[3], payloadData[2], payloadData[1]);
             }
-            case PhysicalInterface::JTAG: {
+            case TargetPhysicalInterface::JTAG: {
                 /*
                  * When using the JTAG interface, the get device ID command returns a 32 bit JTAG ID. This takes
                  * the following form:

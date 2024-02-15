@@ -14,25 +14,6 @@ namespace Targets::Microchip::Avr::Avr8Bit
 
         const auto& targetNode = targetConfig.targetNode;
 
-        if (!targetNode["physicalInterface"]) {
-            throw InvalidConfig("Missing physical interface config parameter for AVR8 target.");
-        }
-
-        const auto physicalInterfaceName = Services::StringService::asciiToLower(targetNode["physicalInterface"].as<std::string>());
-        const auto physicalInterfaceIt = Avr8TargetConfig::debugPhysicalInterfacesByConfigName.find(
-            physicalInterfaceName
-        );
-
-        if (physicalInterfaceIt == Avr8TargetConfig::debugPhysicalInterfacesByConfigName.end()) {
-            throw InvalidConfig(
-                "Invalid physical interface provided (\"" + physicalInterfaceName + "\") for AVR8 target. "
-                "See " + Services::PathService::homeDomainName() + "/docs/configuration/avr8-physical-interfaces for valid physical "
-                "interface configuration values."
-            );
-        }
-
-        this->physicalInterface = physicalInterfaceIt->second;
-
         // The 'manageDwenFuseBit' param used to be 'updateDwenFuseBit' - we still support the old, for now.
         if (targetNode["updateDwenFuseBit"]) {
             this->manageDwenFuseBit = targetNode["updateDwenFuseBit"].as<bool>(

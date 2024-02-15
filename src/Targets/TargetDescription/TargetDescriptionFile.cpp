@@ -97,6 +97,30 @@ namespace Targets::TargetDescription
         return addressSpace->get();
     }
 
+    std::set<TargetPhysicalInterface> TargetDescriptionFile::getPhysicalInterfaces() const {
+        static const auto physicalInterfacesByName = BiMap<std::string, TargetPhysicalInterface>({
+            {"updi", TargetPhysicalInterface::UPDI},
+            {"debugwire", TargetPhysicalInterface::DEBUG_WIRE},
+            {"jtag", TargetPhysicalInterface::JTAG},
+            {"pdi", TargetPhysicalInterface::PDI},
+            {"isp", TargetPhysicalInterface::ISP},
+        });
+
+        auto output = std::set<TargetPhysicalInterface>();
+
+        for (const auto& physicalInterface : this->physicalInterfaces) {
+            const auto interface = physicalInterfacesByName.valueAt(
+                StringService::asciiToLower(physicalInterface.name)
+            );
+
+            if (interface.has_value()) {
+                output.insert(*interface);
+            }
+        }
+
+        return output;
+    }
+
     void TargetDescriptionFile::init(const std::string& xmlFilePath) {
         auto file = QFile(QString::fromStdString(xmlFilePath));
         if (!file.exists()) {

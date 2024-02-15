@@ -6,6 +6,8 @@
 #include <optional>
 #include <yaml-cpp/yaml.h>
 
+#include "src/Targets/TargetPhysicalInterface.hpp"
+
 /*
  * Currently, all user configuration is stored in a YAML file (bloom.yaml), in the user's project directory.
  *
@@ -43,6 +45,12 @@ struct TargetConfig
      * The name of the selected target.
      */
     std::string name;
+
+    /**
+     * The physical interface is the interface used for communication between the debug tool and the connected
+     * target.
+     */
+    Targets::TargetPhysicalInterface physicalInterface;
 
     /**
      * The name of the selected target variant.
