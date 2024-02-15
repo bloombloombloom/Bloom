@@ -104,8 +104,8 @@ namespace Targets::TargetDescription
 
     protected:
         std::map<std::string, std::string> deviceAttributesByName;
-        std::map<std::string, AddressSpace, std::less<void>> addressSpacesByKey;
         std::map<std::string, PropertyGroup, std::less<void>> propertyGroupsByKey;
+        std::map<std::string, AddressSpace, std::less<void>> addressSpacesByKey;
         std::vector<PhysicalInterface> physicalInterfaces;
         std::map<std::string, Module> modulesMappedByName;
         std::map<std::string, Module> peripheralModulesMappedByName;

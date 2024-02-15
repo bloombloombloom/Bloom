@@ -786,19 +786,9 @@ namespace Targets::Microchip::Avr::Avr8Bit
         this->avrIspInterface->activate();
 
         /*
-         * It is crucial that we understand the potential consequences of this operation.
-         *
          * AVR fuses are used to control certain functions within the AVR (including the debugWire interface). Care
          * must be taken when updating these fuse bytes, as an incorrect value could render the AVR inaccessible to
          * standard programmers.
-         *
-         * For example, consider the SPI enable (SPIEN) fuse bit. This fuse bit is used to enable/disable the SPI for
-         * serial programming. If the SPIEN fuse bit is cleared, most programming tools will not be able to gain access
-         * to the target via the SPI. This isn't too bad, if there is some other way for the programming tool to gain
-         * access (such as the debugWire interface). But now consider the DWEN fuse bit (which is used to enable/disable
-         * the debugWire interface). What if both the SPIEN *and* the DWEN fuse bits are cleared? Both interfaces will
-         * be disabled. Effectively, the AVR will be bricked, and the only course for recovery would be to use
-         * high-voltage programming.
          *
          * When updating the DWEN fuse, Bloom relies on data from the target description file (TDF). But there is no
          * guarantee that this data is correct. For this reason, we perform additional checks in an attempt to reduce

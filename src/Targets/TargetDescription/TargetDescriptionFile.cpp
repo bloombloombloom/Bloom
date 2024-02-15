@@ -85,7 +85,7 @@ namespace Targets::TargetDescription
             : std::nullopt;
     }
 
-    const AddressSpace & TargetDescriptionFile::getAddressSpace(std::string_view key) const {
+    const AddressSpace& TargetDescriptionFile::getAddressSpace(std::string_view key) const {
         const auto addressSpace = this->tryGetAddressSpace(key);
 
         if (!addressSpace.has_value()) {
