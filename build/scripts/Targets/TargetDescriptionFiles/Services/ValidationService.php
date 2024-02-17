@@ -9,6 +9,7 @@ use Targets\TargetDescriptionFiles\MemorySegment;
 use Targets\TargetDescriptionFiles\MemorySegmentSection;
 use Targets\TargetDescriptionFiles\Module;
 use Targets\TargetDescriptionFiles\Peripheral;
+use Targets\TargetDescriptionFiles\RegisterGroupInstance;
 use Targets\TargetDescriptionFiles\Property;
 use Targets\TargetDescriptionFiles\PropertyGroup;
 use Targets\TargetDescriptionFiles\Register;
@@ -687,26 +688,26 @@ class ValidationService
             $failures[] = 'Missing module key';
         }
 
-        if (empty($peripheral->registerGroupReferences) && empty($peripheral->signals)) {
-            $failures[] = 'Empty - no register group references or signals';
+        if (empty($peripheral->registerGroupInstances) && empty($peripheral->signals)) {
+            $failures[] = 'Empty - no register group instances or signals';
         }
 
         $processedChildKeys = [];
-        foreach ($peripheral->registerGroupReferences as $registerGroupReference) {
+        foreach ($peripheral->registerGroupInstances as $registerGroupInstance) {
             $failures = array_merge(
                 $failures,
-                $this->validateRegisterGroupReference(
-                    $registerGroupReference,
+                $this->validateRegisterGroupInstance(
+                    $registerGroupInstance,
                     $peripheral->moduleKey ?? '',
                     $tdf
                 )
             );
 
-            if ($registerGroupReference->key !== null && in_array($registerGroupReference->key, $processedChildKeys)) {
-                $failures[] = 'Duplicate register group reference key ("' . $registerGroupReference->key . '") detected';
+            if ($registerGroupInstance->key !== null && in_array($registerGroupInstance->key, $processedChildKeys)) {
+                $failures[] = 'Duplicate register group instance key ("' . $registerGroupInstance->key . '") detected';
             }
 
-            $processedChildKeys[] = $registerGroupReference->key;
+            $processedChildKeys[] = $registerGroupInstance->key;
         }
 
         foreach ($peripheral->signals as $signal) {
@@ -715,6 +716,64 @@ class ValidationService
 
         return array_map(
             fn (string $failure): string => 'Peripheral "' . $peripheral->name . '" validation failure: ' . $failure,
+            $failures
+        );
+    }
+
+    protected function validateRegisterGroupInstance(
+        RegisterGroupInstance $registerGroupInstance,
+        string $moduleKey,
+        TargetDescriptionFile $tdf
+    ): array {
+        $failures = [];
+
+        if (empty($registerGroupInstance->key)) {
+            $failures[] = 'Missing key';
+        }
+
+        if (!mb_check_encoding((string) $registerGroupInstance->key, 'ASCII')) {
+            $failures[] = 'Key contains non ASCII characters';
+        }
+
+        if (str_contains((string) $registerGroupInstance->key, ' ')) {
+            $failures[] = 'Key contains at least one period space';
+        }
+
+        if (str_contains((string) $registerGroupInstance->key, '.')) {
+            $failures[] = 'Key contains at least one period (".") character';
+        }
+
+        if (empty($registerGroupInstance->registerGroupKey)) {
+            $failures[] = 'Missing register group key';
+        }
+
+        if (empty($registerGroupInstance->name)) {
+            $failures[] = 'Missing name';
+        }
+
+        if ($registerGroupInstance->offset === null) {
+            $failures[] = 'Missing offset';
+
+        } elseif ($registerGroupInstance->offset > 0xFFFFFFFF) {
+            $failures[] = 'Offset exceeds 32-bit unsigned integer';
+        }
+
+        if (empty($registerGroupInstance->addressSpaceKey)) {
+            $failures[] = 'Missing address space key';
+
+        } elseif ($tdf->getAddressSpace($registerGroupInstance->addressSpaceKey) === null) {
+            $failures[] = 'Could not find address space "' . $registerGroupInstance->addressSpaceKey
+                . '" - check address space key';
+        }
+
+        if ($tdf->resolveRegisterGroupInstance($registerGroupInstance, $moduleKey) === null) {
+            $failures[] = 'Could not resolve register group instance "' . $registerGroupInstance->key
+                . '" - check register group key ("' . $registerGroupInstance->registerGroupKey . '")';
+        }
+
+        return array_map(
+            fn (string $failure): string => 'Register group instance (group key: "'
+                . $registerGroupInstance->registerGroupKey . '") validation failure: ' . $failure,
             $failures
         );
     }

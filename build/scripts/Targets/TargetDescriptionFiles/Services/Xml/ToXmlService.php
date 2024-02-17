@@ -9,6 +9,7 @@ use Targets\TargetDescriptionFiles\MemorySegment;
 use Targets\TargetDescriptionFiles\MemorySegmentSection;
 use Targets\TargetDescriptionFiles\Module;
 use Targets\TargetDescriptionFiles\Peripheral;
+use Targets\TargetDescriptionFiles\RegisterGroupInstance;
 use Targets\TargetDescriptionFiles\PhysicalInterface;
 use Targets\TargetDescriptionFiles\Pin;
 use Targets\TargetDescriptionFiles\Pinout;
@@ -135,8 +136,8 @@ class ToXmlService
         $element->setAttribute('name', $peripheral->name);
         $element->setAttribute('module-key', $peripheral->moduleKey);
 
-        foreach ($peripheral->registerGroupReferences as $registerGroupReference) {
-            $element->append($this->registerGroupReferenceToXml($registerGroupReference, $document));
+        foreach ($peripheral->registerGroupInstances as $registerGroupInstance) {
+            $element->append($this->registerGroupInstanceToXml($registerGroupInstance, $document));
         }
 
         if (!empty($peripheral->signals)) {
@@ -147,6 +148,25 @@ class ToXmlService
 
             $element->append($signalsElement);
         }
+
+        return $element;
+    }
+
+    public function registerGroupInstanceToXml(
+        RegisterGroupInstance $registerGroupInstance,
+        DOMDocument $document
+    ): DOMElement {
+        $element = $document->createElement('register-group-instance');
+        $element->setAttribute('key', $registerGroupInstance->key);
+        $element->setAttribute('name', $registerGroupInstance->name);
+
+        if (!empty($registerGroupInstance->description)) {
+            $element->setAttribute('description', $registerGroupInstance->description);
+        }
+
+        $element->setAttribute('register-group-key', $registerGroupInstance->registerGroupKey);
+        $element->setAttribute('address-space-key', $registerGroupInstance->addressSpaceKey);
+        $element->setAttribute('offset', $this->stringService->tryIntToHex($registerGroupInstance->offset));
 
         return $element;
     }

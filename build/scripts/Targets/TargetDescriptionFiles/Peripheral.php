@@ -2,7 +2,7 @@
 namespace Targets\TargetDescriptionFiles;
 
 require_once __DIR__ . "/RegisterGroup.php";
-require_once __DIR__ . "/RegisterGroupReference.php";
+require_once __DIR__ . "/RegisterGroupInstance.php";
 require_once __DIR__ . "/Signal.php";
 
 class Peripheral
@@ -12,8 +12,8 @@ class Peripheral
     public ?string $moduleKey = null;
     public ?string $moduleName = null;
 
-    /** @var RegisterGroupReference[] */
-    public array $registerGroupReferences = [];
+    /** @var RegisterGroupInstance[] */
+    public array $registerGroupInstances = [];
 
     /** @var Signal[] */
     public array $signals = [];
@@ -22,21 +22,21 @@ class Peripheral
         ?string $key,
         ?string $name,
         ?string $moduleKey,
-        array $registerGroupReferences,
+        array $registerGroupInstances,
         array $signals
     ) {
         $this->key = $key;
         $this->name = $name;
         $this->moduleKey = $moduleKey;
-        $this->registerGroupReferences = $registerGroupReferences;
+        $this->registerGroupInstances = $registerGroupInstances;
         $this->signals = $signals;
     }
 
-    public function getRegisterGroupReference(string $key): ?RegisterGroupReference
+    public function getRegisterGroupInstance(string $key): ?RegisterGroupInstance
     {
-        foreach ($this->registerGroupReferences as $reference) {
-            if ($reference->key === $key) {
-                return $reference;
+        foreach ($this->registerGroupInstances as $instance) {
+            if ($instance->key === $key) {
+                return $instance;
             }
         }
 

@@ -10,6 +10,7 @@ require_once __DIR__ . "/PropertyGroup.php";
 require_once __DIR__ . "/AddressSpace.php";
 require_once __DIR__ . "/PhysicalInterface.php";
 require_once __DIR__ . "/Peripheral.php";
+require_once __DIR__ . "/RegisterGroupInstance.php";
 require_once __DIR__ . "/Signal.php";
 require_once __DIR__ . "/Module.php";
 require_once __DIR__ . "/RegisterGroup.php";
@@ -246,6 +247,14 @@ class TargetDescriptionFile
             : null;
     }
 
+    public function resolveRegisterGroupInstance(
+        RegisterGroupInstance $registerGroupInstance,
+        string $moduleKey
+    ): ?RegisterGroup {
+        $module = $this->getModule($moduleKey);
+        return $module instanceof Module ? $module->getRegisterGroup($registerGroupInstance->registerGroupKey) : null;
+    }
+
     public function resolveRegisterGroupReference(
         RegisterGroupReference $registerGroupReference,
         string $moduleKey
@@ -258,12 +267,12 @@ class TargetDescriptionFile
     {
         $output = new TargetPeripheral($peripheral->name, []);
 
-        foreach ($peripheral->registerGroupReferences as $registerGroupReference) {
-            $registerGroup = $this->resolveRegisterGroupReference($registerGroupReference, $peripheral->moduleKey);
+        foreach ($peripheral->registerGroupInstances as $registerGroupInstance) {
+            $registerGroup = $this->resolveRegisterGroupInstance($registerGroupInstance, $peripheral->moduleKey);
             if ($registerGroup instanceof RegisterGroup) {
                 $output->registerGroups[] = $this->targetRegisterGroupFromRegisterGroup(
                     $registerGroup,
-                    $registerGroupReference->offset ?? 0,
+                    $registerGroupInstance->offset ?? 0,
                     $peripheral->moduleKey
                 );
             }

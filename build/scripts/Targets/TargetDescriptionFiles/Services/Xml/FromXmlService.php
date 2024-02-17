@@ -14,6 +14,7 @@ use Targets\TargetDescriptionFiles\MemorySegmentSection;
 use Targets\TargetDescriptionFiles\MemorySegmentType;
 use Targets\TargetDescriptionFiles\Module;
 use Targets\TargetDescriptionFiles\Peripheral;
+use Targets\TargetDescriptionFiles\RegisterGroupInstance;
 use Targets\TargetDescriptionFiles\PhysicalInterface;
 use Targets\TargetDescriptionFiles\Property;
 use Targets\TargetDescriptionFiles\PropertyGroup;
@@ -325,8 +326,8 @@ class FromXmlService
                 continue;
             }
 
-            if ($childNode->nodeName === 'register-group-reference') {
-                $output->registerGroupReferences[] = $this->registerGroupReferenceFromElement($childNode);
+            if ($childNode->nodeName === 'register-group-instance') {
+                $output->registerGroupInstances[] = $this->registerGroupInstanceFromElement($childNode);
                 continue;
             }
 
@@ -354,6 +355,20 @@ class FromXmlService
         }
 
         return $output;
+    }
+
+    public function registerGroupInstanceFromElement(DOMElement $element): RegisterGroupInstance
+    {
+        $attributes = $this->getNodeAttributesByName($element);
+
+        return new RegisterGroupInstance(
+            $attributes['key'] ?? null,
+            $attributes['name'] ?? null,
+            $attributes['register-group-key'] ?? null,
+            $attributes['address-space-key'] ?? null,
+            $this->stringService->tryStringToInt($attributes['offset'] ?? null),
+            $attributes['description'] ?? null
+        );
     }
 
     public function signalFromElement(DOMElement $element): Signal
