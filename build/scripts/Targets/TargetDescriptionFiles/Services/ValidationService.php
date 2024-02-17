@@ -250,10 +250,16 @@ class ValidationService
 
         if ($addressSpace->startAddress === null) {
             $failures[] = 'Missing start address';
+
+        } elseif ($addressSpace->startAddress > 0xFFFFFFFF) {
+            $failures[] = 'Start address exceeds 32-bit unsigned integer';
         }
 
         if ($addressSpace->size === null) {
             $failures[] = 'Missing size';
+
+        } elseif ($addressSpace->size > 0xFFFFFFFF) {
+            $failures[] = 'Size exceeds 32-bit unsigned integer';
         }
 
         if (empty($addressSpace->memorySegments)) {
@@ -320,10 +326,16 @@ class ValidationService
 
         if ($segment->startAddress === null) {
             $failures[] = 'Missing start address';
+
+        } elseif ($segment->startAddress > 0xFFFFFFFF) {
+            $failures[] = 'Start address exceeds 32-bit unsigned integer';
         }
 
         if ($segment->size === null) {
             $failures[] = 'Missing size';
+
+        } elseif ($segment->size > 0xFFFFFFFF) {
+            $failures[] = 'Size exceeds 32-bit unsigned integer';
         }
 
         $processedSectionKeys = [];
@@ -435,6 +447,10 @@ class ValidationService
             $failures[] = 'Missing name';
         }
 
+        if ($registerGroup->offset !== null && $registerGroup->offset > 0xFFFFFFFF) {
+            $failures[] = 'Offset exceeds 32-bit unsigned integer';
+        }
+
         $processedChildKeys = [];
 
         foreach ($registerGroup->registers as $register) {
@@ -526,6 +542,9 @@ class ValidationService
 
         if ($registerGroupReference->offset === null) {
             $failures[] = 'Missing offset';
+
+        } elseif ($registerGroupReference->offset > 0xFFFFFFFF) {
+            $failures[] = 'Offset exceeds 32-bit unsigned integer';
         }
 
         if ($tdf->resolveRegisterGroupReference($registerGroupReference, $moduleKey) === null) {
@@ -566,6 +585,9 @@ class ValidationService
 
         if ($register->offset === null) {
             $failures[] = 'Missing offset';
+
+        } elseif ($register->offset > 0xFFFFFFFF) {
+            $failures[] = 'Offset exceeds 32-bit unsigned integer';
         }
 
         if ($register->size === null) {
