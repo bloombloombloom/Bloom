@@ -11,9 +11,6 @@ class RegisterGroup
     public ?int $offset = null;
 
     /** @var Register[] */
-    public array $registersMappedByName = [];
-
-    /** @var Register[] */
     public array $registers = [];
 
     /** @var RegisterGroup[] */
