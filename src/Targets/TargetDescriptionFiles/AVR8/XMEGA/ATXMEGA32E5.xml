@@ -49,7 +49,7 @@
             <memory-segment key="user_signatures" name="User Signatures" type="user_signatures" start="0x00000000" size="128" page-size="128" rw="RW"/>
         </address-space>
         <address-space key="prod_signatures" start="0x00000000" size="54">
-            <memory-segment key="prod_signatures" name="Production Signatures" type="signatures" start="0x00000000" size="54" page-size="128" rw="R"/>
+            <memory-segment key="prod_signatures" name="Production Signatures" type="production_signatures" start="0x00000000" size="54" page-size="128" rw="R"/>
         </address-space>
     </address-spaces>
     <physical-interfaces>
