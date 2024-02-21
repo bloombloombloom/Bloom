@@ -133,9 +133,6 @@
         <peripheral key="lockbit" name="LOCKBIT" module-key="chip_lockbit">
             <register-group-instance key="lockbit" name="LOCKBIT" register-group-key="lockbit" address-space-key="data" offset="0x128A"/>
         </peripheral>
-        <peripheral key="nvmbist" name="NVMBIST" module-key="nvm_ctrl_avr_v2_nvmbist">
-            <register-group-instance key="nvmbist" name="NVMBIST" register-group-key="nvmbist" address-space-key="data" offset="0xC0"/>
-        </peripheral>
         <peripheral key="nvmctrl" name="NVMCTRL" module-key="nvm_ctrl_avr_v2_nvmctrl">
             <register-group-instance key="nvmctrl" name="NVMCTRL" register-group-key="nvmctrl" address-space-key="data" offset="0x1000"/>
         </peripheral>
@@ -732,31 +729,6 @@
             <register-group key="lockbit" name="LOCKBIT">
                 <register key="lockbit" name="LOCKBIT" description="Lock Bits" offset="0x0" size="1" initial-value="0xC5" rw="RW">
                     <bit-field key="lb" name="LB" description="Lock Bits" mask="0xFF" rw="RW"/>
-                </register>
-            </register-group>
-        </module>
-        <module key="nvm_ctrl_avr_v2_nvmbist" name="NVMBIST" description="BIST in the NVMCTRL module">
-            <register-group key="nvmbist" name="NVMBIST">
-                <register key="ctrla" name="CTRLA" description="Control A" offset="0x0" size="1" initial-value="0x0" rw="RW">
-                    <bit-field key="cmd" name="CMD" description="Command" mask="0x7" rw="W"/>
-                    <bit-field key="saf" name="SAF" description="Stop at fault" mask="0x8" rw="RW"/>
-                </register>
-                <register key="addrpat" name="ADDRPAT" description="Address pattern" offset="0x1" size="1" initial-value="0x0" rw="RW">
-                    <bit-field key="amode" name="AMODE" description="Address mode" mask="0x70" rw="RW"/>
-                    <bit-field key="xmode" name="XMODE" description="X address mode" mask="0x3" rw="RW"/>
-                    <bit-field key="ymode" name="YMODE" description="Y address mode" mask="0xC" rw="RW"/>
-                </register>
-                <register key="datapat" name="DATAPAT" description="Data pattern" offset="0x2" size="1" initial-value="0x0" rw="RW">
-                    <bit-field key="pattern" name="PATTERN" description="Data check pattern" mask="0x3" rw="RW"/>
-                </register>
-                <register key="status" name="STATUS" description="Status" offset="0x3" size="1" initial-value="0x0" rw="R">
-                    <bit-field key="state" name="STATE" description="FSM State" mask="0xF" rw="R"/>
-                </register>
-                <register key="cnt" name="CNT" offset="0x4" size="2" initial-value="0x0" rw="RW">
-                    <bit-field key="cnt" name="CNT" description="Faults counter" mask="0x7FF" rw="RW"/>
-                </register>
-                <register key="end" name="END" offset="0x6" size="4" initial-value="0x0" rw="RW">
-                    <bit-field key="end" name="END" mask="0xFFFFFF" rw="RW"/>
                 </register>
             </register-group>
         </module>

@@ -324,10 +324,10 @@
             </signals>
         </peripheral>
         <peripheral key="fuse" name="FUSE" module-key="fuse">
-            <register-group-instance key="fuse" name="FUSE" description="Fuses" register-group-key="fuse" address-space-key="data" offset="0x0"/>
+            <register-group-instance key="fuse" name="FUSE" description="Fuses" register-group-key="fuse" address-space-key="fuses" offset="0x0"/>
         </peripheral>
         <peripheral key="lockbit" name="LOCKBIT" module-key="lockbit">
-            <register-group-instance key="lockbit" name="LOCKBIT" description="Lockbits" register-group-key="lockbit" address-space-key="data" offset="0x0"/>
+            <register-group-instance key="lockbit" name="LOCKBIT" description="Lockbits" register-group-key="lockbit" address-space-key="lockbits" offset="0x0"/>
         </peripheral>
     </peripherals>
     <modules>

@@ -612,13 +612,13 @@
             <register-group-instance key="ircom" name="IRCOM" register-group-key="ircom" address-space-key="data" offset="0x8F8"/>
         </peripheral>
         <peripheral key="fuse" name="FUSE" module-key="i6570_fuse">
-            <register-group-instance key="fuse" name="FUSE" register-group-key="nvm_fuses" address-space-key="data" offset="0x0"/>
+            <register-group-instance key="fuse" name="FUSE" register-group-key="nvm_fuses" address-space-key="fuses" offset="0x0"/>
         </peripheral>
         <peripheral key="lockbit" name="LOCKBIT" module-key="i6570_lockbit">
-            <register-group-instance key="lockbit" name="LOCKBIT" register-group-key="nvm_lockbits" address-space-key="data" offset="0x0"/>
+            <register-group-instance key="lockbit" name="LOCKBIT" register-group-key="nvm_lockbits" address-space-key="lockbits" offset="0x0"/>
         </peripheral>
         <peripheral key="prod_signatures" name="PROD_SIGNATURES" module-key="i6570_sigrow">
-            <register-group-instance key="prod_signatures" name="PROD_SIGNATURES" register-group-key="nvm_prod_signatures" address-space-key="data" offset="0x0"/>
+            <register-group-instance key="prod_signatures" name="PROD_SIGNATURES" register-group-key="nvm_prod_signatures" address-space-key="prod_signatures" offset="0x0"/>
         </peripheral>
     </peripherals>
     <modules>

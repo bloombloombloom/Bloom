@@ -107,13 +107,13 @@
             <register-group-instance key="nvm" name="NVM" register-group-key="nvm" address-space-key="data" offset="0x1C0"/>
         </peripheral>
         <peripheral key="fuse" name="FUSE" module-key="i6076">
-            <register-group-instance key="fuse" name="FUSE" register-group-key="nvm_fuses" address-space-key="data" offset="0x0"/>
+            <register-group-instance key="fuse" name="FUSE" register-group-key="nvm_fuses" address-space-key="fuses" offset="0x0"/>
         </peripheral>
         <peripheral key="lockbit" name="LOCKBIT" module-key="i6076">
-            <register-group-instance key="lockbit" name="LOCKBIT" register-group-key="nvm_lockbits" address-space-key="data" offset="0x0"/>
+            <register-group-instance key="lockbit" name="LOCKBIT" register-group-key="nvm_lockbits" address-space-key="lockbits" offset="0x0"/>
         </peripheral>
         <peripheral key="prod_signatures" name="PROD_SIGNATURES" module-key="i6076">
-            <register-group-instance key="prod_signatures" name="PROD_SIGNATURES" register-group-key="nvm_prod_signatures" address-space-key="data" offset="0x0"/>
+            <register-group-instance key="prod_signatures" name="PROD_SIGNATURES" register-group-key="nvm_prod_signatures" address-space-key="prod_signatures" offset="0x0"/>
         </peripheral>
         <peripheral key="aca" name="ACA" module-key="i6077">
             <register-group-instance key="aca" name="ACA" register-group-key="ac" address-space-key="data" offset="0x380"/>
