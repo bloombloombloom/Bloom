@@ -10,7 +10,7 @@ class DebugWireParameters
     public ?int $flashStartAddress = null;
 
     /** @var BootSection[]  */
-    public array $bootSections = [];
+    public array $bootSectionOptions = [];
 
     public ?int $ramStartAddress = null;
     public ?int $eepromSize = null;

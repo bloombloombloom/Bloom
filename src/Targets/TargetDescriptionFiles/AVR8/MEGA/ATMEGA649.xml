@@ -137,7 +137,7 @@
             <property key="ppprogramlock_pulsewidth" value="0"/>
             <property key="ppprogramlock_polltimeout" value="5"/>
         </property-group>
-        <property-group key="boot_sections">
+        <property-group key="boot_section_options">
             <property-group key="boot_section_1">
                 <property key="start_address" value="0x0000FC00"/>
                 <property key="size" value="1024"/>

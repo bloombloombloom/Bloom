@@ -110,7 +110,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $output->ramStartAddress = $ramMemorySegment->startAddress;
         }
 
-        $output->bootSections = $this->getBootSections();
+        $output->bootSectionOptions = $this->getBootSectionOptions();
 
         $eepromMemorySegment = $this->getEepromSegment();
         if ($eepromMemorySegment instanceof MemorySegment) {
@@ -258,7 +258,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $output->ramStartAddress = $ramMemorySegment->startAddress;
         }
 
-        $output->bootSections = $this->getBootSections();
+        $output->bootSectionOptions = $this->getBootSectionOptions();
 
         $eepromMemorySegment = $this->getEepromSegment();
         if ($eepromMemorySegment instanceof MemorySegment) {
@@ -499,11 +499,11 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             ?? $this->getMemorySegment('eeprom', 'internal_eeprom');
     }
 
-    private function getBootSections(): array
+    private function getBootSectionOptions(): array
     {
         $output = [];
 
-        $bootSectionPropertyGroups = $this->getPropertyGroup('boot_sections')->subPropertyGroups ?? [];
+        $bootSectionPropertyGroups = $this->getPropertyGroup('boot_section_options')->subPropertyGroups ?? [];
         foreach ($bootSectionPropertyGroups as $propertyGroup) {
             $output[] = new BootSection(
                 $this->stringService->tryStringToInt($propertyGroup->getPropertyValue('start_address')),

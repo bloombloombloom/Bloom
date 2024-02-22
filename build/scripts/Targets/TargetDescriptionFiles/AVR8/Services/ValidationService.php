@@ -265,8 +265,8 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'Missing flash start address';
         }
 
-        if (empty($parameters->bootSections)) {
-            $failures[] = 'Missing boot sections';
+        if (empty($parameters->bootSectionOptions)) {
+            $failures[] = 'Missing boot section options';
         }
 
         if ($parameters->ramStartAddress === null) {
