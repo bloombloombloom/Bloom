@@ -39,6 +39,7 @@ require_once __DIR__ . '/../AVR8/Avr8TargetDescriptionFile.php';
  * This AtdfService provides ATDF -> TDF conversion.
  *
  * We use this to convert ATDFs of new Microchip AVR targets to Bloom's TDF format.
+ * See the ConvertAtdfToTdf.php script for more.
  *
  * NOTE: This service class is only intended for performing a first-pass conversion - it will do most of the work, but
  * may not cover every corner, so the generated TDF may require some manual touch-ups. It's best to run the generated
