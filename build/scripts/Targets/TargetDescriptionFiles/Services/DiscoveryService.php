@@ -20,7 +20,7 @@ class DiscoveryService
 
         $directory = new \DirectoryIterator($directoryPath);
         foreach ($directory as $entry) {
-            if ($entry->isFile() && $entry->getExtension() == 'xml') {
+            if ($entry->isFile() && $entry->getExtension() === 'xml') {
                 $output[] = clone $entry;
 
             } elseif ($entry->isDir() && !$entry->isDot()) {

@@ -328,11 +328,6 @@ class FromXmlService
 
             if ($childNode->nodeName === 'register-group-instance') {
                 $output->registerGroupInstances[] = $this->registerGroupInstanceFromElement($childNode);
-                continue;
-            }
-
-            if ($childNode->nodeName === 'signal') {
-                $output->signals[] = $this->signalFromElement($childNode);
             }
         }
 

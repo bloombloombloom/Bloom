@@ -34,7 +34,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public function getAdditionalDeviceAttributes(): array
     {
         return [
-            'avr-family' => $this->getAvrFamily()->value,
+            'avr-family' => $this->getAvrFamily()->value ?? '',
         ];
     }
 
