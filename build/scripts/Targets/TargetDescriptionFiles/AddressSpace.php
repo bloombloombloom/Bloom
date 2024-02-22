@@ -21,6 +21,17 @@ class AddressSpace
         $this->endianness = $endianness;
     }
 
+    public function getMemorySegment(string $key): ?MemorySegment
+    {
+        foreach ($this->memorySegments as $segment) {
+            if ($segment->key === $key) {
+                return $segment;
+            }
+        }
+
+        return null;
+    }
+
     public function totalSegmentSize(): int
     {
         return array_sum(

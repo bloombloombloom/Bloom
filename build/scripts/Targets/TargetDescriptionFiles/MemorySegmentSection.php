@@ -25,6 +25,21 @@ class MemorySegmentSection
         $this->subSections = $subSections;
     }
 
+    public function getInnermostSubSectionContainingAddressRange(int $startAddress, int $endAddress)
+    : ?MemorySegmentSection {
+        if ($this->containsAddressRange($startAddress, $endAddress)) {
+            return null;
+        }
+
+        foreach ($this->subSections as $section) {
+            if ($section->containsAddressRange($startAddress, $endAddress)) {
+                return $section->getInnermostSubSectionContainingAddressRange($startAddress, $endAddress);
+            }
+        }
+
+        return $this;
+    }
+
     public function contains(MemorySegment $other): bool
     {
         $endAddress = !is_null($this->startAddress) && !is_null($this->size)
@@ -39,6 +54,19 @@ class MemorySegmentSection
             && $otherEndAddress !== null
             && $this->startAddress <= $other->startAddress
             && $endAddress >= $otherEndAddress
+        ;
+    }
+
+    public function containsAddressRange(int $subjectStartAddress, int $subjectEndAddress): bool
+    {
+        $endAddress = !is_null($this->startAddress) && !is_null($this->size)
+            ? ($this->startAddress + $this->size - 1) : null;
+
+        return
+            $this->startAddress !== null
+            && $endAddress !== null
+            && $this->startAddress <= $subjectStartAddress
+            && $endAddress >= $subjectEndAddress
         ;
     }
 
