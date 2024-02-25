@@ -36,7 +36,7 @@ namespace Targets
         TargetMemoryAddressRange(TargetMemoryAddress startAddress, TargetMemoryAddress endAddress)
             : startAddress(startAddress)
             , endAddress(endAddress)
-        {};
+        {}
 
         bool operator == (const TargetMemoryAddressRange& rhs) const {
             return this->startAddress == rhs.startAddress && this->endAddress == rhs.endAddress;
@@ -107,7 +107,7 @@ namespace Targets
             , addressRange(addressRange)
             , access(access)
             , pageSize(pageSize)
-        {};
+        {}
 
         bool operator == (const TargetMemoryDescriptor& rhs) const {
             return this->type == rhs.type && this->addressRange == rhs.addressRange;

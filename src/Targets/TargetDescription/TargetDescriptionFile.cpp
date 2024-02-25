@@ -234,7 +234,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("property-group")
         ) {
             auto subgroup = TargetDescriptionFile::propertyGroupFromXml(element);
-            output.subgroupByKey.insert(std::pair(subgroup.key, std::move(subgroup)));
+            output.subgroupsByKey.insert(std::pair(subgroup.key, std::move(subgroup)));
         }
 
         return output;

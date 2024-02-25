@@ -28,7 +28,7 @@ namespace Targets::TargetDescription
     {
         std::string key;
         std::map<std::string, Property, std::less<void>> propertiesByKey;
-        std::map<std::string, PropertyGroup, std::less<void>> subgroupByKey;
+        std::map<std::string, PropertyGroup, std::less<void>> subgroupsByKey;
 
         PropertyGroup(
             const std::string& key,
@@ -37,15 +37,15 @@ namespace Targets::TargetDescription
         )
             : key(key)
             , propertiesByKey(propertiesByKey)
-            , subgroupByKey(subgroupByKey)
+            , subgroupsByKey(subgroupByKey)
         {}
 
         template <typename KeysType>
         requires
             std::ranges::sized_range<KeysType>
         std::optional<std::reference_wrapper<const PropertyGroup>> tryGetSubgroup(KeysType keys) const {
-            auto firstSubgroupIt = this->subgroupByKey.find(*(keys.begin()));
-            if (firstSubgroupIt == this->subgroupByKey.end()) {
+            auto firstSubgroupIt = this->subgroupsByKey.find(*(keys.begin()));
+            if (firstSubgroupIt == this->subgroupsByKey.end()) {
                 return std::nullopt;
             }
 
