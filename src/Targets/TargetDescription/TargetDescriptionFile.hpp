@@ -102,12 +102,17 @@ namespace Targets::TargetDescription
 
         [[nodiscard]] std::set<Targets::TargetPhysicalInterface> getPhysicalInterfaces() const;
 
+        [[nodiscard]] std::optional<std::reference_wrapper<const Module>> tryGetModule(
+            std::string_view key
+        ) const;
+        [[nodiscard]] const Module& getModule(std::string_view key) const;
+
     protected:
         std::map<std::string, std::string> deviceAttributesByName;
         std::map<std::string, PropertyGroup, std::less<void>> propertyGroupsByKey;
         std::map<std::string, AddressSpace, std::less<void>> addressSpacesByKey;
         std::vector<PhysicalInterface> physicalInterfaces;
-        std::map<std::string, Module> modulesMappedByName;
+        std::map<std::string, Module, std::less<void>> modulesByKey;
         std::map<std::string, Module> peripheralModulesMappedByName;
         std::map<std::string, std::vector<RegisterGroup>> peripheralRegisterGroupsMappedByModuleRegisterGroupName;
         std::vector<Variant> variants;
@@ -164,12 +169,28 @@ namespace Targets::TargetDescription
         static PhysicalInterface physicalInterfaceFromXml(const QDomElement& xmlElement);
 
         /**
+         * Constructs a Module object from an XML element.
+         *
+         * @param xmlElement
+         * @return
+         */
+        static Module moduleFromXml(const QDomElement& xmlElement);
+
+        /**
          * Constructs a RegisterGroup object from an XML element.
          *
          * @param xmlElement
          * @return
          */
         static RegisterGroup registerGroupFromXml(const QDomElement& xmlElement);
+
+        /**
+         * Constructs a RegisterGroupReference object from an XML element.
+         *
+         * @param xmlElement
+         * @return
+         */
+        static RegisterGroupReference registerGroupReferenceFromXml(const QDomElement& xmlElement);
 
         /**
          * Constructs a Register object from an XML element.
@@ -180,7 +201,7 @@ namespace Targets::TargetDescription
         static Register registerFromXml(const QDomElement& xmlElement);
 
         /**
-         * Consturcts a BitField object from an XML element.
+         * Constructs a BitField object from an XML element.
          *
          * @param xmlElement
          * @return
@@ -194,11 +215,6 @@ namespace Targets::TargetDescription
          * @return
          */
         const std::string& deviceAttribute(const std::string& attributeName) const;
-
-        /**
-         * Extracts all modules and loads them into this->modulesMappedByName.
-         */
-        void loadModules(const QDomDocument& document);
 
         /**
          * Extracts all peripheral modules and loads them into this->peripheralModulesMappedByName.

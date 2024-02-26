@@ -121,6 +121,27 @@ namespace Targets::TargetDescription
         return output;
     }
 
+    std::optional<std::reference_wrapper<const Module>> TargetDescriptionFile::tryGetModule(
+        std::string_view key
+    ) const {
+        const auto moduleIt = this->modulesByKey.find(key);
+        return moduleIt != this->modulesByKey.end()
+            ? std::optional(std::cref(moduleIt->second))
+            : std::nullopt;
+    }
+
+    const Module& TargetDescriptionFile::getModule(std::string_view key) const {
+        const auto module = this->tryGetModule(key);
+
+        if (!module.has_value()) {
+            throw InvalidTargetDescriptionDataException(
+                "Failed to get module \"" + std::string(key) + "\" from TDF - module not found"
+            );
+        }
+
+        return module->get();
+    }
+
     void TargetDescriptionFile::init(const std::string& xmlFilePath) {
         auto file = QFile(QString::fromStdString(xmlFilePath));
         if (!file.exists()) {
@@ -188,7 +209,17 @@ namespace Targets::TargetDescription
             );
         }
 
-        this->loadModules(document);
+        for (
+            auto element = deviceElement.firstChildElement("modules").firstChildElement("module");
+            !element.isNull();
+            element = element.nextSiblingElement("module")
+        ) {
+            auto module = TargetDescriptionFile::moduleFromXml(element);
+            this->modulesByKey.insert(
+                std::pair(module.key, std::move(module))
+            );
+        }
+
         this->loadPeripheralModules(document);
         this->loadVariants(document);
         this->loadPinouts(document);
@@ -365,124 +396,116 @@ namespace Targets::TargetDescription
         );
     }
 
+    Module TargetDescriptionFile::moduleFromXml(const QDomElement& xmlElement) {
+        auto output = Module(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            TargetDescriptionFile::getAttribute(xmlElement, "description"),
+            {}
+        );
+
+        for (
+            auto element = xmlElement.firstChildElement("register-group");
+            !element.isNull();
+            element = element.nextSiblingElement("register-group")
+        ) {
+            auto registerGroup = TargetDescriptionFile::registerGroupFromXml(element);
+            output.registerGroupsByKey.insert(std::pair(registerGroup.key, std::move(registerGroup)));
+        }
+
+        return output;
+    }
+
     RegisterGroup TargetDescriptionFile::registerGroupFromXml(const QDomElement& xmlElement) {
-        if (!xmlElement.hasAttribute("name")) {
-            throw Exception("Missing register group name attribute");
+        const auto offset = TargetDescriptionFile::tryGetAttribute(xmlElement, "offset");
+
+        auto output = RegisterGroup(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            offset.has_value() ? std::optional(StringService::toUint32(*offset)) : std::nullopt,
+            {},
+            {},
+            {}
+        );
+
+        for (
+            auto element = xmlElement.firstChildElement("register");
+            !element.isNull();
+            element = element.nextSiblingElement("register")
+        ) {
+            auto reg = TargetDescriptionFile::registerFromXml(element);
+            output.registersByKey.insert(std::pair(reg.key, std::move(reg)));
         }
 
-        auto registerGroup = RegisterGroup();
-        registerGroup.name = xmlElement.attribute("name").toLower().toStdString();
-
-        if (registerGroup.name.empty()) {
-            throw Exception("Empty register group name");
+        for (
+            auto element = xmlElement.firstChildElement("register-group");
+            !element.isNull();
+            element = element.nextSiblingElement("register-group")
+        ) {
+            auto registerGroup = TargetDescriptionFile::registerGroupFromXml(element);
+            output.subgroupsByKey.insert(std::pair(registerGroup.key, std::move(registerGroup)));
         }
 
-        if (xmlElement.hasAttribute("name-in-module")) {
-            registerGroup.moduleName = xmlElement.attribute("name-in-module").toLower().toStdString();
+        for (
+            auto element = xmlElement.firstChildElement("register-group-reference");
+            !element.isNull();
+            element = element.nextSiblingElement("register-group-reference")
+        ) {
+            auto registerGroupReference = TargetDescriptionFile::registerGroupReferenceFromXml(element);
+            output.subgroupReferencesByKey.insert(
+                std::pair(registerGroupReference.key, std::move(registerGroupReference))
+            );
         }
 
-        if (xmlElement.hasAttribute("address-space")) {
-            registerGroup.addressSpaceId = xmlElement.attribute("address-space").toLower().toStdString();
-        }
+        return output;
+    }
 
-        if (xmlElement.hasAttribute("offset")) {
-            registerGroup.offset = xmlElement.attribute("offset").toInt(nullptr, 16);
-        }
-
-        auto& registers = registerGroup.registersMappedByName;
-        auto registerNodes = xmlElement.elementsByTagName("register");
-        for (int registerIndex = 0; registerIndex < registerNodes.count(); registerIndex++) {
-            try {
-                auto reg = TargetDescriptionFile::registerFromXml(
-                    registerNodes.item(registerIndex).toElement()
-                );
-                registers.insert(std::pair(reg.name, reg));
-
-            } catch (const Exception& exception) {
-                Logger::debug("Failed to extract register from register group target description element - "
-                    + exception.getMessage());
-            }
-        }
-
-        return registerGroup;
+    RegisterGroupReference TargetDescriptionFile::registerGroupReferenceFromXml(const QDomElement& xmlElement) {
+        return RegisterGroupReference(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            TargetDescriptionFile::getAttribute(xmlElement, "register-group-key"),
+            StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "offset")),
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "description")
+        );
     }
 
     Register TargetDescriptionFile::registerFromXml(const QDomElement& xmlElement) {
-        if (
-            !xmlElement.hasAttribute("name")
-            || !xmlElement.hasAttribute("offset")
-            || !xmlElement.hasAttribute("size")
+        const auto initialValue = TargetDescriptionFile::tryGetAttribute(xmlElement, "initial-value");
+        const auto alternative = TargetDescriptionFile::tryGetAttribute(xmlElement, "alternative");
+
+        auto output = Register(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "description"),
+            StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "offset")),
+            StringService::toUint16(TargetDescriptionFile::getAttribute(xmlElement, "size")),
+            initialValue.has_value() ? std::optional(StringService::toUint64(*initialValue)) : std::nullopt,
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "access"),
+            alternative.has_value() ? std::optional(*alternative == "true") : std::nullopt,
+            {}
+        );
+
+        for (
+            auto element = xmlElement.firstChildElement("bit-field");
+            !element.isNull();
+            element = element.nextSiblingElement("bit-field")
         ) {
-            throw Exception("Missing register name/offset/size attribute");
+            auto bitField = TargetDescriptionFile::bitFieldFromXml(element);
+            output.bitFieldsByKey.insert(std::pair(bitField.key, std::move(bitField)));
         }
 
-        auto reg = Register();
-        reg.name = xmlElement.attribute("name").toLower().toStdString();
-
-        if (reg.name.empty()) {
-            throw Exception("Empty register name");
-        }
-
-        if (xmlElement.hasAttribute("caption")) {
-            reg.caption = xmlElement.attribute("caption").toStdString();
-        }
-
-        if (xmlElement.hasAttribute("ocd-rw")) {
-            reg.readWriteAccess = xmlElement.attribute("ocd-rw").toLower().toStdString();
-
-        } else if (xmlElement.hasAttribute("rw")) {
-            reg.readWriteAccess = xmlElement.attribute("rw").toLower().toStdString();
-        }
-
-        bool conversionStatus = false;
-        reg.size = xmlElement.attribute("size").toUShort(nullptr, 10);
-        reg.offset = xmlElement.attribute("offset").toUShort(&conversionStatus, 16);
-
-        if (!conversionStatus) {
-            // Failed to convert offset hex value as string to uint16_t
-            throw Exception("Invalid register offset");
-        }
-
-        auto& bitFields = reg.bitFieldsMappedByName;
-        auto bitFieldNodes = xmlElement.elementsByTagName("bitfield");
-        for (int bitFieldIndex = 0; bitFieldIndex < bitFieldNodes.count(); bitFieldIndex++) {
-            try {
-                auto bitField = TargetDescriptionFile::bitFieldFromXml(
-                    bitFieldNodes.item(bitFieldIndex).toElement()
-                );
-                bitFields.insert(std::pair(bitField.name, bitField));
-
-            } catch (const Exception& exception) {
-                Logger::debug("Failed to extract bit field from register target description element - "
-                    + exception.getMessage());
-            }
-        }
-
-        return reg;
+        return output;
     }
 
     BitField TargetDescriptionFile::bitFieldFromXml(const QDomElement& xmlElement) {
-        if (!xmlElement.hasAttribute("name") || !xmlElement.hasAttribute("mask")) {
-            throw Exception("Missing bit field name/mask attribute");
-        }
-
-        auto bitField = BitField();
-        bitField.name = xmlElement.attribute("name").toLower().toStdString();
-
-        auto maskConversion = false;
-        bitField.mask = static_cast<std::uint8_t>(
-            xmlElement.attribute("mask").toUShort(&maskConversion, 16)
+        return BitField(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "description"),
+            StringService::toUint64(TargetDescriptionFile::getAttribute(xmlElement, "mask")),
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "access")
         );
-
-        if (!maskConversion) {
-            throw Exception("Failed to convert bit field mask to integer (from hex string)");
-        }
-
-        if (bitField.name.empty()) {
-            throw Exception("Empty bit field name");
-        }
-
-        return bitField;
     }
 
     const std::string& TargetDescriptionFile::deviceAttribute(const std::string& attributeName) const {
@@ -495,105 +518,11 @@ namespace Targets::TargetDescription
         return attributeIt->second;
     }
 
-    void TargetDescriptionFile::loadModules(const QDomDocument& document) {
-        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
-
-        auto moduleNodes = document.elementsByTagName("modules").item(0).toElement()
-            .elementsByTagName("module");
-
-        for (int moduleIndex = 0; moduleIndex < moduleNodes.count(); moduleIndex++) {
-            auto moduleElement = moduleNodes.item(moduleIndex).toElement();
-            auto moduleName = moduleElement.attributes().namedItem("name").nodeValue().toLower().toStdString();
-            Module module;
-            module.name = moduleName;
-
-            auto registerGroupNodes = moduleElement.elementsByTagName("register-group");
-            for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
-                auto registerGroup = TargetDescriptionFile::registerGroupFromXml(
-                    registerGroupNodes.item(registerGroupIndex).toElement()
-                );
-
-                module.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
-            }
-
-            this->modulesMappedByName.insert(std::pair(module.name, module));
-        }
-    }
-
     void TargetDescriptionFile::loadPeripheralModules(const QDomDocument& document) {
         const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
 
         auto moduleNodes = deviceElement.elementsByTagName("peripherals").item(0).toElement()
             .elementsByTagName("module");
-
-        for (int moduleIndex = 0; moduleIndex < moduleNodes.count(); moduleIndex++) {
-            auto moduleElement = moduleNodes.item(moduleIndex).toElement();
-            auto moduleName = moduleElement.attributes().namedItem("name").nodeValue().toLower().toStdString();
-            Module module;
-            module.name = moduleName;
-
-            auto registerGroupNodes = moduleElement.elementsByTagName("register-group");
-            for (int registerGroupIndex = 0; registerGroupIndex < registerGroupNodes.count(); registerGroupIndex++) {
-                auto registerGroup = TargetDescriptionFile::registerGroupFromXml(
-                    registerGroupNodes.item(registerGroupIndex).toElement()
-                );
-
-                module.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
-
-                if (registerGroup.moduleName.has_value()) {
-                    this->peripheralRegisterGroupsMappedByModuleRegisterGroupName[registerGroup.moduleName.value()]
-                        .emplace_back(registerGroup);
-                }
-            }
-
-            auto instanceNodes = moduleElement.elementsByTagName("instance");
-            for (int instanceIndex = 0; instanceIndex < instanceNodes.count(); instanceIndex++) {
-                auto instanceXml = instanceNodes.item(instanceIndex).toElement();
-                auto instance = ModuleInstance();
-                instance.name = instanceXml.attribute("name").toLower().toStdString();
-
-                auto registerGroupNodes = instanceXml.elementsByTagName("register-group");
-                for (
-                    int registerGroupIndex = 0;
-                    registerGroupIndex < registerGroupNodes.count();
-                    registerGroupIndex++
-                ) {
-                    auto registerGroup = TargetDescriptionFile::registerGroupFromXml(
-                        registerGroupNodes.item(registerGroupIndex).toElement()
-                    );
-
-                    instance.registerGroupsMappedByName.insert(std::pair(registerGroup.name, registerGroup));
-                }
-
-                auto signalNodes = instanceXml.elementsByTagName("signals").item(0).toElement()
-                    .elementsByTagName("signal");
-                for (int signalIndex = 0; signalIndex < signalNodes.count(); signalIndex++) {
-                    auto signalXml = signalNodes.item(signalIndex).toElement();
-                    auto signal = Signal();
-
-                    if (!signalXml.hasAttribute("pad")) {
-                        continue;
-                    }
-
-                    signal.padName = signalXml.attribute("pad").toLower().toStdString();
-                    signal.function = signalXml.attribute("function").toStdString();
-                    signal.group = signalXml.attribute("group").toStdString();
-                    auto indexAttribute = signalXml.attribute("index");
-                    bool indexValid = false;
-                    auto indexValue = indexAttribute.toInt(&indexValid, 10);
-
-                    if (!indexAttribute.isEmpty() && indexValid) {
-                        signal.index = indexValue;
-                    }
-
-                    instance.instanceSignals.emplace_back(signal);
-                }
-
-                module.instancesMappedByName.insert(std::pair(instance.name, instance));
-            }
-
-            this->peripheralModulesMappedByName.insert(std::pair(module.name, module));
-        }
     }
 
     void TargetDescriptionFile::loadVariants(const QDomDocument& document) {
