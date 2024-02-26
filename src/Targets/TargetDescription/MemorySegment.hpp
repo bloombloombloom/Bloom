@@ -67,9 +67,7 @@ namespace Targets::TargetDescription
                 : std::nullopt;
         }
 
-        std::optional<std::reference_wrapper<const MemorySegmentSection>> getSection(
-            std::string_view keyStr
-        ) const {
+        const MemorySegmentSection& getSection(std::string_view keyStr) const {
             const auto propertyGroup = this->tryGetSection(keyStr);
             if (!propertyGroup.has_value()) {
                 throw Exceptions::InvalidTargetDescriptionDataException(

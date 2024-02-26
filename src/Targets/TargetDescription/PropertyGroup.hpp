@@ -65,7 +65,7 @@ namespace Targets::TargetDescription
             return this->tryGetSubgroup(Services::StringService::split(keyStr, '.'));
         }
 
-        std::optional<std::reference_wrapper<const PropertyGroup>> getSubgroup(std::string_view keyStr) const {
+        const PropertyGroup& getSubgroup(std::string_view keyStr) const {
             const auto propertyGroup = this->tryGetSubgroup(keyStr);
             if (!propertyGroup.has_value()) {
                 throw Exceptions::InvalidTargetDescriptionDataException(

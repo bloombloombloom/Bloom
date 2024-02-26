@@ -62,9 +62,7 @@ namespace Targets::TargetDescription
             return this->tryGetSubSection(Services::StringService::split(keyStr, '.'));
         }
 
-        std::optional<std::reference_wrapper<const MemorySegmentSection>> getSubSection(
-            std::string_view keyStr
-        ) const {
+        const MemorySegmentSection& getSubSection(std::string_view keyStr) const {
             const auto propertyGroup = this->tryGetSubSection(keyStr);
             if (!propertyGroup.has_value()) {
                 throw Exceptions::InvalidTargetDescriptionDataException(
