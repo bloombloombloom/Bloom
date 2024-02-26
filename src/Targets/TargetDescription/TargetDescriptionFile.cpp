@@ -45,7 +45,7 @@ namespace Targets::TargetDescription
         const auto familyIt = familiesByName.find(this->deviceAttribute("family"));
 
         if (familyIt == familiesByName.end()) {
-            throw Exception("Failed to resolve target family - invalid family name");
+            throw InvalidTargetDescriptionDataException("Failed to resolve target family - invalid family name");
         }
 
         return familyIt->second;
@@ -68,7 +68,7 @@ namespace Targets::TargetDescription
         const auto propertyGroup = this->tryGetPropertyGroup(keyStr);
 
         if (!propertyGroup.has_value()) {
-            throw Exception(
+            throw InvalidTargetDescriptionDataException(
                 "Failed to get property group \"" + std::string(keyStr) + "\" from TDF - property group not found"
             );
         }
@@ -89,7 +89,7 @@ namespace Targets::TargetDescription
         const auto addressSpace = this->tryGetAddressSpace(key);
 
         if (!addressSpace.has_value()) {
-            throw Exception(
+            throw InvalidTargetDescriptionDataException(
                 "Failed to get address space \"" + std::string(key) + "\" from TDF - address space not found"
             );
         }
