@@ -91,7 +91,7 @@ namespace Services
     std::vector<std::string_view> StringService::split(std::string_view str, char delimiter) {
         auto range = str |
             std::ranges::views::split(delimiter) |
-            std::ranges::views::transform([](auto&& subRange) -> std::string_view {
+            std::ranges::views::transform([] (auto&& subRange) -> std::string_view {
                 return std::string_view(
                     subRange.begin(),
                     static_cast<std::size_t>(std::ranges::distance(subRange))

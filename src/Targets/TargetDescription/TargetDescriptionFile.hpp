@@ -135,77 +135,14 @@ namespace Targets::TargetDescription
 
         static PropertyGroup propertyGroupFromXml(const QDomElement& xmlElement);
         static Property propertyFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Constructs an AddressSpace object from an XML element.
-         *
-         * @param xmlElement
-         * @return
-         */
         static AddressSpace addressSpaceFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Constructs a MemorySegment object from an XML element.
-         *
-         * @param xmlElement
-         * @return
-         */
         static MemorySegment memorySegmentFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Constructs a MemorySegmentSection from an XML element.
-         *
-         * @param xmlElement
-         * @return
-         */
         static MemorySegmentSection memorySegmentSectionFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Constructs a PhysicalInterface from al XML element.
-         *
-         * @param xmlElement
-         * @return
-         */
         static PhysicalInterface physicalInterfaceFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Constructs a Module object from an XML element.
-         *
-         * @param xmlElement
-         * @return
-         */
         static Module moduleFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Constructs a RegisterGroup object from an XML element.
-         *
-         * @param xmlElement
-         * @return
-         */
         static RegisterGroup registerGroupFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Constructs a RegisterGroupReference object from an XML element.
-         *
-         * @param xmlElement
-         * @return
-         */
         static RegisterGroupReference registerGroupReferenceFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Constructs a Register object from an XML element.
-         *
-         * @param xmlElement
-         * @return
-         */
         static Register registerFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Constructs a BitField object from an XML element.
-         *
-         * @param xmlElement
-         * @return
-         */
         static BitField bitFieldFromXml(const QDomElement& xmlElement);
 
         /**

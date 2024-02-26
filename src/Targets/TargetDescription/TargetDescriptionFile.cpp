@@ -37,18 +37,17 @@ namespace Targets::TargetDescription
     }
 
     TargetFamily TargetDescriptionFile::getFamily() const {
-        static const auto familiesByName = std::map<std::string, TargetFamily> {
-            {"AVR8", TargetFamily::AVR_8},
-            {"RISCV", TargetFamily::RISC_V},
-        };
+        const auto& family = this->deviceAttribute("family");
 
-        const auto familyIt = familiesByName.find(this->deviceAttribute("family"));
-
-        if (familyIt == familiesByName.end()) {
-            throw InvalidTargetDescriptionDataException("Failed to resolve target family - invalid family name");
+        if (family == "AVR8") {
+            return TargetFamily::AVR_8;
         }
 
-        return familyIt->second;
+        if (family == "RISCV") {
+            return TargetFamily::RISC_V;
+        }
+
+        throw InvalidTargetDescriptionDataException("Failed to resolve target family - invalid family name");
     }
 
     std::optional<std::reference_wrapper<const PropertyGroup>> TargetDescriptionFile::tryGetPropertyGroup(
@@ -278,7 +277,7 @@ namespace Targets::TargetDescription
         );
     }
 
-    AddressSpace TargetDescriptionFile::addressSpaceFromXml(const QDomElement &xmlElement) {
+    AddressSpace TargetDescriptionFile::addressSpaceFromXml(const QDomElement& xmlElement) {
         static const auto endiannessByName = BiMap<std::string, TargetMemoryEndianness>({
             {"big", TargetMemoryEndianness::BIG},
             {"little", TargetMemoryEndianness::LITTLE},
