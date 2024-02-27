@@ -140,6 +140,8 @@ namespace Targets::TargetDescription
         void init(const std::string& xmlFilePath);
         void init(const QDomDocument& document);
 
+        const std::string& deviceAttribute(const std::string& attributeName) const;
+
         static std::optional<std::string> tryGetAttribute(const QDomElement& element, const QString& attributeName);
         static std::string getAttribute(const QDomElement& element, const QString& attributeName);
 
@@ -157,14 +159,6 @@ namespace Targets::TargetDescription
         static Peripheral peripheralFromXml(const QDomElement& xmlElement);
         static RegisterGroupInstance registerGroupInstanceFromXml(const QDomElement& xmlElement);
         static Signal signalFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Fetches a device attribute value by name. Throws an exception if the attribute is not found.
-         *
-         * @param attributeName
-         * @return
-         */
-        const std::string& deviceAttribute(const std::string& attributeName) const;
 
         /**
          * Extracts all variants and loads them into this->variants.

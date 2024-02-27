@@ -255,6 +255,16 @@ namespace Targets::TargetDescription
         this->loadPinouts(document);
     }
 
+    const std::string& TargetDescriptionFile::deviceAttribute(const std::string& attributeName) const {
+        const auto attributeIt = this->deviceAttributesByName.find(attributeName);
+
+        if (attributeIt == this->deviceAttributesByName.end()) {
+            throw Exception("Missing target device attribute (\"" + attributeName + "\")");
+        }
+
+        return attributeIt->second;
+    }
+
     std::optional<std::string> TargetDescriptionFile::tryGetAttribute(
         const QDomElement& element,
         const QString& attributeName
@@ -592,16 +602,6 @@ namespace Targets::TargetDescription
             TargetDescriptionFile::tryGetAttribute(xmlElement, "group"),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "field")
         );
-    }
-
-    const std::string& TargetDescriptionFile::deviceAttribute(const std::string& attributeName) const {
-        const auto attributeIt = this->deviceAttributesByName.find(attributeName);
-
-        if (attributeIt == this->deviceAttributesByName.end()) {
-            throw Exception("Missing target device attribute (\"" + attributeName + "\")");
-        }
-
-        return attributeIt->second;
     }
 
     void TargetDescriptionFile::loadVariants(const QDomDocument& document) {
