@@ -141,6 +141,27 @@ namespace Targets::TargetDescription
         return module->get();
     }
 
+    std::optional<std::reference_wrapper<const Peripheral>> TargetDescriptionFile::tryGetPeripheral(
+        std::string_view key
+    ) const {
+        const auto peripheralIt = this->peripheralsByKey.find(key);
+        return peripheralIt != this->peripheralsByKey.end()
+            ? std::optional(std::cref(peripheralIt->second))
+            : std::nullopt;
+    }
+
+    const Peripheral& TargetDescriptionFile::getPeripheral(std::string_view key) const {
+        const auto peripheral = this->tryGetPeripheral(key);
+
+        if (!peripheral.has_value()) {
+            throw InvalidTargetDescriptionDataException(
+                "Failed to get peripheral \"" + std::string(key) + "\" from TDF - peripheral not found"
+            );
+        }
+
+        return peripheral->get();
+    }
+
     void TargetDescriptionFile::init(const std::string& xmlFilePath) {
         auto file = QFile(QString::fromStdString(xmlFilePath));
         if (!file.exists()) {
@@ -219,7 +240,17 @@ namespace Targets::TargetDescription
             );
         }
 
-        this->loadPeripheralModules(document);
+        for (
+            auto element = deviceElement.firstChildElement("peripherals").firstChildElement("peripheral");
+            !element.isNull();
+            element = element.nextSiblingElement("peripheral")
+        ) {
+            auto peripheral = TargetDescriptionFile::peripheralFromXml(element);
+            this->peripheralsByKey.insert(
+                std::pair(peripheral.key, std::move(peripheral))
+            );
+        }
+
         this->loadVariants(document);
         this->loadPinouts(document);
     }
@@ -507,6 +538,62 @@ namespace Targets::TargetDescription
         );
     }
 
+    Peripheral TargetDescriptionFile::peripheralFromXml(const QDomElement& xmlElement) {
+        const auto offset = TargetDescriptionFile::tryGetAttribute(xmlElement, "offset");
+
+        auto output = Peripheral(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            TargetDescriptionFile::getAttribute(xmlElement, "module-key"),
+            {},
+            {}
+        );
+
+        for (
+            auto element = xmlElement.firstChildElement("register-group-instance");
+            !element.isNull();
+            element = element.nextSiblingElement("register-group-instance")
+        ) {
+            auto registerGroupInstance = TargetDescriptionFile::registerGroupInstanceFromXml(element);
+            output.registerGroupInstancesByKey.insert(
+                std::pair(registerGroupInstance.key, std::move(registerGroupInstance))
+            );
+        }
+
+        for (
+            auto element = xmlElement.firstChildElement("signals").firstChildElement("signal");
+            !element.isNull();
+            element = element.nextSiblingElement("signal")
+        ) {
+            output.sigs.emplace_back(TargetDescriptionFile::signalFromXml(element));
+        }
+
+        return output;
+    }
+
+    RegisterGroupInstance TargetDescriptionFile::registerGroupInstanceFromXml(const QDomElement& xmlElement) {
+        return RegisterGroupInstance(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            TargetDescriptionFile::getAttribute(xmlElement, "register-group-key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "address-space-key"),
+            StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "offset")),
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "description")
+        );
+    }
+
+    Signal TargetDescriptionFile::signalFromXml(const QDomElement& xmlElement) {
+        const auto index = TargetDescriptionFile::tryGetAttribute(xmlElement, "index");
+
+        return Signal(
+            TargetDescriptionFile::getAttribute(xmlElement, "pad-id"),
+            index.has_value() ? std::optional(StringService::toUint64(*index)) : std::nullopt,
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "function"),
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "group"),
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "field")
+        );
+    }
+
     const std::string& TargetDescriptionFile::deviceAttribute(const std::string& attributeName) const {
         const auto attributeIt = this->deviceAttributesByName.find(attributeName);
 
@@ -515,13 +602,6 @@ namespace Targets::TargetDescription
         }
 
         return attributeIt->second;
-    }
-
-    void TargetDescriptionFile::loadPeripheralModules(const QDomDocument& document) {
-        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
-
-        auto moduleNodes = deviceElement.elementsByTagName("peripherals").item(0).toElement()
-            .elementsByTagName("module");
     }
 
     void TargetDescriptionFile::loadVariants(const QDomDocument& document) {

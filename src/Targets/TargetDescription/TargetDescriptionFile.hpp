@@ -14,10 +14,15 @@
 #include "MemorySegment.hpp"
 #include "MemorySegmentSection.hpp"
 #include "PhysicalInterface.hpp"
-#include "RegisterGroup.hpp"
 #include "Module.hpp"
-#include "Variant.hpp"
+#include "RegisterGroup.hpp"
+#include "Register.hpp"
+#include "RegisterGroupReference.hpp"
+#include "Peripheral.hpp"
+#include "RegisterGroupInstance.hpp"
+#include "Signal.hpp"
 #include "Pinout.hpp"
+#include "Variant.hpp"
 
 #include "src/Targets/TargetFamily.hpp"
 #include "src/Targets/TargetPhysicalInterface.hpp"
@@ -107,13 +112,18 @@ namespace Targets::TargetDescription
         ) const;
         [[nodiscard]] const Module& getModule(std::string_view key) const;
 
+        [[nodiscard]] std::optional<std::reference_wrapper<const Peripheral>> tryGetPeripheral(
+            std::string_view key
+        ) const;
+        [[nodiscard]] const Peripheral& getPeripheral(std::string_view key) const;
+
     protected:
         std::map<std::string, std::string> deviceAttributesByName;
         std::map<std::string, PropertyGroup, std::less<void>> propertyGroupsByKey;
         std::map<std::string, AddressSpace, std::less<void>> addressSpacesByKey;
         std::vector<PhysicalInterface> physicalInterfaces;
         std::map<std::string, Module, std::less<void>> modulesByKey;
-        std::map<std::string, Module> peripheralModulesMappedByName;
+        std::map<std::string, Peripheral, std::less<void>> peripheralsByKey;
         std::map<std::string, std::vector<RegisterGroup>> peripheralRegisterGroupsMappedByModuleRegisterGroupName;
         std::vector<Variant> variants;
         std::map<std::string, Pinout> pinoutsMappedByName;
@@ -144,6 +154,9 @@ namespace Targets::TargetDescription
         static RegisterGroupReference registerGroupReferenceFromXml(const QDomElement& xmlElement);
         static Register registerFromXml(const QDomElement& xmlElement);
         static BitField bitFieldFromXml(const QDomElement& xmlElement);
+        static Peripheral peripheralFromXml(const QDomElement& xmlElement);
+        static RegisterGroupInstance registerGroupInstanceFromXml(const QDomElement& xmlElement);
+        static Signal signalFromXml(const QDomElement& xmlElement);
 
         /**
          * Fetches a device attribute value by name. Throws an exception if the attribute is not found.
@@ -152,11 +165,6 @@ namespace Targets::TargetDescription
          * @return
          */
         const std::string& deviceAttribute(const std::string& attributeName) const;
-
-        /**
-         * Extracts all peripheral modules and loads them into this->peripheralModulesMappedByName.
-         */
-        void loadPeripheralModules(const QDomDocument& document);
 
         /**
          * Extracts all variants and loads them into this->variants.
