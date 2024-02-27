@@ -10,7 +10,6 @@ class Peripheral
     public ?string $key = null;
     public ?string $name = null;
     public ?string $moduleKey = null;
-    public ?string $moduleName = null;
 
     /** @var RegisterGroupInstance[] */
     public array $registerGroupInstances = [];
