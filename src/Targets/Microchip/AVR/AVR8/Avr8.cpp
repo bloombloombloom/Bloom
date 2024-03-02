@@ -747,8 +747,12 @@ namespace Targets::Microchip::Avr::Avr8Bit
     ) const {
         return static_cast<unsigned char>(
             this->fuseEnableStrategy == FuseEnableStrategy::SET
-                ? enabled ? (fuseByteValue | descriptor.bitMask) : fuseByteValue & ~(descriptor.bitMask)
-                : enabled ? fuseByteValue & ~(descriptor.bitMask) : (fuseByteValue | descriptor.bitMask)
+                ? enabled
+                    ? (fuseByteValue | descriptor.bitMask)
+                    : fuseByteValue & ~(descriptor.bitMask)
+                : enabled
+                    ? fuseByteValue & ~(descriptor.bitMask)
+                    : (fuseByteValue | descriptor.bitMask)
         );
     }
 
