@@ -14,6 +14,7 @@
 #include <QUrlQuery>
 
 #include "src/Logger/Logger.hpp"
+#include "src/Services/TargetService.hpp"
 #include "src/Services/PathService.hpp"
 #include "src/Services/ProcessService.hpp"
 #include "src/Helpers/BiMap.hpp"
@@ -399,10 +400,10 @@ int Application::presentCapabilitiesMachine() {
 
     auto supportedTargets = QJsonArray();
 
-    for (const auto& [configValue, descriptor] : Targets::TargetDescription::TargetDescriptionFile::mapping()) {
+    for (const auto& [configValue, descriptor] : Services::TargetService::briefDescriptorsByConfigValue()) {
         supportedTargets.push_back(QJsonObject({
-            {"name" , QString::fromStdString(descriptor.targetName)},
-            {"family" , targetFamilyNames.at(descriptor.targetFamily)},
+            {"name" , QString::fromStdString(descriptor.name)},
+            {"family" , targetFamilyNames.at(descriptor.family)},
             {"configurationValue" , QString::fromStdString(configValue)},
         }));
     }

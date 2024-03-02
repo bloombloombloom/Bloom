@@ -375,25 +375,23 @@ namespace TargetController
         };
     }
 
-    std::unique_ptr<Targets::Target> TargetControllerComponent::constructTargetFromBrief(
-        const TargetDescription::GeneratedMapping::BriefTargetDescriptor &targetBrief
-    ) {
+    std::unique_ptr<Target> TargetControllerComponent::constructTarget(const BriefTargetDescriptor& briefDescriptor) {
         using Services::PathService;
 
-        if (targetBrief.targetFamily == TargetFamily::AVR_8) {
+        if (briefDescriptor.family == TargetFamily::AVR_8) {
             return std::make_unique<Microchip::Avr::Avr8Bit::Avr8>(
                 this->environmentConfig.targetConfig,
                 Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile(
-                    PathService::targetDescriptionDirPath() + "/" + targetBrief.relativeTdfPath
+                    PathService::targetDescriptionDirPath() + "/" + briefDescriptor.relativeTdfPath
                 )
             );
         }
 
-        if (targetBrief.targetFamily == TargetFamily::RISC_V) {
+        if (briefDescriptor.family == TargetFamily::RISC_V) {
             return std::make_unique<RiscV::RiscV>(
                 this->environmentConfig.targetConfig,
                 RiscV::TargetDescription::TargetDescriptionFile(
-                    PathService::targetDescriptionDirPath() + "/" + targetBrief.relativeTdfPath
+                    PathService::targetDescriptionDirPath() + "/" + briefDescriptor.relativeTdfPath
                 )
             );
         }
@@ -470,10 +468,9 @@ namespace TargetController
         const auto& targetName = this->environmentConfig.targetConfig.name;
 
         static const auto supportedDebugTools = this->getSupportedDebugTools();
-        static const auto targetsByConfigValue = TargetDescription::TargetDescriptionFile::mapping();
 
         const auto debugToolIt = supportedDebugTools.find(debugToolName);
-        const auto targetBriefIt = targetsByConfigValue.find(targetName);
+        const auto briefTargetDescriptor = Services::TargetService::briefDescriptor(targetName);
 
         if (debugToolIt == supportedDebugTools.end()) {
             throw Exceptions::InvalidConfig(
@@ -481,7 +478,7 @@ namespace TargetController
             );
         }
 
-        if (targetBriefIt == targetsByConfigValue.end()) {
+        if (!briefTargetDescriptor.has_value()) {
             throw Exceptions::InvalidConfig(
                 "Target name (\"" + targetName + "\") not recognised. Please check your configuration!"
             );
@@ -497,7 +494,7 @@ namespace TargetController
         Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
         Logger::info("Debug tool firmware version: " + this->debugTool->getFirmwareVersionString());
 
-        this->target = this->constructTargetFromBrief(targetBriefIt->second);
+        this->target = this->constructTarget(*briefTargetDescriptor);
         const auto& targetDescriptor = this->getTargetDescriptor();
 
         if (!this->target->supportsDebugTool(this->debugTool.get())) {

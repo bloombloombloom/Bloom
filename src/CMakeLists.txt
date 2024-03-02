@@ -5,6 +5,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Application.cpp
 
         # Services
+        ${CMAKE_CURRENT_SOURCE_DIR}/Services/TargetService.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/TargetControllerService.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/PathService.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/ProcessService.cpp

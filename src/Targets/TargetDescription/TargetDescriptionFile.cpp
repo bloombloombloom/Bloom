@@ -20,10 +20,6 @@ namespace Targets::TargetDescription
 
     using Services::StringService;
 
-    const std::map<std::string, GeneratedMapping::BriefTargetDescriptor>& TargetDescriptionFile::mapping() {
-        return GeneratedMapping::map;
-    }
-
     TargetDescriptionFile::TargetDescriptionFile(const std::string& xmlFilePath) {
         this->init(xmlFilePath);
     }

@@ -46,7 +46,11 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 endif()
 
 add_executable(Bloom)
-set_target_properties(Bloom PROPERTIES OUTPUT_NAME bloom)
+set_target_properties(
+    Bloom
+    PROPERTIES
+        OUTPUT_NAME bloom
+)
 
 find_package(yaml-cpp 0.7.0 REQUIRED)
 find_package(Qt6Core REQUIRED)
@@ -162,46 +166,55 @@ if (${ENABLE_SANITIZERS})
     )
 endif()
 
-# Validate TDF files
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/tdf_validation_timestamp.txt
-    COMMAND echo 'Validating target description files'
-    COMMAND php
-    ARGS
-        ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/ValidateTargetDescriptionFiles.php
+# The ValidateTargetDescriptionFiles target will invoke the TDF validation script for all TDFs in Bloom's codebase.
+add_custom_target(
+    ValidateTargetDescriptionFiles
+    COMMENT "Validating target description files"
+    COMMAND php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/ValidateTargetDescriptionFiles.php
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/
-    COMMAND date > ${CMAKE_BINARY_DIR}/tdf_validation_timestamp.txt
 )
 
-# Copy TDF files to build directory and generate TDF mapping
-set(GENERATED_TDF_MAPPING_PATH "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}_autogen/GeneratedMapping.hpp")
+# The GenerateBriefTargetDescriptors target will invoke the GenerateBriefTargetDescriptors.php build script to generate
+# a BriefTargetDescriptor for all targets supported by Bloom. These descriptors are stored in an ASCII text file,
+# located at ${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}. See the TargetService class for more on this.
+#
+# The script will also copy all TDFs to the build directory.
+set(
+    GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH
+    "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}_autogen/GeneratedMapping.txt"
+)
 
 target_sources(
     Bloom
     PRIVATE
-        ${GENERATED_TDF_MAPPING_PATH}
+        ${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}
 )
 
 target_compile_definitions(
     Bloom
-    PUBLIC GENERATED_TDF_MAPPING_PATH="${GENERATED_TDF_MAPPING_PATH}"
+    PUBLIC GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH="${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}"
 )
 
-add_custom_command(
-    OUTPUT
-        ${GENERATED_TDF_MAPPING_PATH}
+add_custom_target(
+    GenerateBriefTargetDescriptors
+    BYPRODUCTS
+        ${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}
         ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/
     DEPENDS
-        ${CMAKE_BINARY_DIR}/tdf_validation_timestamp.txt
-        ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/GenerateTargetDescriptionFileMapping.php
-    COMMAND echo 'Processing target description files'
-    COMMAND php
-    ARGS
-        ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/GenerateTargetDescriptionFileMapping.php
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/GenerateBriefTargetDescriptors.php
+    COMMENT "Processing target description files"
+    COMMAND php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/GenerateBriefTargetDescriptors.php
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescription/GeneratedMapping.hpp.in
-        ${GENERATED_TDF_MAPPING_PATH}
+        ${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}
         ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/
+)
+
+# TDF validation should run before we generate the brief target descriptors, which should run before compilation.
+add_dependencies(GenerateBriefTargetDescriptors ValidateTargetDescriptionFiles)
+add_dependencies(
+    Bloom
+    ValidateTargetDescriptionFiles
+    GenerateBriefTargetDescriptors
 )
 
 include(./cmake/Installing.cmake)

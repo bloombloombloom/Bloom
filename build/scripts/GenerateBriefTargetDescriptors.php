@@ -5,9 +5,8 @@ use Targets\TargetDescriptionFiles\Services\Xml\XmlService;
 use Targets\TargetDescriptionFiles\TargetFamily;
 
 define('TDF_DIR_PATH', $argv[1] ?? null);
-define('MAPPING_TEMPLATE_PATH', $argv[2] ?? null);
-define('MAPPING_OUTPUT_PATH', $argv[3] ?? null);
-define('TDF_OUTPUT_PATH', $argv[4] ?? null);
+define('MAPPING_OUTPUT_PATH', $argv[2] ?? null);
+define('TDF_OUTPUT_PATH', $argv[3] ?? null);
 
 if (empty(TDF_DIR_PATH)) {
     print 'Missing TDF directory path. Aborting' . PHP_EOL;
@@ -16,11 +15,6 @@ if (empty(TDF_DIR_PATH)) {
 
 if (!file_exists(TDF_DIR_PATH)) {
     print 'Invalid TDF directory path - "' . TDF_DIR_PATH . '" does not exist' . PHP_EOL;
-    exit(1);
-}
-
-if (empty(MAPPING_TEMPLATE_PATH)) {
-    print 'Missing TDF mapping template path. Aborting' . PHP_EOL;
     exit(1);
 }
 
@@ -50,11 +44,6 @@ $xmlService = new XmlService();
 $xmlFiles = $discoveryService->findTargetDescriptionFiles(TDF_DIR_PATH);
 print count($xmlFiles) . ' target descriptions files found in ' . TDF_DIR_PATH . PHP_EOL . PHP_EOL;
 
-$targetFamilyMapping = [
-    TargetFamily::AVR_8->value => 'TargetFamily::AVR_8',
-    TargetFamily::RISC_V->value => 'TargetFamily::RISC_V',
-];
-
 const MAP_ENTRY_TEMPLATE = '{"@CONFIG_VALUE@", {"@TARGET_NAME@", "@CONFIG_VALUE@", @TARGET_FAMILY@, "@TDF_PATH@"}}';
 
 $entries = [];
@@ -76,7 +65,10 @@ foreach ($xmlFiles as $xmlFile) {
         [
             $targetDescriptionFile->getConfigurationValue(),
             $targetDescriptionFile->getName(),
-            $targetFamilyMapping[$targetDescriptionFile->getFamily()->value],
+            match($targetDescriptionFile->getFamily()) {
+                TargetFamily::AVR_8 => 'Targets::TargetFamily::AVR_8',
+                TargetFamily::RISC_V => 'Targets::TargetFamily::RISC_V',
+            },
             $relativeTdfPath,
         ],
         MAP_ENTRY_TEMPLATE
@@ -96,16 +88,9 @@ foreach ($xmlFiles as $xmlFile) {
     }
 }
 
-file_put_contents(
-    MAPPING_OUTPUT_PATH,
-    str_replace(
-        '//@MAPPING_PLACEHOLDER@',
-        implode(',' . PHP_EOL . str_repeat(' ', 12), $entries),
-        file_get_contents(MAPPING_TEMPLATE_PATH)
-    )
-);
+file_put_contents(MAPPING_OUTPUT_PATH, implode(',' . PHP_EOL, $entries));
 
 print PHP_EOL;
 print 'Processed ' . count($xmlFiles) . ' TDFs.' . PHP_EOL;
-print 'Generated TDF mapping at ' . MAPPING_OUTPUT_PATH . PHP_EOL;
+print 'Generated brief target descriptors at ' . MAPPING_OUTPUT_PATH . PHP_EOL;
 print 'Done' . PHP_EOL;

@@ -58,6 +58,7 @@
 #include "Responses/Breakpoint.hpp"
 
 #include "src/DebugToolDrivers/DebugTools.hpp"
+#include "src/Targets/BriefTargetDescriptor.hpp"
 #include "src/Targets/Target.hpp"
 #include "src/Targets/Targets.hpp"
 #include "src/Targets/TargetRegister.hpp"
@@ -248,12 +249,10 @@ namespace TargetController
         /**
          * Constructs a Target instance from a BriefTargetDescriptor object.
          *
-         * @param targetBrief
+         * @param briefDescriptor
          * @return
          */
-        std::unique_ptr<Targets::Target> constructTargetFromBrief(
-            const Targets::TargetDescription::GeneratedMapping::BriefTargetDescriptor& targetBrief
-        );
+        std::unique_ptr<Targets::Target> constructTarget(const Targets::BriefTargetDescriptor& briefDescriptor);
 
         /**
          * Processes any pending commands in the queue.
