@@ -166,19 +166,24 @@ if (${ENABLE_SANITIZERS})
     )
 endif()
 
-# The ValidateTargetDescriptionFiles target will invoke the TDF validation script for all TDFs in Bloom's codebase.
-add_custom_target(
-    ValidateTargetDescriptionFiles
+include(${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/TargetDescriptionFiles.cmake)
+
+# This custom command will invoke the TDF validation script for all TDFs in Bloom's codebase. It will also create a
+# text file, which we use as a dependency in the custom command to generate brief target descriptors. This dependency
+# allows us to avoid needlessly running TDF validation and brief target descriptor generation on every build.
+#
+# We specify all TDF files as dependencies for this command, so that CMake will run the command whenever a TDF is
+# modified.
+set(TDF_VALIDATION_OUTPUT_FILE_PATH "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}_autogen/tdf_validation_date.txt")
+add_custom_command(
+    OUTPUT ${TDF_VALIDATION_OUTPUT_FILE_PATH}
     COMMENT "Validating target description files"
+    DEPENDS ${TDF_FILES_LIST}
     COMMAND php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/ValidateTargetDescriptionFiles.php
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/
+    COMMAND date > ${TDF_VALIDATION_OUTPUT_FILE_PATH}
 )
 
-# The GenerateBriefTargetDescriptors target will invoke the GenerateBriefTargetDescriptors.php build script to generate
-# a BriefTargetDescriptor for all targets supported by Bloom. These descriptors are stored in an ASCII text file,
-# located at ${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}. See the TargetService class for more on this.
-#
-# The script will also copy all TDFs to the build directory.
 set(
     GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH
     "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}_autogen/GeneratedMapping.txt"
@@ -195,26 +200,29 @@ target_compile_definitions(
     PUBLIC GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH="${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}"
 )
 
-add_custom_target(
-    GenerateBriefTargetDescriptors
-    BYPRODUCTS
+# This custom command will invoke the GenerateBriefTargetDescriptors.php build script to generate a
+# BriefTargetDescriptor for all targets supported by Bloom. These descriptors are stored in an ASCII text file, located
+# at ${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}. See the TargetService class for more on this.
+#
+# The script will also copy all TDFs to the build directory.
+#
+# We specify all TDF files as dependencies for this command, so that CMake will run the command whenever a TDF is
+# modified.
+add_custom_command(
+    OUTPUT
         ${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}
         ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/
     DEPENDS
+        ${TDF_VALIDATION_OUTPUT_FILE_PATH}
         ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/GenerateBriefTargetDescriptors.php
+        ${TDF_FILES_LIST}
     COMMENT "Processing target description files"
-    COMMAND php ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/GenerateBriefTargetDescriptors.php
+    COMMAND php
+    ARGS
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/scripts/GenerateBriefTargetDescriptors.php
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/
         ${GENERATED_BRIEF_TARGET_DESCRIPTOR_MAPPING_PATH}
         ${CMAKE_BINARY_DIR}/resources/TargetDescriptionFiles/
-)
-
-# TDF validation should run before we generate the brief target descriptors, which should run before compilation.
-add_dependencies(GenerateBriefTargetDescriptors ValidateTargetDescriptionFiles)
-add_dependencies(
-    Bloom
-    ValidateTargetDescriptionFiles
-    GenerateBriefTargetDescriptors
 )
 
 include(./cmake/Installing.cmake)
