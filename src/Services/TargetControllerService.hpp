@@ -9,6 +9,7 @@
 #include "src/TargetController/AtomicSession.hpp"
 
 #include "src/Targets/TargetState.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"

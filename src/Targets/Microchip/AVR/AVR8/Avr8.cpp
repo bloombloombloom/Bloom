@@ -12,7 +12,6 @@
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "Exceptions/DebugWirePhysicalInterfaceError.hpp"
-#include "src/Targets/TargetRegister.hpp"
 
 namespace Targets::Microchip::Avr::Avr8Bit
 {

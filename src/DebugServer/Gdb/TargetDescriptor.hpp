@@ -8,6 +8,7 @@
 
 #include "src/Helpers/BiMap.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
 

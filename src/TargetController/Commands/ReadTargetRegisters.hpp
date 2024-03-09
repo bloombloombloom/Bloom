@@ -3,7 +3,7 @@
 #include "Command.hpp"
 #include "src/TargetController/Responses/TargetRegistersRead.hpp"
 
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 namespace TargetController::Commands
 {

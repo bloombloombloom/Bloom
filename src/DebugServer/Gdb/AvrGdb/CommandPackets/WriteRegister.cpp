@@ -4,6 +4,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
 #include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
+#include "src/Targets/TargetRegister.hpp"
 
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"

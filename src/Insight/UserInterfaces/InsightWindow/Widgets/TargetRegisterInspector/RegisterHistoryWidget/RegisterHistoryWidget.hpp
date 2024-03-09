@@ -8,6 +8,7 @@
 #include <QEvent>
 #include <optional>
 
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetState.hpp"

@@ -6,7 +6,7 @@
 
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 #include "InsightWorker/Tasks/InsightWorkerTask.hpp"
 

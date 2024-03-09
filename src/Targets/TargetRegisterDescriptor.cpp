@@ -1,4 +1,4 @@
-#include "TargetRegister.hpp"
+#include "TargetRegisterDescriptor.hpp"
 
 namespace Targets
 {

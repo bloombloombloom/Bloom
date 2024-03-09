@@ -11,6 +11,7 @@
 
 #include "TargetDescriptor.hpp"
 #include "TargetState.hpp"
+#include "TargetRegisterDescriptor.hpp"
 #include "TargetRegister.hpp"
 #include "TargetMemory.hpp"
 #include "TargetBreakpoint.hpp"

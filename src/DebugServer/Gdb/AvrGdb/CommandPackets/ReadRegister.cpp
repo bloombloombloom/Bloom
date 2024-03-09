@@ -3,7 +3,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
 
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
@@ -14,7 +14,6 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     using Services::TargetControllerService;
 
-    using Targets::TargetRegister;
     using Targets::TargetRegisterDescriptors;
 
     using ResponsePackets::ResponsePacket;

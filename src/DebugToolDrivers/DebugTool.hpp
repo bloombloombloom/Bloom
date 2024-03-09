@@ -11,7 +11,7 @@
 #include "TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 #include "TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
 
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 /**
  * A debug tool can be any device that provides access to the connected target. Debug tools are usually connected

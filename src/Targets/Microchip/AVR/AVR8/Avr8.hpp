@@ -19,7 +19,7 @@
 
 #include "src/Targets/Microchip/AVR/Fuse.hpp"
 #include "src/Targets/TargetPhysicalInterface.hpp"
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
 
 #include "TargetDescription/TargetDescriptionFile.hpp"

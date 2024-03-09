@@ -2,7 +2,7 @@ target_sources(
     Bloom
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetDescription/TargetDescriptionFile.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/TargetRegister.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/TargetRegisterDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetMemoryCache.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetPhysicalInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR/AVR8/Avr8.cpp

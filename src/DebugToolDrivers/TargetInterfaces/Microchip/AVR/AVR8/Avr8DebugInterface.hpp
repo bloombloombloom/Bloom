@@ -12,6 +12,7 @@
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 
 #include "src/Targets/TargetState.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
 

@@ -9,7 +9,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListItem.hpp"
 
 #include "RegisterItem.hpp"
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 namespace Widgets
 {

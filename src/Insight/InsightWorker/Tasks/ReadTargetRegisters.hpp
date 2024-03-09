@@ -1,6 +1,7 @@
 #pragma once
 
 #include "InsightWorkerTask.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
 
 class ReadTargetRegisters: public InsightWorkerTask

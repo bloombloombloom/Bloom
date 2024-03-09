@@ -61,7 +61,7 @@
 #include "src/Targets/BriefTargetDescriptor.hpp"
 #include "src/Targets/Target.hpp"
 #include "src/Targets/Targets.hpp"
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetMemoryCache.hpp"
 

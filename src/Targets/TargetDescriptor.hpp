@@ -9,7 +9,7 @@
 
 #include "TargetFamily.hpp"
 #include "TargetMemory.hpp"
-#include "TargetRegister.hpp"
+#include "TargetRegisterDescriptor.hpp"
 #include "TargetVariant.hpp"
 #include "TargetBreakpoint.hpp"
 

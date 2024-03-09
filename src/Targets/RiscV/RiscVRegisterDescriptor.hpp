@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 #include "RiscVGeneric.hpp"
 

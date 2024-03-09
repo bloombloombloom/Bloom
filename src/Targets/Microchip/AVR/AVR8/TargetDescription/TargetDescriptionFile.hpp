@@ -6,7 +6,7 @@
 #include "src/Targets/TargetDescription/TargetDescriptionFile.hpp"
 
 #include "src/Targets/TargetVariant.hpp"
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 #include "src/Targets/Microchip/AVR/TargetSignature.hpp"
 #include "src/Targets/Microchip/AVR/IspParameters.hpp"

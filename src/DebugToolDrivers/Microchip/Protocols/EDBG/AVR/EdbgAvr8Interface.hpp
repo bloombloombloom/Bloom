@@ -13,6 +13,7 @@
 
 #include "src/Targets/TargetPhysicalInterface.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"

@@ -4,7 +4,6 @@
 
 #include "src/DebugServer/Gdb/RegisterDescriptor.hpp"
 
-#include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
