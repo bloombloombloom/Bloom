@@ -641,7 +641,7 @@ namespace Targets::TargetDescription
             !element.isNull();
             element = element.nextSiblingElement("pin")
         ) {
-            output.pins.push_back(TargetDescriptionFile::pinFromXml(element));
+            output.pins.emplace_back(TargetDescriptionFile::pinFromXml(element));
         }
 
         return output;

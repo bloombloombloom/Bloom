@@ -111,7 +111,6 @@ namespace Targets::TargetDescription
         std::map<std::string, Module, std::less<void>> modulesByKey;
         std::map<std::string, Peripheral, std::less<void>> peripheralsByKey;
         std::map<std::string, Pinout, std::less<void>> pinoutsByKey;
-        std::map<std::string, std::vector<RegisterGroup>> peripheralRegisterGroupsMappedByModuleRegisterGroupName;
 
         TargetDescriptionFile() = default;
         virtual ~TargetDescriptionFile() = default;

@@ -286,6 +286,6 @@ if (${DISCOVERED_TDF_FILE_COUNT} GREATER ${SPECIFIED_TDF_FILE_COUNT})
         "TDF file list is not in sync. Discovered ${DISCOVERED_TDF_FILE_COUNT} TDF files in "
         "${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/ but only ${SPECIFIED_TDF_FILE_COUNT} "
         "have been specified in ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/TargetDescriptionFiles.cmake "
-        "Please review TDF_FILES_LIST in the TargetDescriptionFiles.cmake"
+        "Please review TDF_FILES_LIST in TargetDescriptionFiles.cmake"
     )
 endif()
