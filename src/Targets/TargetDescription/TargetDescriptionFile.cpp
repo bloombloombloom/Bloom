@@ -256,6 +256,14 @@ namespace Targets::TargetDescription
                 std::pair(pinout.key, std::move(pinout))
             );
         }
+
+        for (
+            auto element = deviceElement.firstChildElement("variants").firstChildElement("variant");
+            !element.isNull();
+            element = element.nextSiblingElement("variant")
+        ) {
+            this->variants.emplace_back(TargetDescriptionFile::variantFromXml(element));
+        }
     }
 
     const std::string& TargetDescriptionFile::deviceAttribute(const std::string& attributeName) const {
@@ -651,6 +659,14 @@ namespace Targets::TargetDescription
         return Pin(
             TargetDescriptionFile::getAttribute(xmlElement, "position"),
             TargetDescriptionFile::getAttribute(xmlElement, "pad")
+        );
+    }
+
+    Variant TargetDescriptionFile::variantFromXml(const QDomElement& xmlElement) {
+        return Variant(
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            TargetDescriptionFile::getAttribute(xmlElement, "pinout-key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "package")
         );
     }
 }

@@ -111,6 +111,7 @@ namespace Targets::TargetDescription
         std::map<std::string, Module, std::less<void>> modulesByKey;
         std::map<std::string, Peripheral, std::less<void>> peripheralsByKey;
         std::map<std::string, Pinout, std::less<void>> pinoutsByKey;
+        std::vector<Variant> variants;
 
         TargetDescriptionFile() = default;
         virtual ~TargetDescriptionFile() = default;
@@ -145,5 +146,6 @@ namespace Targets::TargetDescription
         static Signal signalFromXml(const QDomElement& xmlElement);
         static Pinout pinoutFromXml(const QDomElement& xmlElement);
         static Pin pinFromXml(const QDomElement& xmlElement);
+        static Variant variantFromXml(const QDomElement& xmlElement);
     };
 }

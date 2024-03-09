@@ -7,8 +7,17 @@ namespace Targets::TargetDescription
     struct Variant
     {
         std::string name;
-        std::string pinoutName;
+        std::string pinoutKey;
         std::string package;
-        bool disabled = false;
+
+        Variant(
+            const std::string& name,
+            const std::string& pinoutKey,
+            const std::string& package
+        )
+            : name(name)
+            , pinoutKey(pinoutKey)
+            , package(package)
+        {}
     };
 }
