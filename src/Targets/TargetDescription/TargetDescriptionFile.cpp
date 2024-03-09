@@ -11,7 +11,6 @@
 #include "src/Helpers/BiMap.hpp"
 #include "src/Logger/Logger.hpp"
 
-#include "src/Exceptions/Exception.hpp"
 #include "Exceptions/TargetDescriptionParsingFailureException.hpp"
 #include "Exceptions/InvalidTargetDescriptionDataException.hpp"
 
@@ -163,15 +162,13 @@ namespace Targets::TargetDescription
     void TargetDescriptionFile::init(const std::string& xmlFilePath) {
         auto file = QFile(QString::fromStdString(xmlFilePath));
         if (!file.exists()) {
-            // This can happen if someone has been messing with the Resources directory.
-            throw Exception("Failed to load target description file - file not found");
+            throw InternalFatalErrorException("Failed to load target description file - file not found");
         }
 
         file.open(QIODevice::ReadOnly);
         auto document = QDomDocument();
         if (!document.setContent(file.readAll())) {
-            throw Exception("Failed to parse target description file - please report this error "
-                "to Bloom developers via " + Services::PathService::homeDomainName() + "/report-issue");
+            throw TargetDescriptionParsingFailureException();
         }
 
         this->init(document);
@@ -265,7 +262,7 @@ namespace Targets::TargetDescription
         const auto attributeIt = this->deviceAttributesByName.find(attributeName);
 
         if (attributeIt == this->deviceAttributesByName.end()) {
-            throw Exception("Missing target device attribute (\"" + attributeName + "\")");
+            throw InvalidTargetDescriptionDataException("Missing target device attribute (\"" + attributeName + "\")");
         }
 
         return attributeIt->second;
@@ -284,7 +281,7 @@ namespace Targets::TargetDescription
         const auto attribute = TargetDescriptionFile::tryGetAttribute(element, attributeName);
 
         if (!attribute.has_value()) {
-            throw Exception(
+            throw InvalidTargetDescriptionDataException(
                 "Failed to fetch attribute from TDF element \"" + element.nodeName().toStdString()
                     + "\" - attribute \"" + attributeName.toStdString() + "\" not found"
             );
@@ -337,7 +334,7 @@ namespace Targets::TargetDescription
             endianness = endiannessByName.valueAt(*endiannessName);
 
             if (!endianness.has_value()) {
-                throw Exception(
+                throw InvalidTargetDescriptionDataException(
                     "Failed to extract address space from TDF - invalid endianness name \"" + *endiannessName + "\""
                 );
             }
@@ -383,7 +380,7 @@ namespace Targets::TargetDescription
 
         const auto type = typesByName.valueAt(typeName);
         if (!type.has_value()) {
-            throw Exception(
+            throw InvalidTargetDescriptionDataException(
                 "Failed to extract memory segment from TDF - invalid memory segment type name \"" + typeName + "\""
             );
         }

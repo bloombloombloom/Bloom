@@ -10,5 +10,9 @@ namespace Targets::TargetDescription::Exceptions
         explicit TargetDescriptionParsingFailureException(const std::string& message)
             : ::Exceptions::InternalFatalErrorException("Failed to parse target description file - " + message)
         {}
+
+        explicit TargetDescriptionParsingFailureException()
+            : ::Exceptions::InternalFatalErrorException("Failed to parse target description file")
+        {}
     };
 }
