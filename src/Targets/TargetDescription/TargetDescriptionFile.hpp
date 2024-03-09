@@ -22,6 +22,7 @@
 #include "RegisterGroupInstance.hpp"
 #include "Signal.hpp"
 #include "Pinout.hpp"
+#include "Pin.hpp"
 #include "Variant.hpp"
 
 #include "src/Targets/TargetFamily.hpp"
@@ -109,9 +110,8 @@ namespace Targets::TargetDescription
         std::vector<PhysicalInterface> physicalInterfaces;
         std::map<std::string, Module, std::less<void>> modulesByKey;
         std::map<std::string, Peripheral, std::less<void>> peripheralsByKey;
+        std::map<std::string, Pinout, std::less<void>> pinoutsByKey;
         std::map<std::string, std::vector<RegisterGroup>> peripheralRegisterGroupsMappedByModuleRegisterGroupName;
-        std::vector<Variant> variants;
-        std::map<std::string, Pinout> pinoutsMappedByName;
 
         TargetDescriptionFile() = default;
         virtual ~TargetDescriptionFile() = default;
@@ -144,15 +144,7 @@ namespace Targets::TargetDescription
         static Peripheral peripheralFromXml(const QDomElement& xmlElement);
         static RegisterGroupInstance registerGroupInstanceFromXml(const QDomElement& xmlElement);
         static Signal signalFromXml(const QDomElement& xmlElement);
-
-        /**
-         * Extracts all variants and loads them into this->variants.
-         */
-        void loadVariants(const QDomDocument& document);
-
-        /**
-         * Extracts all pinouts and loads them into this->pinoutsMappedByName.
-         */
-        void loadPinouts(const QDomDocument& document);
+        static Pinout pinoutFromXml(const QDomElement& xmlElement);
+        static Pin pinFromXml(const QDomElement& xmlElement);
     };
 }

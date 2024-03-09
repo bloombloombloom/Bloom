@@ -7,11 +7,13 @@
 #include "src/Services/StringService.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetPinoutDescriptor.hpp"
 #include "src/Helpers/BiMap.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 #include "Exceptions/TargetDescriptionParsingFailureException.hpp"
+#include "Exceptions/InvalidTargetDescriptionDataException.hpp"
 
 namespace Targets::TargetDescription
 {
@@ -247,8 +249,16 @@ namespace Targets::TargetDescription
             );
         }
 
-        this->loadVariants(document);
-        this->loadPinouts(document);
+        for (
+            auto element = deviceElement.firstChildElement("pinouts").firstChildElement("pinout");
+            !element.isNull();
+            element = element.nextSiblingElement("pinout")
+        ) {
+            auto pinout = TargetDescriptionFile::pinoutFromXml(element);
+            this->pinoutsByKey.insert(
+                std::pair(pinout.key, std::move(pinout))
+            );
+        }
     }
 
     const std::string& TargetDescriptionFile::deviceAttribute(const std::string& attributeName) const {
@@ -600,99 +610,50 @@ namespace Targets::TargetDescription
         );
     }
 
-    void TargetDescriptionFile::loadVariants(const QDomDocument& document) {
-        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
+    Pinout TargetDescriptionFile::pinoutFromXml(const QDomElement& xmlElement) {
+        static const auto typesByName = BiMap<std::string, PinoutType>({
+            {"soic", PinoutType::SOIC},
+            {"ssop", PinoutType::SSOP},
+            {"dip", PinoutType::DIP},
+            {"qfn", PinoutType::QFN},
+            {"mlf", PinoutType::MLF},
+            {"drqfn", PinoutType::DUAL_ROW_QFN},
+            {"qfp", PinoutType::QFP},
+            {"bga", PinoutType::BGA},
+        });
 
-        auto variantNodes = document.elementsByTagName("variants").item(0).toElement()
-            .elementsByTagName("variant");
+        const auto typeName = TargetDescriptionFile::getAttribute(xmlElement, "type");
 
-        for (int variantIndex = 0; variantIndex < variantNodes.count(); variantIndex++) {
-            try {
-                auto variantXml = variantNodes.item(variantIndex).toElement();
-
-                if (!variantXml.hasAttribute("name")) {
-                    throw Exception("Missing name attribute");
-                }
-
-                if (!variantXml.hasAttribute("package")) {
-                    throw Exception("Missing package attribute");
-                }
-
-                if (!variantXml.hasAttribute("pinout")) {
-                    throw Exception("Missing pinout attribute");
-                }
-
-                auto variant = Variant();
-                variant.name = variantXml.attribute("name").toStdString();
-                variant.pinoutName = variantXml.attribute("pinout").toLower().toStdString();
-                variant.package = variantXml.attribute("package").toUpper().toStdString();
-
-                if (variantXml.hasAttribute("disabled")) {
-                    variant.disabled = (variantXml.attribute("disabled") == "1");
-                }
-
-                this->variants.push_back(variant);
-
-            } catch (const Exception& exception) {
-                Logger::debug(
-                    "Failed to extract variant from target description element - " + exception.getMessage()
-                );
-            }
+        const auto type = typesByName.valueAt(typeName);
+        if (!type.has_value()) {
+            throw InvalidTargetDescriptionDataException(
+                "Failed to extract pinout from TDF - invalid pinout type name \"" + typeName + "\""
+            );
         }
+
+        auto output = Pinout(
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            *type,
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "function"),
+            {}
+        );
+
+        for (
+            auto element = xmlElement.firstChildElement("pin");
+            !element.isNull();
+            element = element.nextSiblingElement("pin")
+        ) {
+            output.pins.push_back(TargetDescriptionFile::pinFromXml(element));
+        }
+
+        return output;
     }
 
-    void TargetDescriptionFile::loadPinouts(const QDomDocument& document) {
-        const auto deviceElement = document.elementsByTagName("device").item(0).toElement();
-
-        auto pinoutNodes = document.elementsByTagName("pinouts").item(0).toElement()
-            .elementsByTagName("pinout");
-
-        for (int pinoutIndex = 0; pinoutIndex < pinoutNodes.count(); pinoutIndex++) {
-            try {
-                auto pinoutXml = pinoutNodes.item(pinoutIndex).toElement();
-
-                if (!pinoutXml.hasAttribute("name")) {
-                    throw Exception("Missing name attribute");
-                }
-
-                auto pinout = Pinout();
-                pinout.name = pinoutXml.attribute("name").toLower().toStdString();
-
-                auto pinNodes = pinoutXml.elementsByTagName("pin");
-
-                for (int pinIndex = 0; pinIndex < pinNodes.count(); pinIndex++) {
-                    auto pinXml = pinNodes.item(pinIndex).toElement();
-
-                    if (!pinXml.hasAttribute("position")) {
-                        throw Exception(
-                            "Missing position attribute on pin element " + std::to_string(pinIndex)
-                        );
-                    }
-
-                    if (!pinXml.hasAttribute("pad")) {
-                        throw Exception("Missing pad attribute on pin element " + std::to_string(pinIndex));
-                    }
-
-                    auto pin = Pin();
-                    bool positionConversionSucceeded = true;
-                    pin.position = pinXml.attribute("position").toInt(&positionConversionSucceeded, 10);
-                    pin.pad = pinXml.attribute("pad").toLower().toStdString();
-
-                    if (!positionConversionSucceeded) {
-                        throw Exception("Failed to convert position attribute value to integer on pin element "
-                            + std::to_string(pinIndex));
-                    }
-
-                    pinout.pins.push_back(pin);
-                }
-
-                this->pinoutsMappedByName.insert(std::pair(pinout.name, pinout));
-
-            } catch (const Exception& exception) {
-                Logger::debug(
-                    "Failed to extract pinout from target description element - " + exception.getMessage()
-                );
-            }
-        }
+    Pin TargetDescriptionFile::pinFromXml(const QDomElement& xmlElement) {
+        return Pin(
+            TargetDescriptionFile::getAttribute(xmlElement, "position"),
+            TargetDescriptionFile::getAttribute(xmlElement, "pad")
+        );
     }
 }
