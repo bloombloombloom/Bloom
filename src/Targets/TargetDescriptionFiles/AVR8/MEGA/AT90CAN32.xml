@@ -162,16 +162,16 @@
     </property-groups>
     <address-spaces>
         <address-space key="prog" start="0x00000000" size="32768" endianness="little">
-            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="32768" page-size="256" rw="RW"/>
+            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="32768" page-size="256" access="RW"/>
         </address-space>
         <address-space key="signatures" start="0x00000000" size="3" endianness="little">
-            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00000000" size="3" rw="R"/>
+            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00000000" size="3" access="R"/>
         </address-space>
         <address-space key="fuses" start="0x00000000" size="3" endianness="little">
-            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00000000" size="3" rw="RW"/>
+            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00000000" size="3" access="RW"/>
         </address-space>
         <address-space key="lockbits" start="0x00000000" size="1" endianness="little">
-            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00000000" size="1" rw="RW"/>
+            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00000000" size="1" access="RW"/>
         </address-space>
         <address-space key="data" start="0x00000000" size="65536" endianness="little">
             <memory-segment key="gp_registers" name="General Purpose Registers" type="gp_registers" start="0x00000000" size="32"/>
@@ -180,10 +180,10 @@
             <memory-segment key="xram" name="XRAM" type="ram" start="0x00000900" size="63232"/>
         </address-space>
         <address-space key="eeprom" start="0x00000000" size="1024" endianness="little">
-            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00000000" size="1024" page-size="8" rw="RW"/>
+            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00000000" size="1024" page-size="8" access="RW"/>
         </address-space>
         <address-space key="osccal" start="0x00000000" size="1" endianness="little">
-            <memory-segment key="osccal" name="OSCCAL" type="osccal" start="0x00000000" size="1" rw="R"/>
+            <memory-segment key="osccal" name="OSCCAL" type="osccal" start="0x00000000" size="1" access="R"/>
         </address-space>
     </address-spaces>
     <physical-interfaces>
@@ -1011,7 +1011,7 @@
                 </register>
                 <register key="canhpmob" name="CANHPMOB" description="Highest Priority MOb Register" offset="0xEC" size="1">
                     <bit-field key="hpmob" name="HPMOB" description="Highest Priority MOb number" mask="0xF0"/>
-                    <bit-field key="cgp" name="CGP" description="CAN General purpose bits" mask="0xF" rw="R"/>
+                    <bit-field key="cgp" name="CGP" description="CAN General purpose bits" mask="0xF" access="R"/>
                 </register>
                 <register key="canpage" name="CANPAGE" description="Page MOb Register" offset="0xED" size="1">
                     <bit-field key="mobnb" name="MOBNB" description="MOb Number Bits" mask="0xF0"/>

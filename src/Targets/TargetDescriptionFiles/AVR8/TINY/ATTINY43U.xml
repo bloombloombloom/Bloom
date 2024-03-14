@@ -140,16 +140,16 @@
     </property-groups>
     <address-spaces>
         <address-space key="prog" start="0x00000000" size="4096" endianness="little">
-            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="4096" page-size="64" rw="RW"/>
+            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="4096" page-size="64" access="RW"/>
         </address-space>
         <address-space key="signatures" start="0x00000000" size="3" endianness="little">
-            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00000000" size="3" rw="R"/>
+            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00000000" size="3" access="R"/>
         </address-space>
         <address-space key="fuses" start="0x00000000" size="3" endianness="little">
-            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00000000" size="3" rw="RW"/>
+            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00000000" size="3" access="RW"/>
         </address-space>
         <address-space key="lockbits" start="0x00000000" size="1" endianness="little">
-            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00000000" size="1" rw="RW"/>
+            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00000000" size="1" access="RW"/>
         </address-space>
         <address-space key="data" start="0x00000000" size="352" endianness="little">
             <memory-segment key="gp_registers" name="General Purpose Registers" type="gp_registers" start="0x00000000" size="32"/>
@@ -157,10 +157,10 @@
             <memory-segment key="internal_ram" name="Internal RAM" type="ram" start="0x00000060" size="256"/>
         </address-space>
         <address-space key="eeprom" start="0x00000000" size="64" endianness="little">
-            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00000000" size="64" page-size="4" rw="RW"/>
+            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00000000" size="64" page-size="4" access="RW"/>
         </address-space>
         <address-space key="osccal" start="0x00000000" size="1" endianness="little">
-            <memory-segment key="osccal" name="OSCCAL" type="osccal" start="0x00000000" size="1" rw="R"/>
+            <memory-segment key="osccal" name="OSCCAL" type="osccal" start="0x00000000" size="1" access="R"/>
         </address-space>
     </address-spaces>
     <physical-interfaces>

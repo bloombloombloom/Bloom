@@ -21,7 +21,7 @@
     </property-groups>
     <address-spaces>
         <address-space key="prog" start="0x00000000" size="204800" endianness="little">
-            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="204800" page-size="512" rw="RW">
+            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="204800" page-size="512" access="RW">
                 <section key="app_section" name="Application Section" start="0x00000000" size="196608">
                     <section key="app_table_section" name="Application Table Section" start="0x0002E000" size="8192"/>
                 </section>
@@ -29,27 +29,27 @@
             </memory-segment>
         </address-space>
         <address-space key="data" start="0x00000000" size="24576" endianness="little">
-            <memory-segment key="io" name="Input/Output" type="io" start="0x00000000" size="4096" rw="RW"/>
-            <memory-segment key="mapped_eeprom" name="Mapped EEPROM" type="eeprom" start="0x00001000" size="2048" rw="RW"/>
-            <memory-segment key="internal_ram" name="Internal RAM" type="ram" start="0x00002000" size="16384" rw="RW"/>
+            <memory-segment key="io" name="Input/Output" type="io" start="0x00000000" size="4096" access="RW"/>
+            <memory-segment key="mapped_eeprom" name="Mapped EEPROM" type="eeprom" start="0x00001000" size="2048" access="RW"/>
+            <memory-segment key="internal_ram" name="Internal RAM" type="ram" start="0x00002000" size="16384" access="RW"/>
         </address-space>
         <address-space key="eeprom" start="0x00000000" size="2048">
-            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00000000" size="2048" page-size="32" rw="RW"/>
+            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00000000" size="2048" page-size="32" access="RW"/>
         </address-space>
         <address-space key="signatures" start="0x00000000" size="3">
-            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00000000" size="3" rw="R"/>
+            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00000000" size="3" access="R"/>
         </address-space>
         <address-space key="fuses" start="0x00000000" size="6">
-            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00000000" size="6" rw="RW"/>
+            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00000000" size="6" access="RW"/>
         </address-space>
         <address-space key="lockbits" start="0x00000000" size="1">
-            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00000000" size="1" rw="RW"/>
+            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00000000" size="1" access="RW"/>
         </address-space>
         <address-space key="user_signatures" start="0x00000000" size="512">
-            <memory-segment key="user_signatures" name="User Signatures" type="user_signatures" start="0x00000000" size="512" page-size="512" rw="RW"/>
+            <memory-segment key="user_signatures" name="User Signatures" type="user_signatures" start="0x00000000" size="512" page-size="512" access="RW"/>
         </address-space>
         <address-space key="prod_signatures" start="0x00000000" size="64">
-            <memory-segment key="prod_signatures" name="Production Signatures" type="production_signatures" start="0x00000000" size="64" page-size="512" rw="R"/>
+            <memory-segment key="prod_signatures" name="Production Signatures" type="production_signatures" start="0x00000000" size="64" page-size="512" access="R"/>
         </address-space>
     </address-spaces>
     <physical-interfaces>

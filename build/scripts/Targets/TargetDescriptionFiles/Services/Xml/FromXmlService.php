@@ -143,7 +143,7 @@ class FromXmlService
             $this->stringService->tryStringToInt($attributes['start'] ?? null),
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
             $this->stringService->tryStringToInt($attributes['page-size'] ?? null),
-            $attributes['rw'] ?? null,
+            $attributes['access'] ?? null,
             []
         );
 
@@ -278,7 +278,7 @@ class FromXmlService
             $this->stringService->tryStringToInt($attributes['offset'] ?? null),
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
             $this->stringService->tryStringToInt($attributes['initial-value'] ?? null),
-            $attributes['rw'] ?? null,
+            $attributes['access'] ?? null,
             isset($attributes['alternative']) ? trim($attributes['alternative']) === 'true' : null,
             []
         );
@@ -305,7 +305,7 @@ class FromXmlService
             $attributes['name'] ?? null,
             $attributes['description'] ?? null,
             $this->stringService->tryStringToInt($attributes['mask'] ?? null),
-            $attributes['rw'] ?? null
+            $attributes['access'] ?? null
         );
     }
 

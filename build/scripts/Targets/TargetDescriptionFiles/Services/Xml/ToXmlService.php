@@ -95,7 +95,7 @@ class ToXmlService
         }
 
         if (!empty($memorySegment->access)) {
-            $element->setAttribute('rw', $memorySegment->access);
+            $element->setAttribute('access', $memorySegment->access);
         }
 
         foreach ($memorySegment->sections as $segmentSection) {
@@ -299,7 +299,7 @@ class ToXmlService
         }
 
         if (!empty($register->access)) {
-            $element->setAttribute('rw', $register->access);
+            $element->setAttribute('access', $register->access);
         }
 
         if ($register->alternative !== null) {
@@ -326,7 +326,7 @@ class ToXmlService
         $element->setAttribute('mask', $this->stringService->tryIntToHex($bitField->mask));
 
         if (!empty($bitField->access)) {
-            $element->setAttribute('rw', $bitField->access);
+            $element->setAttribute('access', $bitField->access);
         }
 
         return $element;
