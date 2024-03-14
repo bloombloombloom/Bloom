@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <optional>
 
+#include "src/Targets/TargetMemorySegmentType.hpp"
+
 #include "MemorySegmentSection.hpp"
 
 #include "src/Services/StringService.hpp"
@@ -10,27 +12,11 @@
 
 namespace Targets::TargetDescription
 {
-    enum class MemorySegmentType: std::uint8_t
-    {
-        ALIASED,
-        REGISTERS,
-        EEPROM,
-        FLASH,
-        FUSES,
-        IO,
-        RAM,
-        LOCKBITS,
-        OSCCAL,
-        PRODUCTION_SIGNATURES,
-        SIGNATURES,
-        USER_SIGNATURES,
-    };
-
     struct MemorySegment
     {
         std::string key;
         std::string name;
-        MemorySegmentType type;
+        TargetMemorySegmentType type;
         std::uint32_t startAddress;
         std::uint32_t size;
         std::optional<std::uint16_t> pageSize;
@@ -39,7 +25,7 @@ namespace Targets::TargetDescription
         MemorySegment(
             const std::string& key,
             const std::string& name,
-            MemorySegmentType type,
+            TargetMemorySegmentType type,
             std::uint32_t startAddress,
             std::uint32_t size,
             const std::optional<std::uint16_t>& pageSize,

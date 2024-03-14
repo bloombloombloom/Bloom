@@ -13,7 +13,6 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
     using Targets::TargetDescription::RegisterGroup;
     using Targets::TargetDescription::AddressSpace;
     using Targets::TargetDescription::MemorySegment;
-    using Targets::TargetDescription::MemorySegmentType;
     using Targets::TargetDescription::Register;
     using Targets::TargetVariant;
     using Targets::TargetRegisterDescriptor;

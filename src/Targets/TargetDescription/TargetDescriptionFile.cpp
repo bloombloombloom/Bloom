@@ -369,19 +369,19 @@ namespace Targets::TargetDescription
     }
 
     MemorySegment TargetDescriptionFile::memorySegmentFromXml(const QDomElement& xmlElement) {
-        static const auto typesByName = BiMap<std::string, MemorySegmentType>({
-            {"aliased", MemorySegmentType::ALIASED},
-            {"regs", MemorySegmentType::REGISTERS},
-            {"eeprom", MemorySegmentType::EEPROM},
-            {"flash", MemorySegmentType::FLASH},
-            {"fuses", MemorySegmentType::FUSES},
-            {"io", MemorySegmentType::IO},
-            {"ram", MemorySegmentType::RAM},
-            {"lockbits", MemorySegmentType::LOCKBITS},
-            {"osccal", MemorySegmentType::OSCCAL},
-            {"production_signatures", MemorySegmentType::PRODUCTION_SIGNATURES},
-            {"signatures", MemorySegmentType::SIGNATURES},
-            {"user_signatures", MemorySegmentType::USER_SIGNATURES},
+        static const auto typesByName = BiMap<std::string, TargetMemorySegmentType>({
+            {"aliased", TargetMemorySegmentType::ALIASED},
+            {"regs", TargetMemorySegmentType::REGISTERS},
+            {"eeprom", TargetMemorySegmentType::EEPROM},
+            {"flash", TargetMemorySegmentType::FLASH},
+            {"fuses", TargetMemorySegmentType::FUSES},
+            {"io", TargetMemorySegmentType::IO},
+            {"ram", TargetMemorySegmentType::RAM},
+            {"lockbits", TargetMemorySegmentType::LOCKBITS},
+            {"osccal", TargetMemorySegmentType::OSCCAL},
+            {"production_signatures", TargetMemorySegmentType::PRODUCTION_SIGNATURES},
+            {"signatures", TargetMemorySegmentType::SIGNATURES},
+            {"user_signatures", TargetMemorySegmentType::USER_SIGNATURES},
         });
 
         const auto typeName = TargetDescriptionFile::getAttribute(xmlElement, "type");
