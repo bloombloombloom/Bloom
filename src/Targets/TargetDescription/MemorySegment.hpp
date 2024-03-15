@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "src/Targets/TargetMemorySegmentType.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 #include "MemorySegmentSection.hpp"
 
@@ -17,18 +18,20 @@ namespace Targets::TargetDescription
         std::string key;
         std::string name;
         TargetMemorySegmentType type;
-        std::uint32_t startAddress;
-        std::uint32_t size;
-        std::optional<std::uint16_t> pageSize;
+        TargetMemoryAddress startAddress;
+        TargetMemorySize size;
+        TargetMemoryAccess access;
+        std::optional<TargetMemorySize> pageSize;
         std::map<std::string, MemorySegmentSection, std::less<void>> sectionsByKey;
 
         MemorySegment(
             const std::string& key,
             const std::string& name,
             TargetMemorySegmentType type,
-            std::uint32_t startAddress,
-            std::uint32_t size,
-            const std::optional<std::uint16_t>& pageSize,
+            TargetMemoryAddress startAddress,
+            TargetMemorySize size,
+            const TargetMemoryAccess& access,
+            const std::optional<TargetMemorySize>& pageSize,
             const std::map<std::string, MemorySegmentSection, std::less<void>>& sectionsByKey
         )
             : key(key)
@@ -36,6 +39,7 @@ namespace Targets::TargetDescription
             , type(type)
             , startAddress(startAddress)
             , size(size)
+            , access(access)
             , pageSize(pageSize)
             , sectionsByKey(sectionsByKey)
         {}

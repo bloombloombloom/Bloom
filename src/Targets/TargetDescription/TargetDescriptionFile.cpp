@@ -394,6 +394,7 @@ namespace Targets::TargetDescription
         }
 
         const auto pageSize = TargetDescriptionFile::tryGetAttribute(xmlElement, "page-size");
+        const auto accessString = TargetDescriptionFile::tryGetAttribute(xmlElement, "rw");
 
         auto output = MemorySegment(
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
@@ -401,8 +402,13 @@ namespace Targets::TargetDescription
             *type,
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "start")),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "size")),
+            TargetMemoryAccess(
+                accessString.has_value() ? accessString->find('R') != std::string::npos : true,
+                accessString.has_value() ? accessString->find('W') != std::string::npos : true,
+                accessString.has_value() ? accessString->find('W') != std::string::npos : true
+            ),
             pageSize.has_value()
-                ? std::optional(StringService::toUint16(*pageSize))
+                ? std::optional(StringService::toUint32(*pageSize))
                 : std::nullopt,
             {}
         );
