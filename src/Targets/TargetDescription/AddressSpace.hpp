@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <string>
 #include <optional>
 #include <map>
@@ -15,15 +14,15 @@ namespace Targets::TargetDescription
     struct AddressSpace
     {
         std::string key;
-        std::uint32_t startAddress;
-        std::uint32_t size;
+        TargetMemoryAddress startAddress;
+        TargetMemorySize size;
         std::optional<TargetMemoryEndianness> endianness;
         std::map<std::string, MemorySegment, std::less<void>> memorySegmentsByKey;
 
         AddressSpace(
             const std::string& key,
-            std::uint32_t startAddress,
-            std::uint32_t size,
+            TargetMemoryAddress startAddress,
+            TargetMemorySize size,
             const std::optional<TargetMemoryEndianness>& endianness,
             const std::map<std::string, MemorySegment, std::less<void>>& memorySegmentsByKey
         )

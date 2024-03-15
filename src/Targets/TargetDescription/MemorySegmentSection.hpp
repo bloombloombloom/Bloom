@@ -1,12 +1,13 @@
 #pragma once
 
-#include <cstdint>
 #include <string>
 #include <map>
 #include <optional>
 #include <concepts>
 #include <functional>
 #include <ranges>
+
+#include "src/Targets/TargetMemory.hpp"
 
 #include "src/Services/StringService.hpp"
 #include "Exceptions/InvalidTargetDescriptionDataException.hpp"
@@ -17,15 +18,15 @@ namespace Targets::TargetDescription
     {
         std::string key;
         std::string name;
-        std::uint32_t startAddress;
-        std::uint32_t size;
+        TargetMemoryAddress startAddress;
+        TargetMemorySize size;
         std::map<std::string, MemorySegmentSection, std::less<void>> subSectionsByKey;
 
         MemorySegmentSection(
             const std::string& key,
             const std::string& name,
-            std::uint32_t startAddress,
-            std::uint32_t size,
+            TargetMemoryAddress startAddress,
+            TargetMemorySize size,
             const std::map<std::string, MemorySegmentSection, std::less<void>>& subSectionsByKey
         )
             : key(key)
