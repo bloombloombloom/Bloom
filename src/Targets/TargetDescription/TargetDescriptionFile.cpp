@@ -394,7 +394,7 @@ namespace Targets::TargetDescription
         }
 
         const auto pageSize = TargetDescriptionFile::tryGetAttribute(xmlElement, "page-size");
-        const auto accessString = TargetDescriptionFile::tryGetAttribute(xmlElement, "rw");
+        const auto accessString = TargetDescriptionFile::tryGetAttribute(xmlElement, "access");
 
         auto output = MemorySegment(
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
