@@ -8,7 +8,6 @@
 
 #include "TargetMemory.hpp"
 #include "TargetMemorySegmentDescriptor.hpp"
-#include "src/Exceptions/InternalFatalErrorException.hpp"
 
 namespace Targets
 {
@@ -28,41 +27,34 @@ namespace Targets
             const TargetMemoryAddressRange& addressRange,
             TargetMemoryEndianness endianness,
             const std::map<std::string, TargetMemorySegmentDescriptor>& segmentDescriptorsByKey
-        )
-            : id(++(TargetAddressSpaceDescriptor::lastAddressSpaceDescriptorId))
-            , key(key)
-            , addressRange(addressRange)
-            , endianness(endianness)
-            , segmentDescriptorsByKey(segmentDescriptorsByKey)
-        {};
+        );
 
-        TargetMemorySize size() const {
-            return this->addressRange.size();
-        }
+        TargetMemorySize size() const;
 
+        /**
+         * Attempts to fetch a memory segment descriptor with the given key.
+         *
+         * @param key
+         *  The key of the memory segment descriptor to lookup.
+         *
+         * @return
+         *  A reference wrapper of the memory segment descriptor, if found. Otherwise, std::nullopt.
+         */
         std::optional<std::reference_wrapper<const TargetMemorySegmentDescriptor>> tryGetMemorySegmentDescriptor(
             const std::string& key
-        ) const {
-            const auto segmentIt = this->segmentDescriptorsByKey.find(key);
+        ) const;
 
-            if (segmentIt == this->segmentDescriptorsByKey.end()) {
-                return std::nullopt;
-            }
-
-            return std::cref(segmentIt->second);
-        }
-
-        const TargetMemorySegmentDescriptor& getMemorySegmentDescriptor(const std::string& key) const {
-            const auto segment = this->tryGetMemorySegmentDescriptor(key);
-            if (!segment.has_value()) {
-                throw Exceptions::InternalFatalErrorException(
-                    "Failed to get memory segment descriptor \"" + key + "\" from address space \"" + this->key
-                        + "\" - segment not found"
-                );
-            }
-
-            return segment->get();
-        }
+        /**
+         * Fetches a memory segment descriptor with the given key. If the descriptor doesn't exist, an
+         * InternalFatalErrorException is thrown.
+         *
+         * @param key
+         *  The key of the memory segment descriptor to lookup.
+         *
+         * @return
+         *  A reference to the memory segment descriptor.
+         */
+        const TargetMemorySegmentDescriptor& getMemorySegmentDescriptor(const std::string& key) const;
 
     private:
         static inline std::atomic<TargetAddressSpaceDescriptorId> lastAddressSpaceDescriptorId = 0;
