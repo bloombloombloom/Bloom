@@ -46,6 +46,10 @@ namespace Targets
             return this->startAddress < rhs.startAddress;
         }
 
+        TargetMemorySize size() const {
+            return this->endAddress - this->startAddress + 1;
+        }
+
         [[nodiscard]] bool intersectsWith(const TargetMemoryAddressRange& other) const {
             return
                 (other.startAddress <= this->startAddress && other.endAddress >= this->startAddress)
