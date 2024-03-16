@@ -9,6 +9,7 @@
 
 #include "Responses/Error.hpp"
 
+#include "src/Services/TargetService.hpp"
 #include "src/Services/PathService.hpp"
 #include "src/Services/ProcessService.hpp"
 #include "src/Services/StringService.hpp"
