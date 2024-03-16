@@ -19,25 +19,26 @@ namespace Targets
     public:
         const TargetAddressSpaceDescriptorId id;
         std::string key;
-        TargetMemoryAddress startAddress;
-        TargetMemorySize size;
+        TargetMemoryAddressRange addressRange;
         TargetMemoryEndianness endianness;
         std::map<std::string, TargetMemorySegmentDescriptor> segmentDescriptorsByKey;
 
         TargetAddressSpaceDescriptor(
             const std::string& key,
-            TargetMemoryAddress startAddress,
-            TargetMemorySize size,
+            const TargetMemoryAddressRange& addressRange,
             TargetMemoryEndianness endianness,
             const std::map<std::string, TargetMemorySegmentDescriptor>& segmentDescriptorsByKey
         )
             : id(++(TargetAddressSpaceDescriptor::lastAddressSpaceDescriptorId))
             , key(key)
-            , startAddress(startAddress)
-            , size(size)
+            , addressRange(addressRange)
             , endianness(endianness)
             , segmentDescriptorsByKey(segmentDescriptorsByKey)
         {};
+
+        TargetMemorySize size() const {
+            return this->addressRange.size();
+        }
 
         std::optional<std::reference_wrapper<const TargetMemorySegmentDescriptor>> tryGetMemorySegmentDescriptor(
             const std::string& key

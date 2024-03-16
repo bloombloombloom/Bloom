@@ -695,8 +695,10 @@ namespace Targets::TargetDescription
     ) {
         auto output = TargetAddressSpaceDescriptor(
             addressSpace.key,
-            addressSpace.startAddress,
-            addressSpace.size,
+            TargetMemoryAddressRange(
+                addressSpace.startAddress,
+                addressSpace.startAddress + addressSpace.size - 1
+            ),
             addressSpace.endianness.value_or(TargetMemoryEndianness::LITTLE),
             {}
         );
@@ -718,8 +720,10 @@ namespace Targets::TargetDescription
             memorySegment.key,
             memorySegment.name,
             memorySegment.type,
-            memorySegment.startAddress,
-            memorySegment.size,
+            TargetMemoryAddressRange(
+                memorySegment.startAddress,
+                memorySegment.startAddress + memorySegment.size - 1
+            ),
             memorySegment.access,
             memorySegment.access,
             memorySegment.pageSize

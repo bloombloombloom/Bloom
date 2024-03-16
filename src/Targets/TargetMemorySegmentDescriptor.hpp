@@ -14,8 +14,7 @@ namespace Targets
         std::string key;
         std::string name;
         TargetMemorySegmentType type;
-        TargetMemoryAddress startAddress;
-        TargetMemorySize size;
+        TargetMemoryAddressRange addressRange;
         TargetMemoryAccess debugModeAccess;
         TargetMemoryAccess programmingModeAccess;
         std::optional<TargetMemorySize> pageSize;
@@ -24,8 +23,7 @@ namespace Targets
             const std::string& key,
             const std::string& name,
             TargetMemorySegmentType type,
-            TargetMemoryAddress startAddress,
-            TargetMemorySize size,
+            const TargetMemoryAddressRange& addressRange,
             const TargetMemoryAccess& debugModeAccess,
             const TargetMemoryAccess& programmingModeAccess,
             std::optional<TargetMemorySize> pageSize
@@ -33,11 +31,14 @@ namespace Targets
             : key(key)
             , name(name)
             , type(type)
-            , startAddress(startAddress)
-            , size(size)
+            , addressRange(addressRange)
             , debugModeAccess(debugModeAccess)
             , programmingModeAccess(programmingModeAccess)
             , pageSize(pageSize)
         {};
+
+        TargetMemorySize size() const {
+            return this->addressRange.size();
+        }
     };
 }
