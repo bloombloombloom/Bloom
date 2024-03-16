@@ -61,6 +61,13 @@ class ValidationService
 
         if (empty($tdf->addressSpaces)) {
             $failures[] = 'Missing address spaces';
+
+        } elseif (count($tdf->addressSpaces) > 256) {
+            /*
+             * We store address space IDs in an std::uint8_t - which should be more than enough (I don't think we'll
+             * ever support a target with more than 256 address spaces).
+             */
+            $failures[] = 'Too many address spaces (' . count($tdf->addressSpaces) . ')';
         }
 
         $processedAddressSpaceKeys = [];
