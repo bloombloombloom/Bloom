@@ -159,6 +159,20 @@ namespace Targets::TargetDescription
         return peripheral->get();
     }
 
+    std::map<
+        TargetAddressSpaceDescriptorId,
+        TargetAddressSpaceDescriptor
+    > TargetDescriptionFile::targetAddressSpaceDescriptorsById() const {
+        auto output = std::map<TargetAddressSpaceDescriptorId, TargetAddressSpaceDescriptor>();
+
+        for (const auto& [key, addressSpace] : this->addressSpacesByKey) {
+            auto descriptor = this->targetAddressSpaceDescriptorFromAddressSpace(addressSpace);
+            output.emplace(descriptor.id, std::move(descriptor));
+        }
+
+        return output;
+    }
+
     void TargetDescriptionFile::init(const std::string& xmlFilePath) {
         auto file = QFile(QString::fromStdString(xmlFilePath));
         if (!file.exists()) {
@@ -673,6 +687,42 @@ namespace Targets::TargetDescription
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "pinout-key"),
             TargetDescriptionFile::getAttribute(xmlElement, "package")
+        );
+    }
+
+    TargetAddressSpaceDescriptor TargetDescriptionFile::targetAddressSpaceDescriptorFromAddressSpace(
+        const AddressSpace& addressSpace
+    ) {
+        auto output = TargetAddressSpaceDescriptor(
+            addressSpace.key,
+            addressSpace.startAddress,
+            addressSpace.size,
+            addressSpace.endianness.value_or(TargetMemoryEndianness::LITTLE),
+            {}
+        );
+
+        for (const auto& [key, memorySegment] : addressSpace.memorySegmentsByKey) {
+            output.segmentDescriptorsByKey.emplace(
+                key,
+                TargetDescriptionFile::targetMemorySegmentDescriptorFromMemorySegment(memorySegment)
+            );
+        }
+
+        return output;
+    }
+
+    TargetMemorySegmentDescriptor TargetDescriptionFile::targetMemorySegmentDescriptorFromMemorySegment(
+        const MemorySegment& memorySegment
+    ) {
+        return TargetMemorySegmentDescriptor(
+            memorySegment.key,
+            memorySegment.name,
+            memorySegment.type,
+            memorySegment.startAddress,
+            memorySegment.size,
+            memorySegment.access,
+            memorySegment.access,
+            memorySegment.pageSize
         );
     }
 }

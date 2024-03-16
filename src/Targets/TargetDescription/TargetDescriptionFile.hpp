@@ -26,6 +26,8 @@
 #include "Variant.hpp"
 
 #include "src/Targets/TargetFamily.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetPhysicalInterface.hpp"
 
 namespace Targets::TargetDescription
@@ -103,6 +105,8 @@ namespace Targets::TargetDescription
         ) const;
         [[nodiscard]] const Peripheral& getPeripheral(std::string_view key) const;
 
+        std::map<TargetAddressSpaceDescriptorId, TargetAddressSpaceDescriptor> targetAddressSpaceDescriptorsById() const;
+
     protected:
         std::map<std::string, std::string> deviceAttributesByName;
         std::map<std::string, PropertyGroup, std::less<void>> propertyGroupsByKey;
@@ -147,5 +151,13 @@ namespace Targets::TargetDescription
         static Pinout pinoutFromXml(const QDomElement& xmlElement);
         static Pin pinFromXml(const QDomElement& xmlElement);
         static Variant variantFromXml(const QDomElement& xmlElement);
+
+        static TargetAddressSpaceDescriptor targetAddressSpaceDescriptorFromAddressSpace(
+            const AddressSpace& addressSpace
+        );
+
+        static TargetMemorySegmentDescriptor targetMemorySegmentDescriptorFromMemorySegment(
+            const MemorySegment& memorySegment
+        );
     };
 }
