@@ -46,4 +46,20 @@ namespace Targets
 
         return segment->get();
     }
+
+    std::vector<
+        const TargetMemorySegmentDescriptor*
+    > TargetAddressSpaceDescriptor::getIntersectingMemorySegmentDescriptors(
+        const TargetMemoryAddressRange& addressRange
+    ) const {
+        auto output = std::vector<const TargetMemorySegmentDescriptor*>();
+
+        for (const auto& [key, segmentDescriptor] : this->segmentDescriptorsByKey) {
+            if (segmentDescriptor.addressRange.intersectsWith(addressRange)) {
+                output.push_back(&segmentDescriptor);
+            }
+        }
+
+        return output;
+    }
 }

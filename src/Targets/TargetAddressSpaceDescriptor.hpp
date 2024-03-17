@@ -56,6 +56,19 @@ namespace Targets
          */
         const TargetMemorySegmentDescriptor& getMemorySegmentDescriptor(const std::string& key) const;
 
+        /**
+         * Fetches all memory segments in the address space that intersect with the given address range.
+         *
+         * @param addressRange
+         *  The address range with which the memory segments must intersect.
+         *
+         * @return
+         *  Pointers to descriptors of all intersecting memory segments.
+         */
+        std::vector<const TargetMemorySegmentDescriptor*> getIntersectingMemorySegmentDescriptors(
+            const TargetMemoryAddressRange& addressRange
+        ) const;
+
     private:
         static inline std::atomic<TargetAddressSpaceDescriptorId> lastAddressSpaceDescriptorId = 0;
     };
