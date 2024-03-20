@@ -129,7 +129,10 @@ namespace Targets::TargetDescription
         void init(const std::string& xmlFilePath);
         void init(const QDomDocument& document);
 
-        const std::string& deviceAttribute(const std::string& attributeName) const;
+        std::optional<std::reference_wrapper<const std::string>> tryGetDeviceAttribute(
+            const std::string& attributeName
+        ) const;
+        const std::string& getDeviceAttribute(const std::string& attributeName) const;
 
         static std::optional<std::string> tryGetAttribute(const QDomElement& element, const QString& attributeName);
         static std::string getAttribute(const QDomElement& element, const QString& attributeName);

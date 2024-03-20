@@ -30,11 +30,11 @@ namespace Targets::TargetDescription
     }
 
     const std::string& TargetDescriptionFile::getTargetName() const {
-        return this->deviceAttribute("name");
+        return this->getDeviceAttribute("name");
     }
 
     TargetFamily TargetDescriptionFile::getFamily() const {
-        const auto& family = this->deviceAttribute("family");
+        const auto& family = this->getDeviceAttribute("family");
 
         if (family == "AVR8") {
             return TargetFamily::AVR_8;
@@ -280,14 +280,26 @@ namespace Targets::TargetDescription
         }
     }
 
-    const std::string& TargetDescriptionFile::deviceAttribute(const std::string& attributeName) const {
+    std::optional<std::reference_wrapper<const std::string>> TargetDescriptionFile::tryGetDeviceAttribute(
+        const std::string& attributeName
+    ) const {
         const auto attributeIt = this->deviceAttributesByName.find(attributeName);
 
         if (attributeIt == this->deviceAttributesByName.end()) {
+            return std::nullopt;
+        }
+
+        return std::cref(attributeIt->second);
+    }
+
+    const std::string& TargetDescriptionFile::getDeviceAttribute(const std::string& attributeName) const {
+        const auto attribute = this->tryGetDeviceAttribute(attributeName);
+
+        if (!attribute.has_value()) {
             throw InvalidTargetDescriptionDataException("Missing target device attribute (\"" + attributeName + "\")");
         }
 
-        return attributeIt->second;
+        return attribute->get();
     }
 
     std::optional<std::string> TargetDescriptionFile::tryGetAttribute(
