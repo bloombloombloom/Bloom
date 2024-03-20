@@ -544,6 +544,7 @@ namespace Targets::TargetDescription
     Register TargetDescriptionFile::registerFromXml(const QDomElement& xmlElement) {
         const auto initialValue = TargetDescriptionFile::tryGetAttribute(xmlElement, "initial-value");
         const auto alternative = TargetDescriptionFile::tryGetAttribute(xmlElement, "alternative");
+        const auto accessString = TargetDescriptionFile::tryGetAttribute(xmlElement, "access");
 
         auto output = Register(
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
@@ -552,7 +553,12 @@ namespace Targets::TargetDescription
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "offset")),
             StringService::toUint16(TargetDescriptionFile::getAttribute(xmlElement, "size")),
             initialValue.has_value() ? std::optional(StringService::toUint64(*initialValue)) : std::nullopt,
-            TargetDescriptionFile::tryGetAttribute(xmlElement, "access"),
+            accessString.has_value()
+                ? std::optional(TargetRegisterAccess(
+                    accessString->find('R') != std::string::npos,
+                    accessString->find('W') != std::string::npos
+                ))
+                : std::nullopt,
             alternative.has_value() ? std::optional(*alternative == "true") : std::nullopt,
             {}
         );

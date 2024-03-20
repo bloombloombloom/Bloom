@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "BitField.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 #include "Exceptions/InvalidTargetDescriptionDataException.hpp"
 
@@ -20,7 +21,7 @@ namespace Targets::TargetDescription
         std::uint32_t offset;
         std::uint16_t size;
         std::optional<std::uint64_t> initialValue;
-        std::optional<std::string> access;
+        std::optional<TargetRegisterAccess> access;
         std::optional<bool> alternative;
         std::map<std::string, BitField, std::less<void>> bitFieldsByKey;
 
@@ -31,7 +32,7 @@ namespace Targets::TargetDescription
             std::uint32_t offset,
             std::uint16_t size,
             const std::optional<std::uint64_t>& initialValue,
-            const std::optional<std::string>& access,
+            const std::optional<TargetRegisterAccess>& access,
             const std::optional<bool>& alternative,
             const std::map<std::string, BitField, std::less<void>>& bitFieldsByKey
         )
