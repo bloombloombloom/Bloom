@@ -44,7 +44,7 @@ namespace Targets::TargetDescription
                 : std::nullopt;
         }
 
-        std::optional<std::reference_wrapper<const RegisterGroup>> getRegisterGroup(std::string_view keyStr) const {
+        const RegisterGroup& getRegisterGroup(std::string_view keyStr) const {
             const auto group = this->tryGetRegisterGroup(keyStr);
             if (!group.has_value()) {
                 throw Exceptions::InvalidTargetDescriptionDataException(
