@@ -26,8 +26,12 @@
 #include "Variant.hpp"
 
 #include "src/Targets/TargetFamily.hpp"
+#include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetPeripheralDescriptor.hpp"
+#include "src/Targets/TargetRegisterGroupDescriptor.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetPhysicalInterface.hpp"
 
 namespace Targets::TargetDescription
@@ -105,6 +109,7 @@ namespace Targets::TargetDescription
         ) const;
         [[nodiscard]] const Peripheral& getPeripheral(std::string_view key) const;
 
+        TargetDescriptor targetDescriptor() const;
         std::map<TargetAddressSpaceDescriptorId, TargetAddressSpaceDescriptor> targetAddressSpaceDescriptorsById() const;
 
     protected:
@@ -161,6 +166,24 @@ namespace Targets::TargetDescription
 
         static TargetMemorySegmentDescriptor targetMemorySegmentDescriptorFromMemorySegment(
             const MemorySegment& memorySegment
+        );
+
+        static TargetRegisterGroupDescriptor targetRegisterGroupDescriptorFromRegisterGroup(
+            const RegisterGroup& registerGroup,
+            const Module& peripheralModule,
+            TargetMemoryAddress baseAddress,
+            const std::string& addressSpaceKey,
+            TargetAddressSpaceDescriptorId addressSpaceDescriptorId,
+            const std::string& key,
+            const std::string& name,
+            const std::optional<std::string>& description
+        );
+
+        static TargetRegisterDescriptor targetRegisterDescriptorFromRegister(
+            const Register& reg,
+            const std::string& addressSpaceKey,
+            TargetAddressSpaceDescriptorId addressSpaceDescriptorId,
+            TargetMemoryAddress baseAddress
         );
     };
 }

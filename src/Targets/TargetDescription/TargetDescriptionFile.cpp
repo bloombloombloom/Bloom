@@ -159,6 +159,64 @@ namespace Targets::TargetDescription
         return peripheral->get();
     }
 
+    TargetDescriptor TargetDescriptionFile::targetDescriptor() const {
+        const auto targetFamily = this->getFamily();
+        const auto vendor = this->tryGetDeviceAttribute("vendor");
+
+        auto output = TargetDescriptor(
+            this->getDeviceAttribute("name"),
+            targetFamily,
+            "",
+            vendor.has_value()
+                ? vendor->get()
+                : targetFamily == TargetFamily::AVR_8
+                    ? "Microchip"
+                    : "Unknown",
+            {},
+            {},
+            {},
+            BreakpointResources(std::nullopt, std::nullopt, 0)
+        );
+
+        for (const auto& [key, addressSpace] : this->addressSpacesByKey) {
+            auto descriptor = this->targetAddressSpaceDescriptorFromAddressSpace(addressSpace);
+            output.addressSpaceDescriptorsByKey.emplace(descriptor.key, std::move(descriptor));
+        }
+
+        for (const auto& [key, peripheral] : this->peripheralsByKey) {
+            const auto& peripheralModule = this->getModule(peripheral.moduleKey);
+
+            auto descriptor = TargetPeripheralDescriptor(
+                peripheral.key,
+                peripheral.name,
+                {}
+            );
+
+            for (const auto& [key, registerGroupInstance] : peripheral.registerGroupInstancesByKey) {
+                const auto& addressSpaceDescriptor = output.getAddressSpaceDescriptor(
+                    registerGroupInstance.addressSpaceKey
+                );
+                descriptor.registerGroupDescriptorsByKey.emplace(
+                    key,
+                    TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
+                        peripheralModule.getRegisterGroup(registerGroupInstance.registerGroupKey),
+                        peripheralModule,
+                        registerGroupInstance.offset,
+                        addressSpaceDescriptor.key,
+                        addressSpaceDescriptor.id,
+                        registerGroupInstance.key,
+                        registerGroupInstance.name,
+                        registerGroupInstance.description
+                    )
+                );
+            }
+
+            output.peripheralDescriptorsByKey.emplace(descriptor.key, std::move(descriptor));
+        }
+
+        return output;
+    }
+
     std::map<
         TargetAddressSpaceDescriptorId,
         TargetAddressSpaceDescriptor
@@ -745,6 +803,92 @@ namespace Targets::TargetDescription
             memorySegment.access,
             memorySegment.access,
             memorySegment.pageSize
+        );
+    }
+
+    TargetRegisterGroupDescriptor TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
+        const RegisterGroup& registerGroup,
+        const Module& peripheralModule,
+        TargetMemoryAddress baseAddress,
+        const std::string& addressSpaceKey,
+        TargetAddressSpaceDescriptorId addressSpaceDescriptorId,
+        const std::string& key,
+        const std::string& name,
+        const std::optional<std::string>& description
+    ) {
+        auto output = TargetRegisterGroupDescriptor(
+            key,
+            name,
+            addressSpaceKey,
+            addressSpaceDescriptorId,
+            description,
+            {},
+            {}
+        );
+
+        for (const auto& [key, subgroup] : registerGroup.subgroupsByKey) {
+            output.subgroupDescriptorsByKey.emplace(
+                key,
+                TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
+                    registerGroup,
+                    peripheralModule,
+                    baseAddress + registerGroup.offset.value_or(0),
+                    addressSpaceKey,
+                    addressSpaceDescriptorId,
+                    subgroup.key,
+                    subgroup.name,
+                    std::nullopt
+                )
+            );
+        }
+
+        for (const auto& [key, subgroupReference] : registerGroup.subgroupReferencesByKey) {
+            const auto& registerGroup = peripheralModule.getRegisterGroup(subgroupReference.registerGroupKey);
+            output.subgroupDescriptorsByKey.emplace(
+                key,
+                TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
+                    registerGroup,
+                    peripheralModule,
+                    baseAddress + subgroupReference.offset + registerGroup.offset.value_or(0),
+                    addressSpaceKey,
+                    addressSpaceDescriptorId,
+                    subgroupReference.key,
+                    subgroupReference.name,
+                    subgroupReference.description
+                )
+            );
+        }
+
+        for (const auto& [key, reg] : registerGroup.registersByKey) {
+            output.registerDescriptorsByKey.emplace(
+                key,
+                TargetDescriptionFile::targetRegisterDescriptorFromRegister(
+                    reg,
+                    addressSpaceKey,
+                    addressSpaceDescriptorId,
+                    baseAddress + registerGroup.offset.value_or(0)
+                )
+            );
+        }
+
+        return output;
+    }
+
+    TargetRegisterDescriptor TargetDescriptionFile::targetRegisterDescriptorFromRegister(
+        const Register& reg,
+        const std::string& addressSpaceKey,
+        TargetAddressSpaceDescriptorId addressSpaceDescriptorId,
+        TargetMemoryAddress baseAddress
+    ) {
+        return TargetRegisterDescriptor(
+            reg.key,
+            reg.name,
+            addressSpaceKey,
+            addressSpaceDescriptorId,
+            baseAddress + reg.offset,
+            reg.size,
+            reg.access.value_or(TargetRegisterAccess(true, true)),
+            reg.description
         );
     }
 }
