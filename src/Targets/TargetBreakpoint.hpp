@@ -39,9 +39,11 @@ namespace Targets
 
     struct BreakpointResources
     {
-        std::optional<std::uint16_t> maximumHardwareBreakpoints;
-        std::optional<std::uint16_t> maximumSoftwareBreakpoints;
-        std::uint16_t reservedHardwareBreakpoints;
+        std::optional<std::uint16_t> maximumHardwareBreakpoints = std::nullopt;
+        std::optional<std::uint16_t> maximumSoftwareBreakpoints = std::nullopt;
+        std::uint16_t reservedHardwareBreakpoints = 0;
+
+        BreakpointResources() = default;
 
         BreakpointResources(
             std::optional<std::uint16_t> maximumHardwareBreakpoints,

@@ -9,7 +9,8 @@
 
 #include "TargetFamily.hpp"
 #include "TargetMemory.hpp"
-#include "TargetRegisterDescriptor.hpp"
+#include "TargetAddressSpaceDescriptor.hpp"
+#include "TargetPeripheralDescriptor.hpp"
 #include "TargetVariant.hpp"
 #include "TargetBreakpoint.hpp"
 
@@ -17,50 +18,31 @@ namespace Targets
 {
     struct TargetDescriptor
     {
-        std::string id;
-        TargetFamily family;
         std::string name;
+        TargetFamily family;
+        std::string marketId;
         std::string vendorName;
-        std::map<TargetMemoryType, TargetMemoryDescriptor> memoryDescriptorsByType;
-        std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor> registerDescriptorsById;
-        BreakpointResources breakpointResources;
+        std::map<std::string, TargetAddressSpaceDescriptor> addressSpaceDescriptorsByKey;
+        std::map<std::string, TargetPeripheralDescriptor> peripheralDescriptorsByKey;
         std::vector<TargetVariant> variants;
-
-        TargetMemoryType programMemoryType;
+        BreakpointResources breakpointResources;
 
         TargetDescriptor(
-            const std::string& id,
-            TargetFamily family,
             const std::string& name,
+            TargetFamily family,
             const std::string& vendorName,
-            const std::map<TargetMemoryType, TargetMemoryDescriptor>& memoryDescriptorsByType,
-            const std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor>& registerDescriptorsById,
-            const BreakpointResources& breakpointResources,
+            const std::string& marketName,
+            const std::map<std::string, TargetAddressSpaceDescriptor>& addressSpaceDescriptorsByKey,
+            const std::map<std::string, TargetPeripheralDescriptor>& peripheralDescriptorsByKey,
             const std::vector<TargetVariant>& variants,
-            TargetMemoryType programMemoryType
-        )
-            : id(id)
-            , family(family)
-            , name(name)
-            , vendorName(vendorName)
-            , memoryDescriptorsByType(memoryDescriptorsByType)
-            , registerDescriptorsById(registerDescriptorsById)
-            , breakpointResources(breakpointResources)
-            , variants(variants)
-            , programMemoryType(programMemoryType)
-        {}
+            const BreakpointResources& breakpointResources
+        );
 
-        TargetRegisterDescriptorIds registerDescriptorIdsForType(TargetRegisterType type) {
-            auto output = TargetRegisterDescriptorIds();
+        std::optional<std::reference_wrapper<const TargetAddressSpaceDescriptor>> tryGetAddressSpaceDescriptor(
+            const std::string& key
+        ) const;
 
-            for (const auto& [descriptorId, descriptor] : this->registerDescriptorsById) {
-                if (descriptor.type == type) {
-                    output.insert(descriptorId);
-                }
-            }
-
-            return output;
-        }
+        const TargetAddressSpaceDescriptor& getAddressSpaceDescriptor(const std::string& key) const;
     };
 }
 
