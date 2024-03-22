@@ -271,6 +271,8 @@ class TargetDescriptionFile
             $registerGroup = $this->resolveRegisterGroupInstance($registerGroupInstance, $peripheral->moduleKey);
             if ($registerGroup instanceof RegisterGroup) {
                 $output->registerGroups[] = $this->targetRegisterGroupFromRegisterGroup(
+                    $registerGroupInstance->key,
+                    $registerGroupInstance->name,
                     $registerGroup,
                     $registerGroupInstance->offset ?? 0,
                     $peripheral->moduleKey
@@ -282,15 +284,23 @@ class TargetDescriptionFile
     }
 
     private function targetRegisterGroupFromRegisterGroup(
+        string $key,
+        string $name,
         RegisterGroup $registerGroup,
         int $addressOffset,
         string $moduleKey
     ): TargetRegisterGroup {
         $addressOffset += $registerGroup->offset ?? 0;
-        $output = new TargetRegisterGroup($registerGroup->key, $registerGroup->name, $addressOffset, [], []);
+        $output = new TargetRegisterGroup($key, $name, $addressOffset, [], []);
 
         foreach ($registerGroup->subgroups as $subgroup) {
-            $output->subgroups[] = $this->targetRegisterGroupFromRegisterGroup($subgroup, $addressOffset, $moduleKey);
+            $output->subgroups[] = $this->targetRegisterGroupFromRegisterGroup(
+                $subgroup->key,
+                $subgroup->name,
+                $subgroup,
+                $addressOffset,
+                $moduleKey
+            );
         }
 
         foreach ($registerGroup->subgroupReferences as $subgroupReference) {
@@ -298,6 +308,8 @@ class TargetDescriptionFile
 
             if ($subgroup instanceof RegisterGroup) {
                 $output->subgroups[] = $this->targetRegisterGroupFromRegisterGroup(
+                    $subgroupReference->key,
+                    $subgroupReference->name,
                     $subgroup,
                     $addressOffset,
                     $moduleKey
