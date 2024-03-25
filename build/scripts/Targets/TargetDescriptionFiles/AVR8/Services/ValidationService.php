@@ -21,6 +21,28 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
     {
         $failures = $this->validateTdf($tdf);
 
+        if ($tdf->getMemorySegment('prog', 'internal_program_memory') === null) {
+            $failures[] = 'Missing "internal_program_memory" memory segment';
+        }
+
+        if ($tdf->getMemorySegment('data', 'internal_ram') === null) {
+            $failures[] = 'Missing "internal_ram" memory segment';
+        }
+
+        if (
+            $tdf->getMemorySegment('data', 'internal_eeprom') === null
+            && $tdf->getMemorySegment('eeprom', 'internal_eeprom') === null
+        ) {
+            $failures[] = 'Missing "internal_eeprom" memory segment';
+        }
+
+        if (
+            $tdf->getMemorySegment('data', 'io') === null
+            && $tdf->getMemorySegment('data', 'mapped_io') === null
+        ) {
+            $failures[] = 'Missing IO memory segment';
+        }
+
         if ($tdf->getSignature() === null) {
             $failures[] = "Missing or incomplete AVR signature.";
         }

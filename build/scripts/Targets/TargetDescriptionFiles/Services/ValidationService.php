@@ -81,18 +81,6 @@ class ValidationService
             $processedAddressSpaceKeys[] = $addressSpace->key;
         }
 
-        if ($tdf->getMemorySegmentsFromAnyAddressSpace('internal_program_memory') === null) {
-            $failures[] = 'Missing "internal_program_memory" memory segment';
-        }
-
-        if ($tdf->getMemorySegmentsFromAnyAddressSpace('internal_ram') === null) {
-            $failures[] = 'Missing "internal_ram" memory segment';
-        }
-
-        if ($tdf->getMemorySegmentsFromAnyAddressSpace('internal_eeprom') === null) {
-            $failures[] = 'Missing "internal_eeprom" memory segment';
-        }
-
         if (empty($tdf->modules)) {
             $failures[] = 'Missing modules';
         }
