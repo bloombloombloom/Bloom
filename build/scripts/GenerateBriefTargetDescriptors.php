@@ -42,7 +42,7 @@ $discoveryService = new DiscoveryService();
 $xmlService = new XmlService();
 
 $xmlFiles = $discoveryService->findTargetDescriptionFiles(TDF_DIR_PATH);
-print count($xmlFiles) . ' target descriptions files found in ' . TDF_DIR_PATH . PHP_EOL . PHP_EOL;
+print count($xmlFiles) . ' target description files found in ' . TDF_DIR_PATH . PHP_EOL . PHP_EOL;
 
 const MAP_ENTRY_TEMPLATE = '{"@CONFIG_VALUE@", {"@TARGET_NAME@", "@CONFIG_VALUE@", @TARGET_FAMILY@, "@TDF_PATH@"}}';
 

@@ -9,7 +9,7 @@ class PdiParameters
     public ?int $fuseRegistersOffset = null;
     public ?int $lockRegistersOffset = null;
     public ?int $userSignaturesOffset = null;
-    public ?int $productSignaturesOffset = null;
+    public ?int $productionSignaturesOffset = null;
     public ?int $ramOffset = null;
     public ?int $appSectionSize = null;
     public ?int $bootSectionSize = null;

@@ -370,7 +370,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         $output->userSignaturesOffset = $this->stringService->tryStringToInt(
             $this->getPropertyValue('pdi_interface', 'user_signatures_offset')
         );
-        $output->productSignaturesOffset = $this->stringService->tryStringToInt(
+        $output->productionSignaturesOffset = $this->stringService->tryStringToInt(
             $this->getPropertyValue('pdi_interface', 'prod_signatures_offset')
         );
         $output->fuseRegistersOffset = $this->stringService->tryStringToInt(

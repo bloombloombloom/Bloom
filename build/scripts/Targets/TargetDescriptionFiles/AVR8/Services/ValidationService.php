@@ -159,58 +159,101 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         if ($parameters->flashPageSize === null) {
             $failures[] = 'Missing flash page size';
+
+        } elseif ($parameters->flashPageSize > 0xFFFF) {
+            $failures[] = 'Flash page size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->flashSize === null) {
             $failures[] = 'Missing flash size';
+
+        } elseif ($parameters->flashSize > 0xFFFFFFFF) {
+            $failures[] = 'Flash size exceeds 0xFFFFFFFF - corresponding EDBG device parameter size is 32 bits';
         }
 
         if ($parameters->flashStartAddress === null) {
             $failures[] = 'Missing flash start address';
+
+        } elseif ($parameters->flashStartAddress > 0xFFFFFFFF) {
+            $failures[] = 'Flash start address exceeds 0xFFFFFFFF - corresponding EDBG device parameter size'
+                . ' is 32 bits';
         }
 
         if ($parameters->ramStartAddress === null) {
-            $failures[] = 'Missing ram start address';
+            $failures[] = 'Missing RAM start address';
+
+        } elseif ($parameters->ramStartAddress > 0xFFFF) {
+            $failures[] = 'RAM start address exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->eepromSize === null) {
-            $failures[] = 'Missing eeprom size';
+            $failures[] = 'Missing EEPROM size';
+
+        } elseif ($parameters->eepromSize > 0xFFFF) {
+            $failures[] = 'EEPROM size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->eepromPageSize === null) {
-            $failures[] = 'Missing eeprom page size';
+            $failures[] = 'Missing EEPROM page size';
+
+        } elseif ($parameters->eepromPageSize > 0xFF) {
+            $failures[] = 'EEPROM page size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->eepromAddressRegisterHigh === null) {
-            $failures[] = 'Missing EEARH register address';
+            $failures[] = 'Missing EEARH address';
+
+        } elseif ($parameters->eepromAddressRegisterHigh > 0xFF) {
+            $failures[] = 'EEARH address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->eepromAddressRegisterLow === null) {
-            $failures[] = 'Missing EEARL register address';
+            $failures[] = 'Missing EEARL address';
+
+        } elseif ($parameters->eepromAddressRegisterLow > 0xFF) {
+            $failures[] = 'EEARL address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->eepromControlRegisterAddress === null) {
-            $failures[] = 'Missing EECR register address';
+            $failures[] = 'Missing EECR address';
+
+        } elseif ($parameters->eepromControlRegisterAddress > 0xFF) {
+            $failures[] = 'EECR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->eepromDataRegisterAddress === null) {
-            $failures[] = 'Missing EEDR register address';
+            $failures[] = 'Missing EEDR address';
+
+        } elseif ($parameters->eepromDataRegisterAddress > 0xFF) {
+            $failures[] = 'EEDR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->ocdRevision === null) {
             $failures[] = 'Missing OCD revision';
+
+        } elseif ($parameters->ocdRevision > 0xFF) {
+            $failures[] = 'OCD revision size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->ocdDataRegister === null) {
-            $failures[] = 'Missing OCD data register address';
+            $failures[] = 'Missing OCDR address';
+
+        } elseif ($parameters->ocdDataRegister > 0xFF) {
+            $failures[] = 'OCDR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->spmcRegisterStartAddress === null) {
-            $failures[] = 'Missing store program memory control register start address';
+            $failures[] = 'Missing SPMCR start address';
+
+        } elseif ($parameters->spmcRegisterStartAddress > 0xFF) {
+            $failures[] = 'SPMCR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->osccalAddress === null) {
-            $failures[] = 'Missing oscillator calibration register address';
+            $failures[] = 'Missing OSCCAL register address';
+
+        } elseif ($parameters->osccalAddress > 0xFF) {
+            $failures[] = 'OSCCALR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         return $failures;
@@ -277,62 +320,101 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         if ($parameters->flashPageSize === null) {
             $failures[] = 'Missing flash page size';
+
+        } elseif ($parameters->flashPageSize > 0xFFFF) {
+            $failures[] = 'Flash page size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->flashSize === null) {
             $failures[] = 'Missing flash size';
+
+        } elseif ($parameters->flashSize > 0xFFFFFFFF) {
+            $failures[] = 'Flash size exceeds 0xFFFFFFFF - corresponding EDBG device parameter size is 32 bits';
         }
 
         if ($parameters->flashStartAddress === null) {
             $failures[] = 'Missing flash start address';
-        }
 
-        if (empty($parameters->bootSectionOptions)) {
-            $failures[] = 'Missing boot section options';
+        } elseif ($parameters->flashStartAddress > 0xFFFFFFFF) {
+            $failures[] = 'Flash start address exceeds 0xFFFFFFFF - corresponding EDBG device parameter size'
+                . ' is 32 bits';
         }
 
         if ($parameters->ramStartAddress === null) {
-            $failures[] = 'Missing ram start address';
+            $failures[] = 'Missing RAM start address';
+
+        } elseif ($parameters->ramStartAddress > 0xFFFF) {
+            $failures[] = 'RAM start address exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->eepromSize === null) {
-            $failures[] = 'Missing eeprom size';
+            $failures[] = 'Missing EEPROM size';
+
+        } elseif ($parameters->eepromSize > 0xFFFF) {
+            $failures[] = 'EEPROM size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->eepromPageSize === null) {
-            $failures[] = 'Missing eeprom page size';
+            $failures[] = 'Missing EEPROM page size';
+
+        } elseif ($parameters->eepromPageSize > 0xFF) {
+            $failures[] = 'EEPROM page size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->eepromAddressRegisterHigh === null) {
-            $failures[] = 'Missing EEARH register address';
+            $failures[] = 'Missing EEARH address';
+
+        } elseif ($parameters->eepromAddressRegisterHigh > 0xFF) {
+            $failures[] = 'EEARH address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->eepromAddressRegisterLow === null) {
-            $failures[] = 'Missing EEARL register address';
+            $failures[] = 'Missing EEARL address';
+
+        } elseif ($parameters->eepromAddressRegisterLow > 0xFF) {
+            $failures[] = 'EEARL address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->eepromControlRegisterAddress === null) {
-            $failures[] = 'Missing EECR register address';
+            $failures[] = 'Missing EECR address';
+
+        } elseif ($parameters->eepromControlRegisterAddress > 0xFF) {
+            $failures[] = 'EECR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->eepromDataRegisterAddress === null) {
-            $failures[] = 'Missing EEDR register address';
+            $failures[] = 'Missing EEDR address';
+
+        } elseif ($parameters->eepromDataRegisterAddress > 0xFF) {
+            $failures[] = 'EEDR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->ocdRevision === null) {
             $failures[] = 'Missing OCD revision';
+
+        } elseif ($parameters->ocdRevision > 0xFF) {
+            $failures[] = 'OCD revision size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->ocdDataRegister === null) {
-            $failures[] = 'Missing OCD data register address';
+            $failures[] = 'Missing OCDR address';
+
+        } elseif ($parameters->ocdDataRegister > 0xFF) {
+            $failures[] = 'OCDR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->spmcRegisterStartAddress === null) {
-            $failures[] = 'Missing store program memory control register start address';
+            $failures[] = 'Missing SPMCR start address';
+
+        } elseif ($parameters->spmcRegisterStartAddress > 0xFF) {
+            $failures[] = 'SPMCR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->osccalAddress === null) {
-            $failures[] = 'Missing oscillator calibration register address';
+            $failures[] = 'Missing OSCCAL register address';
+
+        } elseif ($parameters->osccalAddress > 0xFF) {
+            $failures[] = 'OSCCALR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         return $failures;
@@ -344,62 +426,120 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         if ($parameters->appSectionOffset === null) {
             $failures[] = 'Missing app section PDI offset';
+
+        } elseif ($parameters->appSectionOffset > 0xFFFFFFFF) {
+            $failures[] = 'App section offset exceeds 0xFFFFFFFF - corresponding EDBG device parameter size is 32 bits';
         }
 
         if ($parameters->bootSectionOffset === null) {
             $failures[] = 'Missing boot section PDI offset';
+
+        } elseif ($parameters->bootSectionOffset > 0xFFFFFFFF) {
+            $failures[] = 'Boot section offset exceeds 0xFFFFFFFF - corresponding EDBG device parameter size'
+                . ' is 32 bits';
         }
 
         if ($parameters->eepromOffset === null) {
-            $failures[] = 'Missing eeprom PDI offset';
+            $failures[] = 'Missing EEPROM PDI offset';
+
+        } elseif ($parameters->eepromOffset > 0xFFFFFFFF) {
+            $failures[] = 'EEPROM PDI offset exceeds 0xFFFFFFFF - corresponding EDBG device parameter size is 32 bits';
         }
 
         if ($parameters->fuseRegistersOffset === null) {
             $failures[] = 'Missing fuse PDI offset';
+
+        } elseif ($parameters->fuseRegistersOffset > 0xFFFFFFFF) {
+            $failures[] = 'Fuse register offset exceeds 0xFFFFFFFF - corresponding EDBG device parameter size'
+                . ' is 32 bits';
         }
 
         if ($parameters->lockRegistersOffset === null) {
             $failures[] = 'Missing lock registers PDI offset';
+
+        } elseif ($parameters->lockRegistersOffset > 0xFFFFFFFF) {
+            $failures[] = 'Lock register offset exceeds 0xFFFFFFFF - corresponding EDBG device parameter size'
+                . ' is 32 bits';
         }
 
         if ($parameters->userSignaturesOffset === null) {
             $failures[] = 'Missing user signatures PDI offset';
+
+        } elseif ($parameters->userSignaturesOffset > 0xFFFFFFFF) {
+            $failures[] = 'User signature offset exceeds 0xFFFFFFFF - corresponding EDBG device parameter size'
+                . ' is 32 bits';
         }
 
-        if ($parameters->productSignaturesOffset === null) {
+        if ($parameters->productionSignaturesOffset === null) {
             $failures[] = 'Missing product signatures PDI offset';
+
+        } elseif ($parameters->productionSignaturesOffset > 0xFFFFFFFF) {
+            $failures[] = 'Prod signature offset exceeds 0xFFFFFFFF - corresponding EDBG device parameter size'
+                . ' is 32 bits';
         }
 
         if ($parameters->ramOffset === null) {
             $failures[] = 'Missing datamem PDI offset';
+
+        } elseif ($parameters->ramOffset > 0xFFFFFFFF) {
+            $failures[] = 'RAM offset exceeds 0xFFFFFFFF - corresponding EDBG device parameter size is 32 bits';
         }
 
         if ($parameters->appSectionSize === null) {
             $failures[] = 'Missing app section size';
+
+        } elseif ($parameters->appSectionSize > 0xFFFFFFFF) {
+            $failures[] = 'App section size exceeds 0xFFFFFFFF - corresponding EDBG device parameter size is 32 bits';
         }
 
         if ($parameters->bootSectionSize === null) {
             $failures[] = 'Missing boot section size';
+
+        } elseif ($parameters->bootSectionSize > 0xFFFF) {
+            $failures[] = 'Boot section size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->flashPageSize === null) {
             $failures[] = 'Missing flash page size';
+
+        } elseif ($parameters->flashPageSize > 0xFFFF) {
+            $failures[] = 'Flash page size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->eepromSize === null) {
             $failures[] = 'Missing EEPROM size';
+
+        } elseif ($parameters->eepromSize > 0xFFFF) {
+            $failures[] = 'EEPROM size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
+        }
+
+        if ($parameters->eepromPageSize === null) {
+            $failures[] = 'Missing EEPROM page size';
+
+        } elseif ($parameters->eepromPageSize > 0xFF) {
+            $failures[] = 'EEPROM page size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->flashPageSize === null) {
             $failures[] = 'Missing flash page size';
+
+        } elseif ($parameters->flashPageSize > 0xFFFF) {
+            $failures[] = 'Flash page size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->nvmModuleBaseAddress === null) {
             $failures[] = 'Missing NVM module base address';
+
+        } elseif ($parameters->nvmModuleBaseAddress > 0xFFFF) {
+            $failures[] = 'NVM module address size exceeds 0xFFFF - corresponding EDBG device parameter size'
+                . ' is 16 bits';
         }
 
         if ($parameters->signatureOffset === null) {
             $failures[] = 'Missing signature PDI offset';
+
+        } elseif ($parameters->signatureOffset > 0xFFFF) {
+            $failures[] = 'Signature offset size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         return $failures;
@@ -417,57 +557,90 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
              * Due to size constraints of EDBG AVR8 parameters for UPDI sessions, the program memory offset must
              * fit into a 24-bit integer.
              */
-            $failures[] = 'UPDI program memory offset exceeds maximum value for 24-bit unsigned integer';
+            $failures[] = 'Program memory offset exceeds 0xFFFFFF - corresponding EDBG device parameter size'
+                . ' is 24 bits';
         }
 
         if ($parameters->flashPageSize === null) {
             $failures[] = 'Missing flash page size';
 
         } elseif ($parameters->flashPageSize > 0xFFFF) {
-            $failures[] = 'Flash page size exceeds maximum value for 16-bit unsigned integer';
+            $failures[] = 'Flash page size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->eepromPageSize === null) {
             $failures[] = 'Missing EEPROM page size';
+
+        } elseif ($parameters->eepromPageSize > 0xFF) {
+            $failures[] = 'EEPROM page size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
         if ($parameters->nvmModuleBaseAddress === null) {
             $failures[] = 'Missing NVM base address';
+
+        } elseif ($parameters->nvmModuleBaseAddress > 0xFFFF) {
+            $failures[] = 'NVM module address size exceeds 0xFFFF - corresponding EDBG device parameter size'
+                . ' is 16 bits';
         }
 
         if ($parameters->ocdBaseAddress === null) {
             $failures[] = 'Missing OCD base address';
 
         } elseif ($parameters->ocdBaseAddress > 0xFFFF) {
-            $failures[] = 'UPDI OCD base address exceeds maximum value for 16-bit unsigned integer';
+            $failures[] = 'OCD base address size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->flashSize === null) {
             $failures[] = 'Missing flash size';
+
+        } elseif ($parameters->flashSize > 0xFFFFFFFF) {
+            $failures[] = 'Flash size exceeds 0xFFFFFFFF - corresponding EDBG device parameter size is 32 bits';
         }
 
         if ($parameters->eepromSize === null) {
             $failures[] = 'Missing EEPROM size';
+
+        } elseif ($parameters->eepromSize > 0xFFFF) {
+            $failures[] = 'EEPROM size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->eepromStartAddress === null) {
             $failures[] = 'Missing EEPROM start address';
+
+        } elseif ($parameters->eepromStartAddress > 0xFFFF) {
+            $failures[] = 'EEPROM start address size exceeds 0xFFFF - corresponding EDBG device parameter size'
+                . ' is 16 bits';
         }
 
         if ($parameters->signatureSegmentStartAddress === null) {
             $failures[] = 'Missing signature segment start address';
+
+        } elseif ($parameters->signatureSegmentStartAddress > 0xFFFF) {
+            $failures[] = 'Signature segment start address size exceeds 0xFFFF - corresponding EDBG device parameter'
+                . ' size is 16 bits';
         }
 
         if ($parameters->fuseSegmentStartAddress === null) {
             $failures[] = 'Missing fuses segment start address';
+
+        } elseif ($parameters->fuseSegmentStartAddress > 0xFFFF) {
+            $failures[] = 'Fuse segment start address size exceeds 0xFFFF - corresponding EDBG device parameter size'
+                . ' is 16 bits';
         }
 
         if ($parameters->fuseSegmentSize === null) {
             $failures[] = 'Missing fuse segment size';
+
+        } elseif ($parameters->fuseSegmentSize > 0xFFFF) {
+            $failures[] = 'Fuse segment size exceeds 0xFFFF - corresponding EDBG device parameter size is 16 bits';
         }
 
         if ($parameters->lockbitsSegmentStartAddress === null) {
             $failures[] = 'Missing lockbits segment start address';
+
+        } elseif ($parameters->lockbitsSegmentStartAddress > 0xFFFF) {
+            $failures[] = 'Lockbit segment start address size exceeds 0xFFFF - corresponding EDBG device parameter'
+                . ' size is 16 bits';
         }
 
         return $failures;

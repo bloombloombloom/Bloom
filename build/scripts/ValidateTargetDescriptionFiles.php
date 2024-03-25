@@ -33,7 +33,7 @@ if (is_dir(TDF_PATH)) {
     $discoveryService = new DiscoveryService();
 
     $xmlFiles = $discoveryService->findTargetDescriptionFiles(TDF_PATH);
-    print count($xmlFiles) . ' target descriptions files found in ' . TDF_PATH . PHP_EOL . PHP_EOL;
+    print count($xmlFiles) . ' target description files found in ' . TDF_PATH . PHP_EOL . PHP_EOL;
 
 } else {
     $xmlFiles = [new \SplFileInfo(TDF_PATH)];
