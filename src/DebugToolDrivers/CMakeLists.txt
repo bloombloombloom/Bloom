@@ -19,6 +19,9 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/ResponseFrames/EDBGControl/EdbgControlResponseFrame.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/AvrEvent.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/Events/AVR8Generic/BreakEvent.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/Parameters/AVR8Generic/DebugWireJtagParameters.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/Parameters/AVR8Generic/PdiParameters.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/Parameters/AVR8Generic/UpdiParameters.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/EdbgInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/EdbgTargetPowerManagementInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/EdbgAvr8Interface.cpp

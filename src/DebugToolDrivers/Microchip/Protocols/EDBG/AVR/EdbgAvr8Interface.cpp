@@ -39,6 +39,10 @@
 #include "CommandFrames/AVR8Generic/LeaveProgrammingMode.hpp"
 #include "CommandFrames/AVR8Generic/EraseMemory.hpp"
 
+#include "Parameters/AVR8Generic/DebugWireJtagParameters.hpp"
+#include "Parameters/AVR8Generic/PdiParameters.hpp"
+#include "Parameters/AVR8Generic/UpdiParameters.hpp"
+
 // AVR events
 #include "Events/AVR8Generic/BreakEvent.hpp"
 
@@ -1048,447 +1052,205 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
-        if (this->targetParameters.flashPageSize.has_value()) {
-            Logger::debug("Setting FLASH_PAGE_SIZE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_FLASH_PAGE_SIZE,
-                this->targetParameters.flashPageSize.value()
-            );
-        }
+        const auto parameters = Parameters::Avr8Generic::DebugWireJtagParameters(this->targetDescriptionFile);
 
-        if (this->targetParameters.flashSize.has_value()) {
-            Logger::debug("Setting FLASH_SIZE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_FLASH_SIZE,
-                this->targetParameters.flashSize.value()
-            );
-        }
+        Logger::debug("Setting FLASH_PAGE_SIZE AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_FLASH_PAGE_SIZE, parameters.flashPageSize);
 
-        if (this->targetParameters.flashStartAddress.has_value()) {
-            Logger::debug("Setting FLASH_BASE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_FLASH_BASE,
-                this->targetParameters.flashStartAddress.value()
-            );
-        }
+        Logger::debug("Setting FLASH_SIZE AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_FLASH_SIZE, parameters.flashSize);
 
-        if (this->targetParameters.ramStartAddress.has_value()) {
-            Logger::debug("Setting SRAM_START AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_SRAM_START,
-                this->targetParameters.ramStartAddress.value()
-            );
-        }
+        Logger::debug("Setting FLASH_BASE AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_FLASH_BASE, parameters.flashStartWordAddress);
 
-        if (this->targetParameters.eepromSize.has_value()) {
-            Logger::debug("Setting EEPROM_SIZE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_EEPROM_SIZE,
-                this->targetParameters.eepromSize.value()
-            );
-        }
-
-        if (this->targetParameters.eepromPageSize.has_value()) {
-            Logger::debug("Setting EEPROM_PAGE_SIZE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_EEPROM_PAGE_SIZE,
-                this->targetParameters.eepromPageSize.value()
-            );
-        }
-
-        if (this->targetParameters.ocdRevision.has_value()) {
-            Logger::debug("Setting OCD_REVISION AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_OCD_REVISION,
-                this->targetParameters.ocdRevision.value()
-            );
-        }
-
-        if (this->targetParameters.ocdDataRegister.has_value()) {
-            Logger::debug("Setting OCD_DATA_REGISTER AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_OCD_DATA_REGISTER,
-                this->targetParameters.ocdDataRegister.value()
-            );
-        }
-
-        if (this->targetParameters.spmcRegisterStartAddress.has_value()) {
-            Logger::debug("Setting SPMCR_REGISTER AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_SPMCR_REGISTER,
-                this->targetParameters.spmcRegisterStartAddress.value()
-            );
-        }
-
-        if (this->targetParameters.bootSectionStartAddress.has_value()) {
+        if (parameters.bootSectionStartWordAddress.has_value()) {
             Logger::debug("Setting BOOT_START_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_BOOT_START_ADDR,
-                this->targetParameters.bootSectionStartAddress.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_BOOT_START_ADDR, *(parameters.bootSectionStartWordAddress));
         }
 
-        /*
-         * All addresses for registers that reside in the mapped IO memory segment include the mapped IO segment offset
-         * (start address). But the EDBG protocol requires *some* of these addresses to be stripped of this offset
-         * before sending them as target parameters.
-         *
-         * This applies to the following addresses:
-         *
-         *  - OSCALL Address
-         *  - EEARL Address
-         *  - EEARH Address
-         *  - EECR Address
-         *  - EEDR Address
-         *
-         * It *doesn't* seem to apply to the SPMCR or OCDDR address.
-         */
-        auto mappedIoStartAddress = this->targetParameters.mappedIoSegmentStartAddress.value_or(0);
+        Logger::debug("Setting SRAM_START AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_SRAM_START, parameters.ramStartAddress);
 
-        if (this->targetParameters.osccalAddress.has_value()) {
-            Logger::debug("Setting OSCCAL_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_OSCCAL_ADDR,
-                static_cast<std::uint8_t>(
-                    this->targetParameters.osccalAddress.value() - mappedIoStartAddress
-                )
-            );
-        }
+        Logger::debug("Setting EEPROM_SIZE AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_EEPROM_SIZE, parameters.eepromSize);
 
-        if (this->targetParameters.eepromAddressRegisterLow.has_value()) {
-            Logger::debug("Setting EEARL_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_EEARL_ADDR,
-                static_cast<std::uint8_t>(
-                    this->targetParameters.eepromAddressRegisterLow.value() - mappedIoStartAddress
-                )
-            );
-        }
+        Logger::debug("Setting EEPROM_PAGE_SIZE AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_EEPROM_PAGE_SIZE, parameters.eepromPageSize);
 
-        if (this->targetParameters.eepromAddressRegisterHigh.has_value()) {
-            Logger::debug("Setting EEARH_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_EEARH_ADDR,
-                static_cast<std::uint8_t>(
-                    this->targetParameters.eepromAddressRegisterHigh.value() - mappedIoStartAddress
-                )
-            );
-        }
+        Logger::debug("Setting OCD_REVISION AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_OCD_REVISION, parameters.ocdRevision);
 
-        if (this->targetParameters.eepromControlRegisterAddress.has_value()) {
-            Logger::debug("Setting EECR_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_EECR_ADDR,
-                static_cast<std::uint8_t>(
-                    this->targetParameters.eepromControlRegisterAddress.value() - mappedIoStartAddress
-                )
-            );
-        }
+        Logger::debug("Setting OCD_DATA_REGISTER AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_OCD_DATA_REGISTER, parameters.ocdDataRegister);
 
-        if (this->targetParameters.eepromDataRegisterAddress.has_value()) {
-            Logger::debug("Setting EEDR_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_EEDR_ADDR,
-                static_cast<std::uint8_t>(
-                    this->targetParameters.eepromDataRegisterAddress.value() - mappedIoStartAddress
-                )
-            );
-        }
+        Logger::debug("Setting EEARL_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_EEARL_ADDR, parameters.eepromAddressRegisterLow);
+
+        Logger::debug("Setting EEARH_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_EEARH_ADDR, parameters.eepromAddressRegisterHigh);
+
+        Logger::debug("Setting EECR_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_EECR_ADDR, parameters.eepromControlRegisterAddress);
+
+        Logger::debug("Setting EEDR_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_EEDR_ADDR, parameters.eepromDataRegisterAddress);
+
+        Logger::debug("Setting SPMCR_REGISTER AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_SPMCR_REGISTER, parameters.spmcRegisterStartAddress);
+
+        Logger::debug("Setting OSCCAL_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_OSCCAL_ADDR, parameters.osccalAddress);
     }
 
     void EdbgAvr8Interface::setPdiParameters() {
-        if (!this->targetParameters.appSectionPdiOffset.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: APPL_BASE_ADDR");
-        }
-
-        if (!this->targetParameters.bootSectionPdiOffset.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: BOOT_BASE_ADDR");
-        }
-
-        if (!this->targetParameters.appSectionSize.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: APPLICATION_BYTES");
-        }
-
-        if (!this->targetParameters.bootSectionSize.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: BOOT_BYTES");
-        }
-
-        if (!this->targetParameters.eepromPdiOffset.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: EEPROM_BASE_ADDR");
-        }
-
-        if (!this->targetParameters.fuseRegistersPdiOffset.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: FUSE_BASE_ADDR");
-        }
-
-        if (!this->targetParameters.lockRegistersPdiOffset.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: LOCKBIT_BASE_ADDR");
-        }
-
-        if (!this->targetParameters.userSignaturesPdiOffset.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: USER_SIGN_BASE_ADDR");
-        }
-
-        if (!this->targetParameters.productSignaturesPdiOffset.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: PROD_SIGN_BASE_ADDR");
-        }
-
-        if (!this->targetParameters.ramPdiOffset.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: DATA_BASE_ADDR");
-        }
-
-        if (!this->targetParameters.flashPageSize.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: FLASH_PAGE_BYTES");
-        }
-
-        if (!this->targetParameters.eepromSize.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: EEPROM_SIZE");
-        }
-
-        if (!this->targetParameters.eepromPageSize.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: EEPROM_PAGE_SIZE");
-        }
-
-        if (!this->targetParameters.nvmModuleBaseAddress.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: NVM_BASE");
-        }
-
-        if (!this->targetParameters.mcuModuleBaseAddress.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: SIGNATURE_OFFSET (MCU module base address)");
-        }
+        const auto parameters = Parameters::Avr8Generic::PdiParameters(this->targetDescriptionFile);
 
         Logger::debug("Setting APPL_BASE_ADDR AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_APPL_BASE_ADDR,
-            this->targetParameters.appSectionPdiOffset.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_APPL_BASE_ADDR, parameters.appSectionPdiOffset);
 
         Logger::debug("Setting BOOT_BASE_ADDR AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_BOOT_BASE_ADDR,
-            this->targetParameters.bootSectionPdiOffset.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_BOOT_BASE_ADDR, parameters.bootSectionPdiOffset);
 
         Logger::debug("Setting EEPROM_BASE_ADDR AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_EEPROM_BASE_ADDR,
-            this->targetParameters.eepromPdiOffset.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_EEPROM_BASE_ADDR, parameters.eepromPdiOffset);
 
         Logger::debug("Setting FUSE_BASE_ADDR AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_FUSE_BASE_ADDR,
-            this->targetParameters.fuseRegistersPdiOffset.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_FUSE_BASE_ADDR, parameters.fuseRegistersPdiOffset);
 
         Logger::debug("Setting LOCKBIT_BASE_ADDR AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_LOCKBIT_BASE_ADDR,
-            this->targetParameters.lockRegistersPdiOffset.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_LOCKBIT_BASE_ADDR, parameters.lockRegistersPdiOffset);
 
         Logger::debug("Setting USER_SIGN_BASE_ADDR AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_USER_SIGN_BASE_ADDR,
-            this->targetParameters.userSignaturesPdiOffset.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_USER_SIGN_BASE_ADDR, parameters.userSignaturesPdiOffset);
 
         Logger::debug("Setting PROD_SIGN_BASE_ADDR AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_PROD_SIGN_BASE_ADDR,
-            this->targetParameters.productSignaturesPdiOffset.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_PROD_SIGN_BASE_ADDR, parameters.prodSignaturesPdiOffset);
 
         Logger::debug("Setting DATA_BASE_ADDR AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_DATA_BASE_ADDR,
-            this->targetParameters.ramPdiOffset.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_DATA_BASE_ADDR, parameters.ramPdiOffset);
 
         Logger::debug("Setting APPLICATION_BYTES AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_APPLICATION_BYTES,
-            this->targetParameters.appSectionSize.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_APPLICATION_BYTES, parameters.appSectionSize);
 
         Logger::debug("Setting BOOT_BYTES AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_BOOT_BYTES,
-            this->targetParameters.bootSectionSize.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_BOOT_BYTES, parameters.bootSectionSize);
 
         Logger::debug("Setting FLASH_PAGE_BYTES AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_FLASH_PAGE_BYTES,
-            this->targetParameters.flashPageSize.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_FLASH_PAGE_BYTES, parameters.flashPageSize);
 
         Logger::debug("Setting EEPROM_SIZE AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_EEPROM_SIZE,
-            this->targetParameters.eepromSize.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_EEPROM_SIZE, parameters.eepromSize);
 
         Logger::debug("Setting EEPROM_PAGE_SIZE AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_EEPROM_PAGE_SIZE,
-            static_cast<std::uint8_t>(this->targetParameters.eepromPageSize.value())
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_EEPROM_PAGE_SIZE, parameters.eepromPageSize);
 
         Logger::debug("Setting NVM_BASE AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_NVM_BASE,
-            this->targetParameters.nvmModuleBaseAddress.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_NVM_BASE, parameters.nvmModuleBaseAddress);
 
         Logger::debug("Setting SIGNATURE_OFFSET AVR8 parameter");
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_XMEGA_SIGNATURE_OFFSET,
-            this->targetParameters.mcuModuleBaseAddress.value()
-        );
+        this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_SIGNATURE_OFFSET, parameters.signaturesPdiOffset);
     }
 
     void EdbgAvr8Interface::setUpdiParameters() {
-        if (!this->targetParameters.signatureSegmentStartAddress.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: SIGNATURE BASE ADDRESS");
-        }
+        const auto parameters = Parameters::Avr8Generic::UpdiParameters(this->targetDescriptionFile);
 
-        if (!this->targetParameters.eepromPageSize.has_value()) {
-            throw DeviceInitializationFailure("Missing required parameter: UPDI_EEPROM_PAGE_SIZE");
-        }
+        /*
+         * The program memory base address field for UPDI sessions (DEVICE_UPDI_PROGMEM_BASE_ADDR) seems to be
+         * limited to two bytes in size, as opposed to the four byte size for the debugWire, JTAG and PDI
+         * equivalent fields. This is why, I suspect, another field was required for the most significant byte of
+         * the program memory base address (DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB).
+         *
+         * The additional DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB field is only one byte in size, so it brings the total
+         * capacity for the program memory base address to three bytes. Because of this, we ensure that all TDFs,
+         * for targets that support UPDI, specify an address that does not exceed the maximum value of a 24 bit
+         * unsigned integer. This is done in our TDF validation script (see src/Targets/TargetDescription/README.md
+         * for more).
+         */
+        Logger::debug("Setting UPDI_PROGMEM_BASE_ADDR AVR8 device parameter");
+        this->setParameter(
+            Avr8EdbgParameters::DEVICE_UPDI_PROGMEM_BASE_ADDR,
+            static_cast<std::uint16_t>(parameters.programMemoryStartAddress)
+        );
 
-        if (this->targetParameters.programMemoryUpdiStartAddress.has_value()) {
-            /*
-             * The program memory base address field for UPDI sessions (DEVICE_UPDI_PROGMEM_BASE_ADDR) seems to be
-             * limited to two bytes in size, as opposed to the four byte size for the debugWire, JTAG and PDI
-             * equivalent fields. This is why, I suspect, another field was required for the most significant byte of
-             * the program memory base address (DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB).
-             *
-             * The additional DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB field is only one byte in size, so it brings the total
-             * capacity for the program memory base address to three bytes. Because of this, we ensure that all TDFs,
-             * for targets that support UPDI, specify an address that does not exceed the maximum value of a 24 bit
-             * unsigned integer. This is done in our TDF validation script (see src/Targets/TargetDescription/README.md
-             * for more).
-             */
-            const auto programMemBaseAddress = this->targetParameters.programMemoryUpdiStartAddress.value();
-            Logger::debug("Setting UPDI_PROGMEM_BASE_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_PROGMEM_BASE_ADDR,
-                static_cast<std::uint16_t>(programMemBaseAddress)
-            );
+        Logger::debug("Setting UPDI_PROGMEM_BASE_ADDR_MSB AVR8 device parameter");
+        this->setParameter(
+            Avr8EdbgParameters::DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB,
+            static_cast<std::uint8_t>(parameters.programMemoryStartAddress >> 16)
+        );
 
-            Logger::debug("Setting UPDI_PROGMEM_BASE_ADDR_MSB AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB,
-                static_cast<std::uint8_t>(programMemBaseAddress >> 16)
-            );
-        }
+        this->setParameter(
+            Avr8EdbgParameters::DEVICE_UPDI_24_BIT_ADDRESSING_ENABLE,
+            parameters.programMemoryStartAddress > 0xFFFF
+                ? static_cast<std::uint8_t>(1)
+                : static_cast<std::uint8_t>(0)
+        );
 
-        if (this->targetParameters.flashPageSize.has_value()) {
-            /*
-             * See the comment above regarding capacity limitations of the DEVICE_UPDI_PROGMEM_BASE_ADDR field.
-             *
-             * The same applies here, for the flash page size field (DEVICE_UPDI_FLASH_PAGE_SIZE).
-             */
-            auto flashPageSize = this->targetParameters.flashPageSize.value();
-            Logger::debug("Setting UPDI_FLASH_PAGE_SIZE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_FLASH_PAGE_SIZE,
-                static_cast<std::uint8_t>(flashPageSize)
-            );
+        /*
+         * See the comment above regarding capacity limitations of the DEVICE_UPDI_PROGMEM_BASE_ADDR field.
+         *
+         * The same applies here, for the flash page size field (DEVICE_UPDI_FLASH_PAGE_SIZE).
+         */
+        Logger::debug("Setting UPDI_FLASH_PAGE_SIZE AVR8 device parameter");
+        this->setParameter(
+            Avr8EdbgParameters::DEVICE_UPDI_FLASH_PAGE_SIZE,
+            static_cast<std::uint8_t>(parameters.flashPageSize)
+        );
 
-            Logger::debug("Setting UPDI_FLASH_PAGE_SIZE_MSB AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_FLASH_PAGE_SIZE_MSB,
-                static_cast<std::uint8_t>(flashPageSize >> 8)
-            );
-        }
+        Logger::debug("Setting UPDI_FLASH_PAGE_SIZE_MSB AVR8 device parameter");
+        this->setParameter(
+            Avr8EdbgParameters::DEVICE_UPDI_FLASH_PAGE_SIZE_MSB,
+            static_cast<std::uint8_t>(parameters.flashPageSize >> 8)
+        );
 
         if (this->targetParameters.eepromPageSize.has_value()) {
             Logger::debug("Setting UPDI_EEPROM_PAGE_SIZE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_EEPROM_PAGE_SIZE,
-                this->targetParameters.eepromPageSize.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_EEPROM_PAGE_SIZE, parameters.eepromPageSize);
         }
 
         if (this->targetParameters.nvmModuleBaseAddress.has_value()) {
             Logger::debug("Setting UPDI_NVMCTRL_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_NVMCTRL_ADDR,
-                this->targetParameters.nvmModuleBaseAddress.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_NVMCTRL_ADDR, parameters.nvmModuleBaseAddress);
         }
 
         if (this->targetParameters.ocdModuleAddress.has_value()) {
             Logger::debug("Setting UPDI_OCD_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_OCD_ADDR,
-                this->targetParameters.ocdModuleAddress.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_OCD_ADDR, parameters.ocdModuleAddress);
         }
 
         if (this->targetParameters.flashSize.has_value()) {
             Logger::debug("Setting UPDI_FLASH_SIZE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_FLASH_SIZE,
-                this->targetParameters.flashSize.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_FLASH_SIZE, parameters.flashSize);
         }
 
         if (this->targetParameters.eepromSize.has_value()) {
             Logger::debug("Setting UPDI_EEPROM_SIZE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_EEPROM_SIZE,
-                this->targetParameters.eepromSize.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_EEPROM_SIZE, parameters.eepromSize);
         }
 
         if (this->targetParameters.eepromStartAddress.has_value()) {
             Logger::debug("Setting UPDI_EEPROM_BASE_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_EEPROM_BASE_ADDR,
-                this->targetParameters.eepromStartAddress.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_EEPROM_BASE_ADDR, parameters.eepromStartAddress);
         }
 
         if (this->targetParameters.signatureSegmentStartAddress.has_value()) {
             Logger::debug("Setting UPDI_SIG_BASE_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_SIG_BASE_ADDR,
-                this->targetParameters.signatureSegmentStartAddress.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_SIG_BASE_ADDR, parameters.signatureSegmentStartAddress);
         }
 
         if (this->targetParameters.fuseSegmentStartAddress.has_value()) {
             Logger::debug("Setting UPDI_FUSE_BASE_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_FUSE_BASE_ADDR,
-                this->targetParameters.fuseSegmentStartAddress.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_FUSE_BASE_ADDR, parameters.fuseSegmentStartAddress);
         }
 
         if (this->targetParameters.fuseSegmentSize.has_value()) {
             Logger::debug("Setting UPDI_FUSE_SIZE AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_FUSE_SIZE,
-                this->targetParameters.fuseSegmentSize.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_FUSE_SIZE, parameters.fuseSegmentSize);
         }
 
         if (this->targetParameters.lockbitsSegmentStartAddress.has_value()) {
             Logger::debug("Setting UPDI_LOCK_BASE_ADDR AVR8 device parameter");
-            this->setParameter(
-                Avr8EdbgParameters::DEVICE_UPDI_LOCK_BASE_ADDR,
-                this->targetParameters.lockbitsSegmentStartAddress.value()
-            );
+            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_LOCK_BASE_ADDR, parameters.lockbitSegmentStartAddress);
         }
-
-        this->setParameter(
-            Avr8EdbgParameters::DEVICE_UPDI_24_BIT_ADDRESSING_ENABLE,
-            this->targetParameters.programMemoryUpdiStartAddress.value_or(0) > 0xFFFF ?
-            static_cast<std::uint8_t>(1) : static_cast<std::uint8_t>(0)
-        );
     }
 
     void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
