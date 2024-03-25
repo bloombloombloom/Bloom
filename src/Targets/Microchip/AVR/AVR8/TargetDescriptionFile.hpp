@@ -16,7 +16,7 @@
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/PadDescriptor.hpp"
 
-namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
+namespace Targets::Microchip::Avr::Avr8Bit
 {
     /**
      * Represents an AVR8 TDF. See the Targets::TargetDescription::TargetDescriptionFile close for more on TDFs.
@@ -53,6 +53,14 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
          * @return
          */
         [[nodiscard]] Family getAvrFamily() const;
+
+        [[nodiscard]] const Targets::TargetDescription::MemorySegment& getProgramMemorySegment() const;
+        [[nodiscard]] const Targets::TargetDescription::MemorySegment& getRamMemorySegment() const;
+        [[nodiscard]] const Targets::TargetDescription::MemorySegment& getEepromMemorySegment() const;
+        [[nodiscard]] const Targets::TargetDescription::MemorySegment& getIoMemorySegment() const;
+        [[nodiscard]] const Targets::TargetDescription::MemorySegment& getSignatureMemorySegment() const;
+        [[nodiscard]] const Targets::TargetDescription::MemorySegment& getFuseMemorySegment() const;
+        [[nodiscard]] const Targets::TargetDescription::MemorySegment& getLockbitMemorySegment() const;
 
         /**
          * Constructs an instance of TargetParameters, for the AVR8 target, with data from the TDF.
@@ -222,13 +230,8 @@ namespace Targets::Microchip::Avr::Avr8Bit::TargetDescription
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFlashApplicationMemorySegment(
             const Targets::TargetDescription::AddressSpace& programAddressSpace
         ) const;
-        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRamMemorySegment() const;
-        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getIoMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getRegisterMemorySegment() const;
-        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getEepromMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFirstBootSectionMemorySegment() const;
-        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getSignatureMemorySegment() const;
-        [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getFuseMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::MemorySegment> getLockbitsMemorySegment() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::RegisterGroup> getCpuRegisterGroup() const;
         [[nodiscard]] std::optional<Targets::TargetDescription::RegisterGroup> getBootLoadRegisterGroup() const;

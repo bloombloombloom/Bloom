@@ -4,7 +4,7 @@
 #include <typeindex>
 #include <algorithm>
 
-#include "src/Targets/Microchip/AVR/AVR8/TargetDescription/TargetDescriptionFile.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/TargetDescriptionFile.hpp"
 #include "src/Targets/RiscV/TargetDescription/TargetDescriptionFile.hpp"
 
 #include "Responses/Error.hpp"
