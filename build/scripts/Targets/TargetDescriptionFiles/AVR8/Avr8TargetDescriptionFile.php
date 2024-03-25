@@ -132,9 +132,12 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             if ($eepromAddressRegister instanceof TargetRegister) {
                 $output->eepromAddressRegisterLow = $eepromAddressRegister->address;
-                $output->eepromAddressRegisterHigh = ($eepromAddressRegister->size == 2)
-                    ? $eepromAddressRegister->address + 1
-                    : $eepromAddressRegister->address;
+                $output->eepromAddressRegisterHigh = $eepromAddressRegister->size > 1
+                    ? $eepromAddressRegister->address !== null
+                        ? $eepromAddressRegister->address >> 2
+                        : null
+                    : $eepromAddressRegister->address
+                ;
 
             } else {
                 $eepromAddressRegisterLow = $eepromPeripheral->getRegister('eeprom', 'eearl');
@@ -142,7 +145,11 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
                 if ($eepromAddressRegisterLow instanceof TargetRegister) {
                     $output->eepromAddressRegisterLow = $eepromAddressRegisterLow->address;
-                    $output->eepromAddressRegisterHigh = $eepromAddressRegisterLow->address;
+                    $output->eepromAddressRegisterHigh = $eepromAddressRegisterLow->size > 1
+                        ? $eepromAddressRegisterLow->address !== null
+                            ? $eepromAddressRegisterLow->address >> 2
+                            : null
+                        : $eepromAddressRegisterLow->address;
                 }
 
                 if ($eepromAddressRegisterHigh instanceof TargetRegister) {
@@ -276,9 +283,12 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             if ($eepromAddressRegister instanceof TargetRegister) {
                 $output->eepromAddressRegisterLow = $eepromAddressRegister->address;
-                $output->eepromAddressRegisterHigh = ($eepromAddressRegister->size == 2)
-                    ? $eepromAddressRegister->address + 1
-                    : $eepromAddressRegister->address;
+                $output->eepromAddressRegisterHigh = $eepromAddressRegister->size > 1
+                    ? $eepromAddressRegister->address !== null
+                        ? $eepromAddressRegister->address >> 2
+                        : null
+                    : $eepromAddressRegister->address
+                ;
 
             } else {
                 $eepromAddressRegisterLow = $eepromPeripheral->getRegister('eeprom', 'eearl');
@@ -286,7 +296,6 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
                 if ($eepromAddressRegisterLow instanceof TargetRegister) {
                     $output->eepromAddressRegisterLow = $eepromAddressRegisterLow->address;
-                    $output->eepromAddressRegisterHigh = $eepromAddressRegisterLow->address;
                 }
 
                 if ($eepromAddressRegisterHigh instanceof TargetRegister) {
@@ -435,26 +444,38 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         );
 
         $signatureMemorySegment = $this->getMemorySegment(
+            'signatures',
+            'signatures'
+        ) ?? $this->getMemorySegment(
             'data',
             'signatures'
         );
+
         if ($signatureMemorySegment instanceof MemorySegment) {
             $output->signatureSegmentStartAddress = $signatureMemorySegment->startAddress;
         }
 
         $fuseMemorySegment = $this->getMemorySegment(
+            'fuses',
+            'fuses'
+        ) ?? $this->getMemorySegment(
             'data',
             'fuses'
         );
+
         if ($fuseMemorySegment instanceof MemorySegment) {
             $output->fuseSegmentSize = $fuseMemorySegment->size;
             $output->fuseSegmentStartAddress = $fuseMemorySegment->startAddress;
         }
 
         $lockbitsMemorySegment = $this->getMemorySegment(
+            'lockbits',
+            'lockbits'
+        ) ?? $this->getMemorySegment(
             'data',
             'lockbits'
         );
+
         if ($lockbitsMemorySegment instanceof MemorySegment) {
             $output->lockbitsSegmentStartAddress = $lockbitsMemorySegment->startAddress;
         }
@@ -495,8 +516,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
     private function getEepromSegment(): ?MemorySegment
     {
-        return $this->getMemorySegment('data', 'internal_eeprom')
-            ?? $this->getMemorySegment('eeprom', 'internal_eeprom');
+        return $this->getMemorySegment('eeprom', 'internal_eeprom')
+            ?? $this->getMemorySegment('data', 'internal_eeprom');
     }
 
     private function getBootSectionOptions(): array
