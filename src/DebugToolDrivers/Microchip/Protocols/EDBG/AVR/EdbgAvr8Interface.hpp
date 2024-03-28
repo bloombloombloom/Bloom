@@ -10,11 +10,13 @@
 #include "src/DebugToolDrivers/Microchip/Protocols/EDBG/EdbgInterface.hpp"
 
 #include "Avr8Generic.hpp"
+#include "EdbgAvr8Session.hpp"
 
 #include "src/Targets/TargetPhysicalInterface.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/Microchip/AVR/AVR8/TargetDescriptionFile.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
 #include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
 
@@ -34,10 +36,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     public:
         explicit EdbgAvr8Interface(
             EdbgInterface* edbgInterface,
-            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
-            Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
-            const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
-            const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
+            const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile,
+            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
         );
 
         /**
@@ -294,42 +294,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         EdbgInterface* edbgInterface = nullptr;
 
         /**
-         * Project's AVR8 target configuration.
+         * The active EDBG AVR8 session.
          */
-        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig;
-
-        /**
-         * The target family is taken into account when configuring the AVR8 Generic protocol on the EDBG device.
-         *
-         * We use this to determine which config variant to select.
-         * See EdbgAvr8Interface::resolveConfigVariant() for more.
-         */
-        Targets::Microchip::Avr::Avr8Bit::Family family;
-
-        /**
-         * The AVR8 Generic protocol provides two functions: Debugging and programming. The desired function must be
-         * configured via the setting of the "AVR8_CONFIG_FUNCTION" parameter.
-         */
-        Avr8ConfigFunction configFunction = Avr8ConfigFunction::DEBUGGING;
-
-        /**
-         * Configuring of the AVR8 Generic protocol depends on some characteristics of the target.
-         * The "AVR8_CONFIG_VARIANT" parameter allows us to determine which target parameters are required by the
-         * debug tool.
-         */
-        Avr8ConfigVariant configVariant = Avr8ConfigVariant::NONE;
-
-        /**
-         * EDBG-based debug tools require target specific parameters such as memory locations, page sizes and
-         * register addresses. It is the AVR8 target's responsibility to obtain the required information and pass it
-         * to the Avr8Interface. See Avr8::getTargetParameters() and Avr8::postPromotionConfigure().
-         *
-         * For the EdbgAvr8Interface, we send the required parameters to the debug tool immediately upon receiving
-         * them. See EdbgAvr8Interface::setTargetParameters().
-         */
-        const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters;
-
-        const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById;
+        EdbgAvr8Session session;
 
         /**
          * See the comment for EdbgAvr8Interface::setAvoidMaskedMemoryRead().
@@ -378,25 +345,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * @param config
          */
         void setTargetParameters();
-
-        /**
-         * This mapping allows us to determine which config variant to select, based on the target family and the
-         * selected physical interface.
-         */
-        static std::map<
-            Targets::Microchip::Avr::Avr8Bit::Family,
-            std::map<Targets::TargetPhysicalInterface, Avr8ConfigVariant>
-        > getConfigVariantsByFamilyAndPhysicalInterface();
-
-        /**
-         * Determines the config variant given a target family and physical interface.
-         *
-         * @return
-         */
-        static Avr8ConfigVariant resolveConfigVariant(
-            Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
-            Targets::TargetPhysicalInterface physicalInterface
-        );
 
         /**
          * Sets an AVR8 parameter on the debug tool. See the Avr8EdbgParameters class and protocol documentation
@@ -461,17 +409,15 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * register addresses. These parameters can be sent to the tool before and during a session.
          *
          * What parameters we need to send depend on the physical interface (and config variant) selected by the user.
-         * For target parameters, the address (ID) of the parameter also varies across config variants. This is why
-         * we sometimes have separate parameters for sending the same data, where they differ only in parameter IDs
-         * (and sometimes size constraints). For example, the Avr8EdbgParameters::FLASH_PAGE_BYTES parameter is used
-         * to specify the size of a single page in flash memory. The parameter is assigned an address (ID) of 0x00. But
-         * the Avr8EdbgParameters::DEVICE_XMEGA_FLASH_PAGE_BYTES parameter is used to send the same data (flash page
-         * size), but only for sessions with the PDI physical interface. The address is 0x26.
+         * For target parameters, the address (ID) of the parameter also varies across config variants.
          *
          * - The setDebugWireAndJtagParameters() function sends the required target parameters for debugWire and JTAG
          *   sessions. Both sessions are covered in a single function because they require the same parameters.
          * - The setPdiParameters() function sends the required target parameters for PDI sessions.
          * - The setUpdiParameters() function sends the required target parameters for UPDI sessions.
+         *
+         * We extract the required parameters from the TDF. See the constructors for the `DebugWireJtagParameters`,
+         * `PdiParameters` and `UpdiParameters` structs for more.
          */
         void setDebugWireAndJtagParameters();
         void setPdiParameters();

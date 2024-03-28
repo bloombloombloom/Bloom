@@ -79,6 +79,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     using CommandFrames::Avr8Generic::EraseMemory;
     using CommandFrames::Avr8Generic::DisableDebugWire;
 
+    using Targets::TargetAddressSpaceDescriptor;
+    using Targets::TargetMemorySegmentType;
     using Targets::TargetState;
     using Targets::TargetPhysicalInterface;
     using Targets::TargetMemoryType;
@@ -90,38 +92,31 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     using Targets::TargetRegisterDescriptors;
     using Targets::TargetRegisterDescriptorId;
     using Targets::TargetRegisterDescriptorIds;
-    using Targets::TargetRegisterType;
     using Targets::TargetRegisters;
 
     EdbgAvr8Interface::EdbgAvr8Interface(
         EdbgInterface* edbgInterface,
-        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
-        Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
-        const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
-        const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
+        const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
     )
         : edbgInterface(edbgInterface)
-        , targetConfig(targetConfig)
-        , family(targetFamily)
-        , configVariant(EdbgAvr8Interface::resolveConfigVariant(targetFamily, targetConfig.physicalInterface))
-        , targetParameters(targetParameters)
-        , targetRegisterDescriptorsById(targetRegisterDescriptorsById)
+        , session(EdbgAvr8Session(targetDescriptionFile, targetConfig))
     {}
 
     void EdbgAvr8Interface::init() {
-        if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+        if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
             // Default PDI clock to 4MHz
             // TODO: Make this adjustable via a target config parameter
             this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(4000));
         }
 
-        if (this->configVariant == Avr8ConfigVariant::UPDI) {
+        if (this->session.configVariant == Avr8ConfigVariant::UPDI) {
             // Default UPDI clock to 1.8MHz
             this->setParameter(Avr8EdbgParameters::PDI_CLOCK_SPEED, static_cast<std::uint16_t>(1800));
             this->setParameter(Avr8EdbgParameters::ENABLE_HIGH_VOLTAGE_UPDI, static_cast<std::uint8_t>(0));
         }
 
-        if (this->configVariant == Avr8ConfigVariant::MEGAJTAG) {
+        if (this->session.configVariant == Avr8ConfigVariant::MEGAJTAG) {
             // Default clock value for mega debugging is 200KHz
             // TODO: Make this adjustable via a target config parameter
             this->setParameter(Avr8EdbgParameters::MEGA_DEBUG_CLOCK, static_cast<std::uint16_t>(200));
@@ -130,17 +125,17 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         this->setParameter(
             Avr8EdbgParameters::CONFIG_VARIANT,
-            static_cast<std::uint8_t>(this->configVariant)
+            static_cast<std::uint8_t>(this->session.configVariant)
         );
 
         this->setParameter(
             Avr8EdbgParameters::CONFIG_FUNCTION,
-            static_cast<std::uint8_t>(this->configFunction)
+            static_cast<std::uint8_t>(Avr8ConfigFunction::DEBUGGING)
         );
 
         this->setParameter(
             Avr8EdbgParameters::PHYSICAL_INTERFACE,
-            getPhysicalInterfaceToAvr8IdMapping().at(this->targetConfig.physicalInterface)
+            getPhysicalInterfaceToAvr8IdMapping().at(this->session.targetConfig.physicalInterface)
         );
 
         this->setTargetParameters();
@@ -232,7 +227,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
             } catch (const Avr8CommandFailure& activationException) {
                 if (
-                    this->targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
+                    this->session.targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
                     && (
                         activationException.code == Avr8CommandFailureCode::DEBUGWIRE_PHYSICAL_ERROR
                         || activationException.code == Avr8CommandFailureCode::FAILED_TO_ENABLE_OCD
@@ -257,8 +252,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     void EdbgAvr8Interface::deactivate() {
         if (this->targetAttached) {
             if (
-                this->targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
-                && this->targetConfig.disableDebugWireOnDeactivate
+                this->session.targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
+                && this->session.targetConfig.disableDebugWireOnDeactivate
             ) {
                 try {
                     this->disableDebugWire();
@@ -317,7 +312,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     }
 
     TargetSignature EdbgAvr8Interface::getDeviceId() {
-        if (this->configVariant == Avr8ConfigVariant::UPDI) {
+        if (this->session.configVariant == Avr8ConfigVariant::UPDI) {
             /*
              * When using the UPDI physical interface, the 'Get device ID' command behaves in an odd manner, where it
              * doesn't actually return the target signature, but instead a fixed four byte string reading:
@@ -331,7 +326,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
              */
             const auto signatureMemory = this->readMemory(
                 Avr8MemoryType::SRAM,
-                this->targetParameters.signatureSegmentStartAddress.value(),
+                this->session.signatureMemorySegment.startAddress,
                 3
             );
 
@@ -339,7 +334,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                 throw Exception("Failed to read AVR8 signature from target - unexpected response size");
             }
 
-            return TargetSignature(signatureMemory[0], signatureMemory[1], signatureMemory[2]);
+            return {signatureMemory[0], signatureMemory[1], signatureMemory[2]};
         }
 
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
@@ -350,7 +345,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             throw Avr8CommandFailure("AVR8 Get device ID command failed", responseFrame);
         }
 
-        return responseFrame.extractSignature(this->targetConfig.physicalInterface);
+        return responseFrame.extractSignature(this->session.targetConfig.physicalInterface);
     }
 
     void EdbgAvr8Interface::setSoftwareBreakpoint(TargetMemoryAddress address) {
@@ -518,7 +513,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
             const auto memoryType = (registerType != TargetRegisterType::GENERAL_PURPOSE_REGISTER)
                 ? Avr8MemoryType::SRAM
-                : (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI
+                : (this->session.configVariant == Avr8ConfigVariant::XMEGA || this->session.configVariant == Avr8ConfigVariant::UPDI
                     ? Avr8MemoryType::REGISTER_FILE
                     : Avr8MemoryType::SRAM);
 
@@ -622,7 +617,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             auto memoryType = Avr8MemoryType::SRAM;
             if (
                 registerDescriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER
-                && (this->configVariant == Avr8ConfigVariant::XMEGA || this->configVariant == Avr8ConfigVariant::UPDI)
+                && (this->session.configVariant == Avr8ConfigVariant::XMEGA || this->session.configVariant == Avr8ConfigVariant::UPDI)
             ) {
                 memoryType = Avr8MemoryType::REGISTER_FILE;
             }
@@ -743,14 +738,14 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             }
             case TargetMemoryType::FLASH: {
                 if (
-                    this->configVariant == Avr8ConfigVariant::DEBUG_WIRE
-                    || this->configVariant == Avr8ConfigVariant::UPDI
-                    || this->configVariant == Avr8ConfigVariant::MEGAJTAG
+                    this->session.configVariant == Avr8ConfigVariant::DEBUG_WIRE
+                    || this->session.configVariant == Avr8ConfigVariant::UPDI
+                    || this->session.configVariant == Avr8ConfigVariant::MEGAJTAG
                 ) {
                     avr8MemoryType = Avr8MemoryType::FLASH_PAGE;
 
-                } else if (this->configVariant == Avr8ConfigVariant::XMEGA) {
-                    const auto bootSectionStartAddress = this->targetParameters.bootSectionStartAddress.value();
+                } else if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
+                    const auto bootSectionStartAddress = this->session.programBootSection.value().get().startAddress;
                     if (startAddress >= bootSectionStartAddress) {
                         avr8MemoryType = Avr8MemoryType::BOOT_FLASH;
 
@@ -765,21 +760,21 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                          * When using the APPL_FLASH memory type, the address should be relative to the start of the
                          * application section.
                          */
-                        startAddress -= this->targetParameters.appSectionStartAddress.value();
+                        startAddress -= this->session.programAppSection.value().get().startAddress;
                         avr8MemoryType = Avr8MemoryType::APPL_FLASH;
                     }
                 }
                 break;
             }
             case TargetMemoryType::EEPROM: {
-                switch (this->configVariant) {
+                switch (this->session.configVariant) {
                     case Avr8ConfigVariant::UPDI:
                     case Avr8ConfigVariant::XMEGA: {
                         avr8MemoryType = Avr8MemoryType::EEPROM_ATOMIC;
 
-                        if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+                        if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
                             // EEPROM addresses should be in relative form, for XMEGA (PDI) targets
-                            startAddress -= this->targetParameters.eepromStartAddress.value();
+                            startAddress -= this->session.eepromMemorySegment.startAddress;
                         }
 
                         break;
@@ -810,16 +805,16 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     }
 
     void EdbgAvr8Interface::eraseProgramMemory(std::optional<Avr8Bit::ProgramMemorySection> section) {
-        if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+        if (this->session.configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
             // The EDBG erase command does not work on debugWire targets - we'll just write to the memory instead
             return this->writeMemory(
                 TargetMemoryType::FLASH,
-                this->targetParameters.flashStartAddress.value(),
-                TargetMemoryBuffer(this->targetParameters.flashSize.value(), 0xFF)
+                this->session.programMemorySegment.startAddress,
+                TargetMemoryBuffer(this->session.programMemorySegment.size, 0xFF)
             );
         }
 
-        if (this->configVariant == Avr8ConfigVariant::XMEGA) {
+        if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
             // For PDI (XMEGA) targets, we can erase flash memory without erasing EEPROM
 
             if (!section.has_value() || *section == Avr8Bit::ProgramMemorySection::BOOT) {
@@ -908,7 +903,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         this->programmingModeEnabled = false;
 
-        if (this->configVariant == Avr8ConfigVariant::MEGAJTAG && this->reactivateJtagTargetPostProgrammingMode) {
+        if (this->session.configVariant == Avr8ConfigVariant::MEGAJTAG && this->reactivateJtagTargetPostProgrammingMode) {
             this->deactivatePhysical();
             this->targetAttached = false;
             this->activate();
@@ -916,23 +911,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setTargetParameters() {
-        if (!this->targetParameters.stackPointerRegisterLowAddress.has_value()) {
-            throw DeviceInitializationFailure("Failed to find stack pointer register start address");
-        }
-
-        if (!this->targetParameters.stackPointerRegisterSize.has_value()) {
-            throw DeviceInitializationFailure("Failed to find stack pointer register size");
-        }
-
-        if (!this->targetParameters.statusRegisterStartAddress.has_value()) {
-            throw DeviceInitializationFailure("Failed to find status register start address");
-        }
-
-        if (!this->targetParameters.statusRegisterSize.has_value()) {
-            throw DeviceInitializationFailure("Failed to find status register size");
-        }
-
-        switch (this->configVariant) {
+        switch (this->session.configVariant) {
             case Avr8ConfigVariant::DEBUG_WIRE:
             case Avr8ConfigVariant::MEGAJTAG: {
                 this->setDebugWireAndJtagParameters();
@@ -950,76 +929,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                 break;
             }
         }
-    }
-
-    std::map<Family, std::map<TargetPhysicalInterface, Avr8ConfigVariant>>
-    EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface() {
-        return std::map<Family, std::map<TargetPhysicalInterface, Avr8ConfigVariant>>({
-            {
-                Family::MEGA,
-                {
-                    {TargetPhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
-                    {TargetPhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                }
-            },
-            {
-                Family::TINY,
-                {
-                    {TargetPhysicalInterface::JTAG, Avr8ConfigVariant::MEGAJTAG},
-                    {TargetPhysicalInterface::DEBUG_WIRE, Avr8ConfigVariant::DEBUG_WIRE},
-                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                }
-            },
-            {
-                Family::XMEGA,
-                {
-                    {TargetPhysicalInterface::JTAG, Avr8ConfigVariant::XMEGA},
-                    {TargetPhysicalInterface::PDI, Avr8ConfigVariant::XMEGA},
-                }
-            },
-            {
-                Family::DA,
-                {
-                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                }
-            },
-            {
-                Family::DB,
-                {
-                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                }
-            },
-            {
-                Family::DD,
-                {
-                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                }
-            },
-            {
-                Family::EA,
-                {
-                    {TargetPhysicalInterface::UPDI, Avr8ConfigVariant::UPDI},
-                }
-            },
-        });
-    }
-
-    Avr8ConfigVariant EdbgAvr8Interface::resolveConfigVariant(
-        Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
-        TargetPhysicalInterface physicalInterface
-    ) {
-        const auto configVariantsByFamily = EdbgAvr8Interface::getConfigVariantsByFamilyAndPhysicalInterface();
-        const auto configVariantsByPhysicalInterfaceIt = configVariantsByFamily.find(targetFamily);
-
-        assert(configVariantsByPhysicalInterfaceIt != configVariantsByFamily.end());
-
-        const auto& configVariantsByPhysicalInterface = configVariantsByPhysicalInterfaceIt->second;
-        const auto configVariantIt = configVariantsByPhysicalInterface.find(physicalInterface);
-
-        assert(configVariantIt != configVariantsByPhysicalInterface.end());
-
-        return configVariantIt->second;
     }
 
     void EdbgAvr8Interface::setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value) {
@@ -1052,7 +961,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setDebugWireAndJtagParameters() {
-        const auto parameters = Parameters::Avr8Generic::DebugWireJtagParameters(this->targetDescriptionFile);
+        const auto parameters = Parameters::Avr8Generic::DebugWireJtagParameters(this->session.targetDescriptionFile);
 
         Logger::debug("Setting FLASH_PAGE_SIZE AVR8 device parameter");
         this->setParameter(Avr8EdbgParameters::DEVICE_FLASH_PAGE_SIZE, parameters.flashPageSize);
@@ -1103,7 +1012,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setPdiParameters() {
-        const auto parameters = Parameters::Avr8Generic::PdiParameters(this->targetDescriptionFile);
+        const auto parameters = Parameters::Avr8Generic::PdiParameters(this->session.targetDescriptionFile);
 
         Logger::debug("Setting APPL_BASE_ADDR AVR8 parameter");
         this->setParameter(Avr8EdbgParameters::DEVICE_XMEGA_APPL_BASE_ADDR, parameters.appSectionPdiOffset);
@@ -1152,7 +1061,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     }
 
     void EdbgAvr8Interface::setUpdiParameters() {
-        const auto parameters = Parameters::Avr8Generic::UpdiParameters(this->targetDescriptionFile);
+        const auto parameters = Parameters::Avr8Generic::UpdiParameters(this->session.targetDescriptionFile);
 
         /*
          * The program memory base address field for UPDI sessions (DEVICE_UPDI_PROGMEM_BASE_ADDR) seems to be
@@ -1202,55 +1111,35 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             static_cast<std::uint8_t>(parameters.flashPageSize >> 8)
         );
 
-        if (this->targetParameters.eepromPageSize.has_value()) {
-            Logger::debug("Setting UPDI_EEPROM_PAGE_SIZE AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_EEPROM_PAGE_SIZE, parameters.eepromPageSize);
-        }
+        Logger::debug("Setting UPDI_EEPROM_PAGE_SIZE AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_EEPROM_PAGE_SIZE, parameters.eepromPageSize);
 
-        if (this->targetParameters.nvmModuleBaseAddress.has_value()) {
-            Logger::debug("Setting UPDI_NVMCTRL_ADDR AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_NVMCTRL_ADDR, parameters.nvmModuleBaseAddress);
-        }
+        Logger::debug("Setting UPDI_NVMCTRL_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_NVMCTRL_ADDR, parameters.nvmModuleBaseAddress);
 
-        if (this->targetParameters.ocdModuleAddress.has_value()) {
-            Logger::debug("Setting UPDI_OCD_ADDR AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_OCD_ADDR, parameters.ocdModuleAddress);
-        }
+        Logger::debug("Setting UPDI_OCD_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_OCD_ADDR, parameters.ocdModuleAddress);
 
-        if (this->targetParameters.flashSize.has_value()) {
-            Logger::debug("Setting UPDI_FLASH_SIZE AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_FLASH_SIZE, parameters.flashSize);
-        }
+        Logger::debug("Setting UPDI_FLASH_SIZE AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_FLASH_SIZE, parameters.flashSize);
 
-        if (this->targetParameters.eepromSize.has_value()) {
-            Logger::debug("Setting UPDI_EEPROM_SIZE AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_EEPROM_SIZE, parameters.eepromSize);
-        }
+        Logger::debug("Setting UPDI_EEPROM_SIZE AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_EEPROM_SIZE, parameters.eepromSize);
 
-        if (this->targetParameters.eepromStartAddress.has_value()) {
-            Logger::debug("Setting UPDI_EEPROM_BASE_ADDR AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_EEPROM_BASE_ADDR, parameters.eepromStartAddress);
-        }
+        Logger::debug("Setting UPDI_EEPROM_BASE_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_EEPROM_BASE_ADDR, parameters.eepromStartAddress);
 
-        if (this->targetParameters.signatureSegmentStartAddress.has_value()) {
-            Logger::debug("Setting UPDI_SIG_BASE_ADDR AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_SIG_BASE_ADDR, parameters.signatureSegmentStartAddress);
-        }
+        Logger::debug("Setting UPDI_SIG_BASE_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_SIG_BASE_ADDR, parameters.signatureSegmentStartAddress);
 
-        if (this->targetParameters.fuseSegmentStartAddress.has_value()) {
-            Logger::debug("Setting UPDI_FUSE_BASE_ADDR AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_FUSE_BASE_ADDR, parameters.fuseSegmentStartAddress);
-        }
+        Logger::debug("Setting UPDI_FUSE_BASE_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_FUSE_BASE_ADDR, parameters.fuseSegmentStartAddress);
 
-        if (this->targetParameters.fuseSegmentSize.has_value()) {
-            Logger::debug("Setting UPDI_FUSE_SIZE AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_FUSE_SIZE, parameters.fuseSegmentSize);
-        }
+        Logger::debug("Setting UPDI_FUSE_SIZE AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_FUSE_SIZE, parameters.fuseSegmentSize);
 
-        if (this->targetParameters.lockbitsSegmentStartAddress.has_value()) {
-            Logger::debug("Setting UPDI_LOCK_BASE_ADDR AVR8 device parameter");
-            this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_LOCK_BASE_ADDR, parameters.lockbitSegmentStartAddress);
-        }
+        Logger::debug("Setting UPDI_LOCK_BASE_ADDR AVR8 device parameter");
+        this->setParameter(Avr8EdbgParameters::DEVICE_UPDI_LOCK_BASE_ADDR, parameters.lockbitSegmentStartAddress);
     }
 
     void EdbgAvr8Interface::activatePhysical(bool applyExternalReset) {
@@ -1295,7 +1184,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          */
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             Attach(
-                this->configVariant != Avr8ConfigVariant::MEGAJTAG
+                this->session.configVariant != Avr8ConfigVariant::MEGAJTAG
             )
         );
 
@@ -1384,12 +1273,12 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                  * align them - we've tried only word aligning them - the debug tool reports a "Too many or too few
                  * bytes" error.
                  */
-                alignTo = this->targetParameters.flashPageSize.value();
+                alignTo = static_cast<std::uint16_t>(this->session.programMemorySegment.pageSize.value());
                 break;
             }
             case Avr8MemoryType::EEPROM_ATOMIC:
             case Avr8MemoryType::EEPROM_PAGE: {
-                alignTo = this->targetParameters.eepromPageSize.value();
+                alignTo = static_cast<std::uint16_t>(this->session.eepromMemorySegment.pageSize.value());
                 break;
             }
             default: {
@@ -1418,12 +1307,12 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             case Avr8MemoryType::APPL_FLASH:
             case Avr8MemoryType::BOOT_FLASH: {
                 // See comment in EdbgAvr8Interface::alignMemoryAddress()
-                alignTo = this->targetParameters.flashPageSize.value();
+                alignTo = static_cast<std::uint16_t>(this->session.programMemorySegment.pageSize.value());
                 break;
             }
             case Avr8MemoryType::EEPROM_ATOMIC:
             case Avr8MemoryType::EEPROM_PAGE: {
-                alignTo = this->targetParameters.eepromPageSize.value();
+                alignTo = static_cast<std::uint16_t>(this->session.eepromMemorySegment.pageSize.value());
                 break;
             }
             default: {
@@ -1445,10 +1334,10 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             memoryType == Avr8MemoryType::FLASH_PAGE
             || memoryType == Avr8MemoryType::APPL_FLASH
             || memoryType == Avr8MemoryType::BOOT_FLASH
-            || (memoryType == Avr8MemoryType::SPM && this->configVariant == Avr8ConfigVariant::MEGAJTAG)
+            || (memoryType == Avr8MemoryType::SPM && this->session.configVariant == Avr8ConfigVariant::MEGAJTAG)
         ) {
             // These flash memory types require single page access.
-            return this->targetParameters.flashPageSize.value();
+            return this->session.programMemorySegment.pageSize.value();
         }
 
         if (
@@ -1456,7 +1345,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             || memoryType == Avr8MemoryType::EEPROM_PAGE
         ) {
             // These EEPROM memory types requires single page access.
-            return this->targetParameters.eepromPageSize.value();
+            return this->session.eepromMemorySegment.pageSize.value();
         }
 
         if (this->maximumMemoryAccessSizePerRequest.has_value()) {
@@ -1485,7 +1374,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         const std::set<TargetMemoryAddress>& excludedAddresses
     ) {
         if (type == Avr8MemoryType::FUSES) {
-            if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+            if (this->session.configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
                 throw Exception("Cannot access AVR fuses via the debugWire interface");
             }
         }
@@ -1618,7 +1507,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         const TargetMemoryBuffer& buffer
     ) {
         if (type == Avr8MemoryType::FUSES) {
-            if (this->configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
+            if (this->session.configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
                 throw Exception("Cannot access AVR fuses via the debugWire interface");
             }
         }

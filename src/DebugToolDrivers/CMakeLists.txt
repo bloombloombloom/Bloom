@@ -24,6 +24,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/Parameters/AVR8Generic/UpdiParameters.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/EdbgInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/EdbgTargetPowerManagementInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/EdbgAvr8Session.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/EdbgAvr8Interface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/EdbgAvrIspInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/EdbgDevice.cpp

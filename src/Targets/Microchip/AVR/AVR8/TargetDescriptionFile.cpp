@@ -50,27 +50,60 @@ namespace Targets::Microchip::Avr::Avr8Bit
         return familyIt->second;
     }
 
+    const Targets::TargetDescription::AddressSpace& TargetDescriptionFile::getProgramAddressSpace() const {
+        return this->getAddressSpace("prog");
+    }
+
+    const Targets::TargetDescription::AddressSpace& TargetDescriptionFile::getRamAddressSpace() const {
+        return this->getAddressSpace("data");
+    }
+
+    const Targets::TargetDescription::AddressSpace& TargetDescriptionFile::getEepromAddressSpace() const {
+        const auto addressSpace = this->tryGetAddressSpace("eeprom");
+        return addressSpace.has_value()
+            ? addressSpace->get()
+            : this->getAddressSpace("data");
+    }
+
+    const Targets::TargetDescription::AddressSpace& TargetDescriptionFile::getIoAddressSpace() const {
+        return this->getAddressSpace("data");
+    }
+
+    const Targets::TargetDescription::AddressSpace& TargetDescriptionFile::getSignatureAddressSpace() const {
+        const auto addressSpace = this->tryGetAddressSpace("signatures");
+        return addressSpace.has_value()
+            ? addressSpace->get()
+            : this->getAddressSpace("data");
+    }
+
+    const Targets::TargetDescription::AddressSpace& TargetDescriptionFile::getFuseAddressSpace() const {
+        const auto addressSpace = this->tryGetAddressSpace("fuses");
+        return addressSpace.has_value()
+            ? addressSpace->get()
+            : this->getAddressSpace("data");
+    }
+
+    const Targets::TargetDescription::AddressSpace& TargetDescriptionFile::getLockbitAddressSpace() const {
+        const auto addressSpace = this->tryGetAddressSpace("lockbits");
+        return addressSpace.has_value()
+            ? addressSpace->get()
+            : this->getAddressSpace("data");
+    }
+
     const Targets::TargetDescription::MemorySegment& TargetDescriptionFile::getProgramMemorySegment() const {
-        return this->getAddressSpace("prog").getMemorySegment("internal_program_memory");
+        return this->getProgramAddressSpace().getMemorySegment("internal_program_memory");
     }
 
     const Targets::TargetDescription::MemorySegment& TargetDescriptionFile::getRamMemorySegment() const {
-        return this->getAddressSpace("data").getMemorySegment("internal_ram");
+        return this->getRamAddressSpace().getMemorySegment("internal_ram");
     }
 
     const Targets::TargetDescription::MemorySegment& TargetDescriptionFile::getEepromMemorySegment() const {
-        /*
-         * The EEPROM segment can sometimes be found within a dedicated address space, or within the data address
-         * space.
-         */
-        const auto addressSpace = this->tryGetAddressSpace("eeprom");
-        return addressSpace.has_value()
-            ? addressSpace->get().getMemorySegment("internal_eeprom")
-            : this->getAddressSpace("data").getMemorySegment("internal_eeprom");
+        return this->getEepromAddressSpace().getMemorySegment("internal_eeprom");
     }
 
     const Targets::TargetDescription::MemorySegment& TargetDescriptionFile::getIoMemorySegment() const {
-        const auto addressSpace = this->getAddressSpace("data");
+        const auto addressSpace = this->getIoAddressSpace();
         const auto segment = addressSpace.tryGetMemorySegment("io");
         return segment.has_value()
             ? segment->get()
@@ -78,36 +111,15 @@ namespace Targets::Microchip::Avr::Avr8Bit
     }
 
     const Targets::TargetDescription::MemorySegment& TargetDescriptionFile::getSignatureMemorySegment() const {
-        /*
-         * The signatures segment can sometimes be found within a dedicated address space, or within the data address
-         * space.
-         */
-        const auto addressSpace = this->tryGetAddressSpace("signatures");
-        return addressSpace.has_value()
-            ? addressSpace->get().getMemorySegment("signatures")
-            : this->getAddressSpace("data").getMemorySegment("signatures");
+        return this->getSignatureAddressSpace().getMemorySegment("signatures");
     }
 
     const Targets::TargetDescription::MemorySegment& TargetDescriptionFile::getFuseMemorySegment() const {
-        /*
-         * The fuses segment can sometimes be found within a dedicated address space, or within the data address
-         * space.
-         */
-        const auto addressSpace = this->tryGetAddressSpace("fuses");
-        return addressSpace.has_value()
-            ? addressSpace->get().getMemorySegment("fuses")
-            : this->getAddressSpace("data").getMemorySegment("fuses");
+        return this->getFuseAddressSpace().getMemorySegment("fuses");
     }
 
     const Targets::TargetDescription::MemorySegment& TargetDescriptionFile::getLockbitMemorySegment() const {
-        /*
-         * The lockbits segment can sometimes be found within a dedicated address space, or within the data address
-         * space.
-         */
-        const auto addressSpace = this->tryGetAddressSpace("lockbits");
-        return addressSpace.has_value()
-            ? addressSpace->get().getMemorySegment("lockbits")
-            : this->getAddressSpace("data").getMemorySegment("lockbits");
+        return this->getLockbitAddressSpace().getMemorySegment("lockbits");
     }
 
     TargetParameters TargetDescriptionFile::getTargetParameters() const {

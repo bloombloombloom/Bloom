@@ -54,6 +54,14 @@ namespace Targets::Microchip::Avr::Avr8Bit
          */
         [[nodiscard]] Family getAvrFamily() const;
 
+        [[nodiscard]] const Targets::TargetDescription::AddressSpace& getProgramAddressSpace() const;
+        [[nodiscard]] const Targets::TargetDescription::AddressSpace& getRamAddressSpace() const;
+        [[nodiscard]] const Targets::TargetDescription::AddressSpace& getEepromAddressSpace() const;
+        [[nodiscard]] const Targets::TargetDescription::AddressSpace& getIoAddressSpace() const;
+        [[nodiscard]] const Targets::TargetDescription::AddressSpace& getSignatureAddressSpace() const;
+        [[nodiscard]] const Targets::TargetDescription::AddressSpace& getFuseAddressSpace() const;
+        [[nodiscard]] const Targets::TargetDescription::AddressSpace& getLockbitAddressSpace() const;
+
         [[nodiscard]] const Targets::TargetDescription::MemorySegment& getProgramMemorySegment() const;
         [[nodiscard]] const Targets::TargetDescription::MemorySegment& getRamMemorySegment() const;
         [[nodiscard]] const Targets::TargetDescription::MemorySegment& getEepromMemorySegment() const;
