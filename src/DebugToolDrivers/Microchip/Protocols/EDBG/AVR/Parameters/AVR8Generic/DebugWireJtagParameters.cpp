@@ -34,7 +34,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
 
         const auto& ocdPropertyGroup = targetDescriptionFile.getPropertyGroup("ocd");
         this->ocdRevision = StringService::toUint8(ocdPropertyGroup.getProperty("ocd_revision").value);
-        this->ocdDataRegister = StringService::toUint8(ocdPropertyGroup.getProperty("ocd_datareg").value);
+        this->ocdDataRegisterAddress = StringService::toUint8(ocdPropertyGroup.getProperty("ocd_datareg").value);
 
         const auto& eepromRegisterGroupDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor("eeprom")
             .getRegisterGroupDescriptor("eeprom");
@@ -42,29 +42,38 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         const auto& eearDescriptor = eepromRegisterGroupDescriptor.tryGetRegisterDescriptor("eear");
         if (eearDescriptor.has_value()) {
             const auto startAddress = eearDescriptor->get().startAddress;
-            this->eepromAddressRegisterLow = static_cast<std::uint8_t>(startAddress);
-            this->eepromAddressRegisterHigh = static_cast<std::uint8_t>(
-                eearDescriptor->get().size > 1 ? startAddress >> 2 : startAddress
+            this->eearAddressLow = static_cast<std::uint8_t>(startAddress);
+
+            /*
+             * If the target doesn't have a high byte in the `EEAR` address, the `eearAddressHigh` parameter should be
+             * equal to the `eearAddressLow` parameter, as stated in the "EDBG-based Tools Protocols" document.
+             */
+            this->eearAddressHigh = static_cast<std::uint8_t>(
+                eearDescriptor->get().size > 1 ? startAddress >> 8 : startAddress
             );
 
         } else {
             const auto& eearlDescriptor = eepromRegisterGroupDescriptor.getRegisterDescriptor("eearl");
-            this->eepromAddressRegisterLow = static_cast<std::uint8_t>(eearlDescriptor.startAddress);
-            this->eepromAddressRegisterHigh = static_cast<std::uint8_t>(
-                eearlDescriptor.size > 1 ? eearlDescriptor.startAddress >> 2 : eearlDescriptor.startAddress
-            );
+            this->eearAddressLow = static_cast<std::uint8_t>(eearlDescriptor.startAddress);
 
+            /*
+             * Some debugWire targets only have a single-byte `EEARL` register. In the absence of an `EEARH` register,
+             * and if there is no high byte in the `EEARL` register, the `eearAddressHigh` parameter should be equal
+             * to the `eearAddressLow` parameter, as stated in the "EDBG-based Tools Protocols" document.
+             */
             const auto eearhDescriptor = eepromRegisterGroupDescriptor.tryGetRegisterDescriptor("eearh");
-            if (eearhDescriptor.has_value()) {
-                this->eepromAddressRegisterHigh = static_cast<std::uint8_t>(eearhDescriptor->get().startAddress);
-            }
+            this->eearAddressHigh = static_cast<std::uint8_t>(
+                eearhDescriptor.has_value()
+                    ? eearhDescriptor->get().startAddress
+                    : eearlDescriptor.size > 1 ? eearlDescriptor.startAddress >> 8 : eearlDescriptor.startAddress
+            );
         }
 
-        this->eepromDataRegisterAddress = static_cast<std::uint8_t>(
+        this->eedrAddress = static_cast<std::uint8_t>(
             eepromRegisterGroupDescriptor.getRegisterDescriptor("eedr").startAddress
         );
 
-        this->eepromControlRegisterAddress = static_cast<std::uint8_t>(
+        this->eecrAddress = static_cast<std::uint8_t>(
             eepromRegisterGroupDescriptor.getRegisterDescriptor("eecr").startAddress
         );
 
@@ -75,7 +84,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
             ?: cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("spmcr");
 
         if (spmcsrDescriptor.has_value()) {
-            this->spmcRegisterStartAddress = static_cast<std::uint8_t>(spmcsrDescriptor->get().startAddress);
+            this->spmcrAddress = static_cast<std::uint8_t>(spmcsrDescriptor->get().startAddress);
 
         } else {
             const auto& bootLoaderRegisterGroupDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor(
@@ -89,7 +98,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
                 throw Exceptions::InternalFatalErrorException("Could not extract SPMCS register from TDF");
             }
 
-            this->spmcRegisterStartAddress = static_cast<std::uint8_t>(spmcsrDescriptor->get().startAddress);
+            this->spmcrAddress = static_cast<std::uint8_t>(spmcsrDescriptor->get().startAddress);
         }
 
         const auto osccalDescriptor = cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("osccal")
@@ -122,9 +131,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         const auto& ioMemorySegment = targetDescriptionFile.getIoMemorySegment();
 
         this->osccalAddress -= ioMemorySegment.startAddress;
-        this->eepromAddressRegisterLow -= ioMemorySegment.startAddress;
-        this->eepromAddressRegisterHigh -= ioMemorySegment.startAddress;
-        this->eepromControlRegisterAddress -= ioMemorySegment.startAddress;
-        this->eepromDataRegisterAddress -= ioMemorySegment.startAddress;
+        this->eearAddressLow -= ioMemorySegment.startAddress;
+        this->eearAddressHigh -= ioMemorySegment.startAddress;
+        this->eecrAddress -= ioMemorySegment.startAddress;
+        this->eedrAddress -= ioMemorySegment.startAddress;
     }
 }

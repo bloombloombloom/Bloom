@@ -16,11 +16,11 @@ class JtagParameters
     public ?int $eepromSize = null;
     public ?int $eepromPageSize = null;
     public ?int $ocdRevision = null;
-    public ?int $ocdDataRegister = null;
-    public ?int $eepromAddressRegisterHigh = null;
-    public ?int $eepromAddressRegisterLow = null;
-    public ?int $eepromControlRegisterAddress = null;
-    public ?int $eepromDataRegisterAddress = null;
-    public ?int $spmcRegisterStartAddress = null;
+    public ?int $ocdDataRegisterAddress = null;
+    public ?int $eearAddressHigh = null;
+    public ?int $eearAddressLow = null;
+    public ?int $eecrAddress = null;
+    public ?int $eedrAddress = null;
+    public ?int $spmcrAddress = null;
     public ?int $osccalAddress = null;
 }

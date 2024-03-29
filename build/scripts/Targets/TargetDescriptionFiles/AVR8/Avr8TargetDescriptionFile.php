@@ -121,7 +121,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         $output->ocdRevision = $this->stringService->tryStringToInt(
             $this->getPropertyValue('ocd', 'ocd_revision')
         );
-        $output->ocdDataRegister = $this->stringService->tryStringToInt(
+        $output->ocdDataRegisterAddress = $this->stringService->tryStringToInt(
             $this->getPropertyValue('ocd', 'ocd_datareg')
         );
 
@@ -131,40 +131,40 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $eepromAddressRegister = $eepromPeripheral->getRegister('eeprom', 'eear');
 
             if ($eepromAddressRegister instanceof TargetRegister) {
-                $output->eepromAddressRegisterLow = $eepromAddressRegister->address;
-                $output->eepromAddressRegisterHigh = $eepromAddressRegister->size > 1
+                $output->eearAddressLow = $eepromAddressRegister->address;
+                $output->eearAddressHigh = $eepromAddressRegister->size > 1
                     ? $eepromAddressRegister->address !== null
-                        ? $eepromAddressRegister->address >> 2
+                        ? $eepromAddressRegister->address >> 8
                         : null
                     : $eepromAddressRegister->address
                 ;
 
             } else {
-                $eepromAddressRegisterLow = $eepromPeripheral->getRegister('eeprom', 'eearl');
-                $eepromAddressRegisterHigh = $eepromPeripheral->getRegister('eeprom', 'eearh');
+                $eearAddressLow = $eepromPeripheral->getRegister('eeprom', 'eearl');
+                $eearAddressHigh = $eepromPeripheral->getRegister('eeprom', 'eearh');
 
-                if ($eepromAddressRegisterLow instanceof TargetRegister) {
-                    $output->eepromAddressRegisterLow = $eepromAddressRegisterLow->address;
-                    $output->eepromAddressRegisterHigh = $eepromAddressRegisterLow->size > 1
-                        ? $eepromAddressRegisterLow->address !== null
-                            ? $eepromAddressRegisterLow->address >> 2
+                if ($eearAddressLow instanceof TargetRegister) {
+                    $output->eearAddressLow = $eearAddressLow->address;
+                    $output->eearAddressHigh = $eearAddressLow->size > 1
+                        ? $eearAddressLow->address !== null
+                            ? $eearAddressLow->address >> 8
                             : null
-                        : $eepromAddressRegisterLow->address;
+                        : $eearAddressLow->address;
                 }
 
-                if ($eepromAddressRegisterHigh instanceof TargetRegister) {
-                    $output->eepromAddressRegisterHigh = $eepromAddressRegisterHigh->address;
+                if ($eearAddressHigh instanceof TargetRegister) {
+                    $output->eearAddressHigh = $eearAddressHigh->address;
                 }
             }
 
             $eepromDataRegister = $eepromPeripheral->getRegister('eeprom', 'eedr');
             if ($eepromDataRegister instanceof TargetRegister) {
-                $output->eepromDataRegisterAddress = $eepromDataRegister->address;
+                $output->eedrAddress = $eepromDataRegister->address;
             }
 
             $eepromControlRegister = $eepromPeripheral->getRegister('eeprom', 'eecr');
             if ($eepromControlRegister instanceof TargetRegister) {
-                $output->eepromControlRegisterAddress = $eepromControlRegister->address;
+                $output->eecrAddress = $eepromControlRegister->address;
             }
         }
 
@@ -175,7 +175,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 ?? $cpuPeripheral->getRegister('cpu', 'spmcr');
 
             if ($spmcsRegister instanceof TargetRegister) {
-                $output->spmcRegisterStartAddress = $spmcsRegister->address;
+                $output->spmcrAddress = $spmcsRegister->address;
             }
 
             $osccalRegister = $cpuPeripheral->getRegister('cpu', 'osccal')
@@ -189,7 +189,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
-        if ($output->spmcRegisterStartAddress === null) {
+        if ($output->spmcrAddress === null) {
             $bootLoaderPeripheral = $this->getTargetPeripheral('boot_load');
 
             if ($bootLoaderPeripheral instanceof TargetPeripheral) {
@@ -197,7 +197,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                     ?? $bootLoaderPeripheral->getRegister('boot_load', 'spmcsr');
 
                 if ($spmcsRegister instanceof TargetRegister) {
-                    $output->spmcRegisterStartAddress = $spmcsRegister->address;
+                    $output->spmcrAddress = $spmcsRegister->address;
                 }
             }
         }
@@ -274,7 +274,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         }
 
         $output->ocdRevision = $this->stringService->tryStringToInt($this->getPropertyValue('ocd', 'ocd_revision'));
-        $output->ocdDataRegister = $this->stringService->tryStringToInt($this->getPropertyValue('ocd', 'ocd_datareg'));
+        $output->ocdDataRegisterAddress = $this->stringService->tryStringToInt($this->getPropertyValue('ocd', 'ocd_datareg'));
 
         $eepromPeripheral = $this->getTargetPeripheral('eeprom');
 
@@ -282,8 +282,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             $eepromAddressRegister = $eepromPeripheral->getRegister('eeprom', 'eear');
 
             if ($eepromAddressRegister instanceof TargetRegister) {
-                $output->eepromAddressRegisterLow = $eepromAddressRegister->address;
-                $output->eepromAddressRegisterHigh = $eepromAddressRegister->size > 1
+                $output->eearAddressLow = $eepromAddressRegister->address;
+                $output->eearAddressHigh = $eepromAddressRegister->size > 1
                     ? $eepromAddressRegister->address !== null
                         ? $eepromAddressRegister->address >> 2
                         : null
@@ -291,26 +291,26 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 ;
 
             } else {
-                $eepromAddressRegisterLow = $eepromPeripheral->getRegister('eeprom', 'eearl');
-                $eepromAddressRegisterHigh = $eepromPeripheral->getRegister('eeprom', 'eearh');
+                $eearAddressLow = $eepromPeripheral->getRegister('eeprom', 'eearl');
+                $eearAddressHigh = $eepromPeripheral->getRegister('eeprom', 'eearh');
 
-                if ($eepromAddressRegisterLow instanceof TargetRegister) {
-                    $output->eepromAddressRegisterLow = $eepromAddressRegisterLow->address;
+                if ($eearAddressLow instanceof TargetRegister) {
+                    $output->eearAddressLow = $eearAddressLow->address;
                 }
 
-                if ($eepromAddressRegisterHigh instanceof TargetRegister) {
-                    $output->eepromAddressRegisterHigh = $eepromAddressRegisterHigh->address;
+                if ($eearAddressHigh instanceof TargetRegister) {
+                    $output->eearAddressHigh = $eearAddressHigh->address;
                 }
             }
 
             $eepromDataRegister = $eepromPeripheral->getRegister('eeprom', 'eedr');
             if ($eepromDataRegister instanceof TargetRegister) {
-                $output->eepromDataRegisterAddress = $eepromDataRegister->address;
+                $output->eedrAddress = $eepromDataRegister->address;
             }
 
             $eepromControlRegister = $eepromPeripheral->getRegister('eeprom', 'eecr');
             if ($eepromControlRegister instanceof TargetRegister) {
-                $output->eepromControlRegisterAddress = $eepromControlRegister->address;
+                $output->eecrAddress = $eepromControlRegister->address;
             }
         }
 
@@ -321,7 +321,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                 ?? $cpuPeripheral->getRegister('cpu', 'spmcr');
 
             if ($spmcsRegister instanceof TargetRegister) {
-                $output->spmcRegisterStartAddress = $spmcsRegister->address;
+                $output->spmcrAddress = $spmcsRegister->address;
             }
 
             $osccalRegister = $cpuPeripheral->getRegister('cpu', 'osccal')
@@ -335,7 +335,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
             }
         }
 
-        if ($output->spmcRegisterStartAddress === null) {
+        if ($output->spmcrAddress === null) {
             $bootLoaderPeripheral = $this->getTargetPeripheral('boot_load');
 
             if ($bootLoaderPeripheral instanceof TargetPeripheral) {
@@ -343,7 +343,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
                     ?? $bootLoaderPeripheral->getRegister('boot_load', 'spmcsr');
 
                 if ($spmcsRegister instanceof TargetRegister) {
-                    $output->spmcRegisterStartAddress = $spmcsRegister->address;
+                    $output->spmcrAddress = $spmcsRegister->address;
                 }
             }
         }

@@ -22,12 +22,12 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         std::uint16_t eepromSize;
         std::uint8_t eepromPageSize;
         std::uint8_t ocdRevision;
-        std::uint8_t ocdDataRegister;
-        std::uint8_t eepromAddressRegisterHigh;
-        std::uint8_t eepromAddressRegisterLow;
-        std::uint8_t eepromDataRegisterAddress;
-        std::uint8_t eepromControlRegisterAddress;
-        std::uint8_t spmcRegisterStartAddress;
+        std::uint8_t ocdDataRegisterAddress;
+        std::uint8_t eearAddressHigh;
+        std::uint8_t eearAddressLow;
+        std::uint8_t eedrAddress;
+        std::uint8_t eecrAddress;
+        std::uint8_t spmcrAddress;
         std::uint8_t osccalAddress;
 
         DebugWireJtagParameters(const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile);

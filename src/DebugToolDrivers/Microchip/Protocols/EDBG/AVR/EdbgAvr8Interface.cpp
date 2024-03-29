@@ -990,22 +990,22 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         this->setParameter(Avr8EdbgParameters::DEVICE_OCD_REVISION, parameters.ocdRevision);
 
         Logger::debug("Setting OCD_DATA_REGISTER AVR8 device parameter");
-        this->setParameter(Avr8EdbgParameters::DEVICE_OCD_DATA_REGISTER, parameters.ocdDataRegister);
+        this->setParameter(Avr8EdbgParameters::DEVICE_OCD_DATA_REGISTER, parameters.ocdDataRegisterAddress);
 
         Logger::debug("Setting EEARL_ADDR AVR8 device parameter");
-        this->setParameter(Avr8EdbgParameters::DEVICE_EEARL_ADDR, parameters.eepromAddressRegisterLow);
+        this->setParameter(Avr8EdbgParameters::DEVICE_EEARL_ADDR, parameters.eearAddressLow);
 
         Logger::debug("Setting EEARH_ADDR AVR8 device parameter");
-        this->setParameter(Avr8EdbgParameters::DEVICE_EEARH_ADDR, parameters.eepromAddressRegisterHigh);
+        this->setParameter(Avr8EdbgParameters::DEVICE_EEARH_ADDR, parameters.eearAddressHigh);
 
         Logger::debug("Setting EECR_ADDR AVR8 device parameter");
-        this->setParameter(Avr8EdbgParameters::DEVICE_EECR_ADDR, parameters.eepromControlRegisterAddress);
+        this->setParameter(Avr8EdbgParameters::DEVICE_EECR_ADDR, parameters.eecrAddress);
 
         Logger::debug("Setting EEDR_ADDR AVR8 device parameter");
-        this->setParameter(Avr8EdbgParameters::DEVICE_EEDR_ADDR, parameters.eepromDataRegisterAddress);
+        this->setParameter(Avr8EdbgParameters::DEVICE_EEDR_ADDR, parameters.eedrAddress);
 
         Logger::debug("Setting SPMCR_REGISTER AVR8 device parameter");
-        this->setParameter(Avr8EdbgParameters::DEVICE_SPMCR_REGISTER, parameters.spmcRegisterStartAddress);
+        this->setParameter(Avr8EdbgParameters::DEVICE_SPMCR_REGISTER, parameters.spmcrAddress);
 
         Logger::debug("Setting OSCCAL_ADDR AVR8 device parameter");
         this->setParameter(Avr8EdbgParameters::DEVICE_OSCCAL_ADDR, parameters.osccalAddress);

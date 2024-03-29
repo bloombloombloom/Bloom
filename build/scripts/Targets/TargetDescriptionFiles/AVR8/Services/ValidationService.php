@@ -207,31 +207,31 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'EEPROM page size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->eepromAddressRegisterHigh === null) {
+        if ($parameters->eearAddressHigh === null) {
             $failures[] = 'Missing EEARH address';
 
-        } elseif ($parameters->eepromAddressRegisterHigh > 0xFF) {
+        } elseif ($parameters->eearAddressHigh > 0xFF) {
             $failures[] = 'EEARH address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->eepromAddressRegisterLow === null) {
+        if ($parameters->eearAddressLow === null) {
             $failures[] = 'Missing EEARL address';
 
-        } elseif ($parameters->eepromAddressRegisterLow > 0xFF) {
+        } elseif ($parameters->eearAddressLow > 0xFF) {
             $failures[] = 'EEARL address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->eepromControlRegisterAddress === null) {
+        if ($parameters->eecrAddress === null) {
             $failures[] = 'Missing EECR address';
 
-        } elseif ($parameters->eepromControlRegisterAddress > 0xFF) {
+        } elseif ($parameters->eecrAddress > 0xFF) {
             $failures[] = 'EECR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->eepromDataRegisterAddress === null) {
+        if ($parameters->eedrAddress === null) {
             $failures[] = 'Missing EEDR address';
 
-        } elseif ($parameters->eepromDataRegisterAddress > 0xFF) {
+        } elseif ($parameters->eedrAddress > 0xFF) {
             $failures[] = 'EEDR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
@@ -242,17 +242,17 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'OCD revision size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->ocdDataRegister === null) {
+        if ($parameters->ocdDataRegisterAddress === null) {
             $failures[] = 'Missing OCDR address';
 
-        } elseif ($parameters->ocdDataRegister > 0xFF) {
+        } elseif ($parameters->ocdDataRegisterAddress > 0xFF) {
             $failures[] = 'OCDR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->spmcRegisterStartAddress === null) {
+        if ($parameters->spmcrAddress === null) {
             $failures[] = 'Missing SPMCR start address';
 
-        } elseif ($parameters->spmcRegisterStartAddress > 0xFF) {
+        } elseif ($parameters->spmcrAddress > 0xFF) {
             $failures[] = 'SPMCR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
@@ -368,31 +368,31 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'EEPROM page size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->eepromAddressRegisterHigh === null) {
+        if ($parameters->eearAddressHigh === null) {
             $failures[] = 'Missing EEARH address';
 
-        } elseif ($parameters->eepromAddressRegisterHigh > 0xFF) {
+        } elseif ($parameters->eearAddressHigh > 0xFF) {
             $failures[] = 'EEARH address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->eepromAddressRegisterLow === null) {
+        if ($parameters->eearAddressLow === null) {
             $failures[] = 'Missing EEARL address';
 
-        } elseif ($parameters->eepromAddressRegisterLow > 0xFF) {
+        } elseif ($parameters->eearAddressLow > 0xFF) {
             $failures[] = 'EEARL address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->eepromControlRegisterAddress === null) {
+        if ($parameters->eecrAddress === null) {
             $failures[] = 'Missing EECR address';
 
-        } elseif ($parameters->eepromControlRegisterAddress > 0xFF) {
+        } elseif ($parameters->eecrAddress > 0xFF) {
             $failures[] = 'EECR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->eepromDataRegisterAddress === null) {
+        if ($parameters->eedrAddress === null) {
             $failures[] = 'Missing EEDR address';
 
-        } elseif ($parameters->eepromDataRegisterAddress > 0xFF) {
+        } elseif ($parameters->eedrAddress > 0xFF) {
             $failures[] = 'EEDR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
@@ -403,17 +403,17 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'OCD revision size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->ocdDataRegister === null) {
+        if ($parameters->ocdDataRegisterAddress === null) {
             $failures[] = 'Missing OCDR address';
 
-        } elseif ($parameters->ocdDataRegister > 0xFF) {
+        } elseif ($parameters->ocdDataRegisterAddress > 0xFF) {
             $failures[] = 'OCDR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
-        if ($parameters->spmcRegisterStartAddress === null) {
+        if ($parameters->spmcrAddress === null) {
             $failures[] = 'Missing SPMCR start address';
 
-        } elseif ($parameters->spmcRegisterStartAddress > 0xFF) {
+        } elseif ($parameters->spmcrAddress > 0xFF) {
             $failures[] = 'SPMCR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
         }
 
