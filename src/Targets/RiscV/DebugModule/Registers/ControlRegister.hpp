@@ -47,7 +47,7 @@ namespace Targets::RiscV::DebugModule::Registers
             , haltRequest(static_cast<bool>(registerValue & static_cast<std::uint32_t>(0x01 << 31)))
         {}
 
-        constexpr RegisterValue value() const {
+        [[nodiscard]] constexpr RegisterValue value() const {
             assert(this->selectedHartIndex <= 0xFFFFF);
 
             return RegisterValue{0}

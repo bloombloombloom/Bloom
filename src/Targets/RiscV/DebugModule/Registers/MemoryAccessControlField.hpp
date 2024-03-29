@@ -43,7 +43,7 @@ namespace Targets::RiscV::DebugModule::Registers
             , virtualAddress(static_cast<bool>(controlValue & (0x01 << 23)))
         {}
 
-        constexpr std::uint32_t value() const {
+        [[nodiscard]] constexpr std::uint32_t value() const {
             return std::uint32_t{0}
                 | static_cast<std::uint32_t>(this->write) << 16
                 | static_cast<std::uint32_t>(this->postIncrement) << 19

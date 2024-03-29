@@ -26,7 +26,7 @@ namespace Targets::RiscV::DebugModule::Registers
             , commandType(static_cast<CommandType>((registerValue >> 24) & 0xFF))
         {}
 
-        constexpr RegisterValue value() const {
+        [[nodiscard]] constexpr RegisterValue value() const {
             assert(this->control <= 0x00FFFFFF);
 
             return RegisterValue{0}

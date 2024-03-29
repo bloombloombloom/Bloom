@@ -22,8 +22,6 @@ namespace Targets::RiscV::DebugModule::Registers
         bool postIncrement:1 = false;
         RegisterSize size:3 = RegisterSize::SIZE_32;
 
-        RegisterAccessControlField() = default;
-
         RegisterAccessControlField(
             RegisterNumber registerNumber,
             bool write,
@@ -49,7 +47,7 @@ namespace Targets::RiscV::DebugModule::Registers
             , size(static_cast<RegisterSize>((controlValue >> 20) & 0x07))
         {}
 
-        constexpr std::uint32_t value() const {
+        [[nodiscard]] constexpr std::uint32_t value() const {
             return std::uint32_t{0}
                 | static_cast<std::uint32_t>(this->registerNumber)
                 | static_cast<std::uint32_t>(this->write) << 16

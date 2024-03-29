@@ -52,7 +52,7 @@ namespace Targets::RiscV::DebugModule::Registers
             , ndmResetPending(static_cast<bool>(registerValue & (0x01 << 24)))
         {}
 
-        constexpr RegisterValue value() const {
+        [[nodiscard]] constexpr RegisterValue value() const {
             return RegisterValue{0}
                 | static_cast<RegisterValue>(this->version)
                 | static_cast<RegisterValue>(this->validConfigStructurePointer) << 4

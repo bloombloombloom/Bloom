@@ -35,7 +35,7 @@ namespace Targets::RiscV::DebugModule::Registers
             , programBufferSize(static_cast<std::uint8_t>((registerValue >> 24) & 0x1F))
         {}
 
-        constexpr RegisterValue value() const {
+        [[nodiscard]] constexpr RegisterValue value() const {
             return RegisterValue{0}
                 | static_cast<RegisterValue>(this->dataCount)
                 | static_cast<RegisterValue>(this->commandError) << 8

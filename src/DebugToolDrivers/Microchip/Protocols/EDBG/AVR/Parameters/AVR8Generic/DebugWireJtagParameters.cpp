@@ -57,9 +57,11 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
             this->eearAddressLow = static_cast<std::uint8_t>(eearlDescriptor.startAddress);
 
             /*
-             * Some debugWire targets only have a single-byte `EEARL` register. In the absence of an `EEARH` register,
-             * and if there is no high byte in the `EEARL` register, the `eearAddressHigh` parameter should be equal
-             * to the `eearAddressLow` parameter, as stated in the "EDBG-based Tools Protocols" document.
+             * Some debugWire targets only have a single-byte `EEARL` register.
+             *
+             * In the absence of an `EEARH` register, and if there is no high byte in the `EEARL` register, the
+             * `eearAddressHigh` parameter should be equal to the `eearAddressLow` parameter, as stated in the
+             * "EDBG-based Tools Protocols" document.
              */
             const auto eearhDescriptor = eepromRegisterGroupDescriptor.tryGetRegisterDescriptor("eearh");
             this->eearAddressHigh = static_cast<std::uint8_t>(
