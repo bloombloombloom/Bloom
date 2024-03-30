@@ -68,6 +68,32 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'Unknown AVR8 family';
         }
 
+        // The target must have at least one SP register, and it must reside in the CPU peripheral.
+        $spRegisters = array_filter([
+            $tdf->getTargetRegister("cpu", "cpu", "sp"),
+            $tdf->getTargetRegister("cpu", "cpu", "spl"),
+            $tdf->getTargetRegister("cpu", "cpu", "sph"),
+        ]);
+
+        if (empty($spRegisters)) {
+            $failures[] = 'Missing stack pointer register(s) in CPU peripheral';
+        }
+
+        /*
+         * GDB allows for a maximum SP size of 2 bytes. We enforce this here.
+         *
+         * For more, see GDB's read/write register packets for AVR targets.
+         */
+        $spRegisterSize = array_sum(array_map(fn (TargetRegister $register): int => $register->size, $spRegisters));
+        if ($spRegisterSize > 2) {
+            $failures[] = 'Stack pointer register size exceeds 2 bytes (actual size: ' . $spRegisterSize . ' bytes)';
+        }
+
+        // The target's status register must reside in the CPU peripheral
+        if ($tdf->getTargetRegister("cpu", "cpu", "sreg") === null) {
+            $failures[] = 'Missing status (SREG) register in CPU peripheral';
+        }
+
         if (in_array(AvrPhysicalInterface::DEBUG_WIRE, $debugPhysicalInterfaces)) {
             $failures = array_merge($failures, $this->validateDebugWireParameters($tdf->getDebugWireParameters()));
             $failures = array_merge($failures, $this->validateIspParameters($tdf->getIspParameters()));
