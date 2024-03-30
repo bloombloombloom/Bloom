@@ -240,10 +240,10 @@ class TargetDescriptionFile
     public function getTargetRegister(
         string $peripheralKey,
         array|string $groupKeys,
-        array|string $registerKeys
+        array|string $registerKey
     ): ?TargetRegister {
         return ($peripheral = $this->getPeripheral($peripheralKey)) instanceof Peripheral
-            ? $this->targetPeripheralFromPeripheral($peripheral)->getRegister($groupKeys, $registerKeys)
+            ? $this->targetPeripheralFromPeripheral($peripheral)->getRegister($groupKeys, $registerKey)
             : null;
     }
 
