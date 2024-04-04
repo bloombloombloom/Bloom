@@ -20,6 +20,9 @@
         </property-group>
     </property-groups>
     <address-spaces>
+        <address-space key="register_file" start="0x00000000" size="32" endianness="little">
+            <memory-segment key="gp_registers" name="General Purpose Registers" type="gp_registers" start="0x00000000" size="32"/>
+        </address-space>
         <address-space key="data" start="0x00000000" size="65536" endianness="little">
             <memory-segment key="io" name="Input/Output" type="io" start="0x00000000" size="4159" access="RW"/>
             <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00001040" size="4" page-size="1" access="RW"/>

@@ -50,6 +50,13 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'Missing signatures memory segment';
         }
 
+        if (
+            $tdf->getMemorySegment('data', 'gp_registers') === null
+            && $tdf->getMemorySegment('register_file', 'gp_registers') === null
+        ) {
+            $failures[] = 'Missing "gp_registers" memory segment';
+        }
+
         if ($tdf->getSignature() === null) {
             $failures[] = "Missing or incomplete AVR signature.";
         }

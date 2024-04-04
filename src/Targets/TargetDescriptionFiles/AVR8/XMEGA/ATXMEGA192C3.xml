@@ -20,6 +20,9 @@
         </property-group>
     </property-groups>
     <address-spaces>
+        <address-space key="register_file" start="0x00000000" size="32" endianness="little">
+            <memory-segment key="gp_registers" name="General Purpose Registers" type="gp_registers" start="0x00000000" size="32"/>
+        </address-space>
         <address-space key="prog" start="0x00000000" size="204800" endianness="little">
             <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="204800" page-size="512" access="RW">
                 <section key="app_section" name="Application Section" start="0x00000000" size="196608">
