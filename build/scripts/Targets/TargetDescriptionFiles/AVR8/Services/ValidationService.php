@@ -47,7 +47,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $tdf->getMemorySegment('data', 'signatures') === null
             && $tdf->getMemorySegment('signatures', 'signatures') === null
         ) {
-            $failures[] = 'Missing signatures memory segment';
+            $failures[] = 'Missing "signatures" memory segment';
         }
 
         if (
