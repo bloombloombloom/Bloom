@@ -37,6 +37,13 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         }
 
         if (
+            $tdf->getMemorySegment('data', 'gp_registers') === null
+            && $tdf->getMemorySegment('register_file', 'gp_registers') === null
+        ) {
+            $failures[] = 'Missing "gp_registers" memory segment';
+        }
+
+        if (
             $tdf->getMemorySegment('data', 'io') === null
             && $tdf->getMemorySegment('data', 'mapped_io') === null
         ) {
@@ -55,13 +62,6 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             && $tdf->getMemorySegment('fuses', 'fuses') === null
         ) {
             $failures[] = 'Missing "fuses" memory segment';
-        }
-
-        if (
-            $tdf->getMemorySegment('data', 'gp_registers') === null
-            && $tdf->getMemorySegment('register_file', 'gp_registers') === null
-        ) {
-            $failures[] = 'Missing "gp_registers" memory segment';
         }
 
         if ($tdf->getSignature() === null) {
