@@ -51,6 +51,13 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         }
 
         if (
+            $tdf->getMemorySegment('data', 'fuses') === null
+            && $tdf->getMemorySegment('fuses', 'fuses') === null
+        ) {
+            $failures[] = 'Missing "fuses" memory segment';
+        }
+
+        if (
             $tdf->getMemorySegment('data', 'gp_registers') === null
             && $tdf->getMemorySegment('register_file', 'gp_registers') === null
         ) {
