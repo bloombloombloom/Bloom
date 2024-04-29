@@ -179,6 +179,11 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
                 $failures[] = 'No signals defined for port peripheral "' . $portPeripheral->name . '"';
             }
 
+            if (count($portPeripheral->registerGroupInstances) !== 1) {
+                $failures[] = 'Unexpected number of register group instances in port peripheral "'
+                    . $portPeripheral->name . '"';
+            }
+
             $alternativePortRegisterGroupKey = 'port' . substr(strtolower($portPeripheral->name), -1);
             $portRegisterGroup = $tdf->getTargetRegisterGroup($portPeripheral->key, 'port')
                 ?? $tdf->getTargetRegisterGroup($portPeripheral->key, $alternativePortRegisterGroupKey);
