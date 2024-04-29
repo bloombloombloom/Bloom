@@ -19,7 +19,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 {
     public function validateAvr8Tdf(Avr8TargetDescriptionFile $tdf): array
     {
-        $failures = $this->validateTdf($tdf);
+        $failures = parent::validateTdf($tdf);
 
         if ($tdf->getMemorySegment('prog', 'internal_program_memory') === null) {
             $failures[] = 'Missing "internal_program_memory" memory segment';
@@ -197,7 +197,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
                     ?? $portRegisterGroup->getRegister($alternativePortRegisterKey);
 
                 if (!$portRegister instanceof TargetRegister) {
-                    $failures[] = 'Missing port register in port peripheral "' . $portPeripheral->name . '"';
+                    $failures[] = 'Missing port/out register in port peripheral "' . $portPeripheral->name . '"';
                 }
             }
         }
