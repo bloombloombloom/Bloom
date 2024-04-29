@@ -800,6 +800,7 @@ namespace Targets::TargetDescription
                 memorySegment.startAddress,
                 memorySegment.startAddress + memorySegment.size - 1
             ),
+            memorySegment.executable,
             memorySegment.access,
             memorySegment.access,
             memorySegment.pageSize

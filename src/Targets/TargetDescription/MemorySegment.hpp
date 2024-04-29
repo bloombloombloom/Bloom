@@ -19,6 +19,7 @@ namespace Targets::TargetDescription
         TargetMemorySegmentType type;
         TargetMemoryAddress startAddress;
         TargetMemorySize size;
+        bool executable;
         TargetMemoryAccess access;
         std::optional<TargetMemorySize> pageSize;
         std::map<std::string, MemorySegmentSection, std::less<void>> sectionsByKey;
@@ -29,6 +30,7 @@ namespace Targets::TargetDescription
             TargetMemorySegmentType type,
             TargetMemoryAddress startAddress,
             TargetMemorySize size,
+            bool executable,
             const TargetMemoryAccess& access,
             const std::optional<TargetMemorySize>& pageSize,
             const std::map<std::string, MemorySegmentSection, std::less<void>>& sectionsByKey
@@ -38,6 +40,7 @@ namespace Targets::TargetDescription
             , type(type)
             , startAddress(startAddress)
             , size(size)
+            , executable(executable)
             , access(access)
             , pageSize(pageSize)
             , sectionsByKey(sectionsByKey)

@@ -162,27 +162,27 @@
     </property-groups>
     <address-spaces>
         <address-space key="prog" start="0x00000000" size="16384" endianness="little">
-            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="16384" page-size="128" access="RW"/>
+            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="16384" page-size="128" access="RW" executable="1"/>
         </address-space>
         <address-space key="signatures" start="0x00000000" size="3" endianness="little">
-            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00000000" size="3" access="R"/>
+            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00000000" size="3" access="R" executable="0"/>
         </address-space>
         <address-space key="fuses" start="0x00000000" size="3" endianness="little">
-            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00000000" size="3" access="RW"/>
+            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00000000" size="3" access="RW" executable="0"/>
         </address-space>
         <address-space key="lockbits" start="0x00000000" size="1" endianness="little">
-            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00000000" size="1" access="RW"/>
+            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00000000" size="1" access="RW" executable="0"/>
         </address-space>
         <address-space key="data" start="0x00000000" size="768" endianness="little">
-            <memory-segment key="gp_registers" name="General Purpose Registers" type="gp_registers" start="0x00000000" size="32"/>
-            <memory-segment key="mapped_io" name="Mapped Input/Output" type="io" start="0x00000020" size="224"/>
-            <memory-segment key="internal_ram" name="Internal RAM" type="ram" start="0x00000100" size="512"/>
+            <memory-segment key="gp_registers" name="General Purpose Registers" type="gp_registers" start="0x00000000" size="32" executable="0"/>
+            <memory-segment key="mapped_io" name="Mapped Input/Output" type="io" start="0x00000020" size="224" executable="0"/>
+            <memory-segment key="internal_ram" name="Internal RAM" type="ram" start="0x00000100" size="512" executable="0"/>
         </address-space>
         <address-space key="eeprom" start="0x00000000" size="512" endianness="little">
-            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00000000" size="512" page-size="4" access="RW"/>
+            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00000000" size="512" page-size="4" access="RW" executable="0"/>
         </address-space>
         <address-space key="osccal" start="0x00000000" size="1" endianness="little">
-            <memory-segment key="osccal" name="OSCCAL" type="osccal" start="0x00000000" size="1" access="R"/>
+            <memory-segment key="osccal" name="OSCCAL" type="osccal" start="0x00000000" size="1" access="R" executable="0"/>
         </address-space>
     </address-spaces>
     <physical-interfaces>
@@ -577,7 +577,7 @@
                 <register key="gpior2" name="GPIOR2" description="General Purpose IO Register 2" offset="0x4B" size="1">
                     <bit-field key="gpior" name="GPIOR" description="General Purpose IO Register 2 bis" mask="0xFF"/>
                 </register>
-                <register key="dwdr" name="DWDR" description="debugWire communication register" offset="0x51" size="1"/>
+                <register key="dwdr" name="DWDR" description="debugWIRE communication register" offset="0x51" size="1"/>
                 <register key="smcr" name="SMCR" description="Sleep Mode Control Register" offset="0x53" size="1">
                     <bit-field key="sm" name="SM" description="Sleep Mode Select bits" mask="0xE"/>
                     <bit-field key="se" name="SE" description="Sleep Enable" mask="0x1"/>

@@ -533,7 +533,8 @@ class AtdfService
                             $bootSectionSegment->size,
                             []
                         )
-                    ]
+                    ],
+                    $appSectionSegment->executable
                 )
             ];
         }
@@ -556,7 +557,8 @@ class AtdfService
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
             $this->stringService->tryStringToInt($attributes['pagesize'] ?? null),
             $attributes['rw'] ?? null,
-            []
+            [],
+            isset($attributes['exec']) ? (bool) $attributes['exec'] : null
         );
     }
 

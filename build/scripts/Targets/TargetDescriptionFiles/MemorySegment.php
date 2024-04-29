@@ -13,6 +13,7 @@ class MemorySegment
     public ?int $size = null;
     public ?int $pageSize = null;
     public ?string $access = null;
+    public ?bool $executable = null;
 
     /** @var MemorySegmentSection[] */
     public array $sections = [];
@@ -25,7 +26,8 @@ class MemorySegment
         ?int $size,
         ?int $pageSize,
         ?string $access,
-        array $sections
+        array $sections,
+        ?bool $executable
     ) {
         $this->key = $key;
         $this->name = $name;
@@ -35,6 +37,7 @@ class MemorySegment
         $this->pageSize = $pageSize;
         $this->access = $access;
         $this->sections = $sections;
+        $this->executable = $executable;
     }
 
     public function getSection(string $sectionId): ?MemorySegmentSection

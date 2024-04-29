@@ -20,21 +20,21 @@
     </property-groups>
     <address-spaces>
         <address-space key="register_file" start="0x00000000" size="32" endianness="little">
-            <memory-segment key="gp_registers" name="General Purpose Registers" type="gp_registers" start="0x00000000" size="32"/>
+            <memory-segment key="gp_registers" name="General Purpose Registers" type="gp_registers" start="0x00000000" size="32" executable="0"/>
         </address-space>
         <address-space key="data" start="0x00000000" size="65536" endianness="little">
-            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00001400" size="512" page-size="1" access="RW"/>
-            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00001050" size="16" page-size="1" access="RW"/>
-            <memory-segment key="internal_ram" name="Internal RAM" type="ram" start="0x00004000" size="16384" access="RW"/>
-            <memory-segment key="io" name="Input/Output" type="io" start="0x00000000" size="4159" access="RW"/>
-            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00001040" size="4" page-size="1" access="RW"/>
-            <memory-segment key="mapped_progmem" name="MAPPED_PROGMEM" type="aliased" start="0x00008000" size="32768" page-size="512" access="RW"/>
-            <memory-segment key="prod_signatures" name="Production Signatures" type="production_signatures" start="0x00001103" size="125" page-size="128" access="R"/>
-            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00001100" size="3" page-size="128" access="R"/>
-            <memory-segment key="user_signatures" name="User Signatures" type="user_signatures" start="0x00001080" size="32" page-size="32" access="RW"/>
+            <memory-segment key="internal_eeprom" name="Internal EEPROM" type="eeprom" start="0x00001400" size="512" page-size="1" access="RW" executable="0"/>
+            <memory-segment key="fuses" name="Fuses" type="fuses" start="0x00001050" size="16" page-size="1" access="RW" executable="0"/>
+            <memory-segment key="internal_ram" name="Internal RAM" type="ram" start="0x00004000" size="16384" access="RW" executable="0"/>
+            <memory-segment key="io" name="Input/Output" type="io" start="0x00000000" size="4159" access="RW" executable="0"/>
+            <memory-segment key="lockbits" name="Lockbits" type="lockbits" start="0x00001040" size="4" page-size="1" access="RW" executable="0"/>
+            <memory-segment key="mapped_progmem" name="MAPPED_PROGMEM" type="aliased" start="0x00008000" size="32768" page-size="512" access="RW" executable="0"/>
+            <memory-segment key="prod_signatures" name="Production Signatures" type="production_signatures" start="0x00001103" size="125" page-size="128" access="R" executable="0"/>
+            <memory-segment key="signatures" name="Signatures" type="signatures" start="0x00001100" size="3" page-size="128" access="R" executable="0"/>
+            <memory-segment key="user_signatures" name="User Signatures" type="user_signatures" start="0x00001080" size="32" page-size="32" access="RW" executable="0"/>
         </address-space>
         <address-space key="prog" start="0x00000000" size="131072" endianness="little">
-            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="131072" page-size="512" access="RW"/>
+            <memory-segment key="internal_program_memory" name="Internal FLASH" type="flash" start="0x00000000" size="131072" page-size="512" access="RW" executable="1"/>
         </address-space>
     </address-spaces>
     <physical-interfaces>

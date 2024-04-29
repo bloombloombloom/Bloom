@@ -102,6 +102,8 @@ class ToXmlService
             $element->append($this->memorySegmentSectionToXml($segmentSection, $document));
         }
 
+        $element->setAttribute('executable',$memorySegment->executable ? '1' : '0');
+
         return $element;
     }
 

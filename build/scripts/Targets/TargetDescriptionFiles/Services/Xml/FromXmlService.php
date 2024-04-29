@@ -144,7 +144,8 @@ class FromXmlService
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
             $this->stringService->tryStringToInt($attributes['page-size'] ?? null),
             $attributes['access'] ?? null,
-            []
+            [],
+            isset($attributes['executable']) ? (bool) $attributes['executable'] : null
         );
 
         foreach ($element->childNodes as $childNode) {

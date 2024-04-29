@@ -334,6 +334,10 @@ class ValidationService
             $failures[] = 'Size exceeds 32-bit unsigned integer';
         }
 
+        if ($segment->executable === null) {
+            $failures[] = 'Missing executable';
+        }
+
         $processedSectionKeys = [];
         foreach ($segment->sections as $section) {
             $failures = array_merge($failures, $this->validateMemorySegmentSection($section));
