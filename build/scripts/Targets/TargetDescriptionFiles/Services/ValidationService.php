@@ -256,6 +256,9 @@ class ValidationService
 
         } elseif ($addressSpace->size > 0xFFFFFFFF) {
             $failures[] = 'Size exceeds 32-bit unsigned integer';
+
+        } elseif ($addressSpace->size < 1) {
+            $failures[] = 'Invalid size (' . $addressSpace->size . ')';
         }
 
         if (empty($addressSpace->memorySegments)) {
@@ -332,6 +335,9 @@ class ValidationService
 
         } elseif ($segment->size > 0xFFFFFFFF) {
             $failures[] = 'Size exceeds 32-bit unsigned integer';
+
+        } elseif ($segment->size < 1) {
+            $failures[] = 'Invalid size (' . $segment->size . ')';
         }
 
         if ($segment->executable === null) {
@@ -390,6 +396,9 @@ class ValidationService
 
         if ($section->size === null) {
             $failures[] = 'Missing size';
+
+        } elseif ($section->size < 1) {
+            $failures[] = 'Invalid size (' . $section->size . ')';
         }
 
         $processedSectionKeys = [];
@@ -592,6 +601,9 @@ class ValidationService
 
         if ($register->size === null) {
             $failures[] = 'Missing size';
+
+        } elseif ($register->size < 1) {
+            $failures[] = 'Invalid size (' . $register->size . ')';
         }
 
         $processedBitFieldKeys = [];
