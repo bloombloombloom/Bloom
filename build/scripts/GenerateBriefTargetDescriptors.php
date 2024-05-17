@@ -5,7 +5,7 @@ use Targets\TargetDescriptionFiles\Services\Xml\XmlService;
 use Targets\TargetDescriptionFiles\TargetFamily;
 
 define('TDF_DIR_PATH', $argv[1] ?? null);
-define('MAPPING_OUTPUT_PATH', $argv[2] ?? null);
+define('OUTPUT_PATH', $argv[2] ?? null);
 define('TDF_OUTPUT_PATH', $argv[3] ?? null);
 
 if (empty(TDF_DIR_PATH)) {
@@ -18,7 +18,7 @@ if (!file_exists(TDF_DIR_PATH)) {
     exit(1);
 }
 
-if (empty(MAPPING_OUTPUT_PATH)) {
+if (empty(OUTPUT_PATH)) {
     print 'Missing TDF mapping output path. Aborting' . PHP_EOL;
     exit(1);
 }
@@ -28,8 +28,8 @@ if (empty(TDF_OUTPUT_PATH)) {
     exit(1);
 }
 
-if (!file_exists(dirname(MAPPING_OUTPUT_PATH))) {
-    mkdir(dirname(MAPPING_OUTPUT_PATH), 0700);
+if (!file_exists(dirname(OUTPUT_PATH))) {
+    mkdir(dirname(OUTPUT_PATH), 0700, true);
 }
 
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/DiscoveryService.php';
@@ -65,7 +65,7 @@ foreach ($xmlFiles as $xmlFile) {
         [
             $targetDescriptionFile->getConfigurationValue(),
             $targetDescriptionFile->getName(),
-            match($targetDescriptionFile->getFamily()) {
+            match ($targetDescriptionFile->getFamily()) {
                 TargetFamily::AVR_8 => 'Targets::TargetFamily::AVR_8',
                 TargetFamily::RISC_V => 'Targets::TargetFamily::RISC_V',
             },
@@ -88,9 +88,9 @@ foreach ($xmlFiles as $xmlFile) {
     }
 }
 
-file_put_contents(MAPPING_OUTPUT_PATH, implode(',' . PHP_EOL, $entries));
+file_put_contents(OUTPUT_PATH, implode(',' . PHP_EOL, $entries));
 
 print PHP_EOL;
 print 'Processed ' . count($xmlFiles) . ' TDFs.' . PHP_EOL;
-print 'Generated brief target descriptors at ' . MAPPING_OUTPUT_PATH . PHP_EOL;
+print 'Generated brief target descriptors at ' . OUTPUT_PATH . PHP_EOL;
 print 'Done' . PHP_EOL;
