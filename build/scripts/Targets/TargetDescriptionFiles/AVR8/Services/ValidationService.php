@@ -93,6 +93,13 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'Missing stack pointer register(s) in CPU peripheral';
         }
 
+        // SPL and SPH registers should 1 byte in size
+        foreach ($spRegisters as $register) {
+            if (($register->key === 'spl' || $register->key === 'sph') && $register->size !== 1) {
+                $failures[] = 'Invalid SP register (' . $register->key . ') size - should be 1 byte';
+            }
+        }
+
         /*
          * GDB allows for a maximum SP size of 2 bytes. We enforce this here.
          *
@@ -104,8 +111,29 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         }
 
         // The target's status register must reside in the CPU peripheral
-        if ($tdf->getTargetRegister("cpu", "cpu", "sreg") === null) {
+        if (($sreg = $tdf->getTargetRegister("cpu", "cpu", "sreg")) === null) {
             $failures[] = 'Missing status (SREG) register in CPU peripheral';
+
+        } elseif ($sreg->size !== 1) {
+            // The SREG should always be 1 byte in size
+            $failures[] = 'Unexpected SREG register size - expected 1 byte, actual size: ' . $sreg->size . ' bytes';
+        }
+
+        if ($tdf->getFuseTargetPeripheral() === null) {
+            $failures[] = 'Missing fuse peripheral';
+        }
+
+        $fuseRegisterGroup = $tdf->getFuseTargetRegisterGroup();
+        if ($fuseRegisterGroup instanceof TargetRegisterGroup) {
+            // All fuse registers should be 1 byte in size
+            foreach ($tdf->getFuseTargetRegisterGroup()->registers as $fuseRegister) {
+                if ($fuseRegister->size != 1) {
+                    $failures[] = 'Fuse register ("' . $fuseRegister->key . '") is not 1 byte in size.';
+                }
+            }
+
+        } else {
+            $failures[] = 'Missing fuse register group (in fuse peripheral)';
         }
 
         if (in_array(AvrPhysicalInterface::DEBUG_WIRE, $debugPhysicalInterfaces)) {

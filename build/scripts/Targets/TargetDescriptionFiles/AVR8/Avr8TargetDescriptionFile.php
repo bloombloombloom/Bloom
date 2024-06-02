@@ -483,19 +483,24 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         return $output;
     }
 
+    public function getFuseTargetPeripheral(): ?TargetPeripheral
+    {
+        return $this->getTargetPeripheral('fuse');
+    }
+
+    public function getFuseTargetRegisterGroup(): ?TargetRegisterGroup
+    {
+        return $this->getFuseTargetPeripheral()?->getRegisterGroup("fuse");
+    }
+
     public function getFuseBitsDescriptor(string $fuseBitFieldKey): ?FuseBitsDescriptor
     {
-        $peripheral = $this->getTargetPeripheral('fuse') ?? $this->getTargetPeripheral('nvm');
-        if ($peripheral instanceof TargetPeripheral) {
-            $fuseRegisterGroup = $peripheral->getRegisterGroup('fuse')
-                ?? $peripheral->getRegisterGroup('nvm_fuses');
-
-            if ($fuseRegisterGroup instanceof TargetRegisterGroup) {
-                foreach ($fuseRegisterGroup->registers as $fuseRegister) {
-                    foreach ($fuseRegister->bitFields as $bitField) {
-                        if ($bitField->key === $fuseBitFieldKey) {
-                            return new FuseBitsDescriptor($fuseRegister->name);
-                        }
+        $fuseRegisterGroup = $this->getFuseTargetRegisterGroup();
+        if ($fuseRegisterGroup instanceof TargetRegisterGroup) {
+            foreach ($fuseRegisterGroup->registers as $fuseRegister) {
+                foreach ($fuseRegister->bitFields as $bitField) {
+                    if ($bitField->key === $fuseBitFieldKey) {
+                        return new FuseBitsDescriptor($fuseRegister->name);
                     }
                 }
             }

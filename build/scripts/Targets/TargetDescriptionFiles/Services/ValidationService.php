@@ -606,6 +606,11 @@ class ValidationService
             $failures[] = 'Invalid size (' . $register->size . ')';
         }
 
+        if ($register->size > 8) {
+            // We only support a maximum of 64-bit width for registers, for now
+            $failures[] = 'Width exceeds 64-bit';
+        }
+
         $processedBitFieldKeys = [];
         foreach ($register->bitFields as $bitField) {
             $failures = array_merge($failures, $this->validateBitField($bitField));
