@@ -9,6 +9,7 @@ use Targets\TargetDescriptionFiles\Avr8\IspParameters;
 use Targets\TargetDescriptionFiles\Avr8\JtagParameters;
 use Targets\TargetDescriptionFiles\Avr8\PdiParameters;
 use Targets\TargetDescriptionFiles\Avr8\UpdiParameters;
+use Targets\TargetDescriptionFiles\MemorySegment;
 use Targets\TargetRegister;
 use Targets\TargetRegisterGroup;
 
@@ -137,7 +138,11 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         }
 
         if (in_array(AvrPhysicalInterface::DEBUG_WIRE, $debugPhysicalInterfaces)) {
-            $failures = array_merge($failures, $this->validateDebugWireParameters($tdf->getDebugWireParameters()));
+            $failures = array_merge(
+                $failures,
+                $this->validateDebugWireParameters($tdf->getDebugWireParameters(), $tdf)
+            );
+
             $failures = array_merge($failures, $this->validateIspParameters($tdf->getIspParameters()));
 
             if (!in_array(AvrPhysicalInterface::ISP, $physicalInterfaces)) {
@@ -165,7 +170,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             in_array(AvrPhysicalInterface::JTAG, $debugPhysicalInterfaces)
             && $family == AvrFamily::MEGA
         ) {
-            $failures = array_merge($failures, $this->validateJtagParameters($tdf->getJtagParameters()));
+            $failures = array_merge($failures, $this->validateJtagParameters($tdf->getJtagParameters(), $tdf));
 
             if (empty($tdf->getFuseBitsDescriptor('ocden'))) {
                 $failures[] = 'Could not find OCDEN fuse bit field for JTAG target';
@@ -233,8 +238,10 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         return $failures;
     }
 
-    private function validateDebugWireParameters(DebugWireParameters $parameters): array
-    {
+    private function validateDebugWireParameters(
+        DebugWireParameters $parameters,
+        Avr8TargetDescriptionFile $tdf
+    ): array {
         $failures = [];
 
         if ($parameters->flashPageSize === null) {
@@ -334,6 +341,35 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         } elseif ($parameters->osccalAddress > 0xFF) {
             $failures[] = 'OSCCALR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
+        }
+
+        /*
+         * Bloom removes the IO memory segment offset when sending some of these params to the debug tool. This means
+         * we assume that the offset has already been applied to the params. We enforce this here.
+         */
+        if (($ioMemorySegment = $tdf->getIoMemorySegment()) instanceof MemorySegment) {
+            if ($parameters->osccalAddress < $ioMemorySegment->startAddress) {
+                $failures[] = 'OSCCAL address does not have IO memory segment offset applied';
+            }
+
+            if ($parameters->eearAddressLow < $ioMemorySegment->startAddress) {
+                $failures[] = 'EEARL address does not have IO memory segment offset applied';
+            }
+
+            if ($parameters->eearAddressHigh < $ioMemorySegment->startAddress) {
+                $failures[] = 'EEARH address does not have IO memory segment offset applied';
+            }
+
+            if ($parameters->eecrAddress < $ioMemorySegment->startAddress) {
+                $failures[] = 'EECR address does not have IO memory segment offset applied';
+            }
+
+            if ($parameters->eedrAddress < $ioMemorySegment->startAddress) {
+                $failures[] = 'EEDR address does not have IO memory segment offset applied';
+            }
+
+        } else {
+            $failures[] = 'Could not verify address offset of debugWire parameters - IO memory segment missing';
         }
 
         return $failures;
@@ -394,7 +430,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         return $failures;
     }
 
-    private function validateJtagParameters(JtagParameters $parameters): array
+    private function validateJtagParameters(JtagParameters $parameters, Avr8TargetDescriptionFile $tdf): array
     {
         $failures = [];
 
@@ -495,6 +531,35 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         } elseif ($parameters->osccalAddress > 0xFF) {
             $failures[] = 'OSCCALR address size exceeds 0xFF - corresponding EDBG device parameter size is 8 bits';
+        }
+
+        /*
+         * Bloom removes the IO memory segment offset when sending some of these params to the debug tool. This means
+         * we assume that the offset has already been applied to the params. We enforce this here.
+         */
+        if (($ioMemorySegment = $tdf->getIoMemorySegment()) instanceof MemorySegment) {
+            if ($parameters->osccalAddress < $ioMemorySegment->startAddress) {
+                $failures[] = 'OSCCAL address does not have IO memory segment offset applied';
+            }
+
+            if ($parameters->eearAddressLow < $ioMemorySegment->startAddress) {
+                $failures[] = 'EEARL address does not have IO memory segment offset applied';
+            }
+
+            if ($parameters->eearAddressHigh < $ioMemorySegment->startAddress) {
+                $failures[] = 'EEARH address does not have IO memory segment offset applied';
+            }
+
+            if ($parameters->eecrAddress < $ioMemorySegment->startAddress) {
+                $failures[] = 'EECR address does not have IO memory segment offset applied';
+            }
+
+            if ($parameters->eedrAddress < $ioMemorySegment->startAddress) {
+                $failures[] = 'EEDR address does not have IO memory segment offset applied';
+            }
+
+        } else {
+            $failures[] = 'Could not verify address offset of debugWire parameters - IO memory segment missing';
         }
 
         return $failures;

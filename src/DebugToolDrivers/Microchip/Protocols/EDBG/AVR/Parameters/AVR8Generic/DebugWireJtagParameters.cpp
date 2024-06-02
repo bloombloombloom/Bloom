@@ -48,9 +48,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
              * If the target doesn't have a high byte in the `EEAR` address, the `eearAddressHigh` parameter should be
              * equal to the `eearAddressLow` parameter, as stated in the "EDBG-based Tools Protocols" document.
              */
-            this->eearAddressHigh = static_cast<std::uint8_t>(
-                eearDescriptor->get().size > 1 ? startAddress >> 8 : startAddress
-            );
+            this->eearAddressHigh = static_cast<std::uint8_t>(startAddress + (eearDescriptor->get().size - 1));
 
         } else {
             const auto& eearlDescriptor = eepromRegisterGroupDescriptor.getRegisterDescriptor("eearl");
@@ -67,7 +65,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
             this->eearAddressHigh = static_cast<std::uint8_t>(
                 eearhDescriptor.has_value()
                     ? eearhDescriptor->get().startAddress
-                    : eearlDescriptor.size > 1 ? eearlDescriptor.startAddress >> 8 : eearlDescriptor.startAddress
+                    : eearlDescriptor.startAddress + (eearlDescriptor.size - 1)
             );
         }
 
@@ -130,12 +128,21 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
          *
          * It does *not* seem to apply to the SPMCR or OCDDR address.
          */
-        const auto& ioMemorySegment = targetDescriptionFile.getIoMemorySegment();
+        const auto& ioSegmentStartAddress = static_cast<std::uint8_t>(
+            targetDescriptionFile.getIoMemorySegment().startAddress
+        );
 
-        this->osccalAddress -= ioMemorySegment.startAddress;
-        this->eearAddressLow -= ioMemorySegment.startAddress;
-        this->eearAddressHigh -= ioMemorySegment.startAddress;
-        this->eecrAddress -= ioMemorySegment.startAddress;
-        this->eedrAddress -= ioMemorySegment.startAddress;
+        // This is enforced in TDF validation
+        assert(this->osccalAddress >= ioSegmentStartAddress);
+        assert(this->eearAddressLow >= ioSegmentStartAddress);
+        assert(this->eearAddressHigh >= ioSegmentStartAddress);
+        assert(this->eecrAddress >= ioSegmentStartAddress);
+        assert(this->eedrAddress >= ioSegmentStartAddress);
+
+        this->osccalAddress -= ioSegmentStartAddress;
+        this->eearAddressLow -= ioSegmentStartAddress;
+        this->eearAddressHigh -= ioSegmentStartAddress;
+        this->eecrAddress -= ioSegmentStartAddress;
+        this->eedrAddress -= ioSegmentStartAddress;
     }
 }

@@ -132,12 +132,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             if ($eepromAddressRegister instanceof TargetRegister) {
                 $output->eearAddressLow = $eepromAddressRegister->address;
-                $output->eearAddressHigh = $eepromAddressRegister->size > 1
-                    ? $eepromAddressRegister->address !== null
-                        ? $eepromAddressRegister->address >> 8
-                        : null
-                    : $eepromAddressRegister->address
-                ;
+                $output->eearAddressHigh = $eepromAddressRegister->address + ($eepromAddressRegister->size - 1);
 
             } else {
                 $eearAddressLow = $eepromPeripheral->getRegister('eeprom', 'eearl');
@@ -145,11 +140,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
                 if ($eearAddressLow instanceof TargetRegister) {
                     $output->eearAddressLow = $eearAddressLow->address;
-                    $output->eearAddressHigh = $eearAddressLow->size > 1
-                        ? $eearAddressLow->address !== null
-                            ? $eearAddressLow->address >> 8
-                            : null
-                        : $eearAddressLow->address;
+                    $output->eearAddressHigh = $eearAddressLow->address + ($eearAddressLow->size - 1);
                 }
 
                 if ($eearAddressHigh instanceof TargetRegister) {
@@ -283,12 +274,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             if ($eepromAddressRegister instanceof TargetRegister) {
                 $output->eearAddressLow = $eepromAddressRegister->address;
-                $output->eearAddressHigh = $eepromAddressRegister->size > 1
-                    ? $eepromAddressRegister->address !== null
-                        ? $eepromAddressRegister->address >> 2
-                        : null
-                    : $eepromAddressRegister->address
-                ;
+                $output->eearAddressHigh = $eepromAddressRegister->address + ($eepromAddressRegister->size - 1);
 
             } else {
                 $eearAddressLow = $eepromPeripheral->getRegister('eeprom', 'eearl');
@@ -509,20 +495,44 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         return null;
     }
 
-    private function getProgramMemorySegment(): ?MemorySegment
+    public function getProgramMemorySegment(): ?MemorySegment
     {
         return $this->getMemorySegment('prog', 'internal_program_memory');
     }
 
-    private function getRamSegment(): ?MemorySegment
+    public function getGpRegistersMemorySegment(): ?MemorySegment
+    {
+        return $this->getMemorySegment('data', 'gp_registers')
+            ?? $this->getMemorySegment('register_file', 'gp_registers');
+    }
+
+    public function getRamSegment(): ?MemorySegment
     {
         return $this->getMemorySegment('data', 'internal_ram');
     }
 
-    private function getEepromSegment(): ?MemorySegment
+    public function getEepromSegment(): ?MemorySegment
     {
         return $this->getMemorySegment('eeprom', 'internal_eeprom')
             ?? $this->getMemorySegment('data', 'internal_eeprom');
+    }
+
+    public function getIoMemorySegment(): ?MemorySegment
+    {
+        return $this->getMemorySegment('data', 'io')
+            ?? $this->getMemorySegment('data', 'mapped_io');
+    }
+
+    public function getSignaturesMemorySegment(): ?MemorySegment
+    {
+        return $this->getMemorySegment('data', 'signatures')
+            ?? $this->getMemorySegment('signatures', 'signatures');
+    }
+
+    public function getFusesMemorySegment(): ?MemorySegment
+    {
+        return $this->getMemorySegment('data', 'fuses')
+            ?? $this->getMemorySegment('fuses', 'fuses');
     }
 
     private function getBootSectionOptions(): array
