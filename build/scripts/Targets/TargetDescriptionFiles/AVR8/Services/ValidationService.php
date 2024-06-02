@@ -22,46 +22,31 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
     {
         $failures = parent::validateTdf($tdf);
 
-        if ($tdf->getMemorySegment('prog', 'internal_program_memory') === null) {
+        if ($tdf->getProgramMemorySegment() === null) {
             $failures[] = 'Missing "internal_program_memory" memory segment';
         }
 
-        if ($tdf->getMemorySegment('data', 'internal_ram') === null) {
+        if ($tdf->getRamSegment() === null) {
             $failures[] = 'Missing "internal_ram" memory segment';
         }
 
-        if (
-            $tdf->getMemorySegment('data', 'internal_eeprom') === null
-            && $tdf->getMemorySegment('eeprom', 'internal_eeprom') === null
-        ) {
+        if ($tdf->getEepromSegment() === null) {
             $failures[] = 'Missing "internal_eeprom" memory segment';
         }
 
-        if (
-            $tdf->getMemorySegment('data', 'gp_registers') === null
-            && $tdf->getMemorySegment('register_file', 'gp_registers') === null
-        ) {
+        if ($tdf->getGpRegistersMemorySegment() === null) {
             $failures[] = 'Missing "gp_registers" memory segment';
         }
 
-        if (
-            $tdf->getMemorySegment('data', 'io') === null
-            && $tdf->getMemorySegment('data', 'mapped_io') === null
-        ) {
+        if ($tdf->getIoMemorySegment() === null) {
             $failures[] = 'Missing IO memory segment';
         }
 
-        if (
-            $tdf->getMemorySegment('data', 'signatures') === null
-            && $tdf->getMemorySegment('signatures', 'signatures') === null
-        ) {
+        if ($tdf->getSignaturesMemorySegment() === null) {
             $failures[] = 'Missing "signatures" memory segment';
         }
 
-        if (
-            $tdf->getMemorySegment('data', 'fuses') === null
-            && $tdf->getMemorySegment('fuses', 'fuses') === null
-        ) {
+        if ($tdf->getFusesMemorySegment() === null) {
             $failures[] = 'Missing "fuses" memory segment';
         }
 
