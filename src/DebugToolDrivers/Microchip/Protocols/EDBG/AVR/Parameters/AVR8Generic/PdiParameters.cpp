@@ -30,8 +30,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         this->eepromSize = static_cast<std::uint16_t>(eepromMemorySegment.size);
         this->eepromPageSize = static_cast<std::uint8_t>(eepromMemorySegment.pageSize.value());
 
+        const auto nvmPeripheralDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor("nvm");
         this->nvmModuleBaseAddress = static_cast<std::uint16_t>(
-            targetDescriptionFile.getTargetPeripheralDescriptor("nvm").getRegisterGroupDescriptor("nvm").startAddress()
+            nvmPeripheralDescriptor.getRegisterGroupDescriptor("nvm").startAddress()
         );
     }
 }

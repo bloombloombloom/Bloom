@@ -36,8 +36,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         this->ocdRevision = StringService::toUint8(ocdPropertyGroup.getProperty("ocd_revision").value);
         this->ocdDataRegisterAddress = StringService::toUint8(ocdPropertyGroup.getProperty("ocd_datareg").value);
 
-        const auto& eepromRegisterGroupDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor("eeprom")
-            .getRegisterGroupDescriptor("eeprom");
+        const auto eepromPeripheralDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor("eeprom");
+        const auto& eepromRegisterGroupDescriptor = eepromPeripheralDescriptor.getRegisterGroupDescriptor("eeprom");
 
         const auto& eearDescriptor = eepromRegisterGroupDescriptor.tryGetRegisterDescriptor("eear");
         if (eearDescriptor.has_value()) {
@@ -77,8 +77,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
             eepromRegisterGroupDescriptor.getRegisterDescriptor("eecr").startAddress
         );
 
-        const auto& cpuRegisterGroupDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor("cpu")
-            .getRegisterGroupDescriptor("cpu");
+        const auto cpuPeripheralDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor("cpu");
+        const auto& cpuRegisterGroupDescriptor = cpuPeripheralDescriptor.getRegisterGroupDescriptor("cpu");
 
         const auto spmcsrDescriptor = cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("spmcsr")
             ?: cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("spmcr");
@@ -87,9 +87,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
             this->spmcrAddress = static_cast<std::uint8_t>(spmcsrDescriptor->get().startAddress);
 
         } else {
-            const auto& bootLoaderRegisterGroupDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor(
-                "boot_load"
-            ).getRegisterGroupDescriptor("boot_load");
+            const auto bootLoadPeripheral = targetDescriptionFile.getTargetPeripheralDescriptor("boot_load");
+            const auto& bootLoaderRegisterGroupDescriptor = bootLoadPeripheral.getRegisterGroupDescriptor("boot_load");
 
             const auto spmcsrDescriptor = bootLoaderRegisterGroupDescriptor.tryGetRegisterDescriptor("spmcsr")
                 ?: bootLoaderRegisterGroupDescriptor.tryGetRegisterDescriptor("spmcr");

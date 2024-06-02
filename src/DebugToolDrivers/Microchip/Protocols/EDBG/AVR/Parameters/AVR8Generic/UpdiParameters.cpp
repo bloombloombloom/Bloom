@@ -30,10 +30,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         this->fuseSegmentStartAddress = static_cast<std::uint16_t>(fuseMemorySegment.startAddress);
         this->lockbitSegmentStartAddress = static_cast<std::uint16_t>(lockbitMemorySegment.startAddress);
 
+        const auto nvmCtrlPeripheralDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor("nvmctrl");
         this->nvmModuleBaseAddress = static_cast<std::uint16_t>(
-            targetDescriptionFile.getTargetPeripheralDescriptor("nvmctrl").getRegisterGroupDescriptor(
-                "nvmctrl"
-            ).startAddress()
+            nvmCtrlPeripheralDescriptor.getRegisterGroupDescriptor("nvmctrl").startAddress()
         );
     }
 }
