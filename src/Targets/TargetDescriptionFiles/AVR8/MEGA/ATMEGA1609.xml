@@ -1408,38 +1408,6 @@
                 <register key="userrow29" name="USERROW29" description="User Row Byte 29" offset="0x1D" size="1" access="RW"/>
                 <register key="userrow30" name="USERROW30" description="User Row Byte 30" offset="0x1E" size="1" access="RW"/>
                 <register key="userrow31" name="USERROW31" description="User Row Byte 31" offset="0x1F" size="1" access="RW"/>
-                <register key="userrow32" name="USERROW32" description="User Row Byte 32" offset="0x20" size="1" access="RW"/>
-                <register key="userrow33" name="USERROW33" description="User Row Byte 33" offset="0x21" size="1" access="RW"/>
-                <register key="userrow34" name="USERROW34" description="User Row Byte 34" offset="0x22" size="1" access="RW"/>
-                <register key="userrow35" name="USERROW35" description="User Row Byte 35" offset="0x23" size="1" access="RW"/>
-                <register key="userrow36" name="USERROW36" description="User Row Byte 36" offset="0x24" size="1" access="RW"/>
-                <register key="userrow37" name="USERROW37" description="User Row Byte 37" offset="0x25" size="1" access="RW"/>
-                <register key="userrow38" name="USERROW38" description="User Row Byte 38" offset="0x26" size="1" access="RW"/>
-                <register key="userrow39" name="USERROW39" description="User Row Byte 39" offset="0x27" size="1" access="RW"/>
-                <register key="userrow40" name="USERROW40" description="User Row Byte 40" offset="0x28" size="1" access="RW"/>
-                <register key="userrow41" name="USERROW41" description="User Row Byte 41" offset="0x29" size="1" access="RW"/>
-                <register key="userrow42" name="USERROW42" description="User Row Byte 42" offset="0x2A" size="1" access="RW"/>
-                <register key="userrow43" name="USERROW43" description="User Row Byte 43" offset="0x2B" size="1" access="RW"/>
-                <register key="userrow44" name="USERROW44" description="User Row Byte 44" offset="0x2C" size="1" access="RW"/>
-                <register key="userrow45" name="USERROW45" description="User Row Byte 45" offset="0x2D" size="1" access="RW"/>
-                <register key="userrow46" name="USERROW46" description="User Row Byte 46" offset="0x2E" size="1" access="RW"/>
-                <register key="userrow47" name="USERROW47" description="User Row Byte 47" offset="0x2F" size="1" access="RW"/>
-                <register key="userrow48" name="USERROW48" description="User Row Byte 48" offset="0x30" size="1" access="RW"/>
-                <register key="userrow49" name="USERROW49" description="User Row Byte 49" offset="0x31" size="1" access="RW"/>
-                <register key="userrow50" name="USERROW50" description="User Row Byte 50" offset="0x32" size="1" access="RW"/>
-                <register key="userrow51" name="USERROW51" description="User Row Byte 51" offset="0x33" size="1" access="RW"/>
-                <register key="userrow52" name="USERROW52" description="User Row Byte 52" offset="0x34" size="1" access="RW"/>
-                <register key="userrow53" name="USERROW53" description="User Row Byte 53" offset="0x35" size="1" access="RW"/>
-                <register key="userrow54" name="USERROW54" description="User Row Byte 54" offset="0x36" size="1" access="RW"/>
-                <register key="userrow55" name="USERROW55" description="User Row Byte 55" offset="0x37" size="1" access="RW"/>
-                <register key="userrow56" name="USERROW56" description="User Row Byte 56" offset="0x38" size="1" access="RW"/>
-                <register key="userrow57" name="USERROW57" description="User Row Byte 57" offset="0x39" size="1" access="RW"/>
-                <register key="userrow58" name="USERROW58" description="User Row Byte 58" offset="0x3A" size="1" access="RW"/>
-                <register key="userrow59" name="USERROW59" description="User Row Byte 59" offset="0x3B" size="1" access="RW"/>
-                <register key="userrow60" name="USERROW60" description="User Row Byte 60" offset="0x3C" size="1" access="RW"/>
-                <register key="userrow61" name="USERROW61" description="User Row Byte 61" offset="0x3D" size="1" access="RW"/>
-                <register key="userrow62" name="USERROW62" description="User Row Byte 62" offset="0x3E" size="1" access="RW"/>
-                <register key="userrow63" name="USERROW63" description="User Row Byte 63" offset="0x3F" size="1" access="RW"/>
             </register-group>
         </module>
         <module key="i2103_vport" name="VPORT" description="Virtual Ports">

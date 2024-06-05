@@ -1975,10 +1975,6 @@
                 <register key="daca0gaincal" name="DACA0GAINCAL" description="DACA0 Calibration Byte 1" offset="0x31" size="1"/>
                 <register key="dacb0offcal" name="DACB0OFFCAL" description="DACB0 Calibration Byte 0" offset="0x32" size="1"/>
                 <register key="dacb0gaincal" name="DACB0GAINCAL" description="DACB0 Calibration Byte 1" offset="0x33" size="1"/>
-                <register key="daca1offcal" name="DACA1OFFCAL" description="DACA1 Calibration Byte 0" offset="0x34" size="1"/>
-                <register key="daca1gaincal" name="DACA1GAINCAL" description="DACA1 Calibration Byte 1" offset="0x35" size="1"/>
-                <register key="dacb1offcal" name="DACB1OFFCAL" description="DACB1 Calibration Byte 0" offset="0x36" size="1"/>
-                <register key="dacb1gaincal" name="DACB1GAINCAL" description="DACB1 Calibration Byte 1" offset="0x37" size="1"/>
             </register-group>
         </module>
     </modules>
