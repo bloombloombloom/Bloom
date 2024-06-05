@@ -87,7 +87,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         }
 
         /*
-         * GDB allows for a maximum SP size of 2 bytes. We enforce this here.
+         * GDB allows for a maximum SP size of 2 bytes. We confirm this here.
          *
          * For more, see GDB's read/write register packets for AVR targets.
          */
@@ -128,8 +128,6 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
                 $this->validateDebugWireParameters($tdf->getDebugWireParameters(), $tdf)
             );
 
-            $failures = array_merge($failures, $this->validateIspParameters($tdf->getIspParameters()));
-
             if (!in_array(AvrPhysicalInterface::ISP, $physicalInterfaces)) {
                 $failures[] = 'Missing ISP interface for debugWIRE target';
             }
@@ -149,6 +147,10 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
                     $failures[] = 'Invalid/unknown fuse byte type for DWEN fuse bit';
                 }
             }
+        }
+
+        if (in_array(AvrPhysicalInterface::ISP, $physicalInterfaces)) {
+            $failures = array_merge($failures, $this->validateIspParameters($tdf->getIspParameters()));
         }
 
         if (
@@ -340,7 +342,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         /*
          * Bloom removes the IO memory segment offset when sending some of these params to the debug tool. This means
-         * we assume that the offset has already been applied to the params. We enforce this here.
+         * we assume that the offset has already been applied to the params. We confirm this here.
          */
         if (($ioMemorySegment = $tdf->getIoMemorySegment()) instanceof MemorySegment) {
             if ($parameters->osccalAddress < $ioMemorySegment->startAddress) {
@@ -530,7 +532,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         /*
          * Bloom removes the IO memory segment offset when sending some of these params to the debug tool. This means
-         * we assume that the offset has already been applied to the params. We enforce this here.
+         * we assume that the offset has already been applied to the params. We confirm this here.
          */
         if (($ioMemorySegment = $tdf->getIoMemorySegment()) instanceof MemorySegment) {
             if ($parameters->osccalAddress < $ioMemorySegment->startAddress) {

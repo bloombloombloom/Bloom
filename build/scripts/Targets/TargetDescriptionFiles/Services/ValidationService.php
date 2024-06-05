@@ -932,7 +932,7 @@ class ValidationService
         $failures = [];
 
         foreach ($targetPeripheral->registerGroups as $registerGroup) {
-            $failures = array_merge($failures, $this->validateTargetRegisterGroup($registerGroup, $tdf));;
+            $failures = array_merge($failures, $this->validateTargetRegisterGroup($registerGroup, $tdf));
         }
 
         return array_map(
@@ -952,6 +952,7 @@ class ValidationService
             !empty($registerGroup->addressSpaceKey)
             && ($addressSpace = $tdf->getAddressSpace($registerGroup->addressSpaceKey)) instanceof AddressSpace
         ) {
+            // Ensure that all target registers reside in a known memory segment and do not span multiple segments
             foreach ($registerGroup->registers as $register) {
                 $intersectingSegments = $addressSpace->findIntersectingMemorySegments(
                     $register->address,
