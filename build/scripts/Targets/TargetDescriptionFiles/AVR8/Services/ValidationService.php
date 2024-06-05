@@ -172,6 +172,16 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         if (in_array(AvrPhysicalInterface::UPDI, $debugPhysicalInterfaces)) {
             $failures = array_merge($failures, $this->validateUpdiParameters($tdf->getUpdiParameters()));
+
+            /*
+             * In Bloom's EDBG driver, we assume that the device signature memory segment resides in the 'data'
+             * address space, for all UPDI targets.
+             *
+             * We confirm this here.
+             */
+            if ($tdf->getAddressSpace("data")?->getMemorySegment("signatures") === null) {
+                $failures[] = 'Device signature memory segment should reside in data address space';
+            }
         }
 
         if (
