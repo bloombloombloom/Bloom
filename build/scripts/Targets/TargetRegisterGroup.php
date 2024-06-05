@@ -20,6 +20,7 @@ class TargetRegisterGroup
 {
     public ?string $key = null;
     public ?string $name = null;
+    public ?string $addressSpaceKey = null;
     public ?int $baseAddress = null;
 
     /** @var TargetRegisterGroup[] */
@@ -28,10 +29,17 @@ class TargetRegisterGroup
     /** @var TargetRegister[] */
     public array $registers = [];
 
-    public function __construct(?string $key, ?string $name, ?int $baseAddress, array $subgroups, array $registers)
-    {
+    public function __construct(
+        ?string $key,
+        ?string $name,
+        ?string $addressSpaceKey,
+        ?int $baseAddress,
+        array $subgroups,
+        array $registers
+    ) {
         $this->key = $key;
         $this->name = $name;
+        $this->addressSpaceKey = $addressSpaceKey;
         $this->baseAddress = $baseAddress;
         $this->subgroups = $subgroups;
         $this->registers = $registers;

@@ -19,6 +19,8 @@ use Targets\TargetDescriptionFiles\Signal;
 use Targets\TargetDescriptionFiles\Pinout;
 use Targets\TargetDescriptionFiles\PinoutType;
 use Targets\TargetDescriptionFiles\Variant;
+use Targets\TargetPeripheral;
+use Targets\TargetRegisterGroup;
 
 require_once __DIR__ . '/../TargetDescriptionFile.php';
 
@@ -148,6 +150,15 @@ class ValidationService
             }
 
             $processedVariantNames[] = $variant->name;
+        }
+
+        // Validate resolved peripherals
+        foreach ($tdf->peripherals as $peripheral) {
+            if (($targetPeripheral = $tdf->getTargetPeripheral($peripheral->key)) === null) {
+                continue;
+            }
+
+            $failures = array_merge($failures, $this->validateTargetPeripheral($targetPeripheral, $tdf));
         }
 
         return $failures;
@@ -912,6 +923,61 @@ class ValidationService
 
         return array_map(
             fn (string $failure): string => 'Variant "' . $variant->name . '" validation failure: ' . $failure,
+            $failures
+        );
+    }
+
+    protected function validateTargetPeripheral(TargetPeripheral $targetPeripheral, TargetDescriptionFile $tdf): array
+    {
+        $failures = [];
+
+        foreach ($targetPeripheral->registerGroups as $registerGroup) {
+            $failures = array_merge($failures, $this->validateTargetRegisterGroup($registerGroup, $tdf));;
+        }
+
+        return array_map(
+            fn (string $failure): string => 'Resolved target peripheral "' . $targetPeripheral->name
+                . '" validation failure: ' . $failure,
+            $failures
+        );
+    }
+
+    protected function validateTargetRegisterGroup(
+        TargetRegisterGroup $registerGroup,
+        TargetDescriptionFile $tdf
+    ): array {
+        $failures = [];
+
+        if (
+            !empty($registerGroup->addressSpaceKey)
+            && ($addressSpace = $tdf->getAddressSpace($registerGroup->addressSpaceKey)) instanceof AddressSpace
+        ) {
+            foreach ($registerGroup->registers as $register) {
+                $intersectingSegments = $addressSpace->findIntersectingMemorySegments(
+                    $register->address,
+                    ($register->address + $register->size - 1)
+                );
+
+                if (empty($intersectingSegments)) {
+                    $failures[] = 'Register "' . $register->key . '" is not contained within any memory segment';
+                    continue;
+                }
+
+                if (count($intersectingSegments) > 1) {
+                    $segmentKeys = array_map(
+                        fn (MemorySegment $segment): string => '"' . $segment->key . '"',
+                        $intersectingSegments
+                    );
+                    $failures[] = 'Register "' . $register->key . '" spans multiple memory segments ('
+                        . implode(',', $segmentKeys) . ')';
+                    continue;
+                }
+            }
+        }
+
+        return array_map(
+            fn (string $failure): string => 'Target register group "' . $registerGroup->name
+                . '" validation failure: ' . $failure,
             $failures
         );
     }

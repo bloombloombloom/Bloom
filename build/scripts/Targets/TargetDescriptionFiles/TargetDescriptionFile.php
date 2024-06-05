@@ -273,6 +273,7 @@ class TargetDescriptionFile
                 $output->registerGroups[] = $this->targetRegisterGroupFromRegisterGroup(
                     $registerGroupInstance->key,
                     $registerGroupInstance->name,
+                    $registerGroupInstance->addressSpaceKey,
                     $registerGroup,
                     $registerGroupInstance->offset ?? 0,
                     $peripheral->moduleKey
@@ -286,17 +287,19 @@ class TargetDescriptionFile
     private function targetRegisterGroupFromRegisterGroup(
         string $key,
         string $name,
+        string $addressSpaceKey,
         RegisterGroup $registerGroup,
         int $addressOffset,
         string $moduleKey
     ): TargetRegisterGroup {
         $addressOffset += $registerGroup->offset ?? 0;
-        $output = new TargetRegisterGroup($key, $name, $addressOffset, [], []);
+        $output = new TargetRegisterGroup($key, $name, $addressSpaceKey, $addressOffset, [], []);
 
         foreach ($registerGroup->subgroups as $subgroup) {
             $output->subgroups[] = $this->targetRegisterGroupFromRegisterGroup(
                 $subgroup->key,
                 $subgroup->name,
+                $addressSpaceKey,
                 $subgroup,
                 $addressOffset,
                 $moduleKey
@@ -310,6 +313,7 @@ class TargetDescriptionFile
                 $output->subgroups[] = $this->targetRegisterGroupFromRegisterGroup(
                     $subgroupReference->key,
                     $subgroupReference->name,
+                    $addressSpaceKey,
                     $subgroup,
                     $addressOffset,
                     $moduleKey

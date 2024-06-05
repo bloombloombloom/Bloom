@@ -61,4 +61,24 @@ class AddressSpace
             )
         );
     }
+
+    /**
+     * Returns all memory segments that intercept with the given address range.
+     *
+     * @param int $startAddress
+     * @param int $endAddress
+     *
+     * @return MemorySegment[]
+     */
+    public function findIntersectingMemorySegments(int $startAddress, int $endAddress): array
+    {
+        return array_filter(
+            $this->memorySegments,
+            function (MemorySegment $segment) use ($startAddress, $endAddress) : bool {
+                $segmentEndAddress = $segment->startAddress + $segment->size - 1;
+                return ($startAddress <= $segment->startAddress && $endAddress >= $segment->startAddress)
+                    || ($startAddress >= $segment->startAddress && $startAddress <= $segmentEndAddress);
+            }
+        );
+    }
 }
