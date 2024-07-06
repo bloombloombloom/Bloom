@@ -186,9 +186,9 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface name="ISP" type="isp"/>
-        <physical-interface name="HVPP" type="hvpp"/>
-        <physical-interface name="JTAG" type="megajtag"/>
+        <physical-interface value="isp"/>
+        <physical-interface value="hvpp"/>
+        <physical-interface value="jtag"/>
     </physical-interfaces>
     <peripherals>
         <peripheral key="adc" name="ADC" module-key="adc">

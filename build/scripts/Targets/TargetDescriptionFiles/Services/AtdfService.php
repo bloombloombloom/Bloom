@@ -10,7 +10,6 @@ use Targets\TargetDescriptionFiles\AVR8\Services\ValidationService;
 use Targets\TargetDescriptionFiles\Services\StringService;
 use Targets\TargetDescriptionFiles\Avr8\Avr8TargetDescriptionFile;
 use Targets\TargetDescriptionFiles\Avr8\AvrFamily;
-use Targets\TargetDescriptionFiles\Avr8\AvrPhysicalInterface;
 use Targets\TargetDescriptionFiles\TargetFamily;
 use Targets\TargetDescriptionFiles\PropertyGroup;
 use Targets\TargetDescriptionFiles\Property;
@@ -31,6 +30,7 @@ use Targets\TargetDescriptionFiles\Pinout;
 use Targets\TargetDescriptionFiles\PinoutType;
 use Targets\TargetDescriptionFiles\Pin;
 use Targets\TargetDescriptionFiles\Variant;
+use Targets\TargetPhysicalInterface;
 
 require_once __DIR__ . '/StringService.php';
 require_once __DIR__ . '/../AVR8/Avr8TargetDescriptionFile.php';
@@ -187,7 +187,7 @@ class AtdfService
             }
         }
 
-        if (in_array(AvrPhysicalInterface::UPDI, $tdf->getSupportedDebugPhysicalInterfaces())) {
+        if (in_array(TargetPhysicalInterface::UPDI, $tdf->getSupportedDebugPhysicalInterfaces())) {
             /*
              * ATDFs for UPDI-enabled targets do not typically possess an `ocd_base_addr` property in the updi_interface
              * property group. Bloom needs this property to configure EDBG debug tools, so we add it here.
@@ -598,10 +598,18 @@ class AtdfService
 
     private function physicalInterfaceFromElement(DOMElement $element): PhysicalInterface
     {
+        $physicalInterfacesByName = [
+            'isp' => TargetPhysicalInterface::ISP,
+            'debugwire' => TargetPhysicalInterface::DEBUG_WIRE,
+            'updi' => TargetPhysicalInterface::UPDI,
+            'pdi' => TargetPhysicalInterface::PDI,
+            'jtag' => TargetPhysicalInterface::JTAG,
+        ];
+
         $attributes = $this->getNodeAttributesByName($element);
         return new PhysicalInterface(
-            $attributes['name'] ?? null,
-            $attributes['type'] ?? null,
+            $physicalInterfacesByName[strtolower($attributes['name'] ?? '')]?->value
+                ?? (!empty($attributes['type']) ? strtolower($attributes['type']) : null)
         );
     }
 

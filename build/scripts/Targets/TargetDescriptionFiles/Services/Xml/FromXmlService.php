@@ -189,10 +189,7 @@ class FromXmlService
     public function physicalInterfaceFromElement(DOMElement $element): PhysicalInterface
     {
         $attributes = $this->getNodeAttributesByName($element);
-        return new PhysicalInterface(
-            $attributes['name'] ?? null,
-            $attributes['type'] ?? null,
-        );
+        return new PhysicalInterface($attributes['value'] ?? null);
     }
 
     public function moduleFromElement(DOMElement $element): Module

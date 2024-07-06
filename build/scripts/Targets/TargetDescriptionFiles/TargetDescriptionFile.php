@@ -2,6 +2,7 @@
 namespace Targets\TargetDescriptionFiles;
 
 use Targets\TargetPeripheral;
+use Targets\TargetPhysicalInterface;
 use Targets\TargetRegister;
 use Targets\TargetRegisterBitField;
 use Targets\TargetRegisterGroup;
@@ -20,6 +21,7 @@ require_once __DIR__ . "/Pinout.php";
 require_once __DIR__ . "/Variant.php";
 require_once __DIR__ . "/TargetFamily.php";
 
+require_once __DIR__ . "/../TargetPhysicalInterface.php";
 require_once __DIR__ . "/../TargetPeripheral.php";
 require_once __DIR__ . "/../TargetRegisterGroup.php";
 require_once __DIR__ . "/../TargetRegister.php";
@@ -79,6 +81,22 @@ class TargetDescriptionFile
     public function getVendor(): ?string
     {
         return $this->deviceAttributesByName['vendor'] ?? null;
+    }
+
+    public function getSupportedPhysicalInterfaces(): array
+    {
+        return array_filter(array_map(
+            fn (PhysicalInterface $interface) => TargetPhysicalInterface::tryFrom($interface->value),
+            $this->physicalInterfaces
+        ));
+    }
+
+    public function getSupportedDebugPhysicalInterfaces(): array
+    {
+        return array_filter(
+            $this->getSupportedPhysicalInterfaces(),
+            fn (TargetPhysicalInterface $interface): bool => $interface->supportsDebugging()
+        );
     }
 
     public function getPropertyGroup(array|string $keys): ?PropertyGroup

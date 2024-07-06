@@ -190,9 +190,9 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface name="ISP" type="isp"/>
-        <physical-interface name="HVPP" type="hvpp"/>
-        <physical-interface name="debugWIRE" type="dw"/>
+        <physical-interface value="isp"/>
+        <physical-interface value="hvpp"/>
+        <physical-interface value="debug_wire"/>
     </physical-interfaces>
     <peripherals>
         <peripheral key="porta" name="PORTA" module-key="gpio_port">

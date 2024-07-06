@@ -3,12 +3,10 @@ namespace Targets\TargetDescriptionFiles;
 
 class PhysicalInterface
 {
-    public ?string $name = null;
-    public ?string $type = null;
+    public ?string $value = null;
 
-    public function __construct(?string $name, ?string $type)
+    public function __construct(?string $value)
     {
-        $this->name = $name;
-        $this->type = $type;
+        $this->value = $value;
     }
 }

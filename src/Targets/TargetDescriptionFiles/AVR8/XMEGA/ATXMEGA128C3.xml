@@ -56,7 +56,7 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface name="PDI" type="pdi"/>
+        <physical-interface value="pdi"/>
     </physical-interfaces>
     <peripherals>
         <peripheral key="gpio" name="GPIO" module-key="i6085">

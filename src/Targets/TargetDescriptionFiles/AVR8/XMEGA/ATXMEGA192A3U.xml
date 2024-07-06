@@ -57,8 +57,8 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface name="PDI" type="pdi"/>
-        <physical-interface name="JTAG" type="xmegajtag"/>
+        <physical-interface value="pdi"/>
+        <physical-interface value="jtag"/>
     </physical-interfaces>
     <peripherals>
         <peripheral key="gpio" name="GPIO" module-key="i6085">

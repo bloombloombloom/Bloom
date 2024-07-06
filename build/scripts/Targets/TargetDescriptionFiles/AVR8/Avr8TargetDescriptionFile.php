@@ -13,7 +13,6 @@ use Targets\TargetRegisterGroup;
 require_once __DIR__ . "/../TargetDescriptionFile.php";
 require_once __DIR__ . "/../Services/StringService.php";
 require_once __DIR__ . "/AvrFamily.php";
-require_once __DIR__ . "/AvrPhysicalInterface.php";
 require_once __DIR__ . "/Signature.php";
 require_once __DIR__ . "/DebugWireParameters.php";
 require_once __DIR__ . "/IspParameters.php";
@@ -59,39 +58,6 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public function getAvrFamily(): ?AvrFamily
     {
         return AvrFamily::tryFrom($this->deviceAttributesByName['avr-family']);
-    }
-
-    public function getSupportedPhysicalInterfaces(): array
-    {
-        $physicalInterfacesByName = [
-            'isp' => AvrPhysicalInterface::ISP,
-            'debugwire' => AvrPhysicalInterface::DEBUG_WIRE,
-            'updi' => AvrPhysicalInterface::UPDI,
-            'pdi' => AvrPhysicalInterface::PDI,
-            'jtag' => AvrPhysicalInterface::JTAG,
-        ];
-
-        return array_filter(array_map(
-            fn (PhysicalInterface $interface): ?AvrPhysicalInterface
-                => $physicalInterfacesByName[strtolower($interface->name ?? '')] ?? null,
-            $this->physicalInterfaces
-        ));
-    }
-
-    public function getSupportedDebugPhysicalInterfaces(): array
-    {
-        $physicalInterfacesByName = [
-            'debugwire' => AvrPhysicalInterface::DEBUG_WIRE,
-            'updi' => AvrPhysicalInterface::UPDI,
-            'pdi' => AvrPhysicalInterface::PDI,
-            'jtag' => AvrPhysicalInterface::JTAG,
-        ];
-
-        return array_filter(array_map(
-            fn (PhysicalInterface $interface): ?AvrPhysicalInterface
-                => $physicalInterfacesByName[strtolower($interface->name ?? '')] ?? null,
-            $this->physicalInterfaces
-        ));
     }
 
     public function getDebugWireParameters(): DebugWireParameters

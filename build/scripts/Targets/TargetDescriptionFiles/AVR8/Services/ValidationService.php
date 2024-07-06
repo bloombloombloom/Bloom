@@ -3,13 +3,13 @@ namespace Targets\TargetDescriptionFiles\AVR8\Services;
 
 use Targets\TargetDescriptionFiles\Avr8\Avr8TargetDescriptionFile;
 use Targets\TargetDescriptionFiles\Avr8\AvrFamily;
-use Targets\TargetDescriptionFiles\Avr8\AvrPhysicalInterface;
 use Targets\TargetDescriptionFiles\Avr8\DebugWireParameters;
 use Targets\TargetDescriptionFiles\Avr8\IspParameters;
 use Targets\TargetDescriptionFiles\Avr8\JtagParameters;
 use Targets\TargetDescriptionFiles\Avr8\PdiParameters;
 use Targets\TargetDescriptionFiles\Avr8\UpdiParameters;
 use Targets\TargetDescriptionFiles\MemorySegment;
+use Targets\TargetPhysicalInterface;
 use Targets\TargetRegister;
 use Targets\TargetRegisterGroup;
 
@@ -122,13 +122,13 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'Missing fuse register group (in fuse peripheral)';
         }
 
-        if (in_array(AvrPhysicalInterface::DEBUG_WIRE, $debugPhysicalInterfaces)) {
+        if (in_array(TargetPhysicalInterface::DEBUG_WIRE, $debugPhysicalInterfaces)) {
             $failures = array_merge(
                 $failures,
                 $this->validateDebugWireParameters($tdf->getDebugWireParameters(), $tdf)
             );
 
-            if (!in_array(AvrPhysicalInterface::ISP, $physicalInterfaces)) {
+            if (!in_array(TargetPhysicalInterface::ISP, $physicalInterfaces)) {
                 $failures[] = 'Missing ISP interface for debugWIRE target';
             }
 
@@ -149,12 +149,12 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             }
         }
 
-        if (in_array(AvrPhysicalInterface::ISP, $physicalInterfaces)) {
+        if (in_array(TargetPhysicalInterface::ISP, $physicalInterfaces)) {
             $failures = array_merge($failures, $this->validateIspParameters($tdf->getIspParameters()));
         }
 
         if (
-            in_array(AvrPhysicalInterface::JTAG, $debugPhysicalInterfaces)
+            in_array(TargetPhysicalInterface::JTAG, $debugPhysicalInterfaces)
             && $family == AvrFamily::MEGA
         ) {
             $failures = array_merge($failures, $this->validateJtagParameters($tdf->getJtagParameters(), $tdf));
@@ -168,11 +168,11 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             }
         }
 
-        if (in_array(AvrPhysicalInterface::PDI, $debugPhysicalInterfaces)) {
+        if (in_array(TargetPhysicalInterface::PDI, $debugPhysicalInterfaces)) {
             $failures = array_merge($failures, $this->validatePdiParameters($tdf->getPdiParameters()));
         }
 
-        if (in_array(AvrPhysicalInterface::UPDI, $debugPhysicalInterfaces)) {
+        if (in_array(TargetPhysicalInterface::UPDI, $debugPhysicalInterfaces)) {
             $failures = array_merge($failures, $this->validateUpdiParameters($tdf->getUpdiParameters()));
 
             /*
@@ -187,8 +187,8 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         }
 
         if (
-            in_array(AvrPhysicalInterface::JTAG, $debugPhysicalInterfaces)
-            || in_array(AvrPhysicalInterface::UPDI, $debugPhysicalInterfaces)
+            in_array(TargetPhysicalInterface::JTAG, $debugPhysicalInterfaces)
+            || in_array(TargetPhysicalInterface::UPDI, $debugPhysicalInterfaces)
         ) {
             if (empty($tdf->getFuseBitsDescriptor('eesave'))) {
                 $failures[] = 'Could not find EESAVE fuse bit field for JTAG/UPDI target';

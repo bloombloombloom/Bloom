@@ -125,8 +125,7 @@ class ToXmlService
     public function physicalInterfaceToXml(PhysicalInterface $physicalInterface, DOMDocument $document): DOMElement
     {
         $element = $document->createElement('physical-interface');
-        $element->setAttribute('name', $physicalInterface->name);
-        $element->setAttribute('type', $physicalInterface->type);
+        $element->setAttribute('value', $physicalInterface->value);
 
         return $element;
     }
