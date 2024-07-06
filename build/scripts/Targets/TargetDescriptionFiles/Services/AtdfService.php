@@ -558,7 +558,7 @@ class AtdfService
             $this->stringService->tryStringToInt($attributes['pagesize'] ?? null),
             $attributes['rw'] ?? null,
             [],
-            isset($attributes['exec']) ? (bool) $attributes['exec'] : null
+            isset($attributes['exec']) && $attributes['exec']
         );
     }
 
