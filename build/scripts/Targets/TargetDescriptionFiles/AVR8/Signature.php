@@ -13,9 +13,10 @@ class Signature
             throw new \Exception("Cannot generate hex string of incomplete AVR8 target signature.");
         }
 
-        return '0x' . substr('0' . dechex($this->byteZero), -2)
+        return '0x' . strtoupper(
+            substr('0' . dechex($this->byteZero), -2)
             . substr('0' . dechex($this->byteOne), -2)
             . substr('0' . dechex($this->byteTwo), -2)
-        ;
+        );
     }
 }
