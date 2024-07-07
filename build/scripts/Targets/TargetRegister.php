@@ -22,6 +22,7 @@ class TargetRegister
     public ?string $addressSpaceKey = null;
     public ?int $address = null;
     public ?int $size = null;
+    public ?int $initialValue = null;
     public ?string $description = null;
 
     /** @var TargetRegisterBitField[] */
@@ -33,6 +34,7 @@ class TargetRegister
         ?string $addressSpaceKey,
         ?int $address,
         ?int $size,
+        ?int $initialValue,
         ?string $description,
         array $bitFields
     ) {
@@ -41,6 +43,7 @@ class TargetRegister
         $this->addressSpaceKey = $addressSpaceKey;
         $this->address = $address;
         $this->size = $size;
+        $this->initialValue = $initialValue;
         $this->description = $description;
         $this->bitFields = $bitFields;
     }

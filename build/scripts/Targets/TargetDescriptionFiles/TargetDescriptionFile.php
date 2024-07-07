@@ -360,6 +360,7 @@ class TargetDescriptionFile
             $addressSpaceKey,
             $addressOffset + $register->offset,
             $register->size,
+            $register->initialValue,
             $register->description,
             array_map(
                 fn (BitField $bitField): TargetRegisterBitField => $this->targetRegisterBitFieldFromBitField($bitField),
