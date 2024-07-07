@@ -499,7 +499,7 @@
                     <bit-field key="frqrange" name="FRQRANGE" description="Frequency Range" mask="0xC0"/>
                     <bit-field key="x32klpm" name="X32KLPM" description="32.768 kHz XTAL OSC Low-power Mode" mask="0x20"/>
                     <bit-field key="xoscpwr" name="XOSCPWR" description="16 MHz Crystal Oscillator High Power mode" mask="0x10"/>
-                    <bit-field key="xoscsel" name="XOSCSEL" description="External Oscillator Selection and Startup Time" mask="0x1F"/>
+                    <bit-field key="xoscsel" name="XOSCSEL" description="External Oscillator Selection and Startup Time" mask="0x0F"/>
                 </register>
                 <register key="xoscfail" name="XOSCFAIL" description="Oscillator Failure Detection Register" offset="0x3" size="1">
                     <bit-field key="pllfdif" name="PLLFDIF" description="PLL Failure Detection Interrupt Flag" mask="0x8"/>
