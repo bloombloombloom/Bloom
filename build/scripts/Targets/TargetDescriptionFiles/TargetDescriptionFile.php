@@ -83,6 +83,9 @@ class TargetDescriptionFile
         return $this->deviceAttributesByName['vendor'] ?? null;
     }
 
+    /**
+     * @return TargetPhysicalInterface[]
+     */
     public function getSupportedPhysicalInterfaces(): array
     {
         return array_filter(array_map(
@@ -91,6 +94,9 @@ class TargetDescriptionFile
         ));
     }
 
+    /**
+     * @return TargetPhysicalInterface[]
+     */
     public function getSupportedDebugPhysicalInterfaces(): array
     {
         return array_filter(
@@ -333,7 +339,7 @@ class TargetDescriptionFile
                     $subgroupReference->name,
                     $addressSpaceKey,
                     $subgroup,
-                    $addressOffset,
+                    $addressOffset + $subgroupReference->offset,
                     $moduleKey
                 );
             }
