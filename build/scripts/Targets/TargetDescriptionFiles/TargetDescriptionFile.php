@@ -340,17 +340,18 @@ class TargetDescriptionFile
         }
 
         foreach ($registerGroup->registers as $register) {
-            $output->registers[] = $this->targetRegisterFromRegister($register, $addressOffset);
+            $output->registers[] = $this->targetRegisterFromRegister($register, $addressOffset, $addressSpaceKey);
         }
 
         return $output;
     }
 
-    private function targetRegisterFromRegister(Register $register, int $addressOffset): TargetRegister
-    {
+    private function targetRegisterFromRegister(Register $register, int $addressOffset, ?string $addressSpaceKey)
+    : TargetRegister {
         return new TargetRegister(
             $register->key,
             $register->name,
+            $addressSpaceKey,
             $addressOffset + $register->offset,
             $register->size,
             $register->description,

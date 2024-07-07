@@ -19,6 +19,7 @@ class TargetRegister
 {
     public ?string $key = null;
     public ?string $name = null;
+    public ?string $addressSpaceKey = null;
     public ?int $address = null;
     public ?int $size = null;
     public ?string $description = null;
@@ -29,6 +30,7 @@ class TargetRegister
     public function __construct(
         ?string $key,
         ?string $name,
+        ?string $addressSpaceKey,
         ?int $address,
         ?int $size,
         ?string $description,
@@ -36,6 +38,7 @@ class TargetRegister
     ) {
         $this->key = $key;
         $this->name = $name;
+        $this->addressSpaceKey = $addressSpaceKey;
         $this->address = $address;
         $this->size = $size;
         $this->description = $description;
