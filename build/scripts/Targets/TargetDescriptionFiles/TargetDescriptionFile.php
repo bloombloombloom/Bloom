@@ -88,10 +88,10 @@ class TargetDescriptionFile
      */
     public function getSupportedPhysicalInterfaces(): array
     {
-        return array_filter(array_map(
+        return array_values(array_filter(array_map(
             fn (PhysicalInterface $interface) => TargetPhysicalInterface::tryFrom($interface->value),
             $this->physicalInterfaces
-        ));
+        )));
     }
 
     /**
@@ -99,10 +99,10 @@ class TargetDescriptionFile
      */
     public function getSupportedDebugPhysicalInterfaces(): array
     {
-        return array_filter(
+        return array_values(array_filter(
             $this->getSupportedPhysicalInterfaces(),
             fn (TargetPhysicalInterface $interface): bool => $interface->supportsDebugging()
-        );
+        ));
     }
 
     public function getPropertyGroup(array|string $keys): ?PropertyGroup
