@@ -22,6 +22,20 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
     {
         $failures = parent::validateTdf($tdf);
 
+        $progAddressSpace = $tdf->getAddressSpace("prog");
+        if ($progAddressSpace === null) {
+            $failures[] = 'Missing program memory address space';
+
+        } elseif ($progAddressSpace->size > 1000000) {
+            /*
+             * For program memory cache, Bloom currently allocates a buffer equal to the size of the program memory
+             * address space. This can become a problem if the address space is huge.
+             *
+             * For AVR8 targets, it shouldn't exceed 1 million bytes. 1MB RAM usage is fine.
+             */
+            $failures[] = 'Program memory address space exceeds 1M bytes';
+        }
+
         if ($tdf->getProgramMemorySegment() === null) {
             $failures[] = 'Missing "internal_program_memory" memory segment';
         }
