@@ -46,13 +46,16 @@ public:
      */
     virtual void close() = 0;
 
+    /**
+     * This function is called immediately after successful initialisation of the debug tool.
+     */
+    virtual void postInit() = 0;
+
     virtual bool isInitialised() const = 0;
 
     virtual std::string getName() = 0;
 
     virtual std::string getSerialNumber() = 0;
-
-    virtual std::string getFirmwareVersionString() = 0;
 
     /**
      * All debug tools that support target power management functions must provide an implementation of the

@@ -50,6 +50,8 @@ namespace DebugToolDrivers::Microchip
          */
         void close() override;
 
+        void postInit() override;
+
         [[nodiscard]] bool isInitialised() const override;
 
         /**
@@ -59,19 +61,13 @@ namespace DebugToolDrivers::Microchip
          */
         std::string getSerialNumber() override;
 
-        /**
-         * Retrieves the EDBG firmware version.
-         *
-         * @return
-         */
-        std::string getFirmwareVersionString() override;
-
         DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* getTargetPowerManagementInterface() override;
 
         TargetInterfaces::Microchip::Avr8::Avr8DebugInterface* getAvr8DebugInterface(
             const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
             const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
         ) override;
+
 
         TargetInterfaces::Microchip::Avr8::AvrIspInterface* getAvrIspInterface(
             const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,

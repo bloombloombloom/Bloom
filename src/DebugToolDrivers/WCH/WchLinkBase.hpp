@@ -30,11 +30,11 @@ namespace DebugToolDrivers::Wch
 
         void close() override;
 
+        void postInit() override;
+
         [[nodiscard]] bool isInitialised() const override;
 
         std::string getSerialNumber() override;
-
-        std::string getFirmwareVersionString() override;
 
         ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator* getRiscVDebugInterface(
             const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,

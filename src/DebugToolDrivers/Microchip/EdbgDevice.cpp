@@ -83,6 +83,10 @@ namespace DebugToolDrivers::Microchip
         this->initialised = false;
     }
 
+    void EdbgDevice::postInit() {
+        // TODO: Log firmware version of EDBG device
+    }
+
     bool EdbgDevice::isInitialised() const {
         return this->initialised;
     }
@@ -103,11 +107,6 @@ namespace DebugToolDrivers::Microchip
 
         const auto data = responseFrame.getPayloadData();
         return std::string{data.begin(), data.end()};
-    }
-
-    std::string EdbgDevice::getFirmwareVersionString() {
-        // TODO: Implement this
-        return "UNKNOWN";
     }
 
     DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* EdbgDevice::getTargetPowerManagementInterface()

@@ -496,11 +496,12 @@ namespace TargetController
 
         Logger::info("Connecting to debug tool");
         this->debugTool->init();
-
         Logger::info("Debug tool connected");
+
+        this->debugTool->postInit();
+
         Logger::info("Debug tool name: " + this->debugTool->getName());
         Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
-        Logger::info("Debug tool firmware version: " + this->debugTool->getFirmwareVersionString());
 
         this->target = this->constructTarget(*briefTargetDescriptor);
 

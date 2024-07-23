@@ -56,16 +56,16 @@ namespace DebugToolDrivers::Wch
         this->initialised = false;
     }
 
+    void WchLinkBase::postInit() {
+        Logger::info("WCH-Link firmware version: " + this->getDeviceInfo().firmwareVersion.toString());
+    }
+
     bool WchLinkBase::isInitialised() const {
         return this->initialised;
     }
 
     std::string WchLinkBase::getSerialNumber() {
         return UsbDevice::getSerialNumber();
-    }
-
-    std::string WchLinkBase::getFirmwareVersionString() {
-        return "v" + this->getDeviceInfo().firmwareVersion.toString();
     }
 
     ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator* WchLinkBase::getRiscVDebugInterface(
