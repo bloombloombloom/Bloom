@@ -27,12 +27,13 @@ namespace DebugServer::Gdb::CommandPackets
         : CommandPacket(rawPacket)
     {
         if (this->data.size() < 6) {
-            throw Exception("Unexpected SetBreakpoint packet size");
+            throw Exception{"Unexpected SetBreakpoint packet size"};
         }
 
         // Z0 = SW breakpoint, Z1 = HW breakpoint
-        this->type = (this->data[1] == '0') ? BreakpointType::SOFTWARE_BREAKPOINT : (this->data[1] == '1') ?
-            BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
+        this->type = (this->data[1] == '0')
+            ? BreakpointType::SOFTWARE_BREAKPOINT
+            : (this->data[1] == '1') ? BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
 
         auto packetData = QString::fromLocal8Bit(
             reinterpret_cast<const char*>(this->data.data() + 2),
@@ -41,36 +42,41 @@ namespace DebugServer::Gdb::CommandPackets
 
         auto packetSegments = packetData.split(",");
         if (packetSegments.size() < 3) {
-            throw Exception("Unexpected number of packet segments in SetBreakpoint packet");
+            throw Exception{"Unexpected number of packet segments in SetBreakpoint packet"};
         }
 
         bool conversionStatus = true;
         this->address = packetSegments.at(1).toUInt(&conversionStatus, 16);
 
         if (!conversionStatus) {
-            throw Exception("Failed to convert address hex value from SetBreakpoint packet.");
+            throw Exception{"Failed to convert address hex value from SetBreakpoint packet."};
         }
     }
 
-    void SetBreakpoint::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void SetBreakpoint::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor&,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling SetBreakpoint packet");
 
         try {
             if (this->type == BreakpointType::UNKNOWN) {
                 Logger::debug(
                     "Rejecting breakpoint at address " + std::to_string(this->address)
-                    + " - unsupported breakpoint type"
+                        + " - unsupported breakpoint type"
                 );
-                debugSession.connection.writePacket(EmptyResponsePacket());
+                debugSession.connection.writePacket(EmptyResponsePacket{});
                 return;
             }
 
             debugSession.setExternalBreakpoint(this->address, targetControllerService);
-            debugSession.connection.writePacket(OkResponsePacket());
+            debugSession.connection.writePacket(OkResponsePacket{});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to set breakpoint on target - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

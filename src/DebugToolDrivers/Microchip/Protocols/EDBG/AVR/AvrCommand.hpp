@@ -12,7 +12,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     /**
      * AVR CMSIS-DAP vendor command.
      */
-class AvrCommand: public ::DebugToolDrivers::Protocols::CmsisDap::Command
+    class AvrCommand: public ::DebugToolDrivers::Protocols::CmsisDap::Command
     {
     public:
         /*

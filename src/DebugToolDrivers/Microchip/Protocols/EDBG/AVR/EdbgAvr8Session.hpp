@@ -4,8 +4,8 @@
 #include <optional>
 #include <functional>
 
-#include "src/Targets/Microchip/AVR/AVR8/TargetDescriptionFile.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/Avr8TargetConfig.hpp"
+#include "src/Targets/Microchip/AVR8/TargetDescriptionFile.hpp"
+#include "src/Targets/Microchip/AVR8/Avr8TargetConfig.hpp"
 #include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 
@@ -21,12 +21,12 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         /**
          * AVR8 TDF, from which we extract all target info to configure the EDBG debug tool.
          */
-        const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile;
+        const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile;
 
         /**
          * Project's AVR8 target configuration.
          */
-        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig;
+        const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig;
 
         /**
          * The EDBG config variant parameter.
@@ -37,7 +37,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         Avr8ConfigVariant configVariant = Avr8ConfigVariant::NONE;
 
         const Targets::TargetDescription::AddressSpace& programAddressSpace;
-        const Targets::TargetDescription::AddressSpace& ramAddressSpace;
+        const Targets::TargetDescription::AddressSpace& registerFileAddressSpace;
+        const Targets::TargetDescription::AddressSpace& dataAddressSpace;
         const Targets::TargetDescription::AddressSpace& eepromAddressSpace;
         const Targets::TargetDescription::AddressSpace& ioAddressSpace;
         const Targets::TargetDescription::AddressSpace& signatureAddressSpace;
@@ -59,8 +60,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         std::optional<std::uint8_t> ocdDataRegister;
 
         EdbgAvr8Session(
-            const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile,
-            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
+            const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
+            const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
         );
 
     private:
@@ -75,7 +76,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          *  any particular EDBG config variant.
          */
         static std::optional<Avr8ConfigVariant> tryResolveConfigVariant(
-            Targets::Microchip::Avr::Avr8Bit::Family avrFamily,
+            Targets::Microchip::Avr8::Family avrFamily,
             Targets::TargetPhysicalInterface physicalInterface
         );
     };

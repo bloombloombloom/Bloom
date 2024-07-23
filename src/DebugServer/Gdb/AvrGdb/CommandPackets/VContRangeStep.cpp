@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "src/Targets/Microchip/AVR8/OpcodeDecoder/Decoder.hpp"
 #include "src/Services/Avr8InstructionService.hpp"
 #include "src/Services/StringService.hpp"
 #include "src/Services/PathService.hpp"
@@ -13,43 +14,42 @@
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     using Services::TargetControllerService;
-
     using ResponsePackets::ErrorResponsePacket;
-
     using ::Exceptions::Exception;
 
-    VContRangeStep::VContRangeStep(const RawPacket& rawPacket)
+    VContRangeStep::VContRangeStep(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
         : CommandPacket(rawPacket)
+        , programAddressSpaceDescriptor(gdbTargetDescriptor.programAddressSpaceDescriptor)
+        , programMemorySegmentDescriptor(gdbTargetDescriptor.programMemorySegmentDescriptor)
     {
+        using Services::StringService;
+
         if (this->data.size() < 10) {
-            throw Exception("Unexpected VContRangeStep packet size");
+            throw Exception{"Unexpected VContRangeStep packet size"};
         }
 
-        const auto commandData = std::string(this->data.begin() + 7, this->data.end());
+        const auto command = std::string{this->data.begin() + 7, this->data.end()};
 
-        const auto delimiterPosition = commandData.find(',');
-        const auto threadIdDelimiterPosition = commandData.find(':');
-
-        if (delimiterPosition == std::string::npos || delimiterPosition >= (commandData.size() - 1)) {
-            throw Exception("Invalid VContRangeStep packet");
+        const auto delimiterPos = command.find(',');
+        const auto threadIdDelimiterPos = command.find(':');
+        if (delimiterPos == std::string::npos || delimiterPos >= (command.size() - 1)) {
+            throw Exception{"Invalid VContRangeStep packet"};
         }
 
-        const auto& delimiterIt = commandData.begin() + static_cast<decltype(commandData)::difference_type>(
-                delimiterPosition
+        this->startAddress = StringService::toUint32(command.substr(0, delimiterPos), 16);
+        this->endAddress = StringService::toUint32(
+            command.substr(delimiterPos + 1, threadIdDelimiterPos - (delimiterPos + 1)),
+            16
         );
-        const auto startAddressHex = std::string(commandData.begin(), delimiterIt);
-        const auto endAddressHex = std::string(
-            delimiterIt + 1,
-            threadIdDelimiterPosition != std::string::npos
-                ? commandData.begin() + static_cast<decltype(commandData)::difference_type>(threadIdDelimiterPosition)
-                : commandData.end()
-        );
-
-        this->startAddress = static_cast<Targets::TargetMemoryAddress>(std::stoi(startAddressHex, nullptr, 16));
-        this->endAddress = static_cast<Targets::TargetMemoryAddress>(std::stoi(endAddressHex, nullptr, 16));
     }
 
-    void VContRangeStep::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void VContRangeStep::handle(
+        Gdb::DebugSession& debugSession,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        TargetControllerService& targetControllerService
+    ) {
+        using Targets::Microchip::Avr8::OpcodeDecoder::Decoder;
         using Services::Avr8InstructionService;
         using Services::StringService;
 
@@ -59,19 +59,17 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::debug("Requested stepping range end address (exclusive): 0x" + StringService::toHex(this->endAddress));
 
         try {
-            const auto& targetDescriptor = debugSession.gdbTargetDescriptor.targetDescriptor;
-            const auto& programMemoryAddressRange = targetDescriptor.memoryDescriptorsByType.at(
-                targetDescriptor.programMemoryType
-            ).addressRange;
+            const auto stepAddressRange = Targets::TargetMemoryAddressRange{this->startAddress, this->endAddress};
+            const auto stepByteSize = stepAddressRange.size() - 1; // -1 because the end address is exclusive
+            const auto& programMemoryAddressRange = this->programMemorySegmentDescriptor.addressRange;
 
             if (
-                this->startAddress > this->endAddress
-                || (this->startAddress % 2) != 0
-                || (this->endAddress % 2) != 0
-                || this->startAddress < programMemoryAddressRange.startAddress
-                || this->endAddress > programMemoryAddressRange.endAddress
+                stepAddressRange.startAddress > stepAddressRange.endAddress
+                || (stepAddressRange.startAddress % 2) != 0
+                || (stepAddressRange.endAddress % 2) != 0
+                || !programMemoryAddressRange.contains(stepAddressRange)
             ) {
-                throw Exception("Invalid address range in VContRangeStep");
+                throw Exception{"Invalid address range in VContRangeStep"};
             }
 
             if (debugSession.activeRangeSteppingSession.has_value()) {
@@ -81,26 +79,30 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 debugSession.terminateRangeSteppingSession(targetControllerService);
             }
 
-            if (this->startAddress == this->endAddress || (this->endAddress - this->startAddress) <= 2) {
+            if (stepByteSize <= 2) {
                 // Single step requested. No need for a range step here.
-                targetControllerService.stepTargetExecution(std::nullopt);
+                targetControllerService.stepTargetExecution();
                 debugSession.waitingForBreak = true;
                 return;
             }
 
-            const auto addressRange = Targets::TargetMemoryAddressRange(this->startAddress, this->endAddress);
-            auto rangeSteppingSession = RangeSteppingSession(addressRange, {});
+            auto rangeSteppingSession = RangeSteppingSession{stepAddressRange, {}};
 
-            const auto instructionsByAddress = Avr8InstructionService::fetchInstructions(
-                addressRange,
-                targetDescriptor,
-                targetControllerService
+            const auto instructionsByAddress = Decoder::decode(
+                stepAddressRange.startAddress,
+                targetControllerService.readMemory(
+                    this->programAddressSpaceDescriptor,
+                    this->programMemorySegmentDescriptor,
+                    stepAddressRange.startAddress,
+                    stepByteSize
+                )
             );
 
             Logger::debug(
-                "Inspecting " + std::to_string(instructionsByAddress.size()) + " instructions within stepping range "
-                "(byte addresses) 0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"
-                    + StringService::toHex(addressRange.endAddress) + ", in preparation for new range stepping session"
+                "Inspecting " + std::to_string(instructionsByAddress.size()) + " instruction(s) within stepping range "
+                    "(byte addresses) 0x" + StringService::toHex(stepAddressRange.startAddress) + " -> 0x"
+                    + StringService::toHex(stepAddressRange.endAddress) + ", in preparation for new range stepping "
+                    "session"
             );
 
             for (const auto& [instructionAddress, instruction] : instructionsByAddress) {
@@ -144,10 +146,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                         continue;
                     }
 
-                    if (
-                        *destinationAddress < programMemoryAddressRange.startAddress
-                        || *destinationAddress > programMemoryAddressRange.endAddress
-                    ) {
+                    if (!programMemoryAddressRange.contains(*destinationAddress)) {
                         /*
                          * This instruction may jump to an invalid address. Someone screwed up here - could be
                          * something wrong in Bloom (opcode decoding bug, incorrect program memory address range in
@@ -158,7 +157,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                          */
                         Logger::debug(
                             "Intercepting CCPF instruction (\"" + instruction->name + "\") with invalid destination "
-                            "byte address (0x" + StringService::toHex(*destinationAddress) + "), at byte address 0x"
+                                "byte address (0x" + StringService::toHex(*destinationAddress) + "), at byte address 0x"
                                 + StringService::toHex(instructionAddress)
                         );
                         rangeSteppingSession.interceptedAddresses.insert(instructionAddress);
@@ -166,8 +165,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                     }
 
                     if (
-                        *destinationAddress < addressRange.startAddress
-                        || *destinationAddress >= addressRange.endAddress
+                        *destinationAddress < stepAddressRange.startAddress
+                        || *destinationAddress >= stepAddressRange.endAddress
                     ) {
                         /*
                          * This instruction may jump to an address outside the requested stepping range.
@@ -185,6 +184,12 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 }
             }
 
+            /*
+             * Finally, ensure that we intercept the first instruction outside the range (which is the end address
+             * of the range, because it's exclusive).
+             */
+            rangeSteppingSession.interceptedAddresses.insert(stepAddressRange.endAddress);
+
             debugSession.startRangeSteppingSession(std::move(rangeSteppingSession), targetControllerService);
 
             /*
@@ -195,12 +200,12 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
              * we should continue. See that member function for more.
              */
             debugSession.activeRangeSteppingSession->singleStepping = true;
-            targetControllerService.stepTargetExecution(std::nullopt);
+            targetControllerService.stepTargetExecution();
             debugSession.waitingForBreak = true;
 
         } catch (const Exception& exception) {
             Logger::error("Failed to start new range stepping session - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

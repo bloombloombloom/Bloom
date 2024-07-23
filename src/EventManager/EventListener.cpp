@@ -31,7 +31,7 @@ void EventListener::waitAndDispatch(int msTimeout) {
         const auto& eventQueueByType = this->eventQueueByEventType.unsafeReference();
 
         const auto registeredEventTypes = this->getRegisteredEventTypes();
-        std::optional<SharedGenericEventPointer> event;
+        auto event = std::optional<SharedGenericEventPointer>{};
 
         const auto eventsFound = [&registeredEventTypes, &event, &eventQueueByType]() -> bool {
             for (auto& eventQueue: eventQueueByType) {
@@ -43,7 +43,7 @@ void EventListener::waitAndDispatch(int msTimeout) {
         };
 
         if (msTimeout > 0) {
-            this->eventQueueByEventTypeCV.wait_for(queueLock, std::chrono::milliseconds(msTimeout), eventsFound);
+            this->eventQueueByEventTypeCV.wait_for(queueLock, std::chrono::milliseconds{msTimeout}, eventsFound);
 
         } else {
             this->eventQueueByEventTypeCV.wait(queueLock, eventsFound);
@@ -57,7 +57,7 @@ void EventListener::dispatchEvent(const SharedGenericEventPointer& event) {
     Logger::debug("Dispatching event " + event->getName() + " (" + std::to_string(event->id) + ").");
 
     // Dispatch the event to all registered handlers
-    auto callbacks = std::vector<std::function<void(const Events::Event&)>>();
+    auto callbacks = std::vector<std::function<void(const Events::Event&)>>{};
 
     {
         const auto callbackMappingAccessor = this->eventTypeToCallbacksMapping.accessor();
@@ -83,7 +83,7 @@ void EventListener::dispatchCurrentEvents() {
 
 std::vector<SharedGenericEventPointer> EventListener::getEvents() {
     auto eventQueueByType = this->eventQueueByEventType.accessor();
-    std::vector<SharedGenericEventPointer> output;
+    auto output = std::vector<SharedGenericEventPointer>{};
 
     for (auto& eventQueue: *eventQueueByType) {
         while (!eventQueue.second.empty()) {

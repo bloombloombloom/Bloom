@@ -1,20 +1,28 @@
 #pragma once
 
 #include <cstdint>
-#include <atomic>
 #include <string>
 #include <optional>
-#include <utility>
 #include <map>
 #include <set>
+#include <vector>
 
 #include "TargetMemory.hpp"
 #include "TargetAddressSpaceDescriptor.hpp"
+#include "TargetBitFieldDescriptor.hpp"
+
+#include "src/Helpers/Pair.hpp"
 
 namespace Targets
 {
     using TargetRegisterDescriptorId = std::uint32_t;
     using TargetRegisterDescriptorIds = std::set<Targets::TargetRegisterDescriptorId>;
+
+    enum class TargetRegisterType: std::uint8_t
+    {
+        GENERAL_PURPOSE_REGISTER,
+        OTHER,
+    };
 
     struct TargetRegisterAccess
     {
@@ -39,64 +47,47 @@ namespace Targets
     struct TargetRegisterDescriptor
     {
     public:
-        const TargetRegisterDescriptorId id;
         std::string key;
         std::string name;
+        TargetAddressSpaceId addressSpaceId;
         std::string addressSpaceKey;
-        const TargetAddressSpaceDescriptorId addressSpaceDescriptorId;
         TargetMemoryAddress startAddress;
         TargetMemorySize size;
+        TargetRegisterType type;
         TargetRegisterAccess access;
         std::optional<std::string> description;
+        std::map<std::string, TargetBitFieldDescriptor> bitFieldDescriptorsByKey;
 
         TargetRegisterDescriptor(
             const std::string& key,
             const std::string& name,
             const std::string& addressSpaceKey,
-            TargetAddressSpaceDescriptorId addressSpaceDescriptorId,
             TargetMemoryAddress startAddress,
             TargetMemorySize size,
+            TargetRegisterType type,
             TargetRegisterAccess access,
-            std::optional<std::string> description
-        )
-            : id(++(TargetRegisterDescriptor::lastRegisterDescriptorId))
-            , key(key)
-            , name(name)
-            , addressSpaceKey(addressSpaceKey)
-            , addressSpaceDescriptorId(addressSpaceDescriptorId)
-            , startAddress(startAddress)
-            , size(size)
-            , access(access)
-            , description(description)
-        {};
+            std::optional<std::string> description,
+            std::map<std::string, TargetBitFieldDescriptor>&& bitFieldDescriptorsByKey
+        );
 
-        bool operator == (const TargetRegisterDescriptor& other) const {
-            return this->key == other.key
-                && this->name == other.name
-                && this->addressSpaceDescriptorId == other.addressSpaceDescriptorId
-                && this->startAddress == other.startAddress
-                && this->size == other.size
-                && this->access == other.access
-                && this->description == other.description
-            ;
-        }
+        TargetRegisterDescriptor(const TargetRegisterDescriptor& other) = delete;
+        TargetRegisterDescriptor& operator = (const TargetRegisterDescriptor& other) = delete;
 
-        bool operator < (const TargetRegisterDescriptor& other) const {
-            if (this->addressSpaceDescriptorId != other.addressSpaceDescriptorId) {
-                /*
-                 * If the registers are within different address spaces, there is no meaningful way to sort them, so
-                 * we just sort by name.
-                 */
-                return this->name < other.name;
-            }
+        TargetRegisterDescriptor(TargetRegisterDescriptor&& other) noexcept = default;
+        TargetRegisterDescriptor& operator = (TargetRegisterDescriptor&& other) = default;
 
-            return this->startAddress < other.startAddress;
-        }
+        bool operator == (const TargetRegisterDescriptor& other) const;
+        bool operator < (const TargetRegisterDescriptor& other) const;
 
-    private:
-        static inline std::atomic<TargetRegisterDescriptorId> lastRegisterDescriptorId = 0;
+        [[nodiscard]] std::optional<std::reference_wrapper<const TargetBitFieldDescriptor>> tryGetBitFieldDescriptor(
+            const std::string& key
+        ) const;
+        [[nodiscard]] const TargetBitFieldDescriptor& getBitFieldDescriptor(const std::string& key) const;
+
+        [[nodiscard]] TargetRegisterDescriptor clone() const;
     };
 
-    using TargetRegisterDescriptors = std::set<TargetRegisterDescriptor>;
-    using TargetRegisterDescriptorMapping = std::map<TargetRegisterDescriptorId, TargetRegisterDescriptor>;
+    using TargetRegisterDescriptors = std::vector<const TargetRegisterDescriptor*>;
+    using TargetRegisterDescriptorAndValuePair = Pair<const TargetRegisterDescriptor&, TargetMemoryBuffer>;
+    using TargetRegisterDescriptorAndValuePairs = std::vector<TargetRegisterDescriptorAndValuePair>;
 }

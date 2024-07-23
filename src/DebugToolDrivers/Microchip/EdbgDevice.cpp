@@ -38,14 +38,14 @@ namespace DebugToolDrivers::Microchip
             this->setConfiguration(this->configurationIndex.value());
         }
 
-        auto cmsisHidInterface = Usb::HidInterface(
+        auto cmsisHidInterface = Usb::HidInterface{
             this->cmsisHidInterfaceNumber,
             this->getEndpointMaxPacketSize(
                 this->getFirstEndpointAddress(this->cmsisHidInterfaceNumber, LIBUSB_ENDPOINT_IN)
             ),
             this->vendorId,
             this->productId
-        );
+        };
 
         cmsisHidInterface.init();
 
@@ -57,7 +57,7 @@ namespace DebugToolDrivers::Microchip
          * Because of this, we have to enforce a minimum time gap between commands. See comment
          * in CmsisDapInterface class declaration for more info.
          */
-        this->edbgInterface->setMinimumCommandTimeGap(std::chrono::milliseconds(35));
+        this->edbgInterface->setMinimumCommandTimeGap(std::chrono::milliseconds{35});
 
         // We don't need to claim the CMSISDAP interface here as the HIDAPI will have already done so.
         if (!this->sessionStarted) {
@@ -70,9 +70,7 @@ namespace DebugToolDrivers::Microchip
             );
         }
 
-        this->edbgAvrIspInterface = std::make_unique<EdbgAvrIspInterface>(this->edbgInterface.get());
-
-        this->setInitialised(true);
+        this->initialised = true;
     }
 
     void EdbgDevice::close() {
@@ -82,21 +80,50 @@ namespace DebugToolDrivers::Microchip
 
         this->edbgInterface->getUsbHidInterface().close();
         UsbDevice::close();
+        this->initialised = false;
     }
 
-    TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* EdbgDevice::getAvr8DebugInterface(
-        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
-        Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
-        const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
-        const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
+    bool EdbgDevice::isInitialised() const {
+        return this->initialised;
+    }
+
+    std::string EdbgDevice::getSerialNumber() {
+        using namespace CommandFrames::Discovery;
+        using ResponseFrames::Discovery::ResponseId;
+
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+            Query{QueryContext::SERIAL_NUMBER}
+        );
+
+        if (responseFrame.id != ResponseId::OK) {
+            throw DeviceInitializationFailure{
+                "Failed to fetch serial number from device - invalid Discovery Protocol response ID."
+            };
+        }
+
+        const auto data = responseFrame.getPayloadData();
+        return std::string{data.begin(), data.end()};
+    }
+
+    std::string EdbgDevice::getFirmwareVersionString() {
+        // TODO: Implement this
+        return "UNKNOWN";
+    }
+
+    DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* EdbgDevice::getTargetPowerManagementInterface()
+    {
+        return this->targetPowerManagementInterface.get();
+    }
+
+    TargetInterfaces::Microchip::Avr8::Avr8DebugInterface* EdbgDevice::getAvr8DebugInterface(
+        const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
     ) {
         if (this->edbgAvr8Interface == nullptr) {
             this->edbgAvr8Interface = std::make_unique<EdbgAvr8Interface>(
                 this->edbgInterface.get(),
-                targetConfig,
-                targetFamily,
-                targetParameters,
-                targetRegisterDescriptorsById
+                targetDescriptionFile,
+                targetConfig
             );
 
             this->configureAvr8Interface();
@@ -105,40 +132,30 @@ namespace DebugToolDrivers::Microchip
         return this->edbgAvr8Interface.get();
     }
 
-    std::string EdbgDevice::getSerialNumber() {
-        using namespace CommandFrames::Discovery;
-        using ResponseFrames::Discovery::ResponseId;
-
-        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            Query(QueryContext::SERIAL_NUMBER)
-        );
-
-        if (responseFrame.id != ResponseId::OK) {
-            throw DeviceInitializationFailure(
-                "Failed to fetch serial number from device - invalid Discovery Protocol response ID."
+    TargetInterfaces::Microchip::Avr8::AvrIspInterface* EdbgDevice::getAvrIspInterface(
+        const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
+    ) {
+        if (this->edbgAvrIspInterface == nullptr) {
+            this->edbgAvrIspInterface = std::make_unique<EdbgAvrIspInterface>(
+                this->edbgInterface.get(),
+                targetDescriptionFile
             );
+
+            this->configureAvr8Interface();
         }
 
-        const auto data = responseFrame.getPayloadData();
-        return std::string(data.begin(), data.end());
-    }
-
-    std::string EdbgDevice::getFirmwareVersionString() {
-        // TODO: Implement this
-        return "UNKNOWN";
+        return this->edbgAvrIspInterface.get();
     }
 
     void EdbgDevice::startSession() {
         using namespace CommandFrames::HouseKeeping;
         using ResponseFrames::HouseKeeping::ResponseId;
 
-        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            StartSession()
-        );
-
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(StartSession{});
         if (responseFrame.id == ResponseId::FAILED) {
             // Failed response returned!
-            throw DeviceInitializationFailure("Failed to start session with EDBG device!");
+            throw DeviceInitializationFailure{"Failed to start session with EDBG device!"};
         }
 
         this->sessionStarted = true;
@@ -148,13 +165,10 @@ namespace DebugToolDrivers::Microchip
         using namespace CommandFrames::HouseKeeping;
         using ResponseFrames::HouseKeeping::ResponseId;
 
-        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            EndSession()
-        );
-
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(EndSession{});
         if (responseFrame.id == ResponseId::FAILED) {
             // Failed response returned!
-            throw DeviceFailure("Failed to end session with EDBG device!");
+            throw DeviceFailure{"Failed to end session with EDBG device!"};
         }
 
         this->sessionStarted = false;

@@ -3,6 +3,7 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
 
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
@@ -15,40 +16,40 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Exceptions;
 
-    FlashErase::FlashErase(const RawPacket& rawPacket)
+    FlashErase::FlashErase(const RawPacket& rawPacket, const TargetDescriptor& targetDescriptor)
         : CommandPacket(rawPacket)
+        , programMemoryAddressSpaceDescriptor(targetDescriptor.programAddressSpaceDescriptor)
+        , programMemorySegmentDescriptor(targetDescriptor.programMemorySegmentDescriptor)
     {
-        const auto packetString = QString::fromLocal8Bit(
-            reinterpret_cast<const char*>(this->data.data() + 12),
-            static_cast<int>(this->data.size() - 12)
-        );
+        using Services::StringService;
+
+        if (rawPacket.size() < 8) {
+            throw Exception{"Invalid packet length"};
+        }
 
         /*
          * The flash erase ('vFlashErase') packet consists of two segments, an address and a length, separated by a
          * comma.
+         *
+         * Example: $vFlashErase:00000000,00004f00#f4
          */
-        const auto packetSegments = packetString.split(",");
-        if (packetSegments.size() != 2) {
-            throw Exception(
-                "Unexpected number of segments in packet data: " + std::to_string(packetSegments.size())
-            );
+        const auto command = std::string{this->data.begin() + 12, this->data.end()};
+
+        const auto delimiterPos = command.find_first_of(',');
+        if (delimiterPos == std::string::npos) {
+            throw Exception{"Invalid packet"};
         }
 
-        bool conversionStatus = false;
-        this->startAddress = packetSegments.at(0).toUInt(&conversionStatus, 16);
-
-        if (!conversionStatus) {
-            throw Exception("Failed to parse start address from flash erase packet data");
-        }
-
-        this->bytes = packetSegments.at(1).toUInt(&conversionStatus, 16);
-
-        if (!conversionStatus) {
-            throw Exception("Failed to parse length from flash erase packet data");
-        }
+        this->startAddress = StringService::toUint32(command.substr(0, delimiterPos), 16);
+        this->bytes = StringService::toUint32(command.substr(delimiterPos + 1), 16);
     }
 
-    void FlashErase::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void FlashErase::handle(
+        Gdb::DebugSession& debugSession,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling FlashErase packet");
 
         try {
@@ -57,9 +58,12 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             Logger::warning("Erasing program memory, in preparation for programming");
 
             // We don't erase a specific address range - we just erase the entire program memory.
-            targetControllerService.eraseMemory(debugSession.gdbTargetDescriptor.targetDescriptor.programMemoryType);
+            targetControllerService.eraseMemory(
+                this->programMemoryAddressSpaceDescriptor,
+                this->programMemorySegmentDescriptor
+            );
 
-            debugSession.connection.writePacket(OkResponsePacket());
+            debugSession.connection.writePacket(OkResponsePacket{});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to erase flash memory - " + exception.getMessage());
@@ -72,7 +76,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 Logger::error("Failed to disable programming mode - " + exception.getMessage());
             }
 
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

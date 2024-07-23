@@ -15,6 +15,7 @@
 #include "src/Helpers/EpollInstance.hpp"
 #include "src/Helpers/EventFdNotifier.hpp"
 #include "src/Services/TargetControllerService.hpp"
+#include "src/Targets/TargetDescriptor.hpp"
 
 #include "Connection.hpp"
 #include "TargetDescriptor.hpp"
@@ -24,8 +25,7 @@
 #include "Feature.hpp"
 #include "CommandPackets/CommandPacket.hpp"
 
-#include "src/EventManager/Events/TargetExecutionStopped.hpp"
-#include "src/EventManager/Events/TargetExecutionResumed.hpp"
+#include "src/EventManager/Events/TargetStateChanged.hpp"
 
 namespace DebugServer::Gdb
 {
@@ -43,6 +43,7 @@ namespace DebugServer::Gdb
     public:
         explicit GdbRspDebugServer(
             const DebugServerConfig& debugServerConfig,
+            const Targets::TargetDescriptor& targetDescriptor,
             EventListener& eventListener,
             EventFdNotifier& eventNotifier
         );
@@ -78,14 +79,10 @@ namespace DebugServer::Gdb
         void run() override;
 
     protected:
-        /**
-         * User project configuration specific to the GDB RSP debug server.
-         */
         GdbDebugServerConfig debugServerConfig;
 
-        /**
-         * The DebugServerComponent's event listener.
-         */
+        const Targets::TargetDescriptor& targetDescriptor;
+
         EventListener& eventListener;
 
         /**
@@ -188,17 +185,7 @@ namespace DebugServer::Gdb
          */
         virtual const TargetDescriptor& getGdbTargetDescriptor() = 0;
 
-        /**
-         * If the GDB client is currently waiting for the target execution to stop, this event handler will issue
-         * a "stop reply" packet to the client once the target execution stops.
-         */
-        void onTargetExecutionStopped(const Events::TargetExecutionStopped& stoppedEvent);
-
-        /**
-         * Services any pending interrupts.
-         */
-        void onTargetExecutionResumed(const Events::TargetExecutionResumed&);
-
+        void onTargetStateChanged(const Events::TargetStateChanged& event);
         virtual void handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress);
         virtual void handleTargetResumedGdbResponse();
     };

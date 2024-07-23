@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <chrono>
+#include <memory>
 #include <optional>
 #include <functional>
 
@@ -9,12 +10,16 @@
 #include "src/TargetController/AtomicSession.hpp"
 
 #include "src/Targets/TargetState.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetPeripheralDescriptor.hpp"
+#include "src/Targets/TargetRegisterGroupDescriptor.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetPinoutDescriptor.hpp"
+#include "src/Targets/TargetPinDescriptor.hpp"
+#include "src/Targets/TargetGpioPinState.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
-#include "src/Targets/TargetVariant.hpp"
-#include "src/Targets/TargetPinDescriptor.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 
@@ -71,43 +76,58 @@ namespace Services
         void stopTargetExecution() const;
 
         /**
-         * Requests the TargetController to continue execution on the target.
-         *
-         * @param fromAddress
+         * Requests the TargetController to resume execution on the target.
          */
-        void continueTargetExecution(
-            std::optional<Targets::TargetMemoryAddress> fromAddress,
-            std::optional<Targets::TargetMemoryAddress> toAddress
-        ) const;
+        void resumeTargetExecution() const;
 
         /**
          * Requests the TargetController to step execution on the target.
-         *
-         * @param fromAddress
          */
-        void stepTargetExecution(std::optional<Targets::TargetMemoryAddress> fromAddress) const;
+        void stepTargetExecution() const;
 
         /**
          * Requests the TargetController to read register values from the target.
          *
-         * @param descriptorIds
-         *  Descriptor IDs of the registers to read.
+         * @param descriptors
+         *  Descriptors of the registers to read.
          *
          * @return
          */
-        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) const;
+        Targets::TargetRegisterDescriptorAndValuePairs readRegisters(
+            const Targets::TargetRegisterDescriptors& descriptors
+        ) const;
+
+        /**
+         * Requests the TargetController to read a single register value from the target.
+         *
+         * @param descriptor
+         * @return
+         */
+        Targets::TargetMemoryBuffer readRegister(const Targets::TargetRegisterDescriptor& descriptor) const;
 
         /**
          * Requests the TargetController to write register values to the target.
          *
          * @param registers
          */
-        void writeRegisters(const Targets::TargetRegisters& registers) const;
+        void writeRegisters(const Targets::TargetRegisterDescriptorAndValuePairs& registers) const;
+
+        /**
+         * Requests the TargetController to write to a single register on the target.
+         *
+         * @param descriptor
+         * @param value
+         */
+        void writeRegister(
+            const Targets::TargetRegisterDescriptor& descriptor,
+            const Targets::TargetMemoryBuffer& value
+        ) const;
 
         /**
          * Requests the TargetController to read memory from the target.
          *
-         * @param memoryType
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          * @param startAddress
          * @param bytes
          * @param bypassCache
@@ -115,7 +135,8 @@ namespace Services
          * @return
          */
         Targets::TargetMemoryBuffer readMemory(
-            Targets::TargetMemoryType memoryType,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemorySize bytes,
             bool bypassCache = false,
@@ -125,22 +146,28 @@ namespace Services
         /**
          * Requests the TargetController to write memory to the target.
          *
-         * @param memoryType
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          * @param startAddress
          * @param buffer
          */
         void writeMemory(
-            Targets::TargetMemoryType memoryType,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
-            const Targets::TargetMemoryBuffer& buffer
+            Targets::TargetMemoryBuffer&& buffer
         ) const;
 
         /**
-         * Requests the TargetController to erase the given target memory type.
+         * Requests the TargetController to erase the given target memory segment.
          *
-         * @param memoryType
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          */
-        void eraseMemory(Targets::TargetMemoryType memoryType) const;
+        void eraseMemory(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
+        ) const;
 
         /**
          * Requests the TargetController to set a breakpoint on the target.
@@ -180,17 +207,22 @@ namespace Services
         /**
          * Retrieves the pin states for a particular target variant.
          *
-         * @param variantId
+         * @param pinoutDescriptor
          */
-        Targets::TargetPinStateMapping getPinStates(int variantId) const;
+        Targets::TargetGpioPinDescriptorAndStatePairs getGpioPinStates(
+            const Targets::TargetPinoutDescriptor& pinoutDescriptor
+        ) const;
 
         /**
          * Updates the pin state on the target, for a specific pin.
          *
          * @param pinDescriptor
-         * @param pinState
+         * @param state
          */
-        void setPinState(Targets::TargetPinDescriptor pinDescriptor, Targets::TargetPinState pinState) const;
+        void setGpioPinState(
+            const Targets::TargetPinDescriptor& pinDescriptor,
+            const Targets::TargetGpioPinState& state
+        ) const;
 
         /**
          * Retrieves the current stack pointer value from the target.
@@ -198,6 +230,13 @@ namespace Services
          * @return
          */
         Targets::TargetStackPointer getStackPointer() const;
+
+        /**
+         * Sets the target's stack pointer to the given value.
+         *
+         * @param stackPointer
+         */
+        void setStackPointer(Targets::TargetStackPointer stackPointer) const;
 
         /**
          * Triggers a reset on the target. The target will be held in a stopped state.

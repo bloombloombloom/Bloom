@@ -1,65 +1,35 @@
 #pragma once
 
-#include <string>
 #include <cstdint>
-#include <vector>
-#include <optional>
-#include <map>
-#include <QMetaType>
+#include <string>
 
 namespace Targets
 {
     enum class TargetPinType: std::uint8_t
     {
-        UNKNOWN,
         GPIO,
         GND,
         VCC,
+        OTHER,
     };
 
     struct TargetPinDescriptor
     {
-        int number;
-        int variantId;
-        bool supportsGpio = false;
-        std::string name;
+    public:
         std::string padName;
-        std::vector<std::string> functions;
+        std::string position;
+        TargetPinType type = TargetPinType::OTHER;
 
-        TargetPinType type = TargetPinType::UNKNOWN;
+        TargetPinDescriptor(
+            const std::string& padName,
+            const std::string& position,
+            TargetPinType type
+        );
 
-        bool operator == (const TargetPinDescriptor& pinDescriptor) const {
-            return this->number == pinDescriptor.number
-                && this->supportsGpio == pinDescriptor.supportsGpio
-                && this->name == pinDescriptor.name
-                && this->padName == pinDescriptor.padName
-                && this->functions == pinDescriptor.functions
-                && this->type == pinDescriptor.type
-            ;
-        }
+        TargetPinDescriptor(const TargetPinDescriptor& other) = delete;
+        TargetPinDescriptor& operator = (const TargetPinDescriptor& other) = delete;
+
+        TargetPinDescriptor(TargetPinDescriptor&& other) noexcept = default;
+        TargetPinDescriptor& operator = (TargetPinDescriptor&& other) = default;
     };
-
-    struct TargetPinState
-    {
-        enum class IoState: std::uint8_t
-        {
-            HIGH,
-            LOW,
-        };
-
-        enum class IoDirection: std::uint8_t
-        {
-            INPUT,
-            OUTPUT,
-        };
-
-        std::optional<IoState> ioState;
-        std::optional<IoDirection> ioDirection;
-    };
-
-    using TargetPinStateMapping = std::map<int, Targets::TargetPinState>;
 }
-
-Q_DECLARE_METATYPE(Targets::TargetPinDescriptor)
-Q_DECLARE_METATYPE(Targets::TargetPinState)
-Q_DECLARE_METATYPE(Targets::TargetPinStateMapping)

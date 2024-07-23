@@ -1,67 +1,65 @@
 #include "RiscV.hpp"
 
-#include <thread>
-#include <chrono>
-#include <limits>
+#include <cassert>
 #include <cmath>
+#include <iterator>
 
-#include "Registers/RegisterNumbers.hpp"
-#include "DebugModule/Registers/RegisterAddresses.hpp"
-#include "DebugModule/Registers/RegisterAccessControlField.hpp"
-#include "DebugModule/Registers/MemoryAccessControlField.hpp"
+#include "src/Helpers/Pair.hpp"
+#include "src/Services/StringService.hpp"
+#include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 
-#include "src/Services/StringService.hpp"
-
-#include "src/Logger/Logger.hpp"
-
 namespace Targets::RiscV
 {
-    using Registers::DebugControlStatusRegister;
-
-    using DebugModule::Registers::RegisterAddress;
-    using DebugModule::Registers::ControlRegister;
-    using DebugModule::Registers::StatusRegister;
-    using DebugModule::Registers::AbstractControlStatusRegister;
-    using DebugModule::Registers::AbstractCommandRegister;
-
     RiscV::RiscV(
         const TargetConfig& targetConfig,
-        TargetDescription::TargetDescriptionFile&& targetDescriptionFile
+        TargetDescriptionFile&& targetDescriptionFile
     )
-        : targetDescriptionFile(targetDescriptionFile)
-        , stackPointerRegisterDescriptor(
-            RiscVRegisterDescriptor(
-                TargetRegisterType::STACK_POINTER,
-                static_cast<RegisterNumber>(Registers::RegisterNumber::STACK_POINTER_X2),
-                4,
-                TargetMemoryType::OTHER,
-                "SP",
-                "CPU",
-                "Stack Pointer Register",
-                TargetRegisterAccess(true, true)
+        : targetConfig(RiscVTargetConfig(targetConfig))
+        , targetDescriptionFile(std::move(targetDescriptionFile))
+        , cpuRegisterAddressSpaceDescriptor(RiscV::generateCpuRegisterAddressSpaceDescriptor())
+        , csrMemorySegmentDescriptor(this->cpuRegisterAddressSpaceDescriptor.getMemorySegmentDescriptor("cs_registers"))
+        , gprMemorySegmentDescriptor(this->cpuRegisterAddressSpaceDescriptor.getMemorySegmentDescriptor("gp_registers"))
+        , cpuPeripheralDescriptor(
+            RiscV::generateCpuPeripheralDescriptor(
+                this->cpuRegisterAddressSpaceDescriptor,
+                this->csrMemorySegmentDescriptor,
+                this->gprMemorySegmentDescriptor
             )
         )
-    {
-        this->loadRegisterDescriptors();
-    }
+        , csrGroupDescriptor(this->cpuPeripheralDescriptor.getRegisterGroupDescriptor("csr"))
+        , gprGroupDescriptor(this->cpuPeripheralDescriptor.getRegisterGroupDescriptor("gpr"))
+        , pcRegisterDescriptor(this->csrGroupDescriptor.getRegisterDescriptor("dpc"))
+        , spRegisterDescriptor(this->gprGroupDescriptor.getRegisterDescriptor("x2"))
+        , sysAddressSpaceDescriptor(this->targetDescriptionFile.getSystemAddressSpaceDescriptor())
+    {}
 
     bool RiscV::supportsDebugTool(DebugTool* debugTool) {
-        return debugTool->getRiscVDebugInterface() != nullptr;
+        return
+            debugTool->getRiscVDebugInterface(this->targetDescriptionFile, this->targetConfig) != nullptr
+            && debugTool->getRiscVIdentificationInterface(this->targetDescriptionFile, this->targetConfig) != nullptr
+        ;
     }
 
     void RiscV::setDebugTool(DebugTool* debugTool) {
-        this->riscVDebugInterface = debugTool->getRiscVDebugInterface();
-        this->riscVProgramInterface = debugTool->getRiscVProgramInterface();
+        this->riscVDebugInterface = debugTool->getRiscVDebugInterface(this->targetDescriptionFile, this->targetConfig);
+        this->riscVProgramInterface = debugTool->getRiscVProgramInterface(
+            this->targetDescriptionFile,
+            this->targetConfig
+        );
+        this->riscVIdInterface = debugTool->getRiscVIdentificationInterface(
+            this->targetDescriptionFile,
+            this->targetConfig
+        );
     }
 
     void RiscV::activate() {
-        this->riscVDebugInterface->activate({});
+        this->riscVDebugInterface->activate();
 
-        const auto deviceId = this->riscVDebugInterface->getDeviceId();
+        const auto deviceId = this->riscVIdInterface->getDeviceId();
         const auto tdfDeviceId = this->targetDescriptionFile.getTargetId();
         if (deviceId != tdfDeviceId) {
             throw Exceptions::InvalidConfig(
@@ -69,178 +67,57 @@ namespace Targets::RiscV
                     ". Please check target configuration."
             );
         }
-
-        this->hartIndices = this->discoverHartIndices();
-
-        if (this->hartIndices.empty()) {
-            throw Exceptions::TargetOperationFailure("Failed to discover a single RISC-V hart");
-        }
-
-        Logger::debug("Discovered RISC-V harts: " + std::to_string(this->hartIndices.size()));
-
-        /*
-         * We only support MCUs with a single hart, for now. So select the first index and ensure that this is
-         * explicitly communicated to the user.
-         */
-        if (this->hartIndices.size() > 1) {
-            Logger::warning(
-                "Bloom only supports debugging a single RISC-V hart - selecting first available hart"
-            );
-        }
-
-        this->selectedHartIndex = *(this->hartIndices.begin());
-        Logger::info("Selected RISC-V hart index: " + std::to_string(this->selectedHartIndex));
-
-        /*
-         * Disabling the debug module before enabling it will clear any state from a previous debug session that
-         * wasn't terminated properly.
-         */
-        this->disableDebugModule();
-        this->enableDebugModule();
-
-        this->stop();
-        this->reset();
-
-        auto debugControlStatusRegister = this->readDebugControlStatusRegister();
-        debugControlStatusRegister.breakUMode = true;
-        debugControlStatusRegister.breakSMode = true;
-        debugControlStatusRegister.breakMMode = true;
-
-        this->writeDebugControlStatusRegister(debugControlStatusRegister);
     }
 
     void RiscV::deactivate() {
-        if (this->getState() != TargetState::RUNNING) {
+        if (this->getExecutionState() != TargetExecutionState::RUNNING) {
             this->run();
         }
 
-        this->disableDebugModule();
         this->riscVDebugInterface->deactivate();
     }
 
-    TargetDescriptor RiscV::getDescriptor() {
-        return TargetDescriptor(
+    TargetDescriptor RiscV::targetDescriptor() {
+        auto descriptor = TargetDescriptor{
+            this->targetDescriptionFile.getName(),
+            this->targetDescriptionFile.getFamily(),
             this->targetDescriptionFile.getTargetId(),
-            TargetFamily::RISC_V,
-            this->targetDescriptionFile.getTargetName(),
             this->targetDescriptionFile.getVendorName(),
-            {
-                {
-                    Targets::TargetMemoryType::FLASH,
-                    TargetMemoryDescriptor(
-                        Targets::TargetMemoryType::FLASH,
-                        Targets::TargetMemoryAddressRange(0x00, 0x1000),
-                        Targets::TargetMemoryAccess(true, true, false)
-                    )
-                }
-            },
-            {this->registerDescriptorsById.begin(), this->registerDescriptorsById.end()},
-            BreakpointResources(0, 0, 0),
-            {},
-            TargetMemoryType::FLASH
+            this->targetDescriptionFile.targetAddressSpaceDescriptorsByKey(),
+            this->targetDescriptionFile.targetPeripheralDescriptorsByKey(),
+            this->targetDescriptionFile.targetPinoutDescriptorsByKey(),
+            this->targetDescriptionFile.targetVariantDescriptors(),
+            {} // TODO: populate this
+        };
+
+        // Copy the RISC-V CPU register address space and peripheral descriptor
+        descriptor.addressSpaceDescriptorsByKey.emplace(
+            this->cpuRegisterAddressSpaceDescriptor.key,
+            this->cpuRegisterAddressSpaceDescriptor.clone()
         );
+
+        descriptor.peripheralDescriptorsByKey.emplace(
+            this->cpuPeripheralDescriptor.key,
+            this->cpuPeripheralDescriptor.clone()
+        );
+
+        return descriptor;
     }
 
     void RiscV::run(std::optional<TargetMemoryAddress> toAddress) {
-        auto controlRegister = ControlRegister();
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.resumeRequest = true;
-
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
-        auto statusRegister = this->readDebugModuleStatusRegister();
-
-        for (auto attempts = 1; !statusRegister.allResumeAcknowledge && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
-            statusRegister = this->readDebugModuleStatusRegister();
-        }
-
-        controlRegister.resumeRequest = false;
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        if (!statusRegister.allResumeAcknowledge) {
-            throw Exceptions::Exception("Target took too long to acknowledge resume request");
-        }
+        this->riscVDebugInterface->run();
     }
 
     void RiscV::stop() {
-        auto controlRegister = ControlRegister();
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.haltRequest = true;
-
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
-        auto statusRegister = this->readDebugModuleStatusRegister();
-
-        for (auto attempts = 1; !statusRegister.allHalted && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
-            statusRegister = this->readDebugModuleStatusRegister();
-        }
-
-        controlRegister.haltRequest = false;
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        if (!statusRegister.allHalted) {
-            throw Exceptions::Exception("Target took too long to halt selected harts");
-        }
+        this->riscVDebugInterface->stop();
     }
 
     void RiscV::step() {
-        auto debugControlStatusRegister = this->readDebugControlStatusRegister();
-        debugControlStatusRegister.step = true;
-
-        this->writeDebugControlStatusRegister(debugControlStatusRegister);
-
-        auto controlRegister = ControlRegister();
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.resumeRequest = true;
-
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        controlRegister.resumeRequest = false;
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        debugControlStatusRegister.step = false;
-        this->writeDebugControlStatusRegister(debugControlStatusRegister);
+        this->riscVDebugInterface->step();
     }
 
     void RiscV::reset() {
-        auto controlRegister = ControlRegister();
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.setResetHaltRequest = true;
-        controlRegister.haltRequest = true;
-        controlRegister.ndmReset = true;
-
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        controlRegister.ndmReset = false;
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
-        auto statusRegister = this->readDebugModuleStatusRegister();
-
-        for (auto attempts = 1; !statusRegister.allHaveReset && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
-            statusRegister = this->readDebugModuleStatusRegister();
-        }
-
-        controlRegister = ControlRegister();
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.clearResetHaltRequest = true;
-        controlRegister.acknowledgeHaveReset = true;
-
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        if (!statusRegister.allHaveReset) {
-            throw Exceptions::Exception("Target took too long to reset");
-        }
+        this->riscVDebugInterface->reset();
     }
 
     void RiscV::setSoftwareBreakpoint(TargetMemoryAddress address) {
@@ -263,211 +140,223 @@ namespace Targets::RiscV
 
     }
 
-    TargetRegisters RiscV::readRegisters(const TargetRegisterDescriptorIds& descriptorIds) {
-        auto output = TargetRegisters();
+    TargetRegisterDescriptorAndValuePairs RiscV::readRegisters(const TargetRegisterDescriptors& descriptors) {
+        auto output = TargetRegisterDescriptorAndValuePairs{};
 
-        for (const auto& descriptorId : descriptorIds) {
-            const auto registerValue = this->readRegister(this->registerDescriptorsById.at(descriptorId).number);
-            output.emplace_back(
-                descriptorId,
-                TargetMemoryBuffer({
-                    static_cast<unsigned char>(registerValue >> 24),
-                    static_cast<unsigned char>(registerValue >> 16),
-                    static_cast<unsigned char>(registerValue >> 8),
-                    static_cast<unsigned char>(registerValue),
-                })
+        /*
+         * A "system register" is simply a register that we can access via the system address space.
+         *
+         * CPU registers (GPRs, CSRs, etc) cannot be accessed via the system address space, so we separate them from
+         * system registers, in order to access them separately.
+         */
+        auto cpuRegisterDescriptors = TargetRegisterDescriptors{};
+
+        for (const auto& descriptor : descriptors) {
+            if (descriptor->addressSpaceId == this->cpuRegisterAddressSpaceDescriptor.id) {
+                if (
+                    !this->csrMemorySegmentDescriptor.addressRange.contains(descriptor->startAddress)
+                    && !this->gprMemorySegmentDescriptor.addressRange.contains(descriptor->startAddress)
+                ) {
+                    throw Exceptions::Exception(
+                        "Cannot access CPU register \"" + descriptor->key + "\" - unknown memory segment"
+                    );
+                }
+
+                cpuRegisterDescriptors.emplace_back(descriptor);
+                continue;
+            }
+
+            if (descriptor->addressSpaceId != this->sysAddressSpaceDescriptor.id) {
+                throw Exceptions::Exception(
+                    "Cannot access register \"" + descriptor->key + "\" - unknown address space"
+                );
+            }
+
+            auto value = this->riscVDebugInterface->readMemory(
+                this->sysAddressSpaceDescriptor,
+                this->resolveRegisterMemorySegmentDescriptor(*descriptor, this->sysAddressSpaceDescriptor),
+                descriptor->startAddress,
+                descriptor->size
             );
+
+            if (value.size() > 1 && this->sysAddressSpaceDescriptor.endianness == TargetMemoryEndianness::LITTLE) {
+                // LSB to MSB
+                std::reverse(value.begin(), value.end());
+            }
+
+            output.emplace_back(*descriptor, std::move(value));
+        }
+
+        if (!cpuRegisterDescriptors.empty()) {
+            auto cpuRegisterValues = this->riscVDebugInterface->readCpuRegisters(cpuRegisterDescriptors);
+            std::move(cpuRegisterValues.begin(), cpuRegisterValues.end(), std::back_inserter(output));
         }
 
         return output;
     }
 
-    void RiscV::writeRegisters(const TargetRegisters& registers) {
-        for (const auto& targetRegister : registers) {
-            if ((targetRegister.value.size() * 8) > std::numeric_limits<std::uintmax_t>::digits) {
-                throw Exceptions::Exception("Register value bit width exceeds that of std::uintmax_t");
+    void RiscV::writeRegisters(const TargetRegisterDescriptorAndValuePairs& registers) {
+        for (const auto& pair : registers) {
+            const auto& descriptor = pair.first;
+
+            if (descriptor.addressSpaceId == this->cpuRegisterAddressSpaceDescriptor.id) {
+                if (
+                    !this->csrMemorySegmentDescriptor.addressRange.contains(descriptor.startAddress)
+                    && !this->gprMemorySegmentDescriptor.addressRange.contains(descriptor.startAddress)
+                ) {
+                    throw Exceptions::Exception("Cannot access CPU register - unknown memory segment");
+                }
+
+                this->riscVDebugInterface->writeCpuRegisters({pair});
+                continue;
             }
 
-            auto registerValue = std::uintmax_t{0};
-
-            for (const auto& registerByte : targetRegister.value) {
-                registerValue = (registerValue << 8) | registerByte;
+            if (descriptor.addressSpaceId != this->sysAddressSpaceDescriptor.id) {
+                throw Exceptions::Exception(
+                    "Cannot access register \"" + descriptor.key + "\" - unknown address space"
+                );
             }
 
-            this->writeRegister(
-                this->registerDescriptorsById.at(targetRegister.descriptorId).number,
-                static_cast<RegisterValue>(registerValue) // TODO: Support larger register values
+            auto value = pair.second;
+
+            if (value.size() > 1 && this->sysAddressSpaceDescriptor.endianness == TargetMemoryEndianness::LITTLE) {
+                // MSB to LSB
+                std::reverse(value.begin(), value.end());
+            }
+
+            this->riscVDebugInterface->writeMemory(
+                this->sysAddressSpaceDescriptor,
+                this->resolveRegisterMemorySegmentDescriptor(descriptor, this->sysAddressSpaceDescriptor),
+                descriptor.startAddress,
+                value
             );
         }
     }
 
     TargetMemoryBuffer RiscV::readMemory(
-        TargetMemoryType memoryType,
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
         TargetMemorySize bytes,
         const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) {
-        using DebugModule::Registers::MemoryAccessControlField;
+        assert(bytes > 0);
 
-        // TODO: excluded addresses
+        assert(addressSpaceDescriptor.addressRange.contains(startAddress));
+        assert(addressSpaceDescriptor.addressRange.contains(startAddress + bytes - 1));
 
-        const auto pageSize = 4;
-        if ((startAddress % pageSize) != 0 || (bytes % pageSize) != 0) {
-            // Alignment required
-            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, pageSize);
-            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), pageSize);
+        assert(memorySegmentDescriptor.addressRange.contains(startAddress));
+        assert(memorySegmentDescriptor.addressRange.contains(startAddress + bytes - 1));
 
-            auto memoryBuffer = this->readMemory(
-                memoryType,
-                alignedStartAddress,
-                alignedBytes,
-                excludedAddressRanges
-            );
-
-            const auto offset = memoryBuffer.begin() + (startAddress - alignedStartAddress);
-
-            auto output = TargetMemoryBuffer();
-            output.reserve(bytes);
-            std::move(offset, offset + bytes, std::back_inserter(output));
-
-            return output;
-        }
-
-        auto output = TargetMemoryBuffer();
-        output.reserve(bytes);
-
-        /*
-         * We only need to set the address once. No need to update it as we use the post-increment function to
-         * increment the address. See MemoryAccessControlField::postIncrement
-         */
-        this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
-
-        auto command = AbstractCommandRegister();
-        command.commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS;
-        command.control = MemoryAccessControlField(
-            false,
-            true,
-            MemoryAccessControlField::MemorySize::SIZE_32,
-            false
-        ).value();
-
-        for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
-            this->executeAbstractCommand(command);
-
-            const auto data = this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
-            output.emplace_back(static_cast<unsigned char>(data));
-            output.emplace_back(static_cast<unsigned char>(data >> 8));
-            output.emplace_back(static_cast<unsigned char>(data >> 16));
-            output.emplace_back(static_cast<unsigned char>(data >> 24));
-        }
-
-        return output;
+        return this->riscVDebugInterface->readMemory(
+            addressSpaceDescriptor,
+            memorySegmentDescriptor,
+            startAddress,
+            bytes,
+            excludedAddressRanges
+        );
     }
 
     void RiscV::writeMemory(
-        TargetMemoryType memoryType,
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
         const TargetMemoryBuffer& buffer
     ) {
-        using DebugModule::Registers::MemoryAccessControlField;
+        assert(!buffer.empty());
 
-        constexpr auto alignTo = TargetMemorySize{4};
-        const auto bytes = static_cast<TargetMemorySize>(buffer.size());
-        if ((startAddress % alignTo) != 0 || (bytes % alignTo) != 0) {
-            /*
-             * Alignment required
-             *
-             * To align the write operation, we read the front and back offset bytes and use them to construct an
-             * aligned buffer.
-             */
-            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, alignTo);
-            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), alignTo);
+        assert(addressSpaceDescriptor.addressRange.contains(startAddress));
+        assert(addressSpaceDescriptor.addressRange.contains(
+            static_cast<TargetMemoryAddress>(startAddress + buffer.size()) - 1)
+        );
 
-            auto alignedBuffer = TargetMemoryBuffer();
-            alignedBuffer.reserve(alignedBytes);
+        assert(memorySegmentDescriptor.addressRange.contains(startAddress));
+        assert(memorySegmentDescriptor.addressRange.contains(
+            static_cast<TargetMemoryAddress>(startAddress + buffer.size()) - 1)
+        );
 
-            if (alignedStartAddress < startAddress) {
-                // Read the offset bytes required to align the start address
-                alignedBuffer = this->readMemory(
-                    memoryType,
-                    alignedStartAddress,
-                    (startAddress - alignedStartAddress)
-                );
-            }
-
-            alignedBuffer.insert(alignedBuffer.end(), buffer.begin(), buffer.end());
-            assert(alignedBytes > bytes);
-
-            // Read the offset bytes required to align the buffer size
-            const auto dataBack = this->readMemory(
-                memoryType,
-                startAddress + bytes,
-                alignedBytes - bytes - (startAddress - alignedStartAddress)
-            );
-            alignedBuffer.insert(alignedBuffer.end(), dataBack.begin(), dataBack.end());
-
-            return this->writeMemory(memoryType, alignedStartAddress, alignedBuffer);
-        }
-
-        if (memoryType == TargetMemoryType::FLASH && this->riscVProgramInterface != nullptr) {
+        if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH && this->riscVProgramInterface) {
             return this->riscVProgramInterface->writeFlashMemory(startAddress, buffer);
         }
 
-        this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
-
-        auto command = AbstractCommandRegister();
-        command.commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS;
-        command.control = MemoryAccessControlField(
-            true,
-            true,
-            MemoryAccessControlField::MemorySize::SIZE_32,
-            false
-        ).value();
-
-        for (TargetMemoryAddress offset = 0; offset < buffer.size(); offset += 4) {
-            this->riscVDebugInterface->writeDebugModuleRegister(
-                RegisterAddress::ABSTRACT_DATA_0,
-                static_cast<RegisterValue>(
-                    (buffer[offset + 3] << 24)
-                    | (buffer[offset + 2] << 16)
-                    | (buffer[offset + 1] << 8)
-                    | (buffer[offset])
-                )
-            );
-
-            this->executeAbstractCommand(command);
-        }
+        return this->riscVDebugInterface->writeMemory(
+            addressSpaceDescriptor,
+            memorySegmentDescriptor,
+            startAddress,
+            buffer
+        );
     }
 
-    void RiscV::eraseMemory(TargetMemoryType memoryType) {
+    bool RiscV::isProgramMemory(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        TargetMemoryAddress startAddress,
+        TargetMemorySize size
+    ) {
+        return memorySegmentDescriptor.executable;
+    }
+
+    void RiscV::eraseMemory(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor
+    ) {
 
     }
 
-    TargetState RiscV::getState() {
-        return this->readDebugModuleStatusRegister().anyRunning ? TargetState::RUNNING : TargetState::STOPPED;
+    TargetExecutionState RiscV::getExecutionState() {
+        return this->riscVDebugInterface->getExecutionState();
     }
 
     TargetMemoryAddress RiscV::getProgramCounter() {
-        return this->readRegister(Registers::RegisterNumber::DEBUG_PROGRAM_COUNTER_REGISTER);
+        const auto value = this->riscVDebugInterface->readCpuRegisters({&(this->pcRegisterDescriptor)}).at(0).second;
+        assert(value.size() == 4);
+        return static_cast<TargetMemoryAddress>(
+            (value[0] << 24) | (value[1] << 16) | (value[2] << 8) | (value[3])
+        );
     }
 
     void RiscV::setProgramCounter(TargetMemoryAddress programCounter) {
         // TODO: test this
-        this->writeRegister(Registers::RegisterNumber::DEBUG_PROGRAM_COUNTER_REGISTER, programCounter);
+        this->riscVDebugInterface->writeCpuRegisters({
+            {
+                this->pcRegisterDescriptor,
+                TargetMemoryBuffer{
+                    static_cast<unsigned char>(programCounter >> 24),
+                    static_cast<unsigned char>(programCounter >> 16),
+                    static_cast<unsigned char>(programCounter >> 8),
+                    static_cast<unsigned char>(programCounter)
+                }
+            }
+        });
     }
 
     TargetStackPointer RiscV::getStackPointer() {
-        return this->readRegister(Registers::RegisterNumber::STACK_POINTER_X2);
+        const auto value = this->riscVDebugInterface->readCpuRegisters({&(this->spRegisterDescriptor)}).at(0).second;
+        assert(value.size() == 4);
+        return static_cast<TargetStackPointer>(
+            (value[0] << 24) | (value[1] << 16) | (value[2] << 8) | (value[3])
+        );
     }
 
-    std::map<int, TargetPinState> RiscV::getPinStates(int variantId) {
+    void RiscV::setStackPointer(TargetStackPointer stackPointer) {
+        this->riscVDebugInterface->writeCpuRegisters({
+            {
+                this->spRegisterDescriptor,
+                TargetMemoryBuffer{
+                    static_cast<unsigned char>(stackPointer >> 24),
+                    static_cast<unsigned char>(stackPointer >> 16),
+                    static_cast<unsigned char>(stackPointer >> 8),
+                    static_cast<unsigned char>(stackPointer)
+                }
+            }
+        });
+    }
+
+    TargetGpioPinDescriptorAndStatePairs RiscV::getGpioPinStates(const TargetPinoutDescriptor& pinoutDescriptor) {
         return {};
     }
 
-    void RiscV::setPinState(
-        const TargetPinDescriptor& pinDescriptor,
-        const TargetPinState& state
-    ) {
+    void RiscV::setGpioPinState(const TargetPinDescriptor& pinDescriptor, const TargetGpioPinState& state) {
 
     }
 
@@ -483,225 +372,356 @@ namespace Targets::RiscV
         return false;
     }
 
-    void RiscV::loadRegisterDescriptors() {
-        for (std::uint8_t i = 0; i <= 31; i++) {
-            auto generalPurposeRegisterDescriptor = RiscVRegisterDescriptor(
-                TargetRegisterType::GENERAL_PURPOSE_REGISTER,
-                static_cast<RegisterNumber>(Registers::RegisterNumberBase::GPR) + i,
-                4,
-                TargetMemoryType::OTHER,
-                "x" + std::to_string(i),
-                "CPU General Purpose",
-                std::nullopt,
-                TargetRegisterAccess(true, true)
-            );
-
-            this->registerDescriptorsById.emplace(
-                generalPurposeRegisterDescriptor.id,
-                std::move(generalPurposeRegisterDescriptor)
-            );
-        }
-    }
-
-    std::set<DebugModule::HartIndex> RiscV::discoverHartIndices() {
-        auto hartIndices = std::set<DebugModule::HartIndex>();
-
-        /*
-         * We can obtain the maximum hart index by setting all of the hartsel bits in the control register and then
-         * reading the value back.
-         */
-        auto controlRegister = ControlRegister();
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = 0xFFFFF;
-
-        this->writeDebugModuleControlRegister(controlRegister);
-        const auto maxHartIndex = this->readDebugModuleControlRegister().selectedHartIndex;
-
-        for (DebugModule::HartIndex hartIndex = 0; hartIndex <= maxHartIndex; ++hartIndex) {
-            /*
-             * We can't just assume that everything between 0 and the maximum hart index are valid hart indices. We
-             * have to test each index until we find one that is non-existent.
-             */
-            auto controlRegister = ControlRegister();
-            controlRegister.debugModuleActive = true;
-            controlRegister.selectedHartIndex = hartIndex;
-
-            this->writeDebugModuleControlRegister(controlRegister);
-
-            /*
-             * It's worth noting that some RISC-V targets **do not** set the non-existent flags. I'm not sure why.
-             * Has hartsel been hardwired to 0 because they only support a single hart, preventing the selection
-             * of non-existent harts?
-             *
-             * Relying on the maximum hart index seems to be all we can do in this case.
-             */
-            if (this->readDebugModuleStatusRegister().anyNonExistent) {
-                break;
-            }
-
-            hartIndices.insert(hartIndex);
-        }
-
-        return hartIndices;
-    }
-
-    ControlRegister RiscV::readDebugModuleControlRegister() {
-        return ControlRegister(
-            this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::CONTROL_REGISTER)
-        );
-    }
-
-    StatusRegister RiscV::readDebugModuleStatusRegister() {
-        return StatusRegister(
-            this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::STATUS_REGISTER)
-        );
-    }
-
-    AbstractControlStatusRegister RiscV::readDebugModuleAbstractControlStatusRegister() {
-        return AbstractControlStatusRegister(
-            this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::ABSTRACT_CONTROL_STATUS_REGISTER)
-        );
-    }
-
-    DebugControlStatusRegister RiscV::readDebugControlStatusRegister() {
-        return DebugControlStatusRegister(this->readRegister(Registers::RegisterNumber::DEBUG_CONTROL_STATUS_REGISTER));
-    }
-
-    void RiscV::enableDebugModule() {
-        auto controlRegister = ControlRegister();
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
-        controlRegister = this->readDebugModuleControlRegister();
-
-        for (auto attempts = 1; !controlRegister.debugModuleActive && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
-            controlRegister = this->readDebugModuleControlRegister();
-        }
-
-        if (!controlRegister.debugModuleActive) {
-            throw Exceptions::Exception("Took too long to enable debug module");
-        }
-    }
-
-    void RiscV::disableDebugModule() {
-        auto controlRegister = ControlRegister();
-        controlRegister.debugModuleActive = false;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
-        controlRegister = this->readDebugModuleControlRegister();
-
-        for (auto attempts = 1; controlRegister.debugModuleActive && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
-            controlRegister = this->readDebugModuleControlRegister();
-        }
-
-        if (controlRegister.debugModuleActive) {
-            throw Exceptions::Exception("Took too long to disable debug module");
-        }
-    }
-
-    RegisterValue RiscV::readRegister(RegisterNumber number) {
-        using DebugModule::Registers::RegisterAccessControlField;
-
-        auto command = AbstractCommandRegister();
-        command.commandType = AbstractCommandRegister::CommandType::REGISTER_ACCESS;
-        command.control = RegisterAccessControlField(
-            number,
-            false,
-            true,
-            false,
-            false,
-            RegisterAccessControlField::RegisterSize::SIZE_32
-        ).value();
-
-        this->executeAbstractCommand(command);
-
-        return this->riscVDebugInterface->readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
-    }
-
-    RegisterValue RiscV::readRegister(Registers::RegisterNumber number) {
-        return this->readRegister(static_cast<RegisterNumber>(number));
-    }
-
-    void RiscV::writeRegister(RegisterNumber number, RegisterValue value) {
-        using DebugModule::Registers::RegisterAccessControlField;
-
-        auto command = AbstractCommandRegister();
-        command.commandType = AbstractCommandRegister::CommandType::REGISTER_ACCESS;
-        command.control = RegisterAccessControlField(
-            number,
-            true,
-            true,
-            false,
-            false,
-            RegisterAccessControlField::RegisterSize::SIZE_32
-        ).value();
-
-        this->riscVDebugInterface->writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0, value);
-        this->executeAbstractCommand(command);
-    }
-
-    void RiscV::writeRegister(Registers::RegisterNumber number, RegisterValue value) {
-        this->writeRegister(
-            static_cast<RegisterNumber>(number),
-            value
-        );
-    }
-
-    void RiscV::writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister& controlRegister) {
-        this->riscVDebugInterface->writeDebugModuleRegister(
-            RegisterAddress::CONTROL_REGISTER,
-            controlRegister.value()
-        );
-    }
-
-    void RiscV::writeDebugControlStatusRegister(const DebugControlStatusRegister& controlRegister) {
-        this->writeRegister(Registers::RegisterNumber::DEBUG_CONTROL_STATUS_REGISTER, controlRegister.value());
-    }
-
-    void RiscV::executeAbstractCommand(
-        const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister
+    const TargetMemorySegmentDescriptor& RiscV::resolveRegisterMemorySegmentDescriptor(
+        const TargetRegisterDescriptor& regDescriptor,
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor
     ) {
-        this->riscVDebugInterface->writeDebugModuleRegister(
-            RegisterAddress::ABSTRACT_COMMAND_REGISTER,
-            abstractCommandRegister.value()
+        const auto segmentDescriptors = addressSpaceDescriptor.getIntersectingMemorySegmentDescriptors(
+            TargetMemoryAddressRange{
+                regDescriptor.startAddress,
+                (regDescriptor.startAddress + (regDescriptor.size / addressSpaceDescriptor.unitSize) - 1)
+            }
         );
 
-        auto abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
-        if (abstractStatusRegister.commandError != AbstractControlStatusRegister::CommandError::NONE) {
+        if (segmentDescriptors.empty()) {
             throw Exceptions::Exception(
-                "Failed to execute abstract command - error: "
-                    + Services::StringService::toHex(abstractStatusRegister.commandError)
+                "Cannot access system register \"" + regDescriptor.key + "\" - unknown memory segment"
             );
         }
 
-        constexpr auto maxAttempts = 10;
-        for (auto attempts = 1; abstractStatusRegister.busy && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
-            abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
+        if (segmentDescriptors.size() != 1) {
+            throw Exceptions::Exception(
+                "Cannot access system register \"" + regDescriptor.key
+                    + "\" - register spans multiple memory segments"
+            );
         }
 
-        if (abstractStatusRegister.busy) {
-            throw Exceptions::Exception("Abstract command took too long to execute");
+        return *(segmentDescriptors.front());
+    }
+
+    TargetAddressSpaceDescriptor RiscV::generateCpuRegisterAddressSpaceDescriptor() {
+        auto addressSpace = TargetAddressSpaceDescriptor{
+            "debug_module",
+            {0x0000, 0xFFFF},
+            TargetMemoryEndianness::LITTLE,
+            {},
+            4
+        };
+
+        addressSpace.segmentDescriptorsByKey.emplace(
+            "cs_registers",
+            TargetMemorySegmentDescriptor{
+                addressSpace.key,
+                "cs_registers",
+                "Control Status Registers",
+                TargetMemorySegmentType::REGISTERS,
+                {0x0000, 0x0FFF},
+                addressSpace.unitSize,
+                false,
+                {true, true},
+                {false, false},
+                std::nullopt
+            }
+        );
+
+        addressSpace.segmentDescriptorsByKey.emplace(
+            "gp_registers",
+            TargetMemorySegmentDescriptor{
+                addressSpace.key,
+                "gp_registers",
+                "General Purpose Registers",
+                TargetMemorySegmentType::GENERAL_PURPOSE_REGISTERS,
+                {0x1000, 0x101F},
+                addressSpace.unitSize,
+                false,
+                {true, true},
+                {false, false},
+                std::nullopt
+            }
+        );
+
+        return addressSpace;
+    }
+
+    TargetPeripheralDescriptor RiscV::generateCpuPeripheralDescriptor(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& csrMemorySegmentDescriptor,
+        const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor
+    ) {
+        auto cpuPeripheralDescriptor = TargetPeripheralDescriptor{
+            "cpu",
+            "RISC-V CPU",
+            {},
+            {}
+        };
+
+        auto& gprGroup = cpuPeripheralDescriptor.registerGroupDescriptorsByKey.emplace(
+            "gpr",
+            TargetRegisterGroupDescriptor{
+                "gpr",
+                "General Purpose Registers",
+                addressSpaceDescriptor.key,
+                std::nullopt,
+                {},
+                {}
+            }
+        ).first->second;
+
+        for (auto i = std::uint8_t{0}; i <= 31; ++i) {
+            const auto key = "x" + std::to_string(i);
+            gprGroup.registerDescriptorsByKey.emplace(
+                key,
+                TargetRegisterDescriptor{
+                    key,
+                    "X" + std::to_string(i),
+                    addressSpaceDescriptor.key,
+                    gprMemorySegmentDescriptor.addressRange.startAddress + i,
+                    4,
+                    TargetRegisterType::GENERAL_PURPOSE_REGISTER,
+                    TargetRegisterAccess(true, true),
+                    std::nullopt,
+                    {}
+                }
+            );
         }
-    }
 
-    TargetMemoryAddress RiscV::alignMemoryAddress(TargetMemoryAddress address, TargetMemoryAddress alignTo) {
-        return static_cast<TargetMemoryAddress>(
-            std::floor(static_cast<float>(address) / static_cast<float>(alignTo))
-        ) * alignTo;
-    }
+        auto& csrGroup = cpuPeripheralDescriptor.registerGroupDescriptorsByKey.emplace(
+            "csr",
+            TargetRegisterGroupDescriptor{
+                "csr",
+                "Control Status Registers",
+                addressSpaceDescriptor.key,
+                std::nullopt,
+                {},
+                {}
+            }
+        ).first->second;
 
-    TargetMemorySize RiscV::alignMemorySize(TargetMemorySize size, TargetMemorySize alignTo) {
-        return static_cast<TargetMemorySize>(
-            std::ceil(static_cast<float>(size) / static_cast<float>(alignTo))
-        ) * alignTo;
+        csrGroup.registerDescriptorsByKey.emplace(
+            "marchid",
+            TargetRegisterDescriptor{
+                "marchid",
+                "MARCHID",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0xF12,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, false),
+                "Architecture ID",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "mimpid",
+            TargetRegisterDescriptor{
+                "mimpid",
+                "MIMPID",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0xF13,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, false),
+                "Implementation ID",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "mstatus",
+            TargetRegisterDescriptor{
+                "mstatus",
+                "MSTATUS",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x300,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Machine status",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "misa",
+            TargetRegisterDescriptor{
+                "misa",
+                "MISA",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x301,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "ISA and extensions",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "mtvec",
+            TargetRegisterDescriptor{
+                "mtvec",
+                "MTVEC",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x305,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Machine trap-handler base address",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "mcounteren",
+            TargetRegisterDescriptor{
+                "mcounteren",
+                "MCOUNTEREN",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x306,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Machine counter enable",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "mscratch",
+            TargetRegisterDescriptor{
+                "mscratch",
+                "MSCRATCH",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x340,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Scratch register for machine trap handlers",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "mepc",
+            TargetRegisterDescriptor{
+                "mepc",
+                "MEPC",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x341,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Machine exception program counter",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "mcause",
+            TargetRegisterDescriptor{
+                "mcause",
+                "MCAUSE",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x342,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Machine trap cause",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "mtval",
+            TargetRegisterDescriptor{
+                "mtval",
+                "MTVAL",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x343,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Machine bad address or instruction",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "mip",
+            TargetRegisterDescriptor{
+                "mip",
+                "MIP",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x344,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Machine interrupt pending",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "dcsr",
+            TargetRegisterDescriptor{
+                "dcsr",
+                "DCSR",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B0,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Debug control and status",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "dpc",
+            TargetRegisterDescriptor{
+                "dpc",
+                "DPC",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B1,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Debug program counter",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "dscratch0",
+            TargetRegisterDescriptor{
+                "dscratch0",
+                "DSCRATCH0",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B2,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Debug scratch 0",
+                {}
+            }
+        );
+
+        csrGroup.registerDescriptorsByKey.emplace(
+            "dscratch1",
+            TargetRegisterDescriptor{
+                "dscratch1",
+                "DSCRATCH1",
+                addressSpaceDescriptor.key,
+                csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B3,
+                4,
+                TargetRegisterType::OTHER,
+                TargetRegisterAccess(true, true),
+                "Debug scratch 1",
+                {}
+            }
+        );
+
+        return cpuPeripheralDescriptor;
     }
 }

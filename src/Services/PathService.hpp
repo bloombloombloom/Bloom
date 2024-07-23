@@ -56,7 +56,7 @@ namespace Services
          *
          * @return
          */
-        static std::string targetDescriptionDirPath() {
+        static std::string targetDescriptionFilesDirPath() {
             return PathService::resourcesDirPath() + "/TargetDescriptionFiles";
         }
 

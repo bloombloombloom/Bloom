@@ -19,7 +19,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
              * 1 byte for break cause
              * 2 bytes for extended info
              */
-            throw Exception("Failed to process BreakEvent from AvrEvent - unexpected packet size.");
+            throw Exception{"Failed to process BreakEvent from AvrEvent - unexpected packet size."};
         }
 
         // Program counter consists of 4 bytes

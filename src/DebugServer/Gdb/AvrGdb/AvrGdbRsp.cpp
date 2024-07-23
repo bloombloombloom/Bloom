@@ -17,6 +17,9 @@
 #include "CommandPackets/VContStepExecution.hpp"
 #include "CommandPackets/VContRangeStep.hpp"
 
+#include "src/DebugServer/Gdb/CommandPackets/Monitor.hpp"
+#include "CommandPackets/EepromFill.hpp"
+
 namespace DebugServer::Gdb::AvrGdb
 {
     using namespace Exceptions;
@@ -30,7 +33,7 @@ namespace DebugServer::Gdb::AvrGdb
         EventListener& eventListener,
         EventFdNotifier& eventNotifier
     )
-        : GdbRspDebugServer(debugServerConfig, eventListener, eventNotifier)
+        : GdbRspDebugServer(debugServerConfig, targetDescriptor, eventListener, eventNotifier)
         , gdbTargetDescriptor(targetDescriptor)
     {}
 
@@ -38,7 +41,6 @@ namespace DebugServer::Gdb::AvrGdb
         this->activeDebugSession.emplace(
             std::move(connection),
             this->getSupportedFeatures(),
-            this->gdbTargetDescriptor,
             this->debugServerConfig
         );
 
@@ -57,52 +59,57 @@ namespace DebugServer::Gdb::AvrGdb
         return this->activeDebugSession.has_value() ? &*(this->activeDebugSession) : nullptr;
     }
 
-    std::unique_ptr<Gdb::CommandPackets::CommandPacket> AvrGdbRsp::resolveCommandPacket(
-        const RawPacket& rawPacket
-    ) {
-        using AvrGdb::CommandPackets::ReadRegister;
-        using AvrGdb::CommandPackets::ReadRegisters;
-        using AvrGdb::CommandPackets::WriteRegister;
-        using AvrGdb::CommandPackets::ReadMemory;
-        using AvrGdb::CommandPackets::WriteMemory;
-        using AvrGdb::CommandPackets::ReadMemoryMap;
-        using AvrGdb::CommandPackets::FlashErase;
-        using AvrGdb::CommandPackets::FlashWrite;
-        using AvrGdb::CommandPackets::FlashDone;
-        using AvrGdb::CommandPackets::VContSupportedActionsQuery;
-        using AvrGdb::CommandPackets::VContContinueExecution;
-        using AvrGdb::CommandPackets::VContStepExecution;
-        using AvrGdb::CommandPackets::VContRangeStep;
+    std::unique_ptr<Gdb::CommandPackets::CommandPacket> AvrGdbRsp::resolveCommandPacket(const RawPacket& rawPacket) {
+        using Gdb::CommandPackets::Monitor;
 
-        if (rawPacket.size() >= 2) {
-            if (rawPacket[1] == 'p') {
-                return std::make_unique<ReadRegister>(rawPacket);
-            }
+        using CommandPackets::ReadRegister;
+        using CommandPackets::ReadRegisters;
+        using CommandPackets::WriteRegister;
+        using CommandPackets::ReadMemory;
+        using CommandPackets::WriteMemory;
+        using CommandPackets::ReadMemoryMap;
+        using CommandPackets::FlashErase;
+        using CommandPackets::FlashWrite;
+        using CommandPackets::FlashDone;
+        using CommandPackets::VContSupportedActionsQuery;
+        using CommandPackets::VContContinueExecution;
+        using CommandPackets::VContStepExecution;
+        using CommandPackets::VContRangeStep;
+        using CommandPackets::EepromFill;
 
-            if (rawPacket[1] == 'g') {
-                return std::make_unique<ReadRegisters>(rawPacket);
-            }
+        if (rawPacket.size() < 2) {
+            throw Exception{"Invalid raw packet - no data"};
+        }
 
-            if (rawPacket[1] == 'P') {
-                return std::make_unique<WriteRegister>(rawPacket);
-            }
+        if (rawPacket[1] == 'p') {
+            return std::make_unique<ReadRegister>(rawPacket);
+        }
 
-            if (rawPacket[1] == 'm') {
-                return std::make_unique<ReadMemory>(rawPacket, this->gdbTargetDescriptor);
-            }
+        if (rawPacket[1] == 'g') {
+            return std::make_unique<ReadRegisters>(rawPacket, this->gdbTargetDescriptor);
+        }
 
-            if (rawPacket[1] == 'M') {
-                return std::make_unique<WriteMemory>(rawPacket, this->gdbTargetDescriptor);
-            }
+        if (rawPacket[1] == 'P') {
+            return std::make_unique<WriteRegister>(rawPacket);
+        }
 
-            const auto rawPacketString = std::string(rawPacket.begin() + 1, rawPacket.end());
+        if (rawPacket[1] == 'm') {
+            return std::make_unique<ReadMemory>(rawPacket, this->gdbTargetDescriptor);
+        }
+
+        if (rawPacket[1] == 'M') {
+            return std::make_unique<WriteMemory>(rawPacket, this->gdbTargetDescriptor);
+        }
+
+        if (rawPacket.size() > 1) {
+            const auto rawPacketString = std::string{rawPacket.begin() + 1, rawPacket.end()};
 
             if (rawPacketString.find("qXfer:memory-map:read::") == 0) {
-                return std::make_unique<ReadMemoryMap>(rawPacket);
+                return std::make_unique<ReadMemoryMap>(rawPacket, this->gdbTargetDescriptor);
             }
 
             if (rawPacketString.find("vFlashErase") == 0) {
-                return std::make_unique<FlashErase>(rawPacket);
+                return std::make_unique<FlashErase>(rawPacket, this->gdbTargetDescriptor);
             }
 
             if (rawPacketString.find("vFlashWrite") == 0) {
@@ -110,7 +117,7 @@ namespace DebugServer::Gdb::AvrGdb
             }
 
             if (rawPacketString.find("vFlashDone") == 0) {
-                return std::make_unique<FlashDone>(rawPacket);
+                return std::make_unique<FlashDone>(rawPacket, this->gdbTargetDescriptor);
             }
 
             if (rawPacketString.find("vCont?") == 0) {
@@ -127,7 +134,19 @@ namespace DebugServer::Gdb::AvrGdb
 
             if (this->debugServerConfig.rangeStepping) {
                 if (rawPacketString.find("vCont;r") == 0) {
-                    return std::make_unique<VContRangeStep>(rawPacket);
+                    return std::make_unique<VContRangeStep>(rawPacket, this->gdbTargetDescriptor);
+                }
+            }
+
+            if (rawPacketString.find("qRcmd") == 0) {
+                // This is a monitor packet
+                auto monitorCommand = std::make_unique<Monitor>(rawPacket);
+
+                if (monitorCommand->command.find("eeprom fill") == 0) {
+                    return std::make_unique<EepromFill>(
+                        std::move(*(monitorCommand.release())),
+                        this->gdbTargetDescriptor
+                    );
                 }
             }
         }
@@ -184,7 +203,7 @@ namespace DebugServer::Gdb::AvrGdb
                 Logger::debug("Attempting single step from 0x" + StringService::toHex(programAddress));
 
                 activeRangeSteppingSession->singleStepping = true;
-                this->targetControllerService.stepTargetExecution(std::nullopt);
+                this->targetControllerService.stepTargetExecution();
                 return;
             }
 
@@ -197,10 +216,7 @@ namespace DebugServer::Gdb::AvrGdb
                 Logger::debug("Continuing range stepping");
 
                 activeRangeSteppingSession->singleStepping = false;
-                this->targetControllerService.continueTargetExecution(
-                    std::nullopt,
-                    activeRangeSteppingSession->range.endAddress
-                );
+                this->targetControllerService.resumeTargetExecution();
                 return;
             }
 
@@ -213,9 +229,7 @@ namespace DebugServer::Gdb::AvrGdb
              * We have to end the range stepping session and report the stop to GDB.
              */
             Logger::debug("Target stopped within stepping range, but for an unknown reason");
-
             this->activeDebugSession->terminateRangeSteppingSession(this->targetControllerService);
-            return GdbRspDebugServer::handleTargetStoppedGdbResponse(programAddress);
         }
 
         // Report the stop to GDB

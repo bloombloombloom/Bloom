@@ -66,7 +66,7 @@ public:
     }
 
     std::unique_lock<std::mutex> lock() {
-        return std::unique_lock(this->mutex);
+        return std::unique_lock{this->mutex};
     }
 
 private:

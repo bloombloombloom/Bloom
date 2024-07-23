@@ -2,7 +2,9 @@
 
 #include "Command.hpp"
 
-#include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentType.hpp"
 
 namespace TargetController::Commands
 {
@@ -12,10 +14,15 @@ namespace TargetController::Commands
         static constexpr CommandType type = CommandType::ERASE_TARGET_MEMORY;
         static const inline std::string name = "EraseTargetMemory";
 
-        Targets::TargetMemoryType memoryType;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
 
-        EraseTargetMemory(Targets::TargetMemoryType memoryType)
-            : memoryType(memoryType)
+        EraseTargetMemory(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
+        )
+            : addressSpaceDescriptor(addressSpaceDescriptor)
+            , memorySegmentDescriptor(memorySegmentDescriptor)
         {};
 
         [[nodiscard]] CommandType getType() const override {
@@ -27,7 +34,7 @@ namespace TargetController::Commands
         }
 
         [[nodiscard]] bool requiresDebugMode() const override {
-            return this->memoryType == Targets::TargetMemoryType::RAM;
+            return this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::RAM;
         }
     };
 }

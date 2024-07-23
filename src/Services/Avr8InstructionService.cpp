@@ -2,24 +2,10 @@
 
 namespace Services
 {
-    using Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Decoder;
-
-    Decoder::InstructionMapping Avr8InstructionService::fetchInstructions(
-        const Targets::TargetMemoryAddressRange& addressRange,
-        const Targets::TargetDescriptor& targetDescriptor,
-        TargetControllerService& targetControllerService
-    ) {
-        const auto programMemory = targetControllerService.readMemory(
-            targetDescriptor.programMemoryType,
-            addressRange.startAddress,
-            addressRange.endAddress - addressRange.startAddress
-        );
-
-        return Decoder::decode(addressRange.startAddress, programMemory);
-    }
+    using Targets::Microchip::Avr8::OpcodeDecoder::Decoder;
 
     std::optional<Targets::TargetMemoryAddress> Avr8InstructionService::resolveProgramDestinationAddress(
-        const Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Instruction& instruction,
+        const Targets::Microchip::Avr8::OpcodeDecoder::Instruction& instruction,
         Targets::TargetMemoryAddress instructionAddress,
         const Decoder::InstructionMapping& instructions
     ) {

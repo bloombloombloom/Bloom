@@ -18,21 +18,21 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg
 
     void EdbgTargetPowerManagementInterface::enableTargetPower() {
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            SetParameter(EdbgParameters::CONTROL_TARGET_POWER, 0x01)
+            SetParameter{EdbgParameters::CONTROL_TARGET_POWER, 0x01}
         );
 
         if (responseFrame.id == EdbgControlResponseId::FAILED) {
-            throw Exception("Failed to enable target power via EDBG Control protocol");
+            throw Exception{"Failed to enable target power via EDBG Control protocol"};
         }
     }
 
     void EdbgTargetPowerManagementInterface::disableTargetPower() {
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            SetParameter(EdbgParameters::CONTROL_TARGET_POWER, 0x00)
+            SetParameter{EdbgParameters::CONTROL_TARGET_POWER, 0x00}
         );
 
         if (responseFrame.id == EdbgControlResponseId::FAILED) {
-            throw Exception("Failed to disable target power via EDBG Control protocol");
+            throw Exception{"Failed to disable target power via EDBG Control protocol"};
         }
     }
 }

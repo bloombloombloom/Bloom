@@ -2,6 +2,7 @@
 
 #include "src/DebugServer/Gdb/ResponsePackets/EmptyResponsePacket.hpp"
 
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 namespace DebugServer::Gdb::CommandPackets
@@ -17,23 +18,28 @@ namespace DebugServer::Gdb::CommandPackets
             return;
         }
 
-        const auto decodedCommand = Packet::hexToData(
-            std::string(this->data.begin() + 6, this->data.end())
+        const auto decodedCommand = Services::StringService::dataFromHex(
+            std::string{this->data.begin() + 6, this->data.end()}
         );
 
-        this->command = std::string(decodedCommand.begin(), decodedCommand.end());
+        this->command = std::string{decodedCommand.begin(), decodedCommand.end()};
         this->command.erase(this->command.find_last_not_of(" ") + 1);
 
         this->commandOptions = this->extractCommandOptions(this->command);
     }
 
-    void Monitor::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void Monitor::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor&,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::error("Unknown custom GDB command (\"" + this->command + "\") received.");
-        debugSession.connection.writePacket(EmptyResponsePacket());
+        debugSession.connection.writePacket(EmptyResponsePacket{});
     }
 
     std::map<std::string, std::optional<std::string>> Monitor::extractCommandOptions(const std::string& command) {
-        auto output = std::map<std::string, std::optional<std::string>>();
+        auto output = std::map<std::string, std::optional<std::string>>{};
 
         for (std::string::size_type cmdIndex = 1; cmdIndex < command.size(); ++cmdIndex) {
             const auto cmdChar = command.at(cmdIndex);
@@ -43,17 +49,17 @@ namespace DebugServer::Gdb::CommandPackets
                     continue;
                 }
 
-                auto option = std::string();
-                auto optionValue = std::optional<std::string>();
+                auto option = std::string{};
+                auto optionValue = std::optional<std::string>{};
 
                 bool quoted = false;
 
-                auto optIndex = std::string::size_type(0);
+                auto optIndex = std::string::size_type{0};
                 for (optIndex = cmdIndex + 1; optIndex < command.size(); ++optIndex) {
                     const auto optChar = command.at(optIndex);
 
                     if (!option.empty() && ((!quoted && optChar == ' ') || (quoted && optChar == '"'))) {
-                        output.insert(std::pair(option, optionValue));
+                        output.emplace(option, optionValue);
 
                         option.clear();
                         optionValue.reset();
@@ -74,7 +80,7 @@ namespace DebugServer::Gdb::CommandPackets
                     }
 
                     if (optChar == '=') {
-                        optionValue = std::string();
+                        optionValue = std::string{};
                         continue;
                     }
 
@@ -83,7 +89,7 @@ namespace DebugServer::Gdb::CommandPackets
                 }
 
                 if (!option.empty()) {
-                    output.insert(std::pair(option, optionValue));
+                    output.emplace(option, optionValue);
                     cmdIndex = optIndex;
                 }
             }

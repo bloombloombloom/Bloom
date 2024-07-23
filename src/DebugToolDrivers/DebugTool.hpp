@@ -2,14 +2,16 @@
 
 #include "TargetInterfaces/TargetPowerManagementInterface.hpp"
 
-#include "TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
-#include "TargetInterfaces/Microchip/AVR/AvrIspInterface.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/Avr8TargetConfig.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
+#include "TargetInterfaces/Microchip/AVR8/Avr8DebugInterface.hpp"
+#include "TargetInterfaces/Microchip/AVR8/AvrIspInterface.hpp"
+#include "src/Targets/Microchip/AVR8/TargetDescriptionFile.hpp"
+#include "src/Targets/Microchip/AVR8/Avr8TargetConfig.hpp"
 
 #include "TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 #include "TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
+#include "TargetInterfaces/RiscV/RiscVIdentificationInterface.hpp"
+#include "src/Targets/RiscV/TargetDescriptionFile.hpp"
+#include "src/Targets/RiscV/RiscVTargetConfig.hpp"
 
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 
@@ -44,6 +46,8 @@ public:
      */
     virtual void close() = 0;
 
+    virtual bool isInitialised() const = 0;
+
     virtual std::string getName() = 0;
 
     virtual std::string getSerialNumber() = 0;
@@ -75,11 +79,9 @@ public:
      *
      * @return
      */
-    virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface(
-        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
-        Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
-        const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
-        const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
+    virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr8::Avr8DebugInterface* getAvr8DebugInterface(
+        const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
     ) {
         return nullptr;
     }
@@ -94,8 +96,9 @@ public:
      *
      * @return
      */
-    virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface(
-        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
+    virtual DebugToolDrivers::TargetInterfaces::Microchip::Avr8::AvrIspInterface* getAvrIspInterface(
+        const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
     ) {
         return nullptr;
     }
@@ -110,7 +113,10 @@ public:
      *
      * @return
      */
-    virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* getRiscVDebugInterface() {
+    virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* getRiscVDebugInterface(
+        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::RiscV::RiscVTargetConfig& targetConfig
+    ) {
         return nullptr;
     }
 
@@ -127,19 +133,31 @@ public:
      *
      * @return
      */
-    virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVProgramInterface* getRiscVProgramInterface() {
+    virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVProgramInterface* getRiscVProgramInterface(
+        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::RiscV::RiscVTargetConfig& targetConfig
+    ) {
         return nullptr;
     }
 
-    [[nodiscard]] bool isInitialised() const {
-        return this->initialised;
+    /**
+     * The RISC-V debug spec does not define a target ID. But vendors typically assign each model with an ID and
+     * provide a means to extract it from the connected target, via the debug tool.
+     *
+     * For example, WCH debug tools return the target ID in response to the target activation command. For more, see
+     * the implementation of the WCH-Link protocol.
+     *
+     * Bloom uses the target ID for verification purposes. We simply compare it to the one we have in the TDF and shout
+     * if they don't match.
+     *
+     * Note: the caller of this function will not manage the lifetime of the returned instance.
+     *
+     * @return
+     */
+    virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVIdentificationInterface* getRiscVIdentificationInterface(
+        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::RiscV::RiscVTargetConfig& targetConfig
+    ) {
+        return nullptr;
     }
-
-protected:
-    void setInitialised(bool initialised) {
-        this->initialised = initialised;
-    }
-
-private:
-    bool initialised = false;
 };

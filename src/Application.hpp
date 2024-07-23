@@ -43,15 +43,9 @@ class Application: public QObject, public Thread
     Q_OBJECT
 
 public:
-    static const inline VersionNumber VERSION = VersionNumber(std::string(BLOOM_VERSION));
+    static const inline VersionNumber VERSION = VersionNumber{std::string{BLOOM_VERSION}};
 
     explicit Application(std::vector<std::string>&& arguments);
-
-    /**
-     * Main entry-point for the Bloom program.
-     *
-     * @return
-     */
     int run();
 
 private:

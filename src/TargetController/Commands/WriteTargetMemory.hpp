@@ -2,6 +2,9 @@
 
 #include "Command.hpp"
 
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentType.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
 namespace TargetController::Commands
@@ -12,18 +15,21 @@ namespace TargetController::Commands
         static constexpr CommandType type = CommandType::WRITE_TARGET_MEMORY;
         static const inline std::string name = "WriteTargetMemory";
 
-        Targets::TargetMemoryType memoryType;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
         Targets::TargetMemoryAddress startAddress;
         Targets::TargetMemoryBuffer buffer;
 
         WriteTargetMemory(
-            Targets::TargetMemoryType memoryType,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
-            const Targets::TargetMemoryBuffer& buffer
+            Targets::TargetMemoryBuffer&& buffer
         )
-            : memoryType(memoryType)
+            : addressSpaceDescriptor(addressSpaceDescriptor)
+            , memorySegmentDescriptor(memorySegmentDescriptor)
             , startAddress(startAddress)
-            , buffer(buffer)
+            , buffer(std::move(buffer))
         {};
 
         [[nodiscard]] CommandType getType() const override {
@@ -35,7 +41,7 @@ namespace TargetController::Commands
         }
 
         [[nodiscard]] bool requiresDebugMode() const override {
-            return this->memoryType == Targets::TargetMemoryType::RAM;
+            return this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::RAM;
         }
     };
 }

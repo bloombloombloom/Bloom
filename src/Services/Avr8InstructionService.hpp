@@ -4,31 +4,14 @@
 
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/OpcodeDecoder/Instruction.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/OpcodeDecoder/Decoder.hpp"
+#include "src/Targets/Microchip/AVR8/OpcodeDecoder/Instruction.hpp"
+#include "src/Targets/Microchip/AVR8/OpcodeDecoder/Decoder.hpp"
 
 namespace Services
 {
     class Avr8InstructionService
     {
     public:
-        /**
-         * Fetches opcodes from the target's program memory and attempts to decodes them.
-         *
-         * @param addressRange
-         * @param targetDescriptor
-         * @param targetControllerService
-         *
-         * @return
-         *  A mapping of std::optional<Instruction>, mapped by their byte address in program memory. The address will
-         *  map to std::nullopt if we failed to decode the opcode at that address.
-         */
-        static Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Decoder::InstructionMapping fetchInstructions(
-            const Targets::TargetMemoryAddressRange& addressRange,
-            const Targets::TargetDescriptor& targetDescriptor,
-            TargetControllerService& targetControllerService
-        );
-
         /**
          * For instructions that can change program flow, this function will attempt to figure out where, in program
          * memory, the instruction may jump to.
@@ -62,9 +45,9 @@ namespace Services
          *  Otherwise, std::nullopt.
          */
         static std::optional<Targets::TargetMemoryAddress> resolveProgramDestinationAddress(
-            const Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Instruction& instruction,
+            const Targets::Microchip::Avr8::OpcodeDecoder::Instruction& instruction,
             Targets::TargetMemoryAddress instructionAddress,
-            const Targets::Microchip::Avr::Avr8Bit::OpcodeDecoder::Decoder::InstructionMapping& instructions
+            const Targets::Microchip::Avr8::OpcodeDecoder::Decoder::InstructionMapping& instructions
         );
     };
 }

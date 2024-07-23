@@ -51,10 +51,10 @@ namespace Targets::TargetDescription
         const RegisterGroupInstance& getRegisterGroupInstance(std::string_view key) const {
             const auto instance = this->tryGetRegisterGroupInstance(key);
             if (!instance.has_value()) {
-                throw Exceptions::InvalidTargetDescriptionDataException(
-                    "Failed to get register group instance \"" + std::string(key)
+                throw Exceptions::InvalidTargetDescriptionDataException{
+                    "Failed to get register group instance \"" + std::string{key}
                         + "\" from peripheral in TDF - register group instance not found"
-                );
+                };
             }
 
             return instance->get();

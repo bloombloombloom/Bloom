@@ -13,7 +13,7 @@ namespace TargetController::Responses
         TARGET_REGISTERS_READ,
         TARGET_MEMORY_READ,
         TARGET_STATE,
-        TARGET_PIN_STATES,
+        TARGET_GPIO_PIN_STATES,
         TARGET_STACK_POINTER,
         TARGET_PROGRAM_COUNTER,
         BREAKPOINT,

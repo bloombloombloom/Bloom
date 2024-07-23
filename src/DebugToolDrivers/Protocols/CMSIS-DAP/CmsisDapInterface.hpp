@@ -65,10 +65,9 @@ namespace DebugToolDrivers::Protocols::CmsisDap
                 "CMSIS Response type must be derived from the Response class."
             );
 
-            const auto rawResponse = this->getUsbHidInterface().read(std::chrono::milliseconds(60000));
-
+            const auto rawResponse = this->getUsbHidInterface().read(std::chrono::milliseconds{60000});
             if (rawResponse.empty()) {
-                throw Exceptions::DeviceCommunicationFailure("Empty CMSIS-DAP response received");
+                throw Exceptions::DeviceCommunicationFailure{"Empty CMSIS-DAP response received"};
             }
 
             return ResponseType(rawResponse);
@@ -99,7 +98,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap
             auto response = this->getResponse<typename CommandType::ExpectedResponseType>();
 
             if (response.id != cmsisDapCommand.id) {
-                throw Exceptions::DeviceCommunicationFailure("Unexpected response to CMSIS-DAP command.");
+                throw Exceptions::DeviceCommunicationFailure{"Unexpected response to CMSIS-DAP command."};
             }
 
             return response;
@@ -121,7 +120,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap
          *
          * Because of this, we may need to enforce a minimum time gap between sending CMSIS commands.
          */
-        std::chrono::milliseconds commandDelay = std::chrono::milliseconds(0);
+        std::chrono::milliseconds commandDelay = std::chrono::milliseconds{0};
         std::int64_t lastCommandSentTimeStamp = 0;
     };
 }

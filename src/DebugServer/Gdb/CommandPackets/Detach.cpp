@@ -20,7 +20,12 @@ namespace DebugServer::Gdb::CommandPackets
         : CommandPacket(rawPacket)
     {}
 
-    void Detach::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void Detach::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor&,
+        const Targets::TargetDescriptor&,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling Detach packet");
 
         try {
@@ -28,11 +33,11 @@ namespace DebugServer::Gdb::CommandPackets
                 targetControllerService.shutdown();
             }
 
-            debugSession.connection.writePacket(OkResponsePacket());
+            debugSession.connection.writePacket(OkResponsePacket{});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to shut down TargetController - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

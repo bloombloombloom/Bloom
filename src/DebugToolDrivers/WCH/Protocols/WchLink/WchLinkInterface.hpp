@@ -5,15 +5,16 @@
 #include <vector>
 #include <utility>
 
-#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTransportModuleInterface.hpp"
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVIdentificationInterface.hpp"
+
 #include "src/DebugToolDrivers/USB/UsbInterface.hpp"
 #include "src/DebugToolDrivers/USB/UsbDevice.hpp"
 
 #include "src/DebugToolDrivers/WCH/WchGeneric.hpp"
 #include "Commands/Command.hpp"
 
-#include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
 #include "src/DebugToolDrivers/WCH/DeviceInfo.hpp"
 
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
@@ -21,30 +22,33 @@
 namespace DebugToolDrivers::Wch::Protocols::WchLink
 {
     /**
-     * The WchLinkInterface implements the WCH-Link protocol.
+     * Implementation of the WCH-Link protocol, which provides an implementation of a RISC-V DTM interface, a
+     * programming interface and a target identification interface.
+     *
+     * WCH debug tools cannot write to program memory via the target's RISC-V debug module, so we cannot program the
+     * target via the tool's RISC-V DTM interface. Instead, the WCH-Link protocol provides a dedicated command for
+     * writing to program memory, which is why this class implements the RISC-V programming interface.
+     * See WchLinkInterface::writeFlashMemory() for more.
      */
     class WchLinkInterface
-        : public TargetInterfaces::RiscV::RiscVDebugInterface
+        : public ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTransportModuleInterface
         , public TargetInterfaces::RiscV::RiscVProgramInterface
+        , public TargetInterfaces::RiscV::RiscVIdentificationInterface
     {
     public:
         WchLinkInterface(Usb::UsbInterface& usbInterface, Usb::UsbDevice& usbDevice);
 
         DeviceInfo getDeviceInfo();
-
-        void activate(const Targets::RiscV::TargetParameters& targetParameters) override;
-
+        void activate() override;
         void deactivate() override;
-
         std::string getDeviceId() override;
 
-        Targets::RiscV::DebugModule::RegisterValue readDebugModuleRegister(
-            Targets::RiscV::DebugModule::RegisterAddress address
+        ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterValue readDebugModuleRegister(
+            ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterAddress address
         ) override;
-
         void writeDebugModuleRegister(
-            Targets::RiscV::DebugModule::RegisterAddress address,
-            Targets::RiscV::DebugModule::RegisterValue value
+            ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterAddress address,
+            ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterValue value
         ) override;
 
         void writeFlashMemory(
@@ -85,9 +89,9 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
             auto rawCommand = command.getRawCommand();
 
             if (rawCommand.size() > this->commandEndpointMaxPacketSize) {
-                throw Exceptions::DeviceCommunicationFailure(
+                throw Exceptions::DeviceCommunicationFailure{
                     "Raw command size exceeds maximum packet size for command endpoint"
-                );
+                };
             }
 
             this->usbInterface.writeBulk(WchLinkInterface::USB_COMMAND_ENDPOINT_OUT, std::move(rawCommand));
@@ -95,30 +99,30 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
             const auto rawResponse = this->usbInterface.readBulk(WchLinkInterface::USB_COMMAND_ENDPOINT_IN);
 
             if (rawResponse.size() < 3) {
-                throw Exceptions::DeviceCommunicationFailure("Invalid response size from device");
+                throw Exceptions::DeviceCommunicationFailure{"Invalid response size from device"};
             }
 
             // The first byte of the response should be 0x82 (for success) or 0x81 (for failure)
-            if ((rawResponse[0] != 0x81 && rawResponse[0] != 0x82)) {
-                throw Exceptions::DeviceCommunicationFailure("Invalid response code from device");
+            if (rawResponse[0] != 0x81 && rawResponse[0] != 0x82) {
+                throw Exceptions::DeviceCommunicationFailure{"Invalid response code from device"};
             }
 
             if (rawResponse[0] == 0x81) {
                 // TODO: Create ErrorResponse exception class and throw an instance of it here.
-                throw Exceptions::DeviceCommunicationFailure("Error response");
+                throw Exceptions::DeviceCommunicationFailure{"Error response"};
             }
 
             if (rawResponse[1] != command.commandId) {
-                throw Exceptions::DeviceCommunicationFailure("Missing/invalid command ID in response from device");
+                throw Exceptions::DeviceCommunicationFailure{"Missing/invalid command ID in response from device"};
             }
 
             if ((rawResponse.size() - 3) != rawResponse[2]) {
-                throw Exceptions::DeviceCommunicationFailure("Actual response payload size mismatch");
+                throw Exceptions::DeviceCommunicationFailure{"Actual response payload size mismatch"};
             }
 
-            return typename CommandType::ExpectedResponseType(
-                std::vector<unsigned char>(rawResponse.begin() + 3, rawResponse.end())
-            );
+            return typename CommandType::ExpectedResponseType{
+                std::vector<unsigned char>{rawResponse.begin() + 3, rawResponse.end()}
+            };
         }
     };
 }

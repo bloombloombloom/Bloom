@@ -6,6 +6,7 @@ namespace Targets
 {
     enum class TargetMemorySegmentType: std::uint8_t
     {
+        GENERAL_PURPOSE_REGISTERS,
         ALIASED,
         REGISTERS,
         EEPROM,

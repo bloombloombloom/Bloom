@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 namespace DebugToolDrivers::TargetInterfaces
 {
     /**
@@ -14,20 +12,13 @@ namespace DebugToolDrivers::TargetInterfaces
         TargetPowerManagementInterface() = default;
         virtual ~TargetPowerManagementInterface() = default;
 
-        TargetPowerManagementInterface(const TargetPowerManagementInterface& other) = default;
-        TargetPowerManagementInterface(TargetPowerManagementInterface&& other) = default;
+        TargetPowerManagementInterface(const TargetPowerManagementInterface& other) = delete;
+        TargetPowerManagementInterface& operator = (const TargetPowerManagementInterface& other) = delete;
 
-        TargetPowerManagementInterface& operator = (const TargetPowerManagementInterface& other) = default;
+        TargetPowerManagementInterface(TargetPowerManagementInterface&& other) = default;
         TargetPowerManagementInterface& operator = (TargetPowerManagementInterface&& other) = default;
 
-        /**
-         * Should enable the target power if currently disabled.
-         */
         virtual void enableTargetPower() = 0;
-
-        /**
-         * Should disable the target power if currently enabled.
-         */
         virtual void disableTargetPower() = 0;
     };
 }

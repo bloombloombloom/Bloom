@@ -49,7 +49,7 @@ namespace Targets::TargetDescription
                 return std::nullopt;
             }
 
-            auto subgroup = std::optional(std::cref(firstSubgroupIt->second));
+            auto subgroup = std::optional{std::cref(firstSubgroupIt->second)};
             for (const auto key : keys | std::ranges::views::drop(1)) {
                 subgroup = subgroup->get().tryGetSubgroup(key);
 
@@ -68,10 +68,10 @@ namespace Targets::TargetDescription
         const PropertyGroup& getSubgroup(std::string_view keyStr) const {
             const auto propertyGroup = this->tryGetSubgroup(keyStr);
             if (!propertyGroup.has_value()) {
-                throw Exceptions::InvalidTargetDescriptionDataException(
-                    "Failed to get subgroup \"" + std::string(keyStr)
+                throw Exceptions::InvalidTargetDescriptionDataException{
+                    "Failed to get subgroup \"" + std::string{keyStr}
                         + "\" from property group in TDF - subgroup not found"
-                );
+                };
             }
 
             return propertyGroup->get();
@@ -90,9 +90,10 @@ namespace Targets::TargetDescription
         const Property& getProperty(std::string_view key) const {
             const auto property = this->tryGetProperty(key);
             if (!property.has_value()) {
-                throw Exceptions::InvalidTargetDescriptionDataException(
-                    "Failed to get property \"" + std::string(key) + "\" from property group in TDF - property not found"
-                );
+                throw Exceptions::InvalidTargetDescriptionDataException{
+                    "Failed to get property \"" + std::string{key}
+                        + "\" from property group in TDF - property not found"
+                };
             }
 
             return property->get();

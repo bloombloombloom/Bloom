@@ -66,10 +66,10 @@ namespace Targets::TargetDescription
         const MemorySegmentSection& getSubSection(std::string_view keyStr) const {
             const auto propertyGroup = this->tryGetSubSection(keyStr);
             if (!propertyGroup.has_value()) {
-                throw Exceptions::InvalidTargetDescriptionDataException(
-                    "Failed to get memory segment sub-section \"" + std::string(keyStr)
+                throw Exceptions::InvalidTargetDescriptionDataException{
+                    "Failed to get memory segment sub-section \"" + std::string{keyStr}
                         + "\" from memory segment in TDF - sub-section not found"
-                );
+                };
             }
 
             return propertyGroup->get();

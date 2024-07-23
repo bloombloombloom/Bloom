@@ -14,16 +14,21 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         : CommandPacket(rawPacket)
     {}
 
-    void VContStepExecution::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void VContStepExecution::handle(
+        Gdb::DebugSession& debugSession,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling VContStepExecution packet");
 
         try {
-            targetControllerService.stepTargetExecution(std::nullopt);
+            targetControllerService.stepTargetExecution();
             debugSession.waitingForBreak = true;
 
         } catch (const Exception& exception) {
             Logger::error("Failed to step execution on target - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

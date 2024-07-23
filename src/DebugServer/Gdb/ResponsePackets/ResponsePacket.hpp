@@ -20,7 +20,14 @@ namespace DebugServer::Gdb::ResponsePackets
         }
 
         explicit ResponsePacket(const std::string& data) {
-            this->data = std::vector<unsigned char>(data.begin(), data.end());
+            this->data = std::vector<unsigned char>{data.begin(), data.end()};
         }
+
+        /**
+         * Generates a raw packet.
+         *
+         * @return
+         */
+        [[nodiscard]] RawPacket toRawPacket() const;
     };
 }

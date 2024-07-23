@@ -38,10 +38,10 @@ namespace DebugToolDrivers::Microchip
             }
 
             if (!nonEdbgDevices.empty()) {
-                throw DeviceNotFound(
+                throw DeviceNotFound{
                     "The connected MPLAB Snap device is not in \"AVR mode\". Please follow the instructions at "
                         + Services::PathService::homeDomainName() + "/docs/avr-mode"
-                );
+                };
             }
 
             throw exception;

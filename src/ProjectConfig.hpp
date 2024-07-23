@@ -240,7 +240,7 @@ struct ProjectConfig
      * omit the 'insight' node from their bloom.yaml file, entirely. In this case, Bloom should fall back to a default
      * constructed, project-level, InsightConfig instance.
      */
-    InsightConfig insightConfig = InsightConfig();
+    InsightConfig insightConfig = {};
 
     bool debugLogging = false;
 

@@ -14,14 +14,14 @@ namespace Targets::TargetDescription
     {
         std::string key;
         std::string name;
-        ::Targets::PinoutType type;
+        ::Targets::TargetPinoutType type;
         std::optional<std::string> function;
         std::vector<Pin> pins;
 
         Pinout(
             const std::string& key,
             const std::string& name,
-            ::Targets::PinoutType type,
+            ::Targets::TargetPinoutType type,
             const std::optional<std::string>& function,
             const std::vector<Pin>& pins
         )

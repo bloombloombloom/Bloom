@@ -1,7 +1,6 @@
 #include "TargetDescriptionFile.hpp"
 
-#include <QJsonDocument>
-#include <QJsonArray>
+#include <QFile>
 
 #include "src/Services/PathService.hpp"
 #include "src/Services/StringService.hpp"
@@ -29,22 +28,30 @@ namespace Targets::TargetDescription
         this->init(xml);
     }
 
-    const std::string& TargetDescriptionFile::getTargetName() const {
+    const std::string& TargetDescriptionFile::getName() const {
         return this->getDeviceAttribute("name");
     }
 
     TargetFamily TargetDescriptionFile::getFamily() const {
-        const auto& family = this->getDeviceAttribute("family");
+        const auto& familyName = this->getDeviceAttribute("family");
 
-        if (family == "AVR8") {
+        if (familyName == "AVR8") {
             return TargetFamily::AVR_8;
         }
 
-        if (family == "RISCV") {
+        if (familyName == "RISCV") {
             return TargetFamily::RISC_V;
         }
 
-        throw InvalidTargetDescriptionDataException("Failed to resolve target family - invalid family name");
+        throw InvalidTargetDescriptionDataException{"Failed to resolve target family - invalid family name"};
+    }
+
+    std::optional<std::string> TargetDescriptionFile::tryGetVendorName() const {
+        return this->tryGetDeviceAttribute("vendor");
+    }
+
+    const std::string& TargetDescriptionFile::getVendorName() const {
+        return this->getDeviceAttribute("vendor");
     }
 
     std::optional<std::reference_wrapper<const PropertyGroup>> TargetDescriptionFile::tryGetPropertyGroup(
@@ -56,7 +63,7 @@ namespace Targets::TargetDescription
         return firstSubgroupIt != this->propertyGroupsByKey.end()
             ? keys.size() > 1
                 ? firstSubgroupIt->second.tryGetSubgroup(keys | std::ranges::views::drop(1))
-                : std::optional(std::cref(firstSubgroupIt->second))
+                : std::optional{std::cref(firstSubgroupIt->second)}
             : std::nullopt;
     }
 
@@ -64,12 +71,38 @@ namespace Targets::TargetDescription
         const auto propertyGroup = this->tryGetPropertyGroup(keyStr);
 
         if (!propertyGroup.has_value()) {
-            throw InvalidTargetDescriptionDataException(
-                "Failed to get property group \"" + std::string(keyStr) + "\" from TDF - property group not found"
-            );
+            throw InvalidTargetDescriptionDataException{
+                "Failed to get property group \"" + std::string{keyStr} + "\" from TDF - property group not found"
+            };
         }
 
         return propertyGroup->get();
+    }
+
+    std::optional<std::reference_wrapper<const Property>> TargetDescriptionFile::tryGetProperty(
+        std::string_view groupKey,
+        std::string_view propertyKey
+    ) const {
+        const auto propertyGroup = this->tryGetPropertyGroup(groupKey);
+
+        if (!propertyGroup.has_value()) {
+            return std::nullopt;
+        }
+
+        return propertyGroup->get().tryGetProperty(propertyKey);
+    }
+
+    const Property& TargetDescriptionFile::getProperty(std::string_view groupKey, std::string_view propertyKey) const {
+        const auto property = this->tryGetProperty(groupKey, propertyKey);
+
+        if (!property.has_value()) {
+            throw InvalidTargetDescriptionDataException{
+                "Failed to get property \"" + std::string{propertyKey} + "\" from group \"" + std::string{groupKey}
+                    + "\", from TDF - property/group not found"
+            };
+        }
+
+        return property->get();
     }
 
     std::optional<std::reference_wrapper<const AddressSpace>> TargetDescriptionFile::tryGetAddressSpace(
@@ -77,7 +110,7 @@ namespace Targets::TargetDescription
     ) const {
         const auto addressSpaceIt = this->addressSpacesByKey.find(key);
         return addressSpaceIt != this->addressSpacesByKey.end()
-            ? std::optional(std::cref(addressSpaceIt->second))
+            ? std::optional{std::cref(addressSpaceIt->second)}
             : std::nullopt;
     }
 
@@ -85,29 +118,56 @@ namespace Targets::TargetDescription
         const auto addressSpace = this->tryGetAddressSpace(key);
 
         if (!addressSpace.has_value()) {
-            throw InvalidTargetDescriptionDataException(
-                "Failed to get address space \"" + std::string(key) + "\" from TDF - address space not found"
-            );
+            throw InvalidTargetDescriptionDataException{
+                "Failed to get address space \"" + std::string{key} + "\" from TDF - address space not found"
+            };
         }
 
         return addressSpace->get();
     }
 
+    std::optional<std::reference_wrapper<const MemorySegment>> TargetDescriptionFile::tryGetMemorySegment(
+        std::string_view addressSpaceKey,
+        std::string_view segmentKey
+    ) const {
+        const auto addressSpace = this->tryGetAddressSpace(addressSpaceKey);
+
+        if (!addressSpace.has_value()) {
+            return std::nullopt;
+        }
+
+        return addressSpace->get().tryGetMemorySegment(segmentKey);
+    }
+
+    const MemorySegment& TargetDescriptionFile::getMemorySegment(
+        std::string_view addressSpaceKey,
+        std::string_view segmentKey
+    ) const {
+        const auto segment = this->tryGetMemorySegment(addressSpaceKey, segmentKey);
+
+        if (!segment.has_value()) {
+            throw InvalidTargetDescriptionDataException{
+                "Failed to get memory segment \"" + std::string{segmentKey} + "\" from address space \""
+                    + std::string{addressSpaceKey} + "\" from TDF"
+            };
+        }
+
+        return segment->get();
+    }
+
     std::set<TargetPhysicalInterface> TargetDescriptionFile::getPhysicalInterfaces() const {
-        static const auto physicalInterfacesByName = BiMap<std::string, TargetPhysicalInterface>({
+        static const auto physicalInterfacesByValue = BiMap<std::string, TargetPhysicalInterface>{
             {"updi", TargetPhysicalInterface::UPDI},
-            {"debugwire", TargetPhysicalInterface::DEBUG_WIRE},
+            {"debug_wire", TargetPhysicalInterface::DEBUG_WIRE},
             {"jtag", TargetPhysicalInterface::JTAG},
             {"pdi", TargetPhysicalInterface::PDI},
             {"isp", TargetPhysicalInterface::ISP},
-        });
+        };
 
-        auto output = std::set<TargetPhysicalInterface>();
+        auto output = std::set<TargetPhysicalInterface>{};
 
         for (const auto& physicalInterface : this->physicalInterfaces) {
-            const auto interface = physicalInterfacesByName.valueAt(
-                StringService::asciiToLower(physicalInterface.name)
-            );
+            const auto interface = physicalInterfacesByValue.valueAt(physicalInterface.value);
 
             if (interface.has_value()) {
                 output.insert(*interface);
@@ -122,7 +182,7 @@ namespace Targets::TargetDescription
     ) const {
         const auto moduleIt = this->modulesByKey.find(key);
         return moduleIt != this->modulesByKey.end()
-            ? std::optional(std::cref(moduleIt->second))
+            ? std::optional{std::cref(moduleIt->second)}
             : std::nullopt;
     }
 
@@ -130,9 +190,9 @@ namespace Targets::TargetDescription
         const auto module = this->tryGetModule(key);
 
         if (!module.has_value()) {
-            throw InvalidTargetDescriptionDataException(
-                "Failed to get module \"" + std::string(key) + "\" from TDF - module not found"
-            );
+            throw InvalidTargetDescriptionDataException{
+                "Failed to get module \"" + std::string{key} + "\" from TDF - module not found"
+            };
         }
 
         return module->get();
@@ -143,7 +203,7 @@ namespace Targets::TargetDescription
     ) const {
         const auto peripheralIt = this->peripheralsByKey.find(key);
         return peripheralIt != this->peripheralsByKey.end()
-            ? std::optional(std::cref(peripheralIt->second))
+            ? std::optional{std::cref(peripheralIt->second)}
             : std::nullopt;
     }
 
@@ -151,96 +211,151 @@ namespace Targets::TargetDescription
         const auto peripheral = this->tryGetPeripheral(key);
 
         if (!peripheral.has_value()) {
-            throw InvalidTargetDescriptionDataException(
-                "Failed to get peripheral \"" + std::string(key) + "\" from TDF - peripheral not found"
-            );
+            throw InvalidTargetDescriptionDataException{
+                "Failed to get peripheral \"" + std::string{key} + "\" from TDF - peripheral not found"
+            };
         }
 
         return peripheral->get();
     }
 
-    TargetDescriptor TargetDescriptionFile::targetDescriptor() const {
-        const auto targetFamily = this->getFamily();
-        const auto vendor = this->tryGetDeviceAttribute("vendor");
+    std::optional<TargetMemorySegmentDescriptor> TargetDescriptionFile::tryGetTargetMemorySegmentDescriptor(
+        std::string_view addressSpaceKey,
+        std::string_view segmentKey
+    ) const {
+        const auto addressSpace = this->tryGetAddressSpace(addressSpaceKey);
 
-        auto output = TargetDescriptor(
-            this->getDeviceAttribute("name"),
-            targetFamily,
-            "",
-            vendor.has_value()
-                ? vendor->get()
-                : targetFamily == TargetFamily::AVR_8
-                    ? "Microchip"
-                    : "Unknown",
-            {},
-            {},
-            {},
-            BreakpointResources(std::nullopt, std::nullopt, 0)
-        );
-
-        for (const auto& [key, addressSpace] : this->addressSpacesByKey) {
-            auto descriptor = this->targetAddressSpaceDescriptorFromAddressSpace(addressSpace);
-            output.addressSpaceDescriptorsByKey.emplace(descriptor.key, std::move(descriptor));
+        if (!addressSpace.has_value()) {
+            return std::nullopt;
         }
 
-        for (const auto& [key, peripheral] : this->peripheralsByKey) {
-            const auto& peripheralModule = this->getModule(peripheral.moduleKey);
+        const auto segment = addressSpace->get().tryGetMemorySegment(segmentKey);
 
-            auto descriptor = TargetPeripheralDescriptor(
-                peripheral.key,
-                peripheral.name,
-                {}
-            );
+        if (!segment.has_value()) {
+            return std::nullopt;
+        }
 
-            for (const auto& [key, registerGroupInstance] : peripheral.registerGroupInstancesByKey) {
-                const auto& addressSpaceDescriptor = output.getAddressSpaceDescriptor(
-                    registerGroupInstance.addressSpaceKey
-                );
-                descriptor.registerGroupDescriptorsByKey.emplace(
-                    key,
-                    TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
-                        peripheralModule.getRegisterGroup(registerGroupInstance.registerGroupKey),
-                        peripheralModule,
-                        registerGroupInstance.offset,
-                        addressSpaceDescriptor.key,
-                        addressSpaceDescriptor.id,
-                        registerGroupInstance.key,
-                        registerGroupInstance.name,
-                        registerGroupInstance.description
-                    )
-                );
-            }
+        return TargetDescriptionFile::targetMemorySegmentDescriptorFromMemorySegment(
+            segment->get(),
+            addressSpace->get()
+        );
+    }
 
-            output.peripheralDescriptorsByKey.emplace(descriptor.key, std::move(descriptor));
+    TargetMemorySegmentDescriptor TargetDescriptionFile::getTargetMemorySegmentDescriptor(
+        std::string_view addressSpaceKey,
+        std::string_view segmentKey
+    ) const {
+        const auto& addressSpace = this->getAddressSpace(addressSpaceKey);
+        return TargetDescriptionFile::targetMemorySegmentDescriptorFromMemorySegment(
+            addressSpace.getMemorySegment(segmentKey),
+            addressSpace
+        );
+    }
+
+    std::optional<TargetPeripheralDescriptor> TargetDescriptionFile::tryGetTargetPeripheralDescriptor(
+        std::string_view key
+    ) const {
+        const auto peripheral = this->tryGetPeripheral(key);
+
+        if (!peripheral.has_value()) {
+            return std::nullopt;
+        }
+
+        return TargetDescriptionFile::targetPeripheralDescriptorFromPeripheral(
+            peripheral->get(),
+            this->getModule(peripheral->get().moduleKey)
+        );
+    }
+
+    TargetPeripheralDescriptor TargetDescriptionFile::getTargetPeripheralDescriptor(std::string_view key) const {
+        const auto& peripheral = this->getPeripheral(key);
+
+        return TargetDescriptionFile::targetPeripheralDescriptorFromPeripheral(
+            peripheral,
+            this->getModule(peripheral.moduleKey)
+        );
+    }
+
+    std::map<
+        std::string,
+        TargetAddressSpaceDescriptor
+    > TargetDescriptionFile::targetAddressSpaceDescriptorsByKey() const {
+        auto output = std::map<std::string, TargetAddressSpaceDescriptor>{};
+
+        for (const auto& [key, addressSpace] : this->addressSpacesByKey) {
+            output.emplace(key, TargetDescriptionFile::targetAddressSpaceDescriptorFromAddressSpace(addressSpace));
         }
 
         return output;
     }
 
-    std::map<
-        TargetAddressSpaceDescriptorId,
-        TargetAddressSpaceDescriptor
-    > TargetDescriptionFile::targetAddressSpaceDescriptorsById() const {
-        auto output = std::map<TargetAddressSpaceDescriptorId, TargetAddressSpaceDescriptor>();
+    std::map<std::string, TargetPeripheralDescriptor> TargetDescriptionFile::targetPeripheralDescriptorsByKey() const {
+        auto output = std::map<std::string, TargetPeripheralDescriptor>{};
 
-        for (const auto& [key, addressSpace] : this->addressSpacesByKey) {
-            auto descriptor = this->targetAddressSpaceDescriptorFromAddressSpace(addressSpace);
-            output.emplace(descriptor.id, std::move(descriptor));
+        for (const auto& [key, peripheral] : this->peripheralsByKey) {
+            output.emplace(
+                key,
+                TargetDescriptionFile::targetPeripheralDescriptorFromPeripheral(
+                    peripheral,
+                    this->getModule(peripheral.moduleKey)
+                )
+            );
+        }
+
+        return output;
+    }
+
+    std::map<std::string, TargetPinoutDescriptor> TargetDescriptionFile::targetPinoutDescriptorsByKey() const {
+        auto output = std::map<std::string, TargetPinoutDescriptor>{};
+
+        for (const auto& [key, pinout] : this->pinoutsByKey) {
+            output.emplace(
+                key,
+                TargetDescriptionFile::targetPinoutDescriptorFromPinout(pinout)
+            );
+        }
+
+        return output;
+    }
+
+    std::vector<TargetVariantDescriptor> TargetDescriptionFile::targetVariantDescriptors() const {
+        auto output = std::vector<TargetVariantDescriptor>{};
+
+        for (const auto& variant : this->variants) {
+            output.emplace_back(TargetDescriptionFile::targetVariantDescriptorFromVariant(variant));
+        }
+
+        return output;
+    }
+
+    std::vector<TargetPeripheralDescriptor> TargetDescriptionFile::gpioPortPeripheralDescriptors() const {
+        auto output = std::vector<TargetPeripheralDescriptor>{};
+
+        const auto& gpioPortModule = this->getModule("gpio_port");
+
+        for (const auto& [peripheralKey, peripheral] : this->peripheralsByKey) {
+            if (peripheral.moduleKey != gpioPortModule.key) {
+                continue;
+            }
+
+            output.emplace_back(
+                TargetDescriptionFile::targetPeripheralDescriptorFromPeripheral(peripheral, gpioPortModule)
+            );
         }
 
         return output;
     }
 
     void TargetDescriptionFile::init(const std::string& xmlFilePath) {
-        auto file = QFile(QString::fromStdString(xmlFilePath));
+        auto file = QFile{QString::fromStdString(xmlFilePath)};
         if (!file.exists()) {
-            throw InternalFatalErrorException("Failed to load target description file - file not found");
+            throw InternalFatalErrorException{"Failed to load target description file - file not found"};
         }
 
         file.open(QIODevice::ReadOnly);
-        auto document = QDomDocument();
+        auto document = QDomDocument{};
         if (!document.setContent(file.readAll())) {
-            throw TargetDescriptionParsingFailureException();
+            throw TargetDescriptionParsingFailureException{};
         }
 
         this->init(document);
@@ -249,17 +364,15 @@ namespace Targets::TargetDescription
     void TargetDescriptionFile::init(const QDomDocument& document) {
         const auto deviceElement = document.documentElement();
         if (deviceElement.nodeName() != "device") {
-            throw TargetDescriptionParsingFailureException("Root \"device\" element not found.");
+            throw TargetDescriptionParsingFailureException{"Root \"device\" element not found."};
         }
 
         const auto deviceAttributes = deviceElement.attributes();
         for (auto i = 0; i < deviceAttributes.length(); ++i) {
             const auto deviceAttribute = deviceAttributes.item(i);
-            this->deviceAttributesByName.insert(
-                std::pair(
-                    deviceAttribute.nodeName().toStdString(),
-                    deviceAttribute.nodeValue().toStdString()
-                )
+            this->deviceAttributesByName.emplace(
+                deviceAttribute.nodeName().toStdString(),
+                deviceAttribute.nodeValue().toStdString()
             );
         }
 
@@ -269,9 +382,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("property-group")
         ) {
             auto propertyGroup = TargetDescriptionFile::propertyGroupFromXml(element);
-            this->propertyGroupsByKey.insert(
-                std::pair(propertyGroup.key, std::move(propertyGroup))
-            );
+            this->propertyGroupsByKey.emplace(propertyGroup.key, std::move(propertyGroup));
         }
 
         for (
@@ -280,9 +391,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("address-space")
         ) {
             auto addressSpace = TargetDescriptionFile::addressSpaceFromXml(element);
-            this->addressSpacesByKey.insert(
-                std::pair(addressSpace.key, std::move(addressSpace))
-            );
+            this->addressSpacesByKey.emplace(addressSpace.key, std::move(addressSpace));
         }
 
         for (
@@ -291,9 +400,7 @@ namespace Targets::TargetDescription
             !element.isNull();
             element = element.nextSiblingElement("physical-interface")
         ) {
-            this->physicalInterfaces.emplace_back(
-                TargetDescriptionFile::physicalInterfaceFromXml(element)
-            );
+            this->physicalInterfaces.emplace_back(TargetDescriptionFile::physicalInterfaceFromXml(element));
         }
 
         for (
@@ -302,9 +409,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("module")
         ) {
             auto module = TargetDescriptionFile::moduleFromXml(element);
-            this->modulesByKey.insert(
-                std::pair(module.key, std::move(module))
-            );
+            this->modulesByKey.emplace(module.key, std::move(module));
         }
 
         for (
@@ -313,9 +418,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("peripheral")
         ) {
             auto peripheral = TargetDescriptionFile::peripheralFromXml(element);
-            this->peripheralsByKey.insert(
-                std::pair(peripheral.key, std::move(peripheral))
-            );
+            this->peripheralsByKey.emplace(peripheral.key, std::move(peripheral));
         }
 
         for (
@@ -324,9 +427,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("pinout")
         ) {
             auto pinout = TargetDescriptionFile::pinoutFromXml(element);
-            this->pinoutsByKey.insert(
-                std::pair(pinout.key, std::move(pinout))
-            );
+            this->pinoutsByKey.emplace(pinout.key, std::move(pinout));
         }
 
         for (
@@ -354,7 +455,7 @@ namespace Targets::TargetDescription
         const auto attribute = this->tryGetDeviceAttribute(attributeName);
 
         if (!attribute.has_value()) {
-            throw InvalidTargetDescriptionDataException("Missing target device attribute (\"" + attributeName + "\")");
+            throw InvalidTargetDescriptionDataException{"Missing target device attribute (\"" + attributeName + "\")"};
         }
 
         return attribute->get();
@@ -365,7 +466,7 @@ namespace Targets::TargetDescription
         const QString& attributeName
     ) {
         return element.hasAttribute(attributeName)
-            ? std::optional(element.attribute(attributeName).toStdString())
+            ? std::optional{element.attribute(attributeName).toStdString()}
             : std::nullopt;
     }
 
@@ -373,17 +474,17 @@ namespace Targets::TargetDescription
         const auto attribute = TargetDescriptionFile::tryGetAttribute(element, attributeName);
 
         if (!attribute.has_value()) {
-            throw InvalidTargetDescriptionDataException(
+            throw InvalidTargetDescriptionDataException{
                 "Failed to fetch attribute from TDF element \"" + element.nodeName().toStdString()
                     + "\" - attribute \"" + attributeName.toStdString() + "\" not found"
-            );
+            };
         }
 
         return *attribute;
     }
 
     PropertyGroup TargetDescriptionFile::propertyGroupFromXml(const QDomElement& xmlElement) {
-        auto output = PropertyGroup(TargetDescriptionFile::getAttribute(xmlElement, "key"), {}, {});
+        auto output = PropertyGroup{TargetDescriptionFile::getAttribute(xmlElement, "key"), {}, {}};
 
         for (
             auto element = xmlElement.firstChildElement("property");
@@ -391,7 +492,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("property")
         ) {
             auto property = TargetDescriptionFile::propertyFromXml(element);
-            output.propertiesByKey.insert(std::pair(property.key, std::move(property)));
+            output.propertiesByKey.emplace(property.key, std::move(property));
         }
 
         for (
@@ -400,45 +501,48 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("property-group")
         ) {
             auto subgroup = TargetDescriptionFile::propertyGroupFromXml(element);
-            output.subgroupsByKey.insert(std::pair(subgroup.key, std::move(subgroup)));
+            output.subgroupsByKey.emplace(subgroup.key, std::move(subgroup));
         }
 
         return output;
     }
 
     Property TargetDescriptionFile::propertyFromXml(const QDomElement& xmlElement) {
-        return Property(
+        return {
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "value")
-        );
+        };
     }
 
     AddressSpace TargetDescriptionFile::addressSpaceFromXml(const QDomElement& xmlElement) {
-        static const auto endiannessByName = BiMap<std::string, TargetMemoryEndianness>({
+        static const auto endiannessByName = BiMap<std::string, TargetMemoryEndianness>{
             {"big", TargetMemoryEndianness::BIG},
             {"little", TargetMemoryEndianness::LITTLE},
-        });
+        };
 
         const auto endiannessName = TargetDescriptionFile::tryGetAttribute(xmlElement, "endianness");
 
-        auto endianness = std::optional<TargetMemoryEndianness>();
+        auto endianness = std::optional<TargetMemoryEndianness>{};
         if (endiannessName.has_value()) {
             endianness = endiannessByName.valueAt(*endiannessName);
 
             if (!endianness.has_value()) {
-                throw InvalidTargetDescriptionDataException(
+                throw InvalidTargetDescriptionDataException{
                     "Failed to extract address space from TDF - invalid endianness name \"" + *endiannessName + "\""
-                );
+                };
             }
         }
 
-        auto output = AddressSpace(
+        const auto unitSize = TargetDescriptionFile::tryGetAttribute(xmlElement, "unit-size");
+
+        auto output = AddressSpace{
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "start")),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "size")),
+            unitSize.has_value() ? StringService::toUint8(*unitSize) : std::uint8_t{1},
             endianness,
             {}
-        );
+        };
 
         for (
             auto element = xmlElement.firstChildElement("memory-segment");
@@ -446,14 +550,15 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("memory-segment")
         ) {
             auto section = TargetDescriptionFile::memorySegmentFromXml(element);
-            output.memorySegmentsByKey.insert(std::pair(section.key, std::move(section)));
+            output.memorySegmentsByKey.emplace(section.key, std::move(section));
         }
 
         return output;
     }
 
     MemorySegment TargetDescriptionFile::memorySegmentFromXml(const QDomElement& xmlElement) {
-        static const auto typesByName = BiMap<std::string, TargetMemorySegmentType>({
+        static const auto typesByName = BiMap<std::string, TargetMemorySegmentType>{
+            {"gp_registers", TargetMemorySegmentType::GENERAL_PURPOSE_REGISTERS},
             {"aliased", TargetMemorySegmentType::ALIASED},
             {"regs", TargetMemorySegmentType::REGISTERS},
             {"eeprom", TargetMemorySegmentType::EEPROM},
@@ -466,36 +571,36 @@ namespace Targets::TargetDescription
             {"production_signatures", TargetMemorySegmentType::PRODUCTION_SIGNATURES},
             {"signatures", TargetMemorySegmentType::SIGNATURES},
             {"user_signatures", TargetMemorySegmentType::USER_SIGNATURES},
-        });
+        };
 
         const auto typeName = TargetDescriptionFile::getAttribute(xmlElement, "type");
 
         const auto type = typesByName.valueAt(typeName);
         if (!type.has_value()) {
-            throw InvalidTargetDescriptionDataException(
+            throw InvalidTargetDescriptionDataException{
                 "Failed to extract memory segment from TDF - invalid memory segment type name \"" + typeName + "\""
-            );
+            };
         }
 
         const auto pageSize = TargetDescriptionFile::tryGetAttribute(xmlElement, "page-size");
         const auto accessString = TargetDescriptionFile::tryGetAttribute(xmlElement, "access");
 
-        auto output = MemorySegment(
+        auto output = MemorySegment{
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             *type,
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "start")),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "size")),
-            TargetMemoryAccess(
+            TargetDescriptionFile::getAttribute(xmlElement, "executable") == "1",
+            TargetMemoryAccess{
                 accessString.has_value() ? accessString->find('R') != std::string::npos : true,
-                accessString.has_value() ? accessString->find('W') != std::string::npos : true,
                 accessString.has_value() ? accessString->find('W') != std::string::npos : true
-            ),
+            },
             pageSize.has_value()
-                ? std::optional(StringService::toUint32(*pageSize))
+                ? std::optional{StringService::toUint32(*pageSize)}
                 : std::nullopt,
             {}
-        );
+        };
 
         for (
             auto element = xmlElement.firstChildElement("section");
@@ -503,20 +608,20 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("section")
         ) {
             auto section = TargetDescriptionFile::memorySegmentSectionFromXml(element);
-            output.sectionsByKey.insert(std::pair(section.key, std::move(section)));
+            output.sectionsByKey.emplace(section.key, std::move(section));
         }
 
         return output;
     }
 
     MemorySegmentSection TargetDescriptionFile::memorySegmentSectionFromXml(const QDomElement& xmlElement) {
-        auto output = MemorySegmentSection(
+        auto output = MemorySegmentSection{
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "start")),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "size")),
             {}
-        );
+        };
 
         for (
             auto element = xmlElement.firstChildElement("section");
@@ -524,26 +629,25 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("section")
         ) {
             auto section = TargetDescriptionFile::memorySegmentSectionFromXml(element);
-            output.subSectionsByKey.insert(std::pair(section.key, std::move(section)));
+            output.subSectionsByKey.emplace(section.key, std::move(section));
         }
 
         return output;
     }
 
     PhysicalInterface TargetDescriptionFile::physicalInterfaceFromXml(const QDomElement& xmlElement) {
-        return PhysicalInterface(
-            TargetDescriptionFile::getAttribute(xmlElement, "name"),
-            TargetDescriptionFile::getAttribute(xmlElement, "type")
-        );
+        return {
+            TargetDescriptionFile::getAttribute(xmlElement, "value")
+        };
     }
 
     Module TargetDescriptionFile::moduleFromXml(const QDomElement& xmlElement) {
-        auto output = Module(
+        auto output = Module{
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "description"),
             {}
-        );
+        };
 
         for (
             auto element = xmlElement.firstChildElement("register-group");
@@ -551,7 +655,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("register-group")
         ) {
             auto registerGroup = TargetDescriptionFile::registerGroupFromXml(element);
-            output.registerGroupsByKey.insert(std::pair(registerGroup.key, std::move(registerGroup)));
+            output.registerGroupsByKey.emplace(registerGroup.key, std::move(registerGroup));
         }
 
         return output;
@@ -560,14 +664,14 @@ namespace Targets::TargetDescription
     RegisterGroup TargetDescriptionFile::registerGroupFromXml(const QDomElement& xmlElement) {
         const auto offset = TargetDescriptionFile::tryGetAttribute(xmlElement, "offset");
 
-        auto output = RegisterGroup(
+        auto output = RegisterGroup{
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
-            offset.has_value() ? std::optional(StringService::toUint32(*offset)) : std::nullopt,
+            offset.has_value() ? std::optional{StringService::toUint32(*offset)} : std::nullopt,
             {},
             {},
             {}
-        );
+        };
 
         for (
             auto element = xmlElement.firstChildElement("register");
@@ -575,7 +679,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("register")
         ) {
             auto reg = TargetDescriptionFile::registerFromXml(element);
-            output.registersByKey.insert(std::pair(reg.key, std::move(reg)));
+            output.registersByKey.emplace(reg.key, std::move(reg));
         }
 
         for (
@@ -584,7 +688,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("register-group")
         ) {
             auto registerGroup = TargetDescriptionFile::registerGroupFromXml(element);
-            output.subgroupsByKey.insert(std::pair(registerGroup.key, std::move(registerGroup)));
+            output.subgroupsByKey.emplace(registerGroup.key, std::move(registerGroup));
         }
 
         for (
@@ -593,22 +697,20 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("register-group-reference")
         ) {
             auto registerGroupReference = TargetDescriptionFile::registerGroupReferenceFromXml(element);
-            output.subgroupReferencesByKey.insert(
-                std::pair(registerGroupReference.key, std::move(registerGroupReference))
-            );
+            output.subgroupReferencesByKey.emplace(registerGroupReference.key, std::move(registerGroupReference));
         }
 
         return output;
     }
 
     RegisterGroupReference TargetDescriptionFile::registerGroupReferenceFromXml(const QDomElement& xmlElement) {
-        return RegisterGroupReference(
+        return {
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "register-group-key"),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "offset")),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "description")
-        );
+        };
     }
 
     Register TargetDescriptionFile::registerFromXml(const QDomElement& xmlElement) {
@@ -616,22 +718,22 @@ namespace Targets::TargetDescription
         const auto alternative = TargetDescriptionFile::tryGetAttribute(xmlElement, "alternative");
         const auto accessString = TargetDescriptionFile::tryGetAttribute(xmlElement, "access");
 
-        auto output = Register(
+        auto output = Register{
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "description"),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "offset")),
             StringService::toUint16(TargetDescriptionFile::getAttribute(xmlElement, "size")),
-            initialValue.has_value() ? std::optional(StringService::toUint64(*initialValue)) : std::nullopt,
+            initialValue.has_value() ? std::optional{StringService::toUint64(*initialValue)} : std::nullopt,
             accessString.has_value()
-                ? std::optional(TargetRegisterAccess(
+                ? std::optional{TargetRegisterAccess{
                     accessString->find('R') != std::string::npos,
                     accessString->find('W') != std::string::npos
-                ))
+                }}
                 : std::nullopt,
-            alternative.has_value() ? std::optional(*alternative == "true") : std::nullopt,
+            alternative.has_value() ? std::optional{*alternative == "true"} : std::nullopt,
             {}
-        );
+        };
 
         for (
             auto element = xmlElement.firstChildElement("bit-field");
@@ -639,32 +741,32 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("bit-field")
         ) {
             auto bitField = TargetDescriptionFile::bitFieldFromXml(element);
-            output.bitFieldsByKey.insert(std::pair(bitField.key, std::move(bitField)));
+            output.bitFieldsByKey.emplace(bitField.key, std::move(bitField));
         }
 
         return output;
     }
 
     BitField TargetDescriptionFile::bitFieldFromXml(const QDomElement& xmlElement) {
-        return BitField(
+        return {
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "description"),
             StringService::toUint64(TargetDescriptionFile::getAttribute(xmlElement, "mask")),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "access")
-        );
+        };
     }
 
     Peripheral TargetDescriptionFile::peripheralFromXml(const QDomElement& xmlElement) {
         const auto offset = TargetDescriptionFile::tryGetAttribute(xmlElement, "offset");
 
-        auto output = Peripheral(
+        auto output = Peripheral{
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "module-key"),
             {},
             {}
-        );
+        };
 
         for (
             auto element = xmlElement.firstChildElement("register-group-instance");
@@ -672,9 +774,7 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("register-group-instance")
         ) {
             auto registerGroupInstance = TargetDescriptionFile::registerGroupInstanceFromXml(element);
-            output.registerGroupInstancesByKey.insert(
-                std::pair(registerGroupInstance.key, std::move(registerGroupInstance))
-            );
+            output.registerGroupInstancesByKey.emplace(registerGroupInstance.key, std::move(registerGroupInstance));
         }
 
         for (
@@ -689,56 +789,56 @@ namespace Targets::TargetDescription
     }
 
     RegisterGroupInstance TargetDescriptionFile::registerGroupInstanceFromXml(const QDomElement& xmlElement) {
-        return RegisterGroupInstance(
+        return {
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "register-group-key"),
             TargetDescriptionFile::getAttribute(xmlElement, "address-space-key"),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "offset")),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "description")
-        );
+        };
     }
 
     Signal TargetDescriptionFile::signalFromXml(const QDomElement& xmlElement) {
         const auto index = TargetDescriptionFile::tryGetAttribute(xmlElement, "index");
 
-        return Signal(
+        return {
             TargetDescriptionFile::getAttribute(xmlElement, "pad-id"),
-            index.has_value() ? std::optional(StringService::toUint64(*index)) : std::nullopt,
+            index.has_value() ? std::optional{StringService::toUint64(*index)} : std::nullopt,
             TargetDescriptionFile::tryGetAttribute(xmlElement, "function"),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "group"),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "field")
-        );
+        };
     }
 
     Pinout TargetDescriptionFile::pinoutFromXml(const QDomElement& xmlElement) {
-        static const auto typesByName = BiMap<std::string, PinoutType>({
-            {"soic", PinoutType::SOIC},
-            {"ssop", PinoutType::SSOP},
-            {"dip", PinoutType::DIP},
-            {"qfn", PinoutType::QFN},
-            {"mlf", PinoutType::MLF},
-            {"drqfn", PinoutType::DUAL_ROW_QFN},
-            {"qfp", PinoutType::QFP},
-            {"bga", PinoutType::BGA},
-        });
+        static const auto typesByName = BiMap<std::string, TargetPinoutType>{
+            {"soic", TargetPinoutType::SOIC},
+            {"ssop", TargetPinoutType::SSOP},
+            {"dip", TargetPinoutType::DIP},
+            {"qfn", TargetPinoutType::QFN},
+            {"mlf", TargetPinoutType::MLF},
+            {"drqfn", TargetPinoutType::DUAL_ROW_QFN},
+            {"qfp", TargetPinoutType::QFP},
+            {"bga", TargetPinoutType::BGA},
+        };
 
         const auto typeName = TargetDescriptionFile::getAttribute(xmlElement, "type");
 
         const auto type = typesByName.valueAt(typeName);
         if (!type.has_value()) {
-            throw InvalidTargetDescriptionDataException(
+            throw InvalidTargetDescriptionDataException{
                 "Failed to extract pinout from TDF - invalid pinout type name \"" + typeName + "\""
-            );
+            };
         }
 
-        auto output = Pinout(
+        auto output = Pinout{
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             *type,
             TargetDescriptionFile::tryGetAttribute(xmlElement, "function"),
             {}
-        );
+        };
 
         for (
             auto element = xmlElement.firstChildElement("pin");
@@ -752,37 +852,37 @@ namespace Targets::TargetDescription
     }
 
     Pin TargetDescriptionFile::pinFromXml(const QDomElement& xmlElement) {
-        return Pin(
+        return {
             TargetDescriptionFile::getAttribute(xmlElement, "position"),
             TargetDescriptionFile::getAttribute(xmlElement, "pad")
-        );
+        };
     }
 
     Variant TargetDescriptionFile::variantFromXml(const QDomElement& xmlElement) {
-        return Variant(
+        return {
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "pinout-key"),
             TargetDescriptionFile::getAttribute(xmlElement, "package")
-        );
+        };
     }
 
     TargetAddressSpaceDescriptor TargetDescriptionFile::targetAddressSpaceDescriptorFromAddressSpace(
         const AddressSpace& addressSpace
     ) {
-        auto output = TargetAddressSpaceDescriptor(
+        auto output = TargetAddressSpaceDescriptor{
             addressSpace.key,
-            TargetMemoryAddressRange(
+            TargetMemoryAddressRange{
                 addressSpace.startAddress,
                 addressSpace.startAddress + addressSpace.size - 1
-            ),
+            },
             addressSpace.endianness.value_or(TargetMemoryEndianness::LITTLE),
             {}
-        );
+        };
 
         for (const auto& [key, memorySegment] : addressSpace.memorySegmentsByKey) {
             output.segmentDescriptorsByKey.emplace(
                 key,
-                TargetDescriptionFile::targetMemorySegmentDescriptorFromMemorySegment(memorySegment)
+                TargetDescriptionFile::targetMemorySegmentDescriptorFromMemorySegment(memorySegment, addressSpace)
             );
         }
 
@@ -790,55 +890,99 @@ namespace Targets::TargetDescription
     }
 
     TargetMemorySegmentDescriptor TargetDescriptionFile::targetMemorySegmentDescriptorFromMemorySegment(
-        const MemorySegment& memorySegment
+        const MemorySegment& memorySegment,
+        const AddressSpace& addressSpace
     ) {
-        return TargetMemorySegmentDescriptor(
+        return {
+            addressSpace.key,
             memorySegment.key,
             memorySegment.name,
             memorySegment.type,
-            TargetMemoryAddressRange(
+            TargetMemoryAddressRange{
                 memorySegment.startAddress,
-                memorySegment.startAddress + memorySegment.size - 1
-            ),
+                memorySegment.startAddress + (memorySegment.size / addressSpace.unitSize) - 1
+            },
+            addressSpace.unitSize,
             memorySegment.executable,
             memorySegment.access,
             memorySegment.access,
             memorySegment.pageSize
-        );
+        };
+    }
+
+    TargetPeripheralDescriptor TargetDescriptionFile::targetPeripheralDescriptorFromPeripheral(
+        const Peripheral& peripheral,
+        const Module& peripheralModule
+    ) {
+        auto output = TargetPeripheralDescriptor{
+            peripheral.key,
+            peripheral.name,
+            {},
+            {}
+        };
+
+        for (const auto& [key, registerGroupInstance] : peripheral.registerGroupInstancesByKey) {
+            output.registerGroupDescriptorsByKey.emplace(
+                key,
+                TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
+                    registerGroupInstance.key,
+                    registerGroupInstance.name,
+                    registerGroupInstance.addressSpaceKey,
+                    registerGroupInstance.description,
+                    peripheralModule.getRegisterGroup(registerGroupInstance.registerGroupKey),
+                    peripheralModule,
+                    registerGroupInstance.offset
+                )
+            );
+        }
+
+        for (const auto& signal : peripheral.sigs) {
+            output.signalDescriptors.emplace_back(
+                TargetDescriptionFile::targetPeripheralSignalDescriptorFromSignal(signal)
+            );
+        }
+
+        return output;
+    }
+
+    TargetPeripheralSignalDescriptor TargetDescriptionFile::targetPeripheralSignalDescriptorFromSignal(
+        const Signal& signal
+    ) {
+        return {
+            signal.padId,
+            signal.index
+        };
     }
 
     TargetRegisterGroupDescriptor TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
-        const RegisterGroup& registerGroup,
-        const Module& peripheralModule,
-        TargetMemoryAddress baseAddress,
-        const std::string& addressSpaceKey,
-        TargetAddressSpaceDescriptorId addressSpaceDescriptorId,
         const std::string& key,
         const std::string& name,
-        const std::optional<std::string>& description
+        const std::string& addressSpaceKey,
+        const std::optional<std::string>& description,
+        const RegisterGroup& registerGroup,
+        const Module& peripheralModule,
+        TargetMemoryAddress baseAddress
     ) {
-        auto output = TargetRegisterGroupDescriptor(
+        auto output = TargetRegisterGroupDescriptor{
             key,
             name,
             addressSpaceKey,
-            addressSpaceDescriptorId,
             description,
             {},
             {}
-        );
+        };
 
         for (const auto& [key, subgroup] : registerGroup.subgroupsByKey) {
             output.subgroupDescriptorsByKey.emplace(
                 key,
                 TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
-                    registerGroup,
-                    peripheralModule,
-                    baseAddress + registerGroup.offset.value_or(0),
-                    addressSpaceKey,
-                    addressSpaceDescriptorId,
                     subgroup.key,
                     subgroup.name,
-                    std::nullopt
+                    addressSpaceKey,
+                    std::nullopt,
+                    registerGroup,
+                    peripheralModule,
+                    baseAddress + registerGroup.offset.value_or(0)
                 )
             );
         }
@@ -848,14 +992,13 @@ namespace Targets::TargetDescription
             output.subgroupDescriptorsByKey.emplace(
                 key,
                 TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
-                    registerGroup,
-                    peripheralModule,
-                    baseAddress + subgroupReference.offset + registerGroup.offset.value_or(0),
-                    addressSpaceKey,
-                    addressSpaceDescriptorId,
                     subgroupReference.key,
                     subgroupReference.name,
-                    subgroupReference.description
+                    addressSpaceKey,
+                    subgroupReference.description,
+                    registerGroup,
+                    peripheralModule,
+                    baseAddress + subgroupReference.offset + registerGroup.offset.value_or(0)
                 )
             );
         }
@@ -866,7 +1009,6 @@ namespace Targets::TargetDescription
                 TargetDescriptionFile::targetRegisterDescriptorFromRegister(
                     reg,
                     addressSpaceKey,
-                    addressSpaceDescriptorId,
                     baseAddress + registerGroup.offset.value_or(0)
                 )
             );
@@ -878,18 +1020,84 @@ namespace Targets::TargetDescription
     TargetRegisterDescriptor TargetDescriptionFile::targetRegisterDescriptorFromRegister(
         const Register& reg,
         const std::string& addressSpaceKey,
-        TargetAddressSpaceDescriptorId addressSpaceDescriptorId,
         TargetMemoryAddress baseAddress
     ) {
-        return TargetRegisterDescriptor(
+        auto output = TargetRegisterDescriptor{
             reg.key,
             reg.name,
             addressSpaceKey,
-            addressSpaceDescriptorId,
             baseAddress + reg.offset,
             reg.size,
-            reg.access.value_or(TargetRegisterAccess(true, true)),
-            reg.description
-        );
+            TargetRegisterType::OTHER,
+            reg.access.value_or(TargetRegisterAccess{true, true}),
+            reg.description,
+            {}
+        };
+
+        for (const auto& [key, bitField] : reg.bitFieldsByKey) {
+            output.bitFieldDescriptorsByKey.emplace(
+                key,
+                TargetDescriptionFile::targetBitFieldDescriptorFromBitField(bitField)
+            );
+        }
+
+        return output;
+    }
+
+    TargetBitFieldDescriptor TargetDescriptionFile::targetBitFieldDescriptorFromBitField(const BitField& bitField) {
+        return {
+            bitField.key,
+            bitField.name,
+            bitField.mask,
+            bitField.description
+        };
+    }
+
+    TargetPinoutDescriptor TargetDescriptionFile::targetPinoutDescriptorFromPinout(const Pinout& pinout) {
+        auto output = TargetPinoutDescriptor{
+            pinout.key,
+            pinout.name,
+            pinout.type,
+            {}
+        };
+
+        for (const auto& pin : pinout.pins) {
+            output.pinDescriptors.emplace_back(TargetDescriptionFile::targetPinDescriptorFromPin(pin));
+        }
+
+        return output;
+    }
+
+    TargetPinDescriptor TargetDescriptionFile::targetPinDescriptorFromPin(const Pin& pin) {
+        static const auto resolvePinType = [] (const std::string& pad) -> TargetPinType {
+            if (
+                pad.find("vcc") == 0
+                || pad.find("avcc") == 0
+                || pad.find("aref") == 0
+                || pad.find("avdd") == 0
+                || pad.find("vdd") == 0
+            ) {
+                return TargetPinType::VCC;
+            }
+
+            if (pad.find("gnd") == 0) {
+                return TargetPinType::GND;
+            }
+
+            return TargetPinType::OTHER;
+        };
+
+        return {
+            pin.pad,
+            pin.position,
+            resolvePinType(pin.pad)
+        };
+    }
+
+    TargetVariantDescriptor TargetDescriptionFile::targetVariantDescriptorFromVariant(const Variant& variant) {
+        return {
+            variant.name,
+            variant.pinoutKey
+        };
     }
 }

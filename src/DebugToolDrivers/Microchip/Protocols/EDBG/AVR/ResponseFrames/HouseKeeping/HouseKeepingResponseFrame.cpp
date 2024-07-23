@@ -10,7 +10,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Hou
         : AvrResponseFrame(avrResponses)
     {
         if (this->payload.empty()) {
-            throw Exception("Response ID missing from HOUSEKEEPING response frame payload.");
+            throw Exception{"Response ID missing from HOUSEKEEPING response frame payload."};
         }
 
         this->id = static_cast<ResponseId>(this->payload[0]);

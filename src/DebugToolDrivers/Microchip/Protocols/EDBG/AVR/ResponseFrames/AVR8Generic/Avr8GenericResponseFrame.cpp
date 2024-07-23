@@ -10,7 +10,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
         : AvrResponseFrame(avrResponses)
     {
         if (this->payload.empty()) {
-            throw Exception("Response ID missing from AVR8 Generic response frame payload.");
+            throw Exception{"Response ID missing from AVR8 Generic response frame payload."};
         }
 
         this->id = static_cast<Avr8ResponseId>(this->payload[0]);
@@ -21,11 +21,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
          * AVR8 data payloads are in little endian form and include two bytes before the data (response ID and
          * version byte) as well as an additional byte after the data, known as the 'status code'.
          */
-        auto data = std::vector<unsigned char>(
-            this->payload.begin() + 2,
-            this->payload.end() - 1
-        );
-
+        auto data = std::vector<unsigned char>{this->payload.begin() + 2, this->payload.end() - 1};
         std::reverse(data.begin(), data.end());
         return data;
     }

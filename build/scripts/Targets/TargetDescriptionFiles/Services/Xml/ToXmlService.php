@@ -70,6 +70,10 @@ class ToXmlService
         $element->setAttribute('start', $this->stringService->tryIntToHex($addressSpace->startAddress, 8));
         $element->setAttribute('size', $addressSpace->size);
 
+        if (!empty($addressSpace->unitSize)) {
+            $element->setAttribute('unit-size', $addressSpace->unitSize);
+        }
+
         if (!empty($addressSpace->endianness)) {
             $element->setAttribute('endianness', strtolower($addressSpace->endianness));
         }

@@ -40,17 +40,17 @@ namespace Targets::TargetDescription
             return firstGroupIt != this->registerGroupsByKey.end()
                 ? keys.size() > 1
                     ? firstGroupIt->second.tryGetSubgroup(keys | std::ranges::views::drop(1))
-                    : std::optional(std::cref(firstGroupIt->second))
+                    : std::optional{std::cref(firstGroupIt->second)}
                 : std::nullopt;
         }
 
         const RegisterGroup& getRegisterGroup(std::string_view keyStr) const {
             const auto group = this->tryGetRegisterGroup(keyStr);
             if (!group.has_value()) {
-                throw Exceptions::InvalidTargetDescriptionDataException(
-                    "Failed to get register group \"" + std::string(keyStr)
+                throw Exceptions::InvalidTargetDescriptionDataException{
+                    "Failed to get register group \"" + std::string{keyStr}
                         + "\" from module in TDF - register group not found"
-                );
+                };
             }
 
             return group->get();

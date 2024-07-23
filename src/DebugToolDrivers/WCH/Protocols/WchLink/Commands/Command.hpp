@@ -43,7 +43,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink::Commands
 
             rawCommand[0] = 0x81;
             rawCommand[1] = this->commandId;
-            rawCommand[2] = static_cast<std::uint8_t >(this->payload.size());
+            rawCommand[2] = static_cast<std::uint8_t>(this->payload.size());
 
             if (!this->payload.empty()) {
                 std::copy(this->payload.begin(), this->payload.end(), rawCommand.begin() + 3);

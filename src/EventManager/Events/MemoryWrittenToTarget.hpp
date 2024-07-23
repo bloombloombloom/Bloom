@@ -3,6 +3,9 @@
 #include <string>
 
 #include "Event.hpp"
+
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
 namespace Events
@@ -13,16 +16,19 @@ namespace Events
         static constexpr EventType type = EventType::MEMORY_WRITTEN_TO_TARGET;
         static const inline std::string name = "MemoryWrittenToTarget";
 
-        Targets::TargetMemoryType memoryType;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
         Targets::TargetMemoryAddress startAddress;
         Targets::TargetMemorySize size;
 
         MemoryWrittenToTarget(
-            Targets::TargetMemoryType memoryType,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemorySize size
         )
-            : memoryType(memoryType)
+            : addressSpaceDescriptor(addressSpaceDescriptor)
+            , memorySegmentDescriptor(memorySegmentDescriptor)
             , startAddress(startAddress)
             , size(size)
         {};

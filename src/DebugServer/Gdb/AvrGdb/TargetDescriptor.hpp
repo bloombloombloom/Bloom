@@ -2,28 +2,48 @@
 
 #include "src/DebugServer/Gdb/TargetDescriptor.hpp"
 
+#include "src/Targets/TargetDescriptor.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetPeripheralDescriptor.hpp"
+#include "src/Targets/TargetRegisterGroupDescriptor.hpp"
+
 namespace DebugServer::Gdb::AvrGdb
 {
     class TargetDescriptor: public DebugServer::Gdb::TargetDescriptor
     {
     public:
+        static constexpr auto SRAM_ADDRESS_MASK = 0x00800000U;
+        static constexpr auto EEPROM_ADDRESS_MASK = 0x00810000U;
+
         static constexpr auto STATUS_GDB_REGISTER_ID = 32;
         static constexpr auto STACK_POINTER_GDB_REGISTER_ID = 33;
         static constexpr auto PROGRAM_COUNTER_GDB_REGISTER_ID = 34;
 
+        const Targets::TargetAddressSpaceDescriptor& programAddressSpaceDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& eepromAddressSpaceDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& sramAddressSpaceDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& gpRegistersAddressSpaceDescriptor;
+
+        const Targets::TargetMemorySegmentDescriptor& programMemorySegmentDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& eepromMemorySegmentDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& sramMemorySegmentDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& gpRegistersMemorySegmentDescriptor;
+
+        const Targets::TargetPeripheralDescriptor& cpuGpPeripheralDescriptor;
+        const Targets::TargetRegisterGroupDescriptor& cpuGpRegisterGroupDescriptor;
+
         explicit TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor);
 
-    private:
-        /**
-         * For AVR targets, avr-gdb defines 35 registers in total:
-         *
-         * Register number 0 through 31 are general purpose registers
-         * Register number 32 is the status register (SREG)
-         * Register number 33 is the stack pointer register
-         * Register number 34 is the program counter register
-         *
-         * This function will prepare the appropriate GDB register numbers and mappings.
-         */
-        void loadRegisterMappings();
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptorFromGdbAddress(
+            GdbMemoryAddress address
+        ) const override;
+
+        Targets::TargetMemoryAddress translateGdbAddress(GdbMemoryAddress address) const override;
+        GdbMemoryAddress translateTargetMemoryAddress(
+            Targets::TargetMemoryAddress address,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
+        ) const override;
     };
 }

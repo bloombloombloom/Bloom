@@ -10,7 +10,7 @@
 ProjectSettings::ProjectSettings(const QJsonObject& jsonObject) {
 #ifndef EXCLUDE_INSIGHT
     if (jsonObject.contains("insight")) {
-        this->insightSettings = InsightProjectSettings(jsonObject.find("insight")->toObject());
+        this->insightSettings = InsightProjectSettings{jsonObject.find("insight")->toObject()};
     }
 #endif
 }
@@ -85,25 +85,25 @@ InsightProjectSettings::InsightProjectSettings(const QJsonObject& jsonObject) {
                 continue;
             }
 
-            this->memoryInspectionPaneSettingsByMemoryType.insert(std::pair(
+            this->memoryInspectionPaneSettingsByMemoryType.emplace(
                 EnumToStringMappings::targetMemoryTypes.at(memoryTypeName),
                 this->memoryInspectionPaneSettingsFromJson(settingsObj)
-            ));
+            );
         }
     }
 }
 
 QJsonObject InsightProjectSettings::toJson() const {
-    auto insightObj = QJsonObject();
+    auto insightObj = QJsonObject{};
 
     if (this->mainWindowSize.has_value()) {
-        insightObj.insert("mainWindowSize", QJsonObject({
+        insightObj.insert("mainWindowSize", QJsonObject{
             {"width", this->mainWindowSize->width()},
             {"height", this->mainWindowSize->height()},
-        }));
+        });
     }
 
-    auto memoryInspectionPaneSettingsObj = QJsonObject();
+    auto memoryInspectionPaneSettingsObj = QJsonObject{};
 
     for (const auto& [memoryType, inspectionPaneSettings] : this->memoryInspectionPaneSettingsByMemoryType) {
         if (!EnumToStringMappings::targetMemoryTypes.contains(memoryType)) {
@@ -169,7 +169,7 @@ Widgets::TargetMemoryInspectionPaneSettings InsightProjectSettings::memoryInspec
 ) const {
     using Exceptions::Exception;
 
-    auto inspectionPaneSettings = Widgets::TargetMemoryInspectionPaneSettings();
+    auto inspectionPaneSettings = Widgets::TargetMemoryInspectionPaneSettings{};
 
     if (jsonObject.contains("refreshOnTargetStop")) {
         inspectionPaneSettings.refreshOnTargetStop = jsonObject.value("refreshOnTargetStop").toBool();
@@ -184,28 +184,25 @@ Widgets::TargetMemoryInspectionPaneSettings InsightProjectSettings::memoryInspec
         const auto hexViewerSettingsObj = jsonObject.find("hexViewerSettings")->toObject();
 
         if (hexViewerSettingsObj.contains("groupStackMemory")) {
-            hexViewerSettings.groupStackMemory =
-                hexViewerSettingsObj.value("groupStackMemory").toBool();
+            hexViewerSettings.groupStackMemory = hexViewerSettingsObj.value("groupStackMemory").toBool();
         }
 
         if (hexViewerSettingsObj.contains("highlightFocusedMemory")) {
-            hexViewerSettings.highlightFocusedMemory =
-                hexViewerSettingsObj.value("highlightFocusedMemory").toBool();
+            hexViewerSettings.highlightFocusedMemory = hexViewerSettingsObj.value("highlightFocusedMemory").toBool();
         }
 
         if (hexViewerSettingsObj.contains("highlightHoveredRowAndCol")) {
-            hexViewerSettings.highlightHoveredRowAndCol =
-                hexViewerSettingsObj.value("highlightHoveredRowAndCol").toBool();
+            hexViewerSettings.highlightHoveredRowAndCol = hexViewerSettingsObj.value(
+                "highlightHoveredRowAndCol"
+            ).toBool();
         }
 
         if (hexViewerSettingsObj.contains("displayAsciiValues")) {
-            hexViewerSettings.displayAsciiValues =
-                hexViewerSettingsObj.value("displayAsciiValues").toBool();
+            hexViewerSettings.displayAsciiValues = hexViewerSettingsObj.value("displayAsciiValues").toBool();
         }
 
         if (hexViewerSettingsObj.contains("displayAnnotations")) {
-            hexViewerSettings.displayAnnotations =
-                hexViewerSettingsObj.value("displayAnnotations").toBool();
+            hexViewerSettings.displayAnnotations = hexViewerSettingsObj.value("displayAnnotations").toBool();
         }
 
         if (hexViewerSettingsObj.contains("addressLabelType")) {
@@ -247,17 +244,17 @@ Widgets::TargetMemoryInspectionPaneSettings InsightProjectSettings::memoryInspec
 }
 
 Widgets::PanelState InsightProjectSettings::panelStateFromJson(const QJsonObject& jsonObject) const {
-    return Widgets::PanelState(
+    return Widgets::PanelState{
         (jsonObject.contains("size") ? static_cast<int>(jsonObject.value("size").toInteger()) : 0),
         (jsonObject.contains("open") ? jsonObject.value("open").toBool() : false)
-    );
+    };
 }
 
 Widgets::PaneState InsightProjectSettings::paneStateFromJson(const QJsonObject& jsonObject) const {
-    auto detachedWindowState = std::optional<Widgets::DetachedWindowState>(std::nullopt);
+    auto detachedWindowState = std::optional<Widgets::DetachedWindowState>{};
 
     if (jsonObject.contains("detachedWindowState")) {
-        detachedWindowState = Widgets::DetachedWindowState();
+        detachedWindowState = Widgets::DetachedWindowState{};
 
         const auto detachedWindowStateObject = jsonObject.value("detachedWindowState").toObject();
 
@@ -278,11 +275,11 @@ Widgets::PaneState InsightProjectSettings::paneStateFromJson(const QJsonObject& 
         }
     }
 
-    return Widgets::PaneState(
+    return Widgets::PaneState{
         (jsonObject.contains("activated") ? jsonObject.value("activated").toBool() : false),
         (jsonObject.contains("attached") ? jsonObject.value("attached").toBool() : true),
         detachedWindowState
-    );
+    };
 }
 
 QJsonObject InsightProjectSettings::memoryInspectionPaneSettingsToJson(
@@ -290,27 +287,27 @@ QJsonObject InsightProjectSettings::memoryInspectionPaneSettingsToJson(
 ) const {
     const auto& addressTypesByName = InsightProjectSettings::addressTypesByName;
 
-    auto settingsObj = QJsonObject({
+    auto settingsObj = QJsonObject{
         {"refreshOnTargetStop", inspectionPaneSettings.refreshOnTargetStop},
         {"refreshOnActivation", inspectionPaneSettings.refreshOnActivation},
-    });
+    };
 
     const auto& hexViewerSettings = inspectionPaneSettings.hexViewerWidgetSettings;
-    settingsObj.insert("hexViewerSettings", QJsonObject({
+    settingsObj.insert("hexViewerSettings", QJsonObject{
         {"groupStackMemory", hexViewerSettings.groupStackMemory},
         {"highlightFocusedMemory", hexViewerSettings.highlightFocusedMemory},
         {"highlightHoveredRowAndCol", hexViewerSettings.highlightHoveredRowAndCol},
         {"displayAsciiValues", hexViewerSettings.displayAsciiValues},
         {"displayAnnotations", hexViewerSettings.displayAnnotations},
         {"addressLabelType", addressTypesByName.valueAt(hexViewerSettings.addressLabelType).value()},
-    }));
+    });
 
-    auto focusedRegions = QJsonArray();
+    auto focusedRegions = QJsonArray{};
     for (const auto& focusedRegion : inspectionPaneSettings.focusedMemoryRegions) {
         focusedRegions.push_back(focusedRegion.toJson());
     }
 
-    auto excludedRegions = QJsonArray();
+    auto excludedRegions = QJsonArray{};
     for (const auto& excludedRegion : inspectionPaneSettings.excludedMemoryRegions) {
         excludedRegions.push_back(excludedRegion.toJson());
     }
@@ -322,35 +319,35 @@ QJsonObject InsightProjectSettings::memoryInspectionPaneSettingsToJson(
 }
 
 QJsonObject InsightProjectSettings::panelStateToJson(const Widgets::PanelState& panelState) const {
-    return QJsonObject({
+    return QJsonObject{
         {"size", panelState.size},
         {"open", panelState.open},
-    });
+    };
 }
 
 QJsonObject InsightProjectSettings::paneStateToJson(const Widgets::PaneState& paneState) const {
-    auto json = QJsonObject({
+    auto json = QJsonObject{
         {"activated", paneState.activated},
         {"attached", paneState.attached},
-    });
+    };
 
     if (paneState.detachedWindowState.has_value()) {
-        json.insert("detachedWindowState", QJsonObject({
+        json.insert("detachedWindowState", QJsonObject{
             {
                 "size",
-                QJsonObject({
+                QJsonObject{
                     {"width", paneState.detachedWindowState->size.width()},
                     {"height", paneState.detachedWindowState->size.height()},
-                })
+                }
             },
             {
                 "position",
-                QJsonObject({
+                QJsonObject{
                     {"x", paneState.detachedWindowState->position.x()},
                     {"y", paneState.detachedWindowState->position.y()},
-                })
+                }
             }
-        }));
+        });
     }
 
     return json;

@@ -13,10 +13,7 @@ EventFdNotifier::EventFdNotifier() {
     this->fileDescriptor = ::eventfd(0, ::EFD_NONBLOCK);
 
     if (this->fileDescriptor < 0) {
-        throw Exception(
-            "Failed to create eventfd object - error number " + std::to_string(errno)
-                + " returned."
-        );
+        throw Exception{"Failed to create eventfd object - error number " + std::to_string(errno) + " returned."};
     }
 }
 
@@ -32,16 +29,16 @@ EventFdNotifier::~EventFdNotifier() noexcept {
 
 void EventFdNotifier::notify() {
     if (::eventfd_write(this->fileDescriptor.value(), 1) < 0) {
-        throw Exceptions::Exception("Failed to increment eventfd counter - error number: "
-            + std::to_string(errno));
+        throw Exceptions::Exception{"Failed to increment eventfd counter - error number: " + std::to_string(errno)};
     }
 }
 
 void EventFdNotifier::clear() {
-    ::eventfd_t counter = {};
+    auto counter = ::eventfd_t{};
     if (::eventfd_read(this->fileDescriptor.value(), &counter) < 0 && errno != EAGAIN) {
-        throw Exceptions::Exception("Failed to clear EventFdNotifier object - eventfd_read failed - "
-            "error number: " + std::to_string(errno));
+        throw Exceptions::Exception{
+            "Failed to clear EventFdNotifier object - eventfd_read failed - " "error number: " + std::to_string(errno)
+        };
     }
 }
 

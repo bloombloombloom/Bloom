@@ -1,7 +1,6 @@
 #pragma once
 
 #include "InsightWorkerTask.hpp"
-#include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetPinDescriptor.hpp"
 
 class RefreshTargetPinStates: public InsightWorkerTask

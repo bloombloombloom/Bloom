@@ -22,19 +22,24 @@ namespace DebugServer::Gdb::CommandPackets
         : Monitor(std::move(monitorPacket))
     {}
 
-    void ActivateInsight::handle(DebugSession& debugSession, TargetControllerService&) {
+    void ActivateInsight::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor&,
+        const Targets::TargetDescriptor&,
+        TargetControllerService&
+    ) {
         Logger::info("Handling ActivateInsight packet");
 
         try {
             EventManager::triggerEvent(std::make_shared<Events::InsightActivationRequested>());
 
-            debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
-                "The Insight GUI will be with you shortly.\n"
-            )));
+            debugSession.connection.writePacket(
+                ResponsePacket{Services::StringService::toHex("The Insight GUI will be with you shortly.\n")}
+            );
 
         } catch (const Exception& exception) {
             Logger::error("Failed to activate Insight - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

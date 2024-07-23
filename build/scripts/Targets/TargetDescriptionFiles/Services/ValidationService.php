@@ -606,7 +606,7 @@ class ValidationService
         if ($register->size === null) {
             $failures[] = 'Missing size';
 
-        } elseif ($register->size < 1) {
+        } elseif ($register->size < 1 || $register->size > 8) {
             $failures[] = 'Invalid size (' . $register->size . ')';
         }
 

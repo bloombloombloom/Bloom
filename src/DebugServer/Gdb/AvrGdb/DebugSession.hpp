@@ -12,7 +12,6 @@ namespace DebugServer::Gdb::AvrGdb
         DebugSession(
             Connection&& connection,
             const std::set<std::pair<Feature, std::optional<std::string>>>& supportedFeatures,
-            const TargetDescriptor& targetDescriptor,
             const GdbDebugServerConfig& serverConfig
         );
     };

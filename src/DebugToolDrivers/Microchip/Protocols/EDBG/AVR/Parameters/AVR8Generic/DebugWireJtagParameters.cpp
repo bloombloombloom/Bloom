@@ -1,13 +1,12 @@
 #include "DebugWireJtagParameters.hpp"
 
 #include "src/Services/StringService.hpp"
-
 #include "src/Exceptions/InternalFatalErrorException.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Generic
 {
     DebugWireJtagParameters::DebugWireJtagParameters(
-        const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile
+        const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile
     ) {
         using Services::StringService;
 
@@ -55,7 +54,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
             this->eearAddressLow = static_cast<std::uint8_t>(eearlDescriptor.startAddress);
 
             /*
-             * Some debugWire targets only have a single-byte `EEARL` register.
+             * Some debugWIRE targets only have a single-byte `EEARL` register.
              *
              * In the absence of an `EEARH` register, and if there is no high byte in the `EEARL` register, the
              * `eearAddressHigh` parameter should be equal to the `eearAddressLow` parameter, as stated in the
@@ -80,8 +79,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         const auto cpuPeripheralDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor("cpu");
         const auto& cpuRegisterGroupDescriptor = cpuPeripheralDescriptor.getRegisterGroupDescriptor("cpu");
 
-        const auto spmcsrDescriptor = cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("spmcsr")
-            ?: cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("spmcr");
+        const auto spmcsrDescriptor = cpuRegisterGroupDescriptor.tryGetFirstRegisterDescriptor({"spmcsr", "spmcr"});
 
         if (spmcsrDescriptor.has_value()) {
             this->spmcrAddress = static_cast<std::uint8_t>(spmcsrDescriptor->get().startAddress);
@@ -90,24 +88,27 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
             const auto bootLoadPeripheral = targetDescriptionFile.getTargetPeripheralDescriptor("boot_load");
             const auto& bootLoaderRegisterGroupDescriptor = bootLoadPeripheral.getRegisterGroupDescriptor("boot_load");
 
-            const auto spmcsrDescriptor = bootLoaderRegisterGroupDescriptor.tryGetRegisterDescriptor("spmcsr")
-                ?: bootLoaderRegisterGroupDescriptor.tryGetRegisterDescriptor("spmcr");
+            const auto spmcsrDescriptor = bootLoaderRegisterGroupDescriptor.tryGetFirstRegisterDescriptor(
+                {"spmcsr", "spmcr"}
+            );
 
             if (!spmcsrDescriptor.has_value()) {
-                throw Exceptions::InternalFatalErrorException("Could not extract SPMCS register from TDF");
+                throw Exceptions::InternalFatalErrorException{"Could not extract SPMCS register from TDF"};
             }
 
             this->spmcrAddress = static_cast<std::uint8_t>(spmcsrDescriptor->get().startAddress);
         }
 
-        const auto osccalDescriptor = cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("osccal")
-            ?: cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("osccal0")
-            ?: cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("osccal1")
-            ?: cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("fosccal")
-            ?: cpuRegisterGroupDescriptor.tryGetRegisterDescriptor("sosccala");
+        const auto osccalDescriptor = cpuRegisterGroupDescriptor.tryGetFirstRegisterDescriptor({
+            "osccal",
+            "osccal0",
+            "osccal1",
+            "fosccal",
+            "sosccala",
+        });
 
         if (!osccalDescriptor.has_value()) {
-            throw Exceptions::InternalFatalErrorException("Could not extract OSCCAL register from TDF");
+            throw Exceptions::InternalFatalErrorException{"Could not extract OSCCAL register from TDF"};
         }
 
         this->osccalAddress = static_cast<std::uint8_t>(osccalDescriptor->get().startAddress);

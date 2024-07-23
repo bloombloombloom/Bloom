@@ -4,9 +4,7 @@
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Generic
 {
-    PdiParameters::PdiParameters(
-        const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile
-    ) {
+    PdiParameters::PdiParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile) {
         using Services::StringService;
 
         const auto& pdiGroup = targetDescriptionFile.getPropertyGroup("pdi_interface");

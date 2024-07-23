@@ -1,10 +1,9 @@
 #include "FlashWrite.hpp"
 
-#include <QByteArray>
-
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
 
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
@@ -20,44 +19,41 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     FlashWrite::FlashWrite(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
+        using Services::StringService;
+
         if (this->data.size() < 15) {
-            throw Exception("Invalid packet length");
+            throw Exception{"Invalid packet length"};
         }
 
         /*
-         * The flash write ('vFlashWrite') packet consists of two segments, an address and a buffer.
-         *
-         * Seperated by a colon.
+         * The flash write ('vFlashWrite') packet consists of two segments: an address and a buffer, seperated by a
+         * colon.
          */
-        auto colonIt = std::find(this->data.begin() + 12, this->data.end(), ':');
+        const auto delimiterIt = std::find(this->data.begin() + 12, this->data.end(), ':');
 
-        if (colonIt == this->data.end()) {
-            throw Exception("Failed to find colon delimiter in write flash packet.");
+        if (delimiterIt == this->data.end()) {
+            throw Exception{"Failed to find colon delimiter in write flash packet."};
         }
 
-        bool conversionStatus = false;
-        this->startAddress = QByteArray(
-            reinterpret_cast<const char*>(this->data.data() + 12),
-            std::distance(this->data.begin(), colonIt) - 12
-        ).toUInt(&conversionStatus, 16);
-
-        if (!conversionStatus) {
-            throw Exception("Failed to parse start address from flash write packet data");
-        }
-
-        this->buffer = Targets::TargetMemoryBuffer(colonIt + 1, this->data.end());
+        this->startAddress = StringService::toUint32(std::string{this->data.begin() + 12, delimiterIt}, 16);
+        this->buffer = Targets::TargetMemoryBuffer{delimiterIt + 1, this->data.end()};
     }
 
-    void FlashWrite::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void FlashWrite::handle(
+        Gdb::DebugSession& debugSession,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling FlashWrite packet");
 
         try {
             if (this->buffer.empty()) {
-                throw Exception("Received empty buffer from GDB");
+                throw Exception{"Received empty buffer from GDB"};
             }
 
             if (!debugSession.programmingSession.has_value()) {
-                debugSession.programmingSession = ProgrammingSession(this->startAddress, this->buffer);
+                debugSession.programmingSession = ProgrammingSession{this->startAddress, this->buffer};
 
             } else {
                 auto& programmingSession = debugSession.programmingSession.value();
@@ -65,7 +61,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 const auto expectedStartAddress = (currentEndAddress + 1);
 
                 if (this->startAddress < expectedStartAddress) {
-                    throw Exception("Invalid start address from GDB - the buffer would overlap a previous buffer");
+                    throw Exception{"Invalid start address from GDB - the buffer would overlap a previous buffer"};
                 }
 
                 if (this->startAddress > expectedStartAddress) {
@@ -84,7 +80,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 );
             }
 
-            debugSession.connection.writePacket(OkResponsePacket());
+            debugSession.connection.writePacket(OkResponsePacket{});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to handle FlashWrite packet - " + exception.getMessage());
@@ -97,7 +93,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 Logger::error("Failed to disable programming mode - " + exception.getMessage());
             }
 
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

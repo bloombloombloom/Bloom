@@ -45,23 +45,23 @@ namespace DebugServer::Gdb
     }
 
     std::string Connection::getIpAddress() const {
-        std::array<char, INET_ADDRSTRLEN> ipAddress = {};
+        auto ipAddress = std::array<char, INET_ADDRSTRLEN>{};
 
         if (::inet_ntop(AF_INET, &(socketAddress.sin_addr), ipAddress.data(), INET_ADDRSTRLEN) == nullptr) {
-            throw Exception("Failed to convert client IP address to text form.");
+            throw Exception{"Failed to convert client IP address to text form."};
         }
 
-        return std::string(ipAddress.data());
+        return {ipAddress.data()};
     }
 
     std::vector<RawPacket> Connection::readRawPackets() {
-        std::vector<RawPacket> output;
+        auto output = std::vector<RawPacket>{};
 
         do {
             const auto bytes = this->read();
 
-            std::size_t bufferSize = bytes.size();
-            for (std::size_t byteIndex = 0; byteIndex < bufferSize; byteIndex++) {
+            auto bufferSize = bytes.size();
+            for (auto byteIndex = std::size_t{0}; byteIndex < bufferSize; byteIndex++) {
                 auto byte = bytes[byteIndex];
 
                 if (byte == 0x03) {
@@ -131,7 +131,7 @@ namespace DebugServer::Gdb
                     Logger::debug(
                         "Read GDB packet: "
                             + Services::StringService::replaceUnprintable(
-                                std::string(rawPacket.begin(), rawPacket.end())
+                                std::string{rawPacket.begin(), rawPacket.end()}
                             )
                     );
 
@@ -153,13 +153,13 @@ namespace DebugServer::Gdb
         int attempts = 0;
         const auto rawPacket = packet.toRawPacket();
 
-        Logger::debug("Writing GDB packet: " + std::string(rawPacket.begin(), rawPacket.end()));
+        Logger::debug("Writing GDB packet: " + std::string{rawPacket.begin(), rawPacket.end()});
 
         do {
             if (attempts > 10) {
-                throw ClientCommunicationError(
+                throw ClientCommunicationError{
                     "Failed to write GDB response packet - client failed to acknowledge receipt - retry limit reached"
-                );
+                };
             }
 
             this->write(rawPacket);
@@ -177,7 +177,7 @@ namespace DebugServer::Gdb
         );
 
         if (socketFileDescriptor < 0) {
-            throw Exception("Failed to accept GDB Remote Serial Protocol connection");
+            throw Exception{"Failed to accept GDB Remote Serial Protocol connection"};
         }
 
         this->socketFileDescriptor = socketFileDescriptor;
@@ -219,7 +219,7 @@ namespace DebugServer::Gdb
         if (eventFileDescriptor.value() == this->interruptEventNotifier.getFileDescriptor()) {
             // Interrupted
             this->interruptEventNotifier.clear();
-            throw DebugServerInterrupted();
+            throw DebugServerInterrupted{};
         }
 
         const auto bytesToRead = bytes.value_or(Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE);
@@ -232,14 +232,14 @@ namespace DebugServer::Gdb
         );
 
         if (bytesRead < 0) {
-            throw ClientCommunicationError(
+            throw ClientCommunicationError{
                 "Failed to read data from GDB client - error code: " + std::to_string(errno)
-            );
+            };
         }
 
         if (bytesRead == 0) {
             // Client has disconnected
-            throw ClientDisconnected();
+            throw ClientDisconnected{};
         }
 
         if (bytesRead != output.size()) {
@@ -250,7 +250,7 @@ namespace DebugServer::Gdb
     }
 
     std::optional<unsigned char> Connection::readSingleByte(bool interruptible) {
-        auto bytes = this->read(1, interruptible, std::chrono::milliseconds(300));
+        auto bytes = this->read(1, interruptible, std::chrono::milliseconds{300});
 
         if (!bytes.empty()) {
             return bytes.front();
@@ -263,19 +263,18 @@ namespace DebugServer::Gdb
         if (::write(this->socketFileDescriptor.value(), buffer.data(), buffer.size()) == -1) {
             if (errno == EPIPE || errno == ECONNRESET) {
                 // Connection was closed
-                throw ClientDisconnected();
+                throw ClientDisconnected{};
             }
 
-            throw ClientCommunicationError(
+            throw ClientCommunicationError{
                 "Failed to write " + std::to_string(buffer.size()) + " bytes to GDP client socket - error no: "
                     + std::to_string(errno)
-            );
+            };
         }
     }
 
     void Connection::disableReadInterrupts() {
         this->epollInstance.removeEntry(this->interruptEventNotifier.getFileDescriptor());
-
         this->readInterruptEnabled = false;
     }
 

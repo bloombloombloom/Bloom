@@ -1,7 +1,7 @@
 #include "ConditionVariableNotifier.hpp"
 
 void ConditionVariableNotifier::notify() {
-    const auto lock = std::unique_lock(this->mutex);
+    const auto lock = std::unique_lock{this->mutex};
     this->notified = true;
     this->conditionalVariable.notify_all();
 }
@@ -10,7 +10,7 @@ void ConditionVariableNotifier::waitForNotification(std::optional<std::chrono::m
     const auto predicate = [this] {
         return this->notified;
     };
-    auto lock = std::unique_lock(this->mutex);
+    auto lock = std::unique_lock{this->mutex};
 
     if (timeout.has_value()) {
         this->conditionalVariable.wait_for(lock, timeout.value(), predicate);

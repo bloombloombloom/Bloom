@@ -3,6 +3,10 @@
 #include <cstdint>
 
 #include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
+#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
+
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -13,6 +17,10 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     class ReadMemoryMap: public Gdb::CommandPackets::CommandPacket
     {
     public:
+        const Targets::TargetAddressSpaceDescriptor& eepromAddressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& programMemorySegmentDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& eepromMemorySegmentDescriptor;
+
         /**
          * The offset of the memory map, from which to read.
          */
@@ -23,10 +31,12 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
          */
         std::uint32_t length = 0;
 
-        explicit ReadMemoryMap(const RawPacket& rawPacket);
+        explicit ReadMemoryMap(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor);
 
         void handle(
             Gdb::DebugSession& debugSession,
+            const Gdb::TargetDescriptor& gdbTargetDescriptor,
+            const Targets::TargetDescriptor& targetDescriptor,
             Services::TargetControllerService& targetControllerService
         ) override;
     };

@@ -20,7 +20,7 @@ namespace Services
          * @return
          */
         static QDateTime currentDateTime() {
-            const auto lock = std::unique_lock(DateTimeService::systemClockMutex);
+            const auto lock = std::unique_lock{DateTimeService::systemClockMutex};
             return QDateTime::currentDateTime();
         }
 
@@ -30,7 +30,7 @@ namespace Services
          * @return
          */
         static QDate currentDate() {
-            const auto lock = std::unique_lock(DateTimeService::systemClockMutex);
+            const auto lock = std::unique_lock{DateTimeService::systemClockMutex};
             return QDateTime::currentDateTime().date();
         }
 
@@ -43,7 +43,7 @@ namespace Services
          * @return
          */
         static QString getTimeZoneAbbreviation(const QDateTime& dateTime) {
-            const auto lock = std::unique_lock(DateTimeService::systemClockMutex);
+            const auto lock = std::unique_lock{DateTimeService::systemClockMutex};
             return dateTime.timeZoneAbbreviation();
         }
 

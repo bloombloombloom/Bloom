@@ -60,9 +60,9 @@ namespace Targets::TargetDescription
         const BitField& getBitField(std::string_view key) const {
             const auto bitField = this->tryGetBitField(key);
             if (!bitField.has_value()) {
-                throw Exceptions::InvalidTargetDescriptionDataException(
-                    "Failed to get bit field \"" + std::string(key) + "\" from register in TDF - bit field not found"
-                );
+                throw Exceptions::InvalidTargetDescriptionDataException{
+                    "Failed to get bit field \"" + std::string{key} + "\" from register in TDF - bit field not found"
+                };
             }
 
             return bitField->get();

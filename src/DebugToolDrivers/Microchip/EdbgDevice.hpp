@@ -50,22 +50,7 @@ namespace DebugToolDrivers::Microchip
          */
         void close() override;
 
-        TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface* getAvr8DebugInterface(
-            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig,
-            Targets::Microchip::Avr::Avr8Bit::Family targetFamily,
-            const Targets::Microchip::Avr::Avr8Bit::TargetParameters& targetParameters,
-            const Targets::TargetRegisterDescriptorMapping& targetRegisterDescriptorsById
-        ) override;
-
-        TargetInterfaces::Microchip::Avr::AvrIspInterface* getAvrIspInterface(
-            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
-        ) override {
-            return this->edbgAvrIspInterface.get();
-        }
-
-        DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* getTargetPowerManagementInterface() override {
-            return this->targetPowerManagementInterface.get();
-        }
+        [[nodiscard]] bool isInitialised() const override;
 
         /**
          * Retrieves the device serial number via the "Discovery" EDBG sub-protocol.
@@ -81,6 +66,18 @@ namespace DebugToolDrivers::Microchip
          */
         std::string getFirmwareVersionString() override;
 
+        DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* getTargetPowerManagementInterface() override;
+
+        TargetInterfaces::Microchip::Avr8::Avr8DebugInterface* getAvr8DebugInterface(
+            const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
+            const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
+        ) override;
+
+        TargetInterfaces::Microchip::Avr8::AvrIspInterface* getAvrIspInterface(
+            const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
+            const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
+        ) override;
+
         /**
          * Starts a session with the EDBG device using the "Housekeeping" EDBG sub-protocol.
          */
@@ -92,6 +89,8 @@ namespace DebugToolDrivers::Microchip
         void endSession();
 
     protected:
+        bool initialised = false;
+
         /**
          * The USB interface number of the CMSIS-DAP HID interface.
          */
@@ -136,9 +135,9 @@ namespace DebugToolDrivers::Microchip
          * ISP cannot be used for debugging operations. The EdbgAvrIspInterface class does *not* implement
          * the Avr8DebugInterface.
          *
-         * Currently, Bloom will only use the ISP interface as a fallback when attempting to connect to debugWire
-         * targets. We use the interface to inspect and update the "debugWire enable" (DWEN) fuse-bit, before making a
-         * second connection attempt via the debugWire interface.
+         * Currently, Bloom will only use the ISP interface as a fallback when attempting to connect to debugWIRE
+         * targets. We use the interface to inspect and update the "debugWIRE enable" (DWEN) fuse-bit, before making a
+         * second connection attempt via the debugWIRE interface.
          */
         std::unique_ptr<Microchip::Protocols::Edbg::Avr::EdbgAvrIspInterface> edbgAvrIspInterface = nullptr;
 

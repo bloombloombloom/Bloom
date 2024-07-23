@@ -65,7 +65,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          *   CommandFrames::Avr8Generic::GetDeviceId getDeviceIdCommandFrame;
          *
          *   auto responseFrame = edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(getDeviceIdCommandFrame);
-         *   Targets::Microchip::Avr::TargetSignature avrSignature = responseFrame->extractSignature();
+         *   Targets::Microchip::Avr8::TargetSignature avrSignature = responseFrame->extractSignature();
          *
          * In the code above, the responseFrame object will be an instance of the ResponseFrames::Avr8Generic::GetDeviceId
          * class, which provides the extractSignature() function (to extract the AVR signature from the response frame).
@@ -145,27 +145,30 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          *  A vector of sequenced AvrCommands, each containing a segment of the AvrCommandFrame.
          */
         [[nodiscard]] std::vector<AvrCommand> generateAvrCommands(std::size_t maximumCommandPacketSize) const {
-            auto rawCommandFrame = this->getRawCommandFrame();
+            const auto rawCommandFrame = this->getRawCommandFrame();
 
-            std::size_t commandFrameSize = rawCommandFrame.size();
-            auto commandsRequired = static_cast<std::size_t>(
+            const auto commandFrameSize = rawCommandFrame.size();
+            const auto commandsRequired = static_cast<std::size_t>(
                 std::ceil(static_cast<float>(commandFrameSize) / static_cast<float>(maximumCommandPacketSize))
             );
 
-            std::vector<AvrCommand> avrCommands;
-            std::size_t copiedPacketSize = 0;
-            for (std::size_t i = 0; i < commandsRequired; i++) {
+            auto avrCommands = std::vector<AvrCommand>{};
+            auto copiedPacketSize = std::size_t{0};
+            for (auto i = std::size_t{0}; i < commandsRequired; ++i) {
                 // If we're on the last packet, the packet size will be what ever is left of the AvrCommandFrame
-                std::size_t commandPacketSize = ((i + 1) != commandsRequired) ? maximumCommandPacketSize
-                    : (commandFrameSize - (maximumCommandPacketSize * i));
+                const auto commandPacketSize = static_cast<std::size_t>(
+                    ((i + 1) != commandsRequired)
+                        ? maximumCommandPacketSize
+                        : (commandFrameSize - (maximumCommandPacketSize * i))
+                );
 
                 avrCommands.emplace_back(AvrCommand(
                     commandsRequired,
                     i + 1,
-                    std::vector<unsigned char>(
+                    std::vector<unsigned char>{
                         rawCommandFrame.begin() + static_cast<std::int64_t>(copiedPacketSize),
                         rawCommandFrame.begin() + static_cast<std::int64_t>(copiedPacketSize + commandPacketSize)
-                    )
+                    }
                 ));
                 copiedPacketSize += commandPacketSize;
             }

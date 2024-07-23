@@ -7,32 +7,19 @@
 #include "src/Targets/Target.hpp"
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
-#include "TargetDescription/TargetDescriptionFile.hpp"
+#include "RiscVTargetConfig.hpp"
+#include "TargetDescriptionFile.hpp"
 
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
-
-#include "src/Targets/RiscV/RiscVGeneric.hpp"
-#include "src/Targets/RiscV/Registers/RegisterNumbers.hpp"
-#include "src/Targets/RiscV/Registers/DebugControlStatusRegister.hpp"
-
-#include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
-#include "src/Targets/RiscV/DebugModule/Registers/ControlRegister.hpp"
-#include "src/Targets/RiscV/DebugModule/Registers/StatusRegister.hpp"
-#include "src/Targets/RiscV/DebugModule/Registers/AbstractControlStatusRegister.hpp"
-#include "src/Targets/RiscV/DebugModule/Registers/AbstractCommandRegister.hpp"
-
-#include "RiscVRegisterDescriptor.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVIdentificationInterface.hpp"
 
 namespace Targets::RiscV
 {
     class RiscV: public Target
     {
     public:
-        explicit RiscV(
-            const TargetConfig& targetConfig,
-            TargetDescription::TargetDescriptionFile&& targetDescriptionFile
-        );
+        RiscV(const TargetConfig& targetConfig, TargetDescriptionFile&& targetDescriptionFile);
 
         /*
          * The functions below implement the Target interface for RISC-V targets.
@@ -41,20 +28,13 @@ namespace Targets::RiscV
          * each function.
          */
 
-        /**
-         * All RISC-V compatible debug tools must provide a valid RiscVDebugInterface.
-         *
-         * @param debugTool
-         * @return
-         */
         bool supportsDebugTool(DebugTool* debugTool) override;
-
         void setDebugTool(DebugTool* debugTool) override;
 
         void activate() override;
         void deactivate() override;
 
-        TargetDescriptor getDescriptor() override;
+        TargetDescriptor targetDescriptor() override;
 
         void run(std::optional<TargetMemoryAddress> toAddress = std::nullopt) override;
         void stop() override;
@@ -68,34 +48,45 @@ namespace Targets::RiscV
         void removeHardwareBreakpoint(TargetMemoryAddress address) override;
         void clearAllBreakpoints() override;
 
-        TargetRegisters readRegisters(const TargetRegisterDescriptorIds& descriptorIds) override;
-        void writeRegisters(const TargetRegisters& registers) override;
+        TargetRegisterDescriptorAndValuePairs readRegisters(const TargetRegisterDescriptors& descriptors) override;
+        void writeRegisters(const TargetRegisterDescriptorAndValuePairs& registers) override;
 
         TargetMemoryBuffer readMemory(
-            TargetMemoryType memoryType,
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             TargetMemoryAddress startAddress,
             TargetMemorySize bytes,
             const std::set<TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) override;
         void writeMemory(
-            TargetMemoryType memoryType,
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             TargetMemoryAddress startAddress,
             const TargetMemoryBuffer& buffer
         ) override;
-        void eraseMemory(TargetMemoryType memoryType) override;
+        bool isProgramMemory(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            TargetMemoryAddress startAddress,
+            TargetMemorySize size
+        ) override;
+        void eraseMemory(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor
+        ) override;
 
-        TargetState getState() override;
+        TargetExecutionState getExecutionState() override;
 
         TargetMemoryAddress getProgramCounter() override;
         void setProgramCounter(TargetMemoryAddress programCounter) override;
 
         TargetStackPointer getStackPointer() override;
+        void setStackPointer(TargetStackPointer stackPointer) override;
 
-        std::map<int, TargetPinState> getPinStates(int variantId) override;
-        void setPinState(
-            const TargetPinDescriptor& pinDescriptor,
-            const TargetPinState& state
+        TargetGpioPinDescriptorAndStatePairs getGpioPinStates(
+            const TargetPinoutDescriptor& pinoutDescriptor
         ) override;
+        void setGpioPinState(const TargetPinDescriptor& pinDescriptor, const TargetGpioPinState& state) override;
 
         void enableProgrammingMode() override;
 
@@ -104,43 +95,53 @@ namespace Targets::RiscV
         bool programmingModeEnabled() override;
 
     protected:
-        TargetDescription::TargetDescriptionFile targetDescriptionFile;
-
-        std::map<TargetRegisterDescriptorId, RiscVRegisterDescriptor> registerDescriptorsById;
-
-        RiscVRegisterDescriptor stackPointerRegisterDescriptor;
+        RiscVTargetConfig targetConfig;
+        TargetDescriptionFile targetDescriptionFile;
 
         DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* riscVDebugInterface = nullptr;
         DebugToolDrivers::TargetInterfaces::RiscV::RiscVProgramInterface* riscVProgramInterface = nullptr;
+        DebugToolDrivers::TargetInterfaces::RiscV::RiscVIdentificationInterface* riscVIdInterface = nullptr;
 
-        std::set<DebugModule::HartIndex> hartIndices;
-        DebugModule::HartIndex selectedHartIndex = 0;
+        /*
+         * On RISC-V targets, CPU registers are typically only accessible via the debug module (we can't access them
+         * via the system address space). So we use abstract commands to access these registers. This means we have to
+         * address these registers via their register numbers, as defined in the RISC-V debug spec.
+         *
+         * We effectively treat register numbers as a separate address space, with an addressable unit size of 4 bytes.
+         * The `cpuRegisterAddressSpaceDescriptor` member holds the descriptor for this address space.
+         *
+         * TODO: review this. This address space is specific to the RISC-V debug spec, but some debug tools may
+         *       implement their own debug translator in firmware, and then provide a higher-level API to access the
+         *       same registers. In that case, this address space may not be relevant. This may need to be moved.
+         *       ATM all RISC-V debug tools supported by Bloom provide a DTM interface, so we use our own debug
+         *       translator driver and this address space is, in fact, relevant. I will deal with this when it
+         *       becomes a problem.
+         */
+        TargetAddressSpaceDescriptor cpuRegisterAddressSpaceDescriptor;
+        const TargetMemorySegmentDescriptor& csrMemorySegmentDescriptor;
+        const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor;
 
-        void loadRegisterDescriptors();
+        TargetPeripheralDescriptor cpuPeripheralDescriptor;
+        const TargetRegisterGroupDescriptor& csrGroupDescriptor;
+        const TargetRegisterGroupDescriptor& gprGroupDescriptor;
+        const TargetRegisterDescriptor& pcRegisterDescriptor;
+        const TargetRegisterDescriptor& spRegisterDescriptor;
 
-        std::set<DebugModule::HartIndex> discoverHartIndices();
+        /*
+         * The "system" address space is the main address space on RISC-V targets.
+         */
+        TargetAddressSpaceDescriptor sysAddressSpaceDescriptor;
 
-        DebugModule::Registers::ControlRegister readDebugModuleControlRegister();
-        DebugModule::Registers::StatusRegister readDebugModuleStatusRegister();
-        DebugModule::Registers::AbstractControlStatusRegister readDebugModuleAbstractControlStatusRegister();
+        const TargetMemorySegmentDescriptor& resolveRegisterMemorySegmentDescriptor(
+            const TargetRegisterDescriptor& regDescriptor,
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor
+        );
 
-        Registers::DebugControlStatusRegister readDebugControlStatusRegister();
-
-        void enableDebugModule();
-        void disableDebugModule();
-
-        RegisterValue readRegister(RegisterNumber number);
-        RegisterValue readRegister(Registers::RegisterNumber number);
-        void writeRegister(RegisterNumber number, RegisterValue value);
-        void writeRegister(Registers::RegisterNumber number, RegisterValue value);
-
-        void writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister& controlRegister);
-
-        void writeDebugControlStatusRegister(const Registers::DebugControlStatusRegister& controlRegister);
-
-        void executeAbstractCommand(const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister);
-
-        TargetMemoryAddress alignMemoryAddress(TargetMemoryAddress address, TargetMemoryAddress alignTo);
-        TargetMemorySize alignMemorySize(TargetMemorySize size, TargetMemorySize alignTo);
+        static TargetAddressSpaceDescriptor generateCpuRegisterAddressSpaceDescriptor();
+        static TargetPeripheralDescriptor generateCpuPeripheralDescriptor(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& csrMemorySegmentDescriptor,
+            const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor
+        );
     };
 }

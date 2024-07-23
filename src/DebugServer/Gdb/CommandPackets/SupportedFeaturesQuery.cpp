@@ -51,17 +51,23 @@ namespace DebugServer::Gdb::CommandPackets
         }
     }
 
-    void SupportedFeaturesQuery::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void SupportedFeaturesQuery::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor&,
+        const Targets::TargetDescriptor&,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling QuerySupport packet");
 
-        if (!this->isFeatureSupported(Feature::HARDWARE_BREAKPOINTS)
+        if (
+            !this->isFeatureSupported(Feature::HARDWARE_BREAKPOINTS)
             && !this->isFeatureSupported(Feature::SOFTWARE_BREAKPOINTS)
         ) {
             // All GDB clients are expected to support breakpoints!
-            throw ClientNotSupported("GDB client does not support HW or SW breakpoints");
+            throw ClientNotSupported{"GDB client does not support HW or SW breakpoints"};
         }
 
         // Respond with a SupportedFeaturesResponse packet, listing all supported GDB features by Bloom
-        debugSession.connection.writePacket(SupportedFeaturesResponse(debugSession.supportedFeatures));
+        debugSession.connection.writePacket(SupportedFeaturesResponse{debugSession.supportedFeatures});
     }
 }

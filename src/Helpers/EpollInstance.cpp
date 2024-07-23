@@ -13,15 +13,12 @@ EpollInstance::EpollInstance() {
     this->fileDescriptor = ::epoll_create(1);
 
     if (this->fileDescriptor < 0) {
-        throw Exception(
-            "Failed to create epoll instance - error number " + std::to_string(errno)
-                + " returned."
-        );
+        throw Exception{"Failed to create epoll instance - error number " + std::to_string(errno) + " returned."};
     }
 }
 
 void EpollInstance::addEntry(int fileDescriptor, std::uint16_t eventMask) {
-    struct ::epoll_event event = {
+    auto event = ::epoll_event{
         .events = eventMask,
         .data = {
             .fd = fileDescriptor
@@ -29,23 +26,20 @@ void EpollInstance::addEntry(int fileDescriptor, std::uint16_t eventMask) {
     };
 
     if (::epoll_ctl(this->fileDescriptor.value(), EPOLL_CTL_ADD, fileDescriptor, &event) != 0) {
-        throw Exception(
-            "Failed to add entry to epoll instance - error number " + std::to_string(errno) + " returned."
-        );
+        throw Exception{"Failed to add entry to epoll instance - error number " + std::to_string(errno) + " returned."};
     }
 }
 
 void EpollInstance::removeEntry(int fileDescriptor) {
     if (::epoll_ctl(this->fileDescriptor.value(), EPOLL_CTL_DEL, fileDescriptor, NULL) != 0) {
-        throw Exception(
-            "Failed to remove entry from epoll instance - error number " + std::to_string(errno)
-                + " returned."
-        );
+        throw Exception{
+            "Failed to remove entry from epoll instance - error number " + std::to_string(errno) + " returned."
+        };
     }
 }
 
 std::optional<int> EpollInstance::waitForEvent(std::optional<std::chrono::milliseconds> timeout) const {
-    std::array<struct epoll_event, 1> events = {};
+    auto events = std::array<struct epoll_event, 1>{};
 
     const auto eventCount = ::epoll_wait(
         this->fileDescriptor.value(),

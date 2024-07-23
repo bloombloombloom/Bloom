@@ -4,17 +4,18 @@
 
 #include "AvrIspCommandFrame.hpp"
 
-#include "src/Targets/Microchip/AVR/Fuse.hpp"
+#include "src/Targets/Microchip/AVR8/Fuse.hpp"
+#include "src/Exceptions/InternalFatalErrorException.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::AvrIsp
 {
     class ProgramFuse: public AvrIspCommandFrame<std::array<unsigned char, 5>>
     {
     public:
-        ProgramFuse(Targets::Microchip::Avr::FuseType fuseType, unsigned char value)
+        ProgramFuse(Targets::Microchip::Avr8::FuseType fuseType, Targets::Microchip::Avr8::FuseValue value)
             : AvrIspCommandFrame()
         {
-            using Targets::Microchip::Avr::FuseType;
+            using Targets::Microchip::Avr8::FuseType;
 
             /*
              * The program fuse command consists of 5 bytes:
@@ -54,7 +55,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::AvrI
                     break;
                 }
                 default: {
-                    throw Exceptions::Exception("Unsupported fuse type");
+                    throw Exceptions::InternalFatalErrorException{"Unsupported fuse type"};
                 }
             }
         }

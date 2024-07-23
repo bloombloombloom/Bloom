@@ -8,7 +8,6 @@
 #include "../TargetPackageWidget.hpp"
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
-#include "src/Targets/TargetVariant.hpp"
 
 namespace Widgets::InsightTargetWidgets::Qfp
 {

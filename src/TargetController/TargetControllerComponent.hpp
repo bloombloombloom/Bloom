@@ -38,8 +38,9 @@
 #include "Commands/SetBreakpoint.hpp"
 #include "Commands/RemoveBreakpoint.hpp"
 #include "Commands/SetTargetProgramCounter.hpp"
-#include "Commands/GetTargetPinStates.hpp"
-#include "Commands/SetTargetPinState.hpp"
+#include "Commands/SetTargetStackPointer.hpp"
+#include "Commands/GetTargetGpioPinStates.hpp"
+#include "Commands/SetTargetGpioPinState.hpp"
 #include "Commands/GetTargetStackPointer.hpp"
 #include "Commands/GetTargetProgramCounter.hpp"
 #include "Commands/EnableProgrammingMode.hpp"
@@ -52,7 +53,7 @@
 #include "Responses/TargetState.hpp"
 #include "Responses/TargetRegistersRead.hpp"
 #include "Responses/TargetMemoryRead.hpp"
-#include "Responses/TargetPinStates.hpp"
+#include "Responses/TargetGpioPinStates.hpp"
 #include "Responses/TargetStackPointer.hpp"
 #include "Responses/TargetProgramCounter.hpp"
 #include "Responses/Breakpoint.hpp"
@@ -120,8 +121,8 @@ namespace TargetController
             std::map<Commands::CommandIdType, std::unique_ptr<Responses::Response>>
         > responsesByCommandId;
 
-        static inline ConditionVariableNotifier notifier = ConditionVariableNotifier();
-        static inline std::condition_variable responsesByCommandIdCv = std::condition_variable();
+        static inline ConditionVariableNotifier notifier = {};
+        static inline std::condition_variable responsesByCommandIdCv = {};
 
         static inline std::atomic<TargetControllerState> state = TargetControllerState::INACTIVE;
 
@@ -145,27 +146,13 @@ namespace TargetController
 
         EventListenerPointer eventListener = std::make_shared<EventListener>("TargetControllerEventListener");
 
-        /**
-         * We keep record of the last known execution state of the target. When the connected target reports a
-         * different state to what's stored in lastTargetState, a state change (TargetExecutionStopped/TargetExecutionResumed)
-         * event is emitted.
-         */
-        Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
+        std::unique_ptr<const Targets::TargetDescriptor> targetDescriptor = nullptr;
+        std::unique_ptr<Targets::TargetState> targetState = nullptr;
 
         /**
-         * Target descriptor cache.
+         * Target register descriptors mapped by the address space key
          */
-        std::optional<const Targets::TargetDescriptor> targetDescriptor;
-
-        /**
-         * Target register descriptors mapped by the memory type on which the register is stored.
-         */
-        std::map<Targets::TargetMemoryType, Targets::TargetRegisterDescriptors> registerDescriptorsByMemoryType;
-
-        /**
-         * Memory address ranges for target registers, mapped by the register memory type.
-         */
-        std::map<Targets::TargetMemoryType, Targets::TargetMemoryAddressRange> registerAddressRangeByMemoryType;
+        std::map<std::string, Targets::TargetRegisterDescriptors> registerDescriptorsByAddressSpaceKey;
 
         /**
          * The TargetController keeps track of all installed breakpoints.
@@ -174,14 +161,15 @@ namespace TargetController
         std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> hardwareBreakpointsByAddress;
 
         /**
-         * The target's program memory cache.
+         * The target's program memory cache
          *
          * If program caching is enabled, all program memory reads will be serviced by the cache, if we have the data.
          *
-         * We use std::unique_ptr here due to delayed construction (we construct this after activating the target
-         * and obtaining the target descriptor).
+         * Most targets only have a single program memory, which resides on a single address space. But some may have
+         * multiple program memories, residing on multiple address spaces. We have a single cache (TargetMemoryCache
+         * object) for each address space.
          */
-        std::unique_ptr<Targets::TargetMemoryCache> programMemoryCache = nullptr;
+        std::map<std::string, Targets::TargetMemoryCache> programMemoryCachesByAddressSpaceKey;
 
         /**
          * Registers a handler function for a particular command type.
@@ -192,14 +180,12 @@ namespace TargetController
          */
         template<class CommandType>
         void registerCommandHandler(std::function<std::unique_ptr<Responses::Response>(CommandType&)> callback) {
-            this->commandHandlersByCommandType.insert(
-                std::pair(
-                    CommandType::type,
-                    [callback] (Commands::Command& command) {
-                        // Downcast the command to the expected type
-                        return callback(dynamic_cast<CommandType&>(command));
-                    }
-                )
+            this->commandHandlersByCommandType.emplace(
+                CommandType::type,
+                [callback] (Commands::Command& command) {
+                    // Downcast the command to the expected type
+                    return callback(dynamic_cast<CommandType&>(command));
+                }
             );
         }
 
@@ -283,34 +269,48 @@ namespace TargetController
 
         void endActiveAtomicSession();
 
-        /**
-         * Extracts address ranges and groups target register descriptors.
-         */
-        void loadRegisterDescriptors();
+        void refreshExecutionState();
 
-        /**
-         * Resolves the descriptors of all target registers found within the given address range and memory type.
-         *
-         * @param startAddress
-         * @param endAddress
-         * @param memoryType
-         * @return
-         */
-        Targets::TargetRegisterDescriptors getRegisterDescriptorsWithinAddressRange(
-            Targets::TargetMemoryAddress startAddress,
-            Targets::TargetMemoryAddress endAddress,
-            Targets::TargetMemoryType memoryType
+        void updateTargetState(const Targets::TargetState& newState);
+
+        void stopTarget();
+
+        void resumeTarget();
+
+        void stepTarget();
+
+        void resetTarget();
+
+        Targets::TargetRegisterDescriptorAndValuePairs readTargetRegisters(
+            const Targets::TargetRegisterDescriptors& descriptors
         );
 
-        /**
-         * Should fire any events queued on the target.
-         */
-        void fireTargetEvents();
+        void writeTargetRegisters(const Targets::TargetRegisterDescriptorAndValuePairs& registers);
 
-        /**
-         * Triggers a target reset and emits a TargetReset event.
-         */
-        void resetTarget();
+        Targets::TargetMemoryBuffer readTargetMemory(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize bytes,
+            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges,
+            bool bypassCache
+        );
+
+        void writeTargetMemory(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryAddress startAddress,
+            const Targets::TargetMemoryBuffer& buffer
+        );
+
+        void eraseTargetMemory(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
+        );
+
+        void setBreakpoint(const Targets::TargetBreakpoint& breakpoint);
+
+        void removeBreakpoint(const Targets::TargetBreakpoint& breakpoint);
 
         /**
          * Puts the target into programming mode and disables command handlers for debug commands (commands that serve
@@ -324,11 +324,15 @@ namespace TargetController
         void disableProgrammingMode();
 
         /**
-         * Returns a cached instance of the target's TargetDescriptor.
+         * Fetches the program memory cache object for the given address space. If the address space has no associated
+         * cache object, one will be created.
          *
+         * @param addressSpaceDescriptor
          * @return
          */
-        const Targets::TargetDescriptor& getTargetDescriptor();
+        Targets::TargetMemoryCache& getProgramMemoryCache(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor
+        );
 
         /**
          * Invokes a shutdown.
@@ -364,8 +368,11 @@ namespace TargetController
         std::unique_ptr<Responses::Breakpoint> handleSetBreakpoint(Commands::SetBreakpoint& command);
         std::unique_ptr<Responses::Response> handleRemoveBreakpoint(Commands::RemoveBreakpoint& command);
         std::unique_ptr<Responses::Response> handleSetProgramCounter(Commands::SetTargetProgramCounter& command);
-        std::unique_ptr<Responses::TargetPinStates> handleGetTargetPinStates(Commands::GetTargetPinStates& command);
-        std::unique_ptr<Responses::Response> handleSetTargetPinState(Commands::SetTargetPinState& command);
+        std::unique_ptr<Responses::Response> handleSetStackPointer(Commands::SetTargetStackPointer& command);
+        std::unique_ptr<Responses::TargetGpioPinStates> handleGetTargetGpioPinStates(
+            Commands::GetTargetGpioPinStates& command
+        );
+        std::unique_ptr<Responses::Response> handleSetTargetGpioPinState(Commands::SetTargetGpioPinState& command);
         std::unique_ptr<Responses::TargetStackPointer> handleGetTargetStackPointer(
             Commands::GetTargetStackPointer& command
         );

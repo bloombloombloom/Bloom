@@ -4,20 +4,18 @@
 
 #include "AvrIspCommandFrame.hpp"
 
-#include "src/Targets/Microchip/AVR/Fuse.hpp"
+#include "src/Targets/Microchip/AVR8/Fuse.hpp"
+#include "src/Exceptions/InternalFatalErrorException.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::AvrIsp
 {
     class ReadFuse: public AvrIspCommandFrame<std::array<unsigned char, 6>>
     {
     public:
-        ReadFuse(
-            Targets::Microchip::Avr::FuseType fuseType,
-            std::uint8_t returnAddress
-        )
+        ReadFuse(Targets::Microchip::Avr8::FuseType fuseType, std::uint8_t returnAddress)
             : AvrIspCommandFrame()
         {
-            using Targets::Microchip::Avr::FuseType;
+            using Targets::Microchip::Avr8::FuseType;
 
             /*
              * The read fuse command consists of 6 bytes:
@@ -59,6 +57,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::AvrI
                     this->payload[4] = 0x00;
                     this->payload[5] = 0x00;
                     break;
+                }
+                default: {
+                    throw Exceptions::InternalFatalErrorException{"Unsupported fuse type"};
                 }
             }
         }

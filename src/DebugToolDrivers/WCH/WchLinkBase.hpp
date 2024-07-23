@@ -6,8 +6,10 @@
 
 #include "src/DebugToolDrivers/DebugTool.hpp"
 #include "src/DebugToolDrivers/USB/UsbDevice.hpp"
+#include "src/DebugToolDrivers/USB/UsbInterface.hpp"
 
 #include "Protocols/WchLink/WchLinkInterface.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTranslator.hpp"
 
 #include "WchGeneric.hpp"
 #include "DeviceInfo.hpp"
@@ -28,13 +30,16 @@ namespace DebugToolDrivers::Wch
 
         void close() override;
 
+        [[nodiscard]] bool isInitialised() const override;
+
         std::string getSerialNumber() override;
 
         std::string getFirmwareVersionString() override;
 
-        DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* getRiscVDebugInterface() override {
-            return this->wchLinkInterface.get();
-        }
+        ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator* getRiscVDebugInterface(
+            const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
+            const Targets::RiscV::RiscVTargetConfig& targetConfig
+        ) override;
 
         /**
          * WCH-Link debug tools cannot write to flash memory via the RISC-V debug interface (RiscVDebugInterface).
@@ -46,20 +51,27 @@ namespace DebugToolDrivers::Wch
          * target driver forwards any flash memory writes to this implementation (instead of relying on the debug
          * interface).
          *
-         * The WchLinkInterface implements both the RiscVDebugInterface and the RiscVProgramInterface.
-         *
          * @return
          */
-        DebugToolDrivers::TargetInterfaces::RiscV::RiscVProgramInterface* getRiscVProgramInterface() override {
-            return this->wchLinkInterface.get();
-        }
+        Protocols::WchLink::WchLinkInterface* getRiscVProgramInterface(
+            const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
+            const Targets::RiscV::RiscVTargetConfig& targetConfig
+        ) override;
+
+        Protocols::WchLink::WchLinkInterface* getRiscVIdentificationInterface(
+            const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
+            const Targets::RiscV::RiscVTargetConfig& targetConfig
+        ) override;
 
     protected:
+        bool initialised = false;
+
         WchLinkVariant variant;
 
         std::uint8_t wchLinkUsbInterfaceNumber;
         std::unique_ptr<Usb::UsbInterface> wchLinkUsbInterface = nullptr;
         std::unique_ptr<Protocols::WchLink::WchLinkInterface> wchLinkInterface = nullptr;
+        std::unique_ptr<::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator> wchRiscVTranslator = nullptr;
 
         mutable std::optional<DeviceInfo> cachedDeviceInfo = std::nullopt;
 

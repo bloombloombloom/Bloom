@@ -4,9 +4,10 @@
 #include <optional>
 
 #include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
-#include "src/DebugServer/Gdb/TargetDescriptor.hpp"
 
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -17,26 +18,29 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     class WriteMemory: public Gdb::CommandPackets::CommandPacket
     {
     public:
-        /**
-         * Start address of the memory operation.
-         */
-        Targets::TargetMemoryAddress startAddress = 0;
-
-        /**
-         * The type of memory to read from.
-         */
-        Targets::TargetMemoryType memoryType = Targets::TargetMemoryType::FLASH;
-
-        /**
-         * Data to write.
-         */
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        Targets::TargetMemoryAddress startAddress;
+        Targets::TargetMemorySize bytes;
         Targets::TargetMemoryBuffer buffer;
 
-        explicit WriteMemory(const RawPacket& rawPacket, const Gdb::TargetDescriptor& gdbTargetDescriptor);
+        explicit WriteMemory(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor);
 
         void handle(
             Gdb::DebugSession& debugSession,
+            const Gdb::TargetDescriptor& gdbTargetDescriptor,
+            const Targets::TargetDescriptor& targetDescriptor,
             Services::TargetControllerService& targetControllerService
         ) override;
+
+    private:
+        struct PacketData
+        {
+            std::uint32_t gdbStartAddress;
+            std::uint32_t bytes;
+            Targets::TargetMemoryBuffer buffer;
+        };
+
+        static PacketData extractPacketData(const RawPacket& rawPacket);
+        WriteMemory(const RawPacket& rawPacket, const Gdb::TargetDescriptor& gdbTargetDescriptor, PacketData&& packetData);
     };
 }

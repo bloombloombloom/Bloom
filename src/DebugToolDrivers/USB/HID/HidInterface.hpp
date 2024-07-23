@@ -69,7 +69,7 @@ namespace Usb
     private:
         using HidDevice = std::unique_ptr<::hid_device, decltype(&::hid_close)>;
 
-        HidDevice hidDevice = HidDevice(nullptr, ::hid_close);
+        HidDevice hidDevice = {nullptr, ::hid_close};
 
         std::uint16_t vendorId = 0;
         std::uint16_t productId = 0;

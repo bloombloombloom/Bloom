@@ -68,7 +68,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         explicit Avr8CommandFailure(const char* message): TargetOperationFailure(message) {
-            this->message = std::string(message);
+            this->message = std::string{message};
         }
 
         explicit Avr8CommandFailure(
@@ -95,7 +95,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
     private:
-        static const inline auto failureCodeToDescription = std::map<Avr8CommandFailureCode, std::string>({
+        static const inline auto failureCodeToDescription = std::map<Avr8CommandFailureCode, std::string>{
             {Avr8CommandFailureCode::DEBUGWIRE_PHYSICAL_ERROR, "debugWIRE physical error"},
             {Avr8CommandFailureCode::JTAGM_FAILED_TO_INITIALISE, "JTAGM failed to initialise"},
             {Avr8CommandFailureCode::UNKNOWN_JTAG_ERROR, "JTAGM did something strange"},
@@ -143,6 +143,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             {Avr8CommandFailureCode::FEATURE_NOT_AVAILABLE, "Feature not available"},
             {Avr8CommandFailureCode::UNKNOWN_COMMAND, "Command has not been implemented"},
             {Avr8CommandFailureCode::UNKNOWN_ERROR, "Unknown error reported by EDBG device"},
-        });
+        };
     };
 }

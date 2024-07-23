@@ -18,7 +18,7 @@ namespace Exceptions
 
         explicit Exception(const char* message)
             : std::runtime_error(message)
-            , message(std::string(message))
+            , message(std::string{message})
         {}
 
         virtual ~Exception() = default;

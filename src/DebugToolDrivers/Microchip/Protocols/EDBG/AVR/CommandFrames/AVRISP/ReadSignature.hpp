@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include <src/Targets/Microchip/AVR/Fuse.hpp>
+#include <src/Targets/Microchip/AVR8/Fuse.hpp>
 
 #include "AvrIspCommandFrame.hpp"
 
-#include "src/Targets/Microchip/AVR/Fuse.hpp"
+#include "src/Targets/Microchip/AVR8/Fuse.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::AvrIsp
 {
@@ -18,7 +18,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::AvrI
         )
             : AvrIspCommandFrame()
         {
-            using Targets::Microchip::Avr::FuseType;
+            using Targets::Microchip::Avr8::FuseType;
 
             /*
              * The read signature command consists of 6 bytes:

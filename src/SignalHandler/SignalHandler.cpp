@@ -10,7 +10,7 @@ void SignalHandler::run() {
     try {
         this->startup();
         const auto signalSet = this->getRegisteredSignalSet();
-        int signalNumber = 0;
+        auto signalNumber = int{0};
 
         Logger::debug("SignalHandler ready");
         while(Thread::getThreadState() == ThreadState::READY) {
@@ -26,7 +26,7 @@ void SignalHandler::run() {
         }
 
     } catch (std::exception& exception) {
-        Logger::error("SignalHandler fatal error: " + std::string(exception.what()));
+        Logger::error("SignalHandler fatal error: " + std::string{exception.what()});
     }
 
     Logger::info("Shutting down SignalHandler");
@@ -42,15 +42,8 @@ void SignalHandler::startup() {
     ::sigprocmask(SIG_SETMASK, &signalSet, NULL);
 
     // Register handlers
-    this->handlersBySignalNum.insert(std::pair(
-        SIGINT,
-        std::bind(&SignalHandler::triggerApplicationShutdown, this)
-    ));
-
-    this->handlersBySignalNum.insert(std::pair(
-        SIGTERM,
-        std::bind(&SignalHandler::triggerApplicationShutdown, this)
-    ));
+    this->handlersBySignalNum.emplace(SIGINT, std::bind(&SignalHandler::triggerApplicationShutdown, this));
+    this->handlersBySignalNum.emplace(SIGTERM, std::bind(&SignalHandler::triggerApplicationShutdown, this));
 
     // It's possible that the SignalHandler has been instructed to shut down, before it could finish starting up.
     if (this->getThreadState() != ThreadState::SHUTDOWN_INITIATED) {
@@ -59,7 +52,7 @@ void SignalHandler::startup() {
 }
 
 ::sigset_t SignalHandler::getRegisteredSignalSet() const {
-    ::sigset_t set = {};
+    auto set = ::sigset_t{};
     if (::sigfillset(&set) == -1) {
         throw Exceptions::Exception("::sigfillset() failed - error number: " + std::to_string(errno));
     }

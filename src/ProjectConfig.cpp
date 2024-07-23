@@ -9,37 +9,35 @@ using Services::StringService;
 
 ProjectConfig::ProjectConfig(const YAML::Node& configNode) {
     if (!configNode["environments"]) {
-        throw Exceptions::InvalidConfig(
+        throw Exceptions::InvalidConfig{
             "No environments found - please review the bloom.yaml configuration file and ensure that "
-            "no syntax errors are present."
-        );
+               "no syntax errors are present."
+        };
     }
 
     if (!configNode["environments"].IsMap()) {
-        throw Exceptions::InvalidConfig(
+        throw Exceptions::InvalidConfig{
             "Invalid environments configuration provided - 'environments' must be of mapping type."
-        );
+        };
     }
 
     const auto& environments = configNode["environments"];
 
     for (auto environmentIt = environments.begin(); environmentIt != environments.end(); environmentIt++) {
-        auto environmentName = std::optional<std::string>(std::nullopt);
+        auto environmentName = std::optional<std::string>{};
 
         try {
             environmentName = environmentIt->first.as<std::string>();
 
             if (!StringService::isAscii(environmentName.value())) {
-                throw Exceptions::InvalidConfig(
+                throw Exceptions::InvalidConfig{
                     "Environment name ('" + environmentName.value() + "') is not in ASCII form."
-                );
+                };
             }
 
-            this->environments.insert(
-                std::pair(
-                    environmentName.value(),
-                    EnvironmentConfig(environmentName.value(), environmentIt->second)
-                )
+            this->environments.emplace(
+                environmentName.value(),
+                EnvironmentConfig{environmentName.value(), environmentIt->second}
             );
 
         } catch (Exceptions::InvalidConfig& exception) {
@@ -51,7 +49,7 @@ ProjectConfig::ProjectConfig(const YAML::Node& configNode) {
         } catch (YAML::BadConversion& exception) {
             Logger::error(
                 "Invalid environment name provided. Environment names must be ASCII strings. Environment will be "
-                "ignored"
+                    "ignored"
             );
         }
     }
@@ -59,7 +57,7 @@ ProjectConfig::ProjectConfig(const YAML::Node& configNode) {
     if (configNode["debugServer"]) {
         Logger::warning(
             "The 'debugServer' key was renamed to 'server' in v1.0.0. Please update your bloom.yaml configuration. "
-            "See " + Services::PathService::homeDomainName() + "/docs/v1-0-0-migration for more."
+                "See " + Services::PathService::homeDomainName() + "/docs/v1-0-0-migration for more."
         );
     }
 
@@ -83,9 +81,9 @@ ProjectConfig::ProjectConfig(const YAML::Node& configNode) {
 
 InsightConfig::InsightConfig(const YAML::Node& insightNode) {
     if (!insightNode.IsMap()) {
-        throw Exceptions::InvalidConfig(
+        throw Exceptions::InvalidConfig{
             "Invalid insight configuration provided - node must take the form of a YAML mapping."
-        );
+        };
     }
 
     if (insightNode["activateOnStartup"]) {
@@ -101,7 +99,7 @@ EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environ
     : name(std::move(name))
 {
     if (!environmentNode.IsMap()) {
-        throw Exceptions::InvalidConfig("Environment node must take the form of a YAML mapping.");
+        throw Exceptions::InvalidConfig{"Environment node must take the form of a YAML mapping."};
     }
 
     static auto warn = true;
@@ -110,7 +108,7 @@ EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environ
         if (environmentNode["debugTool"] && !environmentNode["tool"]) {
             Logger::warning(
                 "The 'debugTool' key was renamed to 'tool' in v1.0.0. Please update your bloom.yaml configuration. "
-                "Bloom will fail to start up until this is resolved. See "
+                    "Bloom will fail to start up until this is resolved. See "
                     + Services::PathService::homeDomainName() + "/docs/v1-0-0-migration for more."
             );
         }
@@ -118,7 +116,7 @@ EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environ
         if (environmentNode["debugServer"] && !environmentNode["server"]) {
             Logger::warning(
                 "The 'debugServer' key was renamed to 'server' in v1.0.0. Please update your bloom.yaml configuration. "
-                "Bloom will fail to start up until this is resolved. See "
+                    "Bloom will fail to start up until this is resolved. See "
                     + Services::PathService::homeDomainName() + "/docs/v1-0-0-migration for more."
             );
         }
@@ -127,18 +125,18 @@ EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environ
     }
 
     if (!environmentNode["tool"]) {
-        throw Exceptions::InvalidConfig("Missing debug tool configuration.");
+        throw Exceptions::InvalidConfig{"Missing debug tool configuration."};
     }
 
     if (!environmentNode["target"]) {
-        throw Exceptions::InvalidConfig("Missing target configuration.");
+        throw Exceptions::InvalidConfig{"Missing target configuration."};
     }
 
-    this->debugToolConfig = DebugToolConfig(environmentNode["tool"]);
-    this->targetConfig = TargetConfig(environmentNode["target"]);
+    this->debugToolConfig = DebugToolConfig{environmentNode["tool"]};
+    this->targetConfig = TargetConfig{environmentNode["target"]};
 
     if (environmentNode["server"]) {
-        this->debugServerConfig = DebugServerConfig(environmentNode["server"]);
+        this->debugServerConfig = DebugServerConfig{environmentNode["server"]};
     }
 
     if (environmentNode["insight"]) {
@@ -156,38 +154,38 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
     using Targets::TargetPhysicalInterface;
 
     if (!targetNode.IsMap()) {
-        throw Exceptions::InvalidConfig(
+        throw Exceptions::InvalidConfig{
             "Invalid target configuration provided - node must take the form of a YAML mapping."
-        );
+        };
     }
 
     if (!targetNode["name"]) {
-        throw Exceptions::InvalidConfig("No target name found.");
+        throw Exceptions::InvalidConfig{"No target name found."};
     }
 
     this->name = StringService::asciiToLower(targetNode["name"].as<std::string>());
 
-    static auto physicalInterfacesByConfigName = std::map<std::string, TargetPhysicalInterface>({
+    static auto physicalInterfacesByConfigName = std::map<std::string, TargetPhysicalInterface>{
         {"debugwire", TargetPhysicalInterface::DEBUG_WIRE}, // Deprecated - left here for backwards compatibility
         {"debug-wire", TargetPhysicalInterface::DEBUG_WIRE},
         {"pdi", TargetPhysicalInterface::PDI},
         {"jtag", TargetPhysicalInterface::JTAG},
         {"updi", TargetPhysicalInterface::UPDI},
-    });
+    };
 
     if (!targetNode["physicalInterface"]) {
-        throw Exceptions::InvalidConfig("No physical interface specified.");
+        throw Exceptions::InvalidConfig{"No physical interface specified."};
     }
 
     const auto physicalInterfaceName = StringService::asciiToLower(targetNode["physicalInterface"].as<std::string>());
     const auto physicalInterfaceIt = physicalInterfacesByConfigName.find(physicalInterfaceName);
 
     if (physicalInterfaceIt == physicalInterfacesByConfigName.end()) {
-        throw Exceptions::InvalidConfig(
+        throw Exceptions::InvalidConfig{
             "Invalid physical interface provided (\"" + physicalInterfaceName + "\") for target. "
                 "See " + Services::PathService::homeDomainName() + "/docs/configuration/target-physical-interfaces "
                 "for valid physical interface configuration values."
-        );
+        };
     }
 
     this->physicalInterface = physicalInterfaceIt->second;
@@ -209,13 +207,13 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
 
 DebugToolConfig::DebugToolConfig(const YAML::Node& debugToolNode) {
     if (!debugToolNode.IsMap()) {
-        throw Exceptions::InvalidConfig(
+        throw Exceptions::InvalidConfig{
             "Invalid debug tool configuration provided - node must take the form of a YAML mapping."
-        );
+        };
     }
 
     if (!debugToolNode["name"]) {
-        throw Exceptions::InvalidConfig("No debug tool name found.");
+        throw Exceptions::InvalidConfig{"No debug tool name found."};
     }
 
     this->name = StringService::asciiToLower(debugToolNode["name"].as<std::string>());
@@ -224,13 +222,13 @@ DebugToolConfig::DebugToolConfig(const YAML::Node& debugToolNode) {
 
 DebugServerConfig::DebugServerConfig(const YAML::Node& debugServerNode) {
     if (!debugServerNode.IsMap()) {
-        throw Exceptions::InvalidConfig(
+        throw Exceptions::InvalidConfig{
             "Invalid debug server configuration provided - node must take the form of a YAML mapping."
-        );
+        };
     }
 
     if (!debugServerNode["name"]) {
-        throw Exceptions::InvalidConfig("No debug server name found.");
+        throw Exceptions::InvalidConfig{"No debug server name found."};
     }
 
     this->name = StringService::asciiToLower(debugServerNode["name"].as<std::string>());

@@ -7,17 +7,16 @@ namespace DebugServer::Gdb
     DebugSession::DebugSession(
         Connection&& connection,
         const std::set<std::pair<Feature, std::optional<std::string>>>& supportedFeatures,
-        const TargetDescriptor& targetDescriptor,
         const GdbDebugServerConfig& serverConfig
     )
         : connection(std::move(connection))
         , supportedFeatures(supportedFeatures)
-        , gdbTargetDescriptor(targetDescriptor)
         , serverConfig(serverConfig)
     {
-        this->supportedFeatures.insert({
-            Feature::PACKET_SIZE, std::to_string(Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE)
-        });
+        this->supportedFeatures.emplace(
+            Feature::PACKET_SIZE,
+            std::to_string(Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE)
+        );
 
         EventManager::triggerEvent(std::make_shared<Events::DebugSessionStarted>());
     }
@@ -35,18 +34,15 @@ namespace DebugServer::Gdb
         }
 
         const auto externalBreakpointIt = this->externalBreakpointsByAddress.find(address);
-
         if (externalBreakpointIt != this->externalBreakpointsByAddress.end()) {
             // We already have an external breakpoint at this address
-            this->internalBreakpointsByAddress.insert(std::pair(address, externalBreakpointIt->second));
+            this->internalBreakpointsByAddress.emplace(address, externalBreakpointIt->second);
             return;
         }
 
-        this->internalBreakpointsByAddress.insert(
-            std::pair(
-                address,
-                targetControllerService.setBreakpoint(address, Targets::TargetBreakpoint::Type::HARDWARE)
-            )
+        this->internalBreakpointsByAddress.emplace(
+            address,
+            targetControllerService.setBreakpoint(address, Targets::TargetBreakpoint::Type::HARDWARE)
         );
     }
 
@@ -78,15 +74,13 @@ namespace DebugServer::Gdb
 
         if (internalBreakpointIt != this->internalBreakpointsByAddress.end()) {
             // We already have an internal breakpoint at this address
-            this->externalBreakpointsByAddress.insert(std::pair(address, internalBreakpointIt->second));
+            this->externalBreakpointsByAddress.emplace(address, internalBreakpointIt->second);
             return;
         }
 
-        this->externalBreakpointsByAddress.insert(
-            std::pair(
-                address,
-                targetControllerService.setBreakpoint(address, Targets::TargetBreakpoint::Type::HARDWARE)
-            )
+        this->externalBreakpointsByAddress.emplace(
+            address,
+            targetControllerService.setBreakpoint(address, Targets::TargetBreakpoint::Type::HARDWARE)
         );
     }
 

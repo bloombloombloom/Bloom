@@ -15,7 +15,7 @@ namespace DebugServer::Gdb
      */
     struct ProgrammingSession
     {
-        Targets::TargetMemoryAddress startAddress = 0x00;
+        Targets::TargetMemoryAddress startAddress;
         Targets::TargetMemoryBuffer buffer;
 
         ProgrammingSession(

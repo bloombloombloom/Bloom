@@ -23,7 +23,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg
      * The EdbgInterface class implements the EDBG sub-protocol, which takes the form of numerous CMSIS-DAP vendor
      * commands.
      */
-class EdbgInterface: public ::DebugToolDrivers::Protocols::CmsisDap::CmsisDapInterface
+    class EdbgInterface: public ::DebugToolDrivers::Protocols::CmsisDap::CmsisDapInterface
     {
     public:
         explicit EdbgInterface(Usb::HidInterface&& cmsisHidInterface);
@@ -71,9 +71,9 @@ class EdbgInterface: public ::DebugToolDrivers::Protocols::CmsisDap::CmsisDapInt
 
             if (response.data[0] != 0x01) {
                 // The last response packet should always acknowledge receipt of the AvrCommandFrame
-                throw Exceptions::DeviceCommunicationFailure(
+                throw Exceptions::DeviceCommunicationFailure{
                     "Failed to send AvrCommandFrame to device - device did not acknowledge receipt."
-                );
+                };
             }
 
             return typename CommandFrameType::ExpectedResponseFrameType(this->requestAvrResponses());

@@ -21,18 +21,28 @@ namespace DebugServer::Gdb::CommandPackets
         : Monitor(std::move(monitorPacket))
     {}
 
-    void BloomVersionMachine::handle(DebugSession& debugSession, TargetControllerService&) {
+    void BloomVersionMachine::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor&,
+        const Targets::TargetDescriptor&,
+        TargetControllerService&
+    ) {
         Logger::info("Handling BloomVersionMachine packet");
 
-        debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
-            QJsonDocument(QJsonObject({
-                {"version", QString::fromStdString(Application::VERSION.toString())},
-                {"components", QJsonObject({
-                    {"major", Application::VERSION.major},
-                    {"minor", Application::VERSION.minor},
-                    {"patch", Application::VERSION.patch},
-                })},
-            })).toJson().toStdString()
-        )));
+        debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(
+            QJsonDocument{
+                QJsonObject{
+                    {"version", QString::fromStdString(Application::VERSION.toString())},
+                    {
+                        "components",
+                        QJsonObject{
+                            {"major", Application::VERSION.major},
+                            {"minor", Application::VERSION.minor},
+                            {"patch", Application::VERSION.patch},
+                        }
+                    },
+                }
+            }.toJson().toStdString()
+        )});
     }
 }

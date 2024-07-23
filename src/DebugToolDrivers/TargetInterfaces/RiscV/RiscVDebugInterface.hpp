@@ -1,99 +1,57 @@
 #pragma once
 
 #include <cstdint>
+#include <set>
+#include <vector>
+#include <optional>
 
-#include "src/Targets/RiscV/RiscVGeneric.hpp"
-#include "src/Targets/RiscV/DebugModule/DebugModule.hpp"
-#include "src/Targets/RiscV/DebugModule/Registers/RegisterAddresses.hpp"
-
-#include "src/Targets/RiscV/TargetParameters.hpp"
+#include "src/Targets/TargetDescriptor.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetState.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 namespace DebugToolDrivers::TargetInterfaces::RiscV
 {
     class RiscVDebugInterface
     {
     public:
-        RiscVDebugInterface() = default;
-        virtual ~RiscVDebugInterface() = default;
-
-        RiscVDebugInterface(const RiscVDebugInterface& other) = default;
-        RiscVDebugInterface(RiscVDebugInterface&& other) = default;
-
-        RiscVDebugInterface& operator = (const RiscVDebugInterface& other) = default;
-        RiscVDebugInterface& operator = (RiscVDebugInterface&& other) = default;
-
-        /**
-         * Should prepare for and then activate the physical interface between the debug tool and the RISC-V target.
-         *
-         * Should throw an exception if activation fails. The error will be considered fatal, and result in a shutdown.
-         *
-         * Unless otherwise stated, it can be assumed that this function will be called (and must succeed)
-         * before any of the other functions below this point are called. In other words, we can assume that the
-         * interface has been activated in the implementations of any of the functions below this point.
-         *
-         * @param targetParameters
-         *  Parameters for the RISC-V target. These can be ignored if a particular implementation does not require
-         *  any target parameters for activation.
-         */
-        virtual void activate(const Targets::RiscV::TargetParameters& targetParameters) = 0;
-
-        /**
-         * Should deactivate the physical interface between the debug tool and the RISC-V target.
-         *
-         * CAUTION: This function **CAN** be called before activate(), or in instances where activate() failed (threw
-         * an exception). Implementations must accommodate this.
-         */
+        virtual void init() = 0;
+        virtual void activate() = 0;
         virtual void deactivate() = 0;
 
-        /**
-         * Should retrieve the RISC-V target ID in string form.
-         *
-         * @return
-         *  The target ID, in the form of a string.
-         */
-        virtual std::string getDeviceId() = 0;
+        virtual Targets::TargetExecutionState getExecutionState() = 0;
 
-        /**
-         * Should read the value of a debug module register.
-         *
-         * @param address
-         *  The address of the debug module register to read.
-         *
-         * @return
-         *  The register value.
-         */
-        virtual Targets::RiscV::DebugModule::RegisterValue readDebugModuleRegister(
-            Targets::RiscV::DebugModule::RegisterAddress address
+        virtual void stop() = 0;
+        virtual void run() = 0;
+        virtual void step() = 0;
+        virtual void reset() = 0;
+
+        virtual void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
+        virtual void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
+
+        virtual void setHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
+        virtual void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
+        virtual void clearAllBreakpoints() = 0;
+
+        virtual Targets::TargetRegisterDescriptorAndValuePairs readCpuRegisters(
+            const Targets::TargetRegisterDescriptors& descriptors
         ) = 0;
+        virtual void writeCpuRegisters(const Targets::TargetRegisterDescriptorAndValuePairs& registers) = 0;
 
-        Targets::RiscV::DebugModule::RegisterValue readDebugModuleRegister(
-            Targets::RiscV::DebugModule::Registers::RegisterAddress address
-        ) {
-            return this->readDebugModuleRegister(static_cast<Targets::RiscV::DebugModule::RegisterAddress>(address));
-        };
-
-        /**
-         * Should write a value to a debug module register.
-         *
-         * @param address
-         *  The address of the debug module to update.
-         *
-         * @param value
-         *  The value to write.
-         */
-        virtual void writeDebugModuleRegister(
-            Targets::RiscV::DebugModule::RegisterAddress address,
-            Targets::RiscV::DebugModule::RegisterValue value
+        virtual Targets::TargetMemoryBuffer readMemory(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize bytes,
+            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) = 0;
-
-        void writeDebugModuleRegister(
-            Targets::RiscV::DebugModule::Registers::RegisterAddress address,
-            Targets::RiscV::DebugModule::RegisterValue value
-        ) {
-            return this->writeDebugModuleRegister(
-                static_cast<Targets::RiscV::DebugModule::RegisterAddress>(address),
-                value
-            );
-        };
+        virtual void writeMemory(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryAddress startAddress,
+            const Targets::TargetMemoryBuffer& buffer
+        ) = 0;
     };
 }

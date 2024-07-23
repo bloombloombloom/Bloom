@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iomanip>
 #include <ranges>
+#include <functional>
 
 namespace Services
 {
@@ -39,19 +40,19 @@ namespace Services
     }
 
     std::string StringService::toHex(std::uint32_t value) {
-        auto stream = std::stringstream();
+        auto stream = std::stringstream{};
         stream << std::hex << std::setfill('0') << std::setw(8) << static_cast<unsigned int>(value);
         return stream.str();
     }
 
     std::string StringService::toHex(unsigned char value) {
-        auto stream = std::stringstream();
+        auto stream = std::stringstream{};
         stream << std::hex << std::setfill('0') << std::setw(2) << static_cast<unsigned int>(value);
         return stream.str();
     }
 
     std::string StringService::toHex(const std::vector<unsigned char>& data) {
-        auto stream = std::stringstream();
+        auto stream = std::stringstream{};
         stream << std::hex << std::setfill('0');
 
         for (const auto& byte : data) {
@@ -62,7 +63,7 @@ namespace Services
     }
 
     std::string StringService::toHex(const std::string& data) {
-        std::stringstream stream;
+        auto stream = std::stringstream{};
         stream << std::hex << std::setfill('0');
 
         for (const auto& byte : data) {
@@ -72,20 +73,36 @@ namespace Services
         return stream.str();
     }
 
-    std::uint64_t StringService::toUint64(const std::string& str) {
-        return static_cast<std::uint64_t>(std::stoul(str, nullptr, 0));
+    std::vector<unsigned char> StringService::dataFromHex(const std::string& hexData) {
+         auto output = std::vector<unsigned char>{};
+
+        for (auto i = 0; i < hexData.size(); i += 2) {
+            const auto hexByte = std::string{(hexData.begin() + i), (hexData.begin() + i + 2)};
+            output.push_back(static_cast<unsigned char>(std::stoi(hexByte, nullptr, 16)));
+        }
+
+        return output;
     }
 
-    std::uint32_t StringService::toUint32(const std::string& str) {
-        return static_cast<std::uint32_t>(StringService::toUint64(str));
+    std::uint64_t StringService::toUint64(const std::string& str, int base) {
+        return static_cast<std::uint64_t>(std::stoul(str, nullptr, base));
     }
 
-    std::uint16_t StringService::toUint16(const std::string& str) {
-        return static_cast<std::uint16_t>(StringService::toUint64(str));
+    std::uint32_t StringService::toUint32(const std::string& str, int base) {
+        return static_cast<std::uint32_t>(StringService::toUint64(str, base));
     }
 
-    std::uint8_t StringService::toUint8(const std::string& str) {
-        return static_cast<std::uint8_t>(StringService::toUint64(str));
+    std::uint16_t StringService::toUint16(const std::string& str, int base) {
+        return static_cast<std::uint16_t>(StringService::toUint64(str, base));
+    }
+
+    std::uint8_t StringService::toUint8(const std::string& str, int base) {
+        return static_cast<std::uint8_t>(StringService::toUint64(str, base));
+    }
+
+    std::size_t StringService::hash(const std::string& str) {
+        static const auto hash = std::hash<std::string>{};
+        return hash(str);
     }
 
     std::vector<std::string_view> StringService::split(std::string_view str, char delimiter) {

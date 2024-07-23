@@ -33,11 +33,6 @@ namespace DebugServer::Gdb
         std::set<std::pair<Feature, std::optional<std::string>>> supportedFeatures;
 
         /**
-         * The GDB target descriptor of the connected target.
-         */
-        const TargetDescriptor& gdbTargetDescriptor;
-
-        /**
          * The current server configuration.
          */
         const GdbDebugServerConfig& serverConfig;
@@ -92,7 +87,6 @@ namespace DebugServer::Gdb
         DebugSession(
             Connection&& connection,
             const std::set<std::pair<Feature, std::optional<std::string>>>& supportedFeatures,
-            const TargetDescriptor& targetDescriptor,
             const GdbDebugServerConfig& serverConfig
         );
 

@@ -7,13 +7,14 @@
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 {
     EdbgAvr8Session::EdbgAvr8Session(
-        const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile,
-        const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
+        const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
     )
         : targetDescriptionFile(targetDescriptionFile)
         , targetConfig(targetConfig)
         , programAddressSpace(this->targetDescriptionFile.getProgramAddressSpace())
-        , ramAddressSpace(this->targetDescriptionFile.getRamAddressSpace())
+        , registerFileAddressSpace(this->targetDescriptionFile.getRegisterFileAddressSpace())
+        , dataAddressSpace(this->targetDescriptionFile.getDataAddressSpace())
         , eepromAddressSpace(this->targetDescriptionFile.getEepromAddressSpace())
         , ioAddressSpace(this->targetDescriptionFile.getIoAddressSpace())
         , signatureAddressSpace(this->targetDescriptionFile.getSignatureAddressSpace())
@@ -38,20 +39,20 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         );
 
         if (!resolvedConfigVariant.has_value()) {
-            throw Exceptions::Exception(
+            throw Exceptions::Exception{
                 "Failed to resolve EDBG config variant from the selected physical interface and the AVR target family"
                     " - please review the selected physical interface"
-            );
+            };
         }
 
         this->configVariant = *resolvedConfigVariant;
     }
 
     std::optional<Avr8ConfigVariant> EdbgAvr8Session::tryResolveConfigVariant(
-        Targets::Microchip::Avr::Avr8Bit::Family avrFamily,
+        Targets::Microchip::Avr8::Family avrFamily,
         Targets::TargetPhysicalInterface physicalInterface
     ) {
-        using Targets::Microchip::Avr::Avr8Bit::Family;
+        using Targets::Microchip::Avr8::Family;
         using Targets::TargetPhysicalInterface;
 
         if (avrFamily == Family::MEGA || avrFamily == Family::TINY) {

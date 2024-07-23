@@ -6,22 +6,22 @@
 
 namespace Targets
 {
-    TargetMemoryCache::TargetMemoryCache(const TargetMemoryDescriptor& memoryDescriptor)
-        : memoryDescriptor(memoryDescriptor)
-        , data(TargetMemoryBuffer(memoryDescriptor.size(), 0x00))
+    TargetMemoryCache::TargetMemoryCache(const TargetAddressSpaceDescriptor& addressSpaceDescriptor)
+        : addressSpaceDescriptor(addressSpaceDescriptor)
+        , data(TargetMemoryBuffer(addressSpaceDescriptor.size(), 0x00))
     {}
 
     TargetMemoryBuffer TargetMemoryCache::fetch(TargetMemoryAddress startAddress, TargetMemorySize bytes) const {
-        const auto startIndex = startAddress - this->memoryDescriptor.addressRange.startAddress;
+        const auto startIndex = startAddress - this->addressSpaceDescriptor.addressRange.startAddress;
 
         if (
-            startAddress < this->memoryDescriptor.addressRange.startAddress
+            startAddress < this->addressSpaceDescriptor.addressRange.startAddress
             || (startIndex + bytes) > this->data.size()
         ) {
-            throw Exceptions::Exception("Invalid cache access");
+            throw Exceptions::Exception{"Invalid cache access"};
         }
 
-        return TargetMemoryBuffer(this->data.begin() + startIndex, this->data.begin() + startIndex + bytes);
+        return TargetMemoryBuffer{this->data.begin() + startIndex, this->data.begin() + startIndex + bytes};
     }
 
     bool TargetMemoryCache::contains(TargetMemoryAddress startAddress, TargetMemorySize bytes) const {
@@ -34,7 +34,7 @@ namespace Targets
     }
 
     void TargetMemoryCache::insert(TargetMemoryAddress startAddress, const TargetMemoryBuffer& data) {
-        const auto startIndex = startAddress - this->memoryDescriptor.addressRange.startAddress;
+        const auto startIndex = startAddress - this->addressSpaceDescriptor.addressRange.startAddress;
 
         std::copy(data.begin(), data.end(), this->data.begin() + startIndex);
 
@@ -47,7 +47,7 @@ namespace Targets
             intersectingStartSegmentIt == this->populatedSegments.end()
             && intersectingEndSegmentIt == this->populatedSegments.end()
         ) {
-            this->populatedSegments.insert(std::pair(startAddress, endAddress));
+            this->populatedSegments.emplace(startAddress, endAddress);
             return;
         }
 
@@ -56,8 +56,8 @@ namespace Targets
             return;
         }
 
-        auto newStartSegment = std::optional<decltype(this->populatedSegments)::value_type>();
-        auto newEndSegment = std::optional<decltype(this->populatedSegments)::value_type>();
+        auto newStartSegment = std::optional<decltype(this->populatedSegments)::value_type>{};
+        auto newEndSegment = std::optional<decltype(this->populatedSegments)::value_type>{};
 
         if (intersectingStartSegmentIt != this->populatedSegments.end()) {
             newStartSegment.emplace(intersectingStartSegmentIt->first, endAddress);

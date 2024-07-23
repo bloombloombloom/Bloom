@@ -5,6 +5,8 @@
 #include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
 #include "src/DebugServer/Gdb/RegisterDescriptor.hpp"
+#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -15,10 +17,14 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     class ReadRegisters: public Gdb::CommandPackets::CommandPacket
     {
     public:
-        explicit ReadRegisters(const RawPacket& rawPacket);
+        const Targets::TargetMemorySegmentDescriptor& gpRegistersMemorySegmentDescriptor;
+
+        explicit ReadRegisters(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor);
 
         void handle(
             Gdb::DebugSession& debugSession,
+            const Gdb::TargetDescriptor& gdbTargetDescriptor,
+            const Targets::TargetDescriptor& targetDescriptor,
             Services::TargetControllerService& targetControllerService
         ) override;
     };

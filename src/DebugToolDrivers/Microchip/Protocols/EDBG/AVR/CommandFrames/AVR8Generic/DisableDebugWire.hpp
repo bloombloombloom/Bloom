@@ -11,7 +11,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::Avr8
             : Avr8GenericCommandFrame()
         {
             /*
-             * The disable debugWire command consists of 2 bytes:
+             * The disable debugWIRE command consists of 2 bytes:
              * 1. Command ID (0x17)
              * 2. Version (0x00)
              */

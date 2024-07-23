@@ -15,30 +15,40 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Exceptions;
 
-    FlashDone::FlashDone(const RawPacket& rawPacket)
+    FlashDone::FlashDone(const RawPacket& rawPacket, const TargetDescriptor& targetDescriptor)
         : CommandPacket(rawPacket)
+        , programMemoryAddressSpaceDescriptor(targetDescriptor.programAddressSpaceDescriptor)
+        , programMemorySegmentDescriptor(targetDescriptor.programMemorySegmentDescriptor)
     {}
 
-    void FlashDone::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void FlashDone::handle(
+        Gdb::DebugSession& debugSession,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling FlashDone packet");
 
         try {
-            if (debugSession.programmingSession.has_value()) {
-                const auto& programmingSession = debugSession.programmingSession.value();
-                Logger::info(
-                    "Flushing " + std::to_string(programmingSession.buffer.size()) + " bytes to target's program memory"
-                );
-
-                targetControllerService.enableProgrammingMode();
-
-                targetControllerService.writeMemory(
-                    Targets::TargetMemoryType::FLASH,
-                    programmingSession.startAddress,
-                    std::move(programmingSession.buffer)
-                );
-
-                debugSession.programmingSession.reset();
+            if (!debugSession.programmingSession.has_value()) {
+                throw Exception{"No active programming session"};
             }
+
+            Logger::info(
+                "Flushing " + std::to_string(debugSession.programmingSession->buffer.size())
+                    + " bytes to target's program memory"
+            );
+
+            targetControllerService.enableProgrammingMode();
+
+            targetControllerService.writeMemory(
+                this->programMemoryAddressSpaceDescriptor,
+                this->programMemorySegmentDescriptor,
+                debugSession.programmingSession->startAddress,
+                std::move(debugSession.programmingSession->buffer)
+            );
+
+            debugSession.programmingSession.reset();
 
             Logger::warning("Program memory updated");
             targetControllerService.disableProgrammingMode();
@@ -47,7 +57,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             targetControllerService.resetTarget();
             Logger::info("Target reset complete");
 
-            debugSession.connection.writePacket(OkResponsePacket());
+            debugSession.connection.writePacket(OkResponsePacket{});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to handle FlashDone packet - " + exception.getMessage());
@@ -60,7 +70,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 Logger::error("Failed to disable programming mode - " + exception.getMessage());
             }
 
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

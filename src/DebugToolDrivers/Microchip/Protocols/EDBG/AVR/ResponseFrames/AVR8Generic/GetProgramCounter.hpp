@@ -23,8 +23,10 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
              * command ID and version, the other four being the PC. The four PC bytes are little-endian.
              */
             if (this->payload.size() != 6) {
-                throw Exceptions::Exception("Failed to extract PC from payload of PC read command response "
-                    "frame - unexpected payload size.");
+                throw Exceptions::Exception{
+                    "Failed to extract PC from payload of PC read command response "
+                        "frame - unexpected payload size."
+                };
             }
 
             return static_cast<Targets::TargetMemoryAddress>(

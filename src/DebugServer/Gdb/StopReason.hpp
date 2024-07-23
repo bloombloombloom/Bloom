@@ -11,9 +11,9 @@ namespace DebugServer::Gdb
     };
 
     static inline BiMap<StopReason, std::string> getStopReasonToNameMapping() {
-        return BiMap<StopReason, std::string>({
+        return BiMap<StopReason, std::string>{
             {StopReason::HARDWARE_BREAKPOINT, "hwbreak"},
             {StopReason::SOFTWARE_BREAKPOINT, "swbreak"},
-        });
+        };
     }
 }

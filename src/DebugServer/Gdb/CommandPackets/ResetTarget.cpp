@@ -21,7 +21,12 @@ namespace DebugServer::Gdb::CommandPackets
         : Monitor(std::move(monitorPacket))
     {}
 
-    void ResetTarget::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void ResetTarget::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor&,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling ResetTarget packet");
 
         try {
@@ -29,15 +34,15 @@ namespace DebugServer::Gdb::CommandPackets
             targetControllerService.resetTarget();
             Logger::info("Target reset complete");
 
-            debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
+            debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(
                 "Target reset complete\n"
                 "Current PC: 0x" + Services::StringService::toHex(targetControllerService.getProgramCounter()) + "\n"
                 "Use the 'continue' command to begin execution\n"
-            )));
+            )});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to reset target - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

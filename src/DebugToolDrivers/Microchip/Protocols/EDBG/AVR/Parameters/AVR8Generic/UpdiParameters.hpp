@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "src/Targets/Microchip/AVR/AVR8/TargetDescriptionFile.hpp"
+#include "src/Targets/Microchip/AVR8/TargetDescriptionFile.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Generic
 {
@@ -28,6 +28,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         std::uint16_t fuseSegmentStartAddress;
         std::uint16_t lockbitSegmentStartAddress;
 
-        UpdiParameters(const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile);
+        UpdiParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile);
     };
 }

@@ -10,12 +10,12 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         : Response(rawResponse)
     {
         if (this->id != 0x81) {
-            throw Exception("Failed to construct AvrResponse object - invalid response ID.");
+            throw Exception{"Failed to construct AvrResponse object - invalid response ID."};
         }
 
         if (this->data.empty()) {
             // All AVR responses should contain at least one byte (the fragment info byte)
-            throw Exception("Failed to construct AvrResponse object - malformed AVR_RSP data");
+            throw Exception{"Failed to construct AvrResponse object - malformed AVR_RSP data"};
         }
 
         if (this->data[0] == 0x00) {

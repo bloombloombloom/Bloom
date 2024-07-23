@@ -25,6 +25,8 @@ namespace DebugServer::Gdb::CommandPackets
 
         void handle(
             DebugSession& debugSession,
+            const TargetDescriptor& gdbTargetDescriptor,
+            const Targets::TargetDescriptor& targetDescriptor,
             Services::TargetControllerService& targetControllerService
         ) override;
     };

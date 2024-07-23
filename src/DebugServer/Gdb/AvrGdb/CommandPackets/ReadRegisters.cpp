@@ -1,13 +1,14 @@
 #include "ReadRegisters.hpp"
 
+#include <algorithm>
+#include <iterator>
+#include <cassert>
+
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
-#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
 
 #include "src/Targets/TargetRegisterDescriptor.hpp"
-#include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
-#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -16,93 +17,78 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     using Services::TargetControllerService;
 
-    using Targets::TargetRegister;
-    using Targets::TargetRegisterDescriptorIds;
-
     using ResponsePackets::ResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
 
     using Exceptions::Exception;
 
-    ReadRegisters::ReadRegisters(const RawPacket& rawPacket)
+    ReadRegisters::ReadRegisters(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
         : CommandPacket(rawPacket)
+        , gpRegistersMemorySegmentDescriptor(gdbTargetDescriptor.gpRegistersMemorySegmentDescriptor)
     {}
 
-    void ReadRegisters::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void ReadRegisters::handle(
+        Gdb::DebugSession& debugSession,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling ReadRegisters packet");
 
         try {
-            const auto& targetDescriptor = debugSession.gdbTargetDescriptor;
-            auto descriptorIds = TargetRegisterDescriptorIds();
+            auto buffer = Targets::TargetMemoryBuffer(39, 0x00);
 
-            // Read all target registers mapped to a GDB register
-            for (const auto& [gdbRegisterId, gdbRegisterDescriptor] : targetDescriptor.gdbRegisterDescriptorsById) {
-                const auto registerDescriptorId = targetDescriptor.getTargetRegisterDescriptorIdFromGdbRegisterId(
-                    gdbRegisterId
-                );
-
-                if (registerDescriptorId.has_value()) {
-                    descriptorIds.insert(*registerDescriptorId);
+            auto gpRegDescriptors = Targets::TargetRegisterDescriptors{};
+            std::transform(
+                gdbTargetDescriptor.targetRegisterDescriptorsByGdbId.begin(),
+                gdbTargetDescriptor.targetRegisterDescriptorsByGdbId.end(),
+                std::back_inserter(gpRegDescriptors),
+                [] (const auto& pair) {
+                    return pair.second;
                 }
-            }
-
-            Targets::TargetRegisters registerSet;
-            Targets::TargetMemoryAddress programCounter;
+            );
 
             {
                 const auto atomicSession = targetControllerService.makeAtomicSession();
 
-                registerSet = targetControllerService.readRegisters(descriptorIds);
-                programCounter = targetControllerService.getProgramCounter();
-            }
+                for (auto& [regDesc, regVal] : targetControllerService.readRegisters(gpRegDescriptors)) {
+                    if (regDesc.type != Targets::TargetRegisterType::GENERAL_PURPOSE_REGISTER) {
+                        // Status register (SREG)
+                        assert(regVal.size() == 1);
+                        buffer[32] = regVal[0];
+                        continue;
+                    }
 
-            /*
-             * Sort each register by their respective GDB register ID - this will leave us with a collection of
-             * registers in the order expected by the GDB client.
-             */
-            std::sort(
-                registerSet.begin(),
-                registerSet.end(),
-                [this, &targetDescriptor] (const TargetRegister& regA, const TargetRegister& regB) {
-                    return targetDescriptor.getGdbRegisterIdFromTargetRegisterDescriptorId(regA.descriptorId).value() <
-                        targetDescriptor.getGdbRegisterIdFromTargetRegisterDescriptorId(regB.descriptorId).value();
-                }
-            );
+                    const auto bufferOffset = regDesc.startAddress
+                        - this->gpRegistersMemorySegmentDescriptor.addressRange.startAddress;
 
-            /*
-             * Reverse the register values (as they're all currently in MSB, but GDB expects them in LSB), ensure that
-             * each register value size matches the size in the associated GDB register descriptor and implode the
-             * values.
-             */
-            auto registers = std::vector<unsigned char>();
-            for (auto& reg : registerSet) {
-                std::reverse(reg.value.begin(), reg.value.end());
+                    assert((buffer.size() - bufferOffset) >= regVal.size());
 
-                const auto gdbRegisterId = targetDescriptor.getGdbRegisterIdFromTargetRegisterDescriptorId(
-                    reg.descriptorId
-                ).value();
-                const auto& gdbRegisterDescriptor = targetDescriptor.gdbRegisterDescriptorsById.at(gdbRegisterId);
-
-                if (reg.value.size() < gdbRegisterDescriptor.size) {
-                    reg.value.insert(reg.value.end(), (gdbRegisterDescriptor.size - reg.value.size()), 0x00);
+                    /*
+                     * GDB expects register values in LSB form, which is why we use reverse iterators below.
+                     *
+                     * This isn't really necessary though, as all of the registers that are handled here are
+                     * single-byte registers.
+                     */
+                    std::copy(regVal.rbegin(), regVal.rend(), buffer.begin() + bufferOffset);
                 }
 
-                registers.insert(registers.end(), reg.value.begin(), reg.value.end());
+                const auto spValue = targetControllerService.getStackPointer();
+                buffer[33] = static_cast<unsigned char>(spValue);
+                buffer[34] = static_cast<unsigned char>(spValue >> 8);
+
+                const auto pcValue = targetControllerService.getProgramCounter();
+                buffer[35] = static_cast<unsigned char>(pcValue);
+                buffer[36] = static_cast<unsigned char>(pcValue >> 8);
+                buffer[37] = static_cast<unsigned char>(pcValue >> 16);
+                buffer[38] = static_cast<unsigned char>(pcValue >> 24);
             }
 
-            // Finally, include the program counter (which GDB expects to reside at the end)
-            registers.insert(registers.end(), static_cast<unsigned char>(programCounter));
-            registers.insert(registers.end(), static_cast<unsigned char>(programCounter >> 8));
-            registers.insert(registers.end(), static_cast<unsigned char>(programCounter >> 16));
-            registers.insert(registers.end(), static_cast<unsigned char>(programCounter >> 24));
-
-            debugSession.connection.writePacket(
-                ResponsePacket(Services::StringService::toHex(registers))
-            );
+            debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(buffer)});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to read registers - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

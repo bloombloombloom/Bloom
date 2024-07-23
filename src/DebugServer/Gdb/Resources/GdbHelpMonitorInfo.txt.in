@@ -4,10 +4,6 @@ Supported Bloom commands:
   version               Outputs Bloom's version information.
   version machine       Outputs Bloom's version information in JSON format.
 @ACTIVATE_INSIGHT_HELP_TEXT@
-  svd                   Generates the System View Description (SVD) XML for the current target and saves it into a
-                        file located in the current project directory.
-  svd --out             Generates the System View Description (SVD) XML for the current target and sends it to GDB, as
-                        command output.
 
   reset                 Resets the target and holds it in a stopped state.
 

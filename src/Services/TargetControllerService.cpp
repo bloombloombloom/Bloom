@@ -17,8 +17,9 @@
 #include "src/TargetController/Commands/SetBreakpoint.hpp"
 #include "src/TargetController/Commands/RemoveBreakpoint.hpp"
 #include "src/TargetController/Commands/SetTargetProgramCounter.hpp"
-#include "src/TargetController/Commands/GetTargetPinStates.hpp"
-#include "src/TargetController/Commands/SetTargetPinState.hpp"
+#include "src/TargetController/Commands/SetTargetStackPointer.hpp"
+#include "src/TargetController/Commands/GetTargetGpioPinStates.hpp"
+#include "src/TargetController/Commands/SetTargetGpioPinState.hpp"
 #include "src/TargetController/Commands/GetTargetStackPointer.hpp"
 #include "src/TargetController/Commands/GetTargetProgramCounter.hpp"
 #include "src/TargetController/Commands/EnableProgrammingMode.hpp"
@@ -45,8 +46,9 @@ namespace Services
     using TargetController::Commands::SetBreakpoint;
     using TargetController::Commands::RemoveBreakpoint;
     using TargetController::Commands::SetTargetProgramCounter;
-    using TargetController::Commands::GetTargetPinStates;
-    using TargetController::Commands::SetTargetPinState;
+    using TargetController::Commands::SetTargetStackPointer;
+    using TargetController::Commands::GetTargetGpioPinStates;
+    using TargetController::Commands::SetTargetGpioPinState;
     using TargetController::Commands::GetTargetStackPointer;
     using TargetController::Commands::GetTargetProgramCounter;
     using TargetController::Commands::EnableProgrammingMode;
@@ -56,10 +58,12 @@ namespace Services
     using Targets::TargetDescriptor;
     using Targets::TargetState;
 
-    using Targets::TargetRegisters;
+    using Targets::TargetRegisterDescriptor;
     using Targets::TargetRegisterDescriptors;
+    using Targets::TargetRegisterDescriptorAndValuePairs;
 
-    using Targets::TargetMemoryType;
+    using Targets::TargetAddressSpaceDescriptor;
+    using Targets::TargetMemorySegmentDescriptor;
     using Targets::TargetMemoryAddress;
     using Targets::TargetMemorySize;
     using Targets::TargetMemoryAddressRange;
@@ -68,9 +72,10 @@ namespace Services
 
     using Targets::TargetBreakpoint;
 
+    using Targets::TargetPinoutDescriptor;
     using Targets::TargetPinDescriptor;
-    using Targets::TargetPinState;
-    using Targets::TargetPinStateMapping;
+    using Targets::TargetGpioPinState;
+    using Targets::TargetGpioPinDescriptorAndStatePairs;
 
     TargetControllerService::AtomicSession::AtomicSession(TargetControllerService& targetControllerService)
         : targetControllerService(targetControllerService)
@@ -90,7 +95,7 @@ namespace Services
         } catch (const std::exception& exception) {
             Logger::error(
                 "Failed to end atomic session (ID: " + std::to_string(this->sessionId) + ") - "
-                    + std::string(exception.what())
+                    + std::string{exception.what()}
             );
         }
 
@@ -102,7 +107,7 @@ namespace Services
         }
     }
 
-    const TargetDescriptor& TargetControllerService::getTargetDescriptor() const {
+    const Targets::TargetDescriptor& TargetControllerService::getTargetDescriptor() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetDescriptor>(),
             this->defaultTimeout,
@@ -126,52 +131,41 @@ namespace Services
         );
     }
 
-    void TargetControllerService::continueTargetExecution(
-        std::optional<TargetMemoryAddress> fromAddress,
-        std::optional<Targets::TargetMemoryAddress> toAddress
-    ) const {
-        auto resumeExecutionCommand = std::make_unique<ResumeTargetExecution>();
-
-        if (fromAddress.has_value()) {
-            resumeExecutionCommand->fromAddress = fromAddress.value();
-        }
-
-        if (toAddress.has_value()) {
-            resumeExecutionCommand->toAddress = toAddress.value();
-        }
-
+    void TargetControllerService::resumeTargetExecution() const {
         this->commandManager.sendCommandAndWaitForResponse(
-            std::move(resumeExecutionCommand),
+            std::make_unique<ResumeTargetExecution>(),
             this->defaultTimeout,
             this->activeAtomicSessionId
         );
     }
 
-    void TargetControllerService::stepTargetExecution(std::optional<TargetMemoryAddress> fromAddress) const {
-        auto stepExecutionCommand = std::make_unique<StepTargetExecution>();
-
-        if (fromAddress.has_value()) {
-            stepExecutionCommand->fromProgramCounter = fromAddress.value();
-        }
-
+    void TargetControllerService::stepTargetExecution() const {
         this->commandManager.sendCommandAndWaitForResponse(
-            std::move(stepExecutionCommand),
+            std::make_unique<StepTargetExecution>(),
             this->defaultTimeout,
             this->activeAtomicSessionId
         );
     }
 
-    TargetRegisters TargetControllerService::readRegisters(
-        const Targets::TargetRegisterDescriptorIds& descriptorIds
+    TargetRegisterDescriptorAndValuePairs TargetControllerService::readRegisters(
+        const TargetRegisterDescriptors& descriptors
     ) const {
         return this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<ReadTargetRegisters>(descriptorIds),
+            std::make_unique<ReadTargetRegisters>(descriptors),
             this->defaultTimeout,
             this->activeAtomicSessionId
         )->registers;
     }
 
-    void TargetControllerService::writeRegisters(const TargetRegisters& registers) const {
+    TargetMemoryBuffer TargetControllerService::readRegister(const TargetRegisterDescriptor& descriptor) const {
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<ReadTargetRegisters>(TargetRegisterDescriptors{&descriptor}),
+            this->defaultTimeout,
+            this->activeAtomicSessionId
+        )->registers.at(0).second;
+    }
+
+    void TargetControllerService::writeRegisters(const TargetRegisterDescriptorAndValuePairs& registers) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<WriteTargetRegisters>(registers),
             this->defaultTimeout,
@@ -179,8 +173,20 @@ namespace Services
         );
     }
 
+    void TargetControllerService::writeRegister(
+        const TargetRegisterDescriptor& descriptor,
+        const TargetMemoryBuffer& value
+    ) const {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<WriteTargetRegisters>(TargetRegisterDescriptorAndValuePairs{{descriptor, value}}),
+            this->defaultTimeout,
+            this->activeAtomicSessionId
+        );
+    }
+
     TargetMemoryBuffer TargetControllerService::readMemory(
-        TargetMemoryType memoryType,
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
         TargetMemorySize bytes,
         bool bypassCache,
@@ -188,7 +194,8 @@ namespace Services
     ) const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<ReadTargetMemory>(
-                memoryType,
+                addressSpaceDescriptor,
+                memorySegmentDescriptor,
                 startAddress,
                 bytes,
                 bypassCache,
@@ -200,20 +207,29 @@ namespace Services
     }
 
     void TargetControllerService::writeMemory(
-        TargetMemoryType memoryType,
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
-        const TargetMemoryBuffer& buffer
+        Targets::TargetMemoryBuffer&& buffer
     ) const {
         this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<WriteTargetMemory>(memoryType, startAddress, buffer),
+            std::make_unique<WriteTargetMemory>(
+                addressSpaceDescriptor,
+                memorySegmentDescriptor,
+                startAddress,
+                std::move(buffer)
+            ),
             this->defaultTimeout,
             this->activeAtomicSessionId
         );
     }
 
-    void TargetControllerService::eraseMemory(Targets::TargetMemoryType memoryType) const {
+    void TargetControllerService::eraseMemory(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor
+    ) const {
         this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<EraseTargetMemory>(memoryType),
+            std::make_unique<EraseTargetMemory>(addressSpaceDescriptor, memorySegmentDescriptor),
             this->defaultTimeout,
             this->activeAtomicSessionId
         );
@@ -254,17 +270,22 @@ namespace Services
         );
     }
 
-    TargetPinStateMapping TargetControllerService::getPinStates(int variantId) const {
+    TargetGpioPinDescriptorAndStatePairs TargetControllerService::getGpioPinStates(
+        const TargetPinoutDescriptor& pinoutDescriptor
+    ) const {
         return this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<GetTargetPinStates>(variantId),
+            std::make_unique<GetTargetGpioPinStates>(pinoutDescriptor),
             this->defaultTimeout,
             this->activeAtomicSessionId
-        )->pinStatesByNumber;
+        )->gpioPinStates;
     }
 
-    void TargetControllerService::setPinState(TargetPinDescriptor pinDescriptor, TargetPinState pinState) const {
+    void TargetControllerService::setGpioPinState(
+        const TargetPinDescriptor& pinDescriptor,
+        const TargetGpioPinState& state
+    ) const {
         this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<SetTargetPinState>(pinDescriptor, pinState),
+            std::make_unique<SetTargetGpioPinState>(pinDescriptor, state),
             this->defaultTimeout,
             this->activeAtomicSessionId
         );
@@ -276,6 +297,14 @@ namespace Services
             this->defaultTimeout,
             this->activeAtomicSessionId
         )->stackPointer;
+    }
+
+    void TargetControllerService::setStackPointer(TargetStackPointer stackPointer) const {
+        this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<SetTargetStackPointer>(stackPointer),
+            this->defaultTimeout,
+            this->activeAtomicSessionId
+        );
     }
 
     void TargetControllerService::resetTarget() const {
@@ -311,7 +340,7 @@ namespace Services
     }
 
     TargetControllerService::AtomicSession TargetControllerService::makeAtomicSession() {
-        return AtomicSession(*this);
+        return AtomicSession{*this};
     }
 
     TargetController::AtomicSessionIdType TargetControllerService::startAtomicSession() {

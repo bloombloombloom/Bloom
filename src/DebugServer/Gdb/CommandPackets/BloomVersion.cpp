@@ -22,15 +22,20 @@ namespace DebugServer::Gdb::CommandPackets
         : Monitor(std::move(monitorPacket))
     {}
 
-    void BloomVersion::handle(DebugSession& debugSession, TargetControllerService&) {
+    void BloomVersion::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor&,
+        const Targets::TargetDescriptor&,
+        TargetControllerService&
+    ) {
         Logger::info("Handling BloomVersion packet");
 
-        debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(
-            std::string(
+        debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(
+            std::string{
                 "Bloom v" + Application::VERSION.toString() + "\n"
                     + Services::PathService::homeDomainName() + "\n"
                     + "Nav Mohammed\n"
-            )
-        )));
+            }
+        )});
     }
 }

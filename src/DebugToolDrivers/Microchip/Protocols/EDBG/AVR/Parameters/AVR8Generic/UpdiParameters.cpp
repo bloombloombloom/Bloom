@@ -4,9 +4,7 @@
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Generic
 {
-    UpdiParameters::UpdiParameters(
-        const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile
-    ) {
+    UpdiParameters::UpdiParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile) {
         using Services::StringService;
 
         const auto& updiGroup = targetDescriptionFile.getPropertyGroup("updi_interface");

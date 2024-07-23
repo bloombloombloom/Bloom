@@ -6,7 +6,7 @@
 #include <optional>
 #include <cassert>
 
-#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AVR8/Avr8DebugInterface.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR8/Avr8DebugInterface.hpp"
 #include "src/DebugToolDrivers/Microchip/Protocols/EDBG/EdbgInterface.hpp"
 
 #include "Avr8Generic.hpp"
@@ -15,10 +15,8 @@
 #include "src/Targets/TargetPhysicalInterface.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
-#include "src/Targets/TargetRegister.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/TargetDescriptionFile.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/Family.hpp"
-#include "src/Targets/Microchip/AVR/AVR8/TargetParameters.hpp"
+#include "src/Targets/Microchip/AVR8/TargetDescriptionFile.hpp"
+#include "src/Targets/Microchip/AVR8/Family.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 {
@@ -31,13 +29,13 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
      * This implementation should work with any Microchip EDBG-based CMSIS-DAP debug tool (such as the Atmel-ICE,
      * Power Debugger, the MPLAB SNAP debugger (in "AVR mode"), etc).
      */
-    class EdbgAvr8Interface: public ::DebugToolDrivers::TargetInterfaces::Microchip::Avr::Avr8::Avr8DebugInterface
+    class EdbgAvr8Interface: public ::DebugToolDrivers::TargetInterfaces::Microchip::Avr8::Avr8DebugInterface
     {
     public:
         explicit EdbgAvr8Interface(
             EdbgInterface* edbgInterface,
-            const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile,
-            const Targets::Microchip::Avr::Avr8Bit::Avr8TargetConfig& targetConfig
+            const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile,
+            const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
         );
 
         /**
@@ -140,6 +138,11 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          */
         void deactivate() override;
 
+        Targets::TargetRegisterAccess getRegisterAccess(
+            const Targets::TargetRegisterDescriptor& registerDescriptor,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor
+        ) override;
+
         /**
          * Issues the "PC Read" command to the debug tool, to extract the current program counter.
          *
@@ -160,7 +163,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          *
          * @return
          */
-        Targets::Microchip::Avr::TargetSignature getDeviceId() override;
+        Targets::Microchip::Avr8::TargetSignature getDeviceId() override;
 
         /**
          * Issues the "Software Breakpoint Set" command to the debug tool, setting a software breakpoint at the given
@@ -212,27 +215,31 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * @param descriptorIds
          * @return
          */
-        Targets::TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) override;
+        Targets::TargetRegisterDescriptorAndValuePairs readRegisters(
+            const Targets::TargetRegisterDescriptors& descriptors
+        ) override;
 
         /**
          * Writes registers to target.
          *
          * @param registers
          */
-        void writeRegisters(const Targets::TargetRegisters& registers) override;
+        void writeRegisters(const Targets::TargetRegisterDescriptorAndValuePairs& registers) override;
 
         /**
          * This is an overloaded method.
          *
          * Resolves the correct Avr8MemoryType from the given TargetMemoryType and calls readMemory().
          *
-         * @param memoryType
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          * @param startAddress
          * @param bytes
          * @return
          */
         Targets::TargetMemoryBuffer readMemory(
-            Targets::TargetMemoryType memoryType,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
@@ -243,12 +250,14 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          *
          * Resolves the correct Avr8MemoryType from the given TargetMemoryType and calls writeMemory().
          *
-         * @param memoryType
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          * @param startAddress
          * @param buffer
          */
         void writeMemory(
-            Targets::TargetMemoryType memoryType,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
             const Targets::TargetMemoryBuffer& buffer
         ) override;
@@ -259,7 +268,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * @param section
          */
         void eraseProgramMemory(
-            std::optional<Targets::Microchip::Avr::Avr8Bit::ProgramMemorySection> section = std::nullopt
+            std::optional<Targets::Microchip::Avr8::ProgramMemorySection> section = std::nullopt
         ) override;
 
         /**
@@ -272,7 +281,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          *
          * @return
          */
-        Targets::TargetState getTargetState() override;
+        Targets::TargetExecutionState getExecutionState() override;
 
         /**
          * Enters programming mode on the EDBG debug tool.
@@ -311,13 +320,14 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         bool reactivateJtagTargetPostProgrammingMode = false;
 
         /**
-         * We keep record of the current target state for caching purposes. We'll only refresh the target state if the
-         * target is running. If it has already stopped, then we assume it cannot transition to a running state without
-         * an instruction from us.
+         * We keep record of the current target execution state for caching purposes.
+         *
+         * We'll only refresh the target state if the target is running. If it has already stopped, then we assume it
+         * cannot transition to a running state without an instruction from us.
          *
          * @TODO: Review this. Is the above assumption correct? Always? Explore the option of polling the target state.
          */
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+        Targets::TargetExecutionState cachedExecutionState = Targets::TargetExecutionState::UNKNOWN;
 
         /**
          * Upon configuration, the physical interface must be activated on the debug tool. We keep record of this to
@@ -411,7 +421,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * What parameters we need to send depend on the physical interface (and config variant) selected by the user.
          * For target parameters, the address (ID) of the parameter also varies across config variants.
          *
-         * - The setDebugWireAndJtagParameters() function sends the required target parameters for debugWire and JTAG
+         * - The setDebugWireAndJtagParameters() function sends the required target parameters for debugWIRE and JTAG
          *   sessions. Both sessions are covered in a single function because they require the same parameters.
          * - The setPdiParameters() function sends the required target parameters for PDI sessions.
          * - The setUpdiParameters() function sends the required target parameters for UPDI sessions.
@@ -459,6 +469,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          */
         void clearEvents();
 
+        Avr8MemoryType getRegisterMemoryType(const Targets::TargetRegisterDescriptor& descriptor);
+
         /**
          * Checks if alignment is required for memory access via a given Avr8MemoryType.
          *
@@ -486,14 +498,13 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         Targets::TargetMemorySize alignMemoryBytes(Avr8MemoryType memoryType, Targets::TargetMemorySize bytes);
 
         /**
-         * Checks if a maximum memory access size is imposed for a given Avr8MemoryType.
+         * Determines the maximum memory access size imposed on the given Avr8MemoryType.
          *
          * @param memoryType
-         *  The imposed maximum size, or std::nullopt if a maximum isn't required.
          *
          * @return
          */
-        std::optional<Targets::TargetMemorySize> maximumMemoryAccessSize(Avr8MemoryType memoryType);
+        Targets::TargetMemorySize maximumMemoryAccessSize(Avr8MemoryType memoryType);
 
         /**
          * Reads memory on the target.
@@ -546,7 +557,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         void refreshTargetState();
 
         /**
-         * Temporarily disables the debugWire module on the target. This does not affect the DWEN fuse. The module
+         * Temporarily disables the debugWIRE module on the target. This does not affect the DWEN fuse. The module
          * will be reactivated upon the cycling of the target power.
          */
         void disableDebugWire();
@@ -580,7 +591,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                     }
                 }
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                std::this_thread::sleep_for(std::chrono::milliseconds{50});
                 attemptCount++;
             }
 

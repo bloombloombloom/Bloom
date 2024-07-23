@@ -64,10 +64,10 @@ namespace Usb
         virtual ~UsbDevice();
 
     protected:
-        static inline LibusbContext libusbContext = LibusbContext(nullptr, ::libusb_exit);
+        static inline LibusbContext libusbContext = {nullptr, ::libusb_exit};
 
-        LibusbDevice libusbDevice = LibusbDevice(nullptr, ::libusb_unref_device);
-        LibusbDeviceHandle libusbDeviceHandle = LibusbDeviceHandle(nullptr, ::libusb_close);
+        LibusbDevice libusbDevice = {nullptr, ::libusb_unref_device};
+        LibusbDeviceHandle libusbDeviceHandle = {nullptr, ::libusb_close};
 
         std::vector<LibusbDevice> findMatchingDevices(std::uint16_t vendorId, std::uint16_t productId);
 

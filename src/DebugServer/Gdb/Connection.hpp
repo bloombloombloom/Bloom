@@ -31,7 +31,7 @@ namespace DebugServer::Gdb
          */
         static constexpr auto ABSOLUTE_MAXIMUM_PACKET_READ_SIZE = 2097000; // 2MiB
 
-        explicit Connection(int serverSocketFileDescriptor, EventFdNotifier& interruptEventNotifier);
+        Connection(int serverSocketFileDescriptor, EventFdNotifier& interruptEventNotifier);
 
         Connection() = delete;
         Connection(const Connection&) = delete;

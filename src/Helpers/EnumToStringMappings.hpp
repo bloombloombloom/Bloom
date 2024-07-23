@@ -4,16 +4,15 @@
 
 #include "BiMap.hpp"
 
-#include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemorySegmentType.hpp"
 
 class EnumToStringMappings
 {
 public:
-    static const inline BiMap<Targets::TargetMemoryType, QString> targetMemoryTypes = {
-        {Targets::TargetMemoryType::RAM, "ram"},
-        {Targets::TargetMemoryType::EEPROM, "eeprom"},
-        {Targets::TargetMemoryType::FLASH, "flash"},
-        {Targets::TargetMemoryType::OTHER, "other"},
+    static const inline BiMap<Targets::TargetMemorySegmentType, QString> targetMemorySegmentTypes = {
+        {Targets::TargetMemorySegmentType::RAM, "ram"},
+        {Targets::TargetMemorySegmentType::EEPROM, "eeprom"},
+        {Targets::TargetMemorySegmentType::FLASH, "flash"},
     };
 
     static const inline BiMap<Targets::TargetMemoryEndianness, QString> targetMemoryEndianness = {

@@ -12,11 +12,11 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         : Response(rawResponse)
     {
         if (this->id != 0x82) {
-            throw Exception("Failed to construct AvrEvent object - invalid response ID.");
+            throw Exception{"Failed to construct AvrEvent object - invalid response ID."};
         }
 
         if (this->data.size() < 7) {
-            throw Exception("Failed to construct AvrEvent object - unexpected size of AVR_EVT response.");
+            throw Exception{"Failed to construct AvrEvent object - unexpected size of AVR_EVT response."};
         }
 
         // Response size is two bytes, MSB
@@ -28,17 +28,17 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         if (this->data.size() < responsePacketSize + 7) {
-            throw Exception("Failed to construct AvrEvent object - invalid size of AVR_EVT response packet.");
+            throw Exception{"Failed to construct AvrEvent object - invalid size of AVR_EVT response packet."};
         }
 
         /*
          * Ignore the SOF, protocol version, handler ID, sequence ID and size bytes (which all make up 7 bytes
          * in total).
          */
-        this->eventData = std::vector<unsigned char>(
+        this->eventData = std::vector<unsigned char>{
             this->data.begin() + 7,
             this->data.begin() + 7 + static_cast<std::int64_t>(responsePacketSize)
-        );
+        };
 
         this->eventId = static_cast<AvrEventId>(this->eventData[0]);
     }

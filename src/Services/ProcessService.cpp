@@ -9,11 +9,11 @@
 namespace Services
 {
     ::pid_t ProcessService::getProcessId() {
-        return getpid();
+        return ::getpid();
     }
 
     ::pid_t ProcessService::getParentProcessId() {
-        return getppid();
+        return ::getppid();
     }
 
     ::uid_t ProcessService::getEffectiveUserId(std::optional<::pid_t> processId) {
@@ -24,9 +24,9 @@ namespace Services
         const auto processInfo = ProcessService::getProcessInfo(processId.value());
 
         if (!processInfo) {
-            throw Exceptions::Exception(
+            throw Exceptions::Exception{
                 "Failed to fetch process info for process ID " + std::to_string(processId.value())
-            );
+            };
         }
 
         return static_cast<::uid_t>(processInfo->euid);
@@ -41,7 +41,7 @@ namespace Services
             processId = ProcessService::getProcessId();
         }
 
-        static auto cachedResultsByProcessId = std::map<::pid_t, bool>();
+        static auto cachedResultsByProcessId = std::map<::pid_t, bool>{};
         const auto cachedResultIt = cachedResultsByProcessId.find(*processId);
 
         if (cachedResultIt != cachedResultsByProcessId.end()) {
@@ -59,7 +59,7 @@ namespace Services
         auto pid = processInfo->ppid;
 
         while (const auto processInfo = ProcessService::getProcessInfo(pid)) {
-            const auto commandLine = std::string(*(processInfo->cmdline));
+            const auto commandLine = std::string{*(processInfo->cmdline)};
 
             if (commandLine.find("clion") != std::string::npos) {
                 cachedResultsByProcessId[*processId] = true;
@@ -74,11 +74,11 @@ namespace Services
     }
 
     ProcessService::Proc ProcessService::getProcessInfo(::pid_t processId) {
-        const auto proc = std::unique_ptr<::PROCTAB, decltype(&::closeproc)>(
+        const auto proc = std::unique_ptr<::PROCTAB, decltype(&::closeproc)>{
             ::openproc(PROC_FILLSTAT | PROC_FILLARG | PROC_PID, &processId),
             ::closeproc
-        );
+        };
 
-        return Proc(::readproc(proc.get(), NULL), ::freeproc);
+        return {::readproc(proc.get(), NULL), ::freeproc};
     }
 }

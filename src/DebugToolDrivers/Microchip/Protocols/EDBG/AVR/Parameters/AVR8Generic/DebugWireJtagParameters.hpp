@@ -3,12 +3,12 @@
 #include <cstdint>
 #include <optional>
 
-#include "src/Targets/Microchip/AVR/AVR8/TargetDescriptionFile.hpp"
+#include "src/Targets/Microchip/AVR8/TargetDescriptionFile.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Generic
 {
     /**
-     * EDBG parameters for debugWire and JTAG AVR targets.
+     * EDBG parameters for debugWIRE and JTAG AVR targets.
      *
      * See Microchip's "EDBG-based Tools Protocols" document for more on these parameters.
      */
@@ -30,6 +30,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         std::uint8_t spmcrAddress;
         std::uint8_t osccalAddress;
 
-        DebugWireJtagParameters(const Targets::Microchip::Avr::Avr8Bit::TargetDescriptionFile& targetDescriptionFile);
+        DebugWireJtagParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile);
     };
 }

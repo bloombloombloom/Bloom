@@ -1,10 +1,10 @@
 #include "ReadRegister.hpp"
 
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
-#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
 
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 
+#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -24,16 +24,23 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     ReadRegister::ReadRegister(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
+        using Services::StringService;
+
         if (this->data.size() < 2) {
-            throw Exception("Invalid packet length");
+            throw Exception{"Invalid packet length"};
         }
 
         this->registerId = static_cast<GdbRegisterId>(
-            std::stoi(std::string(this->data.begin() + 1, this->data.end()))
+            StringService::toUint32(std::string{this->data.begin() + 1, this->data.end()}, 16)
         );
     }
 
-    void ReadRegister::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void ReadRegister::handle(
+        Gdb::DebugSession& debugSession,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling ReadRegister packet");
 
         try {
@@ -47,49 +54,60 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 const auto programCounter = targetControllerService.getProgramCounter();
 
                 debugSession.connection.writePacket(
-                    ResponsePacket(Services::StringService::toHex(Targets::TargetMemoryBuffer({
+                    ResponsePacket{Services::StringService::toHex(Targets::TargetMemoryBuffer{
                         static_cast<unsigned char>(programCounter),
                         static_cast<unsigned char>(programCounter >> 8),
                         static_cast<unsigned char>(programCounter >> 16),
                         static_cast<unsigned char>(programCounter >> 24),
-                    })))
+                    })}
                 );
 
                 return;
             }
 
-            const auto& targetDescriptor = debugSession.gdbTargetDescriptor;
-            const auto& gdbRegisterDescriptor = targetDescriptor.gdbRegisterDescriptorsById.at(this->registerId);
+            if (this->registerId == TargetDescriptor::STACK_POINTER_GDB_REGISTER_ID) {
+                /*
+                 * GDB has requested the program counter. We can't access this in the same way as we do with other
+                 * registers.
+                 */
+                const auto stackPointer = targetControllerService.getStackPointer();
 
-            const auto targetRegisterDescriptorId = targetDescriptor.getTargetRegisterDescriptorIdFromGdbRegisterId(
+                debugSession.connection.writePacket(
+                    ResponsePacket{Services::StringService::toHex(Targets::TargetMemoryBuffer{
+                        static_cast<unsigned char>(stackPointer),
+                        static_cast<unsigned char>(stackPointer >> 8),
+                    })}
+                );
+
+                return;
+            }
+
+            const auto gdbRegisterDescriptorIt = gdbTargetDescriptor.gdbRegisterDescriptorsById.find(this->registerId);
+            const auto targetRegisterDescriptorIt = gdbTargetDescriptor.targetRegisterDescriptorsByGdbId.find(
                 this->registerId
             );
 
-            if (!targetRegisterDescriptorId.has_value()) {
-                throw Exception("GDB requested an invalid/unknown register");
+            if (
+                gdbRegisterDescriptorIt == gdbTargetDescriptor.gdbRegisterDescriptorsById.end()
+                || targetRegisterDescriptorIt == gdbTargetDescriptor.targetRegisterDescriptorsByGdbId.end()
+            ) {
+                throw Exception{"Unknown GDB register ID (" + std::to_string(this->registerId) + ")"};
             }
 
-            auto registerValue = targetControllerService.readRegisters({*targetRegisterDescriptorId}).front().value;
+            auto registerValue = targetControllerService.readRegister(*(targetRegisterDescriptorIt->second));
+            std::reverse(registerValue.begin(), registerValue.end()); // MSB to LSB
 
-            // GDB expects register values to be in LSB.
-            std::reverse(registerValue.begin(), registerValue.end());
-
+            const auto& gdbRegisterDescriptor = gdbRegisterDescriptorIt->second;
             if (registerValue.size() < gdbRegisterDescriptor.size) {
-                /*
-                 * The register on the target is smaller than the size expected by GDB.
-                 *
-                 * Insert the rest of the bytes.
-                 */
+                // The register on the target is smaller than the size expected by GDB.
                 registerValue.insert(registerValue.end(), (gdbRegisterDescriptor.size - registerValue.size()), 0x00);
             }
 
-            debugSession.connection.writePacket(
-                ResponsePacket(Services::StringService::toHex(registerValue))
-            );
+            debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(registerValue)});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to read general registers - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

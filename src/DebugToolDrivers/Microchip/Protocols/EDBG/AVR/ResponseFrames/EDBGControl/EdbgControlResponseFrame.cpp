@@ -10,7 +10,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Edb
         : AvrResponseFrame(avrResponses)
     {
         if (this->payload.empty()) {
-            throw Exception("Response ID missing from EDBG Control response frame payload.");
+            throw Exception{"Response ID missing from EDBG Control response frame payload."};
         }
 
         this->id = static_cast<EdbgControlResponseId>(this->payload[0]);
@@ -25,9 +25,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Edb
          * EDBG Control data payloads include two bytes before the data (response ID and version byte) as well as an
          * additional byte after the data, known as the 'status code'.
          */
-        return std::vector<unsigned char>(
-            this->payload.begin() + 2,
-            this->payload.end() - 1
-        );
+        return {this->payload.begin() + 2, this->payload.end() - 1};
     }
 }

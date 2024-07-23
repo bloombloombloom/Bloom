@@ -16,6 +16,6 @@ namespace DebugServer::Gdb::Exceptions
     class DebugServerInterrupted: public ::Exceptions::Exception
     {
     public:
-        explicit DebugServerInterrupted() = default;
+        DebugServerInterrupted() = default;
     };
 }

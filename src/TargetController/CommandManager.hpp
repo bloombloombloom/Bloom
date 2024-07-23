@@ -43,7 +43,7 @@ namespace TargetController
                 Logger::debug(
                     "Timed out whilst waiting for TargetController to respond to " + CommandType::name + " command"
                 );
-                throw Exceptions::Exception("Command timed out");
+                throw Exceptions::Exception{"Command timed out"};
             }
 
             auto& response = optionalResponse.value();
@@ -55,7 +55,7 @@ namespace TargetController
                     "TargetController returned error in response to " + CommandType::name + " command (ID: "
                         + std::to_string(commandId) + "). Error: " + errorResponse->errorMessage
                 );
-                throw Exceptions::Exception(errorResponse->errorMessage);
+                throw Exceptions::Exception{errorResponse->errorMessage};
             }
 
             Logger::debug(

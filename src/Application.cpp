@@ -19,8 +19,6 @@
 #include "src/Services/ProcessService.hpp"
 #include "src/Helpers/BiMap.hpp"
 
-#include "src/Targets/TargetDescription/TargetDescriptionFile.hpp"
-
 #include "src/Exceptions/InvalidConfig.hpp"
 
 using namespace Exceptions;
@@ -75,12 +73,11 @@ int Application::run() {
         this->checkBloomVersion();
 
         /*
-         * We can't run our own event loop here - we have to use Qt's event loop. But we still need to be able to
-         * process our events. To address this, we use a QTimer to dispatch our events on an interval.
+         * We use a QTimer to dispatch our events on an interval.
          *
          * This allows us to use Qt's event loop whilst still being able to process our own events.
          */
-        auto* eventDispatchTimer = new QTimer(this->qtApplication.get());
+        auto* eventDispatchTimer = new QTimer{this->qtApplication.get()};
         QObject::connect(eventDispatchTimer, &QTimer::timeout, this, &Application::dispatchEvents);
         eventDispatchTimer->start(100);
 
@@ -98,7 +95,7 @@ int Application::run() {
 }
 
 std::map<std::string, std::function<int()>> Application::getCommandHandlersByCommandName() {
-    return std::map<std::string, std::function<int()>> {
+    return std::map<std::string, std::function<int()>>{
         {
             "--help",
             std::bind(&Application::presentHelpText, this)
@@ -225,17 +222,15 @@ void Application::triggerShutdown() {
 
 void Application::loadProjectSettings() {
     const auto projectSettingsPath = Services::PathService::projectSettingsPath();
-    auto jsonSettingsFile = QFile(QString::fromStdString(projectSettingsPath));
+    auto jsonSettingsFile = QFile{QString::fromStdString(projectSettingsPath)};
 
     if (jsonSettingsFile.exists()) {
         try {
             if (!jsonSettingsFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                throw Exception("Failed to open settings file.");
+                throw Exception{"Failed to open settings file."};
             }
 
-            this->projectSettings = ProjectSettings(
-                QJsonDocument::fromJson(jsonSettingsFile.readAll()).object()
-            );
+            this->projectSettings = ProjectSettings{QJsonDocument::fromJson(jsonSettingsFile.readAll()).object()};
             jsonSettingsFile.close();
 
             return;
@@ -256,45 +251,43 @@ void Application::saveProjectSettings() {
     }
 
     const auto projectSettingsPath = Services::PathService::projectSettingsPath();
-    auto jsonSettingsFile = QFile(QString::fromStdString(projectSettingsPath));
+    auto jsonSettingsFile = QFile{QString::fromStdString(projectSettingsPath)};
 
     Logger::debug("Saving project settings to " + projectSettingsPath);
 
-    QDir().mkpath(QString::fromStdString(Services::PathService::projectSettingsDirPath()));
+    QDir{}.mkpath(QString::fromStdString(Services::PathService::projectSettingsDirPath()));
 
     try {
-        const auto jsonDocument = QJsonDocument(this->projectSettings->toJson());
+        const auto jsonDocument = QJsonDocument{this->projectSettings->toJson()};
 
         if (!jsonSettingsFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
-            throw Exception(
+            throw Exception{
                 "Failed to open/create settings file (" + projectSettingsPath + "). Check file permissions."
-            );
+            };
         }
 
         jsonSettingsFile.write(jsonDocument.toJson());
         jsonSettingsFile.close();
 
     } catch (const Exception& exception) {
-        Logger::error(
-            "Failed to save project settings -  " + exception.getMessage()
-        );
+        Logger::error("Failed to save project settings -  " + exception.getMessage());
     }
 }
 
 void Application::loadProjectConfiguration() {
-    auto configFile = QFile(QString::fromStdString(Services::PathService::projectConfigPath()));
+    auto configFile = QFile{QString::fromStdString(Services::PathService::projectConfigPath())};
 
     if (!configFile.exists()) {
-        throw Exception(
+        throw Exception{
             "Bloom configuration file (bloom.yaml) not found. Working directory: "
                 + Services::PathService::projectDirPath()
-        );
+        };
     }
 
     if (!configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        throw InvalidConfig(
+        throw InvalidConfig{
             "Failed to open Bloom configuration file. Working directory: " + Services::PathService::projectDirPath()
-        );
+        };
     }
 
     try {
@@ -310,9 +303,9 @@ void Application::loadProjectConfiguration() {
     // Validate the selected environment
     const auto selectedEnvironmentIt = this->projectConfig->environments.find(this->selectedEnvironmentName);
     if (selectedEnvironmentIt == this->projectConfig->environments.end()) {
-        throw InvalidConfig(
+        throw InvalidConfig{
             "Environment (\"" + this->selectedEnvironmentName + "\") not found in configuration."
-        );
+        };
     }
 
     this->environmentConfig = selectedEnvironmentIt->second;
@@ -328,7 +321,7 @@ void Application::loadProjectConfiguration() {
         this->debugServerConfig = this->projectConfig->debugServerConfig.value();
 
     } else {
-        throw InvalidConfig("Debug server configuration missing.");
+        throw InvalidConfig{"Debug server configuration missing."};
     }
 }
 
@@ -340,18 +333,20 @@ int Application::presentHelpText() {
     Logger::silence();
 
     // The file help.txt is included in Bloom's binary, as a resource. See the root-level CMakeLists.txt for more.
-    auto helpFile = QFile(QString::fromStdString(Services::PathService::compiledResourcesPath() + "/resources/help.txt"));
+    auto helpFile = QFile{
+        QString::fromStdString(Services::PathService::compiledResourcesPath() + "/resources/help.txt")
+    };
 
     if (!helpFile.open(QIODevice::ReadOnly)) {
         // This should never happen - if it does, something has gone very wrong
-        throw Exception(
+        throw Exception{
             "Failed to open help file - please report this issue at " + Services::PathService::homeDomainName()
                 + "/report-issue"
-        );
+        };
     }
 
     std::cout << "Bloom v" << Application::VERSION.toString() << "\n";
-    std::cout << QTextStream(&helpFile).readAll().toUtf8().constData() << "\n";
+    std::cout << QTextStream{&helpFile}.readAll().toUtf8().constData() << "\n";
     return EXIT_SUCCESS;
 }
 
@@ -376,14 +371,14 @@ int Application::presentVersionText() {
 int Application::presentVersionMachineText() {
     Logger::silence();
 
-    std::cout << QJsonDocument(QJsonObject({
+    std::cout << QJsonDocument{QJsonObject{
         {"version", QString::fromStdString(Application::VERSION.toString())},
         {"components", QJsonObject({
             {"major", Application::VERSION.major},
             {"minor", Application::VERSION.minor},
             {"patch", Application::VERSION.patch},
         })},
-    })).toJson().toStdString();
+    }}.toJson().toStdString();
 
     return EXIT_SUCCESS;
 }
@@ -393,38 +388,38 @@ int Application::presentCapabilitiesMachine() {
 
     Logger::silence();
 
-    static const auto targetFamilyNames = BiMap<TargetFamily, QString>({
+    static const auto targetFamilyNames = BiMap<TargetFamily, QString>{
         {TargetFamily::AVR_8, "AVR8"},
         {TargetFamily::RISC_V, "RISC-V"},
-    });
+    };
 
-    auto supportedTargets = QJsonArray();
+    auto supportedTargets = QJsonArray{};
 
     for (const auto& [configValue, descriptor] : Services::TargetService::briefDescriptorsByConfigValue()) {
-        supportedTargets.push_back(QJsonObject({
+        supportedTargets.push_back(QJsonObject{
             {"name" , QString::fromStdString(descriptor.name)},
             {"family" , targetFamilyNames.at(descriptor.family)},
             {"configurationValue" , QString::fromStdString(configValue)},
-        }));
+        });
     }
 
-    std::cout << QJsonDocument(QJsonObject({
+    std::cout << QJsonDocument{QJsonObject{
         {"targets", supportedTargets},
 #ifndef EXCLUDE_INSIGHT
         {"insight", true},
 #else
         {"insight", false},
 #endif
-    })).toJson().toStdString();
+    }}.toJson().toStdString();
 
     return EXIT_SUCCESS;
 }
 
 int Application::initProject() {
-    auto configFile = QFile(QString::fromStdString(Services::PathService::projectConfigPath()));
+    auto configFile = QFile{QString::fromStdString(Services::PathService::projectConfigPath())};
 
     if (configFile.exists()) {
-        throw Exception("Bloom configuration file (bloom.yaml) already exists in working directory.");
+        throw Exception{"Bloom configuration file (bloom.yaml) already exists in working directory."};
     }
 
     /*
@@ -433,19 +428,19 @@ int Application::initProject() {
      *
      * We simply copy the template file into the user's working directory.
      */
-    auto templateConfigFile = QFile(
+    auto templateConfigFile = QFile{
         QString::fromStdString(Services::PathService::compiledResourcesPath()+ "/resources/bloom.template.yaml")
-    );
+    };
 
     if (!templateConfigFile.open(QIODevice::ReadOnly)) {
-        throw Exception(
+        throw Exception{
             "Failed to open template configuration file - please report this issue at "
                 + Services::PathService::homeDomainName() + "/report-issue"
-        );
+        };
     }
 
     if (!configFile.open(QIODevice::ReadWrite)) {
-        throw Exception("Failed to create Bloom configuration file (bloom.yaml)");
+        throw Exception{"Failed to create Bloom configuration file (bloom.yaml)"};
     }
 
     configFile.write(templateConfigFile.readAll());
@@ -471,7 +466,7 @@ void Application::stopSignalHandler() {
          * Send meaningless signal to the SignalHandler thread to have it shutdown. The signal will pull it out of
          * a blocking state and allow it to action the shutdown. See SignalHandler::run() for more.
          */
-        pthread_kill(this->signalHandlerThread.native_handle(), SIGUSR1);
+        ::pthread_kill(this->signalHandlerThread.native_handle(), SIGUSR1);
     }
 
     if (this->signalHandlerThread.joinable()) {
@@ -497,7 +492,7 @@ void Application::startTargetController() {
     >();
 
     if (!tcStateChangeEvent.has_value() || tcStateChangeEvent->get()->getState() != ThreadState::READY) {
-        throw Exception("TargetController failed to start up");
+        throw Exception{"TargetController failed to start up"};
     }
 }
 
@@ -510,7 +505,7 @@ void Application::stopTargetController() {
     if (tcThreadState == ThreadState::STARTING || tcThreadState == ThreadState::READY) {
         EventManager::triggerEvent(std::make_shared<Events::ShutdownTargetController>());
         this->applicationEventListener->waitForEvent<Events::TargetControllerThreadStateChanged>(
-            std::chrono::milliseconds(10000)
+            std::chrono::milliseconds{10000}
         );
     }
 
@@ -525,18 +520,14 @@ void Application::startDebugServer() {
     this->debugServer = std::make_unique<DebugServer::DebugServerComponent>(
         this->debugServerConfig.value()
     );
-
-    this->debugServerThread = std::thread(
-        &DebugServer::DebugServerComponent::run,
-        this->debugServer.get()
-    );
+    this->debugServerThread = std::thread{&DebugServer::DebugServerComponent::run, this->debugServer.get()};
 
     const auto dsStateChangeEvent = this->applicationEventListener->waitForEvent<
         Events::DebugServerThreadStateChanged
     >();
 
     if (!dsStateChangeEvent.has_value() || dsStateChangeEvent->get()->getState() != ThreadState::READY) {
-        throw Exception("DebugServer failed to start up");
+        throw Exception{"DebugServer failed to start up"};
     }
 }
 
@@ -549,7 +540,7 @@ void Application::stopDebugServer() {
     if (debugServerState == ThreadState::STARTING || debugServerState == ThreadState::READY) {
         EventManager::triggerEvent(std::make_shared<Events::ShutdownDebugServer>());
         this->applicationEventListener->waitForEvent<Events::DebugServerThreadStateChanged>(
-            std::chrono::milliseconds(5000)
+            std::chrono::milliseconds{5000}
         );
     }
 
@@ -567,12 +558,14 @@ void Application::dispatchEvents() {
 void Application::checkBloomVersion() {
     const auto currentVersionNumber = Application::VERSION;
 
-    auto* networkAccessManager = new QNetworkAccessManager(this);
-    auto queryVersionEndpointUrl = QUrl(QString::fromStdString(Services::PathService::homeDomainName() + "/latest-version"));
+    auto* networkAccessManager = new QNetworkAccessManager{this};
+    auto queryVersionEndpointUrl = QUrl{
+        QString::fromStdString(Services::PathService::homeDomainName() + "/latest-version")
+    };
     queryVersionEndpointUrl.setScheme("http");
-    queryVersionEndpointUrl.setQuery(QUrlQuery({
+    queryVersionEndpointUrl.setQuery(QUrlQuery{
         {"currentVersionNumber", QString::fromStdString(currentVersionNumber.toString())}
-    }));
+    });
 
     QObject::connect(
         networkAccessManager,
@@ -591,7 +584,7 @@ void Application::checkBloomVersion() {
         }
     );
 
-    networkAccessManager->get(QNetworkRequest(queryVersionEndpointUrl));
+    networkAccessManager->get(QNetworkRequest{queryVersionEndpointUrl});
 }
 
 #ifndef EXCLUDE_INSIGHT

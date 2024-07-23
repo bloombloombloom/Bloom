@@ -12,7 +12,6 @@
 
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Targets/TargetVariant.hpp"
 
 #include "Widgets/Label.hpp"
 #include "Widgets/SvgToolButton.hpp"

@@ -29,7 +29,7 @@ namespace DebugServer
             }
 
         } catch (const std::exception& exception) {
-            Logger::error("DebugServer fatal error: " + std::string(exception.what()));
+            Logger::error("DebugServer fatal error: " + std::string{exception.what()});
         }
 
         this->shutdown();
@@ -44,7 +44,7 @@ namespace DebugServer
                 "avr-gdb-rsp",
                 [this] () -> std::unique_ptr<ServerInterface> {
                     if (this->targetDescriptor.family != Targets::TargetFamily::AVR_8) {
-                        throw Exceptions::Exception("The AVR GDB RSP server is only compatible with AVR8 targets.");
+                        throw Exceptions::Exception{"The AVR GDB RSP server is only compatible with AVR8 targets."};
                     }
 
                     return std::make_unique<DebugServer::Gdb::AvrGdb::AvrGdbRsp>(
@@ -75,7 +75,7 @@ namespace DebugServer
         const auto selectedServerIt = availableServersByName.find(this->debugServerConfig.name);
 
         if (selectedServerIt == availableServersByName.end()) {
-            throw Exceptions::InvalidConfig("DebugServer \"" + this->debugServerConfig.name + "\" not found.");
+            throw Exceptions::InvalidConfig{"DebugServer \"" + this->debugServerConfig.name + "\" not found."};
         }
 
         this->server = selectedServerIt->second();
@@ -111,7 +111,7 @@ namespace DebugServer
         );
     }
 
-    void DebugServerComponent::onShutdownDebugServerEvent(const Events::ShutdownDebugServer& event) {
+    void DebugServerComponent::onShutdownDebugServerEvent(const Events::ShutdownDebugServer&) {
         this->shutdown();
     }
 }

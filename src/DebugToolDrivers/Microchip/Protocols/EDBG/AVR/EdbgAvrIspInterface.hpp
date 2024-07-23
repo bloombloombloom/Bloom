@@ -5,8 +5,9 @@
 #include <thread>
 #include <cassert>
 
-#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR/AvrIspInterface.hpp"
+#include "src/DebugToolDrivers/TargetInterfaces/Microchip/AVR8/AvrIspInterface.hpp"
 #include "src/DebugToolDrivers/Microchip/Protocols/EDBG/EdbgInterface.hpp"
+#include "src/Targets/Microchip/AVR8/TargetDescriptionFile.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 {
@@ -19,25 +20,13 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
      * This implementation should work with any Microchip EDBG-based CMSIS-DAP debug tool with ISP support (such as
      * the Atmel-ICE, Power Debugger, the MPLAB SNAP debugger (in "AVR mode"), etc).
      */
-    class EdbgAvrIspInterface: public TargetInterfaces::Microchip::Avr::AvrIspInterface
+    class EdbgAvrIspInterface: public TargetInterfaces::Microchip::Avr8::AvrIspInterface
     {
     public:
-        explicit EdbgAvrIspInterface(EdbgInterface* edbgInterface);
-
-        /**
-         * The EdbgAvrIspInterface doesn't actually require any config from the user, at this point in time. So this
-         * function does nothing, for now.
-         *
-         * @param targetConfig
-         */
-        void configure(const TargetConfig& targetConfig) override {};
-
-        /**
-         * Accepts the target's ISP parameters. These should be extracted from the target's TDF.
-         *
-         * @param ispParameters
-         */
-        void setIspParameters(const Targets::Microchip::Avr::IspParameters& ispParameters) override;
+        explicit EdbgAvrIspInterface(
+            EdbgInterface* edbgInterface,
+            const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile
+        );
 
         /**
          * Initialises the ISP interface by enabling "programming mode" on the debug tool. This will activate the
@@ -56,15 +45,17 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          *
          * @return
          */
-        Targets::Microchip::Avr::TargetSignature getDeviceId() override;
+        Targets::Microchip::Avr8::TargetSignature getDeviceId() override;
 
         /**
          * Reads a particular fuse byte from the AVR target.
          *
-         * @param fuseType
+         * @param fuseRegisterDescriptor
          * @return
          */
-        Targets::Microchip::Avr::Fuse readFuse(Targets::Microchip::Avr::FuseType fuseType) override;
+        Targets::Microchip::Avr8::FuseValue readFuse(
+            const Targets::TargetRegisterDescriptor& fuseRegisterDescriptor
+        ) override;
 
         /**
          * Reads the lock bit byte from the AVR target.
@@ -76,9 +67,13 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         /**
          * Programs a particular fuse on the AVR target.
          *
-         * @param fuse
+         * @param fuseRegisterDescriptor
+         * @param value
          */
-        void programFuse(Targets::Microchip::Avr::Fuse fuse) override;
+        void programFuse(
+            const Targets::TargetRegisterDescriptor& fuseRegisterDescriptor,
+            Targets::Microchip::Avr8::FuseValue value
+        ) override;
 
     private:
         /**
@@ -89,7 +84,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          */
         EdbgInterface* edbgInterface;
 
-        Targets::Microchip::Avr::IspParameters ispParameters;
+        Targets::Microchip::Avr8::IspParameters ispParameters;
 
         /**
          * The EDBG AVRISP protocol only allows us to read a single signature byte at a time.
@@ -100,5 +95,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * @return
          */
         [[nodiscard]] unsigned char readSignatureByte(std::uint8_t signatureByteAddress);
+
+        Targets::Microchip::Avr8::FuseType resolveFuseType(
+            const Targets::TargetRegisterDescriptor& fuseRegisterDescriptor
+        );
     };
 }

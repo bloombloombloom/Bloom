@@ -22,8 +22,8 @@ class BiMap
 public:
     BiMap(std::initializer_list<std::pair<TypeA, TypeB>> elements) {
         for (auto it = elements.begin(); it != elements.end(); ++it) {
-            this->map.insert(std::pair<TypeA, TypeB>{it->first, it->second});
-            this->flippedMap.insert(std::pair<TypeB, TypeA>(it->second, it->first));
+            this->map.emplace(it->first, it->second);
+            this->flippedMap.emplace(it->second, it->first);
         }
     }
 
@@ -37,16 +37,16 @@ public:
 
     auto find(const TypeA& key) const {
         const auto valueIt = this->map.find(key);
-        return valueIt != this->map.end() ? std::optional(valueIt) : std::nullopt;
+        return valueIt != this->map.end() ? std::optional{valueIt} : std::nullopt;
     }
 
     auto find(const TypeB& key) const {
         const auto valueIt = this->flippedMap.find(key);
-        return valueIt != this->flippedMap.end() ? std::optional(valueIt) : std::nullopt;
+        return valueIt != this->flippedMap.end() ? std::optional{valueIt} : std::nullopt;
     }
 
     std::optional<TypeB> valueAt(const TypeA& key) const {
-        std::optional<TypeB> output;
+        auto output = std::optional<TypeB>{};
 
         const auto valueIt = this->map.find(key);
         if (valueIt != this->map.end()) {
@@ -57,7 +57,7 @@ public:
     }
 
     std::optional<TypeA> valueAt(const TypeB& key) const {
-        std::optional<TypeA> output;
+        auto output = std::optional<TypeA>{};
 
         const auto valueIt = this->flippedMap.find(key);
         if (valueIt != this->flippedMap.end()) {
@@ -80,7 +80,7 @@ public:
     }
 
     [[nodiscard]] std::set<TypeB> getKeys() const {
-        auto keys = std::set<TypeB>();
+        auto keys = std::set<TypeB>{};
 
         for (const auto& [key, value] : this->map) {
             keys.insert(key);
@@ -90,7 +90,7 @@ public:
     }
 
     [[nodiscard]] std::set<TypeB> getValues() const {
-        auto values = std::set<TypeB>();
+        auto values = std::set<TypeB>{};
 
         for (const auto& [key, value] : this->map) {
             values.insert(value);
@@ -101,7 +101,7 @@ public:
 
     void insert(const std::pair<TypeA, TypeB>& pair) {
         auto insertResultPair = this->map.insert(pair);
-        this->flippedMap.insert(std::pair<TypeB, TypeA>(pair.second, pair.first));
+        this->flippedMap.emplace(pair.second, pair.first);
     }
 
 private:

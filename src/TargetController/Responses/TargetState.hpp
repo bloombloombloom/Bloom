@@ -11,9 +11,9 @@ namespace TargetController::Responses
     public:
         static constexpr ResponseType type = ResponseType::TARGET_STATE;
 
-        Targets::TargetState targetState;
+        const Targets::TargetState& targetState;
 
-        explicit TargetState(Targets::TargetState targetState)
+        explicit TargetState(const Targets::TargetState& targetState)
             : targetState(targetState)
         {}
 

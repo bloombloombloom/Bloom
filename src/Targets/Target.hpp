@@ -10,11 +10,15 @@
 #include "src/ProjectConfig.hpp"
 
 #include "TargetDescriptor.hpp"
+#include "TargetAddressSpaceDescriptor.hpp"
+#include "TargetMemorySegmentDescriptor.hpp"
 #include "TargetState.hpp"
 #include "TargetRegisterDescriptor.hpp"
-#include "TargetRegister.hpp"
 #include "TargetMemory.hpp"
 #include "TargetBreakpoint.hpp"
+#include "TargetPinoutDescriptor.hpp"
+#include "TargetPinDescriptor.hpp"
+#include "TargetGpioPinState.hpp"
 
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
@@ -33,10 +37,6 @@ namespace Targets
         explicit Target() = default;
 
         virtual ~Target() = default;
-
-        bool isActivated() const {
-            return this->activated;
-        }
 
         /**
          * Should check if the given debugTool is compatible with the target. Returning false in this function will
@@ -79,22 +79,18 @@ namespace Targets
         virtual void deactivate() = 0;
 
         /**
-         * Should generate and return a TargetDescriptor for the current target.
-         *
-         * This is called when a component within Bloom requests the TargetDescriptor from the TargetController.
-         * The TargetController will cache this upon the first request. Subsequent requests will be serviced with the
-         * cached value.
+         * Should generate a TargetDescriptor for the current target.
          *
          * @return
          */
-        virtual TargetDescriptor getDescriptor() = 0;
+        virtual TargetDescriptor targetDescriptor() = 0;
 
         /**
          * Should resume execution on the target.
          *
          * @param toAddress
          */
-        virtual void run(std::optional<TargetMemoryAddress> toAddress = std::nullopt) = 0;
+        virtual void run(std::optional<TargetMemoryAddress> toAddress) = 0;
 
         /**
          * Should halt execution on the target.
@@ -149,23 +145,24 @@ namespace Targets
         /**
          * Should read register values of the registers described by the given descriptors.
          *
-         * @param descriptorIds
+         * @param descriptors
          *
          * @return
          */
-        virtual TargetRegisters readRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds) = 0;
+        virtual TargetRegisterDescriptorAndValuePairs readRegisters(const TargetRegisterDescriptors& descriptors) = 0;
 
         /**
          * Should update the value of the given registers.
          *
          * @param registers
          */
-        virtual void writeRegisters(const TargetRegisters& registers) = 0;
+        virtual void writeRegisters(const TargetRegisterDescriptorAndValuePairs& registers) = 0;
 
         /**
          * Should read memory from the target.
          *
-         * @param memoryType
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          * @param startAddress
          * @param bytes
          * @param excludedAddressRanges
@@ -173,38 +170,65 @@ namespace Targets
          * @return
          */
         virtual TargetMemoryBuffer readMemory(
-            TargetMemoryType memoryType,
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             TargetMemoryAddress startAddress,
             TargetMemorySize bytes,
-            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
+            const std::set<TargetMemoryAddressRange>& excludedAddressRanges
         ) = 0;
 
         /**
          * Should write memory to the target.
          *
-         * @param memoryType
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          * @param startAddress
          * @param buffer
          */
         virtual void writeMemory(
-            TargetMemoryType memoryType,
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             TargetMemoryAddress startAddress,
             const TargetMemoryBuffer& buffer
         ) = 0;
 
         /**
+         * Should check if the given memory is program memory.
+         *
+         * The TargetMemorySegmentDescriptor::executable flag specifies whether any part of the segment is executable,
+         * but this member function allows for a more granular check.
+         *
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
+         * @param startAddress
+         * @param size
+         *
+         * @return
+         */
+        virtual bool isProgramMemory(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            TargetMemoryAddress startAddress,
+            TargetMemorySize size
+        ) = 0;
+
+        /**
          * Should erase the entire address range of a given memory type.
          *
-         * @param memoryType
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          */
-        virtual void eraseMemory(TargetMemoryType memoryType) = 0;
+        virtual void eraseMemory(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor
+        ) = 0;
 
         /**
          * Should return the current state of the target.
          *
          * @return
          */
-        virtual TargetState getState() = 0;
+        virtual TargetExecutionState getExecutionState() = 0;
 
         /**
          * Should fetch the current program counter value.
@@ -228,24 +252,30 @@ namespace Targets
         virtual TargetStackPointer getStackPointer() = 0;
 
         /**
-         * Should get the current pin states for each pin on the target, mapped by pin number
+         * Should update the stack pointer value on the target.
          *
-         * @param variantId
+         * @param stackPointer
+         */
+        virtual void setStackPointer(TargetStackPointer stackPointer) = 0;
+
+        /**
+         * Should get the current state of each GPIO pin on the target
+         *
+         * @param pinoutDescriptor
          *
          * @return
          */
-        virtual std::map<int, TargetPinState> getPinStates(int variantId) = 0;
+        virtual TargetGpioPinDescriptorAndStatePairs getGpioPinStates(
+            const TargetPinoutDescriptor& pinoutDescriptor
+        ) = 0;
 
         /**
-         * Should update the pin state for the given pin, with the given state.
+         * Should update the pin state for the given GPIO pin, with the given state.
          *
          * @param pinDescriptor
          * @param state
          */
-        virtual void setPinState(
-            const TargetPinDescriptor& pinDescriptor,
-            const TargetPinState& state
-        ) = 0;
+        virtual void setGpioPinState(const TargetPinDescriptor& pinDescriptor, const TargetGpioPinState& state) = 0;
 
         /**
          * Should prepare the target for programming.
@@ -263,14 +293,5 @@ namespace Targets
          * @return
          */
         virtual bool programmingModeEnabled() = 0;
-
-    protected:
-        /**
-         * Target related configuration provided by the user. This is passed in via the first stage of target
-         * configuration. See Target::preActivationConfigure() for more.
-         */
-        TargetConfig config;
-
-        bool activated = false;
     };
 }

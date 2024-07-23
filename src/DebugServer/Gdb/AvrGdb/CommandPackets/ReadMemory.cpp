@@ -1,5 +1,7 @@
 #include "ReadMemory.hpp"
 
+#include <cassert>
+
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
@@ -18,141 +20,139 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     using Exceptions::Exception;
 
     ReadMemory::ReadMemory(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
-        : CommandPacket(rawPacket)
-    {
-        if (this->data.size() < 4) {
-            throw Exception("Invalid packet length");
-        }
+        : ReadMemory(rawPacket, gdbTargetDescriptor, ReadMemory::extractPacketData(rawPacket))
+    {}
 
-        const auto packetString = QString::fromLocal8Bit(
-            reinterpret_cast<const char*>(this->data.data() + 1),
-            static_cast<int>(this->data.size() - 1)
-        );
-
-        /*
-         * The read memory ('m') packet consists of two segments, an address and a number of bytes to read.
-         * These are separated by a comma character.
-         */
-        const auto packetSegments = packetString.split(",");
-
-        if (packetSegments.size() != 2) {
-            throw Exception(
-                "Unexpected number of segments in packet data: " + std::to_string(packetSegments.size())
-            );
-        }
-
-        bool conversionStatus = false;
-        const auto gdbStartAddress = packetSegments.at(0).toUInt(&conversionStatus, 16);
-
-        if (!conversionStatus) {
-            throw Exception("Failed to parse start address from read memory packet data");
-        }
-
-        /*
-         * Extract the memory type from the memory address (see Gdb::TargetDescriptor::memoryOffsetsByType for more on
-         * this).
-         */
-        this->memoryType = gdbTargetDescriptor.getMemoryTypeFromGdbAddress(gdbStartAddress);
-        this->startAddress = gdbStartAddress & ~(gdbTargetDescriptor.getMemoryOffset(this->memoryType));
-
-        this->bytes = packetSegments.at(1).toUInt(&conversionStatus, 16);
-
-        if (!conversionStatus) {
-            throw Exception("Failed to parse read length from read memory packet data");
-        }
-    }
-
-    void ReadMemory::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void ReadMemory::handle(
+        Gdb::DebugSession& debugSession,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling ReadMemory packet");
 
         try {
-            const auto& memoryDescriptorsByType = debugSession.gdbTargetDescriptor.targetDescriptor.memoryDescriptorsByType;
-            const auto memoryDescriptorIt = memoryDescriptorsByType.find(this->memoryType);
-
-            if (memoryDescriptorIt == memoryDescriptorsByType.end()) {
-                throw Exception("Target does not support the requested memory type.");
-            }
-
             if (this->bytes == 0) {
-                debugSession.connection.writePacket(ResponsePacket(std::vector<unsigned char>()));
+                debugSession.connection.writePacket(ResponsePacket{Targets::TargetMemoryBuffer{}});
                 return;
             }
 
-            const auto& memoryDescriptor = memoryDescriptorIt->second;
+            const auto addressRange = Targets::TargetMemoryAddressRange{
+                this->startAddress,
+                this->startAddress + this->bytes - 1
+            };
 
-            if (this->memoryType == Targets::TargetMemoryType::EEPROM) {
-                // GDB sends EEPROM addresses in relative form - we convert them to absolute form, here.
-                this->startAddress = memoryDescriptor.addressRange.startAddress + this->startAddress;
+            const auto memorySegmentDescriptors = this->addressSpaceDescriptor.getIntersectingMemorySegmentDescriptors(
+                addressRange
+            );
+
+            /*
+             * First pass to ensure that we can read all of the memory before attempting to do so. And to ensure that
+             * the requested address range completely resides within known memory segments.
+             */
+            auto accessibleBytes = Targets::TargetMemorySize{0};
+            for (const auto* memorySegmentDescriptor : memorySegmentDescriptors) {
+                if (!memorySegmentDescriptor->debugModeAccess.readable) {
+                    throw Exception{
+                        "Attempted to access restricted memory segment (" + memorySegmentDescriptor->key
+                            + ") - segment not readable in debug mode"
+                    };
+                }
+
+                accessibleBytes += memorySegmentDescriptor->addressRange.intersectingSize(addressRange);
             }
 
             /*
-             * In AVR targets, RAM is mapped to many registers and peripherals - we don't want to block GDB from
-             * accessing them.
+             * GDB will sometimes request an excess of up to two bytes outside the memory segment address range, even
+             * though we provide it with a memory map. I don't know why it does this, but I do know that we must
+             * tolerate it, otherwise GDB will moan.
              */
-            const auto permittedStartAddress = (this->memoryType == Targets::TargetMemoryType::RAM)
-                ? 0x00
-                : memoryDescriptor.addressRange.startAddress;
-
-            const auto permittedEndAddress = memoryDescriptor.addressRange.endAddress + 2;
-
-            if (
-                this->startAddress < permittedStartAddress
-                || (this->startAddress + (this->bytes - 1)) > permittedEndAddress
-            ) {
+            if (accessibleBytes < this->bytes && (this->bytes - accessibleBytes) > 2) {
                 /*
-                 * GDB can be configured to generate backtraces past the main function and the internal entry point
-                 * of the application. Although this isn't very useful to most devs, CLion now seems to enable it by
-                 * default. Somewhere between CLion 2021.1 and 2022.1, it began issuing the "-gdb-set backtrace past-entry on"
-                 * command to GDB, at the beginning of each debug session.
+                 * GDB has requested memory that, at least partially, does not reside in any known memory segment.
                  *
-                 * This means that GDB will attempt to walk down the stack to identify every frame. The problem is that
-                 * GDB doesn't really know where the stack begins, so it ends up in a loop, continually issuing read
-                 * memory commands. This has exposed an issue on our end - we need to validate the requested memory
-                 * address range and reject any request for a range that's not within the target's memory. We do this
-                 * here.
+                 * This could be a result of GDB being configured to generate backtraces past the main function and
+                 * the internal entry point of the application. This means that GDB will attempt to walk down the stack
+                 * to identify every frame. The problem is that GDB doesn't really know where the stack begins, so it
+                 * probes the target by continuously issuing read memory commands until the server responds with an
+                 * error.
+                 *
+                 * CLion seems to enable this by default. Somewhere between CLion 2021.1 and 2022.1, it began issuing
+                 * the "-gdb-set backtrace past-entry on" command to GDB, at the beginning of each debug session.
                  *
                  * We don't throw an exception here, because this isn't really an error and so it's best not to report
                  * it as such. I don't think it's an error because it's expected behaviour, even though we respond to
                  * GDB with an error response.
                  */
                 Logger::debug(
-                    "GDB requested access to memory which is outside the target's memory range - returning error "
-                    "response"
+                    "GDB requested access to memory which does not reside within any memory segment - returning error "
+                        "response"
                 );
-                debugSession.connection.writePacket(ErrorResponsePacket());
+                debugSession.connection.writePacket(ErrorResponsePacket{});
                 return;
             }
 
-            /*
-             * GDB may request more bytes than what's available (even though we give it a memory map?!) - ensure that
-             * we don't try to read any more than what's available.
-             *
-             * We fill the out-of-bounds bytes with 0x00, below.
-             */
-            const auto bytesToRead = (this->startAddress <= memoryDescriptor.addressRange.endAddress)
-                ? std::min(this->bytes, (memoryDescriptor.addressRange.endAddress - this->startAddress) + 1)
-                : 0;
+            auto buffer = Targets::TargetMemoryBuffer(this->bytes, 0x00);
 
-            auto memoryBuffer = Targets::TargetMemoryBuffer();
+            {
+                const auto atomicSession = targetControllerService.makeAtomicSession();
 
-            if (bytesToRead > 0) {
-                memoryBuffer = targetControllerService.readMemory(
-                    this->memoryType,
-                    this->startAddress,
-                    bytesToRead
-                );
+                for (const auto* memorySegmentDescriptor : memorySegmentDescriptors) {
+                    const auto segmentStartAddress = std::max(
+                        this->startAddress,
+                        memorySegmentDescriptor->addressRange.startAddress
+                    );
+
+                    const auto segmentBuffer = targetControllerService.readMemory(
+                        this->addressSpaceDescriptor,
+                        *memorySegmentDescriptor,
+                        segmentStartAddress,
+                        memorySegmentDescriptor->addressRange.intersectingSize(addressRange)
+                    );
+
+                    const auto bufferOffsetIt = buffer.begin() + (segmentStartAddress - this->startAddress);
+                    assert(segmentBuffer.size() <= std::distance(bufferOffsetIt, buffer.end()));
+
+                    std::copy(segmentBuffer.begin(), segmentBuffer.end(), bufferOffsetIt);
+                }
             }
 
-            if (bytesToRead < this->bytes) {
-                // GDB requested some out-of-bounds memory - fill the inaccessible bytes with 0x00
-                memoryBuffer.insert(memoryBuffer.end(), (this->bytes - bytesToRead), 0x00);
-            }
-
-            debugSession.connection.writePacket(ResponsePacket(Services::StringService::toHex(memoryBuffer)));
+            debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(buffer)});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to read memory from target - " + exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
+
+    ReadMemory::PacketData ReadMemory::extractPacketData(const RawPacket& rawPacket) {
+        using Services::StringService;
+
+        if (rawPacket.size() < 8) {
+            throw Exception{"Invalid packet length"};
+        }
+
+        const auto command = std::string{rawPacket.begin() + 2, rawPacket.end() - 3};
+
+        const auto delimiterPos = command.find_first_of(',');
+        if (delimiterPos == std::string::npos) {
+            throw Exception{"Invalid packet"};
+        }
+
+        return {
+            StringService::toUint32(command.substr(0, delimiterPos), 16),
+            StringService::toUint32(command.substr(delimiterPos + 1), 16)
+        };
+    }
+
+    ReadMemory::ReadMemory(
+        const RawPacket& rawPacket,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        ReadMemory::PacketData&& packetData
+    )
+        : CommandPacket(rawPacket)
+        , addressSpaceDescriptor(gdbTargetDescriptor.addressSpaceDescriptorFromGdbAddress(packetData.gdbStartAddress))
+        , startAddress(gdbTargetDescriptor.translateGdbAddress(packetData.gdbStartAddress))
+        , bytes(packetData.bytes)
+    {}
 }

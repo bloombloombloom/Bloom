@@ -1,9 +1,6 @@
 #include "TargetDescriptor.hpp"
 
-#include <numeric>
-
 #include "src/Exceptions/Exception.hpp"
-#include "src/Logger/Logger.hpp"
 
 namespace DebugServer::Gdb::AvrGdb
 {
@@ -13,149 +10,110 @@ namespace DebugServer::Gdb::AvrGdb
     using Exceptions::Exception;
 
     TargetDescriptor::TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
-        : DebugServer::Gdb::TargetDescriptor(
-            targetDescriptor,
-            {
-                {Targets::TargetMemoryType::FLASH, 0},
-                {Targets::TargetMemoryType::RAM, 0x00800000U},
-                {Targets::TargetMemoryType::EEPROM, 0x00810000U},
-            },
-            {},
-            {},
-            {}
-        )
+        : programAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("prog"))
+        , eepromAddressSpaceDescriptor(targetDescriptor.getFirstAddressSpaceDescriptorContainingMemorySegment("internal_eeprom"))
+        , sramAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("data"))
+        , gpRegistersAddressSpaceDescriptor(targetDescriptor.getFirstAddressSpaceDescriptorContainingMemorySegment("gp_registers"))
+        , programMemorySegmentDescriptor(this->programAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_program_memory"))
+        , eepromMemorySegmentDescriptor(this->eepromAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_eeprom"))
+        , sramMemorySegmentDescriptor(this->sramAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_ram"))
+        , gpRegistersMemorySegmentDescriptor(this->gpRegistersAddressSpaceDescriptor.getMemorySegmentDescriptor("gp_registers"))
+        , cpuGpPeripheralDescriptor(targetDescriptor.getPeripheralDescriptor("cpu_gpr"))
+        , cpuGpRegisterGroupDescriptor(this->cpuGpPeripheralDescriptor.getRegisterGroupDescriptor("gpr"))
     {
-        this->loadRegisterMappings();
-    }
-
-    void TargetDescriptor::loadRegisterMappings() {
-        const auto generalPurposeTargetRegisterDescriptorIds = this->targetDescriptor.registerDescriptorIdsForType(
-            TargetRegisterType::GENERAL_PURPOSE_REGISTER
-        );
-
-        const auto statusTargetRegisterDescriptorIds = this->targetDescriptor.registerDescriptorIdsForType(
-            TargetRegisterType::STATUS_REGISTER
-        );
-
-        const auto stackPointerTargetRegisterDescriptorIds = this->targetDescriptor.registerDescriptorIdsForType(
-            TargetRegisterType::STACK_POINTER
-        );
-
-        if (generalPurposeTargetRegisterDescriptorIds.size() != 32) {
-            throw Exception("Unexpected general purpose register count");
-        }
-
-        if (statusTargetRegisterDescriptorIds.empty()) {
-            throw Exception("Missing status register descriptor");
-        }
-
-        if (stackPointerTargetRegisterDescriptorIds.empty()) {
-            throw Exception("Missing stack pointer register descriptor");
-        }
-
         /*
          * For AVR targets, GDB defines 35 registers in total:
          *
          * - Register ID 0 through 31 are general purpose registers
          * - Register ID 32 is the status register (SREG)
-         * - Register ID 33 is the stack pointer register
-         * - Register ID 34 is the program counter
-         *
-         * For AVR targets, we don't have a target register descriptor for the program counter, so we don't map that
-         * GDB register ID (34) to anything here. Instead, the register command packet handlers (ReadRegisters,
-         * WriteRegister, etc) will handle any operations involving that GDB register.
+         * - Register ID 33 is the stack pointer register (SP)
+         * - Register ID 34 is the program counter (PC)
          */
 
-        // General purpose registers
-        GdbRegisterId gdbRegisterId = 0;
-        for (const auto descriptorId : generalPurposeTargetRegisterDescriptorIds) {
-            auto gdbRegisterDescriptor = RegisterDescriptor(
-                gdbRegisterId,
-                1,
-                "General Purpose Register " + std::to_string(gdbRegisterId)
+        // Create the GDB register descriptors and populate the mappings for the general purpose registers (ID 0->31)
+        for (const auto& [key, descriptor] : this->cpuGpRegisterGroupDescriptor.registerDescriptorsByKey) {
+            if (descriptor.type != TargetRegisterType::GENERAL_PURPOSE_REGISTER) {
+                continue;
+            }
+
+            const auto gdbRegisterId = static_cast<GdbRegisterId>(
+                descriptor.startAddress - this->gpRegistersMemorySegmentDescriptor.addressRange.startAddress
             );
 
-            this->gdbRegisterIdsByTargetRegisterDescriptorId.emplace(descriptorId, gdbRegisterDescriptor.id);
-            this->targetRegisterDescriptorIdsByGdbRegisterId.emplace(gdbRegisterDescriptor.id, descriptorId);
-
-            this->gdbRegisterDescriptorsById.emplace(gdbRegisterDescriptor.id, std::move(gdbRegisterDescriptor));
-
-            gdbRegisterId++;
+            this->gdbRegisterDescriptorsById.emplace(gdbRegisterId, RegisterDescriptor{gdbRegisterId, 1});
+            this->targetRegisterDescriptorsByGdbId.emplace(gdbRegisterId, &descriptor);
         }
 
-        const auto& statusTargetRegisterDescriptor = this->targetDescriptor.registerDescriptorsById.at(
-            *(statusTargetRegisterDescriptorIds.begin())
-        );
-
-        auto statusGdbRegisterDescriptor = RegisterDescriptor(
+        this->gdbRegisterDescriptorsById.emplace(
             TargetDescriptor::STATUS_GDB_REGISTER_ID,
-            1,
-            "Status Register"
+            RegisterDescriptor{TargetDescriptor::STATUS_GDB_REGISTER_ID, 1}
         );
-
-        if (statusTargetRegisterDescriptor.size > statusGdbRegisterDescriptor.size) {
-            throw Exception("AVR8 status target register size exceeds the GDB register size.");
-        }
-
-        this->gdbRegisterIdsByTargetRegisterDescriptorId.emplace(
-            statusTargetRegisterDescriptor.id,
-            statusGdbRegisterDescriptor.id
-        );
-        this->targetRegisterDescriptorIdsByGdbRegisterId.emplace(
-            statusGdbRegisterDescriptor.id,
-            statusTargetRegisterDescriptor.id
-        );
-
-        this->gdbRegisterDescriptorsById.emplace(
-            statusGdbRegisterDescriptor.id,
-            std::move(statusGdbRegisterDescriptor)
-        );
-
-        const auto& stackPointerTargetRegisterDescriptor = this->targetDescriptor.registerDescriptorsById.at(
-            *(stackPointerTargetRegisterDescriptorIds.begin())
-        );
-
-        auto stackPointerGdbRegisterDescriptor = RegisterDescriptor(
-            TargetDescriptor::STACK_POINTER_GDB_REGISTER_ID,
-            2,
-            "Stack Pointer Register"
-        );
-
-        if (stackPointerTargetRegisterDescriptor.size > stackPointerGdbRegisterDescriptor.size) {
-            throw Exception("AVR8 stack pointer target register size exceeds the GDB register size.");
-        }
-
-        this->gdbRegisterIdsByTargetRegisterDescriptorId.emplace(
-            stackPointerTargetRegisterDescriptor.id,
-            stackPointerGdbRegisterDescriptor.id
-        );
-        this->targetRegisterDescriptorIdsByGdbRegisterId.emplace(
-            stackPointerGdbRegisterDescriptor.id,
-            stackPointerTargetRegisterDescriptor.id
-        );
-
-        this->gdbRegisterDescriptorsById.emplace(
-            stackPointerGdbRegisterDescriptor.id,
-            std::move(stackPointerGdbRegisterDescriptor)
+        this->targetRegisterDescriptorsByGdbId.emplace(
+            TargetDescriptor::STATUS_GDB_REGISTER_ID,
+            &(targetDescriptor.getPeripheralDescriptor("cpu").getRegisterGroupDescriptor("cpu")
+                .getRegisterDescriptor("sreg"))
         );
 
         /*
-         * We acknowledge the GDB program counter register here, but we don't map it to any target register descriptors.
-         *
-         * This is because we can't access the program counter on AVR targets in the same way we do with other
-         * registers. We don't have a register descriptor for the program counter. We have to treat it as a special
-         * case in the register access command packet handlers. See CommandPackets::ReadRegister,
+         * We don't map the SP and PC GDB register IDs to target register descriptors because of inconsistencies.
+         * The register command handlers will deal with these registers separately. See CommandPackets::ReadRegister,
          * CommandPackets::WriteRegister, etc for more.
          */
-        auto programCounterGdbRegisterDescriptor = RegisterDescriptor(
-            TargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID,
-            4,
-            "Program Counter"
+        this->gdbRegisterDescriptorsById.emplace(
+            TargetDescriptor::STACK_POINTER_GDB_REGISTER_ID,
+            RegisterDescriptor{TargetDescriptor::STACK_POINTER_GDB_REGISTER_ID, 2}
         );
 
         this->gdbRegisterDescriptorsById.emplace(
-            programCounterGdbRegisterDescriptor.id,
-            std::move(programCounterGdbRegisterDescriptor)
+            TargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID,
+            RegisterDescriptor{TargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID, 4}
         );
+    }
+
+    const Targets::TargetAddressSpaceDescriptor& TargetDescriptor::addressSpaceDescriptorFromGdbAddress(
+        GdbMemoryAddress address
+    ) const {
+        if ((address & TargetDescriptor::EEPROM_ADDRESS_MASK) == TargetDescriptor::EEPROM_ADDRESS_MASK) {
+            return this->eepromAddressSpaceDescriptor;
+        }
+
+        if ((address & TargetDescriptor::SRAM_ADDRESS_MASK) == TargetDescriptor::SRAM_ADDRESS_MASK) {
+            return this->sramAddressSpaceDescriptor;
+        }
+
+        return this->programAddressSpaceDescriptor;
+    }
+
+    Targets::TargetMemoryAddress TargetDescriptor::translateGdbAddress(GdbMemoryAddress address) const {
+        if ((address & TargetDescriptor::EEPROM_ADDRESS_MASK) == TargetDescriptor::EEPROM_ADDRESS_MASK) {
+            // GDB sends EEPROM addresses in relative form - convert them to absolute form.
+            return this->eepromMemorySegmentDescriptor.addressRange.startAddress
+                + (address & ~(TargetDescriptor::EEPROM_ADDRESS_MASK));
+        }
+
+        if ((address & TargetDescriptor::SRAM_ADDRESS_MASK) == TargetDescriptor::SRAM_ADDRESS_MASK) {
+            return address & ~(TargetDescriptor::SRAM_ADDRESS_MASK);
+        }
+
+        return address;
+    }
+
+    GdbMemoryAddress TargetDescriptor::translateTargetMemoryAddress(
+        Targets::TargetMemoryAddress address,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
+    ) const {
+        if (memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::FLASH) {
+            return address;
+        }
+
+        if (memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::EEPROM) {
+            // GDB expects EEPROM addresses in relative form
+            return (address - memorySegmentDescriptor.addressRange.startAddress)
+                | TargetDescriptor::EEPROM_ADDRESS_MASK;
+        }
+
+        // We assume everything else is SRAM
+        return address | TargetDescriptor::SRAM_ADDRESS_MASK;
     }
 }

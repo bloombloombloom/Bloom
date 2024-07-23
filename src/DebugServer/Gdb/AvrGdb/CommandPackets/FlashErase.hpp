@@ -4,9 +4,10 @@
 #include <optional>
 
 #include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
-#include "src/DebugServer/Gdb/TargetDescriptor.hpp"
+#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
 
-#include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -19,11 +20,15 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     public:
         std::uint32_t startAddress = 0;
         std::uint32_t bytes = 0;
+        const Targets::TargetAddressSpaceDescriptor& programMemoryAddressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& programMemorySegmentDescriptor;
 
-        explicit FlashErase(const RawPacket& rawPacket);
+        explicit FlashErase(const RawPacket& rawPacket, const TargetDescriptor& targetDescriptor);
 
         void handle(
             Gdb::DebugSession& debugSession,
+            const Gdb::TargetDescriptor& gdbTargetDescriptor,
+            const Targets::TargetDescriptor& targetDescriptor,
             Services::TargetControllerService& targetControllerService
         ) override;
     };

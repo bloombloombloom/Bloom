@@ -6,10 +6,12 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
         : Avr8GenericResponseFrame(AvrResponses)
     {}
 
-    Targets::Microchip::Avr::TargetSignature GetDeviceId::extractSignature(
+    Targets::Microchip::Avr8::TargetSignature GetDeviceId::extractSignature(
         Targets::TargetPhysicalInterface physicalInterface
     ) const {
         using Targets::TargetPhysicalInterface;
+        using Targets::Microchip::Avr8::TargetSignature;
+
         const auto payloadData = this->getPayloadData();
 
         switch (physicalInterface) {
@@ -18,14 +20,14 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
                  * When using the DebugWire physical interface, the get device ID command will return
                  * four bytes, where the first can be ignored.
                  */
-                return Targets::Microchip::Avr::TargetSignature(payloadData[1], payloadData[2], payloadData[3]);
+                return TargetSignature{payloadData[1], payloadData[2], payloadData[3]};
             }
             case TargetPhysicalInterface::PDI:
             case TargetPhysicalInterface::UPDI: {
                 /*
                  * When using the PDI physical interface, the signature is returned in LSB format.
                  */
-                return Targets::Microchip::Avr::TargetSignature(payloadData[3], payloadData[2], payloadData[1]);
+                return TargetSignature{payloadData[3], payloadData[2], payloadData[1]};
             }
             case TargetPhysicalInterface::JTAG: {
                 /*
@@ -50,18 +52,14 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
                     (payloadData[0] << 24) | (payloadData[1] << 16) | (payloadData[2] << 8) | (payloadData[3])
                 );
 
-                return Targets::Microchip::Avr::TargetSignature(
+                return TargetSignature{
                     0x1E,
                     static_cast<unsigned char>((jtagId << 4) >> 24),
                     static_cast<unsigned char>((jtagId << 12) >> 24)
-                );
+                };
             }
             default: {
-                return Targets::Microchip::Avr::TargetSignature(
-                    payloadData[0],
-                    payloadData[1],
-                    payloadData[2]
-                );
+                return TargetSignature{payloadData[0], payloadData[1], payloadData[2]};
             }
         }
     }

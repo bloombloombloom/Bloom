@@ -8,16 +8,18 @@ class AddressSpace
     public ?string $key = null;
     public ?int $startAddress = null;
     public ?int $size = null;
+    public ?int $unitSize = null;
     public ?string $endianness = null;
 
     /** @var MemorySegment[] */
     public array $memorySegments = [];
 
-    public function __construct(?string $key, ?int $startAddress, ?int $size, ?string $endianness)
+    public function __construct(?string $key, ?int $startAddress, ?int $size, ?int $unitSize, ?string $endianness)
     {
         $this->key = $key;
         $this->startAddress = $startAddress;
         $this->size = $size;
+        $this->unitSize = $unitSize;
         $this->endianness = $endianness;
     }
 

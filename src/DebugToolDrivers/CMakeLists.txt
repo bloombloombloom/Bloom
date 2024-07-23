@@ -7,6 +7,8 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/CmsisDapInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/Command.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/CMSIS-DAP/Response.cpp
+
+        # Microchip EDBG implementation
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/AvrCommand.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/CommandFrames/AVR8Generic/ReadMemory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/AvrResponse.cpp
@@ -27,6 +29,8 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/EdbgAvr8Session.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/EdbgAvr8Interface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Protocols/EDBG/AVR/EdbgAvrIspInterface.cpp
+
+        # Microchip EDBG debug tools
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/EdbgDevice.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AtmelICE/AtmelIce.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/PowerDebugger/PowerDebugger.cpp
@@ -37,7 +41,12 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/XplainedNano/XplainedNano.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/CuriosityNano/CuriosityNano.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/JtagIce3/JtagIce3.cpp
+
+        # RISC-V debug tools
         ${CMAKE_CURRENT_SOURCE_DIR}/WCH/Protocols/WchLink/WchLinkInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/WCH/WchLinkBase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/WCH/WchLinkE/WchLinkE.cpp
+
+        # RISC-V Debug Translator implementation
+        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/RiscVDebugSpec/DebugTranslator.cpp
 )

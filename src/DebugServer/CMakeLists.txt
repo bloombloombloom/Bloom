@@ -8,7 +8,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/GdbDebugServerConfig.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/Connection.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/DebugSession.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/TargetDescriptor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/ResponsePackets/ResponsePacket.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/ResponsePackets/SupportedFeaturesResponse.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/CommandPacket.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/SupportedFeaturesQuery.cpp
@@ -22,9 +22,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/HelpMonitorInfo.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/BloomVersion.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/BloomVersionMachine.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/GenerateSvd.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/Detach.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/EepromFill.cpp
 
         # AVR GDB RSP Server
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/AvrGdbRsp.cpp
@@ -43,6 +41,8 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContContinueExecution.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContStepExecution.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContRangeStep.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/EepromFill.cpp
+
 )
 
 if (NOT EXCLUDE_INSIGHT)

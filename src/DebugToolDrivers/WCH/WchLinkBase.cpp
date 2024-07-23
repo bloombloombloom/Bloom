@@ -1,5 +1,7 @@
 #include "WchLinkBase.hpp"
 
+#include "Protocols/WchLink/WchLinkInterface.hpp"
+
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 #include "src/Logger/Logger.hpp"
@@ -37,19 +39,25 @@ namespace DebugToolDrivers::Wch
         );
 
         if (this->getDeviceInfo().variant != this->variant) {
-            throw DeviceInitializationFailure(
+            throw DeviceInitializationFailure{
                 "WCH-Link variant mismatch - device returned variant ID that doesn't match the " + this->getName()
                     + " variant ID"
-            );
+            };
         }
 
-        this->setInitialised(true);
+        this->initialised = true;
     }
 
     void WchLinkBase::close() {
         if (this->wchLinkUsbInterface) {
             this->wchLinkUsbInterface->close();
         }
+
+        this->initialised = false;
+    }
+
+    bool WchLinkBase::isInitialised() const {
+        return this->initialised;
     }
 
     std::string WchLinkBase::getSerialNumber() {
@@ -58,6 +66,36 @@ namespace DebugToolDrivers::Wch
 
     std::string WchLinkBase::getFirmwareVersionString() {
         return "v" + this->getDeviceInfo().firmwareVersion.toString();
+    }
+
+    ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator* WchLinkBase::getRiscVDebugInterface(
+        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::RiscV::RiscVTargetConfig& targetConfig
+    ) {
+        using ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator;
+
+        if (!this->wchRiscVTranslator) {
+            this->wchRiscVTranslator = std::make_unique<DebugTranslator>(
+                *(this->wchLinkInterface.get()),
+                targetDescriptionFile,
+                targetConfig
+            );
+        }
+        return this->wchRiscVTranslator.get();
+    }
+
+    Protocols::WchLink::WchLinkInterface* WchLinkBase::getRiscVProgramInterface(
+        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::RiscV::RiscVTargetConfig& targetConfig
+    ) {
+        return this->wchLinkInterface.get();
+    }
+
+    Protocols::WchLink::WchLinkInterface* WchLinkBase::getRiscVIdentificationInterface(
+        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
+        const Targets::RiscV::RiscVTargetConfig& targetConfig
+    ) {
+        return this->wchLinkInterface.get();
     }
 
     const DeviceInfo& WchLinkBase::getDeviceInfo() const {

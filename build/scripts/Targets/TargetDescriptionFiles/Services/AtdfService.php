@@ -323,6 +323,7 @@ class AtdfService
             isset($attributes['id']) ? strtolower($attributes['id']) : null,
             $this->stringService->tryStringToInt($attributes['start'] ?? null),
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
+            null,
             $attributes['endianness'] ?? null,
         );
 

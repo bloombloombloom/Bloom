@@ -25,7 +25,12 @@ namespace DebugServer::Gdb::CommandPackets
         : Monitor(std::move(monitorPacket))
     {}
 
-    void HelpMonitorInfo::handle(DebugSession& debugSession, TargetControllerService&) {
+    void HelpMonitorInfo::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor&,
+        TargetControllerService&
+    ) {
         Logger::info("Handling HelpMonitorInfo packet");
 
         try {
@@ -33,26 +38,24 @@ namespace DebugServer::Gdb::CommandPackets
              * The file GdbHelpMonitorInfo.txt is included in the binary image as a resource.
              * See src/DebugServer/CMakeLists.txt for more.
              */
-            auto helpFile = QFile(
+            auto helpFile = QFile{
                 QString::fromStdString(":/compiled/src/DebugServer/Gdb/Resources/GdbHelpMonitorInfo.txt")
-            );
+            };
 
             if (!helpFile.open(QIODevice::ReadOnly)) {
-                throw Exception(
+                throw Exception{
                     "Failed to open GDB monitor info help file - please report this issue at "
                         + Services::PathService::homeDomainName() + "/report-issue"
-                );
+                };
             }
 
-            debugSession.connection.writePacket(
-                ResponsePacket(Services::StringService::toHex(
-                    "\n" + QTextStream(&helpFile).readAll().toUtf8().toStdString() + "\n"
-                ))
-            );
+            debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(
+                "\n" + QTextStream{&helpFile}.readAll().toUtf8().toStdString() + "\n"
+            )});
 
         } catch (const Exception& exception) {
             Logger::error(exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket());
+            debugSession.connection.writePacket(ErrorResponsePacket{});
         }
     }
 }

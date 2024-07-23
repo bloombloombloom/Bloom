@@ -17,15 +17,9 @@ public:
     ConditionVariableNotifier() = default;
     ~ConditionVariableNotifier() override = default;
 
-    /*
-     * ConditionVariableNotifier objects should not be copied.
-     */
     ConditionVariableNotifier(ConditionVariableNotifier& other) = delete;
     ConditionVariableNotifier& operator = (ConditionVariableNotifier& other) = delete;
 
-    /*
-     * TODO: Implement this.
-     */
     ConditionVariableNotifier(ConditionVariableNotifier&& other) noexcept = delete;
     ConditionVariableNotifier& operator = (ConditionVariableNotifier&& other) = delete;
 

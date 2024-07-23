@@ -12,15 +12,20 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         : CommandPacket(rawPacket)
     {}
 
-    void VContSupportedActionsQuery::handle(Gdb::DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void VContSupportedActionsQuery::handle(
+        Gdb::DebugSession& debugSession,
+        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling VContSupportedActionsQuery packet");
 
         // Respond with a SupportedFeaturesResponse packet, listing all supported GDB features by Bloom
-        debugSession.connection.writePacket(ResponsePackets::ResponsePacket(
+        debugSession.connection.writePacket(ResponsePackets::ResponsePacket{
             debugSession.serverConfig.rangeStepping
                 ? "vCont;c;C;s;S;r"
                 : "vCont;c;C;s;S"
-            )
+            }
         );
     }
 }

@@ -25,7 +25,9 @@ namespace DebugServer::Gdb::ResponsePackets
             : signal(signal)
             , stopReason(stopReason)
         {
-            std::string packetData = "T" + Services::StringService::toHex(static_cast<unsigned char>(this->signal));
+            auto packetData = std::string{"T"} + Services::StringService::toHex(
+                static_cast<unsigned char>(this->signal)
+            );
 
             if (this->stopReason.has_value()) {
                 static const auto stopReasonMapping = getStopReasonToNameMapping();

@@ -54,7 +54,7 @@ namespace DebugServer
         /**
          * The current target descriptor.
          */
-        Targets::TargetDescriptor targetDescriptor;
+        const Targets::TargetDescriptor& targetDescriptor;
 
         /**
          * This EventFdNotifier is injected into this->eventListener. It can be used by server implementations to

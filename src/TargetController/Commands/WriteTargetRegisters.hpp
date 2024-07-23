@@ -2,7 +2,7 @@
 
 #include "Command.hpp"
 
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 namespace TargetController::Commands
 {
@@ -12,9 +12,9 @@ namespace TargetController::Commands
         static constexpr CommandType type = CommandType::WRITE_TARGET_REGISTERS;
         static const inline std::string name = "WriteTargetRegisters";
 
-        Targets::TargetRegisters registers;
+        Targets::TargetRegisterDescriptorAndValuePairs registers;
 
-        explicit WriteTargetRegisters(const Targets::TargetRegisters& registers)
+        explicit WriteTargetRegisters(const Targets::TargetRegisterDescriptorAndValuePairs& registers)
             : registers(registers)
         {};
 

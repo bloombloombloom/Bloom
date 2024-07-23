@@ -11,23 +11,46 @@
 
 namespace Targets
 {
-    using TargetAddressSpaceDescriptorId = std::uint8_t;
-
     struct TargetAddressSpaceDescriptor
     {
     public:
-        const TargetAddressSpaceDescriptorId id;
-        std::string key;
+        /*
+         * The ID of an address space is just a hash of the address space key, which is unique. We use the ID for
+         * cheap equality checks.
+         *
+         * See TargetAddressSpaceDescriptor::generateId() for more.
+         */
+        const TargetAddressSpaceId id;
+        const std::string key;
         TargetMemoryAddressRange addressRange;
         TargetMemoryEndianness endianness;
         std::map<std::string, TargetMemorySegmentDescriptor> segmentDescriptorsByKey;
+
+        /*
+         * In Bloom, a byte is always considered to be 8 bits in width.
+         *
+         * Not all address spaces are byte-addressable. TargetAddressSpaceDescriptor::unitSize holds the number of
+         * bytes within a single addressable unit.
+         *
+         * This is also available in segment descriptors, via TargetMemorySegmentDescriptor::addressSpaceUnitSize.
+         */
+        std::uint8_t unitSize;
 
         TargetAddressSpaceDescriptor(
             const std::string& key,
             const TargetMemoryAddressRange& addressRange,
             TargetMemoryEndianness endianness,
-            const std::map<std::string, TargetMemorySegmentDescriptor>& segmentDescriptorsByKey
+            std::map<std::string, TargetMemorySegmentDescriptor>&& segmentDescriptorsByKey,
+            std::uint8_t unitSize = 1
         );
+
+        TargetAddressSpaceDescriptor(const TargetAddressSpaceDescriptor& other) = delete;
+        TargetAddressSpaceDescriptor& operator = (const TargetAddressSpaceDescriptor& other) = delete;
+
+        TargetAddressSpaceDescriptor(TargetAddressSpaceDescriptor&& other) noexcept = default;
+
+        bool operator == (const TargetAddressSpaceDescriptor& other) const;
+        bool operator != (const TargetAddressSpaceDescriptor& other) const;
 
         TargetMemorySize size() const;
 
@@ -69,7 +92,8 @@ namespace Targets
             const TargetMemoryAddressRange& addressRange
         ) const;
 
-    private:
-        static inline std::atomic<TargetAddressSpaceDescriptorId> lastAddressSpaceDescriptorId = 0;
+        [[nodiscard]] TargetAddressSpaceDescriptor clone() const;
+
+        static TargetAddressSpaceId generateId(const std::string& addressSpaceKey);
     };
 }

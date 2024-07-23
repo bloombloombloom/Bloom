@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "TargetPinWidget.hpp"
-#include "src/Targets/TargetVariant.hpp"
 #include "src/Targets/TargetState.hpp"
 
 namespace Widgets::InsightTargetWidgets

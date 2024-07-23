@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QFile>
 #include <QDomDocument>
 #include <QDomElement>
 #include <string>
@@ -30,8 +29,13 @@
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetPeripheralDescriptor.hpp"
+#include "src/Targets/TargetPeripheralSignalDescriptor.hpp"
 #include "src/Targets/TargetRegisterGroupDescriptor.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
+#include "src/Targets/TargetBitFieldDescriptor.hpp"
+#include "src/Targets/TargetPinoutDescriptor.hpp"
+#include "src/Targets/TargetPinDescriptor.hpp"
+#include "src/Targets/TargetVariantDescriptor.hpp"
 #include "src/Targets/TargetPhysicalInterface.hpp"
 
 namespace Targets::TargetDescription
@@ -46,12 +50,10 @@ namespace Targets::TargetDescription
      * During the build process, all target description files are copied to the distribution directory, ready
      * to be shipped with the Bloom binary.
      *
-     * Processing of target description files is done in this class.
-     *
      * This class may be extended to further reflect a TDF that is specific to a particular target, target architecture
-     * or target family. For example, the Targets::Microchip::Avr::Avr8Bit::TargetDescription::TargetDescriptionFile
-     * class inherits from this class, to represent TDFs for AVR8 targets. The derived class provides access to
-     * additional data that is only found in AVR8 TDFs (such as AVR target signature, AVR Family, etc).
+     * or target family. For example, the Targets::Microchip::Avr8::TargetDescriptionFile class inherits from this
+     * class, to represent TDFs for AVR8 targets. The derived class provides access to additional data that is only
+     * found in AVR8 TDFs (such as AVR target signature, AVR Family, etc).
      *
      * For more information of TDFs, see src/Targets/TargetDescription/README.md
      */
@@ -78,7 +80,7 @@ namespace Targets::TargetDescription
          *
          * @return
          */
-        [[nodiscard]] const std::string& getTargetName() const;
+        [[nodiscard]] const std::string& getName() const;
 
         /**
          * Returns the target family extracted from the TDF.
@@ -87,15 +89,34 @@ namespace Targets::TargetDescription
          */
         [[nodiscard]] TargetFamily getFamily() const;
 
+        [[nodiscard]] std::optional<std::string> tryGetVendorName() const;
+        [[nodiscard]] const std::string& getVendorName() const;
+
         [[nodiscard]] std::optional<std::reference_wrapper<const PropertyGroup>> tryGetPropertyGroup(
             std::string_view keyStr
         ) const;
         [[nodiscard]] const PropertyGroup& getPropertyGroup(std::string_view keyStr) const;
 
+        [[nodiscard]] std::optional<std::reference_wrapper<const Property>> tryGetProperty(
+            std::string_view groupKey,
+            std::string_view propertyKey
+        ) const;
+
+        [[nodiscard]] const Property& getProperty(std::string_view groupKey, std::string_view propertyKey) const;
+
         [[nodiscard]] std::optional<std::reference_wrapper<const AddressSpace>> tryGetAddressSpace(
             std::string_view key
         ) const;
         [[nodiscard]] const AddressSpace& getAddressSpace(std::string_view key) const;
+
+        [[nodiscard]] std::optional<std::reference_wrapper<const MemorySegment>> tryGetMemorySegment(
+            std::string_view addressSpaceKey,
+            std::string_view segmentKey
+        ) const;
+        [[nodiscard]] const MemorySegment& getMemorySegment(
+            std::string_view addressSpaceKey,
+            std::string_view segmentKey
+        ) const;
 
         [[nodiscard]] std::set<Targets::TargetPhysicalInterface> getPhysicalInterfaces() const;
 
@@ -109,8 +130,25 @@ namespace Targets::TargetDescription
         ) const;
         [[nodiscard]] const Peripheral& getPeripheral(std::string_view key) const;
 
-        TargetDescriptor targetDescriptor() const;
-        std::map<TargetAddressSpaceDescriptorId, TargetAddressSpaceDescriptor> targetAddressSpaceDescriptorsById() const;
+        [[nodiscard]] std::optional<TargetMemorySegmentDescriptor> tryGetTargetMemorySegmentDescriptor(
+            std::string_view addressSpaceKey,
+            std::string_view segmentKey
+        ) const;
+        [[nodiscard]] TargetMemorySegmentDescriptor getTargetMemorySegmentDescriptor(
+            std::string_view addressSpaceKey,
+            std::string_view segmentKey
+        ) const;
+
+        [[nodiscard]] std::optional<TargetPeripheralDescriptor> tryGetTargetPeripheralDescriptor(
+            std::string_view key
+        ) const;
+        [[nodiscard]] TargetPeripheralDescriptor getTargetPeripheralDescriptor(std::string_view key) const;
+
+        [[nodiscard]] std::map<std::string, TargetAddressSpaceDescriptor> targetAddressSpaceDescriptorsByKey() const;
+        [[nodiscard]] std::map<std::string, TargetPeripheralDescriptor> targetPeripheralDescriptorsByKey() const;
+        [[nodiscard]] std::map<std::string, TargetPinoutDescriptor> targetPinoutDescriptorsByKey() const;
+        [[nodiscard]] std::vector<TargetVariantDescriptor> targetVariantDescriptors() const;
+        [[nodiscard]] std::vector<TargetPeripheralDescriptor> gpioPortPeripheralDescriptors() const;
 
     protected:
         std::map<std::string, std::string> deviceAttributesByName;
@@ -165,25 +203,38 @@ namespace Targets::TargetDescription
         );
 
         static TargetMemorySegmentDescriptor targetMemorySegmentDescriptorFromMemorySegment(
-            const MemorySegment& memorySegment
+            const MemorySegment& memorySegment,
+            const AddressSpace& addressSpace
         );
 
+        static TargetPeripheralDescriptor targetPeripheralDescriptorFromPeripheral(
+            const Peripheral& peripheral,
+            const Module& peripheralModule
+        );
+
+        static TargetPeripheralSignalDescriptor targetPeripheralSignalDescriptorFromSignal(const Signal& signal);
+
         static TargetRegisterGroupDescriptor targetRegisterGroupDescriptorFromRegisterGroup(
-            const RegisterGroup& registerGroup,
-            const Module& peripheralModule,
-            TargetMemoryAddress baseAddress,
-            const std::string& addressSpaceKey,
-            TargetAddressSpaceDescriptorId addressSpaceDescriptorId,
             const std::string& key,
             const std::string& name,
-            const std::optional<std::string>& description
+            const std::string& addressSpaceKey,
+            const std::optional<std::string>& description,
+            const RegisterGroup& registerGroup,
+            const Module& peripheralModule,
+            TargetMemoryAddress baseAddress
         );
 
         static TargetRegisterDescriptor targetRegisterDescriptorFromRegister(
             const Register& reg,
             const std::string& addressSpaceKey,
-            TargetAddressSpaceDescriptorId addressSpaceDescriptorId,
             TargetMemoryAddress baseAddress
         );
+
+        static TargetBitFieldDescriptor targetBitFieldDescriptorFromBitField(const BitField& bitField);
+
+        static TargetPinoutDescriptor targetPinoutDescriptorFromPinout(const Pinout& pinout);
+        static TargetPinDescriptor targetPinDescriptorFromPin(const Pin& pin);
+
+        static TargetVariantDescriptor targetVariantDescriptorFromVariant(const Variant& variant);
     };
 }

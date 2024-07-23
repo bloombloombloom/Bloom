@@ -55,17 +55,17 @@ namespace Targets::TargetDescription
             return firstSubgroupIt != this->sectionsByKey.end()
                 ? keys.size() > 1
                     ? firstSubgroupIt->second.tryGetSubSection(keys | std::ranges::views::drop(1))
-                    : std::optional(std::cref(firstSubgroupIt->second))
+                    : std::optional{std::cref(firstSubgroupIt->second)}
                 : std::nullopt;
         }
 
         const MemorySegmentSection& getSection(std::string_view keyStr) const {
             const auto propertyGroup = this->tryGetSection(keyStr);
             if (!propertyGroup.has_value()) {
-                throw Exceptions::InvalidTargetDescriptionDataException(
-                    "Failed to get memory segment section \"" + std::string(keyStr)
+                throw Exceptions::InvalidTargetDescriptionDataException{
+                    "Failed to get memory segment section \"" + std::string{keyStr}
                         + "\" from memory segment in TDF - section not found"
-                );
+                };
             }
 
             return propertyGroup->get();

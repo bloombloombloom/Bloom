@@ -15,10 +15,10 @@ namespace TargetController::Commands
         static constexpr CommandType type = CommandType::READ_TARGET_REGISTERS;
         static const inline std::string name = "ReadTargetRegisters";
 
-        std::set<Targets::TargetRegisterDescriptorId> descriptorIds;
+        const Targets::TargetRegisterDescriptors descriptors;
 
-        explicit ReadTargetRegisters(const std::set<Targets::TargetRegisterDescriptorId>& descriptorIds)
-            : descriptorIds(descriptorIds)
+        explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors)
+            : descriptors(descriptors)
         {};
 
         [[nodiscard]] CommandType getType() const override {

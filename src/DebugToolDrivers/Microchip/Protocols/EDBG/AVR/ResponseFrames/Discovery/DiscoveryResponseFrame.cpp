@@ -10,7 +10,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Dis
         : AvrResponseFrame(avrResponses)
     {
         if (this->payload.empty()) {
-            throw Exception("Response ID missing from DISCOVERY response frame payload.");
+            throw Exception{"Response ID missing from DISCOVERY response frame payload."};
         }
 
         this->id = static_cast<ResponseId>(payload[0]);
@@ -22,9 +22,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Dis
         }
 
         // DISCOVERY payloads include two bytes before the data (response ID and version byte).
-        return std::vector<unsigned char>(
-            this->payload.begin() + 2,
-            this->payload.end()
-        );
+        return {this->payload.begin() + 2, this->payload.end()};
     }
 }

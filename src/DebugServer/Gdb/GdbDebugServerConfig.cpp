@@ -12,7 +12,7 @@ namespace DebugServer::Gdb
             if (!YamlUtilities::isCastable<std::string>(debugServerConfig.debugServerNode["ipAddress"])) {
                 Logger::error(
                     "Invalid GDB debug server config parameter ('ipAddress') provided - must be a string. The "
-                    "parameter will be ignored."
+                        "parameter will be ignored."
                 );
             }
 
@@ -26,7 +26,7 @@ namespace DebugServer::Gdb
             } else {
                 Logger::error(
                     "Invalid GDB debug server config parameter ('port') provided - value must be castable to a 16-bit "
-                    "unsigned integer. The parameter will be ignored."
+                        "unsigned integer. The parameter will be ignored."
                 );
             }
         }
@@ -38,7 +38,7 @@ namespace DebugServer::Gdb
             } else {
                 Logger::error(
                     "Invalid GDB debug server config parameter ('rangeStepping') provided - value must be castable to "
-                    "a boolean. The parameter will be ignored."
+                        "a boolean. The parameter will be ignored."
                 );
             }
         }

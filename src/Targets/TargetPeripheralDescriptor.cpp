@@ -1,6 +1,7 @@
 #include "TargetPeripheralDescriptor.hpp"
 
 #include <ranges>
+#include <utility>
 
 #include "src/Services/StringService.hpp"
 
@@ -11,11 +12,13 @@ namespace Targets
     TargetPeripheralDescriptor::TargetPeripheralDescriptor(
         const std::string& key,
         const std::string& name,
-        const std::map<std::string, TargetRegisterGroupDescriptor, std::less<void>>& registerGroupDescriptorsByKey
+        std::map<std::string, TargetRegisterGroupDescriptor, std::less<void>>&& registerGroupDescriptorsByKey,
+        std::vector<TargetPeripheralSignalDescriptor>&& signalDescriptors
     )
         : key(key)
         , name(name)
-        , registerGroupDescriptorsByKey(registerGroupDescriptorsByKey)
+        , registerGroupDescriptorsByKey(std::move(registerGroupDescriptorsByKey))
+        , signalDescriptors(std::move(signalDescriptors))
     {}
 
     std::optional<
@@ -27,7 +30,7 @@ namespace Targets
         return firstGroupIt != this->registerGroupDescriptorsByKey.end()
             ? keys.size() > 1
                 ? firstGroupIt->second.tryGetSubgroupDescriptor(keys | std::ranges::views::drop(1))
-                : std::optional(std::cref(firstGroupIt->second))
+                : std::optional{std::cref(firstGroupIt->second)}
             : std::nullopt;
     }
 
@@ -36,12 +39,38 @@ namespace Targets
     ) const {
         const auto descriptor = this->tryGetRegisterGroupDescriptor(key);
         if (!descriptor.has_value()) {
-            throw Exceptions::InternalFatalErrorException(
-                "Failed to get register group descriptor \"" + std::string(key)
+            throw Exceptions::InternalFatalErrorException{
+                "Failed to get register group descriptor \"" + std::string{key}
                     + "\" from peripheral \"" + this->key + "\" - register group descriptor not found"
-            );
+            };
         }
 
         return descriptor->get();
+    }
+
+    const TargetRegisterDescriptor& TargetPeripheralDescriptor::getRegisterDescriptor(
+        std::string_view groupKey,
+        const std::string& registerKey
+    ) const {
+        return this->getRegisterGroupDescriptor(groupKey).getRegisterDescriptor(registerKey);
+    }
+
+    TargetPeripheralDescriptor TargetPeripheralDescriptor::clone() const {
+        auto output = TargetPeripheralDescriptor{
+            this->key,
+            this->name,
+            {},
+            {}
+        };
+
+        for (const auto& [key, descriptor] : this->registerGroupDescriptorsByKey) {
+            output.registerGroupDescriptorsByKey.emplace(key, descriptor.clone());
+        }
+
+        for (const auto& descriptor : this->signalDescriptors) {
+            output.signalDescriptors.emplace_back(descriptor.clone());
+        }
+
+        return output;
     }
 }

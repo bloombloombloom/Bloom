@@ -25,26 +25,25 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg
         }
 
         // This should never happen
-        throw DeviceCommunicationFailure(
+        throw DeviceCommunicationFailure{
             "Cannot send AVR command frame - failed to generate CMSIS-DAP Vendor (AVR) commands"
-        );
+        };
     }
 
     std::optional<Microchip::Protocols::Edbg::Avr::AvrEvent> EdbgInterface::requestAvrEvent() {
-        auto avrEventResponse = this->sendCommandAndWaitForResponse(Avr::AvrEventCommand());
-
+        auto avrEventResponse = this->sendCommandAndWaitForResponse(Avr::AvrEventCommand{});
         if (avrEventResponse.id != 0x82) {
             throw DeviceCommunicationFailure("Unexpected response to AvrEventCommand from device");
         }
 
-        return !avrEventResponse.eventData.empty() ? std::optional(avrEventResponse) : std::nullopt;
+        return !avrEventResponse.eventData.empty() ? std::optional{avrEventResponse} : std::nullopt;
     }
 
     std::vector<Microchip::Protocols::Edbg::Avr::AvrResponse> EdbgInterface::requestAvrResponses() {
         using Microchip::Protocols::Edbg::Avr::AvrResponseCommand;
 
-        std::vector<Microchip::Protocols::Edbg::Avr::AvrResponse> responses;
-        AvrResponseCommand responseCommand;
+        auto responses = std::vector<Microchip::Protocols::Edbg::Avr::AvrResponse>{};
+        const auto responseCommand = AvrResponseCommand{};
 
         auto avrResponse = this->sendCommandAndWaitForResponse(responseCommand);
         responses.push_back(avrResponse);
@@ -55,15 +54,13 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg
             auto avrResponse = this->sendCommandAndWaitForResponse(responseCommand);
 
             if (avrResponse.fragmentCount != fragmentCount) {
-                throw DeviceCommunicationFailure(
+                throw DeviceCommunicationFailure{
                     "Failed to fetch AvrResponse objects - invalid fragment count returned."
-                );
+                };
             }
 
             if (avrResponse.fragmentCount == 0 && avrResponse.fragmentNumber == 0) {
-                throw DeviceCommunicationFailure(
-                    "Failed to fetch AvrResponse objects - unexpected empty response"
-                );
+                throw DeviceCommunicationFailure{"Failed to fetch AvrResponse objects - unexpected empty response"};
             }
 
             if (avrResponse.fragmentNumber == 0) {

@@ -30,18 +30,18 @@ namespace Usb
         auto devices = this->findMatchingDevices(this->vendorId, this->productId);
 
         if (devices.empty()) {
-            throw DeviceNotFound(
+            throw DeviceNotFound{
                 "Failed to find USB device with matching vendor and product ID. Please examine the debug tool's USB "
-                "connection, as well as the selected environment's debug tool configuration, in bloom.yaml"
-            );
+                    "connection, as well as the selected environment's debug tool configuration, in bloom.yaml"
+            };
         }
 
         if (devices.size() > 1) {
             // TODO: implement support for multiple devices via serial number matching?
-            throw DeviceInitializationFailure(
+            throw DeviceInitializationFailure{
                 "Numerous devices of matching vendor and product ID found.\n"
-                "Please ensure that only one debug tool is connected and then try again."
-            );
+                    "Please ensure that only one debug tool is connected and then try again."
+            };
         }
 
         // For now, just use the first device found.
@@ -51,9 +51,9 @@ namespace Usb
         const int libusbStatusCode = ::libusb_open(this->libusbDevice.get(), &deviceHandle);
 
         if (libusbStatusCode < 0) {
-            throw DeviceInitializationFailure(
+            throw DeviceInitializationFailure{
                 "Failed to open USB device - error code " + std::to_string(libusbStatusCode) + " returned."
-            );
+            };
         }
 
         this->libusbDeviceHandle.reset(deviceHandle);
@@ -65,12 +65,12 @@ namespace Usb
 
         auto statusCode = ::libusb_get_device_descriptor(this->libusbDevice.get(), &desc);
         if (statusCode != 0) {
-            throw DeviceCommunicationFailure(
+            throw DeviceCommunicationFailure{
                 "Failed to retrieve USB device descriptor - status code: " + std::to_string(statusCode)
-            );
+            };
         }
 
-        auto data = std::array<unsigned char, 256>();
+        auto data = std::array<unsigned char, 256>{};
         const auto transferredBytes = ::libusb_get_string_descriptor_ascii(
             this->libusbDeviceHandle.get(),
             desc.iSerialNumber,
@@ -79,12 +79,12 @@ namespace Usb
         );
 
         if (transferredBytes <= 0) {
-            throw DeviceCommunicationFailure(
+            throw DeviceCommunicationFailure{
                 "Failed to retrieve serial number from USB device - status code: " + std::to_string(transferredBytes)
-            );
+            };
         }
 
-        return std::string(data.begin(), data.begin() + transferredBytes);
+        return {data.begin(), data.begin() + transferredBytes};
     }
 
     void UsbDevice::setConfiguration(std::uint8_t configurationIndex) {
@@ -96,9 +96,9 @@ namespace Usb
         );
 
         if (libusbStatusCode < 0) {
-            throw DeviceInitializationFailure(
+            throw DeviceInitializationFailure{
                 "Failed to set USB configuration - error code " + std::to_string(libusbStatusCode) + " returned."
-            );
+            };
         }
     }
 
@@ -124,7 +124,7 @@ namespace Usb
             }
         }
 
-        throw DeviceInitializationFailure("Failed to obtain address of USB endpoint");
+        throw DeviceInitializationFailure{"Failed to obtain address of USB endpoint"};
     }
 
     std::uint16_t UsbDevice::getEndpointMaxPacketSize(std::uint8_t endpointAddress) {
@@ -142,11 +142,11 @@ namespace Usb
             }
         }
 
-        throw DeviceInitializationFailure(
+        throw DeviceInitializationFailure{
             "Failed to obtain maximum packet size of USB endpoint (address: 0x"
                 + Services::StringService::toHex(endpointAddress) + "). Endpoint not found. Selected configuration "
                 "value (" + std::to_string(activeConfigDescriptor->bConfigurationValue) + ")"
-        );
+        };
     }
 
     std::vector<LibusbDevice> UsbDevice::findMatchingDevices(std::uint16_t vendorId, std::uint16_t productId) {
@@ -156,9 +156,9 @@ namespace Usb
 
         auto libusbStatusCode = ::libusb_get_device_list(UsbDevice::libusbContext.get(), &devices);
         if (libusbStatusCode < 0) {
-            throw DeviceInitializationFailure(
+            throw DeviceInitializationFailure{
                 "Failed to retrieve USB devices - return code: '" + std::to_string(libusbStatusCode) + "'"
-            );
+            };
         }
 
         ssize_t i = 0;
@@ -167,8 +167,10 @@ namespace Usb
             struct ::libusb_device_descriptor desc = {};
 
             if ((libusbStatusCode = ::libusb_get_device_descriptor(device, &desc)) < 0) {
-                Logger::warning("Failed to retrieve USB device descriptor - return code: '"
-                    + std::to_string(libusbStatusCode) + "'");
+                Logger::warning(
+                    "Failed to retrieve USB device descriptor - return code: '"
+                        + std::to_string(libusbStatusCode) + "'"
+                );
                 continue;
             }
 
@@ -191,16 +193,13 @@ namespace Usb
             : ::libusb_get_active_config_descriptor(this->libusbDevice.get(), &configDescriptor);
 
         if (libusbStatusCode < 0) {
-            throw DeviceInitializationFailure(
+            throw DeviceInitializationFailure{
                 "Failed to obtain USB configuration descriptor - error code " + std::to_string(libusbStatusCode)
                     + " returned."
-            );
+            };
         }
 
-        return LibusbConfigDescriptor(
-            configDescriptor,
-            ::libusb_free_config_descriptor
-        );
+        return {configDescriptor, ::libusb_free_config_descriptor};
     }
 
     void UsbDevice::detachKernelDriverFromInterface(std::uint8_t interfaceNumber) {
@@ -214,7 +213,7 @@ namespace Usb
             }
 
         } else if (libusbStatusCode != 0) {
-            throw DeviceInitializationFailure("Failed to check for active kernel driver on USB interface.");
+            throw DeviceInitializationFailure{"Failed to check for active kernel driver on USB interface."};
         }
     }
 

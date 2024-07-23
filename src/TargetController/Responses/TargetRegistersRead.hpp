@@ -2,7 +2,8 @@
 
 #include "Response.hpp"
 
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 namespace TargetController::Responses
 {
@@ -11,10 +12,12 @@ namespace TargetController::Responses
     public:
         static constexpr ResponseType type = ResponseType::TARGET_REGISTERS_READ;
 
-        Targets::TargetRegisters registers;
+        Targets::TargetRegisterDescriptorAndValuePairs registers;
 
-        explicit TargetRegistersRead(const Targets::TargetRegisters& registers)
-            : registers(registers)
+        explicit TargetRegistersRead(
+            Targets::TargetRegisterDescriptorAndValuePairs&& registers
+        )
+            : registers(std::move(registers))
         {}
 
         [[nodiscard]] ResponseType getType() const override {

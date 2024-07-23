@@ -7,7 +7,7 @@ namespace DebugServer::Gdb::ResponsePackets
     )
         : supportedFeatures(supportedFeatures)
     {
-        auto output = std::string("qSupported:");
+        auto output = std::string{"qSupported:"};
         static const auto gdbFeatureMapping = getGdbFeatureToNameMapping();
 
         for (const auto& supportedFeature : this->supportedFeatures) {

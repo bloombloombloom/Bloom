@@ -2,7 +2,7 @@
 
 #include "Avr8GenericResponseFrame.hpp"
 
-#include "src/Targets/Microchip/AVR/TargetSignature.hpp"
+#include "src/Targets/Microchip/AVR8/TargetSignature.hpp"
 #include "src/Targets/TargetPhysicalInterface.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr8Generic
@@ -12,7 +12,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
     public:
         explicit GetDeviceId(const std::vector<AvrResponse>& AvrResponses);
 
-        Targets::Microchip::Avr::TargetSignature extractSignature(
+        Targets::Microchip::Avr8::TargetSignature extractSignature(
             Targets::TargetPhysicalInterface physicalInterface
         ) const;
     };

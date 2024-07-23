@@ -13,8 +13,8 @@ namespace TargetController::Responses
 
         Targets::TargetMemoryBuffer data;
 
-        explicit TargetMemoryRead(const Targets::TargetMemoryBuffer& data)
-            : data(data)
+        explicit TargetMemoryRead(Targets::TargetMemoryBuffer&& data)
+            : data(std::move(data))
         {}
 
         [[nodiscard]] ResponseType getType() const override {

@@ -16,10 +16,15 @@ namespace DebugServer::Gdb::CommandPackets
 
     using ::Exceptions::Exception;
 
-    void InterruptExecution::handle(DebugSession& debugSession, TargetControllerService& targetControllerService) {
+    void InterruptExecution::handle(
+        DebugSession& debugSession,
+        const TargetDescriptor& gdbTargetDescriptor,
+        const Targets::TargetDescriptor&,
+        TargetControllerService& targetControllerService
+    ) {
         Logger::info("Handling InterruptExecution packet");
 
-        if (targetControllerService.getTargetState() == Targets::TargetState::STOPPED) {
+        if (targetControllerService.getTargetState().executionState == Targets::TargetExecutionState::STOPPED) {
             debugSession.pendingInterrupt = true;
             return;
         }
@@ -32,7 +37,7 @@ namespace DebugServer::Gdb::CommandPackets
             }
 
             debugSession.waitingForBreak = false;
-            debugSession.connection.writePacket(TargetStopped(Signal::INTERRUPTED));
+            debugSession.connection.writePacket(TargetStopped{Signal::INTERRUPTED});
 
         } catch (const Exception& exception) {
             Logger::error("Failed to interrupt execution - " + exception.getMessage());

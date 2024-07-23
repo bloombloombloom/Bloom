@@ -67,10 +67,10 @@ namespace Targets::TargetDescription
         const RegisterGroup& getSubgroup(std::string_view keyStr) const {
             const auto subgroup = this->tryGetSubgroup(keyStr);
             if (!subgroup.has_value()) {
-                throw Exceptions::InvalidTargetDescriptionDataException(
-                    "Failed to get subgroup \"" + std::string(keyStr)
+                throw Exceptions::InvalidTargetDescriptionDataException{
+                    "Failed to get subgroup \"" + std::string{keyStr}
                         + "\" from register group in TDF - subgroup not found"
-                );
+                };
             }
 
             return subgroup->get();
@@ -89,10 +89,10 @@ namespace Targets::TargetDescription
         const Register& getRegister(std::string_view key) const {
             const auto reg = this->tryGetRegister(key);
             if (!reg.has_value()) {
-                throw Exceptions::InvalidTargetDescriptionDataException(
-                    "Failed to get register \"" + std::string(key) + "\" from register group in TDF - register "
+                throw Exceptions::InvalidTargetDescriptionDataException{
+                    "Failed to get register \"" + std::string{key} + "\" from register group in TDF - register "
                         "not found"
-                );
+                };
             }
 
             return reg->get();

@@ -93,10 +93,7 @@ class MemorySegment
             && $endAddress !== null
             && $other->startAddress !== null
             && $otherEndAddress !== null
-            && (
-                ($other->startAddress <= $this->startAddress && $otherEndAddress >= $this->startAddress)
-                || ($other->startAddress >= $this->startAddress && $other->startAddress <= $endAddress)
-            )
+            && $this->startAddress <= $otherEndAddress && $other->startAddress <= $endAddress
         ;
     }
 

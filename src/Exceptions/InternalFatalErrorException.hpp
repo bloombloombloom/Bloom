@@ -14,9 +14,5 @@ namespace Exceptions
                     + Services::PathService::homeDomainName() + "/report-issue"
             )
         {}
-
-        explicit InternalFatalErrorException(const char* message)
-            : InternalFatalErrorException(std::string(message))
-        {}
     };
 }

@@ -10,12 +10,12 @@
 namespace Services
 {
     std::string PathService::applicationDirPath() {
-        auto pathCharArray = std::array<char, PATH_MAX>();
+        auto pathCharArray = std::array<char, PATH_MAX>{};
 
         if (::readlink("/proc/self/exe", pathCharArray.data(), PATH_MAX) < 0) {
-            throw Exceptions::Exception("Failed to obtain application directory path.");
+            throw Exceptions::Exception{"Failed to obtain application directory path."};
         }
 
-        return std::filesystem::path(std::string(pathCharArray.begin(), pathCharArray.end())).parent_path();
+        return std::filesystem::path{std::string{pathCharArray.begin(), pathCharArray.end()}}.parent_path();
     }
 }

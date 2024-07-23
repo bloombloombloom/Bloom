@@ -15,7 +15,9 @@ namespace Events
         std::string errorMessage;
 
         TargetControllerErrorOccurred() = default;
-        TargetControllerErrorOccurred(const std::string& errorMessage): errorMessage(errorMessage) {};
+        TargetControllerErrorOccurred(const std::string& errorMessage)
+            : errorMessage(errorMessage)
+        {};
 
         [[nodiscard]] EventType getType() const override {
             return TargetControllerErrorOccurred::type;

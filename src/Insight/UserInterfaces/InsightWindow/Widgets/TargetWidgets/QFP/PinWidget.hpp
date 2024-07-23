@@ -8,7 +8,6 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinWidget.hpp"
 
 #include "PinBodyWidget.hpp"
-#include "src/Targets/TargetVariant.hpp"
 
 namespace Widgets::InsightTargetWidgets::Qfp
 {

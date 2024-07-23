@@ -22,7 +22,7 @@ void Logger::log(const std::string& message, LogLevel level) {
     const auto threadName = Logger::threadName();
     static const auto timezoneAbbreviation = DateTimeService::getTimeZoneAbbreviation(timestamp).toStdString();
 
-    const auto lock = std::unique_lock(Logger::printMutex);
+    const auto lock = std::unique_lock{Logger::printMutex};
 
     // Print the timestamp and id in a green font color:
     std::cout << "\033[32m";
@@ -62,20 +62,20 @@ void Logger::log(const std::string& message, LogLevel level) {
 }
 
 const std::string& Logger::threadName() {
-    static auto nameCache = std::map<::pthread_t, std::string>();
+    static auto nameCache = std::map<::pthread_t, std::string>{};
 
     const auto threadId = ::pthread_self();
 
     auto nameIt = nameCache.find(threadId);
     if (nameIt == nameCache.end()) {
-        std::array<char, 16> threadNameBuf = {};
+        auto threadNameBuf = std::array<char, 16>{};
 
         if (::pthread_getname_np(::pthread_self(), threadNameBuf.data(), threadNameBuf.size()) != 0) {
-            static const auto emptyName = std::string();
+            static const auto emptyName = std::string{};
             return emptyName;
         }
 
-        const auto name = std::string(threadNameBuf.data());
+        const auto name = std::string{threadNameBuf.data()};
 
         /*
          * The name of the main thread is also the name of the process, so we have to name the
@@ -84,7 +84,7 @@ const std::string& Logger::threadName() {
          * We override the main thread name when printing logs, to keep the format of the thread name in the
          * logs consistent.
          */
-        nameIt = nameCache.insert(std::pair(threadId, name == "Bloom" ? "MT" : name)).first;
+        nameIt = nameCache.emplace(threadId, name == "Bloom" ? "MT" : name).first;
     }
 
     return nameIt->second;

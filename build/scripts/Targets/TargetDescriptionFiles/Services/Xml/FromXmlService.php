@@ -116,6 +116,7 @@ class FromXmlService
             $attributes['key'] ?? null,
             $this->stringService->tryStringToInt($attributes['start'] ?? null),
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
+            $this->stringService->tryStringToInt($attributes['unit-size'] ?? null),
             $attributes['endianness'] ?? null,
         );
 

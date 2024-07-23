@@ -14,13 +14,6 @@ namespace TargetController::Commands
         static constexpr CommandType type = CommandType::STEP_TARGET_EXECUTION;
         static const inline std::string name = "StepTargetExecution";
 
-        std::optional<Targets::TargetMemoryAddress> fromProgramCounter;
-
-        StepTargetExecution() = default;
-        explicit StepTargetExecution(Targets::TargetMemoryAddress fromProgramCounter)
-            : fromProgramCounter(fromProgramCounter)
-        {};
-
         [[nodiscard]] CommandType getType() const override {
             return StepTargetExecution::type;
         }

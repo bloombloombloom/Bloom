@@ -3,7 +3,8 @@
 #include <string>
 
 #include "Event.hpp"
-#include "src/Targets/TargetRegister.hpp"
+
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 namespace Events
 {
@@ -13,7 +14,11 @@ namespace Events
         static constexpr EventType type = EventType::REGISTERS_WRITTEN_TO_TARGET;
         static const inline std::string name = "RegistersWrittenToTarget";
 
-        Targets::TargetRegisters registers;
+        Targets::TargetRegisterDescriptorAndValuePairs registers;
+
+        explicit RegistersWrittenToTarget(const Targets::TargetRegisterDescriptorAndValuePairs& registers)
+            : registers(registers)
+        {}
 
         [[nodiscard]] EventType getType() const override {
             return RegistersWrittenToTarget::type;

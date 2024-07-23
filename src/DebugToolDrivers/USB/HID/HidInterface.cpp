@@ -29,7 +29,7 @@ namespace Usb
         Logger::debug("HID device path: " + hidInterfacePath);
 
         if ((hidDevice = ::hid_open_path(hidInterfacePath.c_str())) == nullptr) {
-            throw DeviceInitializationFailure("Failed to open HID device via hidapi.");
+            throw DeviceInitializationFailure{"Failed to open HID device via hidapi."};
         }
 
         this->hidDevice.reset(hidDevice);
@@ -41,11 +41,11 @@ namespace Usb
     }
 
     std::vector<unsigned char> HidInterface::read(std::optional<std::chrono::milliseconds> timeout) {
-        auto output = std::vector<unsigned char>();
+        auto output = std::vector<unsigned char>{};
 
         const auto readSize = this->inputReportSize;
         auto transferredByteCount = int(0);
-        auto totalByteCount = std::size_t(0);
+        auto totalByteCount = std::size_t{0};
 
         do {
             output.resize(totalByteCount + readSize, 0x00);
@@ -58,12 +58,12 @@ namespace Usb
             );
 
             if (transferredByteCount == -1) {
-                throw DeviceCommunicationFailure("Failed to read from HID device.");
+                throw DeviceCommunicationFailure{"Failed to read from HID device."};
             }
 
             if (totalByteCount == 0) {
                 // After the first read, set the timeout to 1 millisecond, as we don't want to wait for subsequent data
-                timeout = std::chrono::milliseconds(1);
+                timeout = std::chrono::milliseconds{1};
             }
 
             totalByteCount += static_cast<std::size_t>(transferredByteCount);
@@ -76,9 +76,7 @@ namespace Usb
 
     void HidInterface::write(std::vector<unsigned char>&& buffer) {
         if (buffer.size() > this->inputReportSize) {
-            throw DeviceCommunicationFailure(
-                "Cannot send data via HID interface - data exceeds maximum packet size."
-            );
+            throw DeviceCommunicationFailure{"Cannot send data via HID interface - data exceeds maximum packet size."};
         }
 
         if (buffer.size() < this->inputReportSize) {
@@ -93,9 +91,11 @@ namespace Usb
         const auto length = buffer.size();
 
         if ((transferred = ::hid_write(this->hidDevice.get(), buffer.data(), length)) != length) {
-            Logger::debug("Attempted to write " + std::to_string(length)
-                + " bytes to HID interface. Bytes written: " + std::to_string(transferred));
-            throw DeviceCommunicationFailure("Failed to write data to HID interface.");
+            Logger::debug(
+                "Attempted to write " + std::to_string(length)
+                    + " bytes to HID interface. Bytes written: " + std::to_string(transferred)
+            );
+            throw DeviceCommunicationFailure{"Failed to write data to HID interface."};
         }
     }
 
@@ -105,7 +105,7 @@ namespace Usb
             ::hid_free_enumeration
         );
 
-        auto matchedDevice = std::optional<::hid_device_info*>();
+        auto matchedDevice = std::optional<::hid_device_info*>{};
 
         auto* hidDeviceInfo = hidDeviceInfoList.get();
         while (hidDeviceInfo != nullptr) {
@@ -118,9 +118,9 @@ namespace Usb
         }
 
         if (!matchedDevice.has_value()) {
-            throw DeviceInitializationFailure("Failed to match interface number with HID interface.");
+            throw DeviceInitializationFailure{"Failed to match interface number with HID interface."};
         }
 
-        return std::string(matchedDevice.value()->path);
+        return {matchedDevice.value()->path};
     }
 }

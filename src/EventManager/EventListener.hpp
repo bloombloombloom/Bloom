@@ -40,7 +40,9 @@
 class EventListener
 {
 public:
-    explicit EventListener(std::string name): name(std::move(name)) {};
+    explicit EventListener(std::string name)
+        : name(std::move(name))
+    {};
 
     std::size_t getId() const {
         return this->id;
@@ -55,7 +57,7 @@ public:
 
     bool isEventTypeRegistered(Events::EventType eventType) {
         return this->registeredEventTypes.accessor()->contains(eventType);
-    };
+    }
 
     /**
      * Registers an event type for the listener.
@@ -194,13 +196,13 @@ public:
             >::type
         >::type;
 
-        ReturnType output = std::nullopt;
+        auto output = ReturnType{};
 
         auto queueLock = this->eventQueueByEventType.lock();
         auto& eventQueueByType = this->eventQueueByEventType.unsafeReference();
 
         auto eventTypes = std::set<Events::EventType>({EventTypeA::type});
-        auto eventTypesToDeRegister = std::set<Events::EventType>();
+        auto eventTypesToDeRegister = std::set<Events::EventType>{};
 
         if constexpr (!std::is_same_v<EventTypeA, EventTypeB>) {
             static_assert(
@@ -266,23 +268,23 @@ public:
             // If we're looking for multiple event types, use an std::variant.
             if constexpr (!std::is_same_v<EventTypeA, EventTypeB> || !std::is_same_v<EventTypeB, EventTypeC>) {
                 if (foundEvent->getType() == EventTypeA::type) {
-                    output = std::optional<typename decltype(output)::value_type>(
+                    output = std::optional<typename decltype(output)::value_type>{
                         std::dynamic_pointer_cast<const EventTypeA>(foundEvent)
-                    );
+                    };
 
                 } else if constexpr (!std::is_same_v<EventTypeA, EventTypeB>) {
                     if (foundEvent->getType() == EventTypeB::type) {
-                        output = std::optional<typename decltype(output)::value_type>(
+                        output = std::optional<typename decltype(output)::value_type>{
                             std::dynamic_pointer_cast<const EventTypeB>(foundEvent)
-                        );
+                        };
                     }
                 }
 
                 if constexpr (!std::is_same_v<EventTypeB, EventTypeC>) {
                     if (foundEvent->getType() == EventTypeC::type) {
-                        output = std::optional<typename decltype(output)::value_type>(
+                        output = std::optional<typename decltype(output)::value_type>{
                             std::dynamic_pointer_cast<const EventTypeC>(foundEvent)
-                        );
+                        };
                     }
                 }
 
@@ -341,7 +343,9 @@ private:
      * we perform a downcast before invoking the callback. See EventListener::registerCallbackForEventType()
      * for more)
      */
-    Synchronised<std::map<Events::EventType, std::vector<std::function<void(const Events::Event&)>>>> eventTypeToCallbacksMapping;
+    Synchronised<
+        std::map<Events::EventType, std::vector<std::function<void(const Events::Event&)>>>
+    > eventTypeToCallbacksMapping;
     Synchronised<std::set<Events::EventType>> registeredEventTypes;
 
     NotifierInterface* interruptEventNotifier = nullptr;
