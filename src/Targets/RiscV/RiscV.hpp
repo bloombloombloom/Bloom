@@ -34,6 +34,8 @@ namespace Targets::RiscV
         void activate() override;
         void deactivate() override;
 
+        void postActivate() override;
+
         TargetDescriptor targetDescriptor() override;
 
         void run(std::optional<TargetMemoryAddress> toAddress = std::nullopt) override;

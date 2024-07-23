@@ -518,8 +518,9 @@ namespace TargetController
         this->target->activate();
         Logger::info("Target activated");
 
+        this->target->postActivate();
+
         Logger::info("Target name: " + this->targetDescriptor->name);
-        Logger::info("Target ID: " + this->targetDescriptor->marketId);
 
         this->targetState = std::make_unique<TargetState>(
             TargetExecutionState::UNKNOWN,

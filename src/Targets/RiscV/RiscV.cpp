@@ -77,6 +77,10 @@ namespace Targets::RiscV
         this->riscVDebugInterface->deactivate();
     }
 
+    void RiscV::postActivate() {
+        Logger::info("WCH target ID: " + this->riscVIdInterface->getDeviceId());
+    }
+
     TargetDescriptor RiscV::targetDescriptor() {
         auto descriptor = TargetDescriptor{
             this->targetDescriptionFile.getName(),

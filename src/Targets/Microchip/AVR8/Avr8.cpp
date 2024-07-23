@@ -253,6 +253,10 @@ namespace Targets::Microchip::Avr8
         }
     }
 
+    void Avr8::postActivate() {
+        Logger::info("AVR signature: " + this->avr8DebugInterface->getDeviceId().toHex());
+    }
+
     TargetDescriptor Avr8::targetDescriptor() {
         auto descriptor = TargetDescriptor{
             this->targetDescriptionFile.getName(),

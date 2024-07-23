@@ -79,6 +79,13 @@ namespace Targets
         virtual void deactivate() = 0;
 
         /**
+         * This function is called immediately after successful target activation.
+         *
+         * It's a good place to log any info that we can extract from the target, that will be useful to the user.
+         */
+        virtual void postActivate() = 0;
+
+        /**
          * Should generate a TargetDescriptor for the current target.
          *
          * @return
