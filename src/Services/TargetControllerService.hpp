@@ -68,7 +68,7 @@ namespace Services
          *
          * @return
          */
-        Targets::TargetState getTargetState() const;
+        const Targets::TargetState& getTargetState() const;
 
         /**
          * Requests the TargetController to halt execution on the target.

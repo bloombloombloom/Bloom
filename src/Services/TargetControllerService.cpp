@@ -115,7 +115,7 @@ namespace Services
         )->targetDescriptor;
     }
 
-    TargetState TargetControllerService::getTargetState() const {
+    const TargetState& TargetControllerService::getTargetState() const {
         return this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<GetTargetState>(),
             this->defaultTimeout,
