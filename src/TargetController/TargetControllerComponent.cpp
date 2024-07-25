@@ -518,10 +518,9 @@ namespace TargetController
         Logger::info("Activating target");
         this->target->activate();
         Logger::info("Target activated");
+        Logger::info("Target name: " + this->targetDescriptor->name);
 
         this->target->postActivate();
-
-        Logger::info("Target name: " + this->targetDescriptor->name);
 
         this->targetState = std::make_unique<TargetState>(
             TargetExecutionState::UNKNOWN,

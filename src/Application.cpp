@@ -157,8 +157,9 @@ void Application::startup() {
     this->startSignalHandler();
 
     Logger::info("Selected environment: \"" + this->selectedEnvironmentName + "\"");
-    Logger::debug("Number of environments extracted from config: "
-        + std::to_string(this->projectConfig->environments.size()));
+    Logger::debug(
+        "Number of environments extracted from config: " + std::to_string(this->projectConfig->environments.size())
+    );
 
     applicationEventListener->registerCallbackForEventType<Events::TargetControllerThreadStateChanged>(
         std::bind(&Application::onTargetControllerThreadStateChanged, this, std::placeholders::_1)

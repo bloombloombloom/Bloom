@@ -31,13 +31,6 @@
 
 #include "src/VersionNumber.hpp"
 
-
-/**
- * Bloom - a debug interface for embedded systems development on Linux.
- *
- * This is the main entry-point of execution for the Bloom program. The methods within will run on the main
- * thread. If Insight is enabled, execution will be passed over to Insight::run() upon start up.
- */
 class Application: public QObject, public Thread
 {
     Q_OBJECT
@@ -68,7 +61,7 @@ private:
      *
      * See the SignalHandler class for more on this.
      */
-    SignalHandler signalHandler = SignalHandler();
+    SignalHandler signalHandler = {};
     std::thread signalHandlerThread;
 
     /**
