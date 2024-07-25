@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <ranges>
 #include <functional>
+#include <unordered_map>
+#include <mutex>
 
 namespace Services
 {
@@ -100,9 +102,16 @@ namespace Services
         return static_cast<std::uint8_t>(StringService::toUint64(str, base));
     }
 
-    std::size_t StringService::hash(const std::string& str) {
-        static const auto hash = std::hash<std::string>{};
-        return hash(str);
+    std::size_t StringService::generateUniqueInteger(const std::string& str) {
+        static auto mutex = std::mutex{};
+
+        static auto lastValue = std::size_t{0};
+        static auto map = std::unordered_map<std::string, std::size_t>{};
+
+        const auto lock = std::unique_lock{mutex};
+
+        const auto valueIt = map.find(str);
+        return valueIt != map.end() ? valueIt->second : map.emplace(str, ++lastValue).first->second;
     }
 
     std::vector<std::string_view> StringService::split(std::string_view str, char delimiter) {

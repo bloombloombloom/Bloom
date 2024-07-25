@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <map>
 #include <vector>
@@ -13,10 +14,13 @@
 
 namespace Targets
 {
+    using TargetPeripheralId = std::size_t;
+
     struct TargetPeripheralDescriptor
     {
     public:
-        std::string key;
+        const TargetPeripheralId id;
+        const std::string key;
         std::string name;
         std::map<std::string, TargetRegisterGroupDescriptor, std::less<void>> registerGroupDescriptorsByKey;
         std::vector<TargetPeripheralSignalDescriptor> signalDescriptors;
@@ -32,7 +36,9 @@ namespace Targets
         TargetPeripheralDescriptor& operator = (const TargetPeripheralDescriptor& other) = delete;
 
         TargetPeripheralDescriptor(TargetPeripheralDescriptor&& other) noexcept = default;
-        TargetPeripheralDescriptor& operator = (TargetPeripheralDescriptor&& other) = default;
+
+        bool operator == (const TargetPeripheralDescriptor& other) const;
+        bool operator != (const TargetPeripheralDescriptor& other) const;
 
         [[nodiscard]] std::optional<
             std::reference_wrapper<const TargetRegisterGroupDescriptor>

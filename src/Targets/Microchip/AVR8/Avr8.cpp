@@ -291,7 +291,9 @@ namespace Targets::Microchip::Avr8
             "gpr",
             TargetRegisterGroupDescriptor{
                 "gpr",
+                "gpr",
                 "CPU General Purpose",
+                gpPeripheral.key,
                 registerFileAddressSpace.key,
                 std::nullopt,
                 {},
@@ -306,6 +308,8 @@ namespace Targets::Microchip::Avr8
                 TargetRegisterDescriptor{
                     key,
                     "R" + std::to_string(i),
+                    gpRegisterGroup.absoluteKey,
+                    gpPeripheral.key,
                     registerFileAddressSpace.key,
                     registerFileMemorySegment.startAddress + i,
                     1,

@@ -16,7 +16,7 @@ namespace Targets
         const TargetMemoryAccess& programmingModeAccess,
         std::optional<TargetMemorySize> pageSize
     )
-        : id(static_cast<TargetMemorySegmentId>(Services::StringService::hash(addressSpaceKey + key)))
+        : id(static_cast<TargetMemorySegmentId>(Services::StringService::generateUniqueInteger(addressSpaceKey + key)))
         , key(key)
         , name(name)
         , type(type)

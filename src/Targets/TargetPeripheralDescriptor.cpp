@@ -15,11 +15,20 @@ namespace Targets
         std::map<std::string, TargetRegisterGroupDescriptor, std::less<void>>&& registerGroupDescriptorsByKey,
         std::vector<TargetPeripheralSignalDescriptor>&& signalDescriptors
     )
-        : key(key)
+        : id(static_cast<TargetPeripheralId>(Services::StringService::generateUniqueInteger(key)))
+        , key(key)
         , name(name)
         , registerGroupDescriptorsByKey(std::move(registerGroupDescriptorsByKey))
         , signalDescriptors(std::move(signalDescriptors))
     {}
+
+    bool TargetPeripheralDescriptor::operator == (const TargetPeripheralDescriptor& other) const {
+        return this->id == other.id;
+    }
+
+    bool TargetPeripheralDescriptor::operator != (const TargetPeripheralDescriptor& other) const {
+        return !(*this == other);
+    }
 
     std::optional<
         std::reference_wrapper<const TargetRegisterGroupDescriptor>

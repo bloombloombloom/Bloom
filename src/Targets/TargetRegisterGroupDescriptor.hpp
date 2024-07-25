@@ -15,11 +15,16 @@
 
 namespace Targets
 {
+    using TargetRegisterGroupId = std::size_t;
+
     struct TargetRegisterGroupDescriptor
     {
     public:
-        std::string key;
+        const TargetRegisterGroupId id;
+        const std::string key;
+        const std::string absoluteKey;
         std::string name;
+        std::string peripheralKey;
         std::string addressSpaceKey;
         std::optional<std::string> description;
         std::map<std::string, TargetRegisterDescriptor, std::less<void>> registerDescriptorsByKey;
@@ -27,7 +32,9 @@ namespace Targets
 
         TargetRegisterGroupDescriptor(
             const std::string& key,
+            const std::string& absoluteKey,
             const std::string& name,
+            const std::string& peripheralKey,
             const std::string& addressSpaceKey,
             const std::optional<std::string>& description,
             std::map<std::string, TargetRegisterDescriptor, std::less<void>>&& registerDescriptorsByKey,
@@ -38,7 +45,9 @@ namespace Targets
         TargetRegisterGroupDescriptor& operator = (const TargetRegisterGroupDescriptor& other) = delete;
 
         TargetRegisterGroupDescriptor(TargetRegisterGroupDescriptor&& other) noexcept = default;
-        TargetRegisterGroupDescriptor& operator = (TargetRegisterGroupDescriptor&& other) = default;
+
+        bool operator == (const TargetRegisterGroupDescriptor& other) const;
+        bool operator != (const TargetRegisterGroupDescriptor& other) const;
 
         /**
          * Calculates the start address of the register group.

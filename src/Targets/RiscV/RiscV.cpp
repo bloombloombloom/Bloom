@@ -463,7 +463,9 @@ namespace Targets::RiscV
             "gpr",
             TargetRegisterGroupDescriptor{
                 "gpr",
+                "gpr",
                 "General Purpose Registers",
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 std::nullopt,
                 {},
@@ -478,6 +480,8 @@ namespace Targets::RiscV
                 TargetRegisterDescriptor{
                     key,
                     "X" + std::to_string(i),
+                    gprGroup.absoluteKey,
+                    cpuPeripheralDescriptor.key,
                     addressSpaceDescriptor.key,
                     gprMemorySegmentDescriptor.addressRange.startAddress + i,
                     4,
@@ -493,7 +497,9 @@ namespace Targets::RiscV
             "csr",
             TargetRegisterGroupDescriptor{
                 "csr",
+                "csr",
                 "Control Status Registers",
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 std::nullopt,
                 {},
@@ -506,6 +512,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "marchid",
                 "MARCHID",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0xF12,
                 4,
@@ -521,6 +529,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "mimpid",
                 "MIMPID",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0xF13,
                 4,
@@ -536,6 +546,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "mstatus",
                 "MSTATUS",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x300,
                 4,
@@ -551,6 +563,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "misa",
                 "MISA",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x301,
                 4,
@@ -566,6 +580,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "mtvec",
                 "MTVEC",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x305,
                 4,
@@ -581,6 +597,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "mcounteren",
                 "MCOUNTEREN",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x306,
                 4,
@@ -596,6 +614,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "mscratch",
                 "MSCRATCH",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x340,
                 4,
@@ -611,6 +631,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "mepc",
                 "MEPC",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x341,
                 4,
@@ -626,6 +648,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "mcause",
                 "MCAUSE",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x342,
                 4,
@@ -641,6 +665,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "mtval",
                 "MTVAL",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x343,
                 4,
@@ -656,6 +682,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "mip",
                 "MIP",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x344,
                 4,
@@ -671,6 +699,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "dcsr",
                 "DCSR",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B0,
                 4,
@@ -686,6 +716,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "dpc",
                 "DPC",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B1,
                 4,
@@ -701,6 +733,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "dscratch0",
                 "DSCRATCH0",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B2,
                 4,
@@ -716,6 +750,8 @@ namespace Targets::RiscV
             TargetRegisterDescriptor{
                 "dscratch1",
                 "DSCRATCH1",
+                csrGroup.absoluteKey,
+                cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B3,
                 4,

@@ -1,6 +1,8 @@
 #include "TargetRegisterDescriptor.hpp"
 
+#include "src/Services/StringService.hpp"
 #include "TargetAddressSpaceDescriptor.hpp"
+
 #include "src/Exceptions/InternalFatalErrorException.hpp"
 
 namespace Targets
@@ -8,6 +10,8 @@ namespace Targets
     TargetRegisterDescriptor::TargetRegisterDescriptor(
         const std::string& key,
         const std::string& name,
+        const std::string& absoluteGroupKey,
+        const std::string& peripheralKey,
         const std::string& addressSpaceKey,
         TargetMemoryAddress startAddress,
         TargetMemorySize size,
@@ -16,8 +20,11 @@ namespace Targets
         std::optional<std::string> description,
         std::map<std::string, TargetBitFieldDescriptor>&& bitFieldDescriptorsByKey
     )
-        : key(key)
+        : id(Services::StringService::generateUniqueInteger(peripheralKey + absoluteGroupKey + key))
+        , key(key)
         , name(name)
+        , absoluteGroupKey(absoluteGroupKey)
+        , peripheralKey(peripheralKey)
         , addressSpaceId(TargetAddressSpaceDescriptor::generateId(addressSpaceKey))
         , addressSpaceKey(addressSpaceKey)
         , startAddress(startAddress)
@@ -29,15 +36,7 @@ namespace Targets
     {}
 
     bool TargetRegisterDescriptor::operator == (const TargetRegisterDescriptor& other) const {
-        return this->key == other.key
-            && this->name == other.name
-            && this->addressSpaceKey == other.addressSpaceKey
-            && this->startAddress == other.startAddress
-            && this->size == other.size
-            && this->type == other.type
-            && this->access == other.access
-            && this->description == other.description
-        ;
+        return this->id == other.id;
     }
 
     bool TargetRegisterDescriptor::operator < (const TargetRegisterDescriptor& other) const {
@@ -81,6 +80,8 @@ namespace Targets
         auto output = TargetRegisterDescriptor{
             this->key,
             this->name,
+            this->absoluteGroupKey,
+            this->peripheralKey,
             this->addressSpaceKey,
             this->startAddress,
             this->size,

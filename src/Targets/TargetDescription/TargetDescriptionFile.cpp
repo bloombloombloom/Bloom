@@ -925,13 +925,15 @@ namespace Targets::TargetDescription
             output.registerGroupDescriptorsByKey.emplace(
                 key,
                 TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
-                    registerGroupInstance.key,
-                    registerGroupInstance.name,
-                    registerGroupInstance.addressSpaceKey,
-                    registerGroupInstance.description,
                     peripheralModule.getRegisterGroup(registerGroupInstance.registerGroupKey),
                     peripheralModule,
-                    registerGroupInstance.offset
+                    peripheral.key,
+                    registerGroupInstance.addressSpaceKey,
+                    registerGroupInstance.offset,
+                    std::nullopt,
+                    registerGroupInstance.description,
+                    registerGroupInstance.key,
+                    registerGroupInstance.name
                 )
             );
         }
@@ -955,17 +957,27 @@ namespace Targets::TargetDescription
     }
 
     TargetRegisterGroupDescriptor TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
-        const std::string& key,
-        const std::string& name,
-        const std::string& addressSpaceKey,
-        const std::optional<std::string>& description,
         const RegisterGroup& registerGroup,
         const Module& peripheralModule,
-        TargetMemoryAddress baseAddress
+        const std::string& peripheralKey,
+        const std::string& addressSpaceKey,
+        TargetMemoryAddress baseAddress,
+        const std::optional<std::string>& parentGroupAbsoluteKey,
+        const std::optional<std::string>& description,
+        const std::optional<std::string>& keyOverride,
+        const std::optional<std::string>& nameOverride
     ) {
+        const auto& key = keyOverride.has_value() ? *keyOverride : registerGroup.key;
+        const auto& name = nameOverride.has_value() ? *nameOverride : registerGroup.name;
+        const auto absoluteKey = parentGroupAbsoluteKey.has_value()
+            ? *parentGroupAbsoluteKey + "." + key
+            : key;
+
         auto output = TargetRegisterGroupDescriptor{
             key,
+            absoluteKey,
             name,
+            peripheralKey,
             addressSpaceKey,
             description,
             {},
@@ -976,29 +988,30 @@ namespace Targets::TargetDescription
             output.subgroupDescriptorsByKey.emplace(
                 key,
                 TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
-                    subgroup.key,
-                    subgroup.name,
-                    addressSpaceKey,
-                    std::nullopt,
-                    registerGroup,
+                    subgroup,
                     peripheralModule,
-                    baseAddress + registerGroup.offset.value_or(0)
+                    peripheralKey,
+                    addressSpaceKey,
+                    baseAddress + registerGroup.offset.value_or(0),
+                    absoluteKey
                 )
             );
         }
 
         for (const auto& [key, subgroupReference] : registerGroup.subgroupReferencesByKey) {
-            const auto& registerGroup = peripheralModule.getRegisterGroup(subgroupReference.registerGroupKey);
+            const auto& referencedGroup = peripheralModule.getRegisterGroup(subgroupReference.registerGroupKey);
             output.subgroupDescriptorsByKey.emplace(
                 key,
                 TargetDescriptionFile::targetRegisterGroupDescriptorFromRegisterGroup(
-                    subgroupReference.key,
-                    subgroupReference.name,
-                    addressSpaceKey,
-                    subgroupReference.description,
-                    registerGroup,
+                    referencedGroup,
                     peripheralModule,
-                    baseAddress + subgroupReference.offset + registerGroup.offset.value_or(0)
+                    peripheralKey,
+                    addressSpaceKey,
+                    baseAddress + registerGroup.offset.value_or(0) + subgroupReference.offset,
+                    absoluteKey,
+                    subgroupReference.description,
+                    subgroupReference.key,
+                    subgroupReference.name
                 )
             );
         }
@@ -1008,6 +1021,8 @@ namespace Targets::TargetDescription
                 key,
                 TargetDescriptionFile::targetRegisterDescriptorFromRegister(
                     reg,
+                    absoluteKey,
+                    peripheralKey,
                     addressSpaceKey,
                     baseAddress + registerGroup.offset.value_or(0)
                 )
@@ -1019,12 +1034,16 @@ namespace Targets::TargetDescription
 
     TargetRegisterDescriptor TargetDescriptionFile::targetRegisterDescriptorFromRegister(
         const Register& reg,
+        const std::string& absoluteGroupKey,
+        const std::string& peripheralKey,
         const std::string& addressSpaceKey,
         TargetMemoryAddress baseAddress
     ) {
         auto output = TargetRegisterDescriptor{
             reg.key,
             reg.name,
+            absoluteGroupKey,
+            peripheralKey,
             addressSpaceKey,
             baseAddress + reg.offset,
             reg.size,

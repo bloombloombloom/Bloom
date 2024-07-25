@@ -102,6 +102,6 @@ namespace Targets
     }
 
     TargetAddressSpaceId TargetAddressSpaceDescriptor::generateId(const std::string& addressSpaceKey) {
-        return static_cast<TargetAddressSpaceId>(Services::StringService::hash(addressSpaceKey));
+        return static_cast<TargetAddressSpaceId>(Services::StringService::generateUniqueInteger(addressSpaceKey));
     }
 }

@@ -215,17 +215,21 @@ namespace Targets::TargetDescription
         static TargetPeripheralSignalDescriptor targetPeripheralSignalDescriptorFromSignal(const Signal& signal);
 
         static TargetRegisterGroupDescriptor targetRegisterGroupDescriptorFromRegisterGroup(
-            const std::string& key,
-            const std::string& name,
-            const std::string& addressSpaceKey,
-            const std::optional<std::string>& description,
             const RegisterGroup& registerGroup,
             const Module& peripheralModule,
-            TargetMemoryAddress baseAddress
+            const std::string& peripheralKey,
+            const std::string& addressSpaceKey,
+            TargetMemoryAddress baseAddress,
+            const std::optional<std::string>& parentGroupAbsoluteKey,
+            const std::optional<std::string>& description = std::nullopt,
+            const std::optional<std::string>& keyOverride = std::nullopt,
+            const std::optional<std::string>& nameOverride = std::nullopt
         );
 
         static TargetRegisterDescriptor targetRegisterDescriptorFromRegister(
             const Register& reg,
+            const std::string& absoluteGroupKey,
+            const std::string& peripheralKey,
             const std::string& addressSpaceKey,
             TargetMemoryAddress baseAddress
         );

@@ -10,19 +10,32 @@ namespace Targets
 {
     TargetRegisterGroupDescriptor::TargetRegisterGroupDescriptor(
         const std::string& key,
+        const std::string& absoluteKey,
         const std::string& name,
+        const std::string& peripheralKey,
         const std::string& addressSpaceKey,
         const std::optional<std::string>& description,
         std::map<std::string, TargetRegisterDescriptor, std::less<void>>&& registerDescriptorsByKey,
         std::map<std::string, TargetRegisterGroupDescriptor, std::less<void>>&& subgroupDescriptorsByKey
     )
-        : key(key)
+        : id(Services::StringService::generateUniqueInteger(peripheralKey + absoluteKey))
+        , key(key)
+        , absoluteKey(absoluteKey)
         , name(name)
+        , peripheralKey(peripheralKey)
         , addressSpaceKey(addressSpaceKey)
         , description(description)
         , registerDescriptorsByKey(std::move(registerDescriptorsByKey))
         , subgroupDescriptorsByKey(std::move(subgroupDescriptorsByKey))
     {}
+
+    bool TargetRegisterGroupDescriptor::operator == (const TargetRegisterGroupDescriptor& other) const {
+        return this->id == other.id;
+    }
+
+    bool TargetRegisterGroupDescriptor::operator != (const TargetRegisterGroupDescriptor& other) const {
+        return !(*this == other);
+    }
 
     TargetMemoryAddress TargetRegisterGroupDescriptor::startAddress() const {
         assert(!this->registerDescriptorsByKey.empty() || !this->subgroupDescriptorsByKey.empty());
@@ -140,7 +153,9 @@ namespace Targets
     TargetRegisterGroupDescriptor TargetRegisterGroupDescriptor::clone() const {
         auto output = TargetRegisterGroupDescriptor{
             this->key,
+            this->absoluteKey,
             this->name,
+            this->peripheralKey,
             this->addressSpaceKey,
             this->description,
             {},

@@ -29,7 +29,29 @@ namespace Services
         static std::uint16_t toUint16(const std::string& str, int base = 0);
         static std::uint8_t toUint8(const std::string& str, int base = 0);
 
-        static std::size_t hash(const std::string& str);
+        /**
+         * Generates a unique integer from a given string.
+         *
+         * This function will return the same value for matching strings.
+         * That is: If strA == strB, then generateUniqueInteger(strA) == generateUniqueInteger(strB).
+         *
+         * This function does *not* return a hash of the string. We can't use hashes because they're not unique due to
+         * collisions.
+         *
+         * The returned value will only be unique for the duration of the current execution cycle.
+         * That means generateUniqueInteger(strA) != generateUniqueInteger(strA) if the functions are called within
+         * different execution cycles.
+         *
+         * The generated value isn't actually derived from the string itself. It's just an integer that we produce and
+         * keep record of, in a key-value store. See the implementation for more.
+         *
+         * The purpose of this function is to generate internal integer IDs for entities within Bloom, such as address
+         * spaces and memory segments. These IDs have no meaning to the user or any other external entity.
+         *
+         * @param str
+         * @return
+         */
+        static std::size_t generateUniqueInteger(const std::string& str);
 
         static std::vector<std::string_view> split(std::string_view str, char delimiter);
     };

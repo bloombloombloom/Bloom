@@ -15,6 +15,7 @@
 
 namespace Targets
 {
+    using TargetRegisterId = std::size_t;
     using TargetRegisterDescriptorId = std::uint32_t;
     using TargetRegisterDescriptorIds = std::set<Targets::TargetRegisterDescriptorId>;
 
@@ -47,8 +48,11 @@ namespace Targets
     struct TargetRegisterDescriptor
     {
     public:
-        std::string key;
+        const TargetRegisterId id;
+        const std::string key;
         std::string name;
+        std::string absoluteGroupKey;
+        std::string peripheralKey;
         TargetAddressSpaceId addressSpaceId;
         std::string addressSpaceKey;
         TargetMemoryAddress startAddress;
@@ -61,6 +65,8 @@ namespace Targets
         TargetRegisterDescriptor(
             const std::string& key,
             const std::string& name,
+            const std::string& absoluteGroupKey,
+            const std::string& peripheralKey,
             const std::string& addressSpaceKey,
             TargetMemoryAddress startAddress,
             TargetMemorySize size,
@@ -74,7 +80,6 @@ namespace Targets
         TargetRegisterDescriptor& operator = (const TargetRegisterDescriptor& other) = delete;
 
         TargetRegisterDescriptor(TargetRegisterDescriptor&& other) noexcept = default;
-        TargetRegisterDescriptor& operator = (TargetRegisterDescriptor&& other) = default;
 
         bool operator == (const TargetRegisterDescriptor& other) const;
         bool operator < (const TargetRegisterDescriptor& other) const;
