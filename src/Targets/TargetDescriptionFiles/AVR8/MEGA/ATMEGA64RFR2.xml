@@ -924,7 +924,6 @@
                     <bit-field key="trx_cmd" name="TRX_CMD" description="State Control Command" mask="0x1F"/>
                 </register>
                 <register key="trx_ctrl_0" name="TRX_CTRL_0" description="Reserved" offset="0x143" size="1">
-                    <bit-field key="res7" name="Res7" description="Reserved" mask="0x80"/>
                     <bit-field key="pmu_en" name="PMU_EN" description="Enable Phase Measurement Unit" mask="0x40"/>
                     <bit-field key="pmu_start" name="PMU_START" description="Start of Phase Measurement Unit" mask="0x20"/>
                     <bit-field key="pmu_if_inv" name="PMU_IF_INV" description="PMU IF Inverse" mask="0x10"/>
@@ -1024,7 +1023,6 @@
                     <bit-field key="rx_rpc_en" name="RX_RPC_EN" description="Reciver Smart Receiving Mode Enable" mask="0x20"/>
                     <bit-field key="pdt_rpc_en" name="PDT_RPC_EN" description="Smart Receiving Mode Reduced Sensitivity Enable" mask="0x10"/>
                     <bit-field key="pll_rpc_en" name="PLL_RPC_EN" description="PLL Smart Receiving Mode Enable" mask="0x8"/>
-                    <bit-field key="res0" name="Res0" description="Reserved" mask="0x4"/>
                     <bit-field key="ipan_rpc_en" name="IPAN_RPC_EN" description="Smart Receiving Mode IPAN Handling Enable" mask="0x2"/>
                     <bit-field key="xah_rpc_en" name="XAH_RPC_EN" description="Smart Receiving in Extended Operating Modes Enable" mask="0x1"/>
                 </register>
@@ -1183,7 +1181,6 @@
                     <bit-field key="sccmp" name="SCCMP" description="Symbol Counter Compare Unit 3 Mode select" mask="0x7"/>
                 </register>
                 <register key="sccr1" name="SCCR1" description="Symbol Counter Control Register 1" offset="0xDD" size="1">
-                    <bit-field key="res" name="Res" description="Reserved Bit" mask="0xC0"/>
                     <bit-field key="scbtsm" name="SCBTSM" description="Symbol Counter Beacon Timestamp Mask Register" mask="0x20"/>
                     <bit-field key="scckdiv" name="SCCKDIV" description="Clock divider for synchronous clock source (16MHz Transceiver Clock)" mask="0x1C"/>
                     <bit-field key="sceeclk" name="SCEECLK" description="Enable External Clock Source on PG2" mask="0x2"/>
@@ -1355,7 +1352,6 @@
             <register-group key="adc" name="ADC">
                 <register key="adcsrc" name="ADCSRC" description="The ADC Control and Status Register C" offset="0x77" size="1">
                     <bit-field key="adtht" name="ADTHT" description="ADC Track-and-Hold Time" mask="0xC0"/>
-                    <bit-field key="res0" name="Res0" description="Reserved" mask="0x20"/>
                     <bit-field key="adsut" name="ADSUT" description="ADC Start-up Time" mask="0x1F"/>
                 </register>
                 <register key="adc" name="ADC" description="ADC Data Register Bytes" offset="0x78" size="2"/>
@@ -1380,16 +1376,7 @@
                     <bit-field key="adlar" name="ADLAR" description="ADC Left Adjust Result" mask="0x20"/>
                     <bit-field key="mux" name="MUX" description="Analog Channel and Gain Selection Bits" mask="0x1F"/>
                 </register>
-                <register key="didr2" name="DIDR2" description="Digital Input Disable Register 2" offset="0x7D" size="1">
-                    <bit-field key="adc15d" name="ADC15D" description="Reserved Bits" mask="0x80"/>
-                    <bit-field key="adc14d" name="ADC14D" description="Reserved Bits" mask="0x40"/>
-                    <bit-field key="adc13d" name="ADC13D" description="Reserved Bits" mask="0x20"/>
-                    <bit-field key="adc12d" name="ADC12D" description="Reserved Bits" mask="0x10"/>
-                    <bit-field key="adc11d" name="ADC11D" description="Reserved Bits" mask="0x8"/>
-                    <bit-field key="adc10d" name="ADC10D" description="Reserved Bits" mask="0x4"/>
-                    <bit-field key="adc9d" name="ADC9D" description="Reserved Bits" mask="0x2"/>
-                    <bit-field key="adc8d" name="ADC8D" description="Reserved Bits" mask="0x1"/>
-                </register>
+                <register key="didr2" name="DIDR2" description="Digital Input Disable Register 2" offset="0x7D" size="1"/>
                 <register key="didr0" name="DIDR0" description="Digital Input Disable Register 0" offset="0x7E" size="1">
                     <bit-field key="adc7d" name="ADC7D" description="Disable ADC7:0 Digital Input" mask="0x80"/>
                     <bit-field key="adc6d" name="ADC6D" description="Disable ADC7:0 Digital Input" mask="0x40"/>

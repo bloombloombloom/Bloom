@@ -874,7 +874,6 @@
                     <bit-field key="ivce" name="IVCE" description="Interrupt Vector Change Enable" mask="0x1"/>
                 </register>
                 <register key="rampz" name="RAMPZ" description="Extended Z-pointer Register for ELPM/SPM" offset="0x5B" size="1">
-                    <bit-field key="res" name="Res" description="Reserved" mask="0xFC"/>
                     <bit-field key="rampz" name="RAMPZ" description="Extended Z-Pointer Value" mask="0x3"/>
                 </register>
                 <register key="eind" name="EIND" description="Extended Indirect Register" offset="0x5C" size="1"/>
