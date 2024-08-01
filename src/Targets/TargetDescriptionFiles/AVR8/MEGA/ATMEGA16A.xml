@@ -376,27 +376,27 @@
     <modules>
         <module key="fuse" name="FUSE" description="Fuses">
             <register-group key="fuse" name="FUSE">
-                <register key="low" name="LOW" offset="0x0" size="1" initial-value="0xE1">
+                <register key="low" name="LOW" offset="0x00" size="1" initial-value="0xE1">
                     <bit-field key="bodlevel" name="BODLEVEL" description="Brownout detector trigger level" mask="0x80"/>
                     <bit-field key="boden" name="BODEN" description="Brown-out detection enabled" mask="0x40"/>
                     <bit-field key="sut_cksel" name="SUT_CKSEL" description="Select Clock Source" mask="0x3F"/>
                 </register>
-                <register key="high" name="HIGH" offset="0x1" size="1" initial-value="0x99">
+                <register key="high" name="HIGH" offset="0x01" size="1" initial-value="0x99">
                     <bit-field key="ocden" name="OCDEN" description="On-Chip Debug Enabled" mask="0x80"/>
                     <bit-field key="jtagen" name="JTAGEN" description="JTAG Interface Enabled" mask="0x40"/>
                     <bit-field key="spien" name="SPIEN" description="Serial program downloading (SPI) enabled" mask="0x20"/>
-                    <bit-field key="eesave" name="EESAVE" description="Preserve EEPROM through the Chip Erase cycle" mask="0x8"/>
-                    <bit-field key="bootsz" name="BOOTSZ" description="Select Boot Size" mask="0x6"/>
-                    <bit-field key="bootrst" name="BOOTRST" description="Boot Reset vector Enabled" mask="0x1"/>
+                    <bit-field key="eesave" name="EESAVE" description="Preserve EEPROM through the Chip Erase cycle" mask="0x08"/>
+                    <bit-field key="bootsz" name="BOOTSZ" description="Select Boot Size" mask="0x06"/>
+                    <bit-field key="bootrst" name="BOOTRST" description="Boot Reset vector Enabled" mask="0x01"/>
                     <bit-field key="ckopt" name="CKOPT" description="CKOPT fuse (operation dependent of CKSEL fuses)" mask="0x10"/>
                 </register>
             </register-group>
         </module>
         <module key="lockbit" name="LOCKBIT" description="Lockbits">
             <register-group key="lockbit" name="LOCKBIT">
-                <register key="lockbit" name="LOCKBIT" offset="0x0" size="1" initial-value="0xFF">
-                    <bit-field key="lb" name="LB" description="Memory Lock" mask="0x3"/>
-                    <bit-field key="blb0" name="BLB0" description="Boot Loader Protection Mode" mask="0xC"/>
+                <register key="lockbit" name="LOCKBIT" offset="0x00" size="1" initial-value="0xFF">
+                    <bit-field key="lb" name="LB" description="Memory Lock" mask="0x03"/>
+                    <bit-field key="blb0" name="BLB0" description="Boot Loader Protection Mode" mask="0x0C"/>
                     <bit-field key="blb1" name="BLB1" description="Boot Loader Protection Mode" mask="0x30"/>
                 </register>
             </register-group>
@@ -404,7 +404,7 @@
         <module key="tc8" name="TC8" description="Timer/Counter, 8-bit">
             <register-group key="tc0" name="TC0">
                 <register key="sfior" name="SFIOR" description="Special Function IO Register" offset="0x50" size="1">
-                    <bit-field key="psr10" name="PSR10" description="Prescaler Reset Timer/Counter1 and Timer/Counter0" mask="0x1"/>
+                    <bit-field key="psr10" name="PSR10" description="Prescaler Reset Timer/Counter1 and Timer/Counter0" mask="0x01"/>
                 </register>
                 <register key="tcnt0" name="TCNT0" description="Timer/Counter 0 Register" offset="0x52" size="1">
                     <bit-field key="tcnt0" name="TCNT0" description="Timer/Counter 0 bits" mask="0xFF"/>
@@ -413,16 +413,16 @@
                     <bit-field key="foc0" name="FOC0" description="Force Output Compare" mask="0x80"/>
                     <bit-field key="wgm00" name="WGM00" description="Waveform Generation Mode 0" mask="0x40"/>
                     <bit-field key="com0" name="COM0" description="Compare Match Output Modes" mask="0x30"/>
-                    <bit-field key="wgm01" name="WGM01" description="Waveform Generation Mode 1" mask="0x8"/>
-                    <bit-field key="cs0" name="CS0" description="Clock Selects" mask="0x7"/>
+                    <bit-field key="wgm01" name="WGM01" description="Waveform Generation Mode 1" mask="0x08"/>
+                    <bit-field key="cs0" name="CS0" description="Clock Selects" mask="0x07"/>
                 </register>
                 <register key="tifr" name="TIFR" description="Timer/Counter Interrupt Flag register" offset="0x58" size="1">
-                    <bit-field key="ocf0" name="OCF0" description="Output Compare Flag 0" mask="0x2"/>
-                    <bit-field key="tov0" name="TOV0" description="Timer/Counter0 Overflow Flag" mask="0x1"/>
+                    <bit-field key="ocf0" name="OCF0" description="Output Compare Flag 0" mask="0x02"/>
+                    <bit-field key="tov0" name="TOV0" description="Timer/Counter0 Overflow Flag" mask="0x01"/>
                 </register>
                 <register key="timsk" name="TIMSK" description="Timer/Counter Interrupt Mask Register" offset="0x59" size="1">
-                    <bit-field key="ocie0" name="OCIE0" description="Timer/Counter0 Output Compare Match Interrupt register" mask="0x2"/>
-                    <bit-field key="toie0" name="TOIE0" description="Timer/Counter0 Overflow Interrupt Enable" mask="0x1"/>
+                    <bit-field key="ocie0" name="OCIE0" description="Timer/Counter0 Output Compare Match Interrupt register" mask="0x02"/>
+                    <bit-field key="toie0" name="TOIE0" description="Timer/Counter0 Overflow Interrupt Enable" mask="0x01"/>
                 </register>
                 <register key="ocr0" name="OCR0" description="Output Compare 0 Register" offset="0x5C" size="1">
                     <bit-field key="ocr0" name="OCR0" description="Output Compare bits" mask="0xFF"/>
@@ -447,26 +447,26 @@
                     <bit-field key="icnc1" name="ICNC1" description="Input Capture 1 Noise Canceler" mask="0x80"/>
                     <bit-field key="ices1" name="ICES1" description="Input Capture 1 Edge Select" mask="0x40"/>
                     <bit-field key="wgm1" name="WGM1" description="Waveform Generation Mode" mask="0x18"/>
-                    <bit-field key="cs1" name="CS1" description="Prescaler source of Timer/Counter 1" mask="0x7"/>
+                    <bit-field key="cs1" name="CS1" description="Prescaler source of Timer/Counter 1" mask="0x07"/>
                 </register>
                 <register key="tccr1a" name="TCCR1A" description="Timer/Counter1 Control Register A" offset="0x4F" size="1">
                     <bit-field key="com1a" name="COM1A" description="Compare Output Mode 1A, bits" mask="0xC0"/>
                     <bit-field key="com1b" name="COM1B" description="Compare Output Mode 1B, bits" mask="0x30"/>
-                    <bit-field key="foc1a" name="FOC1A" description="Force Output Compare 1A" mask="0x8"/>
-                    <bit-field key="foc1b" name="FOC1B" description="Force Output Compare 1B" mask="0x4"/>
-                    <bit-field key="wgm1" name="WGM1" description="Waveform Generation Mode" mask="0x3"/>
+                    <bit-field key="foc1a" name="FOC1A" description="Force Output Compare 1A" mask="0x08"/>
+                    <bit-field key="foc1b" name="FOC1B" description="Force Output Compare 1B" mask="0x04"/>
+                    <bit-field key="wgm1" name="WGM1" description="Waveform Generation Mode" mask="0x03"/>
                 </register>
                 <register key="tifr" name="TIFR" description="Timer/Counter Interrupt Flag register" offset="0x58" size="1">
                     <bit-field key="icf1" name="ICF1" description="Input Capture Flag 1" mask="0x20"/>
                     <bit-field key="ocf1a" name="OCF1A" description="Output Compare Flag 1A" mask="0x10"/>
-                    <bit-field key="ocf1b" name="OCF1B" description="Output Compare Flag 1B" mask="0x8"/>
-                    <bit-field key="tov1" name="TOV1" description="Timer/Counter1 Overflow Flag" mask="0x4"/>
+                    <bit-field key="ocf1b" name="OCF1B" description="Output Compare Flag 1B" mask="0x08"/>
+                    <bit-field key="tov1" name="TOV1" description="Timer/Counter1 Overflow Flag" mask="0x04"/>
                 </register>
                 <register key="timsk" name="TIMSK" description="Timer/Counter Interrupt Mask Register" offset="0x59" size="1">
                     <bit-field key="ticie1" name="TICIE1" description="Timer/Counter1 Input Capture Interrupt Enable" mask="0x20"/>
                     <bit-field key="ocie1a" name="OCIE1A" description="Timer/Counter1 Output CompareA Match Interrupt Enable" mask="0x10"/>
-                    <bit-field key="ocie1b" name="OCIE1B" description="Timer/Counter1 Output CompareB Match Interrupt Enable" mask="0x8"/>
-                    <bit-field key="toie1" name="TOIE1" description="Timer/Counter1 Overflow Interrupt Enable" mask="0x4"/>
+                    <bit-field key="ocie1b" name="OCIE1B" description="Timer/Counter1 Output CompareB Match Interrupt Enable" mask="0x08"/>
+                    <bit-field key="toie1" name="TOIE1" description="Timer/Counter1 Overflow Interrupt Enable" mask="0x04"/>
                 </register>
             </register-group>
         </module>
@@ -476,8 +476,8 @@
                     <bit-field key="isc2" name="ISC2" description="Interrupt Sense Control 2" mask="0x40"/>
                 </register>
                 <register key="mcucr" name="MCUCR" description="General Interrupt Control Register" offset="0x55" size="1">
-                    <bit-field key="isc1" name="ISC1" description="Interrupt Sense Control 1 Bits" mask="0xC"/>
-                    <bit-field key="isc0" name="ISC0" description="Interrupt Sense Control 0 Bits" mask="0x3"/>
+                    <bit-field key="isc1" name="ISC1" description="Interrupt Sense Control 1 Bits" mask="0x0C"/>
+                    <bit-field key="isc0" name="ISC0" description="Interrupt Sense Control 0 Bits" mask="0x03"/>
                 </register>
                 <register key="gifr" name="GIFR" description="General Interrupt Flag Register" offset="0x5A" size="1">
                     <bit-field key="intf" name="INTF" description="External Interrupt Flags" mask="0xC0"/>
@@ -487,33 +487,33 @@
                     <bit-field key="int0" name="INT0" description="External Interrupt Request 0 Enable" mask="0x40"/>
                     <bit-field key="int1" name="INT1" description="External Interrupt Request 1 Enable" mask="0x80"/>
                     <bit-field key="int2" name="INT2" description="External Interrupt Request 2 Enable" mask="0x20"/>
-                    <bit-field key="ivsel" name="IVSEL" description="Interrupt Vector Select" mask="0x2"/>
-                    <bit-field key="ivce" name="IVCE" description="Interrupt Vector Change Enable" mask="0x1"/>
+                    <bit-field key="ivsel" name="IVSEL" description="Interrupt Vector Select" mask="0x02"/>
+                    <bit-field key="ivce" name="IVCE" description="Interrupt Vector Change Enable" mask="0x01"/>
                 </register>
             </register-group>
         </module>
         <module key="eeprom" name="EEPROM" description="EEPROM">
             <register-group key="eeprom" name="EEPROM">
                 <register key="eecr" name="EECR" description="EEPROM Control Register" offset="0x3C" size="1">
-                    <bit-field key="eerie" name="EERIE" description="EEPROM Ready Interrupt Enable" mask="0x8"/>
-                    <bit-field key="eemwe" name="EEMWE" description="EEPROM Master Write Enable" mask="0x4"/>
-                    <bit-field key="eewe" name="EEWE" description="EEPROM Write Enable" mask="0x2"/>
-                    <bit-field key="eere" name="EERE" description="EEPROM Read Enable" mask="0x1"/>
+                    <bit-field key="eerie" name="EERIE" description="EEPROM Ready Interrupt Enable" mask="0x08"/>
+                    <bit-field key="eemwe" name="EEMWE" description="EEPROM Master Write Enable" mask="0x04"/>
+                    <bit-field key="eewe" name="EEWE" description="EEPROM Write Enable" mask="0x02"/>
+                    <bit-field key="eere" name="EERE" description="EEPROM Read Enable" mask="0x01"/>
                 </register>
                 <register key="eedr" name="EEDR" description="EEPROM Data Register" offset="0x3D" size="1">
                     <bit-field key="eedr" name="EEDR" description="EEPROM Data bits" mask="0xFF"/>
                 </register>
                 <register key="eear" name="EEAR" description="EEPROM Address Register Bytes" offset="0x3E" size="2">
-                    <bit-field key="eear" name="EEAR" description="EEPROM Address bits" mask="0x1FF"/>
+                    <bit-field key="eear" name="EEAR" description="EEPROM Address bits" mask="0x01FF"/>
                 </register>
             </register-group>
         </module>
         <module key="cpu" name="CPU" description="CPU Registers">
             <register-group key="cpu" name="CPU">
                 <register key="sfior" name="SFIOR" description="Special function I/O register" offset="0x50" size="1">
-                    <bit-field key="pud" name="PUD" description="Pull-up Disable" mask="0x4"/>
-                    <bit-field key="psr2" name="PSR2" description="Prescaler reset" mask="0x2"/>
-                    <bit-field key="psr10" name="PSR10" description="Prescaler reset" mask="0x1"/>
+                    <bit-field key="pud" name="PUD" description="Pull-up Disable" mask="0x04"/>
+                    <bit-field key="psr2" name="PSR2" description="Prescaler reset" mask="0x02"/>
+                    <bit-field key="psr10" name="PSR10" description="Prescaler reset" mask="0x01"/>
                 </register>
                 <register key="osccal" name="OSCCAL" description="Oscillator Calibration Value" offset="0x51" size="1">
                     <bit-field key="osccal" name="OSCCAL" description="Oscillator Calibration" mask="0xFF"/>
@@ -521,16 +521,16 @@
                 <register key="mcucsr" name="MCUCSR" description="MCU Control And Status Register" offset="0x54" size="1">
                     <bit-field key="jtd" name="JTD" description="JTAG Interface Disable" mask="0x80"/>
                     <bit-field key="jtrf" name="JTRF" description="JTAG Reset Flag" mask="0x10"/>
-                    <bit-field key="wdrf" name="WDRF" description="Watchdog Reset Flag" mask="0x8"/>
-                    <bit-field key="borf" name="BORF" description="Brown-out Reset Flag" mask="0x4"/>
-                    <bit-field key="extrf" name="EXTRF" description="External Reset Flag" mask="0x2"/>
-                    <bit-field key="porf" name="PORF" description="Power-on reset flag" mask="0x1"/>
+                    <bit-field key="wdrf" name="WDRF" description="Watchdog Reset Flag" mask="0x08"/>
+                    <bit-field key="borf" name="BORF" description="Brown-out Reset Flag" mask="0x04"/>
+                    <bit-field key="extrf" name="EXTRF" description="External Reset Flag" mask="0x02"/>
+                    <bit-field key="porf" name="PORF" description="Power-on reset flag" mask="0x01"/>
                 </register>
                 <register key="mcucr" name="MCUCR" description="MCU Control Register" offset="0x55" size="1">
                     <bit-field key="sm" name="SM" description="Sleep Mode Select" mask="0xB0"/>
                     <bit-field key="se" name="SE" description="Sleep Enable" mask="0x40"/>
-                    <bit-field key="isc1" name="ISC1" description="Interrupt Sense Control 1 Bits" mask="0xC"/>
-                    <bit-field key="isc0" name="ISC0" description="Interrupt Sense Control 0 Bits" mask="0x3"/>
+                    <bit-field key="isc1" name="ISC1" description="Interrupt Sense Control 1 Bits" mask="0x0C"/>
+                    <bit-field key="isc0" name="ISC0" description="Interrupt Sense Control 0 Bits" mask="0x03"/>
                 </register>
                 <register key="sp" name="SP" description="Stack Pointer" offset="0x5D" size="2"/>
                 <register key="sreg" name="SREG" description="Status Register" offset="0x5F" size="1">
@@ -538,20 +538,20 @@
                     <bit-field key="t" name="T" description="Bit Copy Storage" mask="0x40"/>
                     <bit-field key="h" name="H" description="Half Carry Flag" mask="0x20"/>
                     <bit-field key="s" name="S" description="Sign Bit" mask="0x10"/>
-                    <bit-field key="v" name="V" description="Two's Complement Overflow Flag" mask="0x8"/>
-                    <bit-field key="n" name="N" description="Negative Flag" mask="0x4"/>
-                    <bit-field key="z" name="Z" description="Zero Flag" mask="0x2"/>
-                    <bit-field key="c" name="C" description="Carry Flag" mask="0x1"/>
+                    <bit-field key="v" name="V" description="Two's Complement Overflow Flag" mask="0x08"/>
+                    <bit-field key="n" name="N" description="Negative Flag" mask="0x04"/>
+                    <bit-field key="z" name="Z" description="Zero Flag" mask="0x02"/>
+                    <bit-field key="c" name="C" description="Carry Flag" mask="0x01"/>
                 </register>
             </register-group>
         </module>
         <module key="tc8_async" name="TC8_ASYNC" description="Timer/Counter, 8-bit Async">
             <register-group key="tc2" name="TC2">
                 <register key="assr" name="ASSR" description="Asynchronous Status Register" offset="0x42" size="1">
-                    <bit-field key="as2" name="AS2" description="Asynchronous Timer/counter2" mask="0x8"/>
-                    <bit-field key="tcn2ub" name="TCN2UB" description="Timer/Counter2 Update Busy" mask="0x4"/>
-                    <bit-field key="ocr2ub" name="OCR2UB" description="Output Compare Register2 Update Busy" mask="0x2"/>
-                    <bit-field key="tcr2ub" name="TCR2UB" description="Timer/counter Control Register2 Update Busy" mask="0x1"/>
+                    <bit-field key="as2" name="AS2" description="Asynchronous Timer/counter2" mask="0x08"/>
+                    <bit-field key="tcn2ub" name="TCN2UB" description="Timer/Counter2 Update Busy" mask="0x04"/>
+                    <bit-field key="ocr2ub" name="OCR2UB" description="Output Compare Register2 Update Busy" mask="0x02"/>
+                    <bit-field key="tcr2ub" name="TCR2UB" description="Timer/counter Control Register2 Update Busy" mask="0x01"/>
                 </register>
                 <register key="ocr2" name="OCR2" description="Timer/Counter2 Output Compare Register" offset="0x43" size="1">
                     <bit-field key="ocr2" name="OCR2" description="Timer/Counter2 Output Compare bits" mask="0xFF"/>
@@ -563,11 +563,11 @@
                     <bit-field key="foc2" name="FOC2" description="Force Output Compare" mask="0x80"/>
                     <bit-field key="wgm20" name="WGM20" description="Waveform Genration Mode" mask="0x40"/>
                     <bit-field key="com2" name="COM2" description="Compare Output Mode bits" mask="0x30"/>
-                    <bit-field key="wgm21" name="WGM21" description="Waveform Generation Mode" mask="0x8"/>
-                    <bit-field key="cs2" name="CS2" description="Clock Select bits" mask="0x7"/>
+                    <bit-field key="wgm21" name="WGM21" description="Waveform Generation Mode" mask="0x08"/>
+                    <bit-field key="cs2" name="CS2" description="Clock Select bits" mask="0x07"/>
                 </register>
                 <register key="sfior" name="SFIOR" description="Special Function IO Register" offset="0x50" size="1">
-                    <bit-field key="psr2" name="PSR2" description="Prescaler Reset Timer/Counter2" mask="0x2"/>
+                    <bit-field key="psr2" name="PSR2" description="Prescaler Reset Timer/Counter2" mask="0x02"/>
                 </register>
                 <register key="tifr" name="TIFR" description="Timer/Counter Interrupt Flag Register" offset="0x58" size="1">
                     <bit-field key="ocf2" name="OCF2" description="Output Compare Flag 2" mask="0x80"/>
@@ -586,14 +586,14 @@
                     <bit-field key="spe" name="SPE" description="SPI Enable" mask="0x40"/>
                     <bit-field key="dord" name="DORD" description="Data Order" mask="0x20"/>
                     <bit-field key="mstr" name="MSTR" description="Master/Slave Select" mask="0x10"/>
-                    <bit-field key="cpol" name="CPOL" description="Clock polarity" mask="0x8"/>
-                    <bit-field key="cpha" name="CPHA" description="Clock Phase" mask="0x4"/>
-                    <bit-field key="spr" name="SPR" description="SPI Clock Rate Selects" mask="0x3"/>
+                    <bit-field key="cpol" name="CPOL" description="Clock polarity" mask="0x08"/>
+                    <bit-field key="cpha" name="CPHA" description="Clock Phase" mask="0x04"/>
+                    <bit-field key="spr" name="SPR" description="SPI Clock Rate Selects" mask="0x03"/>
                 </register>
                 <register key="spsr" name="SPSR" description="SPI Status Register" offset="0x2E" size="1">
                     <bit-field key="spif" name="SPIF" description="SPI Interrupt Flag" mask="0x80"/>
                     <bit-field key="wcol" name="WCOL" description="Write Collision Flag" mask="0x40"/>
-                    <bit-field key="spi2x" name="SPI2X" description="Double SPI Speed Bit" mask="0x1"/>
+                    <bit-field key="spi2x" name="SPI2X" description="Double SPI Speed Bit" mask="0x01"/>
                 </register>
                 <register key="spdr" name="SPDR" description="SPI Data Register" offset="0x2F" size="1">
                     <bit-field key="spdr" name="SPDR" description="SPI Data bits" mask="0xFF"/>
@@ -610,20 +610,20 @@
                     <bit-field key="txcie" name="TXCIE" description="TX Complete Interrupt Enable" mask="0x40"/>
                     <bit-field key="udrie" name="UDRIE" description="USART Data register Empty Interrupt Enable" mask="0x20"/>
                     <bit-field key="rxen" name="RXEN" description="Receiver Enable" mask="0x10"/>
-                    <bit-field key="txen" name="TXEN" description="Transmitter Enable" mask="0x8"/>
-                    <bit-field key="ucsz2" name="UCSZ2" description="Character Size" mask="0x4"/>
-                    <bit-field key="rxb8" name="RXB8" description="Receive Data Bit 8" mask="0x2"/>
-                    <bit-field key="txb8" name="TXB8" description="Transmit Data Bit 8" mask="0x1"/>
+                    <bit-field key="txen" name="TXEN" description="Transmitter Enable" mask="0x08"/>
+                    <bit-field key="ucsz2" name="UCSZ2" description="Character Size" mask="0x04"/>
+                    <bit-field key="rxb8" name="RXB8" description="Receive Data Bit 8" mask="0x02"/>
+                    <bit-field key="txb8" name="TXB8" description="Transmit Data Bit 8" mask="0x01"/>
                 </register>
                 <register key="ucsra" name="UCSRA" description="USART Control and Status Register A" offset="0x2B" size="1">
                     <bit-field key="rxc" name="RXC" description="USART Receive Complete" mask="0x80"/>
                     <bit-field key="txc" name="TXC" description="USART Transmitt Complete" mask="0x40"/>
                     <bit-field key="udre" name="UDRE" description="USART Data Register Empty" mask="0x20"/>
                     <bit-field key="fe" name="FE" description="Framing Error" mask="0x10"/>
-                    <bit-field key="dor" name="DOR" description="Data overRun" mask="0x8"/>
-                    <bit-field key="upe" name="UPE" description="Parity Error" mask="0x4"/>
-                    <bit-field key="u2x" name="U2X" description="Double the USART transmission speed" mask="0x2"/>
-                    <bit-field key="mpcm" name="MPCM" description="Multi-processor Communication Mode" mask="0x1"/>
+                    <bit-field key="dor" name="DOR" description="Data overRun" mask="0x08"/>
+                    <bit-field key="upe" name="UPE" description="Parity Error" mask="0x04"/>
+                    <bit-field key="u2x" name="U2X" description="Double the USART transmission speed" mask="0x02"/>
+                    <bit-field key="mpcm" name="MPCM" description="Multi-processor Communication Mode" mask="0x01"/>
                 </register>
                 <register key="udr" name="UDR" description="USART I/O Data Register" offset="0x2C" size="1">
                     <bit-field key="udr" name="UDR" description="USART I/O Data bits" mask="0xFF"/>
@@ -632,13 +632,13 @@
                     <bit-field key="ursel" name="URSEL" description="Register Select" mask="0x80"/>
                     <bit-field key="umsel" name="UMSEL" description="USART Mode Select" mask="0x40"/>
                     <bit-field key="upm" name="UPM" description="Parity Mode Bits" mask="0x30"/>
-                    <bit-field key="usbs" name="USBS" description="Stop Bit Select" mask="0x8"/>
-                    <bit-field key="ucsz" name="UCSZ" description="Character Size" mask="0x6"/>
-                    <bit-field key="ucpol" name="UCPOL" description="Clock Polarity" mask="0x1"/>
+                    <bit-field key="usbs" name="USBS" description="Stop Bit Select" mask="0x08"/>
+                    <bit-field key="ucsz" name="UCSZ" description="Character Size" mask="0x06"/>
+                    <bit-field key="ucpol" name="UCPOL" description="Clock Polarity" mask="0x01"/>
                 </register>
                 <register key="ubrrh" name="UBRRH" description="USART Baud Rate Register" offset="0x40" size="1" alternative="true">
                     <bit-field key="ursel" name="URSEL" description="Register Select" mask="0x80"/>
-                    <bit-field key="ubrr" name="UBRR" description="USART Baud Rate bits" mask="0xF"/>
+                    <bit-field key="ubrr" name="UBRR" description="USART Baud Rate bits" mask="0x0F"/>
                 </register>
             </register-group>
         </module>
@@ -649,11 +649,11 @@
                 </register>
                 <register key="twsr" name="TWSR" description="TWI Status Register" offset="0x21" size="1">
                     <bit-field key="tws" name="TWS" description="TWI Status" mask="0xF8"/>
-                    <bit-field key="twps" name="TWPS" description="TWI Prescaler" mask="0x3"/>
+                    <bit-field key="twps" name="TWPS" description="TWI Prescaler" mask="0x03"/>
                 </register>
                 <register key="twar" name="TWAR" description="TWI (Slave) Address register" offset="0x22" size="1">
                     <bit-field key="twa" name="TWA" description="TWI (Slave) Address register Bits" mask="0xFE"/>
-                    <bit-field key="twgce" name="TWGCE" description="TWI General Call Recognition Enable Bit" mask="0x1"/>
+                    <bit-field key="twgce" name="TWGCE" description="TWI General Call Recognition Enable Bit" mask="0x01"/>
                 </register>
                 <register key="twdr" name="TWDR" description="TWI Data register" offset="0x23" size="1">
                     <bit-field key="twd" name="TWD" description="TWI Data bits" mask="0xFF"/>
@@ -663,9 +663,9 @@
                     <bit-field key="twea" name="TWEA" description="TWI Enable Acknowledge Bit" mask="0x40"/>
                     <bit-field key="twsta" name="TWSTA" description="TWI Start Condition Bit" mask="0x20"/>
                     <bit-field key="twsto" name="TWSTO" description="TWI Stop Condition Bit" mask="0x10"/>
-                    <bit-field key="twwc" name="TWWC" description="TWI Write Collition Flag" mask="0x8"/>
-                    <bit-field key="twen" name="TWEN" description="TWI Enable Bit" mask="0x4"/>
-                    <bit-field key="twie" name="TWIE" description="TWI Interrupt Enable" mask="0x1"/>
+                    <bit-field key="twwc" name="TWWC" description="TWI Write Collition Flag" mask="0x08"/>
+                    <bit-field key="twen" name="TWEN" description="TWI Enable Bit" mask="0x04"/>
+                    <bit-field key="twie" name="TWIE" description="TWI Interrupt Enable" mask="0x01"/>
                 </register>
             </register-group>
         </module>
@@ -676,27 +676,27 @@
                     <bit-field key="acbg" name="ACBG" description="Analog Comparator Bandgap Select" mask="0x40"/>
                     <bit-field key="aco" name="ACO" description="Analog Compare Output" mask="0x20"/>
                     <bit-field key="aci" name="ACI" description="Analog Comparator Interrupt Flag" mask="0x10"/>
-                    <bit-field key="acie" name="ACIE" description="Analog Comparator Interrupt Enable" mask="0x8"/>
-                    <bit-field key="acic" name="ACIC" description="Analog Comparator Input Capture Enable" mask="0x4"/>
-                    <bit-field key="acis" name="ACIS" description="Analog Comparator Interrupt Mode Select bits" mask="0x3"/>
+                    <bit-field key="acie" name="ACIE" description="Analog Comparator Interrupt Enable" mask="0x08"/>
+                    <bit-field key="acic" name="ACIC" description="Analog Comparator Input Capture Enable" mask="0x04"/>
+                    <bit-field key="acis" name="ACIS" description="Analog Comparator Interrupt Mode Select bits" mask="0x03"/>
                 </register>
                 <register key="sfior" name="SFIOR" description="Special Function IO Register" offset="0x50" size="1">
-                    <bit-field key="acme" name="ACME" description="Analog Comparator Multiplexer Enable" mask="0x8"/>
+                    <bit-field key="acme" name="ACME" description="Analog Comparator Multiplexer Enable" mask="0x08"/>
                 </register>
             </register-group>
         </module>
         <module key="adc" name="ADC" description="Analog-to-Digital Converter">
             <register-group key="adc" name="ADC">
                 <register key="adc" name="ADC" description="ADC Data Register Bytes" offset="0x24" size="2">
-                    <bit-field key="adc" name="ADC" description="ADC Data Bits" mask="0x3FF"/>
+                    <bit-field key="adc" name="ADC" description="ADC Data Bits" mask="0x03FF"/>
                 </register>
                 <register key="adcsra" name="ADCSRA" description="The ADC Control and Status register" offset="0x26" size="1">
                     <bit-field key="aden" name="ADEN" description="ADC Enable" mask="0x80"/>
                     <bit-field key="adsc" name="ADSC" description="ADC Start Conversion" mask="0x40"/>
                     <bit-field key="adate" name="ADATE" description="ADC Auto Trigger" mask="0x20"/>
                     <bit-field key="adif" name="ADIF" description="ADC Interrupt Flag" mask="0x10"/>
-                    <bit-field key="adie" name="ADIE" description="ADC Interrupt Enable" mask="0x8"/>
-                    <bit-field key="adps" name="ADPS" description="ADC Prescaler Select Bits" mask="0x7"/>
+                    <bit-field key="adie" name="ADIE" description="ADC Interrupt Enable" mask="0x08"/>
+                    <bit-field key="adps" name="ADPS" description="ADC Prescaler Select Bits" mask="0x07"/>
                 </register>
                 <register key="admux" name="ADMUX" description="The ADC multiplexer Selection Register" offset="0x27" size="1">
                     <bit-field key="refs" name="REFS" description="Reference Selection Bits" mask="0xC0"/>
@@ -725,10 +725,10 @@
                     <bit-field key="spmie" name="SPMIE" description="SPM Interrupt Enable" mask="0x80"/>
                     <bit-field key="rwwsb" name="RWWSB" description="Read While Write Section Busy" mask="0x40"/>
                     <bit-field key="rwwsre" name="RWWSRE" description="Read While Write section read enable" mask="0x10"/>
-                    <bit-field key="blbset" name="BLBSET" description="Boot Lock Bit Set" mask="0x8"/>
-                    <bit-field key="pgwrt" name="PGWRT" description="Page Write" mask="0x4"/>
-                    <bit-field key="pgers" name="PGERS" description="Page Erase" mask="0x2"/>
-                    <bit-field key="spmen" name="SPMEN" description="Store Program Memory Enable" mask="0x1"/>
+                    <bit-field key="blbset" name="BLBSET" description="Boot Lock Bit Set" mask="0x08"/>
+                    <bit-field key="pgwrt" name="PGWRT" description="Page Write" mask="0x04"/>
+                    <bit-field key="pgers" name="PGERS" description="Page Erase" mask="0x02"/>
+                    <bit-field key="spmen" name="SPMEN" description="Store Program Memory Enable" mask="0x01"/>
                 </register>
             </register-group>
         </module>
@@ -758,8 +758,8 @@
             <register-group key="wdt" name="WDT">
                 <register key="wdtcr" name="WDTCR" description="Watchdog Timer Control Register" offset="0x41" size="1">
                     <bit-field key="wdtoe" name="WDTOE" description="RW" mask="0x10"/>
-                    <bit-field key="wde" name="WDE" description="Watch Dog Enable" mask="0x8"/>
-                    <bit-field key="wdp" name="WDP" description="Watch Dog Timer Prescaler bits" mask="0x7"/>
+                    <bit-field key="wde" name="WDE" description="Watch Dog Enable" mask="0x08"/>
+                    <bit-field key="wdp" name="WDP" description="Watch Dog Timer Prescaler bits" mask="0x07"/>
                 </register>
             </register-group>
         </module>

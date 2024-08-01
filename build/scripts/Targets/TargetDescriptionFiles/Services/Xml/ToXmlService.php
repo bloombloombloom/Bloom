@@ -296,11 +296,14 @@ class ToXmlService
             $element->setAttribute('description', trim($register->description));
         }
 
-        $element->setAttribute('offset', $this->stringService->tryIntToHex($register->offset));
+        $element->setAttribute('offset', $this->stringService->tryIntToHex($register->offset, 2));
         $element->setAttribute('size', $register->size);
 
         if ($register->initialValue !== null) {
-            $element->setAttribute('initial-value', $this->stringService->tryIntToHex($register->initialValue));
+            $element->setAttribute(
+                'initial-value',
+                $this->stringService->tryIntToHex($register->initialValue, $register->size * 2)
+            );
         }
 
         if (!empty($register->access)) {
@@ -312,13 +315,13 @@ class ToXmlService
         }
 
         foreach ($register->bitFields as $bitField) {
-            $element->append($this->bitFieldToXml($bitField, $document));
+            $element->append($this->bitFieldToXml($bitField, $register, $document));
         }
 
         return $element;
     }
 
-    public function bitFieldToXml(BitField $bitField, DOMDocument $document): DOMElement
+    public function bitFieldToXml(BitField $bitField, Register $register, DOMDocument $document): DOMElement
     {
         $element = $document->createElement('bit-field');
         $element->setAttribute('key', $bitField->key);
@@ -328,7 +331,10 @@ class ToXmlService
             $element->setAttribute('description', trim($bitField->description));
         }
 
-        $element->setAttribute('mask', $this->stringService->tryIntToHex($bitField->mask));
+        $element->setAttribute(
+            'mask',
+            $this->stringService->tryIntToHex($bitField->mask, $register->size * 2)
+        );
 
         if (!empty($bitField->access)) {
             $element->setAttribute('access', $bitField->access);
