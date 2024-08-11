@@ -15,9 +15,6 @@ class Register
     public ?bool $alternative = null;
 
     /** @var BitField[] */
-    public array $bitFieldsByName = [];
-
-    /** @var BitField[] */
     public array $bitFields = [];
 
     public function __construct(
