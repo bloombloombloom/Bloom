@@ -247,6 +247,28 @@ class TargetDescriptionFile
         return null;
     }
 
+    /**
+     * Returns all pinouts that are supported by the target package widget, in Bloom's Insight GUI.
+     *
+     * @return array
+     */
+    public function getInsightCompatiblePinouts(): array
+    {
+        return array_filter(
+            $this->pinouts,
+            fn (Pinout $pinout): bool => in_array(
+                $pinout->type,
+                [
+                    PinoutType::DIP,
+                    PinoutType::QFP,
+                    PinoutType::QFN,
+                    PinoutType::SOIC,
+                    PinoutType::SSOP,
+                ]
+            )
+        );
+    }
+
     public function getTargetPeripheral(string $peripheralKey): ?TargetPeripheral
     {
         $peripheral = $this->getPeripheral($peripheralKey);

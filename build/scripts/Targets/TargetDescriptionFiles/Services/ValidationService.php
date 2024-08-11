@@ -121,6 +121,9 @@ class ValidationService
 
         if (empty($tdf->pinouts)) {
             $failures[] = 'Missing pinouts';
+
+        } elseif (empty($tdf->getInsightCompatiblePinouts())) {
+            $failures[] = 'No Insight-compatible pinouts';
         }
 
         $processedPinoutKeys = [];
