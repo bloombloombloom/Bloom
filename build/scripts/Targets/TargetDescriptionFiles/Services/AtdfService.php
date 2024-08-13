@@ -640,6 +640,24 @@ class AtdfService
             }
         }
 
+        if (count($output->registerGroupInstances) === 1) {
+            /*
+             * ATDF peripherals sometimes override the register group keys and names, when there's only a single
+             * register group in the peripheral.
+             *
+             * This is not necessary for Bloom's TDFs, so we tidy it up here by clearing the `key` and `name`
+             * attributes where we can.
+             */
+            foreach ($output->registerGroupInstances as $instance) {
+                if ($output->key == 'fuse' && $instance->key !== $instance->registerGroupKey) {
+                    continue;
+                }
+
+                $instance->key = null;
+                $instance->name = null;
+            }
+        }
+
         $signalElement = $element->getElementsByTagName('signals')->item(0);
         if ($signalElement instanceof DOMElement) {
             foreach ($signalElement->childNodes as $childNode) {
