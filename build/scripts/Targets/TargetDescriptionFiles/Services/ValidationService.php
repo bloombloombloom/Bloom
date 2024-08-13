@@ -166,18 +166,9 @@ class ValidationService
 
         if (empty($propertyGroup->key)) {
             $failures[] = 'Missing key';
-        }
 
-        if (!mb_check_encoding((string) $propertyGroup->key, 'ASCII')) {
-            $failures[] = 'Key contains non ASCII characters';
-        }
-
-        if (str_contains((string) $propertyGroup->key, ' ')) {
-            $failures[] = 'Key contains at least one white character';
-        }
-
-        if (str_contains((string) $propertyGroup->key, '.')) {
-            $failures[] = 'Key contains at least one period (".") character';
+        } else {
+            $failures = array_merge($failures, $this->validateKey($propertyGroup->key));
         }
 
         if (empty($propertyGroup->subPropertyGroups) && empty($propertyGroup->properties)) {
@@ -219,18 +210,9 @@ class ValidationService
 
         if (empty($property->key)) {
             $failures[] = 'Missing key';
-        }
 
-        if (!mb_check_encoding((string) $property->key, 'ASCII')) {
-            $failures[] = 'Key contains non ASCII characters';
-        }
-
-        if (str_contains((string) $property->key, ' ')) {
-            $failures[] = 'Key contains at least white space character';
-        }
-
-        if (str_contains((string) $property->key, '.')) {
-            $failures[] = 'Key contains at least one period (".") character';
+        } else {
+            $failures = array_merge($failures, $this->validateKey($property->key));
         }
 
         if ($property->value === null) {
@@ -312,14 +294,9 @@ class ValidationService
 
         if (empty($segment->key)) {
             $failures[] = 'Missing key';
-        }
 
-        if (!preg_match('/^[a-z_]+$/',$segment->key)) {
-            $failures[] = 'Key must contain only lowercase letters';
-        }
-
-        if (!mb_check_encoding((string) $segment->key, 'ASCII')) {
-            $failures[] = 'Key must contain only ASCII characters';
+        } else {
+            $failures = array_merge($failures, $this->validateKey($segment->key));
         }
 
         if (empty($segment->name)) {
@@ -445,18 +422,9 @@ class ValidationService
 
         if (empty($registerGroup->key)) {
             $failures[] = 'Missing key';
-        }
 
-        if (!mb_check_encoding((string) $registerGroup->key, 'ASCII')) {
-            $failures[] = 'Key contains non ASCII characters';
-        }
-
-        if (str_contains((string) $registerGroup->key, ' ')) {
-            $failures[] = 'Key contains at least one white character';
-        }
-
-        if (str_contains((string) $registerGroup->key, '.')) {
-            $failures[] = 'Key contains at least one period (".") character';
+        } else {
+            $failures = array_merge($failures, $this->validateKey($registerGroup->key));
         }
 
         if (empty($registerGroup->name)) {
@@ -534,18 +502,9 @@ class ValidationService
 
         if (empty($registerGroupReference->key)) {
             $failures[] = 'Missing key';
-        }
 
-        if (!mb_check_encoding((string) $registerGroupReference->key, 'ASCII')) {
-            $failures[] = 'Key contains non ASCII characters';
-        }
-
-        if (str_contains((string) $registerGroupReference->key, ' ')) {
-            $failures[] = 'Key contains at least one period space';
-        }
-
-        if (str_contains((string) $registerGroupReference->key, '.')) {
-            $failures[] = 'Key contains at least one period (".") character';
+        } else {
+            $failures = array_merge($failures, $this->validateKey($registerGroupReference->key));
         }
 
         if (empty($registerGroupReference->registerGroupKey)) {
@@ -581,18 +540,9 @@ class ValidationService
 
         if (empty($register->key)) {
             $failures[] = 'Missing key';
-        }
 
-        if (!mb_check_encoding((string) $register->key, 'ASCII')) {
-            $failures[] = 'Key contains non ASCII character';
-        }
-
-        if (str_contains((string) $register->key, ' ')) {
-            $failures[] = 'Key contains at least white space character';
-        }
-
-        if (str_contains((string) $register->key, '.')) {
-            $failures[] = 'Key contains at least one period (".") character';
+        } else {
+            $failures = array_merge($failures, $this->validateKey($register->key));
         }
 
         if (empty($register->name)) {
@@ -750,28 +700,12 @@ class ValidationService
     ): array {
         $failures = [];
 
-        if (empty($registerGroupInstance->key)) {
-            $failures[] = 'Missing key';
-        }
-
-        if (!mb_check_encoding((string) $registerGroupInstance->key, 'ASCII')) {
-            $failures[] = 'Key contains non ASCII characters';
-        }
-
-        if (str_contains((string) $registerGroupInstance->key, ' ')) {
-            $failures[] = 'Key contains at least one period space';
-        }
-
-        if (str_contains((string) $registerGroupInstance->key, '.')) {
-            $failures[] = 'Key contains at least one period (".") character';
+        if (!empty($registerGroupInstance->key)) {
+            $failures = array_merge($failures, $this->validateKey($registerGroupInstance->key));
         }
 
         if (empty($registerGroupInstance->registerGroupKey)) {
             $failures[] = 'Missing register group key';
-        }
-
-        if (empty($registerGroupInstance->name)) {
-            $failures[] = 'Missing name';
         }
 
         if ($registerGroupInstance->offset === null) {
@@ -975,6 +909,33 @@ class ValidationService
         return array_map(
             fn (string $failure): string => 'Target register group "' . $registerGroup->name
                 . '" validation failure: ' . $failure,
+            $failures
+        );
+    }
+
+    protected function validateKey(string $key): array
+    {
+        $failures = [];
+
+        if (!mb_check_encoding($key, 'ASCII')) {
+            $failures[] = 'Key contains non ASCII characters';
+        }
+
+        if (strtolower($key) !== $key) {
+            $failures[] = 'Key must contain only lowercase characters';
+        }
+
+        if (str_contains($key, ' ')) {
+            $failures[] = 'Key contains at least one whitespace';
+        }
+
+        if (str_contains($key, '.')) {
+            $failures[] = 'Key contains at least one period (".") character';
+        }
+
+        return array_map(
+            fn (string $failure): string => 'Key validation failure for key "' . $key
+                . '": ' . $failure,
             $failures
         );
     }

@@ -63,115 +63,115 @@
     </physical-interfaces>
     <peripherals>
         <peripheral key="gpio" name="GPIO" module-key="i6085">
-            <register-group-instance key="gpio" name="GPIO" register-group-key="gpio" address-space-key="data" offset="0x0"/>
+            <register-group-instance register-group-key="gpio" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="ocd" name="OCD" module-key="i6043">
-            <register-group-instance key="ocd" name="OCD" register-group-key="ocd" address-space-key="data" offset="0x2E"/>
+            <register-group-instance register-group-key="ocd" address-space-key="data" offset="0x2E"/>
         </peripheral>
         <peripheral key="cpu" name="CPU" module-key="i6000">
-            <register-group-instance key="cpu" name="CPU" register-group-key="cpu" address-space-key="data" offset="0x30"/>
+            <register-group-instance register-group-key="cpu" address-space-key="data" offset="0x30"/>
         </peripheral>
         <peripheral key="clk" name="CLK" module-key="i6073">
-            <register-group-instance key="clk" name="CLK" register-group-key="clk" address-space-key="data" offset="0x40"/>
+            <register-group-instance register-group-key="clk" address-space-key="data" offset="0x40"/>
         </peripheral>
         <peripheral key="pr" name="PR" module-key="i6073">
-            <register-group-instance key="pr" name="PR" register-group-key="pr" address-space-key="data" offset="0x70"/>
+            <register-group-instance register-group-key="pr" address-space-key="data" offset="0x70"/>
         </peripheral>
         <peripheral key="sleep" name="SLEEP" module-key="i6081">
-            <register-group-instance key="sleep" name="SLEEP" register-group-key="sleep" address-space-key="data" offset="0x48"/>
+            <register-group-instance register-group-key="sleep" address-space-key="data" offset="0x48"/>
         </peripheral>
         <peripheral key="osc" name="OSC" module-key="i6079">
-            <register-group-instance key="osc" name="OSC" register-group-key="osc" address-space-key="data" offset="0x50"/>
+            <register-group-instance register-group-key="osc" address-space-key="data" offset="0x50"/>
         </peripheral>
         <peripheral key="dfllrc32m" name="DFLLRC32M" module-key="i6055">
-            <register-group-instance key="dfllrc32m" name="DFLLRC32M" register-group-key="dfll" address-space-key="data" offset="0x60"/>
+            <register-group-instance register-group-key="dfll" address-space-key="data" offset="0x60"/>
         </peripheral>
         <peripheral key="dfllrc2m" name="DFLLRC2M" module-key="i6055">
-            <register-group-instance key="dfllrc2m" name="DFLLRC2M" register-group-key="dfll" address-space-key="data" offset="0x68"/>
+            <register-group-instance register-group-key="dfll" address-space-key="data" offset="0x68"/>
         </peripheral>
         <peripheral key="rst" name="RST" module-key="i6083">
-            <register-group-instance key="rst" name="RST" register-group-key="rst" address-space-key="data" offset="0x78"/>
+            <register-group-instance register-group-key="rst" address-space-key="data" offset="0x78"/>
         </peripheral>
         <peripheral key="wdt" name="WDT" module-key="i6078">
-            <register-group-instance key="wdt" name="WDT" register-group-key="wdt" address-space-key="data" offset="0x80"/>
+            <register-group-instance register-group-key="wdt" address-space-key="data" offset="0x80"/>
         </peripheral>
         <peripheral key="mcu" name="MCU" module-key="i6091">
-            <register-group-instance key="mcu" name="MCU" register-group-key="mcu" address-space-key="data" offset="0x90"/>
+            <register-group-instance register-group-key="mcu" address-space-key="data" offset="0x90"/>
         </peripheral>
         <peripheral key="pmic" name="PMIC" module-key="i6057">
-            <register-group-instance key="pmic" name="PMIC" register-group-key="pmic" address-space-key="data" offset="0xA0"/>
+            <register-group-instance register-group-key="pmic" address-space-key="data" offset="0xA0"/>
         </peripheral>
         <peripheral key="dma" name="DMA" module-key="i3000">
-            <register-group-instance key="dma" name="DMA" register-group-key="dma" address-space-key="data" offset="0x100"/>
+            <register-group-instance register-group-key="dma" address-space-key="data" offset="0x100"/>
         </peripheral>
         <peripheral key="evsys" name="EVSYS" module-key="i6061">
-            <register-group-instance key="evsys" name="EVSYS" register-group-key="evsys" address-space-key="data" offset="0x180"/>
+            <register-group-instance register-group-key="evsys" address-space-key="data" offset="0x180"/>
         </peripheral>
         <peripheral key="nvm" name="NVM" module-key="i6076-revh">
-            <register-group-instance key="nvm" name="NVM" register-group-key="nvm" address-space-key="data" offset="0x1C0"/>
+            <register-group-instance register-group-key="nvm" address-space-key="data" offset="0x1C0"/>
         </peripheral>
         <peripheral key="fuse" name="FUSE" module-key="i6076-revh">
             <register-group-instance key="fuse" name="FUSE" register-group-key="nvm_fuses" address-space-key="fuses" offset="0x0"/>
         </peripheral>
         <peripheral key="lockbit" name="LOCKBIT" module-key="i6076-revh">
-            <register-group-instance key="lockbit" name="LOCKBIT" register-group-key="nvm_lockbits" address-space-key="lockbits" offset="0x0"/>
+            <register-group-instance register-group-key="nvm_lockbits" address-space-key="lockbits" offset="0x0"/>
         </peripheral>
         <peripheral key="prod_signatures" name="PROD_SIGNATURES" module-key="i6076-revh">
-            <register-group-instance key="prod_signatures" name="PROD_SIGNATURES" register-group-key="nvm_prod_signatures" address-space-key="prod_signatures" offset="0x0"/>
+            <register-group-instance register-group-key="nvm_prod_signatures" address-space-key="prod_signatures" offset="0x0"/>
         </peripheral>
         <peripheral key="aca" name="ACA" module-key="i6077">
-            <register-group-instance key="aca" name="ACA" register-group-key="ac" address-space-key="data" offset="0x380"/>
+            <register-group-instance register-group-key="ac" address-space-key="data" offset="0x380"/>
         </peripheral>
         <peripheral key="acb" name="ACB" module-key="i6077">
-            <register-group-instance key="acb" name="ACB" register-group-key="ac" address-space-key="data" offset="0x390"/>
+            <register-group-instance register-group-key="ac" address-space-key="data" offset="0x390"/>
         </peripheral>
         <peripheral key="adca" name="ADCA" module-key="i6064">
-            <register-group-instance key="adca" name="ADCA" register-group-key="adc" address-space-key="data" offset="0x200"/>
+            <register-group-instance register-group-key="adc" address-space-key="data" offset="0x200"/>
         </peripheral>
         <peripheral key="adcb" name="ADCB" module-key="i6064">
-            <register-group-instance key="adcb" name="ADCB" register-group-key="adc" address-space-key="data" offset="0x240"/>
+            <register-group-instance register-group-key="adc" address-space-key="data" offset="0x240"/>
         </peripheral>
         <peripheral key="daca" name="DACA" module-key="i6059">
-            <register-group-instance key="daca" name="DACA" register-group-key="dac" address-space-key="data" offset="0x300"/>
+            <register-group-instance register-group-key="dac" address-space-key="data" offset="0x300"/>
         </peripheral>
         <peripheral key="dacb" name="DACB" module-key="i6059">
-            <register-group-instance key="dacb" name="DACB" register-group-key="dac" address-space-key="data" offset="0x320"/>
+            <register-group-instance register-group-key="dac" address-space-key="data" offset="0x320"/>
         </peripheral>
         <peripheral key="rtc" name="RTC" module-key="i6093">
-            <register-group-instance key="rtc" name="RTC" register-group-key="rtc" address-space-key="data" offset="0x400"/>
+            <register-group-instance register-group-key="rtc" address-space-key="data" offset="0x400"/>
         </peripheral>
         <peripheral key="ebi" name="EBI" module-key="i3001">
-            <register-group-instance key="ebi" name="EBI" register-group-key="ebi" address-space-key="data" offset="0x440"/>
+            <register-group-instance register-group-key="ebi" address-space-key="data" offset="0x440"/>
         </peripheral>
         <peripheral key="twic" name="TWIC" module-key="i6089">
-            <register-group-instance key="twic" name="TWIC" register-group-key="twi" address-space-key="data" offset="0x480"/>
+            <register-group-instance register-group-key="twi" address-space-key="data" offset="0x480"/>
         </peripheral>
         <peripheral key="twid" name="TWID" module-key="i6089">
-            <register-group-instance key="twid" name="TWID" register-group-key="twi" address-space-key="data" offset="0x490"/>
+            <register-group-instance register-group-key="twi" address-space-key="data" offset="0x490"/>
         </peripheral>
         <peripheral key="twie" name="TWIE" module-key="i6089">
-            <register-group-instance key="twie" name="TWIE" register-group-key="twi" address-space-key="data" offset="0x4A0"/>
+            <register-group-instance register-group-key="twi" address-space-key="data" offset="0x4A0"/>
         </peripheral>
         <peripheral key="twif" name="TWIF" module-key="i6089">
-            <register-group-instance key="twif" name="TWIF" register-group-key="twi" address-space-key="data" offset="0x4B0"/>
+            <register-group-instance register-group-key="twi" address-space-key="data" offset="0x4B0"/>
         </peripheral>
         <peripheral key="port_cfg" name="PORT_CFG" module-key="gpio_port">
-            <register-group-instance key="portcfg" name="PORTCFG" register-group-key="portcfg" address-space-key="data" offset="0xB0"/>
+            <register-group-instance register-group-key="portcfg" address-space-key="data" offset="0xB0"/>
         </peripheral>
         <peripheral key="vport0" name="VPORT0" module-key="gpio_port">
-            <register-group-instance key="vport0" name="VPORT0" register-group-key="vport" address-space-key="data" offset="0x10"/>
+            <register-group-instance register-group-key="vport" address-space-key="data" offset="0x10"/>
         </peripheral>
         <peripheral key="vport1" name="VPORT1" module-key="gpio_port">
-            <register-group-instance key="vport1" name="VPORT1" register-group-key="vport" address-space-key="data" offset="0x14"/>
+            <register-group-instance register-group-key="vport" address-space-key="data" offset="0x14"/>
         </peripheral>
         <peripheral key="vport2" name="VPORT2" module-key="gpio_port">
-            <register-group-instance key="vport2" name="VPORT2" register-group-key="vport" address-space-key="data" offset="0x18"/>
+            <register-group-instance register-group-key="vport" address-space-key="data" offset="0x18"/>
         </peripheral>
         <peripheral key="vport3" name="VPORT3" module-key="gpio_port">
-            <register-group-instance key="vport3" name="VPORT3" register-group-key="vport" address-space-key="data" offset="0x1C"/>
+            <register-group-instance register-group-key="vport" address-space-key="data" offset="0x1C"/>
         </peripheral>
         <peripheral key="porta" name="PORTA" module-key="gpio_port">
-            <register-group-instance key="porta" name="PORTA" register-group-key="port" address-space-key="data" offset="0x600"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x600"/>
             <signals>
                 <signal pad-id="pa0" index="0" function="PORTA" group="P"/>
                 <signal pad-id="pa1" index="1" function="PORTA" group="P"/>
@@ -184,7 +184,7 @@
             </signals>
         </peripheral>
         <peripheral key="portb" name="PORTB" module-key="gpio_port">
-            <register-group-instance key="portb" name="PORTB" register-group-key="port" address-space-key="data" offset="0x620"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x620"/>
             <signals>
                 <signal pad-id="pb0" index="0" function="PORTB" group="P"/>
                 <signal pad-id="pb1" index="1" function="PORTB" group="P"/>
@@ -197,7 +197,7 @@
             </signals>
         </peripheral>
         <peripheral key="portc" name="PORTC" module-key="gpio_port">
-            <register-group-instance key="portc" name="PORTC" register-group-key="port" address-space-key="data" offset="0x640"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x640"/>
             <signals>
                 <signal pad-id="pc0" index="0" function="PORTC" group="P"/>
                 <signal pad-id="pc1" index="1" function="PORTC" group="P"/>
@@ -210,7 +210,7 @@
             </signals>
         </peripheral>
         <peripheral key="portd" name="PORTD" module-key="gpio_port">
-            <register-group-instance key="portd" name="PORTD" register-group-key="port" address-space-key="data" offset="0x660"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x660"/>
             <signals>
                 <signal pad-id="pd0" index="0" function="PORTD" group="P"/>
                 <signal pad-id="pd1" index="1" function="PORTD" group="P"/>
@@ -223,7 +223,7 @@
             </signals>
         </peripheral>
         <peripheral key="porte" name="PORTE" module-key="gpio_port">
-            <register-group-instance key="porte" name="PORTE" register-group-key="port" address-space-key="data" offset="0x680"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x680"/>
             <signals>
                 <signal pad-id="pe0" index="0" function="PORTE" group="P"/>
                 <signal pad-id="pe1" index="1" function="PORTE" group="P"/>
@@ -236,7 +236,7 @@
             </signals>
         </peripheral>
         <peripheral key="portf" name="PORTF" module-key="gpio_port">
-            <register-group-instance key="portf" name="PORTF" register-group-key="port" address-space-key="data" offset="0x6A0"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x6A0"/>
             <signals>
                 <signal pad-id="pf0" index="0" function="PORTF" group="P"/>
                 <signal pad-id="pf1" index="1" function="PORTF" group="P"/>
@@ -249,7 +249,7 @@
             </signals>
         </peripheral>
         <peripheral key="porth" name="PORTH" module-key="gpio_port">
-            <register-group-instance key="porth" name="PORTH" register-group-key="port" address-space-key="data" offset="0x6E0"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x6E0"/>
             <signals>
                 <signal pad-id="ph0" index="0" function="PORTH" group="P"/>
                 <signal pad-id="ph1" index="1" function="PORTH" group="P"/>
@@ -262,7 +262,7 @@
             </signals>
         </peripheral>
         <peripheral key="portj" name="PORTJ" module-key="gpio_port">
-            <register-group-instance key="portj" name="PORTJ" register-group-key="port" address-space-key="data" offset="0x700"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x700"/>
             <signals>
                 <signal pad-id="pj0" index="0" function="PORTJ" group="P"/>
                 <signal pad-id="pj1" index="1" function="PORTJ" group="P"/>
@@ -275,7 +275,7 @@
             </signals>
         </peripheral>
         <peripheral key="portk" name="PORTK" module-key="gpio_port">
-            <register-group-instance key="portk" name="PORTK" register-group-key="port" address-space-key="data" offset="0x720"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x720"/>
             <signals>
                 <signal pad-id="pk0" index="0" function="PORTK" group="P"/>
                 <signal pad-id="pk1" index="1" function="PORTK" group="P"/>
@@ -288,7 +288,7 @@
             </signals>
         </peripheral>
         <peripheral key="portq" name="PORTQ" module-key="gpio_port">
-            <register-group-instance key="portq" name="PORTQ" register-group-key="port" address-space-key="data" offset="0x7C0"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x7C0"/>
             <signals>
                 <signal pad-id="pq0" index="0" function="PORTQ" group="P"/>
                 <signal pad-id="pq1" index="1" function="PORTQ" group="P"/>
@@ -297,95 +297,95 @@
             </signals>
         </peripheral>
         <peripheral key="portr" name="PORTR" module-key="gpio_port">
-            <register-group-instance key="portr" name="PORTR" register-group-key="port" address-space-key="data" offset="0x7E0"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x7E0"/>
             <signals>
                 <signal pad-id="pr0" index="0" function="PORTR" group="P"/>
                 <signal pad-id="pr1" index="1" function="PORTR" group="P"/>
             </signals>
         </peripheral>
         <peripheral key="tcc0" name="TCC0" module-key="i6090_tc">
-            <register-group-instance key="tcc0" name="TCC0" register-group-key="tc0" address-space-key="data" offset="0x800"/>
+            <register-group-instance register-group-key="tc0" address-space-key="data" offset="0x800"/>
         </peripheral>
         <peripheral key="tcc1" name="TCC1" module-key="i6090_tc">
-            <register-group-instance key="tcc1" name="TCC1" register-group-key="tc1" address-space-key="data" offset="0x840"/>
+            <register-group-instance register-group-key="tc1" address-space-key="data" offset="0x840"/>
         </peripheral>
         <peripheral key="awexc" name="AWEXC" module-key="i6090_tc">
-            <register-group-instance key="awexc" name="AWEXC" register-group-key="awex" address-space-key="data" offset="0x880"/>
+            <register-group-instance register-group-key="awex" address-space-key="data" offset="0x880"/>
         </peripheral>
         <peripheral key="hiresc" name="HIRESC" module-key="i6090_tc">
-            <register-group-instance key="hiresc" name="HIRESC" register-group-key="hires" address-space-key="data" offset="0x890"/>
+            <register-group-instance register-group-key="hires" address-space-key="data" offset="0x890"/>
         </peripheral>
         <peripheral key="tcd0" name="TCD0" module-key="i6090_tc">
-            <register-group-instance key="tcd0" name="TCD0" register-group-key="tc0" address-space-key="data" offset="0x900"/>
+            <register-group-instance register-group-key="tc0" address-space-key="data" offset="0x900"/>
         </peripheral>
         <peripheral key="tcd1" name="TCD1" module-key="i6090_tc">
-            <register-group-instance key="tcd1" name="TCD1" register-group-key="tc1" address-space-key="data" offset="0x940"/>
+            <register-group-instance register-group-key="tc1" address-space-key="data" offset="0x940"/>
         </peripheral>
         <peripheral key="hiresd" name="HIRESD" module-key="i6090_tc">
-            <register-group-instance key="hiresd" name="HIRESD" register-group-key="hires" address-space-key="data" offset="0x990"/>
+            <register-group-instance register-group-key="hires" address-space-key="data" offset="0x990"/>
         </peripheral>
         <peripheral key="tce0" name="TCE0" module-key="i6090_tc">
-            <register-group-instance key="tce0" name="TCE0" register-group-key="tc0" address-space-key="data" offset="0xA00"/>
+            <register-group-instance register-group-key="tc0" address-space-key="data" offset="0xA00"/>
         </peripheral>
         <peripheral key="tce1" name="TCE1" module-key="i6090_tc">
-            <register-group-instance key="tce1" name="TCE1" register-group-key="tc1" address-space-key="data" offset="0xA40"/>
+            <register-group-instance register-group-key="tc1" address-space-key="data" offset="0xA40"/>
         </peripheral>
         <peripheral key="awexe" name="AWEXE" module-key="i6090_tc">
-            <register-group-instance key="awexe" name="AWEXE" register-group-key="awex" address-space-key="data" offset="0xA80"/>
+            <register-group-instance register-group-key="awex" address-space-key="data" offset="0xA80"/>
         </peripheral>
         <peripheral key="hirese" name="HIRESE" module-key="i6090_tc">
-            <register-group-instance key="hirese" name="HIRESE" register-group-key="hires" address-space-key="data" offset="0xA90"/>
+            <register-group-instance register-group-key="hires" address-space-key="data" offset="0xA90"/>
         </peripheral>
         <peripheral key="tcf0" name="TCF0" module-key="i6090_tc">
-            <register-group-instance key="tcf0" name="TCF0" register-group-key="tc0" address-space-key="data" offset="0xB00"/>
+            <register-group-instance register-group-key="tc0" address-space-key="data" offset="0xB00"/>
         </peripheral>
         <peripheral key="tcf1" name="TCF1" module-key="i6090_tc">
-            <register-group-instance key="tcf1" name="TCF1" register-group-key="tc1" address-space-key="data" offset="0xB40"/>
+            <register-group-instance register-group-key="tc1" address-space-key="data" offset="0xB40"/>
         </peripheral>
         <peripheral key="hiresf" name="HIRESF" module-key="i6090_tc">
-            <register-group-instance key="hiresf" name="HIRESF" register-group-key="hires" address-space-key="data" offset="0xB90"/>
+            <register-group-instance register-group-key="hires" address-space-key="data" offset="0xB90"/>
         </peripheral>
         <peripheral key="usartc0" name="USARTC0" module-key="i6090_usart">
-            <register-group-instance key="usartc0" name="USARTC0" register-group-key="usart" address-space-key="data" offset="0x8A0"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0x8A0"/>
         </peripheral>
         <peripheral key="usartc1" name="USARTC1" module-key="i6090_usart">
-            <register-group-instance key="usartc1" name="USARTC1" register-group-key="usart" address-space-key="data" offset="0x8B0"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0x8B0"/>
         </peripheral>
         <peripheral key="usartd0" name="USARTD0" module-key="i6090_usart">
-            <register-group-instance key="usartd0" name="USARTD0" register-group-key="usart" address-space-key="data" offset="0x9A0"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0x9A0"/>
         </peripheral>
         <peripheral key="usartd1" name="USARTD1" module-key="i6090_usart">
-            <register-group-instance key="usartd1" name="USARTD1" register-group-key="usart" address-space-key="data" offset="0x9B0"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0x9B0"/>
         </peripheral>
         <peripheral key="usarte0" name="USARTE0" module-key="i6090_usart">
-            <register-group-instance key="usarte0" name="USARTE0" register-group-key="usart" address-space-key="data" offset="0xAA0"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0xAA0"/>
         </peripheral>
         <peripheral key="usarte1" name="USARTE1" module-key="i6090_usart">
-            <register-group-instance key="usarte1" name="USARTE1" register-group-key="usart" address-space-key="data" offset="0xAB0"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0xAB0"/>
         </peripheral>
         <peripheral key="usartf0" name="USARTF0" module-key="i6090_usart">
-            <register-group-instance key="usartf0" name="USARTF0" register-group-key="usart" address-space-key="data" offset="0xBA0"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0xBA0"/>
         </peripheral>
         <peripheral key="usartf1" name="USARTF1" module-key="i6090_usart">
-            <register-group-instance key="usartf1" name="USARTF1" register-group-key="usart" address-space-key="data" offset="0xBB0"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0xBB0"/>
         </peripheral>
         <peripheral key="spic" name="SPIC" module-key="i6090_spi">
-            <register-group-instance key="spic" name="SPIC" register-group-key="spi" address-space-key="data" offset="0x8C0"/>
+            <register-group-instance register-group-key="spi" address-space-key="data" offset="0x8C0"/>
         </peripheral>
         <peripheral key="spid" name="SPID" module-key="i6090_spi">
-            <register-group-instance key="spid" name="SPID" register-group-key="spi" address-space-key="data" offset="0x9C0"/>
+            <register-group-instance register-group-key="spi" address-space-key="data" offset="0x9C0"/>
         </peripheral>
         <peripheral key="spie" name="SPIE" module-key="i6090_spi">
-            <register-group-instance key="spie" name="SPIE" register-group-key="spi" address-space-key="data" offset="0xAC0"/>
+            <register-group-instance register-group-key="spi" address-space-key="data" offset="0xAC0"/>
         </peripheral>
         <peripheral key="spif" name="SPIF" module-key="i6090_spi">
-            <register-group-instance key="spif" name="SPIF" register-group-key="spi" address-space-key="data" offset="0xBC0"/>
+            <register-group-instance register-group-key="spi" address-space-key="data" offset="0xBC0"/>
         </peripheral>
         <peripheral key="ircom" name="IRCOM" module-key="i6090_ircom">
-            <register-group-instance key="ircom" name="IRCOM" register-group-key="ircom" address-space-key="data" offset="0x8F8"/>
+            <register-group-instance register-group-key="ircom" address-space-key="data" offset="0x8F8"/>
         </peripheral>
         <peripheral key="aes" name="AES" module-key="i6096">
-            <register-group-instance key="aes" name="AES" register-group-key="aes" address-space-key="data" offset="0xC0"/>
+            <register-group-instance register-group-key="aes" address-space-key="data" offset="0xC0"/>
         </peripheral>
     </peripherals>
     <modules>

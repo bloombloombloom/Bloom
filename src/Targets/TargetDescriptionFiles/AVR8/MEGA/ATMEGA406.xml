@@ -92,40 +92,40 @@
     </physical-interfaces>
     <peripherals>
         <peripheral key="adc" name="ADC" module-key="adc">
-            <register-group-instance key="adc" name="ADC" description="Analog-to-Digital Converter" register-group-key="adc" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Analog-to-Digital Converter" register-group-key="adc" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="exint" name="EXINT" module-key="exint">
-            <register-group-instance key="exint" name="EXINT" description="External Interrupts" register-group-key="exint" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="External Interrupts" register-group-key="exint" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="tc1" name="TC1" module-key="tc16">
-            <register-group-instance key="tc1" name="TC1" description="Timer/Counter, 16-bit" register-group-key="tc1" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Timer/Counter, 16-bit" register-group-key="tc1" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="wakeup_timer" name="WAKEUP_TIMER" module-key="wakeup_timer">
-            <register-group-instance key="wakeup_timer" name="WAKEUP_TIMER" description="Wakeup Timer" register-group-key="wakeup_timer" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Wakeup Timer" register-group-key="wakeup_timer" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="battery_protection" name="BATTERY_PROTECTION" module-key="battery_protection">
-            <register-group-instance key="battery_protection" name="BATTERY_PROTECTION" description="Battery Protection" register-group-key="battery_protection" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Battery Protection" register-group-key="battery_protection" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="fet" name="FET" module-key="fet">
-            <register-group-instance key="fet" name="FET" description="FET Control" register-group-key="fet" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="FET Control" register-group-key="fet" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="coulomb_counter" name="COULOMB_COUNTER" module-key="coulomb_counter">
-            <register-group-instance key="coulomb_counter" name="COULOMB_COUNTER" description="Coulomb Counter" register-group-key="coulomb_counter" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Coulomb Counter" register-group-key="coulomb_counter" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="cell_balancing" name="CELL_BALANCING" module-key="cell_balancing">
-            <register-group-instance key="cell_balancing" name="CELL_BALANCING" description="Cell Balancing" register-group-key="cell_balancing" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Cell Balancing" register-group-key="cell_balancing" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="cpu" name="CPU" module-key="cpu">
-            <register-group-instance key="cpu" name="CPU" description="CPU Registers" register-group-key="cpu" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="CPU Registers" register-group-key="cpu" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="wdt" name="WDT" module-key="wdt">
-            <register-group-instance key="wdt" name="WDT" description="Watchdog Timer" register-group-key="wdt" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Watchdog Timer" register-group-key="wdt" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="tc0" name="TC0" module-key="tc8">
-            <register-group-instance key="tc0" name="TC0" description="Timer/Counter, 8-bit" register-group-key="tc0" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Timer/Counter, 8-bit" register-group-key="tc0" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="porta" name="PORTA" module-key="gpio_port">
-            <register-group-instance key="porta" name="PORTA" description="I/O Port" register-group-key="porta" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="I/O Port" register-group-key="porta" address-space-key="data" offset="0x0"/>
             <signals>
                 <signal pad-id="pa0" index="0" function="PORTA" group="P"/>
                 <signal pad-id="pa1" index="1" function="PORTA" group="P"/>
@@ -138,7 +138,7 @@
             </signals>
         </peripheral>
         <peripheral key="portb" name="PORTB" module-key="gpio_port">
-            <register-group-instance key="portb" name="PORTB" description="I/O Port" register-group-key="portb" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="I/O Port" register-group-key="portb" address-space-key="data" offset="0x0"/>
             <signals>
                 <signal pad-id="pb0" index="0" function="PORTB" group="P"/>
                 <signal pad-id="pb1" index="1" function="PORTB" group="P"/>
@@ -151,35 +151,35 @@
             </signals>
         </peripheral>
         <peripheral key="portc" name="PORTC" module-key="gpio_port">
-            <register-group-instance key="portc" name="PORTC" description="I/O Port" register-group-key="portc" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="I/O Port" register-group-key="portc" address-space-key="data" offset="0x0"/>
             <signals>
                 <signal pad-id="pc0" index="0" function="PORTC" group="P"/>
             </signals>
         </peripheral>
         <peripheral key="portd" name="PORTD" module-key="gpio_port">
-            <register-group-instance key="portd" name="PORTD" description="I/O Port" register-group-key="portd" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="I/O Port" register-group-key="portd" address-space-key="data" offset="0x0"/>
             <signals>
                 <signal pad-id="pd0" index="0" function="PORTD" group="P"/>
                 <signal pad-id="pd1" index="1" function="PORTD" group="P"/>
             </signals>
         </peripheral>
         <peripheral key="boot_load" name="BOOT_LOAD" module-key="boot_load">
-            <register-group-instance key="boot_load" name="BOOT_LOAD" description="Bootloader" register-group-key="boot_load" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Bootloader" register-group-key="boot_load" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="twi" name="TWI" module-key="twi">
-            <register-group-instance key="twi" name="TWI" description="Two Wire Serial Interface" register-group-key="twi" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Two Wire Serial Interface" register-group-key="twi" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="bandgap" name="BANDGAP" module-key="bandgap">
-            <register-group-instance key="bandgap" name="BANDGAP" description="Bandgap" register-group-key="bandgap" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="Bandgap" register-group-key="bandgap" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="eeprom" name="EEPROM" module-key="eeprom">
-            <register-group-instance key="eeprom" name="EEPROM" description="EEPROM" register-group-key="eeprom" address-space-key="data" offset="0x0"/>
+            <register-group-instance description="EEPROM" register-group-key="eeprom" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="fuse" name="FUSE" module-key="fuse">
-            <register-group-instance key="fuse" name="FUSE" description="Fuses" register-group-key="fuse" address-space-key="fuses" offset="0x0"/>
+            <register-group-instance description="Fuses" register-group-key="fuse" address-space-key="fuses" offset="0x0"/>
         </peripheral>
         <peripheral key="lockbit" name="LOCKBIT" module-key="lockbit">
-            <register-group-instance key="lockbit" name="LOCKBIT" description="Lockbits" register-group-key="lockbit" address-space-key="lockbits" offset="0x0"/>
+            <register-group-instance description="Lockbits" register-group-key="lockbit" address-space-key="lockbits" offset="0x0"/>
         </peripheral>
     </peripherals>
     <modules>

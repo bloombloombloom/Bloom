@@ -317,12 +317,12 @@ class TargetDescriptionFile
             $registerGroup = $this->resolveRegisterGroupInstance($registerGroupInstance, $peripheral->moduleKey);
             if ($registerGroup instanceof RegisterGroup) {
                 $output->registerGroups[] = $this->targetRegisterGroupFromRegisterGroup(
-                    $registerGroupInstance->key,
-                    $registerGroupInstance->name,
                     $registerGroupInstance->addressSpaceKey,
                     $registerGroup,
                     $registerGroupInstance->offset ?? 0,
-                    $peripheral->moduleKey
+                    $peripheral->moduleKey,
+                    $registerGroupInstance->key,
+                    $registerGroupInstance->name
                 );
             }
         }
@@ -331,20 +331,25 @@ class TargetDescriptionFile
     }
 
     private function targetRegisterGroupFromRegisterGroup(
-        string $key,
-        string $name,
         string $addressSpaceKey,
         RegisterGroup $registerGroup,
         int $addressOffset,
-        string $moduleKey
+        string $moduleKey,
+        ?string $keyOverride = null,
+        ?string $nameOverride = null
     ): TargetRegisterGroup {
         $addressOffset += $registerGroup->offset ?? 0;
-        $output = new TargetRegisterGroup($key, $name, $addressSpaceKey, $addressOffset, [], []);
+        $output = new TargetRegisterGroup(
+            $keyOverride ?? $registerGroup->key,
+            $nameOverride ?? $registerGroup->name,
+            $addressSpaceKey,
+            $addressOffset,
+            [],
+            []
+        );
 
         foreach ($registerGroup->subgroups as $subgroup) {
             $output->subgroups[] = $this->targetRegisterGroupFromRegisterGroup(
-                $subgroup->key,
-                $subgroup->name,
                 $addressSpaceKey,
                 $subgroup,
                 $addressOffset,
@@ -357,12 +362,12 @@ class TargetDescriptionFile
 
             if ($subgroup instanceof RegisterGroup) {
                 $output->subgroups[] = $this->targetRegisterGroupFromRegisterGroup(
-                    $subgroupReference->key,
-                    $subgroupReference->name,
                     $addressSpaceKey,
                     $subgroup,
                     $addressOffset + $subgroupReference->offset,
-                    $moduleKey
+                    $moduleKey,
+                    $subgroupReference->key,
+                    $subgroupReference->name
                 );
             }
         }

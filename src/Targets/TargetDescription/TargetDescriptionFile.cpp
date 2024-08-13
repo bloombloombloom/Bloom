@@ -774,7 +774,10 @@ namespace Targets::TargetDescription
             element = element.nextSiblingElement("register-group-instance")
         ) {
             auto registerGroupInstance = TargetDescriptionFile::registerGroupInstanceFromXml(element);
-            output.registerGroupInstancesByKey.emplace(registerGroupInstance.key, std::move(registerGroupInstance));
+            output.registerGroupInstancesByKey.emplace(
+                registerGroupInstance.key.value_or(registerGroupInstance.registerGroupKey),
+                std::move(registerGroupInstance)
+            );
         }
 
         for (
@@ -790,8 +793,8 @@ namespace Targets::TargetDescription
 
     RegisterGroupInstance TargetDescriptionFile::registerGroupInstanceFromXml(const QDomElement& xmlElement) {
         return {
-            TargetDescriptionFile::getAttribute(xmlElement, "key"),
-            TargetDescriptionFile::getAttribute(xmlElement, "name"),
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "key"),
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "register-group-key"),
             TargetDescriptionFile::getAttribute(xmlElement, "address-space-key"),
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "offset")),

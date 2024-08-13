@@ -8,16 +8,16 @@ namespace Targets::TargetDescription
 {
     struct RegisterGroupInstance
     {
-        std::string key;
-        std::string name;
+        std::optional<std::string> key;
+        std::optional<std::string> name;
         std::string registerGroupKey;
         std::string addressSpaceKey;
         std::uint32_t offset;
         std::optional<std::string> description;
 
         RegisterGroupInstance(
-            const std::string& key,
-            const std::string& name,
+            const std::optional<std::string>& key,
+            const std::optional<std::string>& name,
             const std::string& registerGroupKey,
             const std::string& addressSpaceKey,
             std::uint32_t offset,

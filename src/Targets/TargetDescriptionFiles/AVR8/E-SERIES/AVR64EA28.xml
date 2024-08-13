@@ -42,7 +42,7 @@
     </physical-interfaces>
     <peripherals>
         <peripheral key="ac0" name="AC0" module-key="cmp_control_v8">
-            <register-group-instance key="ac0" name="AC0" register-group-key="ac" address-space-key="data" offset="0x680"/>
+            <register-group-instance register-group-key="ac" address-space-key="data" offset="0x680"/>
             <signals>
                 <signal pad-id="pd3" index="0" function="AINN" group="AINN"/>
                 <signal pad-id="pd0" index="1" function="AINN" group="AINN"/>
@@ -55,7 +55,7 @@
             </signals>
         </peripheral>
         <peripheral key="ac1" name="AC1" module-key="cmp_control_v8">
-            <register-group-instance key="ac1" name="AC1" register-group-key="ac" address-space-key="data" offset="0x688"/>
+            <register-group-instance register-group-key="ac" address-space-key="data" offset="0x688"/>
             <signals>
                 <signal pad-id="pd5" index="0" function="AINN" group="AINN"/>
                 <signal pad-id="pd0" index="1" function="AINN" group="AINN"/>
@@ -69,7 +69,7 @@
             </signals>
         </peripheral>
         <peripheral key="adc0" name="ADC0" module-key="adc_12b_diff_ctrl_avr_v2">
-            <register-group-instance key="adc0" name="ADC0" register-group-key="adc" address-space-key="data" offset="0x600"/>
+            <register-group-instance register-group-key="adc" address-space-key="data" offset="0x600"/>
             <signals>
                 <signal pad-id="pd0" index="0" function="AINN" group="AINN"/>
                 <signal pad-id="pd1" index="1" function="AINN" group="AINN"/>
@@ -114,10 +114,10 @@
             </signals>
         </peripheral>
         <peripheral key="bod" name="BOD" module-key="bor_lvd_ctrl_avr_v2">
-            <register-group-instance key="bod" name="BOD" register-group-key="bod" address-space-key="data" offset="0xA0"/>
+            <register-group-instance register-group-key="bod" address-space-key="data" offset="0xA0"/>
         </peripheral>
         <peripheral key="ccl" name="CCL" module-key="cla_ccl_v1">
-            <register-group-instance key="ccl" name="CCL" register-group-key="ccl" address-space-key="data" offset="0x1C0"/>
+            <register-group-instance register-group-key="ccl" address-space-key="data" offset="0x1C0"/>
             <signals>
                 <signal pad-id="pa0" index="0" function="IN" group="LUT0_IN"/>
                 <signal pad-id="pa1" index="1" function="IN" group="LUT0_IN"/>
@@ -138,7 +138,7 @@
             </signals>
         </peripheral>
         <peripheral key="clkctrl" name="CLKCTRL" module-key="avrea_clkctrl">
-            <register-group-instance key="clkctrl" name="CLKCTRL" register-group-key="clkctrl" address-space-key="data" offset="0x60"/>
+            <register-group-instance register-group-key="clkctrl" address-space-key="data" offset="0x60"/>
             <signals>
                 <signal pad-id="pa0" function="EXTCLK" group="EXTCLK"/>
                 <signal pad-id="pa7" function="OUT" group="CLKOUT"/>
@@ -149,22 +149,22 @@
             </signals>
         </peripheral>
         <peripheral key="cpu" name="CPU" module-key="cpu_avr_xt_v1">
-            <register-group-instance key="cpu" name="CPU" register-group-key="cpu" address-space-key="data" offset="0x30"/>
+            <register-group-instance register-group-key="cpu" address-space-key="data" offset="0x30"/>
         </peripheral>
         <peripheral key="cpuint" name="CPUINT" module-key="int_8bit_v3">
-            <register-group-instance key="cpuint" name="CPUINT" register-group-key="cpuint" address-space-key="data" offset="0x110"/>
+            <register-group-instance register-group-key="cpuint" address-space-key="data" offset="0x110"/>
         </peripheral>
         <peripheral key="crcscan" name="CRCSCAN" module-key="math_pdi_crc_v1">
-            <register-group-instance key="crcscan" name="CRCSCAN" register-group-key="crcscan" address-space-key="data" offset="0x120"/>
+            <register-group-instance register-group-key="crcscan" address-space-key="data" offset="0x120"/>
         </peripheral>
         <peripheral key="dac0" name="DAC0" module-key="dac_nbit_ctrl_avr_v6">
-            <register-group-instance key="dac0" name="DAC0" register-group-key="dac" address-space-key="data" offset="0x6A0"/>
+            <register-group-instance register-group-key="dac" address-space-key="data" offset="0x6A0"/>
             <signals>
                 <signal pad-id="pd6" function="VOUT" group="OUT"/>
             </signals>
         </peripheral>
         <peripheral key="evsys" name="EVSYS" module-key="avrea_evsys">
-            <register-group-instance key="evsys" name="EVSYS" register-group-key="evsys" address-space-key="data" offset="0x200"/>
+            <register-group-instance register-group-key="evsys" address-space-key="data" offset="0x200"/>
             <signals>
                 <signal pad-id="pa7" index="0" function="ALT1" group="EVOUT" field="PORTMUX.EVSYSROUTEA.EVOUTA"/>
                 <signal pad-id="pa2" index="0" function="DEFAULT" group="EVOUT" field="PORTMUX.EVSYSROUTEA.EVOUTA"/>
@@ -175,19 +175,19 @@
             </signals>
         </peripheral>
         <peripheral key="fuse" name="FUSE" module-key="avrea_fuse">
-            <register-group-instance key="fuse" name="FUSE" register-group-key="fuse" address-space-key="data" offset="0x1050"/>
+            <register-group-instance register-group-key="fuse" address-space-key="data" offset="0x1050"/>
         </peripheral>
         <peripheral key="gpr" name="GPR" module-key="avrea_gpr">
-            <register-group-instance key="gpr" name="GPR" register-group-key="gpr" address-space-key="data" offset="0x1C"/>
+            <register-group-instance register-group-key="gpr" address-space-key="data" offset="0x1C"/>
         </peripheral>
         <peripheral key="lock" name="LOCK" module-key="avrea_lock">
-            <register-group-instance key="lock" name="LOCK" register-group-key="lock" address-space-key="data" offset="0x1040"/>
+            <register-group-instance register-group-key="lock" address-space-key="data" offset="0x1040"/>
         </peripheral>
         <peripheral key="nvmctrl" name="NVMCTRL" module-key="nvm_ctrl_avr_v3">
-            <register-group-instance key="nvmctrl" name="NVMCTRL" register-group-key="nvmctrl" address-space-key="data" offset="0x1000"/>
+            <register-group-instance register-group-key="nvmctrl" address-space-key="data" offset="0x1000"/>
         </peripheral>
         <peripheral key="porta" name="PORTA" module-key="gpio_port">
-            <register-group-instance key="porta" name="PORTA" register-group-key="port" address-space-key="data" offset="0x400"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x400"/>
             <signals>
                 <signal pad-id="pa0" index="0" function="IOPORT" group="PIN"/>
                 <signal pad-id="pa1" index="1" function="IOPORT" group="PIN"/>
@@ -200,7 +200,7 @@
             </signals>
         </peripheral>
         <peripheral key="portc" name="PORTC" module-key="gpio_port">
-            <register-group-instance key="portc" name="PORTC" register-group-key="port" address-space-key="data" offset="0x440"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x440"/>
             <signals>
                 <signal pad-id="pc0" index="0" function="IOPORT" group="PIN"/>
                 <signal pad-id="pc1" index="1" function="IOPORT" group="PIN"/>
@@ -209,7 +209,7 @@
             </signals>
         </peripheral>
         <peripheral key="portd" name="PORTD" module-key="gpio_port">
-            <register-group-instance key="portd" name="PORTD" register-group-key="port" address-space-key="data" offset="0x460"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x460"/>
             <signals>
                 <signal pad-id="pd0" index="0" function="IOPORT" group="PIN"/>
                 <signal pad-id="pd1" index="1" function="IOPORT" group="PIN"/>
@@ -222,7 +222,7 @@
             </signals>
         </peripheral>
         <peripheral key="portf" name="PORTF" module-key="gpio_port">
-            <register-group-instance key="portf" name="PORTF" register-group-key="port" address-space-key="data" offset="0x4A0"/>
+            <register-group-instance register-group-key="port" address-space-key="data" offset="0x4A0"/>
             <signals>
                 <signal pad-id="pf0" index="0" function="IOPORT" group="PIN"/>
                 <signal pad-id="pf1" index="1" function="IOPORT" group="PIN"/>
@@ -231,25 +231,25 @@
             </signals>
         </peripheral>
         <peripheral key="portmux" name="PORTMUX" module-key="avrea_portmux">
-            <register-group-instance key="portmux" name="PORTMUX" register-group-key="portmux" address-space-key="data" offset="0x5E0"/>
+            <register-group-instance register-group-key="portmux" address-space-key="data" offset="0x5E0"/>
         </peripheral>
         <peripheral key="rstctrl" name="RSTCTRL" module-key="rst_integration_avr_v2">
-            <register-group-instance key="rstctrl" name="RSTCTRL" register-group-key="rstctrl" address-space-key="data" offset="0x40"/>
+            <register-group-instance register-group-key="rstctrl" address-space-key="data" offset="0x40"/>
             <signals>
                 <signal pad-id="pf6" function="OTHER" group="RESET"/>
             </signals>
         </peripheral>
         <peripheral key="rtc" name="RTC" module-key="tmr_16b_rtc_avr_v2">
-            <register-group-instance key="rtc" name="RTC" register-group-key="rtc" address-space-key="data" offset="0x140"/>
+            <register-group-instance register-group-key="rtc" address-space-key="data" offset="0x140"/>
         </peripheral>
         <peripheral key="sigrow" name="SIGROW" module-key="avrea_sigrow">
-            <register-group-instance key="sigrow" name="SIGROW" register-group-key="sigrow" address-space-key="data" offset="0x1100"/>
+            <register-group-instance register-group-key="sigrow" address-space-key="data" offset="0x1100"/>
         </peripheral>
         <peripheral key="slpctrl" name="SLPCTRL" module-key="clk_sleep_ctrl_avr_v1">
-            <register-group-instance key="slpctrl" name="SLPCTRL" register-group-key="slpctrl" address-space-key="data" offset="0x50"/>
+            <register-group-instance register-group-key="slpctrl" address-space-key="data" offset="0x50"/>
         </peripheral>
         <peripheral key="spi0" name="SPI0" module-key="spi_8bit_v2">
-            <register-group-instance key="spi0" name="SPI0" register-group-key="spi" address-space-key="data" offset="0x940"/>
+            <register-group-instance register-group-key="spi" address-space-key="data" offset="0x940"/>
             <signals>
                 <signal pad-id="pa1" function="ALT3" group="MISO" field="PORTMUX.SPIROUTEA.SPI0"/>
                 <signal pad-id="pa0" function="ALT3" group="MOSI" field="PORTMUX.SPIROUTEA.SPI0"/>
@@ -274,10 +274,10 @@
             </signals>
         </peripheral>
         <peripheral key="syscfg" name="SYSCFG" module-key="avrea_syscfg">
-            <register-group-instance key="syscfg" name="SYSCFG" register-group-key="syscfg" address-space-key="data" offset="0xF00"/>
+            <register-group-instance register-group-key="syscfg" address-space-key="data" offset="0xF00"/>
         </peripheral>
         <peripheral key="tca0" name="TCA0" module-key="tmr_16b_pwm_v1">
-            <register-group-instance key="tca0" name="TCA0" register-group-key="tca" address-space-key="data" offset="0xA00"/>
+            <register-group-instance register-group-key="tca" address-space-key="data" offset="0xA00"/>
             <signals>
                 <signal pad-id="pc0" index="0" function="ALT2" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
                 <signal pad-id="pc1" index="1" function="ALT2" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
@@ -300,25 +300,25 @@
             </signals>
         </peripheral>
         <peripheral key="tcb0" name="TCB0" module-key="tmr_16b_capture_v1">
-            <register-group-instance key="tcb0" name="TCB0" register-group-key="tcb" address-space-key="data" offset="0xB00"/>
+            <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xB00"/>
             <signals>
                 <signal pad-id="pa2" index="0" function="DEFAULT" group="WO" field="PORTMUX.TCBROUTEA.TCB0"/>
             </signals>
         </peripheral>
         <peripheral key="tcb1" name="TCB1" module-key="tmr_16b_capture_v1">
-            <register-group-instance key="tcb1" name="TCB1" register-group-key="tcb" address-space-key="data" offset="0xB10"/>
+            <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xB10"/>
             <signals>
                 <signal pad-id="pa3" index="0" function="DEFAULT" group="WO" field="PORTMUX.TCBROUTEA.TCB1"/>
             </signals>
         </peripheral>
         <peripheral key="tcb2" name="TCB2" module-key="tmr_16b_capture_v1">
-            <register-group-instance key="tcb2" name="TCB2" register-group-key="tcb" address-space-key="data" offset="0xB20"/>
+            <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xB20"/>
             <signals>
                 <signal pad-id="pc0" index="0" function="DEFAULT" group="WO" field="PORTMUX.TCBROUTEA.TCB2"/>
             </signals>
         </peripheral>
         <peripheral key="twi0" name="TWI0" module-key="i2c_8bit_avr_v3">
-            <register-group-instance key="twi0" name="TWI0" register-group-key="twi" address-space-key="data" offset="0x900"/>
+            <register-group-instance register-group-key="twi" address-space-key="data" offset="0x900"/>
             <signals>
                 <signal pad-id="pa3" function="ALT1" group="SCL" field="PORTMUX.TWIROUTEA.TWI0"/>
                 <signal pad-id="pa2" function="ALT1" group="SDA" field="PORTMUX.TWIROUTEA.TWI0"/>
@@ -335,7 +335,7 @@
             </signals>
         </peripheral>
         <peripheral key="usart0" name="USART0" module-key="uart_autobd_v4">
-            <register-group-instance key="usart0" name="USART0" register-group-key="usart" address-space-key="data" offset="0x800"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0x800"/>
             <signals>
                 <signal pad-id="pa5" index="1" function="ALT1" group="RXD" field="PORTMUX.USARTROUTEA.USART0"/>
                 <signal pad-id="pa4" index="1" function="ALT1" group="TXD" field="PORTMUX.USARTROUTEA.USART0"/>
@@ -357,7 +357,7 @@
             </signals>
         </peripheral>
         <peripheral key="usart1" name="USART1" module-key="uart_autobd_v4">
-            <register-group-instance key="usart1" name="USART1" register-group-key="usart" address-space-key="data" offset="0x820"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0x820"/>
             <signals>
                 <signal pad-id="pd7" function="ALT2" group="RXD" field="PORTMUX.USARTROUTEA.USART1"/>
                 <signal pad-id="pd6" function="ALT2" group="TXD" field="PORTMUX.USARTROUTEA.USART1"/>
@@ -368,35 +368,35 @@
             </signals>
         </peripheral>
         <peripheral key="usart2" name="USART2" module-key="uart_autobd_v4">
-            <register-group-instance key="usart2" name="USART2" register-group-key="usart" address-space-key="data" offset="0x840"/>
+            <register-group-instance register-group-key="usart" address-space-key="data" offset="0x840"/>
             <signals>
                 <signal pad-id="pf1" function="DEFAULT" group="RXD" field="PORTMUX.USARTROUTEA.USART2"/>
                 <signal pad-id="pf0" function="DEFAULT" group="TXD" field="PORTMUX.USARTROUTEA.USART2"/>
             </signals>
         </peripheral>
         <peripheral key="userrow" name="USERROW" module-key="avrea_userrow">
-            <register-group-instance key="userrow" name="USERROW" register-group-key="userrow" address-space-key="data" offset="0x1080"/>
+            <register-group-instance register-group-key="userrow" address-space-key="data" offset="0x1080"/>
         </peripheral>
         <peripheral key="vporta" name="VPORTA" module-key="gpio_ports_avr_v3_vport">
-            <register-group-instance key="vporta" name="VPORTA" register-group-key="vport" address-space-key="data" offset="0x0"/>
+            <register-group-instance register-group-key="vport" address-space-key="data" offset="0x0"/>
         </peripheral>
         <peripheral key="vportc" name="VPORTC" module-key="gpio_ports_avr_v3_vport">
-            <register-group-instance key="vportc" name="VPORTC" register-group-key="vport" address-space-key="data" offset="0x8"/>
+            <register-group-instance register-group-key="vport" address-space-key="data" offset="0x8"/>
         </peripheral>
         <peripheral key="vportd" name="VPORTD" module-key="gpio_ports_avr_v3_vport">
-            <register-group-instance key="vportd" name="VPORTD" register-group-key="vport" address-space-key="data" offset="0xC"/>
+            <register-group-instance register-group-key="vport" address-space-key="data" offset="0xC"/>
         </peripheral>
         <peripheral key="vportf" name="VPORTF" module-key="gpio_ports_avr_v3_vport">
-            <register-group-instance key="vportf" name="VPORTF" register-group-key="vport" address-space-key="data" offset="0x14"/>
+            <register-group-instance register-group-key="vport" address-space-key="data" offset="0x14"/>
         </peripheral>
         <peripheral key="vref" name="VREF" module-key="avrea_vref">
-            <register-group-instance key="vref" name="VREF" register-group-key="vref" address-space-key="data" offset="0xB0"/>
+            <register-group-instance register-group-key="vref" address-space-key="data" offset="0xB0"/>
             <signals>
                 <signal pad-id="pd7" function="VREF" group="VREFA"/>
             </signals>
         </peripheral>
         <peripheral key="wdt" name="WDT" module-key="wdt_windowed_v2">
-            <register-group-instance key="wdt" name="WDT" register-group-key="wdt" address-space-key="data" offset="0x100"/>
+            <register-group-instance register-group-key="wdt" address-space-key="data" offset="0x100"/>
         </peripheral>
     </peripherals>
     <modules>

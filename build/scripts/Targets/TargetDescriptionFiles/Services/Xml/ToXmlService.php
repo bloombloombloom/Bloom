@@ -162,8 +162,14 @@ class ToXmlService
         DOMDocument $document
     ): DOMElement {
         $element = $document->createElement('register-group-instance');
-        $element->setAttribute('key', $registerGroupInstance->key);
-        $element->setAttribute('name', $registerGroupInstance->name);
+
+        if (!empty($registerGroupInstance->key)) {
+            $element->setAttribute('key', $registerGroupInstance->key);
+        }
+
+        if (!empty($registerGroupInstance->name)) {
+            $element->setAttribute('name', $registerGroupInstance->name);
+        }
 
         if (!empty($registerGroupInstance->description)) {
             $element->setAttribute('description', $registerGroupInstance->description);
