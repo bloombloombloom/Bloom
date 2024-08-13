@@ -231,6 +231,9 @@ class ValidationService
 
         if (empty($addressSpace->key)) {
             $failures[] = 'Missing key';
+
+        } else {
+            $failures = array_merge($failures, $this->validateKey($addressSpace->key));
         }
 
         if ($addressSpace->startAddress === null) {
@@ -368,6 +371,9 @@ class ValidationService
 
         if (empty($section->key)) {
             $failures[] = 'Missing key';
+
+        } else {
+            $failures = array_merge($failures, $this->validateKey($section->key));
         }
 
         if (empty($section->name)) {
@@ -592,6 +598,9 @@ class ValidationService
 
         if (empty($bitField->key)) {
             $failures[] = 'Missing key';
+
+        } else {
+            $failures = array_merge($failures, $this->validateKey($bitField->key));
         }
 
         if (empty($bitField->name)) {
@@ -615,6 +624,9 @@ class ValidationService
 
         if (empty($module->key)) {
             $failures[] = 'Missing key';
+
+        } else {
+            $failures = array_merge($failures, $this->validateKey($module->key));
         }
 
         if (empty($module->name)) {
@@ -651,6 +663,9 @@ class ValidationService
 
         if (empty($peripheral->key)) {
             $failures[] = 'Missing key';
+
+        } else {
+            $failures = array_merge($failures, $this->validateKey($peripheral->key));
         }
 
         if (empty($peripheral->name)) {
@@ -755,6 +770,9 @@ class ValidationService
 
         if (empty($pinout->key)) {
             $failures[] = 'Missing key';
+
+        } else {
+            $failures = array_merge($failures, $this->validateKey($pinout->key));
         }
 
         if (empty($pinout->name)) {
