@@ -8,6 +8,7 @@ use Targets\TargetDescriptionFiles\BitField;
 use Targets\TargetDescriptionFiles\MemorySegment;
 use Targets\TargetDescriptionFiles\MemorySegmentSection;
 use Targets\TargetDescriptionFiles\Module;
+use Targets\TargetDescriptionFiles\Pad;
 use Targets\TargetDescriptionFiles\Peripheral;
 use Targets\TargetDescriptionFiles\RegisterGroupInstance;
 use Targets\TargetDescriptionFiles\PhysicalInterface;
@@ -185,7 +186,7 @@ class ToXmlService
     public function signalToXml(Signal $signal, DOMDocument $document): DOMElement
     {
         $element = $document->createElement('signal');
-        $element->setAttribute('pad-id', $signal->padId);
+        $element->setAttribute('pad-key', $signal->padKey);
 
         if ($signal->index !== null) {
             $element->setAttribute('index', $signal->index);
@@ -349,6 +350,15 @@ class ToXmlService
         return $element;
     }
 
+    public function padToXml(Pad $pad, DOMDocument $document): DOMElement
+    {
+        $element = $document->createElement('pad');
+        $element->setAttribute('key', $pad->key);
+        $element->setAttribute('name', $pad->name);
+
+        return $element;
+    }
+
     public function pinoutToXml(Pinout $pinout, DOMDocument $document): DOMElement
     {
         $element = $document->createElement('pinout');
@@ -371,7 +381,10 @@ class ToXmlService
     {
         $element = $document->createElement('pin');
         $element->setAttribute('position', $pin->position);
-        $element->setAttribute('pad', $pin->pad);
+
+        if (!empty($pin->padKey)) {
+            $element->setAttribute('pad-key', $pin->padKey);
+        }
 
         return $element;
     }
@@ -379,9 +392,9 @@ class ToXmlService
     public function variantToXml(Variant $variant, DOMDocument $document): DOMElement
     {
         $element = $document->createElement('variant');
+        $element->setAttribute('key', $variant->key);
         $element->setAttribute('name', $variant->name);
         $element->setAttribute('pinout-key', $variant->pinoutKey);
-        $element->setAttribute('package', $variant->package);
 
         return $element;
     }

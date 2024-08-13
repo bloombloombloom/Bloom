@@ -254,61 +254,61 @@
         <peripheral key="porta" name="PORTA" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="porta" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pa0" index="0" function="PORTA" group="P"/>
-                <signal pad-id="pa1" index="1" function="PORTA" group="P"/>
-                <signal pad-id="pa2" index="2" function="PORTA" group="P"/>
-                <signal pad-id="pa3" index="3" function="PORTA" group="P"/>
-                <signal pad-id="pa4" index="4" function="PORTA" group="P"/>
-                <signal pad-id="pa5" index="5" function="PORTA" group="P"/>
-                <signal pad-id="pa6" index="6" function="PORTA" group="P"/>
-                <signal pad-id="pa7" index="7" function="PORTA" group="P"/>
+                <signal pad-key="pa0" index="0" function="PORTA" group="P"/>
+                <signal pad-key="pa1" index="1" function="PORTA" group="P"/>
+                <signal pad-key="pa2" index="2" function="PORTA" group="P"/>
+                <signal pad-key="pa3" index="3" function="PORTA" group="P"/>
+                <signal pad-key="pa4" index="4" function="PORTA" group="P"/>
+                <signal pad-key="pa5" index="5" function="PORTA" group="P"/>
+                <signal pad-key="pa6" index="6" function="PORTA" group="P"/>
+                <signal pad-key="pa7" index="7" function="PORTA" group="P"/>
             </signals>
         </peripheral>
         <peripheral key="portb" name="PORTB" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portb" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pb0" index="0" function="PORTB" group="P"/>
-                <signal pad-id="pb1" index="1" function="PORTB" group="P"/>
-                <signal pad-id="pb2" index="2" function="PORTB" group="P"/>
-                <signal pad-id="pb3" index="3" function="PORTB" group="P"/>
-                <signal pad-id="pb4" index="4" function="PORTB" group="P"/>
-                <signal pad-id="pb5" index="5" function="PORTB" group="P"/>
-                <signal pad-id="pb6" index="6" function="PORTB" group="P"/>
-                <signal pad-id="pb7" index="7" function="PORTB" group="P"/>
+                <signal pad-key="pb0" index="0" function="PORTB" group="P"/>
+                <signal pad-key="pb1" index="1" function="PORTB" group="P"/>
+                <signal pad-key="pb2" index="2" function="PORTB" group="P"/>
+                <signal pad-key="pb3" index="3" function="PORTB" group="P"/>
+                <signal pad-key="pb4" index="4" function="PORTB" group="P"/>
+                <signal pad-key="pb5" index="5" function="PORTB" group="P"/>
+                <signal pad-key="pb6" index="6" function="PORTB" group="P"/>
+                <signal pad-key="pb7" index="7" function="PORTB" group="P"/>
             </signals>
         </peripheral>
         <peripheral key="portc" name="PORTC" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portc" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pc0" index="0" function="PORTC" group="P"/>
-                <signal pad-id="pc1" index="1" function="PORTC" group="P"/>
-                <signal pad-id="pc2" index="2" function="PORTC" group="P"/>
-                <signal pad-id="pc3" index="3" function="PORTC" group="P"/>
-                <signal pad-id="pc4" index="4" function="PORTC" group="P"/>
-                <signal pad-id="pc5" index="5" function="PORTC" group="P"/>
-                <signal pad-id="pc6" index="6" function="PORTC" group="P"/>
-                <signal pad-id="pc7" index="7" function="PORTC" group="P"/>
+                <signal pad-key="pc0" index="0" function="PORTC" group="P"/>
+                <signal pad-key="pc1" index="1" function="PORTC" group="P"/>
+                <signal pad-key="pc2" index="2" function="PORTC" group="P"/>
+                <signal pad-key="pc3" index="3" function="PORTC" group="P"/>
+                <signal pad-key="pc4" index="4" function="PORTC" group="P"/>
+                <signal pad-key="pc5" index="5" function="PORTC" group="P"/>
+                <signal pad-key="pc6" index="6" function="PORTC" group="P"/>
+                <signal pad-key="pc7" index="7" function="PORTC" group="P"/>
             </signals>
         </peripheral>
         <peripheral key="portd" name="PORTD" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portd" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pd0" index="0" function="PORTD" group="P"/>
-                <signal pad-id="pd1" index="1" function="PORTD" group="P"/>
-                <signal pad-id="pd2" index="2" function="PORTD" group="P"/>
-                <signal pad-id="pd3" index="3" function="PORTD" group="P"/>
-                <signal pad-id="pd4" index="4" function="PORTD" group="P"/>
-                <signal pad-id="pd5" index="5" function="PORTD" group="P"/>
-                <signal pad-id="pd6" index="6" function="PORTD" group="P"/>
-                <signal pad-id="pd7" index="7" function="PORTD" group="P"/>
+                <signal pad-key="pd0" index="0" function="PORTD" group="P"/>
+                <signal pad-key="pd1" index="1" function="PORTD" group="P"/>
+                <signal pad-key="pd2" index="2" function="PORTD" group="P"/>
+                <signal pad-key="pd3" index="3" function="PORTD" group="P"/>
+                <signal pad-key="pd4" index="4" function="PORTD" group="P"/>
+                <signal pad-key="pd5" index="5" function="PORTD" group="P"/>
+                <signal pad-key="pd6" index="6" function="PORTD" group="P"/>
+                <signal pad-key="pd7" index="7" function="PORTD" group="P"/>
             </signals>
         </peripheral>
         <peripheral key="porte" name="PORTE" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="porte" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pe0" index="0" function="PORTE" group="P"/>
-                <signal pad-id="pe1" index="1" function="PORTE" group="P"/>
-                <signal pad-id="pe2" index="2" function="PORTE" group="P"/>
+                <signal pad-key="pe0" index="0" function="PORTE" group="P"/>
+                <signal pad-key="pe1" index="1" function="PORTE" group="P"/>
+                <signal pad-key="pe2" index="2" function="PORTE" group="P"/>
             </signals>
         </peripheral>
         <peripheral key="tc0" name="TC0" module-key="tc8">
@@ -742,99 +742,141 @@
             </register-group>
         </module>
     </modules>
+    <pads>
+        <pad key="pb0" name="PB0"/>
+        <pad key="pb1" name="PB1"/>
+        <pad key="pb2" name="PB2"/>
+        <pad key="pb3" name="PB3"/>
+        <pad key="pb4" name="PB4"/>
+        <pad key="pb5" name="PB5"/>
+        <pad key="pb6" name="PB6"/>
+        <pad key="pb7" name="PB7"/>
+        <pad key="reset" name="RESET"/>
+        <pad key="pd0" name="PD0"/>
+        <pad key="pd1" name="PD1"/>
+        <pad key="pd2" name="PD2"/>
+        <pad key="pd3" name="PD3"/>
+        <pad key="pd4" name="PD4"/>
+        <pad key="pd5" name="PD5"/>
+        <pad key="pd6" name="PD6"/>
+        <pad key="pd7" name="PD7"/>
+        <pad key="xtal2" name="XTAL2"/>
+        <pad key="xtal1" name="XTAL1"/>
+        <pad key="gnd" name="GND"/>
+        <pad key="pc0" name="PC0"/>
+        <pad key="pc1" name="PC1"/>
+        <pad key="pc2" name="PC2"/>
+        <pad key="pc3" name="PC3"/>
+        <pad key="pc4" name="PC4"/>
+        <pad key="pc5" name="PC5"/>
+        <pad key="pc6" name="PC6"/>
+        <pad key="pc7" name="PC7"/>
+        <pad key="pe2" name="PE2"/>
+        <pad key="pe1" name="PE1"/>
+        <pad key="pe0" name="PE0"/>
+        <pad key="pa7" name="PA7"/>
+        <pad key="pa6" name="PA6"/>
+        <pad key="pa5" name="PA5"/>
+        <pad key="pa4" name="PA4"/>
+        <pad key="pa3" name="PA3"/>
+        <pad key="pa2" name="PA2"/>
+        <pad key="pa1" name="PA1"/>
+        <pad key="pa0" name="PA0"/>
+        <pad key="vcc" name="VCC"/>
+    </pads>
     <pinouts>
         <pinout key="dip40" name="DIP40" type="dip">
-            <pin position="1" pad="PB0"/>
-            <pin position="2" pad="PB1"/>
-            <pin position="3" pad="PB2"/>
-            <pin position="4" pad="PB3"/>
-            <pin position="5" pad="PB4"/>
-            <pin position="6" pad="PB5"/>
-            <pin position="7" pad="PB6"/>
-            <pin position="8" pad="PB7"/>
-            <pin position="9" pad="RESET"/>
-            <pin position="10" pad="PD0"/>
-            <pin position="11" pad="PD1"/>
-            <pin position="12" pad="PD2"/>
-            <pin position="13" pad="PD3"/>
-            <pin position="14" pad="PD4"/>
-            <pin position="15" pad="PD5"/>
-            <pin position="16" pad="PD6"/>
-            <pin position="17" pad="PD7"/>
-            <pin position="18" pad="XTAL2"/>
-            <pin position="19" pad="XTAL1"/>
-            <pin position="20" pad="GND"/>
-            <pin position="21" pad="PC0"/>
-            <pin position="22" pad="PC1"/>
-            <pin position="23" pad="PC2"/>
-            <pin position="24" pad="PC3"/>
-            <pin position="25" pad="PC4"/>
-            <pin position="26" pad="PC5"/>
-            <pin position="27" pad="PC6"/>
-            <pin position="28" pad="PC7"/>
-            <pin position="29" pad="PE2"/>
-            <pin position="30" pad="PE1"/>
-            <pin position="31" pad="PE0"/>
-            <pin position="32" pad="PA7"/>
-            <pin position="33" pad="PA6"/>
-            <pin position="34" pad="PA5"/>
-            <pin position="35" pad="PA4"/>
-            <pin position="36" pad="PA3"/>
-            <pin position="37" pad="PA2"/>
-            <pin position="38" pad="PA1"/>
-            <pin position="39" pad="PA0"/>
-            <pin position="40" pad="VCC"/>
+            <pin position="1" pad-key="pb0"/>
+            <pin position="2" pad-key="pb1"/>
+            <pin position="3" pad-key="pb2"/>
+            <pin position="4" pad-key="pb3"/>
+            <pin position="5" pad-key="pb4"/>
+            <pin position="6" pad-key="pb5"/>
+            <pin position="7" pad-key="pb6"/>
+            <pin position="8" pad-key="pb7"/>
+            <pin position="9" pad-key="reset"/>
+            <pin position="10" pad-key="pd0"/>
+            <pin position="11" pad-key="pd1"/>
+            <pin position="12" pad-key="pd2"/>
+            <pin position="13" pad-key="pd3"/>
+            <pin position="14" pad-key="pd4"/>
+            <pin position="15" pad-key="pd5"/>
+            <pin position="16" pad-key="pd6"/>
+            <pin position="17" pad-key="pd7"/>
+            <pin position="18" pad-key="xtal2"/>
+            <pin position="19" pad-key="xtal1"/>
+            <pin position="20" pad-key="gnd"/>
+            <pin position="21" pad-key="pc0"/>
+            <pin position="22" pad-key="pc1"/>
+            <pin position="23" pad-key="pc2"/>
+            <pin position="24" pad-key="pc3"/>
+            <pin position="25" pad-key="pc4"/>
+            <pin position="26" pad-key="pc5"/>
+            <pin position="27" pad-key="pc6"/>
+            <pin position="28" pad-key="pc7"/>
+            <pin position="29" pad-key="pe2"/>
+            <pin position="30" pad-key="pe1"/>
+            <pin position="31" pad-key="pe0"/>
+            <pin position="32" pad-key="pa7"/>
+            <pin position="33" pad-key="pa6"/>
+            <pin position="34" pad-key="pa5"/>
+            <pin position="35" pad-key="pa4"/>
+            <pin position="36" pad-key="pa3"/>
+            <pin position="37" pad-key="pa2"/>
+            <pin position="38" pad-key="pa1"/>
+            <pin position="39" pad-key="pa0"/>
+            <pin position="40" pad-key="vcc"/>
         </pinout>
         <pinout key="qfp_qfn_44" name="QFP_QFN_44" type="qfn">
-            <pin position="1" pad="PB5"/>
-            <pin position="2" pad="PB6"/>
-            <pin position="3" pad="PB7"/>
-            <pin position="4" pad="RESET"/>
-            <pin position="5" pad="PD0"/>
-            <pin position="6" pad="VCC"/>
-            <pin position="7" pad="PD1"/>
-            <pin position="8" pad="PD2"/>
-            <pin position="9" pad="PD3"/>
-            <pin position="10" pad="PD4"/>
-            <pin position="11" pad="PD5"/>
-            <pin position="12" pad="PD6"/>
-            <pin position="13" pad="PD7"/>
-            <pin position="14" pad="XTAL2"/>
-            <pin position="15" pad="XTAL1"/>
-            <pin position="16" pad="GND"/>
-            <pin position="17" pad="VCC"/>
-            <pin position="18" pad="PC0"/>
-            <pin position="19" pad="PC1"/>
-            <pin position="20" pad="PC2"/>
-            <pin position="21" pad="PC3"/>
-            <pin position="22" pad="PC4"/>
-            <pin position="23" pad="PC5"/>
-            <pin position="24" pad="PC6"/>
-            <pin position="25" pad="PC7"/>
-            <pin position="26" pad="PE2"/>
-            <pin position="27" pad="PE1"/>
-            <pin position="28" pad="GND"/>
-            <pin position="29" pad="PE0"/>
-            <pin position="30" pad="PA7"/>
-            <pin position="31" pad="PA6"/>
-            <pin position="32" pad="PA5"/>
-            <pin position="33" pad="PA4"/>
-            <pin position="34" pad="PA3"/>
-            <pin position="35" pad="PA2"/>
-            <pin position="36" pad="PA1"/>
-            <pin position="37" pad="PA0"/>
-            <pin position="38" pad="VCC"/>
-            <pin position="39" pad="GND"/>
-            <pin position="40" pad="PB0"/>
-            <pin position="41" pad="PB1"/>
-            <pin position="42" pad="PB2"/>
-            <pin position="43" pad="PB3"/>
-            <pin position="44" pad="PB4"/>
+            <pin position="1" pad-key="pb5"/>
+            <pin position="2" pad-key="pb6"/>
+            <pin position="3" pad-key="pb7"/>
+            <pin position="4" pad-key="reset"/>
+            <pin position="5" pad-key="pd0"/>
+            <pin position="6" pad-key="vcc"/>
+            <pin position="7" pad-key="pd1"/>
+            <pin position="8" pad-key="pd2"/>
+            <pin position="9" pad-key="pd3"/>
+            <pin position="10" pad-key="pd4"/>
+            <pin position="11" pad-key="pd5"/>
+            <pin position="12" pad-key="pd6"/>
+            <pin position="13" pad-key="pd7"/>
+            <pin position="14" pad-key="xtal2"/>
+            <pin position="15" pad-key="xtal1"/>
+            <pin position="16" pad-key="gnd"/>
+            <pin position="17" pad-key="vcc"/>
+            <pin position="18" pad-key="pc0"/>
+            <pin position="19" pad-key="pc1"/>
+            <pin position="20" pad-key="pc2"/>
+            <pin position="21" pad-key="pc3"/>
+            <pin position="22" pad-key="pc4"/>
+            <pin position="23" pad-key="pc5"/>
+            <pin position="24" pad-key="pc6"/>
+            <pin position="25" pad-key="pc7"/>
+            <pin position="26" pad-key="pe2"/>
+            <pin position="27" pad-key="pe1"/>
+            <pin position="28" pad-key="gnd"/>
+            <pin position="29" pad-key="pe0"/>
+            <pin position="30" pad-key="pa7"/>
+            <pin position="31" pad-key="pa6"/>
+            <pin position="32" pad-key="pa5"/>
+            <pin position="33" pad-key="pa4"/>
+            <pin position="34" pad-key="pa3"/>
+            <pin position="35" pad-key="pa2"/>
+            <pin position="36" pad-key="pa1"/>
+            <pin position="37" pad-key="pa0"/>
+            <pin position="38" pad-key="vcc"/>
+            <pin position="39" pad-key="gnd"/>
+            <pin position="40" pad-key="pb0"/>
+            <pin position="41" pad-key="pb1"/>
+            <pin position="42" pad-key="pb2"/>
+            <pin position="43" pad-key="pb3"/>
+            <pin position="44" pad-key="pb4"/>
         </pinout>
     </pinouts>
     <variants>
-        <variant name="ATmega162-PU" pinout-key="dip40" package="DIP40"/>
-        <variant name="ATmega162-AU" pinout-key="qfp_qfn_44" package="TQFP44"/>
-        <variant name="ATmega162-MU" pinout-key="qfp_qfn_44" package="VQFN44"/>
+        <variant key="atmega162_pu" name="ATmega162-PU" pinout-key="dip40"/>
+        <variant key="atmega162_au" name="ATmega162-AU" pinout-key="qfp_qfn_44"/>
+        <variant key="atmega162_mu" name="ATmega162-MU" pinout-key="qfp_qfn_44"/>
     </variants>
 </device>

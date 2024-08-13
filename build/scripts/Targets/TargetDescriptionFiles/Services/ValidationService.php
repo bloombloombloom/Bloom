@@ -16,6 +16,7 @@ use Targets\TargetDescriptionFiles\Register;
 use Targets\TargetDescriptionFiles\RegisterGroup;
 use Targets\TargetDescriptionFiles\RegisterGroupReference;
 use Targets\TargetDescriptionFiles\Signal;
+use Targets\TargetDescriptionFiles\Pad;
 use Targets\TargetDescriptionFiles\Pinout;
 use Targets\TargetDescriptionFiles\PinoutType;
 use Targets\TargetDescriptionFiles\Variant;
@@ -119,6 +120,21 @@ class ValidationService
             $failures[] = 'Missing GPIO port peripherals';
         }
 
+        if (empty($tdf->pads)) {
+            $failures[] = 'Missing pads';
+        }
+
+        $processedPadKeys = [];
+        foreach ($tdf->pads as $pad) {
+            $failures = array_merge($failures, $this->validatePad($pad));
+
+            if ($pad->key !== null && in_array($pad->key, $processedPadKeys)) {
+                $failures[] = 'Duplicate pad key ("' . $pad->key . '") detected';
+            }
+
+            $processedPadKeys[] = $pad->key;
+        }
+
         if (empty($tdf->pinouts)) {
             $failures[] = 'Missing pinouts';
 
@@ -128,7 +144,7 @@ class ValidationService
 
         $processedPinoutKeys = [];
         foreach ($tdf->pinouts as $pinout) {
-            $failures = array_merge($failures, $this->validatePinout($pinout));
+            $failures = array_merge($failures, $this->validatePinout($pinout, $tdf));
 
             if ($pinout->key !== null && in_array($pinout->key, $processedPinoutKeys)) {
                 $failures[] = 'Duplicate pinout key ("' . $pinout->key . '") detected';
@@ -137,15 +153,15 @@ class ValidationService
             $processedPinoutKeys[] = $pinout->key;
         }
 
-        $processedVariantNames = [];
+        $processedVariantKeys = [];
         foreach ($tdf->variants as $variant) {
             $failures = array_merge($failures, $this->validateVariant($variant, $tdf));
 
-            if ($variant->name !== null && in_array($variant->name, $processedVariantNames)) {
-                $failures[] = 'Duplicate variant name ("' . $variant->name . '") detected';
+            if ($variant->key !== null && in_array($variant->key, $processedVariantKeys)) {
+                $failures[] = 'Duplicate variant key ("' . $variant->key . '") detected';
             }
 
-            $processedVariantNames[] = $variant->name;
+            $processedVariantKeys[] = $variant->key;
         }
 
         // Validate resolved peripherals
@@ -699,7 +715,7 @@ class ValidationService
         }
 
         foreach ($peripheral->signals as $signal) {
-            $failures = array_merge($failures, $this->validateSignal($signal));
+            $failures = array_merge($failures, $this->validateSignal($signal, $tdf));
         }
 
         return array_map(
@@ -750,12 +766,15 @@ class ValidationService
         );
     }
 
-    protected function validateSignal(Signal $signal): array
+    protected function validateSignal(Signal $signal, TargetDescriptionFile $tdf): array
     {
         $failures = [];
 
-        if (empty($signal->padId)) {
-            $failures[] = 'Missing pad ID';
+        if (empty($signal->padKey)) {
+            $failures[] = 'Missing pad key';
+
+        } elseif ($tdf->getPad($signal->padKey) === null) {
+            $failures[] = 'Failed to resolve pad key "' . $signal->padKey . '"';
         }
 
         return array_map(
@@ -764,7 +783,28 @@ class ValidationService
         );
     }
 
-    protected function validatePinout(Pinout $pinout): array
+    protected function validatePad(Pad $pad): array
+    {
+        $failures = [];
+
+        if (empty($pad->key)) {
+            $failures[] = 'Missing key';
+
+        } else {
+            $failures = array_merge($failures, $this->validateKey($pad->key));
+        }
+
+        if (empty($pad->name)) {
+            $failures[] = 'Missing name';
+        }
+
+        return array_map(
+            fn (string $failure): string => 'Pad validation failure: ' . $failure,
+            $failures
+        );
+    }
+
+    protected function validatePinout(Pinout $pinout, TargetDescriptionFile $tdf): array
     {
         $failures = [];
 
@@ -806,7 +846,7 @@ class ValidationService
 
         $processedPositions = [];
         foreach ($pinout->pins as $pin) {
-            $failures = array_merge($failures, $this->validatePin($pin, $pinout));
+            $failures = array_merge($failures, $this->validatePin($pin, $pinout, $tdf));
 
             if ($pin->position !== null && in_array($pin->position, $processedPositions)) {
                 $failures[] = 'Duplicate pin position (' . $pin->position . ') detected';
@@ -821,7 +861,7 @@ class ValidationService
         );
     }
 
-    protected function validatePin(Pin $pin, Pinout $pinout): array
+    protected function validatePin(Pin $pin, Pinout $pinout, TargetDescriptionFile $tdf): array
     {
         $failures = [];
 
@@ -839,12 +879,12 @@ class ValidationService
                 . $pin->position . '")';
         }
 
-        if (empty($pin->pad)) {
-            $failures[] = 'Missing pad';
+        if (!empty($pin->padKey) && $tdf->getPad($pin->padKey) === null) {
+            $failures[] = 'Failed to resolve pad key "' . $pin->padKey . '"';
         }
 
         return array_map(
-            fn (string $failure): string => 'Pin validation failure: ' . $failure,
+            fn (string $failure): string => 'Pin "' . $pin->position . '" validation failure: ' . $failure,
             $failures
         );
     }
@@ -852,6 +892,13 @@ class ValidationService
     protected function validateVariant(Variant $variant, TargetDescriptionFile $tdf): array
     {
         $failures = [];
+
+        if (empty($variant->key)) {
+            $failures[] = 'Missing key';
+
+        } else {
+            $failures = array_merge($failures, $this->validateKey($variant->key));
+        }
 
         if (empty($variant->name)) {
             $failures[] = 'Missing name';
@@ -863,10 +910,6 @@ class ValidationService
         } elseif (!$tdf->getPinout($variant->pinoutKey) instanceof Pinout) {
             $failures[] = 'Could not resolve pinout from key "' . $variant->pinoutKey
                 . '" - check pinout key';
-        }
-
-        if (empty($variant->package)) {
-            $failures[] = 'Missing package';
         }
 
         return array_map(

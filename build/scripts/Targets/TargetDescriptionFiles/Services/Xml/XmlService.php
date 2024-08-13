@@ -98,6 +98,14 @@ class XmlService
             $tdf->modules[] = $this->fromXmlService->moduleFromElement($element);
         }
 
+        $padElements = $this->fromXmlService->getDeviceElementsFromXPath(
+            'pads/pad',
+            $document
+        );
+        foreach ($padElements as $element) {
+            $tdf->pads[] = $this->fromXmlService->padFromElement($element);
+        }
+
         $pinoutElements = $this->fromXmlService->getDeviceElementsFromXPath(
             'pinouts/pinout',
             $document
@@ -185,6 +193,13 @@ class XmlService
         }
 
         $deviceElement->append($modulesElement);
+
+        $padsElement = $document->createElement('pads');
+        foreach ($tdf->pads as $pad) {
+            $padsElement->append($this->toXmlService->padToXml($pad, $document));
+        }
+
+        $deviceElement->append($padsElement);
 
         $pinoutsElement = $document->createElement('pinouts');
         foreach ($tdf->pinouts as $pinout) {

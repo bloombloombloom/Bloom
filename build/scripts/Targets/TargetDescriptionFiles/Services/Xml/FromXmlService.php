@@ -5,6 +5,7 @@ use DOMDocument;
 use DOMNode;
 use DOMNodeList;
 use DOMElement;
+use Targets\TargetDescriptionFiles\Pad;
 use Targets\TargetDescriptionFiles\Services\StringService;
 use Targets\TargetDescriptionFiles\Services\Xml\Exceptions\XmlParsingException;
 use Targets\TargetDescriptionFiles\AddressSpace;
@@ -370,11 +371,21 @@ class FromXmlService
         $attributes = $this->getNodeAttributesByName($element);
 
         return new Signal(
-            $attributes['pad-id'] ?? null,
+            $attributes['pad-key'] ?? null,
             $this->stringService->tryStringToInt($attributes['index'] ?? null),
             $attributes['function'] ?? null,
             $attributes['group'] ?? null,
             $attributes['field'] ?? null
+        );
+    }
+
+    public function padFromElement(DOMElement $element): Pad
+    {
+        $attributes = $this->getNodeAttributesByName($element);
+
+        return new Pad(
+            $attributes['key'] ?? null,
+            $attributes['name'] ?? null
         );
     }
 
@@ -409,7 +420,7 @@ class FromXmlService
 
         return new Pin(
             $attributes['position'] ?? null,
-            $attributes['pad'] ?? null
+            $attributes['pad-key'] ?? null
         );
     }
 
@@ -418,9 +429,9 @@ class FromXmlService
         $attributes = $this->getNodeAttributesByName($element);
 
         return new Variant(
+            $attributes['key'] ?? null,
             $attributes['name'] ?? null,
-            $attributes['pinout-key'] ?? null,
-            $attributes['package'] ?? null
+            $attributes['pinout-key'] ?? null
         );
     }
 }

@@ -17,6 +17,7 @@ require_once __DIR__ . "/Module.php";
 require_once __DIR__ . "/RegisterGroup.php";
 require_once __DIR__ . "/RegisterGroupReference.php";
 require_once __DIR__ . "/Register.php";
+require_once __DIR__ . "/Pad.php";
 require_once __DIR__ . "/Pinout.php";
 require_once __DIR__ . "/Variant.php";
 require_once __DIR__ . "/TargetFamily.php";
@@ -46,6 +47,9 @@ class TargetDescriptionFile
 
     /** @var Module[] */
     public array $modules = [];
+
+    /** @var Pad[] */
+    public array $pads = [];
 
     /** @var Pinout[] */
     public array $pinouts = [];
@@ -234,6 +238,17 @@ class TargetDescriptionFile
         }
 
         $module->key = $newKey;
+    }
+
+    public function getPad(string $key): ?Pad
+    {
+        foreach ($this->pads as $pad) {
+            if ($pad->key === $key) {
+                return $pad;
+            }
+        }
+
+        return null;
     }
 
     public function getPinout(string $key): ?Pinout

@@ -194,48 +194,48 @@
         <peripheral key="portb" name="PORTB" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portb" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pb0" index="0" function="IOPORT" group="PIN"/>
-                <signal pad-id="pb1" index="1" function="IOPORT" group="PIN"/>
-                <signal pad-id="pb2" index="2" function="IOPORT" group="PIN"/>
-                <signal pad-id="pb3" index="3" function="IOPORT" group="PIN"/>
-                <signal pad-id="pb4" index="4" function="IOPORT" group="PIN"/>
-                <signal pad-id="pb5" index="5" function="IOPORT" group="PIN"/>
-                <signal pad-id="pb6" index="6" function="IOPORT" group="PIN"/>
-                <signal pad-id="pb7" index="7" function="IOPORT" group="PIN"/>
+                <signal pad-key="pb0" index="0" function="IOPORT" group="PIN"/>
+                <signal pad-key="pb1" index="1" function="IOPORT" group="PIN"/>
+                <signal pad-key="pb2" index="2" function="IOPORT" group="PIN"/>
+                <signal pad-key="pb3" index="3" function="IOPORT" group="PIN"/>
+                <signal pad-key="pb4" index="4" function="IOPORT" group="PIN"/>
+                <signal pad-key="pb5" index="5" function="IOPORT" group="PIN"/>
+                <signal pad-key="pb6" index="6" function="IOPORT" group="PIN"/>
+                <signal pad-key="pb7" index="7" function="IOPORT" group="PIN"/>
             </signals>
         </peripheral>
         <peripheral key="portc" name="PORTC" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portc" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pc0" index="0" function="IOPORT" group="PIN"/>
-                <signal pad-id="pc1" index="1" function="IOPORT" group="PIN"/>
-                <signal pad-id="pc2" index="2" function="IOPORT" group="PIN"/>
-                <signal pad-id="pc3" index="3" function="IOPORT" group="PIN"/>
-                <signal pad-id="pc4" index="4" function="IOPORT" group="PIN"/>
-                <signal pad-id="pc5" index="5" function="IOPORT" group="PIN"/>
-                <signal pad-id="pc6" index="6" function="IOPORT" group="PIN"/>
-                <signal pad-id="pc7" index="7" function="IOPORT" group="PIN"/>
+                <signal pad-key="pc0" index="0" function="IOPORT" group="PIN"/>
+                <signal pad-key="pc1" index="1" function="IOPORT" group="PIN"/>
+                <signal pad-key="pc2" index="2" function="IOPORT" group="PIN"/>
+                <signal pad-key="pc3" index="3" function="IOPORT" group="PIN"/>
+                <signal pad-key="pc4" index="4" function="IOPORT" group="PIN"/>
+                <signal pad-key="pc5" index="5" function="IOPORT" group="PIN"/>
+                <signal pad-key="pc6" index="6" function="IOPORT" group="PIN"/>
+                <signal pad-key="pc7" index="7" function="IOPORT" group="PIN"/>
             </signals>
         </peripheral>
         <peripheral key="portd" name="PORTD" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portd" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pd0" index="0" function="IOPORT" group="PIN"/>
-                <signal pad-id="pd1" index="1" function="IOPORT" group="PIN"/>
-                <signal pad-id="pd2" index="2" function="IOPORT" group="PIN"/>
-                <signal pad-id="pd3" index="3" function="IOPORT" group="PIN"/>
-                <signal pad-id="pd4" index="4" function="IOPORT" group="PIN"/>
-                <signal pad-id="pd5" index="5" function="IOPORT" group="PIN"/>
-                <signal pad-id="pd6" index="6" function="IOPORT" group="PIN"/>
-                <signal pad-id="pd7" index="7" function="IOPORT" group="PIN"/>
+                <signal pad-key="pd0" index="0" function="IOPORT" group="PIN"/>
+                <signal pad-key="pd1" index="1" function="IOPORT" group="PIN"/>
+                <signal pad-key="pd2" index="2" function="IOPORT" group="PIN"/>
+                <signal pad-key="pd3" index="3" function="IOPORT" group="PIN"/>
+                <signal pad-key="pd4" index="4" function="IOPORT" group="PIN"/>
+                <signal pad-key="pd5" index="5" function="IOPORT" group="PIN"/>
+                <signal pad-key="pd6" index="6" function="IOPORT" group="PIN"/>
+                <signal pad-key="pd7" index="7" function="IOPORT" group="PIN"/>
             </signals>
         </peripheral>
         <peripheral key="porte" name="PORTE" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="porte" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pe0" index="0" function="IOPORT" group="PIN"/>
-                <signal pad-id="pe1" index="1" function="IOPORT" group="PIN"/>
-                <signal pad-id="pe2" index="2" function="IOPORT" group="PIN"/>
+                <signal pad-key="pe0" index="0" function="IOPORT" group="PIN"/>
+                <signal pad-key="pe1" index="1" function="IOPORT" group="PIN"/>
+                <signal pad-key="pe2" index="2" function="IOPORT" group="PIN"/>
             </signals>
         </peripheral>
         <peripheral key="can" name="CAN" module-key="can">
@@ -244,20 +244,20 @@
         <peripheral key="ac" name="AC" module-key="ac">
             <register-group-instance description="Analog Comparator" register-group-key="ac" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pd7" index="0" function="AC" group="ACMP"/>
-                <signal pad-id="pc6" index="1" function="AC" group="ACMP"/>
-                <signal pad-id="pd5" index="2" function="AC" group="ACMP"/>
-                <signal pad-id="pc5" index="3" function="AC" group="ACMP"/>
-                <signal pad-id="pb2" index="0" function="AC" group="ACMPN"/>
-                <signal pad-id="pb5" index="1" function="AC" group="ACMPN"/>
-                <signal pad-id="pd6" index="2" function="AC" group="ACMPN"/>
-                <signal pad-id="pc4" index="3" function="AC" group="ACMPN"/>
+                <signal pad-key="pd7" index="0" function="AC" group="ACMP"/>
+                <signal pad-key="pc6" index="1" function="AC" group="ACMP"/>
+                <signal pad-key="pd5" index="2" function="AC" group="ACMP"/>
+                <signal pad-key="pc5" index="3" function="AC" group="ACMP"/>
+                <signal pad-key="pb2" index="0" function="AC" group="ACMPN"/>
+                <signal pad-key="pb5" index="1" function="AC" group="ACMPN"/>
+                <signal pad-key="pd6" index="2" function="AC" group="ACMPN"/>
+                <signal pad-key="pc4" index="3" function="AC" group="ACMPN"/>
             </signals>
         </peripheral>
         <peripheral key="dac" name="DAC" module-key="dac">
             <register-group-instance description="Digital-to-Analog Converter" register-group-key="dac" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pc7" function="DAC" group="D2A"/>
+                <signal pad-key="pc7" function="DAC" group="D2A"/>
             </signals>
         </peripheral>
         <peripheral key="cpu" name="CPU" module-key="cpu">
@@ -266,55 +266,55 @@
         <peripheral key="tc0" name="TC0" module-key="tc8">
             <register-group-instance description="Timer/Counter, 8-bit" register-group-key="tc0" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pc2" function="TC0" group="T0"/>
-                <signal pad-id="pd3" function="TC0" group="OC0A"/>
-                <signal pad-id="pe1" function="TC0" group="OC0B"/>
+                <signal pad-key="pc2" function="TC0" group="T0"/>
+                <signal pad-key="pd3" function="TC0" group="OC0A"/>
+                <signal pad-key="pe1" function="TC0" group="OC0B"/>
             </signals>
         </peripheral>
         <peripheral key="tc1" name="TC1" module-key="tc16">
             <register-group-instance description="Timer/Counter, 16-bit" register-group-key="tc1" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pc3" function="TC1" group="T1"/>
-                <signal pad-id="pd4" function="TC1" group="ICP1A"/>
-                <signal pad-id="pc3" function="TC1" group="ICP1B"/>
-                <signal pad-id="pd2" function="TC1" group="OC1A"/>
-                <signal pad-id="pc1" function="TC1" group="OC1B"/>
+                <signal pad-key="pc3" function="TC1" group="T1"/>
+                <signal pad-key="pd4" function="TC1" group="ICP1A"/>
+                <signal pad-key="pc3" function="TC1" group="ICP1B"/>
+                <signal pad-key="pd2" function="TC1" group="OC1A"/>
+                <signal pad-key="pc1" function="TC1" group="OC1B"/>
             </signals>
         </peripheral>
         <peripheral key="adc" name="ADC" module-key="adc">
             <register-group-instance description="Analog-to-Digital Converter" register-group-key="adc" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pe2" index="0" function="ADC" group="ADC"/>
-                <signal pad-id="pd4" index="1" function="ADC" group="ADC"/>
-                <signal pad-id="pd5" index="2" function="ADC" group="ADC"/>
-                <signal pad-id="pd6" index="3" function="ADC" group="ADC"/>
-                <signal pad-id="pb7" index="4" function="ADC" group="ADC"/>
-                <signal pad-id="pb2" index="5" function="ADC" group="ADC"/>
-                <signal pad-id="pb5" index="6" function="ADC" group="ADC"/>
-                <signal pad-id="pb6" index="7" function="ADC" group="ADC"/>
-                <signal pad-id="pc4" index="8" function="ADC" group="ADC"/>
-                <signal pad-id="pc5" index="9" function="ADC" group="ADC"/>
-                <signal pad-id="pc6" index="10" function="ADC" group="ADC"/>
+                <signal pad-key="pe2" index="0" function="ADC" group="ADC"/>
+                <signal pad-key="pd4" index="1" function="ADC" group="ADC"/>
+                <signal pad-key="pd5" index="2" function="ADC" group="ADC"/>
+                <signal pad-key="pd6" index="3" function="ADC" group="ADC"/>
+                <signal pad-key="pb7" index="4" function="ADC" group="ADC"/>
+                <signal pad-key="pb2" index="5" function="ADC" group="ADC"/>
+                <signal pad-key="pb5" index="6" function="ADC" group="ADC"/>
+                <signal pad-key="pb6" index="7" function="ADC" group="ADC"/>
+                <signal pad-key="pc4" index="8" function="ADC" group="ADC"/>
+                <signal pad-key="pc5" index="9" function="ADC" group="ADC"/>
+                <signal pad-key="pc6" index="10" function="ADC" group="ADC"/>
             </signals>
         </peripheral>
         <peripheral key="linuart" name="LINUART" module-key="linuart">
             <register-group-instance description="Local Interconnect Network" register-group-key="linuart" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pd3" function="LIN" group="TXLIN"/>
-                <signal pad-id="pd4" function="LIN" group="RXLIN"/>
+                <signal pad-key="pd3" function="LIN" group="TXLIN"/>
+                <signal pad-key="pd4" function="LIN" group="RXLIN"/>
             </signals>
         </peripheral>
         <peripheral key="spi" name="SPI" module-key="spi">
             <register-group-instance description="Serial Peripheral Interface" register-group-key="spi" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pb0" function="SPI" group="MISO"/>
-                <signal pad-id="pd2" function="SPI_ALT" group="MISO"/>
-                <signal pad-id="pb1" function="SPI" group="MOSI"/>
-                <signal pad-id="pd3" function="SPI_ALT" group="MOSI"/>
-                <signal pad-id="pb7" function="SPI" group="SCK"/>
-                <signal pad-id="pd4" function="SPI_ALT" group="SCK"/>
-                <signal pad-id="pd3" function="SPI" group="SS"/>
-                <signal pad-id="pc1" function="SPI_ALT" group="SS"/>
+                <signal pad-key="pb0" function="SPI" group="MISO"/>
+                <signal pad-key="pd2" function="SPI_ALT" group="MISO"/>
+                <signal pad-key="pb1" function="SPI" group="MOSI"/>
+                <signal pad-key="pd3" function="SPI_ALT" group="MOSI"/>
+                <signal pad-key="pb7" function="SPI" group="SCK"/>
+                <signal pad-key="pd4" function="SPI_ALT" group="SCK"/>
+                <signal pad-key="pd3" function="SPI" group="SS"/>
+                <signal pad-key="pc1" function="SPI_ALT" group="SS"/>
             </signals>
         </peripheral>
         <peripheral key="wdt" name="WDT" module-key="wdt">
@@ -323,37 +323,37 @@
         <peripheral key="exint" name="EXINT" module-key="exint">
             <register-group-instance description="External Interrupts" register-group-key="exint" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pd6" index="0" function="EXINT" group="INT"/>
-                <signal pad-id="pb2" index="1" function="EXINT" group="INT"/>
-                <signal pad-id="pb5" index="2" function="EXINT" group="INT"/>
-                <signal pad-id="pc0" index="3" function="EXINT" group="INT"/>
-                <signal pad-id="pb0" index="0" function="EXINT" group="PCINT"/>
-                <signal pad-id="pb1" index="1" function="EXINT" group="PCINT"/>
-                <signal pad-id="pb2" index="2" function="EXINT" group="PCINT"/>
-                <signal pad-id="pb3" index="3" function="EXINT" group="PCINT"/>
-                <signal pad-id="pb4" index="4" function="EXINT" group="PCINT"/>
-                <signal pad-id="pb5" index="5" function="EXINT" group="PCINT"/>
-                <signal pad-id="pb6" index="6" function="EXINT" group="PCINT"/>
-                <signal pad-id="pb7" index="7" function="EXINT" group="PCINT"/>
-                <signal pad-id="pc0" index="8" function="EXINT" group="PCINT"/>
-                <signal pad-id="pc1" index="9" function="EXINT" group="PCINT"/>
-                <signal pad-id="pc2" index="10" function="EXINT" group="PCINT"/>
-                <signal pad-id="pc3" index="11" function="EXINT" group="PCINT"/>
-                <signal pad-id="pc4" index="12" function="EXINT" group="PCINT"/>
-                <signal pad-id="pc5" index="13" function="EXINT" group="PCINT"/>
-                <signal pad-id="pc6" index="14" function="EXINT" group="PCINT"/>
-                <signal pad-id="pc7" index="15" function="EXINT" group="PCINT"/>
-                <signal pad-id="pd0" index="16" function="EXINT" group="PCINT"/>
-                <signal pad-id="pd1" index="17" function="EXINT" group="PCINT"/>
-                <signal pad-id="pd2" index="18" function="EXINT" group="PCINT"/>
-                <signal pad-id="pd3" index="19" function="EXINT" group="PCINT"/>
-                <signal pad-id="pd4" index="20" function="EXINT" group="PCINT"/>
-                <signal pad-id="pd5" index="21" function="EXINT" group="PCINT"/>
-                <signal pad-id="pd6" index="22" function="EXINT" group="PCINT"/>
-                <signal pad-id="pd7" index="23" function="EXINT" group="PCINT"/>
-                <signal pad-id="pe0" index="24" function="EXINT" group="PCINT"/>
-                <signal pad-id="pe1" index="25" function="EXINT" group="PCINT"/>
-                <signal pad-id="pe2" index="26" function="EXINT" group="PCINT"/>
+                <signal pad-key="pd6" index="0" function="EXINT" group="INT"/>
+                <signal pad-key="pb2" index="1" function="EXINT" group="INT"/>
+                <signal pad-key="pb5" index="2" function="EXINT" group="INT"/>
+                <signal pad-key="pc0" index="3" function="EXINT" group="INT"/>
+                <signal pad-key="pb0" index="0" function="EXINT" group="PCINT"/>
+                <signal pad-key="pb1" index="1" function="EXINT" group="PCINT"/>
+                <signal pad-key="pb2" index="2" function="EXINT" group="PCINT"/>
+                <signal pad-key="pb3" index="3" function="EXINT" group="PCINT"/>
+                <signal pad-key="pb4" index="4" function="EXINT" group="PCINT"/>
+                <signal pad-key="pb5" index="5" function="EXINT" group="PCINT"/>
+                <signal pad-key="pb6" index="6" function="EXINT" group="PCINT"/>
+                <signal pad-key="pb7" index="7" function="EXINT" group="PCINT"/>
+                <signal pad-key="pc0" index="8" function="EXINT" group="PCINT"/>
+                <signal pad-key="pc1" index="9" function="EXINT" group="PCINT"/>
+                <signal pad-key="pc2" index="10" function="EXINT" group="PCINT"/>
+                <signal pad-key="pc3" index="11" function="EXINT" group="PCINT"/>
+                <signal pad-key="pc4" index="12" function="EXINT" group="PCINT"/>
+                <signal pad-key="pc5" index="13" function="EXINT" group="PCINT"/>
+                <signal pad-key="pc6" index="14" function="EXINT" group="PCINT"/>
+                <signal pad-key="pc7" index="15" function="EXINT" group="PCINT"/>
+                <signal pad-key="pd0" index="16" function="EXINT" group="PCINT"/>
+                <signal pad-key="pd1" index="17" function="EXINT" group="PCINT"/>
+                <signal pad-key="pd2" index="18" function="EXINT" group="PCINT"/>
+                <signal pad-key="pd3" index="19" function="EXINT" group="PCINT"/>
+                <signal pad-key="pd4" index="20" function="EXINT" group="PCINT"/>
+                <signal pad-key="pd5" index="21" function="EXINT" group="PCINT"/>
+                <signal pad-key="pd6" index="22" function="EXINT" group="PCINT"/>
+                <signal pad-key="pd7" index="23" function="EXINT" group="PCINT"/>
+                <signal pad-key="pe0" index="24" function="EXINT" group="PCINT"/>
+                <signal pad-key="pe1" index="25" function="EXINT" group="PCINT"/>
+                <signal pad-key="pe2" index="26" function="EXINT" group="PCINT"/>
             </signals>
         </peripheral>
         <peripheral key="eeprom" name="EEPROM" module-key="eeprom">
@@ -362,15 +362,15 @@
         <peripheral key="psc" name="PSC" module-key="psc">
             <register-group-instance description="Power Stage Controller" register-group-key="psc" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-id="pd2" function="PSC" group="PSCIN2"/>
-                <signal pad-id="pb0" function="PSC" group="PSCOUT2A"/>
-                <signal pad-id="pb1" function="PSC" group="PSCOUT2B"/>
-                <signal pad-id="pc1" function="PSC" group="PSCIN1"/>
-                <signal pad-id="pc0" function="PSC" group="PSCOUT1A"/>
-                <signal pad-id="pb6" function="PSC" group="PSCOUT1B"/>
-                <signal pad-id="pd1" function="PSC" group="PSCIN0"/>
-                <signal pad-id="pd0" function="PSC" group="PSCOUT0A"/>
-                <signal pad-id="pb7" function="PSC" group="PSCOUT0B"/>
+                <signal pad-key="pd2" function="PSC" group="PSCIN2"/>
+                <signal pad-key="pb0" function="PSC" group="PSCOUT2A"/>
+                <signal pad-key="pb1" function="PSC" group="PSCOUT2B"/>
+                <signal pad-key="pc1" function="PSC" group="PSCIN1"/>
+                <signal pad-key="pc0" function="PSC" group="PSCOUT1A"/>
+                <signal pad-key="pb6" function="PSC" group="PSCOUT1B"/>
+                <signal pad-key="pd1" function="PSC" group="PSCIN0"/>
+                <signal pad-key="pd0" function="PSC" group="PSCOUT0A"/>
+                <signal pad-key="pb7" function="PSC" group="PSCOUT0B"/>
             </signals>
         </peripheral>
         <peripheral key="fuse" name="FUSE" module-key="fuse">
@@ -1092,44 +1092,78 @@
             </register-group>
         </module>
     </modules>
+    <pads>
+        <pad key="pd2" name="PD2"/>
+        <pad key="pd3" name="PD3"/>
+        <pad key="pc1" name="PC1"/>
+        <pad key="vcc" name="VCC"/>
+        <pad key="gnd" name="GND"/>
+        <pad key="pc2" name="PC2"/>
+        <pad key="pc3" name="PC3"/>
+        <pad key="pb0" name="PB0"/>
+        <pad key="pb1" name="PB1"/>
+        <pad key="pe1" name="PE1"/>
+        <pad key="pe2" name="PE2"/>
+        <pad key="pd4" name="PD4"/>
+        <pad key="pd5" name="PD5"/>
+        <pad key="pd6" name="PD6"/>
+        <pad key="pd7" name="PD7"/>
+        <pad key="pb2" name="PB2"/>
+        <pad key="pc4" name="PC4"/>
+        <pad key="pc5" name="PC5"/>
+        <pad key="avcc" name="AVCC"/>
+        <pad key="agnd" name="AGND"/>
+        <pad key="aref" name="AREF"/>
+        <pad key="pc6" name="PC6"/>
+        <pad key="pb3" name="PB3"/>
+        <pad key="pb4" name="PB4"/>
+        <pad key="pc7" name="PC7"/>
+        <pad key="pb5" name="PB5"/>
+        <pad key="pb6" name="PB6"/>
+        <pad key="pb7" name="PB7"/>
+        <pad key="pd0" name="PD0"/>
+        <pad key="pc0" name="PC0"/>
+        <pad key="pe0" name="PE0"/>
+        <pad key="pd1" name="PD1"/>
+    </pads>
     <pinouts>
         <pinout key="tqfpqfn32" name="TQFPQFN32" type="qfn">
-            <pin position="1" pad="PD2"/>
-            <pin position="2" pad="PD3"/>
-            <pin position="3" pad="PC1"/>
-            <pin position="4" pad="VCC"/>
-            <pin position="5" pad="GND"/>
-            <pin position="6" pad="PC2"/>
-            <pin position="7" pad="PC3"/>
-            <pin position="8" pad="PB0"/>
-            <pin position="9" pad="PB1"/>
-            <pin position="10" pad="PE1"/>
-            <pin position="11" pad="PE2"/>
-            <pin position="12" pad="PD4"/>
-            <pin position="13" pad="PD5"/>
-            <pin position="14" pad="PD6"/>
-            <pin position="15" pad="PD7"/>
-            <pin position="16" pad="PB2"/>
-            <pin position="17" pad="PC4"/>
-            <pin position="18" pad="PC5"/>
-            <pin position="19" pad="AVCC"/>
-            <pin position="20" pad="AGND"/>
-            <pin position="21" pad="AREF"/>
-            <pin position="22" pad="PC6"/>
-            <pin position="23" pad="PB3"/>
-            <pin position="24" pad="PB4"/>
-            <pin position="25" pad="PC7"/>
-            <pin position="26" pad="PB5"/>
-            <pin position="27" pad="PB6"/>
-            <pin position="28" pad="PB7"/>
-            <pin position="29" pad="PD0"/>
-            <pin position="30" pad="PC0"/>
-            <pin position="31" pad="PE0"/>
-            <pin position="32" pad="PD1"/>
+            <pin position="1" pad-key="pd2"/>
+            <pin position="2" pad-key="pd3"/>
+            <pin position="3" pad-key="pc1"/>
+            <pin position="4" pad-key="vcc"/>
+            <pin position="5" pad-key="gnd"/>
+            <pin position="6" pad-key="pc2"/>
+            <pin position="7" pad-key="pc3"/>
+            <pin position="8" pad-key="pb0"/>
+            <pin position="9" pad-key="pb1"/>
+            <pin position="10" pad-key="pe1"/>
+            <pin position="11" pad-key="pe2"/>
+            <pin position="12" pad-key="pd4"/>
+            <pin position="13" pad-key="pd5"/>
+            <pin position="14" pad-key="pd6"/>
+            <pin position="15" pad-key="pd7"/>
+            <pin position="16" pad-key="pb2"/>
+            <pin position="17" pad-key="pc4"/>
+            <pin position="18" pad-key="pc5"/>
+            <pin position="19" pad-key="avcc"/>
+            <pin position="20" pad-key="agnd"/>
+            <pin position="21" pad-key="aref"/>
+            <pin position="22" pad-key="pc6"/>
+            <pin position="23" pad-key="pb3"/>
+            <pin position="24" pad-key="pb4"/>
+            <pin position="25" pad-key="pc7"/>
+            <pin position="26" pad-key="pb5"/>
+            <pin position="27" pad-key="pb6"/>
+            <pin position="28" pad-key="pb7"/>
+            <pin position="29" pad-key="pd0"/>
+            <pin position="30" pad-key="pc0"/>
+            <pin position="31" pad-key="pe0"/>
+            <pin position="32" pad-key="pd1"/>
         </pinout>
     </pinouts>
     <variants>
-        <variant name="ATmega16M1-AU" pinout-key="tqfpqfn32" package="TQFP32"/>
-        <variant name="ATmega16M1-MU" pinout-key="tqfpqfn32" package="QFN32"/>
+        <variant key="atmega16m1_au" name="ATmega16M1-AU" pinout-key="tqfpqfn32"/>
+        <variant key="atmega16m1_mu" name="ATmega16M1-MU" pinout-key="tqfpqfn32"/>
     </variants>
 </device>

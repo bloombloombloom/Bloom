@@ -4,11 +4,11 @@ namespace Targets\TargetDescriptionFiles;
 class Pin
 {
     public ?string $position = null;
-    public ?string $pad = null;
+    public ?string $padKey = null;
 
-    public function __construct(?string $position, ?string $pad)
+    public function __construct(?string $position, ?string $padKey)
     {
         $this->position = $position;
-        $this->pad = $pad;
+        $this->padKey = $padKey;
     }
 }
