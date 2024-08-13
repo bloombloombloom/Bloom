@@ -1092,17 +1092,19 @@ namespace Targets::TargetDescription
 
     TargetPinDescriptor TargetDescriptionFile::targetPinDescriptorFromPin(const Pin& pin) {
         static const auto resolvePinType = [] (const std::string& pad) -> TargetPinType {
+            const auto padLower = StringService::asciiToLower(pad);
+
             if (
-                pad.find("vcc") == 0
-                || pad.find("avcc") == 0
-                || pad.find("aref") == 0
-                || pad.find("avdd") == 0
-                || pad.find("vdd") == 0
+                padLower.find("vcc") == 0
+                || padLower.find("avcc") == 0
+                || padLower.find("aref") == 0
+                || padLower.find("avdd") == 0
+                || padLower.find("vdd") == 0
             ) {
                 return TargetPinType::VCC;
             }
 
-            if (pad.find("gnd") == 0) {
+            if (padLower.find("gnd") == 0) {
                 return TargetPinType::GND;
             }
 
