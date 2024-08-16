@@ -219,6 +219,22 @@ namespace Targets::TargetDescription
         return peripheral->get();
     }
 
+    std::set<const Peripheral*> TargetDescriptionFile::getModulePeripherals(const std::string& moduleKey) const {
+        auto output = std::set<const Peripheral*>{};
+
+        for (const auto& [peripheralKey, peripheral] : this->peripheralsByKey) {
+            if (peripheral.moduleKey == moduleKey) {
+                output.insert(&peripheral);
+            }
+        }
+
+        return output;
+    }
+
+    std::set<const Peripheral*> TargetDescriptionFile::getGpioPeripherals() const {
+        return this->getModulePeripherals("gpio_port");
+    }
+
     std::optional<TargetMemorySegmentDescriptor> TargetDescriptionFile::tryGetTargetMemorySegmentDescriptor(
         std::string_view addressSpaceKey,
         std::string_view segmentKey
@@ -299,6 +315,20 @@ namespace Targets::TargetDescription
                     peripheral,
                     this->getModule(peripheral.moduleKey)
                 )
+            );
+        }
+
+        return output;
+    }
+
+    std::map<std::string, TargetPadDescriptor> TargetDescriptionFile::targetPadDescriptorsByKey() const {
+        auto output = std::map<std::string, TargetPadDescriptor>{};
+
+        const auto gpioPadKeys = this->getGpioPadKeys();
+        for (const auto& [key, pad] : this->padsByKey) {
+            output.emplace(
+                key,
+                TargetDescriptionFile::targetPadDescriptorFromPad(pad, gpioPadKeys)
             );
         }
 
@@ -422,6 +452,15 @@ namespace Targets::TargetDescription
         }
 
         for (
+            auto element = deviceElement.firstChildElement("pads").firstChildElement("pad");
+            !element.isNull();
+            element = element.nextSiblingElement("pad")
+        ) {
+            auto pad = TargetDescriptionFile::padFromXml(element);
+            this->padsByKey.emplace(pad.key, std::move(pad));
+        }
+
+        for (
             auto element = deviceElement.firstChildElement("pinouts").firstChildElement("pinout");
             !element.isNull();
             element = element.nextSiblingElement("pinout")
@@ -459,6 +498,17 @@ namespace Targets::TargetDescription
         }
 
         return attribute->get();
+    }
+
+    std::set<std::string> TargetDescriptionFile::getGpioPadKeys() const {
+        auto output = std::set<std::string>{};
+        for (const auto* peripheral : this->getGpioPeripherals()) {
+            for (const auto& signal : peripheral->sigs) {
+                output.insert(signal.padKey);
+            }
+        }
+
+        return output;
     }
 
     std::optional<std::string> TargetDescriptionFile::tryGetAttribute(
@@ -806,11 +856,18 @@ namespace Targets::TargetDescription
         const auto index = TargetDescriptionFile::tryGetAttribute(xmlElement, "index");
 
         return {
-            TargetDescriptionFile::getAttribute(xmlElement, "pad-id"),
+            TargetDescriptionFile::getAttribute(xmlElement, "pad-key"),
             index.has_value() ? std::optional{StringService::toUint64(*index)} : std::nullopt,
             TargetDescriptionFile::tryGetAttribute(xmlElement, "function"),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "group"),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "field")
+        };
+    }
+
+    Pad TargetDescriptionFile::padFromXml(const QDomElement& xmlElement) {
+        return {
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
+            TargetDescriptionFile::getAttribute(xmlElement, "name")
         };
     }
 
@@ -857,15 +914,14 @@ namespace Targets::TargetDescription
     Pin TargetDescriptionFile::pinFromXml(const QDomElement& xmlElement) {
         return {
             TargetDescriptionFile::getAttribute(xmlElement, "position"),
-            TargetDescriptionFile::getAttribute(xmlElement, "pad")
+            TargetDescriptionFile::tryGetAttribute(xmlElement, "pad-key")
         };
     }
 
     Variant TargetDescriptionFile::variantFromXml(const QDomElement& xmlElement) {
         return {
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
-            TargetDescriptionFile::getAttribute(xmlElement, "pinout-key"),
-            TargetDescriptionFile::getAttribute(xmlElement, "package")
+            TargetDescriptionFile::getAttribute(xmlElement, "pinout-key")
         };
     }
 
@@ -954,7 +1010,7 @@ namespace Targets::TargetDescription
         const Signal& signal
     ) {
         return {
-            signal.padId,
+            signal.padKey,
             signal.index
         };
     }
@@ -1075,6 +1131,41 @@ namespace Targets::TargetDescription
         };
     }
 
+    TargetPadDescriptor TargetDescriptionFile::targetPadDescriptorFromPad(
+        const Pad& pad,
+        const std::set<std::string>& gpioPadKeys
+    ) {
+        static const auto resolvePadType = [&gpioPadKeys] (const Pad& pad) -> TargetPadType {
+            if (gpioPadKeys.contains(pad.key)) {
+                return TargetPadType::GPIO;
+            }
+
+            const auto padNameLower = StringService::asciiToLower(pad.name);
+
+            if (
+                padNameLower.find("vcc") == 0
+                || padNameLower.find("avcc") == 0
+                || padNameLower.find("aref") == 0
+                || padNameLower.find("avdd") == 0
+                || padNameLower.find("vdd") == 0
+            ) {
+                return TargetPadType::VCC;
+            }
+
+            if (padNameLower.find("gnd") == 0 || padNameLower.find("agnd") == 0) {
+                return TargetPadType::GND;
+            }
+
+            return TargetPadType::OTHER;
+        };
+
+        return {
+            pad.key,
+            pad.name,
+            resolvePadType(pad)
+        };
+    }
+
     TargetPinoutDescriptor TargetDescriptionFile::targetPinoutDescriptorFromPinout(const Pinout& pinout) {
         auto output = TargetPinoutDescriptor{
             pinout.key,
@@ -1091,30 +1182,9 @@ namespace Targets::TargetDescription
     }
 
     TargetPinDescriptor TargetDescriptionFile::targetPinDescriptorFromPin(const Pin& pin) {
-        static const auto resolvePinType = [] (const std::string& pad) -> TargetPinType {
-            const auto padLower = StringService::asciiToLower(pad);
-
-            if (
-                padLower.find("vcc") == 0
-                || padLower.find("avcc") == 0
-                || padLower.find("aref") == 0
-                || padLower.find("avdd") == 0
-                || padLower.find("vdd") == 0
-            ) {
-                return TargetPinType::VCC;
-            }
-
-            if (padLower.find("gnd") == 0) {
-                return TargetPinType::GND;
-            }
-
-            return TargetPinType::OTHER;
-        };
-
         return {
-            pin.pad,
             pin.position,
-            resolvePinType(pin.pad)
+            pin.padKey
         };
     }
 

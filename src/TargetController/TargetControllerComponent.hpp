@@ -39,8 +39,8 @@
 #include "Commands/RemoveBreakpoint.hpp"
 #include "Commands/SetTargetProgramCounter.hpp"
 #include "Commands/SetTargetStackPointer.hpp"
-#include "Commands/GetTargetGpioPinStates.hpp"
-#include "Commands/SetTargetGpioPinState.hpp"
+#include "Commands/GetTargetGpioPadStates.hpp"
+#include "Commands/SetTargetGpioPadState.hpp"
 #include "Commands/GetTargetStackPointer.hpp"
 #include "Commands/GetTargetProgramCounter.hpp"
 #include "Commands/EnableProgrammingMode.hpp"
@@ -53,7 +53,7 @@
 #include "Responses/TargetState.hpp"
 #include "Responses/TargetRegistersRead.hpp"
 #include "Responses/TargetMemoryRead.hpp"
-#include "Responses/TargetGpioPinStates.hpp"
+#include "Responses/TargetGpioPadStates.hpp"
 #include "Responses/TargetStackPointer.hpp"
 #include "Responses/TargetProgramCounter.hpp"
 #include "Responses/Breakpoint.hpp"
@@ -369,10 +369,10 @@ namespace TargetController
         std::unique_ptr<Responses::Response> handleRemoveBreakpoint(Commands::RemoveBreakpoint& command);
         std::unique_ptr<Responses::Response> handleSetProgramCounter(Commands::SetTargetProgramCounter& command);
         std::unique_ptr<Responses::Response> handleSetStackPointer(Commands::SetTargetStackPointer& command);
-        std::unique_ptr<Responses::TargetGpioPinStates> handleGetTargetGpioPinStates(
-            Commands::GetTargetGpioPinStates& command
+        std::unique_ptr<Responses::TargetGpioPadStates> handleGetTargetGpioPadStates(
+            Commands::GetTargetGpioPadStates& command
         );
-        std::unique_ptr<Responses::Response> handleSetTargetGpioPinState(Commands::SetTargetGpioPinState& command);
+        std::unique_ptr<Responses::Response> handleSetTargetGpioPadState(Commands::SetTargetGpioPadState& command);
         std::unique_ptr<Responses::TargetStackPointer> handleGetTargetStackPointer(
             Commands::GetTargetStackPointer& command
         );

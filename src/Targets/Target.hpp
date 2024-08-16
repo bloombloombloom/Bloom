@@ -16,9 +16,8 @@
 #include "TargetRegisterDescriptor.hpp"
 #include "TargetMemory.hpp"
 #include "TargetBreakpoint.hpp"
-#include "TargetPinoutDescriptor.hpp"
-#include "TargetPinDescriptor.hpp"
-#include "TargetGpioPinState.hpp"
+#include "TargetPadDescriptor.hpp"
+#include "TargetGpioPadState.hpp"
 
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
@@ -266,23 +265,19 @@ namespace Targets
         virtual void setStackPointer(TargetStackPointer stackPointer) = 0;
 
         /**
-         * Should get the current state of each GPIO pin on the target
-         *
-         * @param pinoutDescriptor
+         * Should get the current state of the given GPIO pads.
          *
          * @return
          */
-        virtual TargetGpioPinDescriptorAndStatePairs getGpioPinStates(
-            const TargetPinoutDescriptor& pinoutDescriptor
-        ) = 0;
+        virtual TargetGpioPadDescriptorAndStatePairs getGpioPadStates(const TargetPadDescriptors& padDescriptors) = 0;
 
         /**
-         * Should update the pin state for the given GPIO pin, with the given state.
+         * Should update the state for the given GPIO pad, with the given state.
          *
-         * @param pinDescriptor
+         * @param padDescriptor
          * @param state
          */
-        virtual void setGpioPinState(const TargetPinDescriptor& pinDescriptor, const TargetGpioPinState& state) = 0;
+        virtual void setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) = 0;
 
         /**
          * Should prepare the target for programming.

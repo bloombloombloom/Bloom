@@ -2,28 +2,20 @@
 
 #include <cstdint>
 #include <string>
+#include <optional>
 
 namespace Targets
 {
-    enum class TargetPinType: std::uint8_t
-    {
-        GPIO,
-        GND,
-        VCC,
-        OTHER,
-    };
-
     struct TargetPinDescriptor
     {
     public:
-        std::string padName;
         std::string position;
-        TargetPinType type = TargetPinType::OTHER;
+        std::uint16_t numericPosition;
+        std::optional<std::string> padKey;
 
         TargetPinDescriptor(
-            const std::string& padName,
             const std::string& position,
-            TargetPinType type
+            const std::optional<std::string>& padKey
         );
 
         TargetPinDescriptor(const TargetPinDescriptor& other) = delete;

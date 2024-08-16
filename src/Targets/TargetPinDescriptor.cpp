@@ -1,14 +1,15 @@
 #include "TargetPinDescriptor.hpp"
 
+#include "src/Services/StringService.hpp"
+
 namespace Targets
 {
     TargetPinDescriptor::TargetPinDescriptor(
-        const std::string& padName,
         const std::string& position,
-        TargetPinType type
+        const std::optional<std::string>& padKey
     )
-        : padName(padName)
-        , position(position)
-        , type(type)
+        : position(position)
+        , numericPosition(Services::StringService::toUint16(this->position, 10))
+        , padKey(padKey)
     {}
 }

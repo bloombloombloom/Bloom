@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "src/Targets/TargetPadDescriptor.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 
 namespace Targets::Microchip::Avr8
@@ -13,6 +14,8 @@ namespace Targets::Microchip::Avr8
      */
     struct GpioPadDescriptor
     {
+        const TargetPadId padId;
+        const std::string padKey;
         std::uint8_t registerMask;
 
         const TargetRegisterDescriptor& dataDirectionRegisterDescriptor;
@@ -20,12 +23,15 @@ namespace Targets::Microchip::Avr8
         const TargetRegisterDescriptor& outputRegisterDescriptor;
 
         GpioPadDescriptor(
+            const std::string& padKey,
             std::uint8_t registerMask,
             const TargetRegisterDescriptor& dataDirectionRegisterDescriptor,
             const TargetRegisterDescriptor& inputRegisterDescriptor,
             const TargetRegisterDescriptor& outputRegisterDescriptor
         )
-            : registerMask(registerMask)
+            : padId(TargetPadDescriptor::generateId(padKey))
+            , padKey(padKey)
+            , registerMask(registerMask)
             , dataDirectionRegisterDescriptor(dataDirectionRegisterDescriptor)
             , inputRegisterDescriptor(inputRegisterDescriptor)
             , outputRegisterDescriptor(outputRegisterDescriptor)

@@ -8,16 +8,13 @@ namespace Targets::TargetDescription
     {
         std::string name;
         std::string pinoutKey;
-        std::string package;
 
         Variant(
             const std::string& name,
-            const std::string& pinoutKey,
-            const std::string& package
+            const std::string& pinoutKey
         )
             : name(name)
             , pinoutKey(pinoutKey)
-            , package(package)
         {}
     };
 }

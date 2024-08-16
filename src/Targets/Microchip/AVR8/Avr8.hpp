@@ -20,6 +20,7 @@
 #include "src/Targets/TargetPhysicalInterface.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetBitFieldDescriptor.hpp"
+#include "src/Targets/TargetPadDescriptor.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
 
 #include "TargetDescriptionFile.hpp"
@@ -104,8 +105,8 @@ namespace Targets::Microchip::Avr8
         TargetStackPointer getStackPointer() override;
         void setStackPointer(TargetStackPointer stackPointer) override;
 
-        TargetGpioPinDescriptorAndStatePairs getGpioPinStates(const TargetPinoutDescriptor& pinoutDescriptor) override;
-        void setGpioPinState(const TargetPinDescriptor& pinDescriptor, const TargetGpioPinState& state) override;
+        TargetGpioPadDescriptorAndStatePairs getGpioPadStates(const TargetPadDescriptors& padDescriptors) override;
+        void setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) override;
 
         void enableProgrammingMode() override;
 
@@ -136,7 +137,7 @@ namespace Targets::Microchip::Avr8
         std::set<TargetPhysicalInterface> physicalInterfaces;
 
         std::vector<TargetPeripheralDescriptor> gpioPortPeripheralDescriptors;
-        std::map<std::string, GpioPadDescriptor> gpioPadDescriptorsByPadName;
+        std::map<TargetPadId, GpioPadDescriptor> gpioPadDescriptorsByPadId;
 
         /**
          * The stack pointer register on AVR8 targets can take several forms:
@@ -163,7 +164,7 @@ namespace Targets::Microchip::Avr8
 
         std::optional<ProgrammingSession> activeProgrammingSession = std::nullopt;
 
-        static std::map<std::string, GpioPadDescriptor> generateGpioPadDescriptorMapping(
+        static std::map<TargetPadId, GpioPadDescriptor> generateGpioPadDescriptorMapping(
             const std::vector<TargetPeripheralDescriptor>& portPeripheralDescriptors
         );
 

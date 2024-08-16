@@ -9,6 +9,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetRegisterGroupDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetRegisterDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetBitFieldDescriptor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/TargetPadDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetPinoutDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetPinDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetVariantDescriptor.cpp

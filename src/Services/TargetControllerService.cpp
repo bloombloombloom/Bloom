@@ -18,8 +18,8 @@
 #include "src/TargetController/Commands/RemoveBreakpoint.hpp"
 #include "src/TargetController/Commands/SetTargetProgramCounter.hpp"
 #include "src/TargetController/Commands/SetTargetStackPointer.hpp"
-#include "src/TargetController/Commands/GetTargetGpioPinStates.hpp"
-#include "src/TargetController/Commands/SetTargetGpioPinState.hpp"
+#include "src/TargetController/Commands/GetTargetGpioPadStates.hpp"
+#include "src/TargetController/Commands/SetTargetGpioPadState.hpp"
 #include "src/TargetController/Commands/GetTargetStackPointer.hpp"
 #include "src/TargetController/Commands/GetTargetProgramCounter.hpp"
 #include "src/TargetController/Commands/EnableProgrammingMode.hpp"
@@ -47,8 +47,8 @@ namespace Services
     using TargetController::Commands::RemoveBreakpoint;
     using TargetController::Commands::SetTargetProgramCounter;
     using TargetController::Commands::SetTargetStackPointer;
-    using TargetController::Commands::GetTargetGpioPinStates;
-    using TargetController::Commands::SetTargetGpioPinState;
+    using TargetController::Commands::GetTargetGpioPadStates;
+    using TargetController::Commands::SetTargetGpioPadState;
     using TargetController::Commands::GetTargetStackPointer;
     using TargetController::Commands::GetTargetProgramCounter;
     using TargetController::Commands::EnableProgrammingMode;
@@ -74,8 +74,8 @@ namespace Services
 
     using Targets::TargetPinoutDescriptor;
     using Targets::TargetPinDescriptor;
-    using Targets::TargetGpioPinState;
-    using Targets::TargetGpioPinDescriptorAndStatePairs;
+    using Targets::TargetGpioPadState;
+    using Targets::TargetGpioPadDescriptorAndStatePairs;
 
     TargetControllerService::AtomicSession::AtomicSession(TargetControllerService& targetControllerService)
         : targetControllerService(targetControllerService)
@@ -270,22 +270,22 @@ namespace Services
         );
     }
 
-    TargetGpioPinDescriptorAndStatePairs TargetControllerService::getGpioPinStates(
-        const TargetPinoutDescriptor& pinoutDescriptor
+    TargetGpioPadDescriptorAndStatePairs TargetControllerService::getGpioPadStates(
+        const Targets::TargetPadDescriptors& padDescriptors
     ) const {
         return this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<GetTargetGpioPinStates>(pinoutDescriptor),
+            std::make_unique<GetTargetGpioPadStates>(padDescriptors),
             this->defaultTimeout,
             this->activeAtomicSessionId
-        )->gpioPinStates;
+        )->gpioPadStates;
     }
 
-    void TargetControllerService::setGpioPinState(
-        const TargetPinDescriptor& pinDescriptor,
-        const TargetGpioPinState& state
+    void TargetControllerService::setGpioPadState(
+        const Targets::TargetPadDescriptor& padDescriptor,
+        const TargetGpioPadState& state
     ) const {
         this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<SetTargetGpioPinState>(pinDescriptor, state),
+            std::make_unique<SetTargetGpioPadState>(padDescriptor, state),
             this->defaultTimeout,
             this->activeAtomicSessionId
         );

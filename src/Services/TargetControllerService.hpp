@@ -16,8 +16,8 @@
 #include "src/Targets/TargetRegisterGroupDescriptor.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetPinoutDescriptor.hpp"
-#include "src/Targets/TargetPinDescriptor.hpp"
-#include "src/Targets/TargetGpioPinState.hpp"
+#include "src/Targets/TargetPadDescriptor.hpp"
+#include "src/Targets/TargetGpioPadState.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
 
@@ -205,23 +205,23 @@ namespace Services
         void setProgramCounter(Targets::TargetMemoryAddress address) const;
 
         /**
-         * Retrieves the pin states for a particular target variant.
+         * Retrieves the GPIO states for the given GPIO pads.
          *
-         * @param pinoutDescriptor
+         * @param padDescriptors
          */
-        Targets::TargetGpioPinDescriptorAndStatePairs getGpioPinStates(
-            const Targets::TargetPinoutDescriptor& pinoutDescriptor
+        Targets::TargetGpioPadDescriptorAndStatePairs getGpioPadStates(
+            const Targets::TargetPadDescriptors& padDescriptors
         ) const;
 
         /**
          * Updates the pin state on the target, for a specific pin.
          *
-         * @param pinDescriptor
+         * @param padDescriptor
          * @param state
          */
-        void setGpioPinState(
-            const Targets::TargetPinDescriptor& pinDescriptor,
-            const Targets::TargetGpioPinState& state
+        void setGpioPadState(
+            const Targets::TargetPadDescriptor& padDescriptor,
+            const Targets::TargetGpioPadState& state
         ) const;
 
         /**

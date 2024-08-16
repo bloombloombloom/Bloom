@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <functional>
+#include <unordered_map>
 
 #include "IspParameters.hpp"
 
@@ -33,7 +34,7 @@ namespace Targets::Microchip::Avr8
         , family(this->targetDescriptionFile.getAvrFamily())
         , physicalInterfaces(this->targetDescriptionFile.getPhysicalInterfaces())
         , gpioPortPeripheralDescriptors(this->targetDescriptionFile.gpioPortPeripheralDescriptors())
-        , gpioPadDescriptorsByPadName(Avr8::generateGpioPadDescriptorMapping(this->gpioPortPeripheralDescriptors))
+        , gpioPadDescriptorsByPadId(Avr8::generateGpioPadDescriptorMapping(this->gpioPortPeripheralDescriptors))
         , fuseEnableStrategy(this->targetDescriptionFile.getFuseEnableStrategy().value_or(FuseEnableStrategy::CLEAR))
     {
         const auto cpuPeripheralDescriptor = this->targetDescriptionFile.getTargetPeripheralDescriptor("cpu");
@@ -265,6 +266,7 @@ namespace Targets::Microchip::Avr8
             this->targetDescriptionFile.tryGetVendorName().value_or("Microchip"),
             this->targetDescriptionFile.targetAddressSpaceDescriptorsByKey(),
             this->targetDescriptionFile.targetPeripheralDescriptorsByKey(),
+            this->targetDescriptionFile.targetPadDescriptorsByKey(),
             this->targetDescriptionFile.targetPinoutDescriptorsByKey(),
             this->targetDescriptionFile.targetVariantDescriptors(),
             this->getBreakpointResources()
@@ -558,11 +560,11 @@ namespace Targets::Microchip::Avr8
         }
     }
 
-    TargetGpioPinDescriptorAndStatePairs Avr8::getGpioPinStates(const TargetPinoutDescriptor& pinoutDescriptor) {
-        auto output = TargetGpioPinDescriptorAndStatePairs{};
+    TargetGpioPadDescriptorAndStatePairs Avr8::getGpioPadStates(const TargetPadDescriptors& padDescriptors) {
+        auto output = TargetGpioPadDescriptorAndStatePairs{};
 
         // To reduce the number of memory reads we perform here, we cache the data and map it by start address.
-        auto cachedRegsByStartAddress = std::map<TargetMemoryAddress, unsigned char>{};
+        auto cachedRegsByStartAddress = std::unordered_map<TargetMemoryAddress, unsigned char>{};
         const auto readGpioReg = [this, &cachedRegsByStartAddress] (const TargetRegisterDescriptor& descriptor) {
             assert(descriptor.size == 1);
 
@@ -577,33 +579,32 @@ namespace Targets::Microchip::Avr8
             return cachedRegIt->second;
         };
 
-        for (const auto& pinDescriptor : pinoutDescriptor.pinDescriptors) {
-            if (pinDescriptor.type != TargetPinType::GPIO) {
+        for (const auto* padDescriptor : padDescriptors) {
+            if (padDescriptor->type != TargetPadType::GPIO) {
                 continue;
             }
 
-            const auto padDescriptorIt = this->gpioPadDescriptorsByPadName.find(pinDescriptor.padName);
-            if (padDescriptorIt == this->gpioPadDescriptorsByPadName.end()) {
+            const auto gpioPadDescriptorIt = this->gpioPadDescriptorsByPadId.find(padDescriptor->id);
+            if (gpioPadDescriptorIt == this->gpioPadDescriptorsByPadId.end()) {
                 continue;
             }
 
-            const auto& padDescriptor = padDescriptorIt->second;
-
+            const auto& gpioPadDescriptor = gpioPadDescriptorIt->second;
             const auto ddrValue = (
-                readGpioReg(padDescriptor.dataDirectionRegisterDescriptor) & padDescriptor.registerMask
-            ) != 0 ? TargetGpioPinState::DataDirection::OUTPUT : TargetGpioPinState::DataDirection::INPUT;
+                readGpioReg(gpioPadDescriptor.dataDirectionRegisterDescriptor) & gpioPadDescriptor.registerMask
+            ) != 0 ? TargetGpioPadState::DataDirection::OUTPUT : TargetGpioPadState::DataDirection::INPUT;
 
-            const auto& stateRegisterDescriptor = ddrValue == TargetGpioPinState::DataDirection::OUTPUT
-                ? padDescriptor.outputRegisterDescriptor
-                : padDescriptor.inputRegisterDescriptor;
+            const auto& stateRegisterDescriptor = ddrValue == TargetGpioPadState::DataDirection::OUTPUT
+                ? gpioPadDescriptor.outputRegisterDescriptor
+                : gpioPadDescriptor.inputRegisterDescriptor;
 
             output.emplace_back(
-                TargetGpioPinDescriptorAndStatePair{
-                    pinDescriptor,
-                    TargetGpioPinState{
-                        (readGpioReg(stateRegisterDescriptor) & padDescriptor.registerMask) != 0
-                            ? TargetGpioPinState::State::HIGH
-                            : TargetGpioPinState::State::LOW,
+                TargetGpioPadDescriptorAndStatePair{
+                    *padDescriptor,
+                    TargetGpioPadState{
+                        (readGpioReg(stateRegisterDescriptor) & gpioPadDescriptor.registerMask) != 0
+                            ? TargetGpioPadState::State::HIGH
+                            : TargetGpioPadState::State::LOW,
                         ddrValue
                     }
                 }
@@ -613,39 +614,38 @@ namespace Targets::Microchip::Avr8
         return output;
     }
 
-    void Avr8::setGpioPinState(const TargetPinDescriptor& pinDescriptor, const TargetGpioPinState& state) {
-        using DataDirection = TargetGpioPinState::DataDirection;
-        using GpioState = TargetGpioPinState::State;
+    void Avr8::setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) {
+        using DataDirection = TargetGpioPadState::DataDirection;
+        using GpioState = TargetGpioPadState::State;
 
-        const auto padDescriptorIt = this->gpioPadDescriptorsByPadName.find(pinDescriptor.padName);
-
-        if (padDescriptorIt == this->gpioPadDescriptorsByPadName.end()) {
+        const auto gpioPadDescriptorIt = this->gpioPadDescriptorsByPadId.find(padDescriptor.id);
+        if (gpioPadDescriptorIt == this->gpioPadDescriptorsByPadId.end()) {
             throw Exception{"Unknown pad"};
         }
 
-        const auto& padDescriptor = padDescriptorIt->second;
+        const auto& gpioPadDescriptor = gpioPadDescriptorIt->second;
 
-        const auto currentDdrValue = this->readRegister(padDescriptor.dataDirectionRegisterDescriptor).at(0);
+        const auto currentDdrValue = this->readRegister(gpioPadDescriptor.dataDirectionRegisterDescriptor).at(0);
         this->writeRegister(
-            padDescriptor.dataDirectionRegisterDescriptor,
+            gpioPadDescriptor.dataDirectionRegisterDescriptor,
             {
                 static_cast<unsigned char>(
                     state.direction == DataDirection::OUTPUT
-                        ? (currentDdrValue | padDescriptor.registerMask)
-                        : (currentDdrValue & ~(padDescriptor.registerMask))
+                        ? (currentDdrValue | gpioPadDescriptor.registerMask)
+                        : (currentDdrValue & ~(gpioPadDescriptor.registerMask))
                 )
             }
         );
 
         if (state.direction == DataDirection::OUTPUT) {
-            const auto currentOutputValue = this->readRegister(padDescriptor.outputRegisterDescriptor).at(0);
+            const auto currentOutputValue = this->readRegister(gpioPadDescriptor.outputRegisterDescriptor).at(0);
             this->writeRegister(
-                padDescriptor.outputRegisterDescriptor,
+                gpioPadDescriptor.outputRegisterDescriptor,
                 {
                     static_cast<unsigned char>(
                         state.value == GpioState::HIGH
-                            ? (currentOutputValue | padDescriptor.registerMask)
-                            : (currentOutputValue & ~(padDescriptor.registerMask))
+                            ? (currentOutputValue | gpioPadDescriptor.registerMask)
+                            : (currentOutputValue & ~(gpioPadDescriptor.registerMask))
                     )
                 }
             );
@@ -679,22 +679,22 @@ namespace Targets::Microchip::Avr8
         return this->activeProgrammingSession.has_value();
     }
 
-    std::map<std::string, GpioPadDescriptor> Avr8::generateGpioPadDescriptorMapping(
+    std::map<TargetPadId, GpioPadDescriptor> Avr8::generateGpioPadDescriptorMapping(
         const std::vector<TargetPeripheralDescriptor>& portPeripheralDescriptors
     ) {
-        auto output = std::map<std::string, GpioPadDescriptor>{};
+        auto output = std::map<TargetPadId, GpioPadDescriptor>{};
 
         for (const auto& peripheralDescriptor : portPeripheralDescriptors) {
+            if (peripheralDescriptor.registerGroupDescriptorsByKey.empty()) {
+                continue;
+            }
+
             for (const auto& signalDescriptor : peripheralDescriptor.signalDescriptors) {
                 if (!signalDescriptor.index.has_value()) {
                     continue;
                 }
 
-                if (output.contains(signalDescriptor.padName)) {
-                    continue;
-                }
-
-                if (peripheralDescriptor.registerGroupDescriptorsByKey.empty()) {
+                if (output.contains(signalDescriptor.padId)) {
                     continue;
                 }
 
@@ -712,8 +712,9 @@ namespace Targets::Microchip::Avr8
                 // From a register layout perspective, there are two types of GPIO port modules on AVR8 targets.
                 if (portRegisterGroup.registerDescriptorsByKey.contains("outset")) {
                     output.emplace(
-                        signalDescriptor.padName,
+                        signalDescriptor.padId,
                         GpioPadDescriptor{
+                            signalDescriptor.padKey,
                             registerMask,
                             portRegisterGroup.getRegisterDescriptor("dir"),
                             portRegisterGroup.getRegisterDescriptor("in"),
@@ -752,8 +753,9 @@ namespace Targets::Microchip::Avr8
 
                 if (ddrDescriptor.has_value() && inputDescriptor.has_value() && outputDescriptor.has_value()) {
                     output.emplace(
-                        signalDescriptor.padName,
+                        signalDescriptor.padId,
                         GpioPadDescriptor{
+                            signalDescriptor.padKey,
                             registerMask,
                             ddrDescriptor->get(),
                             inputDescriptor->get(),

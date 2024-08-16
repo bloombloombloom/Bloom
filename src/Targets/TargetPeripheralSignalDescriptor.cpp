@@ -3,16 +3,17 @@
 namespace Targets
 {
     TargetPeripheralSignalDescriptor::TargetPeripheralSignalDescriptor(
-        const std::string& padName,
+        const std::string& padKey,
         const std::optional<std::uint16_t>& index
     )
-        : padName(padName)
+        : padId(TargetPadDescriptor::generateId(padKey))
+        , padKey(padKey)
         , index(index)
     {}
 
     TargetPeripheralSignalDescriptor TargetPeripheralSignalDescriptor::clone() const {
         return {
-            this->padName,
+            this->padKey,
             this->index
         };
     }

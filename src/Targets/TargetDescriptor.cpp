@@ -13,6 +13,7 @@ namespace Targets
         const std::string& vendorName,
         std::map<std::string, TargetAddressSpaceDescriptor>&& addressSpaceDescriptorsByKey,
         std::map<std::string, TargetPeripheralDescriptor>&& peripheralDescriptorsByKey,
+        std::map<std::string, TargetPadDescriptor>&& padDescriptorsByKey,
         std::map<std::string, TargetPinoutDescriptor>&& pinoutDescriptorsByKey,
         std::vector<TargetVariantDescriptor>&& variantDescriptors,
         const BreakpointResources& breakpointResources
@@ -23,6 +24,7 @@ namespace Targets
         , vendorName(vendorName)
         , addressSpaceDescriptorsByKey(std::move(addressSpaceDescriptorsByKey))
         , peripheralDescriptorsByKey(std::move(peripheralDescriptorsByKey))
+        , padDescriptorsByKey(std::move(padDescriptorsByKey))
         , pinoutDescriptorsByKey(std::move(pinoutDescriptorsByKey))
         , variantDescriptors(std::move(variantDescriptors))
         , breakpointResources(breakpointResources)
@@ -85,6 +87,30 @@ namespace Targets
         if (!descriptor.has_value()) {
             throw Exceptions::InternalFatalErrorException{
                 "Failed to get peripheral descriptor \"" + std::string{key}
+                    + "\" from target descriptor - descriptor not found"
+            };
+        }
+
+        return descriptor->get();
+    }
+
+    std::optional<
+        std::reference_wrapper<const TargetPadDescriptor>
+    > TargetDescriptor::tryGetPadDescriptor(const std::string& key) const {
+        const auto descriptorIt = this->padDescriptorsByKey.find(key);
+
+        if (descriptorIt == this->padDescriptorsByKey.end()) {
+            return std::nullopt;
+        }
+
+        return std::cref(descriptorIt->second);
+    }
+
+    const TargetPadDescriptor& TargetDescriptor::getPadDescriptor(const std::string& key) const {
+        const auto descriptor = this->tryGetPadDescriptor(key);
+        if (!descriptor.has_value()) {
+            throw Exceptions::InternalFatalErrorException{
+                "Failed to get pad descriptor \"" + std::string{key}
                     + "\" from target descriptor - descriptor not found"
             };
         }

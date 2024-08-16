@@ -89,6 +89,7 @@ namespace Targets::RiscV
             this->targetDescriptionFile.getVendorName(),
             this->targetDescriptionFile.targetAddressSpaceDescriptorsByKey(),
             this->targetDescriptionFile.targetPeripheralDescriptorsByKey(),
+            this->targetDescriptionFile.targetPadDescriptorsByKey(),
             this->targetDescriptionFile.targetPinoutDescriptorsByKey(),
             this->targetDescriptionFile.targetVariantDescriptors(),
             {} // TODO: populate this
@@ -356,11 +357,11 @@ namespace Targets::RiscV
         });
     }
 
-    TargetGpioPinDescriptorAndStatePairs RiscV::getGpioPinStates(const TargetPinoutDescriptor& pinoutDescriptor) {
+    TargetGpioPadDescriptorAndStatePairs RiscV::getGpioPadStates(const TargetPadDescriptors& padDescriptors) {
         return {};
     }
 
-    void RiscV::setGpioPinState(const TargetPinDescriptor& pinDescriptor, const TargetGpioPinState& state) {
+    void RiscV::setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) {
 
     }
 

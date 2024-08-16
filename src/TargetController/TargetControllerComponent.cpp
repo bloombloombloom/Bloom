@@ -44,8 +44,8 @@ namespace TargetController
     using Commands::RemoveBreakpoint;
     using Commands::SetTargetProgramCounter;
     using Commands::SetTargetStackPointer;
-    using Commands::GetTargetGpioPinStates;
-    using Commands::SetTargetGpioPinState;
+    using Commands::GetTargetGpioPadStates;
+    using Commands::SetTargetGpioPadState;
     using Commands::GetTargetStackPointer;
     using Commands::GetTargetProgramCounter;
     using Commands::EnableProgrammingMode;
@@ -55,7 +55,7 @@ namespace TargetController
     using Responses::AtomicSessionId;
     using Responses::TargetRegistersRead;
     using Responses::TargetMemoryRead;
-    using Responses::TargetGpioPinStates;
+    using Responses::TargetGpioPadStates;
     using Responses::TargetStackPointer;
     using Responses::TargetProgramCounter;
     using Responses::Breakpoint;
@@ -233,12 +233,12 @@ namespace TargetController
             std::bind(&TargetControllerComponent::handleSetProgramCounter, this, std::placeholders::_1)
         );
 
-        this->registerCommandHandler<GetTargetGpioPinStates>(
-            std::bind(&TargetControllerComponent::handleGetTargetGpioPinStates, this, std::placeholders::_1)
+        this->registerCommandHandler<GetTargetGpioPadStates>(
+            std::bind(&TargetControllerComponent::handleGetTargetGpioPadStates, this, std::placeholders::_1)
         );
 
-        this->registerCommandHandler<SetTargetGpioPinState>(
-            std::bind(&TargetControllerComponent::handleSetTargetGpioPinState, this, std::placeholders::_1)
+        this->registerCommandHandler<SetTargetGpioPadState>(
+            std::bind(&TargetControllerComponent::handleSetTargetGpioPadState, this, std::placeholders::_1)
         );
 
         this->registerCommandHandler<GetTargetStackPointer>(
@@ -1007,7 +1007,7 @@ namespace TargetController
         return std::make_unique<Response>();
     }
 
-    std::unique_ptr<Response> TargetControllerComponent::handleStepTargetExecution(StepTargetExecution& command) {
+    std::unique_ptr<Response> TargetControllerComponent::handleStepTargetExecution(StepTargetExecution&) {
         this->stepTarget();
         return std::make_unique<Response>();
     }
@@ -1053,14 +1053,14 @@ namespace TargetController
         return std::make_unique<Response>();
     }
 
-    std::unique_ptr<TargetGpioPinStates> TargetControllerComponent::handleGetTargetGpioPinStates(
-        GetTargetGpioPinStates& command
+    std::unique_ptr<TargetGpioPadStates> TargetControllerComponent::handleGetTargetGpioPadStates(
+        GetTargetGpioPadStates& command
     ) {
-        return std::make_unique<TargetGpioPinStates>(this->target->getGpioPinStates(command.pinoutDescriptor));
+        return std::make_unique<TargetGpioPadStates>(this->target->getGpioPadStates(command.padDescriptors));
     }
 
-    std::unique_ptr<Response> TargetControllerComponent::handleSetTargetGpioPinState(SetTargetGpioPinState& command) {
-        this->target->setGpioPinState(command.pinDescriptor, command.state);
+    std::unique_ptr<Response> TargetControllerComponent::handleSetTargetGpioPadState(SetTargetGpioPadState& command) {
+        this->target->setGpioPadState(command.padDescriptor, command.state);
         return std::make_unique<Response>();
     }
 
@@ -1076,7 +1076,7 @@ namespace TargetController
         return std::make_unique<TargetProgramCounter>(this->target->getProgramCounter());
     }
 
-    std::unique_ptr<Response> TargetControllerComponent::handleEnableProgrammingMode(EnableProgrammingMode& command) {
+    std::unique_ptr<Response> TargetControllerComponent::handleEnableProgrammingMode(EnableProgrammingMode&) {
         if (!this->target->programmingModeEnabled()) {
             this->enableProgrammingMode();
         }
@@ -1084,7 +1084,7 @@ namespace TargetController
         return std::make_unique<Response>();
     }
 
-    std::unique_ptr<Response> TargetControllerComponent::handleDisableProgrammingMode(DisableProgrammingMode& command) {
+    std::unique_ptr<Response> TargetControllerComponent::handleDisableProgrammingMode(DisableProgrammingMode&) {
         if (this->target->programmingModeEnabled()) {
             this->disableProgrammingMode();
         }

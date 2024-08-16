@@ -11,6 +11,7 @@
 #include "TargetMemory.hpp"
 #include "TargetAddressSpaceDescriptor.hpp"
 #include "TargetPeripheralDescriptor.hpp"
+#include "TargetPadDescriptor.hpp"
 #include "TargetPinoutDescriptor.hpp"
 #include "TargetVariantDescriptor.hpp"
 #include "TargetBreakpoint.hpp"
@@ -25,6 +26,7 @@ namespace Targets
         std::string vendorName;
         std::map<std::string, TargetAddressSpaceDescriptor> addressSpaceDescriptorsByKey;
         std::map<std::string, TargetPeripheralDescriptor> peripheralDescriptorsByKey;
+        std::map<std::string, TargetPadDescriptor> padDescriptorsByKey;
         std::map<std::string, TargetPinoutDescriptor> pinoutDescriptorsByKey;
         std::vector<TargetVariantDescriptor> variantDescriptors;
         BreakpointResources breakpointResources;
@@ -36,6 +38,7 @@ namespace Targets
             const std::string& vendorName,
             std::map<std::string, TargetAddressSpaceDescriptor>&& addressSpaceDescriptorsByKey,
             std::map<std::string, TargetPeripheralDescriptor>&& peripheralDescriptorsByKey,
+            std::map<std::string, TargetPadDescriptor>&& padDescriptorsByKey,
             std::map<std::string, TargetPinoutDescriptor>&& pinoutDescriptorsByKey,
             std::vector<TargetVariantDescriptor>&& variantDescriptors,
             const BreakpointResources& breakpointResources
@@ -70,6 +73,12 @@ namespace Targets
         ) const;
 
         const TargetPeripheralDescriptor& getPeripheralDescriptor(const std::string& key) const;
+
+        std::optional<std::reference_wrapper<const TargetPadDescriptor>> tryGetPadDescriptor(
+                const std::string& key
+        ) const;
+
+        const TargetPadDescriptor& getPadDescriptor(const std::string& key) const;
 
         std::optional<std::reference_wrapper<const TargetPinoutDescriptor>> tryGetPinoutDescriptor(
             const std::string& key

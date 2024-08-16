@@ -85,10 +85,8 @@ namespace Targets::RiscV
         TargetStackPointer getStackPointer() override;
         void setStackPointer(TargetStackPointer stackPointer) override;
 
-        TargetGpioPinDescriptorAndStatePairs getGpioPinStates(
-            const TargetPinoutDescriptor& pinoutDescriptor
-        ) override;
-        void setGpioPinState(const TargetPinDescriptor& pinDescriptor, const TargetGpioPinState& state) override;
+        TargetGpioPadDescriptorAndStatePairs getGpioPadStates(const TargetPadDescriptors& padDescriptors) override;
+        void setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) override;
 
         void enableProgrammingMode() override;
 

@@ -7,6 +7,7 @@
 #include <functional>
 #include <map>
 #include <vector>
+#include <set>
 
 #include "PropertyGroup.hpp"
 #include "AddressSpace.hpp"
@@ -19,6 +20,7 @@
 #include "RegisterGroupReference.hpp"
 #include "Peripheral.hpp"
 #include "RegisterGroupInstance.hpp"
+#include "Pad.hpp"
 #include "Signal.hpp"
 #include "Pinout.hpp"
 #include "Pin.hpp"
@@ -129,6 +131,9 @@ namespace Targets::TargetDescription
             std::string_view key
         ) const;
         [[nodiscard]] const Peripheral& getPeripheral(std::string_view key) const;
+        [[nodiscard]] std::set<const Peripheral*> getModulePeripherals(const std::string& moduleKey) const;
+        [[nodiscard]] std::set<const Peripheral*> getGpioPeripherals() const;
+
 
         [[nodiscard]] std::optional<TargetMemorySegmentDescriptor> tryGetTargetMemorySegmentDescriptor(
             std::string_view addressSpaceKey,
@@ -146,6 +151,7 @@ namespace Targets::TargetDescription
 
         [[nodiscard]] std::map<std::string, TargetAddressSpaceDescriptor> targetAddressSpaceDescriptorsByKey() const;
         [[nodiscard]] std::map<std::string, TargetPeripheralDescriptor> targetPeripheralDescriptorsByKey() const;
+        [[nodiscard]] std::map<std::string, TargetPadDescriptor> targetPadDescriptorsByKey() const;
         [[nodiscard]] std::map<std::string, TargetPinoutDescriptor> targetPinoutDescriptorsByKey() const;
         [[nodiscard]] std::vector<TargetVariantDescriptor> targetVariantDescriptors() const;
         [[nodiscard]] std::vector<TargetPeripheralDescriptor> gpioPortPeripheralDescriptors() const;
@@ -157,6 +163,7 @@ namespace Targets::TargetDescription
         std::vector<PhysicalInterface> physicalInterfaces;
         std::map<std::string, Module, std::less<void>> modulesByKey;
         std::map<std::string, Peripheral, std::less<void>> peripheralsByKey;
+        std::map<std::string, Pad, std::less<void>> padsByKey;
         std::map<std::string, Pinout, std::less<void>> pinoutsByKey;
         std::vector<Variant> variants;
 
@@ -177,6 +184,8 @@ namespace Targets::TargetDescription
         ) const;
         const std::string& getDeviceAttribute(const std::string& attributeName) const;
 
+        [[nodiscard]] std::set<std::string> getGpioPadKeys() const;
+
         static std::optional<std::string> tryGetAttribute(const QDomElement& element, const QString& attributeName);
         static std::string getAttribute(const QDomElement& element, const QString& attributeName);
 
@@ -194,6 +203,7 @@ namespace Targets::TargetDescription
         static Peripheral peripheralFromXml(const QDomElement& xmlElement);
         static RegisterGroupInstance registerGroupInstanceFromXml(const QDomElement& xmlElement);
         static Signal signalFromXml(const QDomElement& xmlElement);
+        static Pad padFromXml(const QDomElement& xmlElement);
         static Pinout pinoutFromXml(const QDomElement& xmlElement);
         static Pin pinFromXml(const QDomElement& xmlElement);
         static Variant variantFromXml(const QDomElement& xmlElement);
@@ -235,6 +245,11 @@ namespace Targets::TargetDescription
         );
 
         static TargetBitFieldDescriptor targetBitFieldDescriptorFromBitField(const BitField& bitField);
+
+        static TargetPadDescriptor targetPadDescriptorFromPad(
+            const Pad& pad,
+            const std::set<std::string>& gpioPadKeys
+        );
 
         static TargetPinoutDescriptor targetPinoutDescriptorFromPinout(const Pinout& pinout);
         static TargetPinDescriptor targetPinDescriptorFromPin(const Pin& pin);
