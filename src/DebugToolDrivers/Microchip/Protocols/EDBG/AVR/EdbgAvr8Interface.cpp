@@ -327,6 +327,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
              *
              * So it appears we cannot use that command for UPDI sessions. For this reason, we will just read the
              * signature from memory via the signature memory segment.
+             *
+             * TODO: We're assuming the signature memory segment will always reside in the `data` address space, for
+             *       UPDI targets. Review.
              */
             const auto signatureMemory = this->readMemory(
                 Avr8MemoryType::SRAM,

@@ -323,11 +323,7 @@ namespace Targets::Microchip::Avr8
             );
         }
 
-        /*
-         * The debug interface may have its own access restrictions for registers.
-         *
-         * We must amend the register descriptors with the appropriate restrictions.
-         */
+        // The debug interface may have its own access restrictions for registers.
         for (auto& [peripheralKey, peripheral] : descriptor.peripheralDescriptorsByKey) {
             for (auto& [groupKey, registerGroup] : peripheral.registerGroupDescriptorsByKey) {
                 this->applyDebugInterfaceRegisterAccessRestrictions(
