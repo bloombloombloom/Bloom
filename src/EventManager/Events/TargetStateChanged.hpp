@@ -16,7 +16,7 @@ namespace Events
         Targets::TargetState newState;
         Targets::TargetState previousState;
 
-        explicit TargetStateChanged(Targets::TargetState newState, Targets::TargetState previousState)
+        explicit TargetStateChanged(const Targets::TargetState& newState, const Targets::TargetState& previousState)
             : newState(newState)
             , previousState(previousState)
         {};
