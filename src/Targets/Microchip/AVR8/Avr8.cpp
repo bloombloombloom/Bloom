@@ -268,7 +268,7 @@ namespace Targets::Microchip::Avr8
             this->targetDescriptionFile.targetPeripheralDescriptorsByKey(),
             this->targetDescriptionFile.targetPadDescriptorsByKey(),
             this->targetDescriptionFile.targetPinoutDescriptorsByKey(),
-            this->targetDescriptionFile.targetVariantDescriptors(),
+            this->targetDescriptionFile.targetVariantDescriptorsByKey(),
             this->getBreakpointResources()
         };
 

@@ -28,7 +28,7 @@ namespace Targets
         std::map<std::string, TargetPeripheralDescriptor> peripheralDescriptorsByKey;
         std::map<std::string, TargetPadDescriptor> padDescriptorsByKey;
         std::map<std::string, TargetPinoutDescriptor> pinoutDescriptorsByKey;
-        std::vector<TargetVariantDescriptor> variantDescriptors;
+        std::map<std::string, TargetVariantDescriptor> variantDescriptorsByKey;
         BreakpointResources breakpointResources;
 
         TargetDescriptor(
@@ -40,7 +40,7 @@ namespace Targets
             std::map<std::string, TargetPeripheralDescriptor>&& peripheralDescriptorsByKey,
             std::map<std::string, TargetPadDescriptor>&& padDescriptorsByKey,
             std::map<std::string, TargetPinoutDescriptor>&& pinoutDescriptorsByKey,
-            std::vector<TargetVariantDescriptor>&& variantDescriptors,
+            std::map<std::string, TargetVariantDescriptor>&& variantDescriptorsByKey,
             const BreakpointResources& breakpointResources
         );
 
@@ -85,5 +85,11 @@ namespace Targets
         ) const;
 
         const TargetPinoutDescriptor& getPinoutDescriptor(const std::string& key) const;
+
+        std::optional<std::reference_wrapper<const TargetVariantDescriptor>> tryGetVariantDescriptor(
+            const std::string& key
+        ) const;
+
+        const TargetVariantDescriptor& getVariantDescriptor(const std::string& key) const;
     };
 }

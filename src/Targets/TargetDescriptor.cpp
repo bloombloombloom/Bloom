@@ -15,7 +15,7 @@ namespace Targets
         std::map<std::string, TargetPeripheralDescriptor>&& peripheralDescriptorsByKey,
         std::map<std::string, TargetPadDescriptor>&& padDescriptorsByKey,
         std::map<std::string, TargetPinoutDescriptor>&& pinoutDescriptorsByKey,
-        std::vector<TargetVariantDescriptor>&& variantDescriptors,
+        std::map<std::string, TargetVariantDescriptor>&& variantDescriptorsByKey,
         const BreakpointResources& breakpointResources
     )
         : name(name)
@@ -26,7 +26,7 @@ namespace Targets
         , peripheralDescriptorsByKey(std::move(peripheralDescriptorsByKey))
         , padDescriptorsByKey(std::move(padDescriptorsByKey))
         , pinoutDescriptorsByKey(std::move(pinoutDescriptorsByKey))
-        , variantDescriptors(std::move(variantDescriptors))
+        , variantDescriptorsByKey(std::move(variantDescriptorsByKey))
         , breakpointResources(breakpointResources)
     {}
 
@@ -132,6 +132,30 @@ namespace Targets
 
     const TargetPinoutDescriptor& TargetDescriptor::getPinoutDescriptor(const std::string& key) const {
         const auto descriptor = this->tryGetPinoutDescriptor(key);
+        if (!descriptor.has_value()) {
+            throw Exceptions::InternalFatalErrorException{
+                "Failed to get pinout descriptor \"" + std::string{key}
+                    + "\" from target descriptor - descriptor not found"
+            };
+        }
+
+        return descriptor->get();
+    }
+
+    std::optional<
+        std::reference_wrapper<const TargetVariantDescriptor>
+    > TargetDescriptor::tryGetVariantDescriptor(const std::string& key) const {
+        const auto descriptorIt = this->variantDescriptorsByKey.find(key);
+
+        if (descriptorIt == this->variantDescriptorsByKey.end()) {
+            return std::nullopt;
+        }
+
+        return std::cref(descriptorIt->second);
+    }
+
+    const TargetVariantDescriptor& TargetDescriptor::getVariantDescriptor(const std::string& key) const {
+        const auto descriptor = this->tryGetVariantDescriptor(key);
         if (!descriptor.has_value()) {
             throw Exceptions::InternalFatalErrorException{
                 "Failed to get pinout descriptor \"" + std::string{key}

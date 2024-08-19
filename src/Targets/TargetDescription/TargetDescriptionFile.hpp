@@ -153,7 +153,7 @@ namespace Targets::TargetDescription
         [[nodiscard]] std::map<std::string, TargetPeripheralDescriptor> targetPeripheralDescriptorsByKey() const;
         [[nodiscard]] std::map<std::string, TargetPadDescriptor> targetPadDescriptorsByKey() const;
         [[nodiscard]] std::map<std::string, TargetPinoutDescriptor> targetPinoutDescriptorsByKey() const;
-        [[nodiscard]] std::vector<TargetVariantDescriptor> targetVariantDescriptors() const;
+        [[nodiscard]] std::map<std::string, TargetVariantDescriptor> targetVariantDescriptorsByKey() const;
         [[nodiscard]] std::vector<TargetPeripheralDescriptor> gpioPortPeripheralDescriptors() const;
 
     protected:
@@ -165,7 +165,7 @@ namespace Targets::TargetDescription
         std::map<std::string, Peripheral, std::less<void>> peripheralsByKey;
         std::map<std::string, Pad, std::less<void>> padsByKey;
         std::map<std::string, Pinout, std::less<void>> pinoutsByKey;
-        std::vector<Variant> variants;
+        std::map<std::string, Variant, std::less<void>> variantsByKey;
 
         TargetDescriptionFile() = default;
         virtual ~TargetDescriptionFile() = default;

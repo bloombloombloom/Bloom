@@ -348,11 +348,14 @@ namespace Targets::TargetDescription
         return output;
     }
 
-    std::vector<TargetVariantDescriptor> TargetDescriptionFile::targetVariantDescriptors() const {
-        auto output = std::vector<TargetVariantDescriptor>{};
+    std::map<std::string, TargetVariantDescriptor> TargetDescriptionFile::targetVariantDescriptorsByKey() const {
+        auto output = std::map<std::string, TargetVariantDescriptor>{};
 
-        for (const auto& variant : this->variants) {
-            output.emplace_back(TargetDescriptionFile::targetVariantDescriptorFromVariant(variant));
+        for (const auto& [key, variant] : this->variantsByKey) {
+            output.emplace(
+                key,
+                TargetDescriptionFile::targetVariantDescriptorFromVariant(variant)
+            );
         }
 
         return output;
@@ -474,7 +477,8 @@ namespace Targets::TargetDescription
             !element.isNull();
             element = element.nextSiblingElement("variant")
         ) {
-            this->variants.emplace_back(TargetDescriptionFile::variantFromXml(element));
+            auto variant = TargetDescriptionFile::variantFromXml(element);
+            this->variantsByKey.emplace(variant.key, std::move(variant));
         }
     }
 
@@ -920,6 +924,7 @@ namespace Targets::TargetDescription
 
     Variant TargetDescriptionFile::variantFromXml(const QDomElement& xmlElement) {
         return {
+            TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "pinout-key")
         };
@@ -1190,6 +1195,7 @@ namespace Targets::TargetDescription
 
     TargetVariantDescriptor TargetDescriptionFile::targetVariantDescriptorFromVariant(const Variant& variant) {
         return {
+            variant.key,
             variant.name,
             variant.pinoutKey
         };

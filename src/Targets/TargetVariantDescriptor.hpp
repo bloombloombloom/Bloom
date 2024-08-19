@@ -7,10 +7,12 @@ namespace Targets
     struct TargetVariantDescriptor
     {
     public:
+        const std::string key;
         std::string name;
         std::string pinoutKey;
 
         TargetVariantDescriptor(
+            const std::string& key,
             const std::string& name,
             const std::string& pinoutKey
         );
@@ -19,6 +21,5 @@ namespace Targets
         TargetVariantDescriptor& operator = (const TargetVariantDescriptor& other) = delete;
 
         TargetVariantDescriptor(TargetVariantDescriptor&& other) noexcept = default;
-        TargetVariantDescriptor& operator = (TargetVariantDescriptor&& other) noexcept = default;
     };
 }
