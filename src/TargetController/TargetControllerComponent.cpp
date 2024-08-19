@@ -632,7 +632,6 @@ namespace TargetController
     void TargetControllerComponent::stopTarget() {
         if (this->target->getExecutionState() != TargetExecutionState::STOPPED) {
             this->target->stop();
-            this->targetState->executionState = TargetExecutionState::STOPPED;
         }
 
         auto newState = *(this->targetState);
