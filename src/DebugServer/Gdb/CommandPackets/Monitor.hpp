@@ -2,8 +2,7 @@
 
 #include <cstdint>
 #include <string>
-#include <map>
-#include <optional>
+#include <vector>
 
 #include "CommandPacket.hpp"
 
@@ -20,14 +19,7 @@ namespace DebugServer::Gdb::CommandPackets
          */
         std::string command;
 
-        /**
-         * A mapping of any command options included in this->command. A command option must begin with "--" and
-         * can optionally have a value.
-         *
-         * The key of this map is the option name. The map value is the option value, or std::nullopt if no value was
-         * provided.
-         */
-        std::map<std::string, std::optional<std::string>> commandOptions;
+        std::vector<std::string> commandArguments;
 
         explicit Monitor(const RawPacket& rawPacket);
 
@@ -39,12 +31,6 @@ namespace DebugServer::Gdb::CommandPackets
         ) override;
 
     private:
-        /**
-         * Extracts command options from a command string.
-         *
-         * @param command
-         * @return
-         */
-        std::map<std::string, std::optional<std::string>> extractCommandOptions(const std::string& command);
+        static std::vector<std::string> extractCommandArguments(const std::string& command);
     };
 }

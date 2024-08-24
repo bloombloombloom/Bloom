@@ -1,14 +1,14 @@
 Supported Bloom commands:
 
-  help                  Displays this help text.
-  version               Outputs Bloom's version information.
-  version machine       Outputs Bloom's version information in JSON format.
+  help                      Displays this help text.
+  version                   Outputs Bloom's version information.
+  version machine           Outputs Bloom's version information in JSON format.
 @ACTIVATE_INSIGHT_HELP_TEXT@
 
-  reset                 Resets the target and holds it in a stopped state.
+  reset                     Resets the target and holds it in a stopped state.
 
-  eeprom fill           Fills the target's EEPROM with a specified value. The value should be specified via the
-                        --value option. The value should be in hexadecimal format: "--value=AABBCC". If the specified
-                        value is smaller than the EEPROM capacity, it will be repeated across the entire EEPROM address
-                        range. If the value size is not a multiple of the EEPROM capacity, the value will be truncated
-                        in the final repetition. The value size must not exceed the EEPROM capacity.
+  eeprom fill [VALUE]       Fills the target's EEPROM with the specified value. The value should be in hexadecimal
+                            format: "monitor eeprom fill AABBCC". If the specified value is smaller than the EEPROM
+                            memory segment size, it will be repeated across the entire segment address range. If the
+                            value size is not a multiple of the segment size, the value will be truncated in the final
+                            repetition. The value size must not exceed the segment size.

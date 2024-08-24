@@ -30,8 +30,5 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             const Targets::TargetDescriptor& targetDescriptor,
             Services::TargetControllerService& targetControllerService
         ) override;
-
-    private:
-        Targets::TargetMemoryBuffer fillValue;
     };
 }

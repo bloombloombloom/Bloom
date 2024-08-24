@@ -2,6 +2,7 @@
 
 #include <QByteArray>
 #include <algorithm>
+#include <stdexcept>
 
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
@@ -26,12 +27,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         : Monitor(std::move(monitorPacket))
         , eepromAddressSpaceDescriptor(gdbTargetDescriptor.eepromAddressSpaceDescriptor)
         , eepromMemorySegmentDescriptor(gdbTargetDescriptor.eepromMemorySegmentDescriptor)
-    {
-        const auto fillValueOptionIt = this->commandOptions.find("value");
-        if (fillValueOptionIt != this->commandOptions.end() && fillValueOptionIt->second.has_value()) {
-            this->fillValue = Services::StringService::dataFromHex(*(fillValueOptionIt->second));
-        }
-    }
+    {}
 
     void EepromFill::handle(
         Gdb::DebugSession& debugSession,
@@ -42,12 +38,13 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::info("Handling EepromFill packet");
 
         try {
-            const auto eepromSize = this->eepromMemorySegmentDescriptor.size();
-            const auto fillValueSize = this->fillValue.size();
-
-            if (fillValueSize == 0) {
+            if (this->commandArguments.size() < 3 || this->commandArguments[2].empty()) {
                 throw InvalidCommandOption{"Fill value required"};
             }
+
+            const auto eepromSize = this->eepromMemorySegmentDescriptor.size();
+            const auto& fillValue = Services::StringService::dataFromHex(this->commandArguments[2]);
+            const auto fillValueSize = fillValue.size();
 
             if (fillValueSize > eepromSize) {
                 throw InvalidCommandOption{
@@ -68,12 +65,12 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             auto data = Targets::TargetMemoryBuffer{};
             data.reserve(eepromSize);
 
-            // Repeat this->fillValue until we've filled `data`
+            // Repeat fillValue until we've filled `data`
             while (data.size() < eepromSize) {
                 data.insert(
                     data.end(),
-                    this->fillValue.begin(),
-                    this->fillValue.begin() + static_cast<std::int32_t>(
+                    fillValue.begin(),
+                    fillValue.begin() + static_cast<std::int32_t>(
                         std::min(fillValueSize, (eepromSize - data.size()))
                     )
                 );
@@ -94,9 +91,13 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             )});
 
         } catch (const InvalidCommandOption& exception) {
-            Logger::error(exception.getMessage());
             debugSession.connection.writePacket(
                 ResponsePacket{Services::StringService::toHex(exception.getMessage() + "\n")}
+            );
+
+        } catch (const std::invalid_argument& exception) {
+            debugSession.connection.writePacket(
+                ResponsePacket{Services::StringService::toHex("Invalid fill value\n")}
             );
 
         } catch (const Exception& exception) {
