@@ -54,9 +54,6 @@ namespace DebugServer::Gdb::CommandPackets
             const auto& peripheralDescriptor = peripheralDescriptorOpt->get();
 
             if (argCount < 3) {
-                debugSession.connection.writePacket(PartialResponsePacket{StringService::toHex(
-                    peripheralDescriptor.name + " peripheral registers:\n\n"
-                )});
                 this->handlePeripheralOutput(peripheralDescriptor, debugSession);
                 debugSession.connection.writePacket(ResponsePacket{StringService::toHex("\n")});
 
