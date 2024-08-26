@@ -28,12 +28,10 @@ namespace DebugServer::Gdb::CommandPackets
     ) {
         Logger::info("Handling HelpMonitorInfo packet");
 
-        static constexpr auto LEFT_PADDING = std::string::size_type{3};
-
         static constexpr auto CMD_COLOR = StringService::TerminalColor::DARK_YELLOW;
         static constexpr auto PARAM_COLOR = StringService::TerminalColor::BLUE;
 
-        static const auto leftPadding = std::string{LEFT_PADDING, ' ', std::string::allocator_type{}};
+        static const auto leftPadding = std::string{std::string::size_type{3}, ' ', std::string::allocator_type{}};
 
         auto output = std::string{"\nSupported Bloom commands:\n\n"};
 

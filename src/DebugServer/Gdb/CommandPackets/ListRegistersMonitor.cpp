@@ -120,7 +120,7 @@ namespace DebugServer::Gdb::CommandPackets
             output += registerDescriptor.name + ", ";
             output += StringService::applyTerminalColor(
                 "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor.startAddress)),
-                StringService::TerminalColor::DARK_BLUE
+                StringService::TerminalColor::BLUE
             ) + ", ";
             output += std::to_string(registerDescriptor.size) + " byte(s)";
 
