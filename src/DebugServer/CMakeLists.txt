@@ -24,6 +24,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/BloomVersionMachine.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/Detach.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ReadRegistersMonitor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ListRegistersMonitor.cpp
 
         # AVR GDB RSP Server
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/AvrGdbRsp.cpp
