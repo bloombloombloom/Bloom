@@ -29,6 +29,7 @@
 #include "CommandPackets/BloomVersion.hpp"
 #include "CommandPackets/BloomVersionMachine.hpp"
 #include "CommandPackets/Detach.hpp"
+#include "CommandPackets/ReadRegistersMonitor.hpp"
 
 #ifndef EXCLUDE_INSIGHT
 #include "CommandPackets/ActivateInsight.hpp"
@@ -289,6 +290,10 @@ namespace DebugServer::Gdb
 
             if (monitorCommand->command == "reset") {
                 return std::make_unique<CommandPackets::ResetTarget>(std::move(*(monitorCommand.release())));
+            }
+
+            if (monitorCommand->command.find("rr") == 0) {
+                return std::make_unique<CommandPackets::ReadRegistersMonitor>(std::move(*(monitorCommand.release())));
             }
 
 #ifndef EXCLUDE_INSIGHT

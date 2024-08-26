@@ -8,6 +8,7 @@
 #include <functional>
 #include <unordered_map>
 #include <mutex>
+#include <bitset>
 
 namespace Services
 {
@@ -39,6 +40,12 @@ namespace Services
         });
 
         return str;
+    }
+
+    std::string StringService::toHex(std::uint64_t value) {
+        auto stream = std::stringstream{};
+        stream << std::hex << std::setfill('0') << std::setw(16) << static_cast<unsigned int>(value);
+        return stream.str();
     }
 
     std::string StringService::toHex(std::uint32_t value) {
@@ -73,6 +80,20 @@ namespace Services
         }
 
         return stream.str();
+    }
+
+    std::string StringService::toBinaryStringWithMask(std::uint64_t value, std::uint64_t mask) {
+        auto output = std::string{};
+
+        const auto maskBitset = std::bitset<64>{mask};
+        for (auto i = std::size_t{0}; i < maskBitset.size(); ++i) {
+            const auto& bit = maskBitset[i];
+            if (bit) {
+                output.insert(output.begin(), (value & (0x01 << i)) != 0 ? '1' : '0');
+            }
+        }
+
+        return output;
     }
 
     std::vector<unsigned char> StringService::dataFromHex(const std::string& hexData) {
@@ -125,5 +146,78 @@ namespace Services
             });
 
         return {std::ranges::begin(range), std::ranges::end(range)};
+    }
+
+    std::string StringService::applyTerminalColor(const std::string& string, TerminalColor color) {
+        auto colorCode = std::string{};
+
+        switch (color) {
+            case TerminalColor::BLACK: {
+                colorCode = "\033[30m";
+                break;
+            }
+            case TerminalColor::DARK_RED: {
+                colorCode = "\033[31m";
+                break;
+            }
+            case TerminalColor::DARK_GREEN: {
+                colorCode = "\033[32m";
+                break;
+            }
+            case TerminalColor::DARK_YELLOW: {
+                colorCode = "\033[33m";
+                break;
+            }
+            case TerminalColor::DARK_BLUE: {
+                colorCode = "\033[34m";
+                break;
+            }
+            case TerminalColor::DARK_MAGENTA: {
+                colorCode = "\033[35m";
+                break;
+            }
+            case TerminalColor::DARK_CYAN: {
+                colorCode = "\033[36m";
+                break;
+            }
+            case TerminalColor::LIGHT_GRAY: {
+                colorCode = "\033[37m";
+                break;
+            }
+            case TerminalColor::DARK_GRAY: {
+                colorCode = "\033[90m";
+                break;
+            }
+            case TerminalColor::RED: {
+                colorCode = "\033[91m";
+                break;
+            }
+            case TerminalColor::GREEN: {
+                colorCode = "\033[92m";
+                break;
+            }
+            case TerminalColor::ORANGE: {
+                colorCode = "\033[93m";
+                break;
+            }
+            case TerminalColor::BLUE: {
+                colorCode = "\033[94m";
+                break;
+            }
+            case TerminalColor::MAGENTA: {
+                colorCode = "\033[95m";
+                break;
+            }
+            case TerminalColor::CYAN: {
+                colorCode = "\033[96m";
+                break;
+            }
+            case TerminalColor::WHITE: {
+                colorCode = "\033[97m";
+                break;
+            }
+        }
+
+        return colorCode + string + "\033[0m";
     }
 }

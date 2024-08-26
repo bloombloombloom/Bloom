@@ -17,10 +17,13 @@ namespace Services
         static bool isAscii(const std::string& str);
         static std::string replaceUnprintable(std::string str);
 
+        static std::string toHex(std::uint64_t value);
         static std::string toHex(std::uint32_t value);
         static std::string toHex(unsigned char value);
         static std::string toHex(const std::vector<unsigned char>& data);
         static std::string toHex(const std::string& data);
+
+        static std::string toBinaryStringWithMask(std::uint64_t value, std::uint64_t mask);
 
         static std::vector<unsigned char> dataFromHex(const std::string& hexData);
 
@@ -54,5 +57,27 @@ namespace Services
         static std::size_t generateUniqueInteger(const std::string& str);
 
         static std::vector<std::string_view> split(std::string_view str, char delimiter);
+
+        enum class TerminalColor: std::uint8_t
+        {
+            BLACK,
+            DARK_RED,
+            DARK_GREEN,
+            DARK_YELLOW,
+            DARK_BLUE,
+            DARK_MAGENTA,
+            DARK_CYAN,
+            LIGHT_GRAY,
+            DARK_GRAY,
+            RED,
+            GREEN,
+            ORANGE,
+            BLUE,
+            MAGENTA,
+            CYAN,
+            WHITE,
+        };
+
+        static std::string applyTerminalColor(const std::string& string, TerminalColor color);
     };
 }

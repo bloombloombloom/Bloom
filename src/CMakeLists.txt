@@ -10,6 +10,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/PathService.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/ProcessService.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/StringService.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Services/IntegerService.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Services/Avr8InstructionService.cpp
 
         # Helpers & other
