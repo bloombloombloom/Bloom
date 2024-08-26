@@ -1,25 +1,20 @@
 #include "HelpMonitorInfo.hpp"
 
-#include <QFile>
-#include <QString>
+#include <string>
 
-#include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
-#include "src/Services/PathService.hpp"
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
-#include "src/Exceptions/Exception.hpp"
+#include "src/Targets/TargetFamily.hpp"
 
 namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
+    using Services::StringService;
 
-    using ResponsePackets::ErrorResponsePacket;
     using ResponsePackets::ResponsePacket;
-
-    using ::Exceptions::Exception;
 
     HelpMonitorInfo::HelpMonitorInfo(Monitor&& monitorPacket)
         : Monitor(std::move(monitorPacket))
@@ -28,34 +23,47 @@ namespace DebugServer::Gdb::CommandPackets
     void HelpMonitorInfo::handle(
         DebugSession& debugSession,
         const TargetDescriptor& gdbTargetDescriptor,
-        const Targets::TargetDescriptor&,
+        const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService&
     ) {
         Logger::info("Handling HelpMonitorInfo packet");
 
-        try {
-            /*
-             * The file GdbHelpMonitorInfo.txt is included in the binary image as a resource.
-             * See src/DebugServer/CMakeLists.txt for more.
-             */
-            auto helpFile = QFile{
-                QString::fromStdString(":/compiled/src/DebugServer/Gdb/Resources/GdbHelpMonitorInfo.txt")
-            };
+        static constexpr auto LEFT_PADDING = std::string::size_type{3};
+        static constexpr auto RIGHT_PADDING = std::string::size_type{26};
 
-            if (!helpFile.open(QIODevice::ReadOnly)) {
-                throw Exception{
-                    "Failed to open GDB monitor info help file - please report this issue at "
-                        + Services::PathService::homeDomainName() + "/report-issue"
-                };
-            }
+        static const auto leftPadding = std::string{LEFT_PADDING, ' ', std::string::allocator_type{}};
+        static const auto leftRightPadding = std::string{
+            LEFT_PADDING + RIGHT_PADDING,
+            ' ',
+            std::string::allocator_type{}
+        };
 
-            debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(
-                "\n" + QTextStream{&helpFile}.readAll().toUtf8().toStdString() + "\n"
-            )});
+        auto output = std::string{"\nSupported Bloom commands:\n\n"};
+        output += leftPadding + StringService::padRight("help", ' ', RIGHT_PADDING);
+        output += "Displays this help text.\n";
+        output += leftPadding + StringService::padRight("version", ' ', RIGHT_PADDING);
+        output += "Outputs Bloom's version information.\n";
+        output += leftPadding + StringService::padRight("version machine", ' ', RIGHT_PADDING);
+        output += "Outputs Bloom's version information in JSON format.\n";
 
-        } catch (const Exception& exception) {
-            Logger::error(exception.getMessage());
-            debugSession.connection.writePacket(ErrorResponsePacket{});
+#ifndef EXCLUDE_INSIGHT
+        output += leftPadding + StringService::padRight("insight", ' ', RIGHT_PADDING);
+        output += "Activates the Insight GUI.\n";
+#endif
+
+        output += "\n\n";
+        output += leftPadding + StringService::padRight("reset", ' ', RIGHT_PADDING);
+        output += "Resets the target and holds it in a stopped state.\n\n";
+
+        if (targetDescriptor.family == Targets::TargetFamily::AVR_8) {
+            output += leftPadding + StringService::padRight("eeprom fill [VALUE]", ' ', RIGHT_PADDING);
+            output += "Fills the target's EEPROM with the specified value. The value should be in hexadecimal\n";
+            output += leftRightPadding + "format: \"monitor eeprom fill AABBCC\". If the specified value is smaller than the EEPROM\n";
+            output += leftRightPadding + "memory segment size, it will be repeated across the entire segment address range. If the\n";
+            output += leftRightPadding + "value size is not a multiple of the segment size, the value will be truncated in the final\n";
+            output += leftRightPadding + "repetition. The value size must not exceed the segment size.\n";
         }
+
+        debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(output)});
     }
 }

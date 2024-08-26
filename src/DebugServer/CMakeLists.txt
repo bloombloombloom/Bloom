@@ -44,7 +44,6 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContStepExecution.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContRangeStep.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/EepromFill.cpp
-
 )
 
 if (NOT EXCLUDE_INSIGHT)
@@ -53,31 +52,4 @@ if (NOT EXCLUDE_INSIGHT)
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ActivateInsight.cpp
     )
-
-    set(
-        ACTIVATE_INSIGHT_HELP_TEXT
-        "\n  insight               Activates the Insight GUI.\n"
-    )
 endif ()
-
-configure_file(
-    "./Gdb/Resources/GdbHelpMonitorInfo.txt.in"
-    "${COMPILED_RESOURCES_BUILD_DIR}/Gdb/GdbHelpMonitorInfo.txt"
-    @ONLY
-)
-
-set_source_files_properties(
-    "${COMPILED_RESOURCES_BUILD_DIR}/Gdb/GdbHelpMonitorInfo.txt"
-    PROPERTIES QT_RESOURCE_ALIAS "/Gdb/Resources/GdbHelpMonitorInfo.txt"
-)
-
-# DebugServer resources
-qt_add_resources(
-    Bloom
-    "DebugServerResources"
-    PREFIX
-        "/compiled/src/DebugServer"
-    FILES
-        # GDB RSP Server
-        "${COMPILED_RESOURCES_BUILD_DIR}/Gdb/GdbHelpMonitorInfo.txt"
-)

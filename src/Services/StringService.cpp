@@ -42,6 +42,11 @@ namespace Services
         return str;
     }
 
+    std::string StringService::padRight(std::string str, char padChar, std::size_t padSize) {
+        str.insert(str.end(), str.size() < padSize ? padSize - str.size() : 0, padChar);
+        return str;
+    }
+
     std::string StringService::toHex(std::uint64_t value) {
         auto stream = std::stringstream{};
         stream << std::hex << std::setfill('0') << std::setw(16) << static_cast<unsigned int>(value);

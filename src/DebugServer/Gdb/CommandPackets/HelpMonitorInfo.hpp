@@ -6,11 +6,6 @@
 
 namespace DebugServer::Gdb::CommandPackets
 {
-    /**
-     * The HelpMonitorInfo class implements a structure for the "monitor help" GDB command.
-     *
-     * We just respond with some help info on the available "monitor" commands.
-     */
     class HelpMonitorInfo: public Monitor
     {
     public:
