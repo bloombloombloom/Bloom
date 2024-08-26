@@ -41,6 +41,7 @@ namespace DebugServer::Gdb::CommandPackets
     std::vector<std::string> Monitor::extractCommandArguments(const std::string& command) {
         auto output = std::vector<std::string>{};
 
+        // TODO: Support escaping
         auto quoteEnabled = false;
         auto argument = std::string{};
 

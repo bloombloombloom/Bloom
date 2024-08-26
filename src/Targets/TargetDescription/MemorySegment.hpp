@@ -1,6 +1,12 @@
 #pragma once
 
+#include <string>
+#include <map>
 #include <optional>
+#include <string_view>
+#include <ranges>
+#include <concepts>
+#include <functional>
 
 #include "src/Targets/TargetMemorySegmentType.hpp"
 #include "src/Targets/TargetMemory.hpp"
