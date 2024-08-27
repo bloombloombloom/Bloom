@@ -31,6 +31,7 @@
 #include "CommandPackets/Detach.hpp"
 #include "CommandPackets/ListRegistersMonitor.hpp"
 #include "CommandPackets/ReadRegistersMonitor.hpp"
+#include "CommandPackets/WriteRegisterMonitor.hpp"
 
 #ifndef EXCLUDE_INSIGHT
 #include "CommandPackets/ActivateInsight.hpp"
@@ -299,6 +300,10 @@ namespace DebugServer::Gdb
 
             if (monitorCommand->command.find("rr") == 0) {
                 return std::make_unique<CommandPackets::ReadRegistersMonitor>(std::move(*(monitorCommand.release())));
+            }
+
+            if (monitorCommand->command.find("wr") == 0) {
+                return std::make_unique<CommandPackets::WriteRegisterMonitor>(std::move(*(monitorCommand.release())));
             }
 
 #ifndef EXCLUDE_INSIGHT
