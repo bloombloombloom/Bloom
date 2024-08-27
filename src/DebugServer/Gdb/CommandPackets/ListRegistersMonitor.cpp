@@ -30,7 +30,7 @@ namespace DebugServer::Gdb::CommandPackets
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
-        Logger::info("Handling ReadRegisterMonitor packet");
+        Logger::info("Handling ListRegistersMonitor packet");
 
         try {
             const auto argCount = this->commandArguments.size();
