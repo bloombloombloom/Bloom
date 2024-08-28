@@ -131,6 +131,16 @@ namespace DebugServer::Gdb::CommandPackets
 
             debugSession.connection.writePacket(ResponsePacket{StringService::toHex("Register written\n")});
 
+        } catch (const std::invalid_argument& exception) {
+            debugSession.connection.writePacket(ResponsePacket{
+                StringService::toHex(
+                    StringService::applyTerminalColor(
+                        "Error: Invalid register value given\n",
+                        StringService::TerminalColor::DARK_RED
+                    )
+                )
+            });
+
         } catch (const Exception& exception) {
             debugSession.connection.writePacket(ResponsePacket{
                 StringService::toHex(
