@@ -99,7 +99,7 @@ namespace DebugServer::Gdb::CommandPackets
             + StringService::applyTerminalColor("ABS_REG_GROUP_KEY", PARAM_COLOR) + "] ["
             + StringService::applyTerminalColor("REG_KEY", PARAM_COLOR) + "] ["
             + StringService::applyTerminalColor("VALUE_HEX", PARAM_COLOR) + "]\n\n";
-        output += leftPadding + "Writes the given value to the given register.\n";
+        output += leftPadding + "Writes the given value to the given register. The value must take the form of a hexadecimal string.\n";
         output += leftPadding + "The register group key can be omitted if the peripheral contains a single register group,\n";
         output += leftPadding + "and the subject register resides directly within that group (not in any subgroup).\n\n";
         output += leftPadding + "Examples:\n\n";
@@ -118,11 +118,18 @@ namespace DebugServer::Gdb::CommandPackets
         if (targetDescriptor.family == Targets::TargetFamily::AVR_8) {
             output += StringService::applyTerminalColor("eeprom fill", CMD_COLOR) + " ["
                 + StringService::applyTerminalColor("VALUE", PARAM_COLOR) + "]\n\n";
-            output += leftPadding + "Fills the target's EEPROM with the specified value. The value should be in hexadecimal\n";
-            output += leftPadding + "format: \"monitor eeprom fill AABBCC\". If the specified value is smaller than the EEPROM\n";
-            output += leftPadding + "memory segment size, it will be repeated across the entire segment address range. If the\n";
-            output += leftPadding + "value size is not a multiple of the segment size, the value will be truncated in the final\n";
-            output += leftPadding + "repetition. The value size must not exceed the segment size.\n";
+            output += leftPadding + "Fills the target's EEPROM with the specified value. The value must take the form of a hexadecimal string.\n";
+            output += leftPadding + "If the specified value is smaller than the EEPROM memory segment size, it will be repeated\n";
+            output += leftPadding + "across the entire segment address range. If the value size is not a multiple of the segment\n";
+            output += leftPadding + "size, the value will be truncated in the final repetition. The value size must not\n";
+            output += leftPadding + "exceed the segment size.\n\n";
+            output += leftPadding + "Examples:\n\n";
+            output += leftPadding + "mon " + StringService::applyTerminalColor("eeprom fill", CMD_COLOR) + " "
+                + StringService::applyTerminalColor("0xFF", PARAM_COLOR) + "\n";
+            output += leftPadding + "  To write 0xFF to the entirety of the target's EEPROM memory segment.\n\n";
+            output += leftPadding + "mon " + StringService::applyTerminalColor("eeprom fill", CMD_COLOR) + " "
+                + StringService::applyTerminalColor("FF00FF00AABBCC", PARAM_COLOR) + "\n";
+            output += leftPadding + "  To repeat the hexadecimal sequence 'FF00FF00AABBCC' across the entirety of the target's EEPROM memory segment.\n\n";
         }
 
         output += "\n";
