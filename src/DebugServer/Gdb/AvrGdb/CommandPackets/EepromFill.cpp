@@ -43,7 +43,14 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             }
 
             const auto eepromSize = this->eepromMemorySegmentDescriptor.size();
-            const auto& fillValue = Services::StringService::dataFromHex(this->commandArguments[2]);
+            const auto& rawFillValue = this->commandArguments[2];
+
+            const auto fillValue = Services::StringService::dataFromHex(
+                rawFillValue.size() >= 3 && rawFillValue[0] == '0'
+                && (rawFillValue[1] == 'X' || rawFillValue[1] == 'x')
+                    ? rawFillValue.substr(2)
+                    : rawFillValue
+            );
             const auto fillValueSize = fillValue.size();
 
             if (fillValueSize > eepromSize) {
