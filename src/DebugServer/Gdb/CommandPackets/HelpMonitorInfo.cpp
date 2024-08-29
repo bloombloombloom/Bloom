@@ -117,7 +117,7 @@ namespace DebugServer::Gdb::CommandPackets
 
         if (targetDescriptor.family == Targets::TargetFamily::AVR_8) {
             output += StringService::applyTerminalColor("eeprom fill", CMD_COLOR) + " ["
-                + StringService::applyTerminalColor("VALUE", PARAM_COLOR) + "]\n\n";
+                + StringService::applyTerminalColor("FILL_VALUE_HEX", PARAM_COLOR) + "]\n\n";
             output += leftPadding + "Fills the target's EEPROM with the specified value. The value must take the form of a hexadecimal string.\n";
             output += leftPadding + "If the specified value is smaller than the EEPROM memory segment size, it will be repeated\n";
             output += leftPadding + "across the entire segment address range. If the value size is not a multiple of the segment\n";
