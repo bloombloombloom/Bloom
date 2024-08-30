@@ -579,14 +579,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     TargetMemoryAddress DebugTranslator::alignMemoryAddress(TargetMemoryAddress address, TargetMemoryAddress alignTo) {
-        return static_cast<TargetMemoryAddress>(
-            std::floor(static_cast<float>(address) / static_cast<float>(alignTo))
-        ) * alignTo;
+        return (address / alignTo) * alignTo;
     }
 
     TargetMemorySize DebugTranslator::alignMemorySize(TargetMemorySize size, TargetMemorySize alignTo) {
         return static_cast<TargetMemorySize>(
-            std::ceil(static_cast<float>(size) / static_cast<float>(alignTo))
+            std::ceil(static_cast<double>(size) / static_cast<double>(alignTo))
         ) * alignTo;
     }
 }

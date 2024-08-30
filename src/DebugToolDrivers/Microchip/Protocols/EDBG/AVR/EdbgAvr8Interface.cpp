@@ -1267,9 +1267,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         if ((address % alignTo) != 0) {
-            return static_cast<TargetMemoryAddress>(std::floor(
-                static_cast<float>(address) / static_cast<float>(alignTo)
-            ) * alignTo);
+            return (address / alignTo) * alignTo;
         }
 
         return address;
@@ -1299,7 +1297,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         if ((bytes % alignTo) != 0) {
             return static_cast<TargetMemorySize>(std::ceil(
-                static_cast<float>(bytes) / static_cast<float>(alignTo)
+                static_cast<double>(bytes) / static_cast<double>(alignTo)
             ) * alignTo);
         }
 
