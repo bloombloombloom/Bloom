@@ -98,7 +98,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
             const auto rawResponse = this->usbInterface.readBulk(WchLinkInterface::USB_COMMAND_ENDPOINT_IN);
 
-            if (rawResponse.size() < 3) {
+            if (rawResponse.size() < 4) {
                 throw Exceptions::DeviceCommunicationFailure{"Invalid response size from device"};
             }
 
