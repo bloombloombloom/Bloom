@@ -1,6 +1,7 @@
 #include "WchLinkInterface.hpp"
 
 #include <cassert>
+#include <thread>
 
 #include "Commands/Control/GetDeviceInfo.hpp"
 #include "Commands/Control/AttachTarget.hpp"
@@ -79,15 +80,29 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
     DebugModule::RegisterValue WchLinkInterface::readDebugModuleRegister(DebugModule::RegisterAddress address) {
         using DebugModule::DmiOperationStatus;
 
-        const auto response = this->sendCommandAndWaitForResponse(
-            Commands::DebugModuleInterfaceOperation{DmiOperation::READ, address}
-        );
+        auto attempt = std::uint8_t{0};
+        while (attempt < WchLinkInterface::DMI_OP_MAX_RETRY) {
+            if (attempt > 0) {
+                std::this_thread::sleep_for(this->dmiOpRetryDelay);
+            }
 
-        if (response.operationStatus != DmiOperationStatus::SUCCESS) {
-            throw Exceptions::DeviceCommunicationFailure{"DMI operation failed"};
+            const auto response = this->sendCommandAndWaitForResponse(
+                Commands::DebugModuleInterfaceOperation{DmiOperation::READ, address}
+            );
+
+            if (response.operationStatus == DmiOperationStatus::SUCCESS) {
+                return response.value;
+            }
+
+            if (response.operationStatus == DmiOperationStatus::FAILED) {
+                throw Exceptions::DeviceCommunicationFailure{"DMI operation failed"};
+            }
+
+            // Busy response...
+            ++attempt;
         }
 
-        return response.value;
+        throw Exceptions::DeviceCommunicationFailure{"DMI operation timed out"};
     }
 
     void WchLinkInterface::writeDebugModuleRegister(
@@ -96,13 +111,29 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
     ) {
         using DebugModule::DmiOperationStatus;
 
-        const auto response = this->sendCommandAndWaitForResponse(
-            Commands::DebugModuleInterfaceOperation{DmiOperation::WRITE, address, value}
-        );
+        auto attempt = std::uint8_t{0};
+        while (attempt < WchLinkInterface::DMI_OP_MAX_RETRY) {
+            if (attempt > 0) {
+                std::this_thread::sleep_for(this->dmiOpRetryDelay);
+            }
 
-        if (response.operationStatus != DmiOperationStatus::SUCCESS) {
-            throw Exceptions::DeviceCommunicationFailure{"DMI operation failed"};
+            const auto response = this->sendCommandAndWaitForResponse(
+                Commands::DebugModuleInterfaceOperation{DmiOperation::WRITE, address, value}
+            );
+
+            if (response.operationStatus == DmiOperationStatus::SUCCESS) {
+                return;
+            }
+
+            if (response.operationStatus == DmiOperationStatus::FAILED) {
+                throw Exceptions::DeviceCommunicationFailure{"DMI operation failed"};
+            }
+
+            // Busy response...
+            ++attempt;
         }
+
+        throw Exceptions::DeviceCommunicationFailure{"DMI operation timed out"};
     }
 
     void WchLinkInterface::writeFlashMemory(

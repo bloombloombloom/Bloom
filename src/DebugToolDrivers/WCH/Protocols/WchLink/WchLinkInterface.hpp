@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <chrono>
 #include <optional>
 #include <vector>
 #include <utility>
@@ -61,11 +62,14 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         static constexpr std::uint8_t USB_COMMAND_ENDPOINT_OUT = 0x01;
         static constexpr std::uint8_t USB_DATA_ENDPOINT_IN = 0x82;
         static constexpr std::uint8_t USB_DATA_ENDPOINT_OUT = 0x02;
+        static constexpr std::uint8_t DMI_OP_MAX_RETRY = 10;
 
         Usb::UsbInterface& usbInterface;
 
         std::uint16_t commandEndpointMaxPacketSize = 0;
         std::uint16_t dataEndpointMaxPacketSize = 0;
+        // TODO: Move this into a config param
+        std::chrono::microseconds dmiOpRetryDelay = std::chrono::microseconds{10};
 
         /**
          * The 'target activation' command returns a payload of 5 bytes.
