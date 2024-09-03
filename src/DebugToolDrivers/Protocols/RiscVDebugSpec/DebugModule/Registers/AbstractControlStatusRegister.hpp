@@ -8,28 +8,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 {
     struct AbstractControlStatusRegister
     {
-        enum CommandError: std::uint8_t
-        {
-            NONE = 0x00,
-            BUSY = 0x01,
-            NOT_SUPPORTED = 0x02,
-            EXCEPTION = 0x03,
-            HALT_RESUME = 0x04,
-            BUS = 0x05,
-            OTHER = 0x07,
-        };
-
-        std::uint8_t dataCount:4 = 0;
-        CommandError commandError:3 = CommandError::NONE;
-        bool relaxedPrivilege:1 = false;
-        bool busy:1 = false;
-        std::uint8_t programBufferSize:5 = 0;
-
-        AbstractControlStatusRegister() = default;
+        std::uint8_t dataCount:4;
+        AbstractCommandError commandError:3;
+        bool relaxedPrivilege:1;
+        bool busy:1;
+        std::uint8_t programBufferSize:5;
 
         constexpr explicit AbstractControlStatusRegister(RegisterValue registerValue)
             : dataCount(static_cast<std::uint8_t>(registerValue & 0x0F))
-            , commandError(static_cast<CommandError>((registerValue >> 8) & 0x07))
+            , commandError(static_cast<AbstractCommandError>((registerValue >> 8) & 0x07))
             , relaxedPrivilege(static_cast<bool>(registerValue & (0x01 << 11)))
             , busy(static_cast<bool>(registerValue & (0x01 << 12)))
             , programBufferSize(static_cast<std::uint8_t>((registerValue >> 24) & 0x1F))
@@ -47,7 +34,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 
         constexpr void clearCommandError() {
             // Setting all of the bits will clear the field
-            this->commandError = CommandError::OTHER;
+            this->commandError = AbstractCommandError::OTHER;
         }
     };
 }

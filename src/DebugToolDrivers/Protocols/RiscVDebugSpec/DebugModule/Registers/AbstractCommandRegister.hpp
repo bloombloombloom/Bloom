@@ -16,10 +16,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
             MEMORY_ACCESS = 0x02,
         };
 
-        std::uint32_t control = 0;
-        CommandType commandType = CommandType::REGISTER_ACCESS;
-
-        AbstractCommandRegister() = default;
+        std::uint32_t control;
+        CommandType commandType;
 
         constexpr AbstractCommandRegister(std::uint32_t control, CommandType commandType)
             : control(control)

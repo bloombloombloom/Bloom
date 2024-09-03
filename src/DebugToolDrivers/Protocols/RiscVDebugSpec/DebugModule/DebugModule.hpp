@@ -21,4 +21,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule
         FAILED = 0x02,
         BUSY = 0x03,
     };
+
+    enum AbstractCommandError: std::uint8_t
+    {
+        NONE = 0x00,
+        BUSY = 0x01,
+        NOT_SUPPORTED = 0x02,
+        EXCEPTION = 0x03,
+        HALT_RESUME = 0x04,
+        BUS = 0x05,
+        OTHER = 0x07,
+    };
 }

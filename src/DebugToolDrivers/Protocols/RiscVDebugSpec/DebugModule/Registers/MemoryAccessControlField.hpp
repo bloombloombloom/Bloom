@@ -17,12 +17,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
             SIZE_128 = 0x04,
         };
 
-        bool write:1 = false;
-        bool postIncrement:1 = false;
-        MemorySize size:3 = MemorySize::SIZE_32;
-        bool virtualAddress:1 = false;
-
-        constexpr MemoryAccessControlField() = default;
+        bool write:1;
+        bool postIncrement:1;
+        MemorySize size:3;
+        bool virtualAddress:1;
 
         constexpr MemoryAccessControlField(
             bool write,

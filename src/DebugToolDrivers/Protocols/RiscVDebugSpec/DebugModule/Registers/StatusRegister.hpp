@@ -8,26 +8,26 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 {
     struct StatusRegister
     {
-        std::uint8_t version:4 = 0;
-        bool validConfigStructurePointer:1 = false;
-        bool supportsResetHalt:1 = false;
-        bool authBusy:1 = false;
-        bool authenticated:1 = false;
-        bool anyHalted:1 = false;
-        bool allHalted:1 = false;
-        bool anyRunning:1 = false;
-        bool allRunning:1 = false;
-        bool anyUnavailable:1 = false;
-        bool allUnavailable:1 = false;
-        bool anyNonExistent:1 = false;
-        bool allNonExistent:1 = false;
-        bool anyResumeAcknowledge:1 = false;
-        bool allResumeAcknowledge:1 = false;
-        bool anyHaveReset:1 = false;
-        bool allHaveReset:1 = false;
-        bool implicitBreak:1 = false;
-        bool stickyUnavailableBits:1 = false;
-        bool ndmResetPending:1 = false;
+        std::uint8_t version:4;
+        bool validConfigStructurePointer:1;
+        bool supportsResetHalt:1;
+        bool authBusy:1;
+        bool authenticated:1;
+        bool anyHalted:1;
+        bool allHalted:1;
+        bool anyRunning:1;
+        bool allRunning:1;
+        bool anyUnavailable:1;
+        bool allUnavailable:1;
+        bool anyNonExistent:1;
+        bool allNonExistent:1;
+        bool anyResumeAcknowledge:1;
+        bool allResumeAcknowledge:1;
+        bool anyHaveReset:1;
+        bool allHaveReset:1;
+        bool implicitBreak:1;
+        bool stickyUnavailableBits:1;
+        bool ndmResetPending:1;
 
         constexpr explicit StatusRegister(RegisterValue registerValue)
             : version(static_cast<std::uint8_t>(registerValue & 0x0F))

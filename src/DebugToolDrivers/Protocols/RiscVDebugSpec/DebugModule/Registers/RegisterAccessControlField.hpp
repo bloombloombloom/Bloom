@@ -16,11 +16,11 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
         };
 
         RegisterNumber registerNumber;
-        bool write:1 = false;
-        bool transfer:1 = false;
-        bool postExecute:1 = false;
-        bool postIncrement:1 = false;
-        RegisterSize size:3 = RegisterSize::SIZE_32;
+        bool write:1;
+        bool transfer:1;
+        bool postExecute:1;
+        bool postIncrement:1;
+        RegisterSize size:3;
 
         RegisterAccessControlField(
             RegisterNumber registerNumber,
