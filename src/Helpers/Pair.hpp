@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 template<typename FirstType, typename SecondType>
 struct Pair
 {
