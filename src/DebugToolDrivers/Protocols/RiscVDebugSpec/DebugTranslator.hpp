@@ -20,6 +20,9 @@
 #include "DebugModule/Registers/AbstractControlStatusRegister.hpp"
 #include "DebugModule/Registers/AbstractCommandRegister.hpp"
 
+
+#include "src/Helpers/Expected.hpp"
+
 namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 {
     /**
@@ -92,12 +95,24 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         void enableDebugModule();
         void disableDebugModule();
 
+        Expected<RegisterValue, DebugModule::AbstractCommandError> tryReadCpuRegister(RegisterNumber number);
+        Expected<RegisterValue, DebugModule::AbstractCommandError> tryReadCpuRegister(
+            Registers::CpuRegisterNumber number
+        );
         RegisterValue readCpuRegister(RegisterNumber number);
+        RegisterValue readCpuRegister(Registers::CpuRegisterNumber number);
+
+        DebugModule::AbstractCommandError tryWriteCpuRegister(RegisterNumber number, RegisterValue value);
+        DebugModule::AbstractCommandError tryWriteCpuRegister(Registers::CpuRegisterNumber number, RegisterValue value);
         void writeCpuRegister(RegisterNumber number, RegisterValue value);
+        void writeCpuRegister(Registers::CpuRegisterNumber number, RegisterValue value);
 
         void writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister& controlRegister);
         void writeDebugControlStatusRegister(const Registers::DebugControlStatusRegister& controlRegister);
 
+        DebugModule::AbstractCommandError tryExecuteAbstractCommand(
+            const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister
+        );
         void executeAbstractCommand(const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister);
 
         Targets::TargetMemoryAddress alignMemoryAddress(

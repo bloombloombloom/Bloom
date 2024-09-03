@@ -505,10 +505,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
     }
 
-    RegisterValue DebugTranslator::readCpuRegister(RegisterNumber number) {
+    Expected<RegisterValue, DebugModule::AbstractCommandError> DebugTranslator::tryReadCpuRegister(
+        RegisterNumber number
+    ) {
         using DebugModule::Registers::RegisterAccessControlField;
 
-        this->executeAbstractCommand(AbstractCommandRegister{
+        const auto commandError = this->tryExecuteAbstractCommand(AbstractCommandRegister{
             RegisterAccessControlField{
                 number,
                 false,
@@ -519,15 +521,45 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             }.value(),
             AbstractCommandRegister::CommandType::REGISTER_ACCESS
         });
+
+        if (commandError != DebugModule::AbstractCommandError::NONE) {
+            return commandError;
+        }
 
         return this->dtmInterface.readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
     }
 
-    void DebugTranslator::writeCpuRegister(RegisterNumber number, RegisterValue value) {
+    Expected<RegisterValue, DebugModule::AbstractCommandError> DebugTranslator::tryReadCpuRegister(
+        Registers::CpuRegisterNumber number
+    ) {
+        return this->tryReadCpuRegister(static_cast<RegisterNumber>(number));
+    }
+
+    RegisterValue DebugTranslator::readCpuRegister(RegisterNumber number) {
+        const auto result = this->tryReadCpuRegister(number);
+
+        if (!result.hasValue()) {
+            throw Exceptions::Exception{
+                "Failed to read CPU register (number: 0x" + Services::StringService::toHex(number)
+                    + ") - abstract command error: 0x" + Services::StringService::toHex(result.error())
+            };
+        }
+
+        return result.value();
+    }
+
+    RegisterValue DebugTranslator::readCpuRegister(Registers::CpuRegisterNumber number) {
+        return this->readCpuRegister(static_cast<RegisterNumber>(number));
+    }
+
+    DebugModule::AbstractCommandError DebugTranslator::tryWriteCpuRegister(
+        RegisterNumber number,
+        RegisterValue value
+    ) {
         using DebugModule::Registers::RegisterAccessControlField;
 
         this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0, value);
-        this->executeAbstractCommand(AbstractCommandRegister{
+        return this->tryExecuteAbstractCommand(AbstractCommandRegister{
             RegisterAccessControlField{
                 number,
                 true,
@@ -538,6 +570,27 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             }.value(),
             AbstractCommandRegister::CommandType::REGISTER_ACCESS
         });
+    }
+
+    DebugModule::AbstractCommandError DebugTranslator::tryWriteCpuRegister(
+        Registers::CpuRegisterNumber number,
+        RegisterValue value
+    ) {
+        return this->tryWriteCpuRegister(static_cast<RegisterNumber>(number), value);
+    }
+
+    void DebugTranslator::writeCpuRegister(RegisterNumber number, RegisterValue value) {
+        const auto commandError = this->tryWriteCpuRegister(number, value);
+        if (commandError != DebugModule::AbstractCommandError::NONE) {
+            throw Exceptions::Exception{
+                "Failed to write to CPU register (number: 0x" + Services::StringService::toHex(number)
+                    + ") - abstract command error: 0x" + Services::StringService::toHex(commandError)
+            };
+        }
+    }
+
+    void DebugTranslator::writeCpuRegister(Registers::CpuRegisterNumber number, RegisterValue value) {
+        this->writeCpuRegister(static_cast<RegisterNumber>(number), value);
     }
 
     void DebugTranslator::writeDebugModuleControlRegister(const ControlRegister& controlRegister) {
@@ -551,7 +604,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         );
     }
 
-    void DebugTranslator::executeAbstractCommand(
+    DebugModule::AbstractCommandError DebugTranslator::tryExecuteAbstractCommand(
         const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister
     ) {
         this->dtmInterface.writeDebugModuleRegister(
@@ -560,11 +613,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         );
 
         auto abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
-        if (abstractStatusRegister.commandError != AbstractControlStatusRegister::CommandError::NONE) {
-            throw Exceptions::Exception{
-                "Failed to execute abstract command - error: "
-                    + Services::StringService::toHex(abstractStatusRegister.commandError)
-            };
+        if (abstractStatusRegister.commandError != DebugModule::AbstractCommandError::NONE) {
+            return abstractStatusRegister.commandError;
         }
 
         constexpr auto maxAttempts = 10;
@@ -575,6 +625,19 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         if (abstractStatusRegister.busy) {
             throw Exceptions::Exception{"Abstract command took too long to execute"};
+        }
+
+        return abstractStatusRegister.commandError;
+    }
+
+    void DebugTranslator::executeAbstractCommand(
+        const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister
+    ) {
+        const auto commandError = this->tryExecuteAbstractCommand(abstractCommandRegister);
+        if (commandError != DebugModule::AbstractCommandError::NONE) {
+            throw Exceptions::Exception{
+                "Failed to execute abstract command - error: 0x" + Services::StringService::toHex(commandError)
+            };
         }
     }
 
