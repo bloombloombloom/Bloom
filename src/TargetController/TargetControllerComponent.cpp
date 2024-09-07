@@ -513,11 +513,12 @@ namespace TargetController
         }
 
         this->target->setDebugTool(this->debugTool.get());
-        this->targetDescriptor = std::make_unique<const TargetDescriptor>(this->target->targetDescriptor());
 
         Logger::info("Activating target");
         this->target->activate();
         Logger::info("Target activated");
+
+        this->targetDescriptor = std::make_unique<const TargetDescriptor>(this->target->targetDescriptor());
         Logger::info("Target name: " + this->targetDescriptor->name);
 
         this->target->postActivate();

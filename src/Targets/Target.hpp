@@ -85,7 +85,10 @@ namespace Targets
         virtual void postActivate() = 0;
 
         /**
-         * Should generate a TargetDescriptor for the current target.
+         * Should generate a TargetDescriptor for the target.
+         *
+         * This function is called shortly after target activation, allowing for information that was obtained via
+         * probing/discovery to be used in the target descriptor.
          *
          * @return
          */
