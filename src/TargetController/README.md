@@ -29,17 +29,18 @@ For example, to read memory from the connected target, we would send the
 [`TargetController::Commands::ReadTargetMemory`](./Commands/ReadTargetMemory.hpp) command:
 
 ```c++
-auto tcCommandManager = TargetController::CommandManager();
+auto tcCommandManager = TargetController::CommandManager{};
 
 auto readMemoryCommand = std::make_unique<TargetController::Commands::ReadTargetMemory>(
-    someMemoryType, // Flash, RAM, EEPROM, etc
+    addressSpaceDescriptor,
+    memorySegmentDecriptor,
     someStartAddress,
-    someNumberOfBytes
+    bytesToRead
 );
 
 const auto readMemoryResponse = tcCommandManager.sendCommandAndWaitForResponse(
     std::move(readMemoryCommand),
-    std::chrono::milliseconds(1000) // Response timeout
+    std::chrono::milliseconds{1000} // Response timeout
 );
 
 const auto& data = readMemoryResponse->data;
@@ -53,19 +54,6 @@ until a timeout has been reached. Because it is a template function, it is able 
 type at compile-time (see the `SuccessResponseType` alias in some command classes). If the TargetController responds
 with an error, or the timeout is reached, `CommandManager::sendCommandAndWaitForResponse()` will throw an exception.
 
-#### Atomic operations
-
-In some instances, we need the TargetController to service a series of commands without any interruptions (servicing of
-other commands).
-
-The TargetController allows for operations to be performed within "atomic sessions". Simply put, when the
-TargetController starts a new atomic session, any commands that are part of the session will be placed into a dedicated
-queue. When an atomic session is active, the TargetController will only process commands in the dedicated queue.
-All other commands will be processed once the atomic session has ended.
-
-The `TargetControllerService` provides an RAII wrapper for atomic sessions. See
-[Atomic sessions with the TargetControllerService](#atomic-sessions-with-the-TargetControllerService) for more.
-
 #### The TargetControllerService class
 
 The `TargetControllerService` class encapsulates the TargetController's command-response mechanism and provides a
@@ -73,12 +61,13 @@ simplified means for other components to interact with the connected hardware. I
 memory from the target:
 
 ```c++
-const auto tcService = Services::TargetControllerService();
+const auto tcService = Services::TargetControllerService{};
 
 const auto data = tcService.readMemory(
-    someMemoryType, // Flash, RAM, EEPROM, etc
+    addressSpaceDescriptor,
+    memorySegmentDecriptor,
     someStartAddress,
-    someNumberOfBytes
+    bytesToRead
 );
 ```
 
@@ -89,14 +78,26 @@ All components within Bloom should use the `TargetControllerService` class to in
 **should not** directly issue commands via the `TargetController::CommandManager`, unless there is a very good
 reason to do so.
 
+#### Atomic operations
+
+In some instances, we need the TargetController to service a series of commands without any interruptions (servicing of
+other commands).
+
+The TargetController allows for operations to be performed within "atomic sessions". Simply put, when the
+TargetController starts a new atomic session, any commands that are part of the session will be placed into a dedicated
+queue. When an atomic session is active, the TargetController will only process commands in the dedicated queue.
+All other commands will be processed once the atomic session has ended.
+
 ##### Atomic sessions with the TargetControllerService
+
+The `TargetControllerService` provides an RAII wrapper for atomic sessions.
 
 The `TargetControllerService::makeAtomicSession()` member function returns an `TargetControllerService::AtomicSession`
 RAII object, which starts an atomic session with the TargetController, at construction, and ends the session at
 destruction. This allows us to perform operations within an atomic session, in an exception-safe manner:
 
 ```c++
-auto tcService = Services::TargetControllerService();
+auto tcService = Services::TargetControllerService{};
 
 {
     const auto atomicSession = tcService.makeAtomicSession();
@@ -127,7 +128,7 @@ auto tcService = Services::TargetControllerService();
      */
 
     // Don't ever do this.
-    auto anotherTcService = Services::TargetControllerService();
+    auto anotherTcService = Services::TargetControllerService{};
 
     // These operations will **NOT** be part of the atomic session, and they will cause a deadlock and timeout.
     anotherTcService.writeMemory(...);
@@ -143,6 +144,99 @@ auto tcService = Services::TargetControllerService();
 
 // At this point, the atomic session will have ended. The TC will now process any other commands in the queue.
 tcService.readMemory(...); // Will not be part of the atomic session
+```
+
+### Target state observation
+
+The TargetController provides access to the target's current state, via the `GetTargetState` command, which will return
+an instance of the [`TargetState`](../Targets/TargetState.hpp) struct. This struct holds the execution state
+(`TargetExecutionState`), the mode (programming/debugging, `TargetMode`), and the program counter.
+
+The `TargetControllerService::getTargetState()` member function should be used to obtain the target's current state:
+
+```c++
+const auto targetState = tcService.getTargetState();
+
+if (targetState.executionState == TargetExecutionState::STOPPED) {
+    // ...
+}
+```
+
+#### Real-time, on-demand, thread-safe access to the target's current state - the master `TargetState` object
+
+All members of the `TargetState` struct are accessible via atomic operations (that is, all members are of `std::atomic<...>`
+type). This means that we can access a single instance of the `TargetState` struct across multiple threads, in a
+thread-safe manner.
+
+The "master" `TargetState` object is simply an instance of the `TargetState` struct that is owned and managed by the
+TargetController (`TargetControllerComponent::targetState`). It holds the current state of the target, at all times.
+
+When servicing the `GetTargetState` command, the TargetController returns a const reference to the master `TargetState`
+object. This means that, if the caller of `TargetControllerService::getTargetState()` needs real-time, on-demand access
+to the target's current state, it can gain this by simply accepting a const reference of the master `TargetState`
+object:
+
+```c++
+const auto& targetState = tcService.getTargetState();
+
+/*
+ * In the previous example, we used `const auto targetState = tcService.getTargetState();`, which made a copy of the
+ * master TargetState object. That copy would not be managed by the TargetController, and would only hold the state of
+ * the target at the point when `tcService.getTargetState()` returned a value.
+ *
+ * In this example, `targetState` is a const reference to the master TargetState object - it will always hold the
+ * target's current state.
+ *
+ * We can now observe the target's current state, without having to make any more calls to `TargetControllerService::getTargetState()`.
+ */
+
+if (targetState.executionState == TargetExecutionState::STOPPED) {
+    tcService.resumeTargetExecution();
+
+    /*
+     * At this point, targetState.executionState == TargetExecutionState::RUNNING, because the master TargetState
+     * object, which `targetState` references, will have been updated by the TargetController (as a result of the call
+     * to `tcService.resumeTargetExecution()` above).
+     */
+}
+```
+
+The master `TargetState` object can be accessed freely by any other component within Bloom, just as long as the
+component doesn't outlive the TargetController (at the time of writing this, no component outlives the TargetController).
+
+Many Insight GUI widgets make use of the master `TargetState` object, as it allows for immediate access to the target's
+current state, without having to bother the TargetController via an InsightWorker task.
+
+#### Target state changed events
+
+When the target state changes, the TargetController will emit a `TargetStateChanged` event. The event object holds
+two `TargetState` objects: `TargetStateChanged::newState` and `TargetStateChanged::previousState`. Listeners can use
+these to determine what changed:
+
+```c++
+void onTargetStateChanged(const Events::TargetStateChanged& event) {
+    using Targets::TargetExecutionState;
+
+    if (event.previousState.executionState == event.newState.executionState) {
+        // Target execution state has not changed. Probably a mode change
+    }
+
+    if (
+        event.previousState.executionState == TargetExecutionState::STOPPED
+        && event.newState.executionState == TargetExecutionState::RUNNING
+    ) {
+        // Target has just resumed execution...
+    }
+
+    if (
+        event.previousState.executionState == TargetExecutionState::STEPPING
+        && event.newState.executionState == TargetExecutionState::STOPPED
+    ) {
+        // Target has just finished stepping...
+    }
+
+    // ...
+}
 ```
 
 ### Programming mode
