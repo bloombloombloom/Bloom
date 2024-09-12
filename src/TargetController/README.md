@@ -5,6 +5,13 @@ user-space device drivers takes place here. All interactions with the connected 
 TargetController. It runs on a dedicated thread (see `Applciation::startTargetController()`). The source code for the
 TargetController component can be found in src/TargetController. The entry point is `TargetControllerComponent::run()`.
 
+### Lifetime
+
+The TargetController is the second (after the SignalHandler) component to be instantiated at startup, and the second
+to last to be destroyed when Bloom shuts down.
+
+The TargetController will outlive both the DebugServer and the Insight GUI components.
+
 ### Interfacing with the TargetController - The command-response mechanism
 
 Other components within Bloom can interface with the TargetController via the provided command-response mechanism.
@@ -146,6 +153,88 @@ auto tcService = Services::TargetControllerService{};
 tcService.readMemory(...); // Will not be part of the atomic session
 ```
 
+### Obtaining information on the connected target - target descriptor objects
+
+Most components in Bloom require access to some target information. This information could be related to address spaces,
+peripherals, registers, or any other target entity.
+
+In Bloom, target information is held in descriptor objects. These objects are instances of descriptor structs intended
+to hold information on a particular target entity. For example, information on a particular address space can be found
+in the relevant `TargetAddressSpaceDescriptor` object.
+
+All descriptor structs can be found in [src/Targets/](../Targets).
+
+The `TargetDescriptor` struct is the top-level descriptor struct. Instances of all other descriptor structs can be
+accessed via the `TargetDescriptor` struct.
+
+The `GetTargetDescriptor` command returns a const reference to the top-level target descriptor object.
+The `TargetControllerService::getTargetDescriptor()` member function can be used to obtain the top-level target
+descriptor:
+
+```c++
+const auto& targetDescriptor = tcService.getTargetDescriptor();
+
+// Obtain info on the target's "data" address space
+const auto& dataAsDescriptor = targetDescriptor.getAddressSpaceDescriptor("data");
+/**
+ * - dataAsDescriptor.addressRange.startAddress <- the start address of the address space
+ * - dataAsDescriptor.size() <- the size of the address space, in bytes
+ * - dataAsDescriptor.endianness <- the endianness of the address space
+ *
+ * See the TargetAddressSpaceDescriptor struct for more...
+ */
+
+// Obtain info on the target's "ADC0" peripheral
+const auto& adcPerDescriptor = targetDescriptor.getPeripheralDescriptor("adc0");
+/**
+ * - adcPerDescriptor.name <- the name of the peripheral
+ * - adcPerDescriptor.getRegisterGroupDescriptor(...) <- Access a register group within the peripheral
+ *
+ * See the TargetPeripheralDescriptor struct for more...
+ */
+```
+
+The copying of descriptor objects is discouraged for two reasons:
+
+- Descriptor objects hold a lot of information, making them expensive to copy
+- Descriptor objects can be passed back to the TargetController, in the form of const references, when performing an
+  operation on a particular target entity. If the copied object does not outlive the TargetController command, the
+  TargetController may attempt to access a dangling reference, resulting in undefined behaviour. For more on this, see
+  the [Passing descriptor objects to the TargetController](#passing-descriptor-objects-to-the-targetController) section
+  below
+
+The copy constructors and the assignment operators are deleted on all descriptor structs.
+
+#### Passing descriptor objects to the TargetController
+
+For some operations, the TargetController may require the referencing of a particular target entity. For example, to
+read memory from the target, the TargetController will need to know which address space and memory segment to read
+from. This is why the `ReadTargetMemory` command requires a `const TargetAddressSpaceDescriptor&` and
+`const TargetMemorySegmentDescriptor&`. There are many commands that require const references to target descriptor
+objects.
+
+It is the invoker's responsibility to ensure that all const references to descriptor objects, passed to the
+TargetController, are still valid at the time the TargetController services the command. If the TargetController
+encounters a dangling reference, undefined behaviour will occur. See the "master target descriptor" for more.
+
+#### Thread-safe access of the target descriptor - the master target descriptor object
+
+The "master" target descriptor object is simply an instance of the top-level `TargetDescriptor` struct, owned and
+managed by the TargetController. The TargetController will return a const reference of the master target descriptor
+when servicing the `GetTargetDescriptor` command.
+
+The TargetController will never modify the master target descriptor after creation. There are no mutable members in
+any of the target descriptor structs. This means we can access a const reference of the descriptor, from any thread
+within Bloom, assuming the thread does not outlive the TargetController.
+
+Because the master target descriptor is owned by the TargetController, it, along with any of its contained objects,
+can be passed safely to the TargetController, in any TargetController command.
+
+Both the debug server and Insight GUI components hold a const reference of the master target descriptor, allowing them
+to access target information freely.
+
+Do **not** modify the master target descriptor. Do **not** perform a `const_cast` on the const reference. Ever.
+
 ### Target state observation
 
 The TargetController provides access to the target's current state, via the `GetTargetState` command, which will return
@@ -162,18 +251,18 @@ if (targetState.executionState == TargetExecutionState::STOPPED) {
 }
 ```
 
-#### Real-time, on-demand, thread-safe access to the target's current state - the master `TargetState` object
+#### Real-time, on-demand, thread-safe access to the target's current state - the master target state object
 
 All members of the `TargetState` struct are accessible via atomic operations (that is, all members are of `std::atomic<...>`
 type). This means that we can access a single instance of the `TargetState` struct across multiple threads, in a
 thread-safe manner.
 
-The "master" `TargetState` object is simply an instance of the `TargetState` struct that is owned and managed by the
+The "master" target state object is simply an instance of the `TargetState` struct that is owned and managed by the
 TargetController (`TargetControllerComponent::targetState`). It holds the current state of the target, at all times.
 
-When servicing the `GetTargetState` command, the TargetController returns a const reference to the master `TargetState`
+When servicing the `GetTargetState` command, the TargetController returns a const reference to the master target state
 object. This means that, if the caller of `TargetControllerService::getTargetState()` needs real-time, on-demand access
-to the target's current state, it can gain this by simply accepting a const reference of the master `TargetState`
+to the target's current state, it can gain this by simply accepting a const reference of the master target state
 object:
 
 ```c++
@@ -194,17 +283,20 @@ if (targetState.executionState == TargetExecutionState::STOPPED) {
     tcService.resumeTargetExecution();
 
     /*
-     * At this point, targetState.executionState == TargetExecutionState::RUNNING, because the master TargetState
+     * At this point, targetState.executionState == TargetExecutionState::RUNNING, because the master target state
      * object, which `targetState` references, will have been updated by the TargetController (as a result of the call
      * to `tcService.resumeTargetExecution()` above).
+     *
+     * This, of course, assumes that the target is still running by the time we get to this assertion...
      */
+    assert(targetState.executionState == TargetExecutionState::RUNNING);
 }
 ```
 
-The master `TargetState` object can be accessed freely by any other component within Bloom, just as long as the
-component doesn't outlive the TargetController (at the time of writing this, no component outlives the TargetController).
+The master target state object can be accessed freely by any other component within Bloom, just as long as the
+component doesn't outlive the TargetController.
 
-Many Insight GUI widgets make use of the master `TargetState` object, as it allows for immediate access to the target's
+Many Insight GUI widgets make use of the master target state object, as it allows for immediate access to the target's
 current state, without having to bother the TargetController via an InsightWorker task.
 
 #### Target state changed events
