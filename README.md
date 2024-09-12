@@ -17,42 +17,6 @@ Bloom is released under the LGPLv3 license. See LICENSE.md
 
 ---
 
-### Bloom Architecture
-
-Bloom is a multithreaded event-driven program written in C++. It consists of four components:
-
-- TargetController
-- DebugServer
-- Insight
-- SignalHandler
-
-##### TargetController
-The TargetController possesses full control of the connected debug tool and target. Execution of user-space
-device drivers takes place here. All interaction with the connected hardware goes through the TargetController.
-It exposes an interface to the connected hardware via a command-response mechanism. The TargetController runs on a
-dedicated thread. See the [TargetController documentation](./src/TargetController/README.md) and source code in
-src/TargetController/ for more.
-
-##### DebugServer
-The DebugServer exposes an interface to the connected target, for third-party programs such as GDB and IDEs (GDB
-front-ends). Currently, Bloom only supports one server - the AVR GDB RSP server. With this server, any AVR compatible
-version of GDB (or any IDE with GDB RSP support) can interface with Bloom and thus the connected AVR target. The
-DebugServer runs on a dedicated thread. See the
-[DebugServer documentation](./src/DebugServer/README.md) and source code in src/DebugServer/ for more.
-
-##### Insight
-Insight is a graphical user interface that provides insight into the connected target. It presents the target's
-memories, GPIO pin states & registers, along with the ability to manipulate them. Insight runs on Bloom's main thread
-and employs several worker threads for background tasks. Unlike other components within Bloom, Insight relies heavily
-on the Qt framework for its GUI capabilities and other useful utilities. See source code in src/Insight/ for more.
-
-##### SignalHandler
-The SignalHandler is responsible for handling any UNIX signals issued to Bloom. It runs on a dedicated thread. All
-other threads within Bloom do not accept any UNIX signals.
-See source code in src/SignalHandler/ for more.
-
----
-
 ### Building Bloom from source
 
 > Bloom is typically distributed via binary packages, which can be downloaded via the
