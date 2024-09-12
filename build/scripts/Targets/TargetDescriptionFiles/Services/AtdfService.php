@@ -7,6 +7,7 @@ use DOMElement;
 use DOMNodeList;
 use RuntimeException;
 use Targets\TargetDescriptionFiles\AVR8\Services\ValidationService;
+use Targets\TargetDescriptionFiles\Pad;
 use Targets\TargetDescriptionFiles\Services\StringService;
 use Targets\TargetDescriptionFiles\Avr8\Avr8TargetDescriptionFile;
 use Targets\TargetDescriptionFiles\Avr8\AvrFamily;
@@ -161,13 +162,31 @@ class AtdfService
             $tdf->modules[] = $this->moduleFromElement($element);
         }
 
+        $padsByKey = [];
         $pinoutElements = $this->getElementsFromXPath(
             'pinouts/pinout',
             $document
         );
         foreach ($pinoutElements as $element) {
             $tdf->pinouts[] = $this->pinoutFromElement($element);
+
+            foreach ($element->childNodes as $childNode) {
+                if (!$childNode instanceof DOMElement) {
+                    continue;
+                }
+
+                if ($childNode->nodeName === 'pin') {
+                    $pad = $this->padFromPinElement($childNode);
+                    if ($pad->key === null || $pad->key === 'nc') {
+                        continue;
+                    }
+
+                    $padsByKey[$pad->key] = $pad;
+                }
+            }
         }
+
+        $tdf->pads = array_values($padsByKey);
 
         $variantElements = $this->getElementsFromXPath(
             'variants/variant',
@@ -697,7 +716,7 @@ class AtdfService
         $attributes = $this->getNodeAttributesByName($element);
 
         return new Signal(
-            isset($attributes['pad']) ? strtolower($attributes['pad']) : null,
+            isset($attributes['pad']) ? strtolower(trim($attributes['pad'])) : null,
             $this->stringService->tryStringToInt($attributes['index'] ?? null),
             $attributes['function'] ?? null,
             $attributes['group'] ?? null,
@@ -922,6 +941,16 @@ class AtdfService
         );
     }
 
+    private function padFromPinElement(DOMElement $element): ?Pad
+    {
+        $attributes = $this->getNodeAttributesByName($element);
+
+        return new Pad(
+            isset($attributes['pad']) ? strtolower(trim($attributes['pad'])) : null,
+            trim($attributes['pad'] ?? '')
+        );
+    }
+
     private function pinoutFromElement(DOMElement $element): Pinout
     {
         $attributes = $this->getNodeAttributesByName($element);
@@ -978,7 +1007,7 @@ class AtdfService
 
         return new Pin(
             $attributes['position'] ?? null,
-            $attributes['pad'] ?? null
+            ($pad = strtolower(trim($attributes['pad'] ?? ''))) !== 'nc' ? $pad : null
         );
     }
 
@@ -987,9 +1016,13 @@ class AtdfService
         $attributes = $this->getNodeAttributesByName($element);
 
         return new Variant(
+            str_replace(
+                '-',
+                '_',
+                strtolower($attributes['ordercode'] ?? $attributes['name'] ?? '')
+            ),
             $attributes['ordercode'] ?? $attributes['name'] ?? null,
-            isset($attributes['pinout']) ? strtolower($attributes['pinout']) : null,
-            $attributes['package'] ?? null
+            isset($attributes['pinout']) ? strtolower($attributes['pinout']) : null
         );
     }
 }

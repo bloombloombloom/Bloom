@@ -879,8 +879,13 @@ class ValidationService
                 . $pin->position . '")';
         }
 
-        if (!empty($pin->padKey) && $tdf->getPad($pin->padKey) === null) {
-            $failures[] = 'Failed to resolve pad key "' . $pin->padKey . '"';
+        if ($pin->padKey !== null) {
+            if (empty(trim($pin->padKey))) {
+                $failures[] = 'Missing pad key';
+
+            } else if ($tdf->getPad($pin->padKey) === null) {
+                $failures[] = 'Failed to resolve pad key "' . $pin->padKey . '"';
+            }
         }
 
         return array_map(
