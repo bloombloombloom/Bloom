@@ -860,10 +860,10 @@ namespace Targets::TargetDescription
         const auto index = TargetDescriptionFile::tryGetAttribute(xmlElement, "index");
 
         return {
+            TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "pad-key"),
             index.has_value() ? std::optional{StringService::toUint64(*index)} : std::nullopt,
             TargetDescriptionFile::tryGetAttribute(xmlElement, "function"),
-            TargetDescriptionFile::tryGetAttribute(xmlElement, "group"),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "field")
         };
     }

@@ -218,63 +218,63 @@
         <peripheral key="portb" name="PORTB" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portb" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pb0" index="0" function="PORTB" group="P"/>
-                <signal pad-key="pb1" index="1" function="PORTB" group="P"/>
-                <signal pad-key="pb2" index="2" function="PORTB" group="P"/>
-                <signal pad-key="pb3" index="3" function="PORTB" group="P"/>
-                <signal pad-key="pb4" index="4" function="PORTB" group="P"/>
-                <signal pad-key="pb5" index="5" function="PORTB" group="P"/>
-                <signal pad-key="pb6" index="6" function="PORTB" group="P"/>
+                <signal name="PB0" pad-key="pb0" index="0" function="PORTB"/>
+                <signal name="PB1" pad-key="pb1" index="1" function="PORTB"/>
+                <signal name="PB2" pad-key="pb2" index="2" function="PORTB"/>
+                <signal name="PB3" pad-key="pb3" index="3" function="PORTB"/>
+                <signal name="PB4" pad-key="pb4" index="4" function="PORTB"/>
+                <signal name="PB5" pad-key="pb5" index="5" function="PORTB"/>
+                <signal name="PB6" pad-key="pb6" index="6" function="PORTB"/>
             </signals>
         </peripheral>
         <peripheral key="portd" name="PORTD" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portd" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pd0" index="0" function="PORTD" group="P"/>
-                <signal pad-key="pd1" index="1" function="PORTD" group="P"/>
-                <signal pad-key="pd2" index="2" function="PORTD" group="P"/>
-                <signal pad-key="pd3" index="3" function="PORTD" group="P"/>
-                <signal pad-key="pd4" index="4" function="PORTD" group="P"/>
-                <signal pad-key="pd5" index="5" function="PORTD" group="P"/>
-                <signal pad-key="pd6" index="6" function="PORTD" group="P"/>
-                <signal pad-key="pd7" index="7" function="PORTD" group="P"/>
+                <signal name="PD0" pad-key="pd0" index="0" function="PORTD"/>
+                <signal name="PD1" pad-key="pd1" index="1" function="PORTD"/>
+                <signal name="PD2" pad-key="pd2" index="2" function="PORTD"/>
+                <signal name="PD3" pad-key="pd3" index="3" function="PORTD"/>
+                <signal name="PD4" pad-key="pd4" index="4" function="PORTD"/>
+                <signal name="PD5" pad-key="pd5" index="5" function="PORTD"/>
+                <signal name="PD6" pad-key="pd6" index="6" function="PORTD"/>
+                <signal name="PD7" pad-key="pd7" index="7" function="PORTD"/>
             </signals>
         </peripheral>
         <peripheral key="porte" name="PORTE" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="porte" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pe0" index="0" function="PORTE" group="P"/>
-                <signal pad-key="pe1" index="1" function="PORTE" group="P"/>
-                <signal pad-key="pe2" index="2" function="PORTE" group="P"/>
-                <signal pad-key="pe3" index="3" function="PORTE" group="P"/>
-                <signal pad-key="pe4" index="4" function="PORTE" group="P"/>
-                <signal pad-key="pe5" index="5" function="PORTE" group="P"/>
-                <signal pad-key="pe6" index="6" function="PORTE" group="P"/>
-                <signal pad-key="pe7" index="7" function="PORTE" group="P"/>
+                <signal name="PE0" pad-key="pe0" index="0" function="PORTE"/>
+                <signal name="PE1" pad-key="pe1" index="1" function="PORTE"/>
+                <signal name="PE2" pad-key="pe2" index="2" function="PORTE"/>
+                <signal name="PE3" pad-key="pe3" index="3" function="PORTE"/>
+                <signal name="PE4" pad-key="pe4" index="4" function="PORTE"/>
+                <signal name="PE5" pad-key="pe5" index="5" function="PORTE"/>
+                <signal name="PE6" pad-key="pe6" index="6" function="PORTE"/>
+                <signal name="PE7" pad-key="pe7" index="7" function="PORTE"/>
             </signals>
         </peripheral>
         <peripheral key="portf" name="PORTF" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portf" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pf0" index="0" function="PORTF" group="P"/>
-                <signal pad-key="pf1" index="1" function="PORTF" group="P"/>
-                <signal pad-key="pf2" index="2" function="PORTF" group="P"/>
-                <signal pad-key="pf3" index="3" function="PORTF" group="P"/>
-                <signal pad-key="pf4" index="4" function="PORTF" group="P"/>
-                <signal pad-key="pf5" index="5" function="PORTF" group="P"/>
-                <signal pad-key="pf6" index="6" function="PORTF" group="P"/>
-                <signal pad-key="pf7" index="7" function="PORTF" group="P"/>
+                <signal name="PF0" pad-key="pf0" index="0" function="PORTF"/>
+                <signal name="PF1" pad-key="pf1" index="1" function="PORTF"/>
+                <signal name="PF2" pad-key="pf2" index="2" function="PORTF"/>
+                <signal name="PF3" pad-key="pf3" index="3" function="PORTF"/>
+                <signal name="PF4" pad-key="pf4" index="4" function="PORTF"/>
+                <signal name="PF5" pad-key="pf5" index="5" function="PORTF"/>
+                <signal name="PF6" pad-key="pf6" index="6" function="PORTF"/>
+                <signal name="PF7" pad-key="pf7" index="7" function="PORTF"/>
             </signals>
         </peripheral>
         <peripheral key="portg" name="PORTG" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portg" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pg0" index="0" function="PORTG" group="P"/>
-                <signal pad-key="pg1" index="1" function="PORTG" group="P"/>
-                <signal pad-key="pg2" index="2" function="PORTG" group="P"/>
-                <signal pad-key="pg3" index="3" function="PORTG" group="P"/>
-                <signal pad-key="pg4" index="4" function="PORTG" group="P"/>
-                <signal pad-key="pg5" index="5" function="PORTG" group="P"/>
+                <signal name="PG0" pad-key="pg0" index="0" function="PORTG"/>
+                <signal name="PG1" pad-key="pg1" index="1" function="PORTG"/>
+                <signal name="PG2" pad-key="pg2" index="2" function="PORTG"/>
+                <signal name="PG3" pad-key="pg3" index="3" function="PORTG"/>
+                <signal name="PG4" pad-key="pg4" index="4" function="PORTG"/>
+                <signal name="PG5" pad-key="pg5" index="5" function="PORTG"/>
             </signals>
         </peripheral>
         <peripheral key="tc0" name="TC0" module-key="tc8">

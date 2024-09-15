@@ -371,10 +371,10 @@ class FromXmlService
         $attributes = $this->getNodeAttributesByName($element);
 
         return new Signal(
+            $attributes['name'] ?? null,
             $attributes['pad-key'] ?? null,
             $this->stringService->tryStringToInt($attributes['index'] ?? null),
             $attributes['function'] ?? null,
-            $attributes['group'] ?? null,
             $attributes['field'] ?? null
         );
     }

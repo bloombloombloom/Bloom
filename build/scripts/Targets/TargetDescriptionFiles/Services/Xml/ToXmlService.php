@@ -186,6 +186,7 @@ class ToXmlService
     public function signalToXml(Signal $signal, DOMDocument $document): DOMElement
     {
         $element = $document->createElement('signal');
+        $element->setAttribute('name', $signal->name);
         $element->setAttribute('pad-key', $signal->padKey);
 
         if ($signal->index !== null) {
@@ -194,10 +195,6 @@ class ToXmlService
 
         if ($signal->function !== null) {
             $element->setAttribute('function', $signal->function);
-        }
-
-        if ($signal->group !== null) {
-            $element->setAttribute('group', $signal->group);
         }
 
         if ($signal->field !== null) {

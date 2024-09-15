@@ -170,23 +170,23 @@
         <peripheral key="porta" name="PORTA" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="porta" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pa0" index="0" function="PORTA" group="P"/>
-                <signal pad-key="pa1" index="1" function="PORTA" group="P"/>
-                <signal pad-key="pa2" index="2" function="PORTA" group="P"/>
-                <signal pad-key="pa3" index="3" function="PORTA" group="P"/>
-                <signal pad-key="pa4" index="4" function="PORTA" group="P"/>
-                <signal pad-key="pa5" index="5" function="PORTA" group="P"/>
-                <signal pad-key="pa6" index="6" function="PORTA" group="P"/>
-                <signal pad-key="pa7" index="7" function="PORTA" group="P"/>
+                <signal name="PA0" pad-key="pa0" index="0" function="PORTA"/>
+                <signal name="PA1" pad-key="pa1" index="1" function="PORTA"/>
+                <signal name="PA2" pad-key="pa2" index="2" function="PORTA"/>
+                <signal name="PA3" pad-key="pa3" index="3" function="PORTA"/>
+                <signal name="PA4" pad-key="pa4" index="4" function="PORTA"/>
+                <signal name="PA5" pad-key="pa5" index="5" function="PORTA"/>
+                <signal name="PA6" pad-key="pa6" index="6" function="PORTA"/>
+                <signal name="PA7" pad-key="pa7" index="7" function="PORTA"/>
             </signals>
         </peripheral>
         <peripheral key="portb" name="PORTB" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portb" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pb0" index="0" function="PORTB" group="P"/>
-                <signal pad-key="pb1" index="1" function="PORTB" group="P"/>
-                <signal pad-key="pb2" index="2" function="PORTB" group="P"/>
-                <signal pad-key="pb3" index="3" function="PORTB" group="P"/>
+                <signal name="PB0" pad-key="pb0" index="0" function="PORTB"/>
+                <signal name="PB1" pad-key="pb1" index="1" function="PORTB"/>
+                <signal name="PB2" pad-key="pb2" index="2" function="PORTB"/>
+                <signal name="PB3" pad-key="pb3" index="3" function="PORTB"/>
             </signals>
         </peripheral>
         <peripheral key="ac" name="AC" module-key="ac">

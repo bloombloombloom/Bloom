@@ -173,8 +173,8 @@
         <peripheral key="ac" name="AC" module-key="ac">
             <register-group-instance description="Analog Comparator" register-group-key="ac" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pb1" index="1" function="default" group="AIN"/>
-                <signal pad-key="pb0" index="0" function="default" group="AIN"/>
+                <signal name="AIN" pad-key="pb1" index="1" function="default"/>
+                <signal name="AIN" pad-key="pb0" index="0" function="default"/>
             </signals>
         </peripheral>
         <peripheral key="eeprom" name="EEPROM" module-key="eeprom">
@@ -186,32 +186,32 @@
         <peripheral key="portb" name="PORTB" module-key="gpio_port">
             <register-group-instance description="I/O Port" register-group-key="portb" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pb0" index="0" function="default" group="P"/>
-                <signal pad-key="pb1" index="1" function="default" group="P"/>
-                <signal pad-key="pb2" index="2" function="default" group="P"/>
-                <signal pad-key="pb3" index="3" function="default" group="P"/>
-                <signal pad-key="pb4" index="4" function="default" group="P"/>
-                <signal pad-key="pb5" index="5" function="default" group="P"/>
+                <signal name="PB0" pad-key="pb0" index="0" function="default"/>
+                <signal name="PB1" pad-key="pb1" index="1" function="default"/>
+                <signal name="PB2" pad-key="pb2" index="2" function="default"/>
+                <signal name="PB3" pad-key="pb3" index="3" function="default"/>
+                <signal name="PB4" pad-key="pb4" index="4" function="default"/>
+                <signal name="PB5" pad-key="pb5" index="5" function="default"/>
             </signals>
         </peripheral>
         <peripheral key="exint" name="EXINT" module-key="exint">
             <register-group-instance description="External Interrupts" register-group-key="exint" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pb5" function="default" group="PCINT5"/>
-                <signal pad-key="pb4" function="default" group="PCINT4"/>
-                <signal pad-key="pb3" function="default" group="PCINT3"/>
-                <signal pad-key="pb2" function="default" group="PCINT2"/>
-                <signal pad-key="pb1" function="default" group="PCINT1"/>
-                <signal pad-key="pb1" function="default" group="INT"/>
-                <signal pad-key="pb0" function="default" group="PCINT0"/>
+                <signal name="PCINT5" pad-key="pb5" function="default"/>
+                <signal name="PCINT4" pad-key="pb4" function="default"/>
+                <signal name="PCINT3" pad-key="pb3" function="default"/>
+                <signal name="PCINT2" pad-key="pb2" function="default"/>
+                <signal name="PCINT1" pad-key="pb1" function="default"/>
+                <signal name="INT" pad-key="pb1" function="default"/>
+                <signal name="PCINT0" pad-key="pb0" function="default"/>
             </signals>
         </peripheral>
         <peripheral key="tc0" name="TC0" module-key="tc8">
             <register-group-instance description="Timer/Counter, 8-bit" register-group-key="tc0" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal pad-key="pb2" function="default" group="T"/>
-                <signal pad-key="pb1" function="default" group="OCB"/>
-                <signal pad-key="pb0" function="default" group="OCA"/>
+                <signal name="T" pad-key="pb2" function="default"/>
+                <signal name="OCB" pad-key="pb1" function="default"/>
+                <signal name="OCA" pad-key="pb0" function="default"/>
             </signals>
         </peripheral>
         <peripheral key="wdt" name="WDT" module-key="wdt">

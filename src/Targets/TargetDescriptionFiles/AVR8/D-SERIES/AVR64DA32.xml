@@ -44,56 +44,56 @@
         <peripheral key="ac0" name="AC0" module-key="cmp_control_v8">
             <register-group-instance register-group-key="ac" address-space-key="data" offset="0x680"/>
             <signals>
-                <signal pad-key="pd3" index="0" function="AC0" group="N"/>
-                <signal pad-key="pd0" index="1" function="AC0" group="N"/>
-                <signal pad-key="pd7" index="2" function="AC0" group="N"/>
-                <signal pad-key="pa7" index="0" function="AC0" group="OUT" field="PORTMUX.ACROUTEA.AC0"/>
-                <signal pad-key="pd2" index="0" function="AC0" group="P"/>
-                <signal pad-key="pd6" index="3" function="AC0" group="P"/>
+                <signal name="N" pad-key="pd3" index="0" function="AC0"/>
+                <signal name="N" pad-key="pd0" index="1" function="AC0"/>
+                <signal name="N" pad-key="pd7" index="2" function="AC0"/>
+                <signal name="OUT" pad-key="pa7" index="0" function="AC0" field="PORTMUX.ACROUTEA.AC0"/>
+                <signal name="P" pad-key="pd2" index="0" function="AC0"/>
+                <signal name="P" pad-key="pd6" index="3" function="AC0"/>
             </signals>
         </peripheral>
         <peripheral key="ac1" name="AC1" module-key="cmp_control_v8">
             <register-group-instance register-group-key="ac" address-space-key="data" offset="0x688"/>
             <signals>
-                <signal pad-key="pd5" index="0" function="AC1" group="N"/>
-                <signal pad-key="pd0" index="1" function="AC1" group="N"/>
-                <signal pad-key="pd7" index="2" function="AC1" group="N"/>
-                <signal pad-key="pa7" index="0" function="AC1" group="OUT" field="PORTMUX.ACROUTEA.AC1"/>
-                <signal pad-key="pd2" index="0" function="AC1" group="P"/>
-                <signal pad-key="pd3" index="1" function="AC1" group="P"/>
-                <signal pad-key="pd4" index="2" function="AC1" group="P"/>
-                <signal pad-key="pd6" index="3" function="AC1" group="P"/>
+                <signal name="N" pad-key="pd5" index="0" function="AC1"/>
+                <signal name="N" pad-key="pd0" index="1" function="AC1"/>
+                <signal name="N" pad-key="pd7" index="2" function="AC1"/>
+                <signal name="OUT" pad-key="pa7" index="0" function="AC1" field="PORTMUX.ACROUTEA.AC1"/>
+                <signal name="P" pad-key="pd2" index="0" function="AC1"/>
+                <signal name="P" pad-key="pd3" index="1" function="AC1"/>
+                <signal name="P" pad-key="pd4" index="2" function="AC1"/>
+                <signal name="P" pad-key="pd6" index="3" function="AC1"/>
             </signals>
         </peripheral>
         <peripheral key="ac2" name="AC2" module-key="cmp_control_v8">
             <register-group-instance register-group-key="ac" address-space-key="data" offset="0x690"/>
             <signals>
-                <signal pad-key="pd7" index="0" function="AC2" group="N"/>
-                <signal pad-key="pd0" index="1" function="AC2" group="N"/>
-                <signal pad-key="pd7" index="2" function="AC2" group="N"/>
-                <signal pad-key="pa7" index="0" function="AC2" group="OUT" field="PORTMUX.ACROUTEA.AC2"/>
-                <signal pad-key="pd2" index="0" function="AC2" group="P"/>
-                <signal pad-key="pd4" index="1" function="AC2" group="P"/>
-                <signal pad-key="pd6" index="3" function="AC2" group="P"/>
+                <signal name="N" pad-key="pd7" index="0" function="AC2"/>
+                <signal name="N" pad-key="pd0" index="1" function="AC2"/>
+                <signal name="N" pad-key="pd7" index="2" function="AC2"/>
+                <signal name="OUT" pad-key="pa7" index="0" function="AC2" field="PORTMUX.ACROUTEA.AC2"/>
+                <signal name="P" pad-key="pd2" index="0" function="AC2"/>
+                <signal name="P" pad-key="pd4" index="1" function="AC2"/>
+                <signal name="P" pad-key="pd6" index="3" function="AC2"/>
             </signals>
         </peripheral>
         <peripheral key="adc0" name="ADC0" module-key="adc_12b_diff_ctrl_v1">
             <register-group-instance register-group-key="adc" address-space-key="data" offset="0x600"/>
             <signals>
-                <signal pad-key="pd0" index="0" function="AIN0" group="AIN"/>
-                <signal pad-key="pd1" index="1" function="AIN0" group="AIN"/>
-                <signal pad-key="pd2" index="2" function="AIN0" group="AIN"/>
-                <signal pad-key="pd3" index="3" function="AIN0" group="AIN"/>
-                <signal pad-key="pd4" index="4" function="AIN0" group="AIN"/>
-                <signal pad-key="pd5" index="5" function="AIN0" group="AIN"/>
-                <signal pad-key="pd6" index="6" function="AIN0" group="AIN"/>
-                <signal pad-key="pd7" index="7" function="AIN0" group="AIN"/>
-                <signal pad-key="pf0" index="16" function="AIN0" group="AIN"/>
-                <signal pad-key="pf1" index="17" function="AIN0" group="AIN"/>
-                <signal pad-key="pf2" index="18" function="AIN0" group="AIN"/>
-                <signal pad-key="pf3" index="19" function="AIN0" group="AIN"/>
-                <signal pad-key="pf4" index="20" function="AIN0" group="AIN"/>
-                <signal pad-key="pf5" index="21" function="AIN0" group="AIN"/>
+                <signal name="AIN" pad-key="pd0" index="0" function="AIN0"/>
+                <signal name="AIN" pad-key="pd1" index="1" function="AIN0"/>
+                <signal name="AIN" pad-key="pd2" index="2" function="AIN0"/>
+                <signal name="AIN" pad-key="pd3" index="3" function="AIN0"/>
+                <signal name="AIN" pad-key="pd4" index="4" function="AIN0"/>
+                <signal name="AIN" pad-key="pd5" index="5" function="AIN0"/>
+                <signal name="AIN" pad-key="pd6" index="6" function="AIN0"/>
+                <signal name="AIN" pad-key="pd7" index="7" function="AIN0"/>
+                <signal name="AIN" pad-key="pf0" index="16" function="AIN0"/>
+                <signal name="AIN" pad-key="pf1" index="17" function="AIN0"/>
+                <signal name="AIN" pad-key="pf2" index="18" function="AIN0"/>
+                <signal name="AIN" pad-key="pf3" index="19" function="AIN0"/>
+                <signal name="AIN" pad-key="pf4" index="20" function="AIN0"/>
+                <signal name="AIN" pad-key="pf5" index="21" function="AIN0"/>
             </signals>
         </peripheral>
         <peripheral key="bod" name="BOD" module-key="bor_lvd_ctrl_v1">
@@ -102,33 +102,33 @@
         <peripheral key="ccl" name="CCL" module-key="cla_ccl_v1">
             <register-group-instance register-group-key="ccl" address-space-key="data" offset="0x1C0"/>
             <signals>
-                <signal pad-key="pa0" index="0" function="CCL_IN" group="LUT0_IN"/>
-                <signal pad-key="pa1" index="1" function="CCL_IN" group="LUT0_IN"/>
-                <signal pad-key="pa2" index="2" function="CCL_IN" group="LUT0_IN"/>
-                <signal pad-key="pa6" index="0" function="CCL_ALT" group="LUT0_OUT" field="PORTMUX.CCLROUTEA.LUT0"/>
-                <signal pad-key="pa3" index="0" function="CCL" group="LUT0_OUT" field="PORTMUX.CCLROUTEA.LUT0"/>
-                <signal pad-key="pc0" index="0" function="CCL_IN" group="LUT1_IN"/>
-                <signal pad-key="pc1" index="1" function="CCL_IN" group="LUT1_IN"/>
-                <signal pad-key="pc2" index="2" function="CCL_IN" group="LUT1_IN"/>
-                <signal pad-key="pc3" index="0" function="CCL" group="LUT1_OUT" field="PORTMUX.CCLROUTEA.LUT1"/>
-                <signal pad-key="pd0" index="0" function="CCL_IN" group="LUT2_IN"/>
-                <signal pad-key="pd1" index="1" function="CCL_IN" group="LUT2_IN"/>
-                <signal pad-key="pd2" index="2" function="CCL_IN" group="LUT2_IN"/>
-                <signal pad-key="pd6" index="0" function="CCL_ALT" group="LUT2_OUT" field="PORTMUX.CCLROUTEA.LUT2"/>
-                <signal pad-key="pd3" index="0" function="CCL" group="LUT2_OUT" field="PORTMUX.CCLROUTEA.LUT2"/>
-                <signal pad-key="pf0" index="0" function="CCL_IN" group="LUT3_IN"/>
-                <signal pad-key="pf1" index="1" function="CCL_IN" group="LUT3_IN"/>
-                <signal pad-key="pf2" index="2" function="CCL_IN" group="LUT3_IN"/>
-                <signal pad-key="pf3" index="0" function="CCL" group="LUT3_OUT" field="PORTMUX.CCLROUTEA.LUT3"/>
+                <signal name="LUT0_IN" pad-key="pa0" index="0" function="CCL_IN"/>
+                <signal name="LUT0_IN" pad-key="pa1" index="1" function="CCL_IN"/>
+                <signal name="LUT0_IN" pad-key="pa2" index="2" function="CCL_IN"/>
+                <signal name="LUT0_OUT" pad-key="pa6" index="0" function="CCL_ALT" field="PORTMUX.CCLROUTEA.LUT0"/>
+                <signal name="LUT0_OUT" pad-key="pa3" index="0" function="CCL" field="PORTMUX.CCLROUTEA.LUT0"/>
+                <signal name="LUT1_IN" pad-key="pc0" index="0" function="CCL_IN"/>
+                <signal name="LUT1_IN" pad-key="pc1" index="1" function="CCL_IN"/>
+                <signal name="LUT1_IN" pad-key="pc2" index="2" function="CCL_IN"/>
+                <signal name="LUT1_OUT" pad-key="pc3" index="0" function="CCL" field="PORTMUX.CCLROUTEA.LUT1"/>
+                <signal name="LUT2_IN" pad-key="pd0" index="0" function="CCL_IN"/>
+                <signal name="LUT2_IN" pad-key="pd1" index="1" function="CCL_IN"/>
+                <signal name="LUT2_IN" pad-key="pd2" index="2" function="CCL_IN"/>
+                <signal name="LUT2_OUT" pad-key="pd6" index="0" function="CCL_ALT" field="PORTMUX.CCLROUTEA.LUT2"/>
+                <signal name="LUT2_OUT" pad-key="pd3" index="0" function="CCL" field="PORTMUX.CCLROUTEA.LUT2"/>
+                <signal name="LUT3_IN" pad-key="pf0" index="0" function="CCL_IN"/>
+                <signal name="LUT3_IN" pad-key="pf1" index="1" function="CCL_IN"/>
+                <signal name="LUT3_IN" pad-key="pf2" index="2" function="CCL_IN"/>
+                <signal name="LUT3_OUT" pad-key="pf3" index="0" function="CCL" field="PORTMUX.CCLROUTEA.LUT3"/>
             </signals>
         </peripheral>
         <peripheral key="clkctrl" name="CLKCTRL" module-key="avrda_clkctrl">
             <register-group-instance register-group-key="clkctrl" address-space-key="data" offset="0x60"/>
             <signals>
-                <signal pad-key="pa7" function="CLKCTRL" group="CLKOUT"/>
-                <signal pad-key="pa0" function="CLKCTRL" group="EXTCLK"/>
-                <signal pad-key="pf0" function="CLKCTRL" group="XTAL32K1"/>
-                <signal pad-key="pf1" function="CLKCTRL" group="XTAL32K2"/>
+                <signal name="CLKOUT" pad-key="pa7" function="CLKCTRL"/>
+                <signal name="EXTCLK" pad-key="pa0" function="CLKCTRL"/>
+                <signal name="XTAL32K1" pad-key="pf0" function="CLKCTRL"/>
+                <signal name="XTAL32K2" pad-key="pf1" function="CLKCTRL"/>
             </signals>
         </peripheral>
         <peripheral key="cpu" name="CPU" module-key="cpu_avr_xt_v1">
@@ -143,18 +143,18 @@
         <peripheral key="dac0" name="DAC0" module-key="dac_nbit_ctrl_v5">
             <register-group-instance register-group-key="dac" address-space-key="data" offset="0x6A0"/>
             <signals>
-                <signal pad-key="pd6" index="0" function="DAC0" group="OUT"/>
+                <signal name="OUT" pad-key="pd6" index="0" function="DAC0"/>
             </signals>
         </peripheral>
         <peripheral key="evsys" name="EVSYS" module-key="avrda_evsys">
             <register-group-instance register-group-key="evsys" address-space-key="data" offset="0x200"/>
             <signals>
-                <signal pad-key="pa7" index="0" function="EVSYS_ALT" group="EVOUT" field="PORTMUX.EVSYSROUTEA.EVOUTA"/>
-                <signal pad-key="pa2" index="0" function="EVSYS" group="EVOUT" field="PORTMUX.EVSYSROUTEA.EVOUTA"/>
-                <signal pad-key="pc2" index="2" function="EVSYS" group="EVOUT" field="PORTMUX.EVSYSROUTEA.EVOUTC"/>
-                <signal pad-key="pd7" index="3" function="EVSYS_ALT" group="EVOUT" field="PORTMUX.EVSYSROUTEA.EVOUTD"/>
-                <signal pad-key="pd2" index="3" function="EVSYS" group="EVOUT" field="PORTMUX.EVSYSROUTEA.EVOUTD"/>
-                <signal pad-key="pf2" index="5" function="EVSYS" group="EVOUT" field="PORTMUX.EVSYSROUTEA.EVOUTF"/>
+                <signal name="EVOUT" pad-key="pa7" index="0" function="EVSYS_ALT" field="PORTMUX.EVSYSROUTEA.EVOUTA"/>
+                <signal name="EVOUT" pad-key="pa2" index="0" function="EVSYS" field="PORTMUX.EVSYSROUTEA.EVOUTA"/>
+                <signal name="EVOUT" pad-key="pc2" index="2" function="EVSYS" field="PORTMUX.EVSYSROUTEA.EVOUTC"/>
+                <signal name="EVOUT" pad-key="pd7" index="3" function="EVSYS_ALT" field="PORTMUX.EVSYSROUTEA.EVOUTD"/>
+                <signal name="EVOUT" pad-key="pd2" index="3" function="EVSYS" field="PORTMUX.EVSYSROUTEA.EVOUTD"/>
+                <signal name="EVOUT" pad-key="pf2" index="5" function="EVSYS" field="PORTMUX.EVSYSROUTEA.EVOUTF"/>
             </signals>
         </peripheral>
         <peripheral key="fuse" name="FUSE" module-key="avrda_fuse">
@@ -172,48 +172,48 @@
         <peripheral key="porta" name="PORTA" module-key="gpio_port">
             <register-group-instance register-group-key="port" address-space-key="data" offset="0x400"/>
             <signals>
-                <signal pad-key="pa0" index="0" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa1" index="1" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa2" index="2" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa3" index="3" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa4" index="4" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa5" index="5" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa6" index="6" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa7" index="7" function="IOPORT" group="PIN"/>
+                <signal name="PA0" pad-key="pa0" index="0" function="IOPORT"/>
+                <signal name="PA1" pad-key="pa1" index="1" function="IOPORT"/>
+                <signal name="PA2" pad-key="pa2" index="2" function="IOPORT"/>
+                <signal name="PA3" pad-key="pa3" index="3" function="IOPORT"/>
+                <signal name="PA4" pad-key="pa4" index="4" function="IOPORT"/>
+                <signal name="PA5" pad-key="pa5" index="5" function="IOPORT"/>
+                <signal name="PA6" pad-key="pa6" index="6" function="IOPORT"/>
+                <signal name="PA7" pad-key="pa7" index="7" function="IOPORT"/>
             </signals>
         </peripheral>
         <peripheral key="portc" name="PORTC" module-key="gpio_port">
             <register-group-instance register-group-key="port" address-space-key="data" offset="0x440"/>
             <signals>
-                <signal pad-key="pc0" index="0" function="IOPORT" group="PIN"/>
-                <signal pad-key="pc1" index="1" function="IOPORT" group="PIN"/>
-                <signal pad-key="pc2" index="2" function="IOPORT" group="PIN"/>
-                <signal pad-key="pc3" index="3" function="IOPORT" group="PIN"/>
+                <signal name="PC0" pad-key="pc0" index="0" function="IOPORT"/>
+                <signal name="PC1" pad-key="pc1" index="1" function="IOPORT"/>
+                <signal name="PC2" pad-key="pc2" index="2" function="IOPORT"/>
+                <signal name="PC3" pad-key="pc3" index="3" function="IOPORT"/>
             </signals>
         </peripheral>
         <peripheral key="portd" name="PORTD" module-key="gpio_port">
             <register-group-instance register-group-key="port" address-space-key="data" offset="0x460"/>
             <signals>
-                <signal pad-key="pd0" index="0" function="IOPORT" group="PIN"/>
-                <signal pad-key="pd1" index="1" function="IOPORT" group="PIN"/>
-                <signal pad-key="pd2" index="2" function="IOPORT" group="PIN"/>
-                <signal pad-key="pd3" index="3" function="IOPORT" group="PIN"/>
-                <signal pad-key="pd4" index="4" function="IOPORT" group="PIN"/>
-                <signal pad-key="pd5" index="5" function="IOPORT" group="PIN"/>
-                <signal pad-key="pd6" index="6" function="IOPORT" group="PIN"/>
-                <signal pad-key="pd7" index="7" function="IOPORT" group="PIN"/>
+                <signal name="PD0" pad-key="pd0" index="0" function="IOPORT"/>
+                <signal name="PD1" pad-key="pd1" index="1" function="IOPORT"/>
+                <signal name="PD2" pad-key="pd2" index="2" function="IOPORT"/>
+                <signal name="PD3" pad-key="pd3" index="3" function="IOPORT"/>
+                <signal name="PD4" pad-key="pd4" index="4" function="IOPORT"/>
+                <signal name="PD5" pad-key="pd5" index="5" function="IOPORT"/>
+                <signal name="PD6" pad-key="pd6" index="6" function="IOPORT"/>
+                <signal name="PD7" pad-key="pd7" index="7" function="IOPORT"/>
             </signals>
         </peripheral>
         <peripheral key="portf" name="PORTF" module-key="gpio_port">
             <register-group-instance register-group-key="port" address-space-key="data" offset="0x4A0"/>
             <signals>
-                <signal pad-key="pf0" index="0" function="IOPORT" group="PIN"/>
-                <signal pad-key="pf1" index="1" function="IOPORT" group="PIN"/>
-                <signal pad-key="pf2" index="2" function="IOPORT" group="PIN"/>
-                <signal pad-key="pf3" index="3" function="IOPORT" group="PIN"/>
-                <signal pad-key="pf4" index="4" function="IOPORT" group="PIN"/>
-                <signal pad-key="pf5" index="5" function="IOPORT" group="PIN"/>
-                <signal pad-key="pf6" index="6" function="IOPORT" group="PIN"/>
+                <signal name="PF0" pad-key="pf0" index="0" function="IOPORT"/>
+                <signal name="PF1" pad-key="pf1" index="1" function="IOPORT"/>
+                <signal name="PF2" pad-key="pf2" index="2" function="IOPORT"/>
+                <signal name="PF3" pad-key="pf3" index="3" function="IOPORT"/>
+                <signal name="PF4" pad-key="pf4" index="4" function="IOPORT"/>
+                <signal name="PF5" pad-key="pf5" index="5" function="IOPORT"/>
+                <signal name="PF6" pad-key="pf6" index="6" function="IOPORT"/>
             </signals>
         </peripheral>
         <peripheral key="portmux" name="PORTMUX" module-key="avrda_portmux">
@@ -221,34 +221,34 @@
         </peripheral>
         <peripheral key="ptc" name="PTC" module-key="adc_ptc_ctrl_v1">
             <signals>
-                <signal pad-key="pa0" index="0" function="PTC" group="XY"/>
-                <signal pad-key="pa1" index="1" function="PTC" group="XY"/>
-                <signal pad-key="pa2" index="2" function="PTC" group="XY"/>
-                <signal pad-key="pa3" index="3" function="PTC" group="XY"/>
-                <signal pad-key="pa4" index="4" function="PTC" group="XY"/>
-                <signal pad-key="pa5" index="5" function="PTC" group="XY"/>
-                <signal pad-key="pa6" index="6" function="PTC" group="XY"/>
-                <signal pad-key="pa7" index="7" function="PTC" group="XY"/>
-                <signal pad-key="pd0" index="16" function="PTC" group="XY"/>
-                <signal pad-key="pd1" index="17" function="PTC" group="XY"/>
-                <signal pad-key="pd2" index="18" function="PTC" group="XY"/>
-                <signal pad-key="pd3" index="19" function="PTC" group="XY"/>
-                <signal pad-key="pd4" index="20" function="PTC" group="XY"/>
-                <signal pad-key="pd5" index="21" function="PTC" group="XY"/>
-                <signal pad-key="pd6" index="22" function="PTC" group="XY"/>
-                <signal pad-key="pd7" index="23" function="PTC" group="XY"/>
-                <signal pad-key="pf0" index="32" function="PTC" group="XY"/>
-                <signal pad-key="pf1" index="33" function="PTC" group="XY"/>
-                <signal pad-key="pf2" index="34" function="PTC" group="XY"/>
-                <signal pad-key="pf3" index="35" function="PTC" group="XY"/>
-                <signal pad-key="pf4" index="36" function="PTC" group="XY"/>
-                <signal pad-key="pf5" index="37" function="PTC" group="XY"/>
+                <signal name="XY" pad-key="pa0" index="0" function="PTC"/>
+                <signal name="XY" pad-key="pa1" index="1" function="PTC"/>
+                <signal name="XY" pad-key="pa2" index="2" function="PTC"/>
+                <signal name="XY" pad-key="pa3" index="3" function="PTC"/>
+                <signal name="XY" pad-key="pa4" index="4" function="PTC"/>
+                <signal name="XY" pad-key="pa5" index="5" function="PTC"/>
+                <signal name="XY" pad-key="pa6" index="6" function="PTC"/>
+                <signal name="XY" pad-key="pa7" index="7" function="PTC"/>
+                <signal name="XY" pad-key="pd0" index="16" function="PTC"/>
+                <signal name="XY" pad-key="pd1" index="17" function="PTC"/>
+                <signal name="XY" pad-key="pd2" index="18" function="PTC"/>
+                <signal name="XY" pad-key="pd3" index="19" function="PTC"/>
+                <signal name="XY" pad-key="pd4" index="20" function="PTC"/>
+                <signal name="XY" pad-key="pd5" index="21" function="PTC"/>
+                <signal name="XY" pad-key="pd6" index="22" function="PTC"/>
+                <signal name="XY" pad-key="pd7" index="23" function="PTC"/>
+                <signal name="XY" pad-key="pf0" index="32" function="PTC"/>
+                <signal name="XY" pad-key="pf1" index="33" function="PTC"/>
+                <signal name="XY" pad-key="pf2" index="34" function="PTC"/>
+                <signal name="XY" pad-key="pf3" index="35" function="PTC"/>
+                <signal name="XY" pad-key="pf4" index="36" function="PTC"/>
+                <signal name="XY" pad-key="pf5" index="37" function="PTC"/>
             </signals>
         </peripheral>
         <peripheral key="rstctrl" name="RSTCTRL" module-key="rst_integration_v8">
             <register-group-instance register-group-key="rstctrl" address-space-key="data" offset="0x40"/>
             <signals>
-                <signal pad-key="pf6" function="OTHER" group="RESET"/>
+                <signal name="RESET" pad-key="pf6" function="OTHER"/>
             </signals>
         </peripheral>
         <peripheral key="rtc" name="RTC" module-key="tmr_16b_rtc_v1">
@@ -263,19 +263,19 @@
         <peripheral key="spi0" name="SPI0" module-key="spi_8bit_v2">
             <register-group-instance register-group-key="spi" address-space-key="data" offset="0x940"/>
             <signals>
-                <signal pad-key="pa5" function="SPI0" group="MISO" field="PORTMUX.SPIROUTEA.SPI0"/>
-                <signal pad-key="pa4" function="SPI0" group="MOSI" field="PORTMUX.SPIROUTEA.SPI0"/>
-                <signal pad-key="pa6" function="SPI0" group="SCK" field="PORTMUX.SPIROUTEA.SPI0"/>
-                <signal pad-key="pa7" function="SPI0" group="SS" field="PORTMUX.SPIROUTEA.SPI0"/>
+                <signal name="MISO" pad-key="pa5" function="SPI0" field="PORTMUX.SPIROUTEA.SPI0"/>
+                <signal name="MOSI" pad-key="pa4" function="SPI0" field="PORTMUX.SPIROUTEA.SPI0"/>
+                <signal name="SCK" pad-key="pa6" function="SPI0" field="PORTMUX.SPIROUTEA.SPI0"/>
+                <signal name="SS" pad-key="pa7" function="SPI0" field="PORTMUX.SPIROUTEA.SPI0"/>
             </signals>
         </peripheral>
         <peripheral key="spi1" name="SPI1" module-key="spi_8bit_v2">
             <register-group-instance register-group-key="spi" address-space-key="data" offset="0x960"/>
             <signals>
-                <signal pad-key="pc1" function="SPI1" group="MISO" field="PORTMUX.SPIROUTEA.SPI1"/>
-                <signal pad-key="pc0" function="SPI1" group="MOSI" field="PORTMUX.SPIROUTEA.SPI1"/>
-                <signal pad-key="pc2" function="SPI1" group="SCK" field="PORTMUX.SPIROUTEA.SPI1"/>
-                <signal pad-key="pc3" function="SPI1" group="SS" field="PORTMUX.SPIROUTEA.SPI1"/>
+                <signal name="MISO" pad-key="pc1" function="SPI1" field="PORTMUX.SPIROUTEA.SPI1"/>
+                <signal name="MOSI" pad-key="pc0" function="SPI1" field="PORTMUX.SPIROUTEA.SPI1"/>
+                <signal name="SCK" pad-key="pc2" function="SPI1" field="PORTMUX.SPIROUTEA.SPI1"/>
+                <signal name="SS" pad-key="pc3" function="SPI1" field="PORTMUX.SPIROUTEA.SPI1"/>
             </signals>
         </peripheral>
         <peripheral key="syscfg" name="SYSCFG" module-key="avrda_syscfg">
@@ -284,116 +284,116 @@
         <peripheral key="tca0" name="TCA0" module-key="tmr_16b_pwm_v1">
             <register-group-instance register-group-key="tca" address-space-key="data" offset="0xA00"/>
             <signals>
-                <signal pad-key="pf0" index="0" function="TCA0_ALT5" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pd0" index="0" function="TCA0_ALT3" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pc0" index="0" function="TCA0_ALT2" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pa0" index="0" function="TCA0" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pf1" index="1" function="TCA0_ALT5" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pd1" index="1" function="TCA0_ALT3" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pc1" index="1" function="TCA0_ALT2" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pa1" index="1" function="TCA0" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pf2" index="2" function="TCA0_ALT5" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pd2" index="2" function="TCA0_ALT3" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pc2" index="2" function="TCA0_ALT2" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pa2" index="2" function="TCA0" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pf3" index="3" function="TCA0_ALT5" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pd3" index="3" function="TCA0_ALT3" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pc3" index="3" function="TCA0_ALT2" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pa3" index="3" function="TCA0" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pf4" index="4" function="TCA0_ALT5" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pd4" index="4" function="TCA0_ALT3" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pa4" index="4" function="TCA0" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pf5" index="5" function="TCA0_ALT5" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pd5" index="5" function="TCA0_ALT3" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal pad-key="pa5" index="5" function="TCA0" group="WO" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pf0" index="0" function="TCA0_ALT5" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pd0" index="0" function="TCA0_ALT3" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pc0" index="0" function="TCA0_ALT2" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa0" index="0" function="TCA0" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pf1" index="1" function="TCA0_ALT5" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pd1" index="1" function="TCA0_ALT3" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pc1" index="1" function="TCA0_ALT2" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa1" index="1" function="TCA0" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pf2" index="2" function="TCA0_ALT5" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pd2" index="2" function="TCA0_ALT3" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pc2" index="2" function="TCA0_ALT2" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa2" index="2" function="TCA0" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pf3" index="3" function="TCA0_ALT5" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pd3" index="3" function="TCA0_ALT3" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pc3" index="3" function="TCA0_ALT2" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa3" index="3" function="TCA0" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pf4" index="4" function="TCA0_ALT5" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pd4" index="4" function="TCA0_ALT3" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa4" index="4" function="TCA0" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pf5" index="5" function="TCA0_ALT5" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pd5" index="5" function="TCA0_ALT3" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa5" index="5" function="TCA0" field="PORTMUX.TCAROUTEA.TCA0"/>
             </signals>
         </peripheral>
         <peripheral key="tcb0" name="TCB0" module-key="tmr_16b_capture_v1">
             <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xB00"/>
             <signals>
-                <signal pad-key="pf4" index="0" function="TCB0_ALT" group="WO" field="PORTMUX.TCBROUTEA.TCB0"/>
-                <signal pad-key="pa2" index="0" function="TCB0" group="WO" field="PORTMUX.TCBROUTEA.TCB0"/>
+                <signal name="WO" pad-key="pf4" index="0" function="TCB0_ALT" field="PORTMUX.TCBROUTEA.TCB0"/>
+                <signal name="WO" pad-key="pa2" index="0" function="TCB0" field="PORTMUX.TCBROUTEA.TCB0"/>
             </signals>
         </peripheral>
         <peripheral key="tcb1" name="TCB1" module-key="tmr_16b_capture_v1">
             <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xB10"/>
             <signals>
-                <signal pad-key="pf5" index="0" function="TCB1_ALT" group="WO" field="PORTMUX.TCBROUTEA.TCB1"/>
-                <signal pad-key="pa3" index="0" function="TCB1" group="WO" field="PORTMUX.TCBROUTEA.TCB1"/>
+                <signal name="WO" pad-key="pf5" index="0" function="TCB1_ALT" field="PORTMUX.TCBROUTEA.TCB1"/>
+                <signal name="WO" pad-key="pa3" index="0" function="TCB1" field="PORTMUX.TCBROUTEA.TCB1"/>
             </signals>
         </peripheral>
         <peripheral key="tcb2" name="TCB2" module-key="tmr_16b_capture_v1">
             <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xB20"/>
             <signals>
-                <signal pad-key="pc0" index="0" function="TCB2" group="WO" field="PORTMUX.TCBROUTEA.TCB2"/>
+                <signal name="WO" pad-key="pc0" index="0" function="TCB2" field="PORTMUX.TCBROUTEA.TCB2"/>
             </signals>
         </peripheral>
         <peripheral key="tcd0" name="TCD0" module-key="tmr_12b_psc_v1">
             <register-group-instance register-group-key="tcd" address-space-key="data" offset="0xB80"/>
             <signals>
-                <signal pad-key="pf0" function="TCD0_ALT2" group="WOA" field="PORTMUX.TCDROUTEA.TCD0"/>
-                <signal pad-key="pa4" function="TCD0" group="WOA" field="PORTMUX.TCDROUTEA.TCD0"/>
-                <signal pad-key="pf1" index="1" function="TCD0_ALT2" group="WOB" field="PORTMUX.TCDROUTEA.TCD0"/>
-                <signal pad-key="pa5" index="1" function="TCD0" group="WOB" field="PORTMUX.TCDROUTEA.TCD0"/>
-                <signal pad-key="pf2" index="2" function="TCD0_ALT2" group="WOC" field="PORTMUX.TCDROUTEA.TCD0"/>
-                <signal pad-key="pa6" index="2" function="TCD0" group="WOC" field="PORTMUX.TCDROUTEA.TCD0"/>
-                <signal pad-key="pf3" index="3" function="TCD0_ALT2" group="WOD" field="PORTMUX.TCDROUTEA.TCD0"/>
-                <signal pad-key="pa7" index="3" function="TCD0" group="WOD" field="PORTMUX.TCDROUTEA.TCD0"/>
+                <signal name="WOA" pad-key="pf0" function="TCD0_ALT2" field="PORTMUX.TCDROUTEA.TCD0"/>
+                <signal name="WOA" pad-key="pa4" function="TCD0" field="PORTMUX.TCDROUTEA.TCD0"/>
+                <signal name="WOB" pad-key="pf1" index="1" function="TCD0_ALT2" field="PORTMUX.TCDROUTEA.TCD0"/>
+                <signal name="WOB" pad-key="pa5" index="1" function="TCD0" field="PORTMUX.TCDROUTEA.TCD0"/>
+                <signal name="WOC" pad-key="pf2" index="2" function="TCD0_ALT2" field="PORTMUX.TCDROUTEA.TCD0"/>
+                <signal name="WOC" pad-key="pa6" index="2" function="TCD0" field="PORTMUX.TCDROUTEA.TCD0"/>
+                <signal name="WOD" pad-key="pf3" index="3" function="TCD0_ALT2" field="PORTMUX.TCDROUTEA.TCD0"/>
+                <signal name="WOD" pad-key="pa7" index="3" function="TCD0" field="PORTMUX.TCDROUTEA.TCD0"/>
             </signals>
         </peripheral>
         <peripheral key="twi0" name="TWI0" module-key="i2c_8bit_v2">
             <register-group-instance register-group-key="twi" address-space-key="data" offset="0x900"/>
             <signals>
-                <signal pad-key="pc3" function="I2C0_ALT2" group="SCL" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal pad-key="pa3" function="I2C0_ALT1" group="SCL" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal pad-key="pa3" function="I2C0" group="SCL" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal pad-key="pc3" function="I2C0" group="SCL_DUAL" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal pad-key="pc2" function="I2C0_ALT2" group="SDA" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal pad-key="pa2" function="I2C0_ALT1" group="SDA" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal pad-key="pa2" function="I2C0" group="SDA" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal pad-key="pc2" function="I2C0" group="SDA_DUAL" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SCL" pad-key="pc3" function="I2C0_ALT2" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SCL" pad-key="pa3" function="I2C0_ALT1" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SCL" pad-key="pa3" function="I2C0" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SCL_DUAL" pad-key="pc3" function="I2C0" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SDA" pad-key="pc2" function="I2C0_ALT2" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SDA" pad-key="pa2" function="I2C0_ALT1" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SDA" pad-key="pa2" function="I2C0" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SDA_DUAL" pad-key="pc2" function="I2C0" field="PORTMUX.TWIROUTEA.TWI0"/>
             </signals>
         </peripheral>
         <peripheral key="twi1" name="TWI1" module-key="i2c_8bit_v2">
             <register-group-instance register-group-key="twi" address-space-key="data" offset="0x920"/>
             <signals>
-                <signal pad-key="pf3" function="I2C1_ALT1" group="SCL" field="PORTMUX.TWIROUTEA.TWI1"/>
-                <signal pad-key="pf3" function="I2C1" group="SCL" field="PORTMUX.TWIROUTEA.TWI1"/>
-                <signal pad-key="pf2" function="I2C1_ALT1" group="SDA" field="PORTMUX.TWIROUTEA.TWI1"/>
-                <signal pad-key="pf2" function="I2C1" group="SDA" field="PORTMUX.TWIROUTEA.TWI1"/>
+                <signal name="SCL" pad-key="pf3" function="I2C1_ALT1" field="PORTMUX.TWIROUTEA.TWI1"/>
+                <signal name="SCL" pad-key="pf3" function="I2C1" field="PORTMUX.TWIROUTEA.TWI1"/>
+                <signal name="SDA" pad-key="pf2" function="I2C1_ALT1" field="PORTMUX.TWIROUTEA.TWI1"/>
+                <signal name="SDA" pad-key="pf2" function="I2C1" field="PORTMUX.TWIROUTEA.TWI1"/>
             </signals>
         </peripheral>
         <peripheral key="usart0" name="USART0" module-key="uart_autobd_v4">
             <register-group-instance register-group-key="usart" address-space-key="data" offset="0x800"/>
             <signals>
-                <signal pad-key="pa5" function="USART0_ALT" group="RXD" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal pad-key="pa1" function="USART0" group="RXD" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal pad-key="pa4" function="USART0_ALT" group="TXD" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal pad-key="pa0" function="USART0" group="TXD" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal pad-key="pa6" function="USART0_ALT" group="XCK" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal pad-key="pa2" function="USART0" group="XCK" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal pad-key="pa7" function="USART0_ALT" group="XDIR" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal pad-key="pa3" function="USART0" group="XDIR" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="RXD" pad-key="pa5" function="USART0_ALT" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="RXD" pad-key="pa1" function="USART0" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="TXD" pad-key="pa4" function="USART0_ALT" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="TXD" pad-key="pa0" function="USART0" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="XCK" pad-key="pa6" function="USART0_ALT" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="XCK" pad-key="pa2" function="USART0" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="XDIR" pad-key="pa7" function="USART0_ALT" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="XDIR" pad-key="pa3" function="USART0" field="PORTMUX.USARTROUTEA.USART0"/>
             </signals>
         </peripheral>
         <peripheral key="usart1" name="USART1" module-key="uart_autobd_v4">
             <register-group-instance register-group-key="usart" address-space-key="data" offset="0x820"/>
             <signals>
-                <signal pad-key="pc1" function="USART1" group="RXD" field="PORTMUX.USARTROUTEA.USART1"/>
-                <signal pad-key="pc0" function="USART1" group="TXD" field="PORTMUX.USARTROUTEA.USART1"/>
-                <signal pad-key="pc2" function="USART1" group="XCK" field="PORTMUX.USARTROUTEA.USART1"/>
-                <signal pad-key="pc3" function="USART1" group="XDIR" field="PORTMUX.USARTROUTEA.USART1"/>
+                <signal name="RXD" pad-key="pc1" function="USART1" field="PORTMUX.USARTROUTEA.USART1"/>
+                <signal name="TXD" pad-key="pc0" function="USART1" field="PORTMUX.USARTROUTEA.USART1"/>
+                <signal name="XCK" pad-key="pc2" function="USART1" field="PORTMUX.USARTROUTEA.USART1"/>
+                <signal name="XDIR" pad-key="pc3" function="USART1" field="PORTMUX.USARTROUTEA.USART1"/>
             </signals>
         </peripheral>
         <peripheral key="usart2" name="USART2" module-key="uart_autobd_v4">
             <register-group-instance register-group-key="usart" address-space-key="data" offset="0x840"/>
             <signals>
-                <signal pad-key="pf5" function="USART2_ALT" group="RXD" field="PORTMUX.USARTROUTEA.USART2"/>
-                <signal pad-key="pf1" function="USART2" group="RXD" field="PORTMUX.USARTROUTEA.USART2"/>
-                <signal pad-key="pf4" function="USART2_ALT" group="TXD" field="PORTMUX.USARTROUTEA.USART2"/>
-                <signal pad-key="pf0" function="USART2" group="TXD" field="PORTMUX.USARTROUTEA.USART2"/>
-                <signal pad-key="pf2" function="USART2" group="XCK" field="PORTMUX.USARTROUTEA.USART2"/>
-                <signal pad-key="pf3" function="USART2" group="XDIR" field="PORTMUX.USARTROUTEA.USART2"/>
+                <signal name="RXD" pad-key="pf5" function="USART2_ALT" field="PORTMUX.USARTROUTEA.USART2"/>
+                <signal name="RXD" pad-key="pf1" function="USART2" field="PORTMUX.USARTROUTEA.USART2"/>
+                <signal name="TXD" pad-key="pf4" function="USART2_ALT" field="PORTMUX.USARTROUTEA.USART2"/>
+                <signal name="TXD" pad-key="pf0" function="USART2" field="PORTMUX.USARTROUTEA.USART2"/>
+                <signal name="XCK" pad-key="pf2" function="USART2" field="PORTMUX.USARTROUTEA.USART2"/>
+                <signal name="XDIR" pad-key="pf3" function="USART2" field="PORTMUX.USARTROUTEA.USART2"/>
             </signals>
         </peripheral>
         <peripheral key="userrow" name="USERROW" module-key="avrda_userrow">
@@ -420,8 +420,8 @@
         <peripheral key="zcd0" name="ZCD0" module-key="cmp_zxover_ctrl_v3">
             <register-group-instance register-group-key="zcd" address-space-key="data" offset="0x6C0"/>
             <signals>
-                <signal pad-key="pd1" function="ZCD0" group="IN"/>
-                <signal pad-key="pa7" function="ZCD0" group="OUT" field="PORTMUX.ZCDROUTEA.ZCD0"/>
+                <signal name="IN" pad-key="pd1" function="ZCD0"/>
+                <signal name="OUT" pad-key="pa7" function="ZCD0" field="PORTMUX.ZCDROUTEA.ZCD0"/>
             </signals>
         </peripheral>
     </peripherals>

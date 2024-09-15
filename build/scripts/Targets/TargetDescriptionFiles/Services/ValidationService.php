@@ -770,6 +770,10 @@ class ValidationService
     {
         $failures = [];
 
+        if (empty($signal->name)) {
+            $failures[] = 'Missing name';
+        }
+
         if (empty($signal->padKey)) {
             $failures[] = 'Missing pad key';
 

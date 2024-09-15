@@ -43,20 +43,20 @@
         <peripheral key="ac0" name="AC0" module-key="i2106">
             <register-group-instance register-group-key="ac" address-space-key="data" offset="0x670"/>
             <signals>
-                <signal pad-key="pa6" index="0" function="AC0" group="N"/>
-                <signal pad-key="pa3" function="AC0" group="OUT"/>
-                <signal pad-key="pa7" index="0" function="AC0" group="P"/>
+                <signal name="N" pad-key="pa6" index="0" function="AC0"/>
+                <signal name="OUT" pad-key="pa3" function="AC0"/>
+                <signal name="P" pad-key="pa7" index="0" function="AC0"/>
             </signals>
         </peripheral>
         <peripheral key="adc0" name="ADC0" module-key="i2132">
             <register-group-instance register-group-key="adc" address-space-key="data" offset="0x600"/>
             <signals>
-                <signal pad-key="pa0" index="0" function="AIN0" group="AIN"/>
-                <signal pad-key="pa1" index="1" function="AIN0" group="AIN"/>
-                <signal pad-key="pa2" index="2" function="AIN0" group="AIN"/>
-                <signal pad-key="pa3" index="3" function="AIN0" group="AIN"/>
-                <signal pad-key="pa6" index="6" function="AIN0" group="AIN"/>
-                <signal pad-key="pa7" index="7" function="AIN0" group="AIN"/>
+                <signal name="AIN" pad-key="pa0" index="0" function="AIN0"/>
+                <signal name="AIN" pad-key="pa1" index="1" function="AIN0"/>
+                <signal name="AIN" pad-key="pa2" index="2" function="AIN0"/>
+                <signal name="AIN" pad-key="pa3" index="3" function="AIN0"/>
+                <signal name="AIN" pad-key="pa6" index="6" function="AIN0"/>
+                <signal name="AIN" pad-key="pa7" index="7" function="AIN0"/>
             </signals>
         </peripheral>
         <peripheral key="bod" name="BOD" module-key="i2114">
@@ -65,22 +65,22 @@
         <peripheral key="ccl" name="CCL" module-key="i2128">
             <register-group-instance register-group-key="ccl" address-space-key="data" offset="0x1C0"/>
             <signals>
-                <signal pad-key="pa0" index="0" function="CCL" group="LUT0_IN"/>
-                <signal pad-key="pa1" index="1" function="CCL" group="LUT0_IN"/>
-                <signal pad-key="pa2" index="2" function="CCL" group="LUT0_IN"/>
-                <signal pad-key="pa6" index="0" function="CCL" group="LUT1_OUT"/>
+                <signal name="LUT0_IN" pad-key="pa0" index="0" function="CCL"/>
+                <signal name="LUT0_IN" pad-key="pa1" index="1" function="CCL"/>
+                <signal name="LUT0_IN" pad-key="pa2" index="2" function="CCL"/>
+                <signal name="LUT1_OUT" pad-key="pa6" index="0" function="CCL"/>
             </signals>
         </peripheral>
         <peripheral key="clkctrl" name="CLKCTRL" module-key="i2601_clkctrl">
             <register-group-instance register-group-key="clkctrl" address-space-key="data" offset="0x60"/>
             <signals>
-                <signal pad-key="pa3" function="CLKCTRL" group="CLKI"/>
+                <signal name="CLKI" pad-key="pa3" function="CLKCTRL"/>
             </signals>
         </peripheral>
         <peripheral key="cpu" name="CPU" module-key="i2100">
             <register-group-instance register-group-key="cpu" address-space-key="data" offset="0x30"/>
             <signals>
-                <signal pad-key="pa1" function="OTHER" group="BREAK"/>
+                <signal name="BREAK" pad-key="pa1" function="OTHER"/>
             </signals>
         </peripheral>
         <peripheral key="cpuint" name="CPUINT" module-key="i2104">
@@ -92,19 +92,19 @@
         <peripheral key="evsys" name="EVSYS" module-key="i2601_evsys">
             <register-group-instance register-group-key="evsys" address-space-key="data" offset="0x180"/>
             <signals>
-                <signal pad-key="pa0" index="0" function="EVAINCH0" group="EVAPA" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
-                <signal pad-key="pa1" index="1" function="EVAINCH0" group="EVAPA" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
-                <signal pad-key="pa2" index="2" function="EVAINCH0" group="EVAPA" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
-                <signal pad-key="pa3" index="3" function="EVAINCH0" group="EVAPA" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
-                <signal pad-key="pa6" index="6" function="EVAINCH0" group="EVAPA" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
-                <signal pad-key="pa7" index="7" function="EVAINCH0" group="EVAPA" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
-                <signal pad-key="pa2" index="0" function="EVSYS" group="EVOUT" field="PORTMUX.CTRLA.EVOUT0"/>
-                <signal pad-key="pa0" index="0" function="EVSINCH0" group="EVSPA" field="EVSYS.SYNCCH0.SYNCCH0"/>
-                <signal pad-key="pa1" index="1" function="EVSINCH0" group="EVSPA" field="EVSYS.SYNCCH0.SYNCCH0"/>
-                <signal pad-key="pa2" index="2" function="EVSINCH0" group="EVSPA" field="EVSYS.SYNCCH0.SYNCCH0"/>
-                <signal pad-key="pa3" index="3" function="EVSINCH0" group="EVSPA" field="EVSYS.SYNCCH0.SYNCCH0"/>
-                <signal pad-key="pa6" index="6" function="EVSINCH0" group="EVSPA" field="EVSYS.SYNCCH0.SYNCCH0"/>
-                <signal pad-key="pa7" index="7" function="EVSINCH0" group="EVSPA" field="EVSYS.SYNCCH0.SYNCCH0"/>
+                <signal name="EVAPA" pad-key="pa0" index="0" function="EVAINCH0" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
+                <signal name="EVAPA" pad-key="pa1" index="1" function="EVAINCH0" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
+                <signal name="EVAPA" pad-key="pa2" index="2" function="EVAINCH0" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
+                <signal name="EVAPA" pad-key="pa3" index="3" function="EVAINCH0" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
+                <signal name="EVAPA" pad-key="pa6" index="6" function="EVAINCH0" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
+                <signal name="EVAPA" pad-key="pa7" index="7" function="EVAINCH0" field="EVSYS.ASYNCCH0.ASYNCCH0"/>
+                <signal name="EVOUT" pad-key="pa2" index="0" function="EVSYS" field="PORTMUX.CTRLA.EVOUT0"/>
+                <signal name="EVSPA" pad-key="pa0" index="0" function="EVSINCH0" field="EVSYS.SYNCCH0.SYNCCH0"/>
+                <signal name="EVSPA" pad-key="pa1" index="1" function="EVSINCH0" field="EVSYS.SYNCCH0.SYNCCH0"/>
+                <signal name="EVSPA" pad-key="pa2" index="2" function="EVSINCH0" field="EVSYS.SYNCCH0.SYNCCH0"/>
+                <signal name="EVSPA" pad-key="pa3" index="3" function="EVSINCH0" field="EVSYS.SYNCCH0.SYNCCH0"/>
+                <signal name="EVSPA" pad-key="pa6" index="6" function="EVSINCH0" field="EVSYS.SYNCCH0.SYNCCH0"/>
+                <signal name="EVSPA" pad-key="pa7" index="7" function="EVSINCH0" field="EVSYS.SYNCCH0.SYNCCH0"/>
             </signals>
         </peripheral>
         <peripheral key="fuse" name="FUSE" module-key="i2601_fuse">
@@ -122,12 +122,12 @@
         <peripheral key="porta" name="PORTA" module-key="gpio_port">
             <register-group-instance register-group-key="port" address-space-key="data" offset="0x400"/>
             <signals>
-                <signal pad-key="pa0" index="0" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa1" index="1" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa2" index="2" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa3" index="3" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa6" index="6" function="IOPORT" group="PIN"/>
-                <signal pad-key="pa7" index="7" function="IOPORT" group="PIN"/>
+                <signal name="PA0" pad-key="pa0" index="0" function="IOPORT"/>
+                <signal name="PA1" pad-key="pa1" index="1" function="IOPORT"/>
+                <signal name="PA2" pad-key="pa2" index="2" function="IOPORT"/>
+                <signal name="PA3" pad-key="pa3" index="3" function="IOPORT"/>
+                <signal name="PA6" pad-key="pa6" index="6" function="IOPORT"/>
+                <signal name="PA7" pad-key="pa7" index="7" function="IOPORT"/>
             </signals>
         </peripheral>
         <peripheral key="portmux" name="PORTMUX" module-key="i2601_portmux">
@@ -136,7 +136,7 @@
         <peripheral key="rstctrl" name="RSTCTRL" module-key="i2111">
             <register-group-instance register-group-key="rstctrl" address-space-key="data" offset="0x40"/>
             <signals>
-                <signal pad-key="pa0" function="OTHER" group="RESET"/>
+                <signal name="RESET" pad-key="pa0" function="OTHER"/>
             </signals>
         </peripheral>
         <peripheral key="rtc" name="RTC" module-key="i2116">
@@ -151,52 +151,52 @@
         <peripheral key="spi0" name="SPI0" module-key="i2107">
             <register-group-instance register-group-key="spi" address-space-key="data" offset="0x820"/>
             <signals>
-                <signal pad-key="pa7" function="SPI0_ALT" group="MISO" field="PORTMUX.CTRLB.SPI0"/>
-                <signal pad-key="pa2" function="SPI0" group="MISO" field="PORTMUX.CTRLB.SPI0"/>
-                <signal pad-key="pa6" function="SPI0_ALT" group="MOSI" field="PORTMUX.CTRLB.SPI0"/>
-                <signal pad-key="pa1" function="SPI0" group="MOSI" field="PORTMUX.CTRLB.SPI0"/>
-                <signal pad-key="pa3" function="SPI0" group="SCK"/>
-                <signal pad-key="pa0" function="SPI0" group="SS"/>
+                <signal name="MISO" pad-key="pa7" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
+                <signal name="MISO" pad-key="pa2" function="SPI0" field="PORTMUX.CTRLB.SPI0"/>
+                <signal name="MOSI" pad-key="pa6" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
+                <signal name="MOSI" pad-key="pa1" function="SPI0" field="PORTMUX.CTRLB.SPI0"/>
+                <signal name="SCK" pad-key="pa3" function="SPI0"/>
+                <signal name="SS" pad-key="pa0" function="SPI0"/>
             </signals>
         </peripheral>
         <peripheral key="syscfg" name="SYSCFG" module-key="i2601_syscfg">
             <register-group-instance register-group-key="syscfg" address-space-key="data" offset="0xF00"/>
             <signals>
-                <signal pad-key="pa0" function="OTHER" group="UPDI"/>
+                <signal name="UPDI" pad-key="pa0" function="OTHER"/>
             </signals>
         </peripheral>
         <peripheral key="tca0" name="TCA0" module-key="i2117">
             <register-group-instance register-group-key="tca" address-space-key="data" offset="0xA00"/>
             <signals>
-                <signal pad-key="pa7" index="0" function="TCA0_ALT" group="WO" field="PORTMUX.CTRLC.TCA00"/>
-                <signal pad-key="pa3" index="0" function="TCA0" group="WO" field="PORTMUX.CTRLC.TCA00"/>
-                <signal pad-key="pa1" index="1" function="TCA0" group="WO"/>
-                <signal pad-key="pa2" index="2" function="TCA0" group="WO"/>
-                <signal pad-key="pa3" index="3" function="TCA0" group="WO"/>
+                <signal name="WO" pad-key="pa7" index="0" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA00"/>
+                <signal name="WO" pad-key="pa3" index="0" function="TCA0" field="PORTMUX.CTRLC.TCA00"/>
+                <signal name="WO" pad-key="pa1" index="1" function="TCA0"/>
+                <signal name="WO" pad-key="pa2" index="2" function="TCA0"/>
+                <signal name="WO" pad-key="pa3" index="3" function="TCA0"/>
             </signals>
         </peripheral>
         <peripheral key="tcb0" name="TCB0" module-key="i2119">
             <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xA40"/>
             <signals>
-                <signal pad-key="pa6" function="TCB0" group="WO"/>
+                <signal name="WO" pad-key="pa6" function="TCB0"/>
             </signals>
         </peripheral>
         <peripheral key="twi0" name="TWI0" module-key="i2110">
             <register-group-instance register-group-key="twi" address-space-key="data" offset="0x810"/>
             <signals>
-                <signal pad-key="pa2" function="TWI0" group="SCL"/>
-                <signal pad-key="pa1" function="TWI0" group="SDA"/>
+                <signal name="SCL" pad-key="pa2" function="TWI0"/>
+                <signal name="SDA" pad-key="pa1" function="TWI0"/>
             </signals>
         </peripheral>
         <peripheral key="usart0" name="USART0" module-key="i2108">
             <register-group-instance register-group-key="usart" address-space-key="data" offset="0x800"/>
             <signals>
-                <signal pad-key="pa2" function="USART0_ALT" group="RXD" field="PORTMUX.CTRLB.USART0"/>
-                <signal pad-key="pa7" function="USART0" group="RXD" field="PORTMUX.CTRLB.USART0"/>
-                <signal pad-key="pa1" function="USART0_ALT" group="TXD" field="PORTMUX.CTRLB.USART0"/>
-                <signal pad-key="pa6" function="USART0" group="TXD" field="PORTMUX.CTRLB.USART0"/>
-                <signal pad-key="pa3" function="USART0" group="XCK"/>
-                <signal pad-key="pa0" function="USART0" group="XDIR"/>
+                <signal name="RXD" pad-key="pa2" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="RXD" pad-key="pa7" function="USART0" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="TXD" pad-key="pa1" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="TXD" pad-key="pa6" function="USART0" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="XCK" pad-key="pa3" function="USART0"/>
+                <signal name="XDIR" pad-key="pa0" function="USART0"/>
             </signals>
         </peripheral>
         <peripheral key="userrow" name="USERROW" module-key="i2601_userrow">
