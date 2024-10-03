@@ -22,6 +22,7 @@ enum TargetPhysicalInterface: string
             self::PDI => 'PDI',
             self::UPDI => 'UPDI',
             self::DEBUG_WIRE => 'debugWIRE',
+            default => 'Other'
         };
     }
 

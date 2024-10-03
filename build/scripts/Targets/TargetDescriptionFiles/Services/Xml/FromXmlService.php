@@ -191,7 +191,28 @@ class FromXmlService
     public function physicalInterfaceFromElement(DOMElement $element): PhysicalInterface
     {
         $attributes = $this->getNodeAttributesByName($element);
-        return new PhysicalInterface($attributes['value'] ?? null);
+
+        $output = new PhysicalInterface($attributes['value'] ?? null, []);
+
+        $signalsElements = $element->getElementsByTagName('signals');
+        if ($signalsElements->count() > 1) {
+            throw new XmlParsingException('Unexpected number of "signals" elements');
+        }
+
+        $signalElement = $signalsElements->item(0);
+        if ($signalElement instanceof DOMElement) {
+            foreach ($signalElement->childNodes as $childNode) {
+                if (!$childNode instanceof DOMElement) {
+                    continue;
+                }
+
+                if ($childNode->nodeName === 'signal') {
+                    $output->signals[] = $this->signalFromElement($childNode);
+                }
+            }
+        }
+
+        return $output;
     }
 
     public function moduleFromElement(DOMElement $element): Module

@@ -132,6 +132,15 @@ class ToXmlService
         $element = $document->createElement('physical-interface');
         $element->setAttribute('value', $physicalInterface->value);
 
+        if (!empty($physicalInterface->signals)) {
+            $signalsElement = $document->createElement('signals');
+            foreach ($physicalInterface->signals as $signal) {
+                $signalsElement->append($this->signalToXml($signal, $document));
+            }
+
+            $element->append($signalsElement);
+        }
+
         return $element;
     }
 

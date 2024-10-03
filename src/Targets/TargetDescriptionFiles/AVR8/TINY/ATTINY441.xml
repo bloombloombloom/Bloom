@@ -163,9 +163,20 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface value="isp"/>
+        <physical-interface value="debug_wire">
+            <signals>
+                <signal name="dW" pad-key="pb3"/>
+            </signals>
+        </physical-interface>
+        <physical-interface value="isp">
+            <signals>
+                <signal name="RESET" pad-key="pb3"/>
+                <signal name="MOSI" pad-key="pa6"/>
+                <signal name="MISO" pad-key="pa5"/>
+                <signal name="SCK" pad-key="pa4"/>
+            </signals>
+        </physical-interface>
         <physical-interface value="hvsp"/>
-        <physical-interface value="debug_wire"/>
     </physical-interfaces>
     <peripherals>
         <peripheral key="portb" name="PORTB" module-key="gpio_port">

@@ -5,8 +5,12 @@ class PhysicalInterface
 {
     public ?string $value = null;
 
-    public function __construct(?string $value)
+    /** @var Signal[] */
+    public array $signals = [];
+
+    public function __construct(?string $value, array $signals)
     {
         $this->value = $value;
+        $this->signals = $signals;
     }
 }

@@ -212,9 +212,23 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface value="isp"/>
+        <physical-interface value="isp">
+            <signals>
+                <signal name="RESET" pad-key="reset"/>
+                <signal name="SCK" pad-key="pb7"/>
+                <signal name="MOSI" pad-key="pb5"/>
+                <signal name="MISO" pad-key="pb6"/>
+            </signals>
+        </physical-interface>
         <physical-interface value="hvpp"/>
-        <physical-interface value="jtag"/>
+        <physical-interface value="jtag">
+            <signals>
+                <signal name="TMS" pad-key="pc3"/>
+                <signal name="TDI" pad-key="pc5"/>
+                <signal name="TCK" pad-key="pc2"/>
+                <signal name="TDO" pad-key="pc4"/>
+            </signals>
+        </physical-interface>
     </physical-interfaces>
     <peripherals>
         <peripheral key="eeprom" name="EEPROM" module-key="eeprom">

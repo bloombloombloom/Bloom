@@ -1,6 +1,7 @@
 <?php
 namespace Targets\TargetDescriptionFiles\Services;
 
+use Targets\TargetDescriptionFiles\PhysicalInterface;
 use Targets\TargetDescriptionFiles\Pin;
 use Targets\TargetDescriptionFiles\TargetDescriptionFile;
 use Targets\TargetDescriptionFiles\AddressSpace;
@@ -21,6 +22,7 @@ use Targets\TargetDescriptionFiles\Pinout;
 use Targets\TargetDescriptionFiles\PinoutType;
 use Targets\TargetDescriptionFiles\Variant;
 use Targets\TargetPeripheral;
+use Targets\TargetPhysicalInterface;
 use Targets\TargetRegisterGroup;
 
 require_once __DIR__ . '/../TargetDescriptionFile.php';
@@ -75,6 +77,14 @@ class ValidationService
             }
 
             $processedAddressSpaceKeys[] = $addressSpace->key;
+        }
+
+        if (empty($tdf->physicalInterfaces)) {
+            $failures[] = 'Missing physical interfaces';
+        }
+
+        foreach ($tdf->physicalInterfaces as $physicalInterface) {
+            $failures = array_merge($failures, $this->validatePhysicalInterface($physicalInterface, $tdf));
         }
 
         if (empty($tdf->modules)) {
@@ -630,6 +640,104 @@ class ValidationService
         return array_map(
             fn (string $failure): string => 'Bit field (name: "' . $bitField->name . '") validation failure: '
                 . $failure,
+            $failures
+        );
+    }
+
+    protected function validatePhysicalInterface(
+        PhysicalInterface $physicalInterface,
+        TargetDescriptionFile $tdf
+    ): array {
+        $failures = [];
+
+        if (empty($physicalInterface->value)) {
+            $failures[] = 'Missing value';
+        }
+
+        $containsSignal = function (string $signalName) use ($physicalInterface): bool {
+            foreach ($physicalInterface->signals as $signal) {
+                if ($signal->name === $signalName) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        $enumValue = TargetPhysicalInterface::tryFrom($physicalInterface->value);
+
+        /*
+         * We only require ISP signals for debugWire targets, as we recommend using the ISP connection when debugging
+         * debugWire targets.
+         */
+        if (
+            $enumValue === TargetPhysicalInterface::ISP
+            && in_array(TargetPhysicalInterface::DEBUG_WIRE, $tdf->getSupportedPhysicalInterfaces())
+        ) {
+            if (!$containsSignal('RESET')) {
+                $failures[] = 'Missing RESET signal';
+            }
+
+            if (!$containsSignal('SCK')) {
+                $failures[] = 'Missing SCK signal';
+            }
+
+            if (!$containsSignal('MOSI')) {
+                $failures[] = 'Missing MOSI signal';
+            }
+
+            if (!$containsSignal('MISO')) {
+                $failures[] = 'Missing MISO signal';
+            }
+        }
+
+        if ($enumValue === TargetPhysicalInterface::DEBUG_WIRE) {
+            if (!$containsSignal('dW')) {
+                $failures[] = 'Missing dW signal';
+            }
+        }
+
+        if ($enumValue === TargetPhysicalInterface::UPDI) {
+            if (!$containsSignal('UPDI')) {
+                $failures[] = 'Missing UPDI signal';
+            }
+        }
+
+        if ($enumValue === TargetPhysicalInterface::PDI) {
+            if (!$containsSignal('DATA')) {
+                $failures[] = 'Missing DATA signal';
+            }
+
+            if (!$containsSignal('CLOCK')) {
+                $failures[] = 'Missing CLOCK signal';
+            }
+        }
+
+        if ($enumValue === TargetPhysicalInterface::JTAG) {
+            if (!$containsSignal('TMS')) {
+                $failures[] = 'Missing TMS signal';
+            }
+
+            if (!$containsSignal('TDI')) {
+                $failures[] = 'Missing TDI signal';
+            }
+
+            if (!$containsSignal('TCK')) {
+                $failures[] = 'Missing TCK signal';
+            }
+
+            if (!$containsSignal('TDO')) {
+                $failures[] = 'Missing TDO signal';
+            }
+        }
+
+        foreach ($physicalInterface->signals as $signal) {
+            $failures = array_merge($failures, $this->validateSignal($signal, $tdf));
+        }
+
+        return array_map(
+            fn (string $failure): string => 'Physical Interface ("' . $physicalInterface->value
+                . '") validation failure: ' . $failure,
             $failures
         );
     }

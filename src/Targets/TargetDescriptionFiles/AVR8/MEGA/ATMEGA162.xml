@@ -213,9 +213,23 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface value="isp"/>
+        <physical-interface value="isp">
+            <signals>
+                <signal name="RESET" pad-key="reset"/>
+                <signal name="SCK" pad-key="pb7"/>
+                <signal name="MOSI" pad-key="pb5"/>
+                <signal name="MISO" pad-key="pb6"/>
+            </signals>
+        </physical-interface>
         <physical-interface value="hvpp"/>
-        <physical-interface value="jtag"/>
+        <physical-interface value="jtag">
+            <signals>
+                <signal name="TMS" pad-key="pc5"/>
+                <signal name="TDI" pad-key="pc7"/>
+                <signal name="TCK" pad-key="pc4"/>
+                <signal name="TDO" pad-key="pc6"/>
+            </signals>
+        </physical-interface>
     </physical-interfaces>
     <peripherals>
         <peripheral key="tc1" name="TC1" module-key="tc16">

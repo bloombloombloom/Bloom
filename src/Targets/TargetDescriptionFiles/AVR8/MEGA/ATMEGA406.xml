@@ -88,7 +88,14 @@
     </address-spaces>
     <physical-interfaces>
         <physical-interface value="hvpp"/>
-        <physical-interface value="jtag"/>
+        <physical-interface value="jtag">
+            <signals>
+                <signal name="TMS" pad-key="pb2"/>
+                <signal name="TDI" pad-key="pb1"/>
+                <signal name="TCK" pad-key="pb3"/>
+                <signal name="TDO" pad-key="pb0"/>
+            </signals>
+        </physical-interface>
     </physical-interfaces>
     <peripherals>
         <peripheral key="adc" name="ADC" module-key="adc">

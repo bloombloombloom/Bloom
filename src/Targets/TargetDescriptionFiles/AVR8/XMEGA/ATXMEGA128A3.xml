@@ -57,8 +57,20 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface value="pdi"/>
-        <physical-interface value="jtag"/>
+        <physical-interface value="pdi">
+            <signals>
+                <signal name="CLOCK" pad-key="reset"/>
+                <signal name="DATA" pad-key="pdi"/>
+            </signals>
+        </physical-interface>
+        <physical-interface value="jtag">
+            <signals>
+                <signal name="TMS" pad-key="pb4"/>
+                <signal name="TDI" pad-key="pb5"/>
+                <signal name="TCK" pad-key="pb6"/>
+                <signal name="TDO" pad-key="pb7"/>
+            </signals>
+        </physical-interface>
     </physical-interfaces>
     <peripherals>
         <peripheral key="gpio" name="GPIO" module-key="i6085">

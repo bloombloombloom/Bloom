@@ -57,7 +57,12 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface value="pdi"/>
+        <physical-interface value="pdi">
+            <signals>
+                <signal name="CLOCK" pad-key="reset"/>
+                <signal name="DATA" pad-key="pdi"/>
+            </signals>
+        </physical-interface>
     </physical-interfaces>
     <peripherals>
         <peripheral key="gpio" name="GPIO" module-key="i6085">

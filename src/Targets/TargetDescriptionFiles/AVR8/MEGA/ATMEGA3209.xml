@@ -38,7 +38,11 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface value="updi"/>
+        <physical-interface value="updi">
+            <signals>
+                <signal name="UPDI" pad-key="updi"/>
+            </signals>
+        </physical-interface>
     </physical-interfaces>
     <peripherals>
         <peripheral key="ac0" name="AC0" module-key="i2106">

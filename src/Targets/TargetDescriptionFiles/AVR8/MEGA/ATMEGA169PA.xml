@@ -188,7 +188,14 @@
     <physical-interfaces>
         <physical-interface value="isp"/>
         <physical-interface value="hvpp"/>
-        <physical-interface value="jtag"/>
+        <physical-interface value="jtag">
+            <signals>
+                <signal name="TCK" pad-key="pf4"/>
+                <signal name="TMS" pad-key="pf5"/>
+                <signal name="TDO" pad-key="pf6"/>
+                <signal name="TDI" pad-key="pf7"/>
+            </signals>
+        </physical-interface>
     </physical-interfaces>
     <peripherals>
         <peripheral key="tc0" name="TC0" module-key="tc8">

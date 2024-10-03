@@ -186,9 +186,20 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface value="isp"/>
+        <physical-interface value="debug_wire">
+            <signals>
+                <signal name="dW" pad-key="pc1"/>
+            </signals>
+        </physical-interface>
+        <physical-interface value="isp">
+            <signals>
+                <signal name="RESET" pad-key="pc1"/>
+                <signal name="MOSI" pad-key="pb2"/>
+                <signal name="MISO" pad-key="pb3"/>
+                <signal name="SCK" pad-key="pb1"/>
+            </signals>
+        </physical-interface>
         <physical-interface value="hvpp"/>
-        <physical-interface value="debug_wire"/>
     </physical-interfaces>
     <peripherals>
         <peripheral key="portb" name="PORTB" module-key="gpio_port">
@@ -766,7 +777,7 @@
         <pad key="pb7" name="PB7"/>
         <pad key="pc7" name="PC7"/>
         <pad key="pc6" name="PC6"/>
-        <pad key="reset" name="RESET"/>
+        <pad key="pc1" name="PC1"/>
         <pad key="pc5" name="PC5"/>
         <pad key="pc4" name="PC4"/>
         <pad key="ucap" name="UCAP"/>
@@ -801,7 +812,7 @@
             <pin position="21" pad-key="pb7"/>
             <pin position="22" pad-key="pc7"/>
             <pin position="23" pad-key="pc6"/>
-            <pin position="24" pad-key="reset"/>
+            <pin position="24" pad-key="pc1"/>
             <pin position="25" pad-key="pc5"/>
             <pin position="26" pad-key="pc4"/>
             <pin position="27" pad-key="ucap"/>

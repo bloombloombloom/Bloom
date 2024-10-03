@@ -214,7 +214,14 @@
     <physical-interfaces>
         <physical-interface value="isp"/>
         <physical-interface value="hvpp"/>
-        <physical-interface value="jtag"/>
+        <physical-interface value="jtag">
+            <signals>
+                <signal name="TDI" pad-key="pc5"/>
+                <signal name="TDO" pad-key="pc4"/>
+                <signal name="TMS" pad-key="pc3"/>
+                <signal name="TCK" pad-key="pc2"/>
+            </signals>
+        </physical-interface>
     </physical-interfaces>
     <peripherals>
         <peripheral key="eeprom" name="EEPROM" module-key="eeprom">

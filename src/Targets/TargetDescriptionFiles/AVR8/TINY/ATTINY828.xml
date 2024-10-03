@@ -164,9 +164,20 @@
         </address-space>
     </address-spaces>
     <physical-interfaces>
-        <physical-interface value="isp"/>
+        <physical-interface value="debug_wire">
+            <signals>
+                <signal name="dW" pad-key="pd2"/>
+            </signals>
+        </physical-interface>
+        <physical-interface value="isp">
+            <signals>
+                <signal name="RESET" pad-key="pd2"/>
+                <signal name="MOSI" pad-key="pd0"/>
+                <signal name="MISO" pad-key="pd1"/>
+                <signal name="SCK" pad-key="pd3"/>
+            </signals>
+        </physical-interface>
         <physical-interface value="hvpp"/>
-        <physical-interface value="debug_wire"/>
     </physical-interfaces>
     <peripherals>
         <peripheral key="spi" name="SPI" module-key="spi">
