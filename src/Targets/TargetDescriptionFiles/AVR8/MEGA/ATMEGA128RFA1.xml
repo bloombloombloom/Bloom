@@ -189,7 +189,7 @@
         <physical-interface value="isp">
             <signals>
                 <signal name="RESET" pad-key="rstn"/>
-                <signal name="SCK" pad-key="pb1"/>
+                <signal name="SCLK" pad-key="pb1"/>
                 <signal name="MOSI" pad-key="pb2"/>
                 <signal name="MISO" pad-key="pb3"/>
             </signals>

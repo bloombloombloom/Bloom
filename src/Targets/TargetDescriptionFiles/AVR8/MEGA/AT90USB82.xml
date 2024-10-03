@@ -196,7 +196,7 @@
                 <signal name="RESET" pad-key="pc1"/>
                 <signal name="MOSI" pad-key="pb2"/>
                 <signal name="MISO" pad-key="pb3"/>
-                <signal name="SCK" pad-key="pb1"/>
+                <signal name="SCLK" pad-key="pb1"/>
             </signals>
         </physical-interface>
         <physical-interface value="hvpp"/>

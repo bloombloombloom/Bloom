@@ -215,7 +215,7 @@
         <physical-interface value="isp">
             <signals>
                 <signal name="RESET" pad-key="reset"/>
-                <signal name="SCK" pad-key="pb7"/>
+                <signal name="SCLK" pad-key="pb7"/>
                 <signal name="MOSI" pad-key="pb5"/>
                 <signal name="MISO" pad-key="pb6"/>
             </signals>

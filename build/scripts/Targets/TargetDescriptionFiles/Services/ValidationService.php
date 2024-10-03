@@ -678,8 +678,8 @@ class ValidationService
                 $failures[] = 'Missing RESET signal';
             }
 
-            if (!$containsSignal('SCK')) {
-                $failures[] = 'Missing SCK signal';
+            if (!$containsSignal('SCLK')) {
+                $failures[] = 'Missing SCLK signal';
             }
 
             if (!$containsSignal('MOSI')) {

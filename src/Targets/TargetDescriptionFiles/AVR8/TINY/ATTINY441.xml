@@ -173,7 +173,7 @@
                 <signal name="RESET" pad-key="pb3"/>
                 <signal name="MOSI" pad-key="pa6"/>
                 <signal name="MISO" pad-key="pa5"/>
-                <signal name="SCK" pad-key="pa4"/>
+                <signal name="SCLK" pad-key="pa4"/>
             </signals>
         </physical-interface>
         <physical-interface value="hvsp"/>
