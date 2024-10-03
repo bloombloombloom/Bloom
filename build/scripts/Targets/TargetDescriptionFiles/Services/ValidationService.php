@@ -731,6 +731,16 @@ class ValidationService
             }
         }
 
+        if ($enumValue === TargetPhysicalInterface::SDI) {
+            if (!$containsSignal('SWDIO')) {
+                $failures[] = 'Missing SWDIO signal';
+            }
+
+            if (!$containsSignal('SWCLK')) {
+                $failures[] = 'Missing SWCLK signal';
+            }
+        }
+
         foreach ($physicalInterface->signals as $signal) {
             $failures = array_merge($failures, $this->validateSignal($signal, $tdf));
         }
