@@ -65,7 +65,7 @@ foreach ($xmlFiles as $xmlFile) {
 
         print "\033[31m";
         print 'Validation for ' . $xmlFilePath . ' failed' . PHP_EOL;
-        print count($validationFailures) . ' error(s) found:' . PHP_EOL;
+        print count($validationFailures) . ' failure(s):' . PHP_EOL;
         print implode(PHP_EOL, $validationFailures);
         print PHP_EOL . PHP_EOL;
 
@@ -81,7 +81,7 @@ foreach ($xmlFiles as $xmlFile) {
 
 print 'Validated ' . count($xmlFiles) . ' TDFs' . PHP_EOL;
 print (($failedValidationCount > 0) ? "\033[31m" : "\033[32m");
-print $failedValidationCount . ' failure(s)' . "\033[0m" . PHP_EOL;
+print $failedValidationCount . ' TDF(s) with failures' . "\033[0m" . PHP_EOL;
 print 'Done' . PHP_EOL;
 
 if ($failedValidationCount > 0) {
