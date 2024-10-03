@@ -9,6 +9,7 @@ namespace Targets
             {TargetPhysicalInterface::PDI, "PDI"},
             {TargetPhysicalInterface::JTAG, "JTAG"},
             {TargetPhysicalInterface::UPDI, "UPDI"},
+            {TargetPhysicalInterface::SDI, "SDI"},
         };
     }
 }

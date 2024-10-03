@@ -13,6 +13,7 @@ namespace Targets
         DEBUG_WIRE,
         PDI,
         UPDI,
+        SDI,
     };
 
     /**

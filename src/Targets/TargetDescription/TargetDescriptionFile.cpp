@@ -162,6 +162,7 @@ namespace Targets::TargetDescription
             {"jtag", TargetPhysicalInterface::JTAG},
             {"pdi", TargetPhysicalInterface::PDI},
             {"isp", TargetPhysicalInterface::ISP},
+            {"sdi", TargetPhysicalInterface::SDI},
         };
 
         auto output = std::set<TargetPhysicalInterface>{};

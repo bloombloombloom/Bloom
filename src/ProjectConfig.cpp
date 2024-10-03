@@ -171,6 +171,7 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
         {"pdi", TargetPhysicalInterface::PDI},
         {"jtag", TargetPhysicalInterface::JTAG},
         {"updi", TargetPhysicalInterface::UPDI},
+        {"sdi", TargetPhysicalInterface::SDI},
     };
 
     if (!targetNode["physicalInterface"]) {

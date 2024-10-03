@@ -8,6 +8,7 @@ enum TargetPhysicalInterface: string
     case PDI = 'pdi';
     case UPDI = 'updi';
     case DEBUG_WIRE = 'debug_wire';
+    case SDI = 'sdi';
 
     public function supportsDebugging(): bool
     {
@@ -22,6 +23,7 @@ enum TargetPhysicalInterface: string
             self::PDI => 'PDI',
             self::UPDI => 'UPDI',
             self::DEBUG_WIRE => 'debugWIRE',
+            self::SDI => 'SDI',
             default => 'Other'
         };
     }
@@ -33,6 +35,7 @@ enum TargetPhysicalInterface: string
             self::PDI => 'pdi',
             self::UPDI => 'updi',
             self::DEBUG_WIRE => 'debug-wire',
+            self::SDI => 'sdi',
             default => null
         };
     }
