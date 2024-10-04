@@ -335,6 +335,7 @@ class TargetDescriptionFile
                     $registerGroupInstance->addressSpaceKey,
                     $registerGroup,
                     $registerGroupInstance->offset ?? 0,
+                    null,
                     $peripheral->moduleKey,
                     $registerGroupInstance->key,
                     $registerGroupInstance->name
@@ -349,13 +350,17 @@ class TargetDescriptionFile
         string $addressSpaceKey,
         RegisterGroup $registerGroup,
         int $addressOffset,
+        ?string $parentGroupAbsoluteKey,
         string $moduleKey,
         ?string $keyOverride = null,
         ?string $nameOverride = null
     ): TargetRegisterGroup {
         $addressOffset += $registerGroup->offset ?? 0;
+        $groupKey = $keyOverride ?? $registerGroup->key;
+
         $output = new TargetRegisterGroup(
-            $keyOverride ?? $registerGroup->key,
+            $groupKey,
+            !empty($parentGroupAbsoluteKey) ? $parentGroupAbsoluteKey . '.' . $groupKey : $groupKey,
             $nameOverride ?? $registerGroup->name,
             $addressSpaceKey,
             $addressOffset,
@@ -368,6 +373,7 @@ class TargetDescriptionFile
                 $addressSpaceKey,
                 $subgroup,
                 $addressOffset,
+                $output->absoluteKey,
                 $moduleKey
             );
         }
@@ -380,6 +386,7 @@ class TargetDescriptionFile
                     $addressSpaceKey,
                     $subgroup,
                     $addressOffset + $subgroupReference->offset,
+                    $output->absoluteKey,
                     $moduleKey,
                     $subgroupReference->key,
                     $subgroupReference->name

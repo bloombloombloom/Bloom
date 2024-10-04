@@ -19,6 +19,7 @@ require_once __DIR__ . "/TargetRegister.php";
 class TargetRegisterGroup
 {
     public ?string $key = null;
+    public ?string $absoluteKey = null;
     public ?string $name = null;
     public ?string $addressSpaceKey = null;
     public ?int $baseAddress = null;
@@ -31,6 +32,7 @@ class TargetRegisterGroup
 
     public function __construct(
         ?string $key,
+        ?string $absoluteKey,
         ?string $name,
         ?string $addressSpaceKey,
         ?int $baseAddress,
@@ -38,6 +40,7 @@ class TargetRegisterGroup
         array $registers
     ) {
         $this->key = $key;
+        $this->absoluteKey = $absoluteKey;
         $this->name = $name;
         $this->addressSpaceKey = $addressSpaceKey;
         $this->baseAddress = $baseAddress;
