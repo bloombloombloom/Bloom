@@ -215,9 +215,9 @@
                 <signal name="TXD" pad-key="pa1" function="USART" field="U0MAP"/>
                 <signal name="RXD" pad-key="pa2" function="USART" field="U0MAP"/>
                 <signal name="XCK" pad-key="pa3" function="USART" field="U0MAP"/>
-                <signal name="TXD" pad-key="pa7" function="USART_ALT" field="U0MAP"/>
-                <signal name="RXD" pad-key="pb2" function="USART_ALT" field="U0MAP"/>
-                <signal name="XCK" pad-key="pa3" function="USART_ALT" field="U0MAP"/>
+                <signal name="TXD" pad-key="pa7" alternative="true" function="USART_ALT" field="U0MAP"/>
+                <signal name="RXD" pad-key="pb2" alternative="true" function="USART_ALT" field="U0MAP"/>
+                <signal name="XCK" pad-key="pa3" alternative="true" function="USART_ALT" field="U0MAP"/>
             </signals>
         </peripheral>
         <peripheral key="wdt" name="WDT" module-key="wdt">
@@ -339,10 +339,10 @@
         <peripheral key="spi" name="SPI" module-key="spi">
             <register-group-instance description="Serial Peripheral Interface" register-group-key="spi" address-space-key="data" offset="0x0"/>
             <signals>
-                <signal name="MISO" pad-key="pa0" function="SPI_ALT" field="SPIMAP"/>
-                <signal name="MOSI" pad-key="pa1" function="SPI_ALT" field="SPIMAP"/>
-                <signal name="SS" pad-key="pa2" function="SPI_ALT" field="SPIMAP"/>
-                <signal name="SCK" pad-key="pa3" function="SPI_ALT" field="SPIMAP"/>
+                <signal name="MISO" pad-key="pa0" alternative="true" function="SPI_ALT" field="SPIMAP"/>
+                <signal name="MOSI" pad-key="pa1" alternative="true" function="SPI_ALT" field="SPIMAP"/>
+                <signal name="SS" pad-key="pa2" alternative="true" function="SPI_ALT" field="SPIMAP"/>
+                <signal name="SCK" pad-key="pa3" alternative="true" function="SPI_ALT" field="SPIMAP"/>
                 <signal name="SCK" pad-key="pa4" function="SPI" field="SPIMAP"/>
                 <signal name="MISO" pad-key="pa5" function="SPI" field="SPIMAP"/>
                 <signal name="MOSI" pad-key="pa6" function="SPI" field="SPIMAP"/>

@@ -858,11 +858,13 @@ namespace Targets::TargetDescription
     }
 
     Signal TargetDescriptionFile::signalFromXml(const QDomElement& xmlElement) {
+        const auto alternative = TargetDescriptionFile::tryGetAttribute(xmlElement, "alternative");
         const auto index = TargetDescriptionFile::tryGetAttribute(xmlElement, "index");
 
         return {
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
             TargetDescriptionFile::getAttribute(xmlElement, "pad-key"),
+            alternative.has_value() ? std::optional{*alternative == "true"} : std::nullopt,
             index.has_value() ? std::optional{StringService::toUint64(*index)} : std::nullopt,
             TargetDescriptionFile::tryGetAttribute(xmlElement, "function"),
             TargetDescriptionFile::tryGetAttribute(xmlElement, "field")

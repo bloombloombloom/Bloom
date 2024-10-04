@@ -206,6 +206,17 @@ class AtdfService
             }
         }
 
+        // Rename GPIO port signals
+        foreach ($tdf->peripherals as $peripheral) {
+            if ($peripheral->moduleKey !== 'gpio_port') {
+                continue;
+            }
+
+            foreach ($peripheral->signals as $signal) {
+                $signal->name = strtoupper((string) $signal->padKey);
+            }
+        }
+
         if (in_array(TargetPhysicalInterface::UPDI, $tdf->getSupportedDebugPhysicalInterfaces())) {
             /*
              * ATDFs for UPDI-enabled targets do not typically possess an `ocd_base_addr` property in the updi_interface
@@ -629,7 +640,8 @@ class AtdfService
         $attributes = $this->getNodeAttributesByName($element);
         return new PhysicalInterface(
             $physicalInterfacesByName[strtolower($attributes['name'] ?? '')]?->value
-                ?? (!empty($attributes['type']) ? strtolower($attributes['type']) : null)
+                ?? (!empty($attributes['type']) ? strtolower($attributes['type']) : null),
+            []
         );
     }
 
@@ -715,11 +727,18 @@ class AtdfService
     {
         $attributes = $this->getNodeAttributesByName($element);
 
+        $padKey = isset($attributes['pad']) ? strtolower(trim($attributes['pad'])) : null;
+        $function = $attributes['function'] ?? null;
         return new Signal(
-            isset($attributes['pad']) ? strtolower(trim($attributes['pad'])) : null,
+            isset($attributes['group'])
+                ? trim($attributes['group'])
+                : (!empty($padKey) ? strtoupper($padKey) : null),
+            $padKey,
+            stristr((string) $function, 'default') !== false
+                ? false
+                : (stristr((string) $function, '_alt') !== false ? true : null),
             $this->stringService->tryStringToInt($attributes['index'] ?? null),
-            $attributes['function'] ?? null,
-            $attributes['group'] ?? null,
+            $function,
             $attributes['field'] ?? null
         );
     }

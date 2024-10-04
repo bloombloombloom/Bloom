@@ -125,10 +125,10 @@
             <register-group-instance register-group-key="portcfg" address-space-key="data" offset="0xB0"/>
             <signals>
                 <signal name="CLKOUT" pad-key="pd7" function="CLKOUTD" field="CLKOUT"/>
-                <signal name="CLKOUT" pad-key="pd4" function="CLKOUTD_ALT" field="CLKEVPIN"/>
+                <signal name="CLKOUT" pad-key="pd4" alternative="true" function="CLKOUTD_ALT" field="CLKEVPIN"/>
                 <signal name="CLKOUT" pad-key="pr0" function="CLKOUTR" field="CLKOUT"/>
                 <signal name="EVOUT" pad-key="pd7" function="EVOUTD" field="EVOUT"/>
-                <signal name="EVOUT" pad-key="pd4" function="EVOUTD_ALT" field="CLKEVPIN"/>
+                <signal name="EVOUT" pad-key="pd4" alternative="true" function="EVOUTD_ALT" field="CLKEVPIN"/>
                 <signal name="EVOUT" pad-key="pr0" function="EVOUTR" field="EVOUT"/>
                 <signal name="RTCOUT" pad-key="pd6" function="RTCOUTD" field="RTCOUT"/>
                 <signal name="RTCOUT" pad-key="pr0" function="RTCOUTR" field="RTCOUT"/>
@@ -291,10 +291,10 @@
                 <signal name="OC4B" pad-key="pc1" function="TC4" field="TC4B"/>
                 <signal name="OC4C" pad-key="pc2" function="TC4" field="TC4C"/>
                 <signal name="OC4D" pad-key="pc3" function="TC4" field="TC4D"/>
-                <signal name="OC4A" pad-key="pc4" function="TC4_ALT" field="TC4A"/>
-                <signal name="OC4B" pad-key="pc5" function="TC4_ALT" field="TC4B"/>
-                <signal name="OC4C" pad-key="pc6" function="TC4_ALT" field="TC4C"/>
-                <signal name="OC4D" pad-key="pc7" function="TC4_ALT" field="TC4D"/>
+                <signal name="OC4A" pad-key="pc4" alternative="true" function="TC4_ALT" field="TC4A"/>
+                <signal name="OC4B" pad-key="pc5" alternative="true" function="TC4_ALT" field="TC4B"/>
+                <signal name="OC4C" pad-key="pc6" alternative="true" function="TC4_ALT" field="TC4C"/>
+                <signal name="OC4D" pad-key="pc7" alternative="true" function="TC4_ALT" field="TC4D"/>
             </signals>
         </peripheral>
         <peripheral key="tcc5" name="TCC5" module-key="i3007_tc">
@@ -339,9 +339,9 @@
                 <signal name="XCK" pad-key="pc1" function="USART" field="USART0"/>
                 <signal name="RXD" pad-key="pc2" function="USART" field="USART0"/>
                 <signal name="TXD" pad-key="pc3" function="USART" field="USART0"/>
-                <signal name="XCK" pad-key="pc5" function="USART_ALT" field="USART0"/>
-                <signal name="RXD" pad-key="pc6" function="USART_ALT" field="USART0"/>
-                <signal name="TXD" pad-key="pc7" function="USART_ALT" field="USART0"/>
+                <signal name="XCK" pad-key="pc5" alternative="true" function="USART_ALT" field="USART0"/>
+                <signal name="RXD" pad-key="pc6" alternative="true" function="USART_ALT" field="USART0"/>
+                <signal name="TXD" pad-key="pc7" alternative="true" function="USART_ALT" field="USART0"/>
             </signals>
         </peripheral>
         <peripheral key="usartd0" name="USARTD0" module-key="i4000">
@@ -350,9 +350,9 @@
                 <signal name="XCK" pad-key="pd1" function="USART" field="USART0"/>
                 <signal name="RXD" pad-key="pd2" function="USART" field="USART0"/>
                 <signal name="TXD" pad-key="pd3" function="USART" field="USART0"/>
-                <signal name="XCK" pad-key="pd5" function="USART_ALT" field="USART0"/>
-                <signal name="RXD" pad-key="pd6" function="USART_ALT" field="USART0"/>
-                <signal name="TXD" pad-key="pd7" function="USART_ALT" field="USART0"/>
+                <signal name="XCK" pad-key="pd5" alternative="true" function="USART_ALT" field="USART0"/>
+                <signal name="RXD" pad-key="pd6" alternative="true" function="USART_ALT" field="USART0"/>
+                <signal name="TXD" pad-key="pd7" alternative="true" function="USART_ALT" field="USART0"/>
             </signals>
         </peripheral>
         <peripheral key="spic" name="SPIC" module-key="i6090_spi">

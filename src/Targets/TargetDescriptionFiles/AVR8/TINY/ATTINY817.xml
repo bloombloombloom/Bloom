@@ -81,12 +81,12 @@
                 <signal name="LUT0_IN" pad-key="pa0" index="0" function="CCL"/>
                 <signal name="LUT0_IN" pad-key="pa1" index="1" function="CCL"/>
                 <signal name="LUT0_IN" pad-key="pa2" index="2" function="CCL"/>
-                <signal name="LUT0_OUT" pad-key="pb4" index="0" function="CCL_ALT" field="PORTMUX.CTRLA.LUT0"/>
+                <signal name="LUT0_OUT" pad-key="pb4" alternative="true" index="0" function="CCL_ALT" field="PORTMUX.CTRLA.LUT0"/>
                 <signal name="LUT0_OUT" pad-key="pa4" index="0" function="CCL" field="PORTMUX.CTRLA.LUT0"/>
                 <signal name="LUT1_IN" pad-key="pc3" index="0" function="CCL"/>
                 <signal name="LUT1_IN" pad-key="pc4" index="1" function="CCL"/>
                 <signal name="LUT1_IN" pad-key="pc5" index="2" function="CCL"/>
-                <signal name="LUT1_OUT" pad-key="pc1" index="0" function="CCL_ALT" field="PORTMUX.CTRLA.LUT1"/>
+                <signal name="LUT1_OUT" pad-key="pc1" alternative="true" index="0" function="CCL_ALT" field="PORTMUX.CTRLA.LUT1"/>
                 <signal name="LUT1_OUT" pad-key="pa7" index="0" function="CCL" field="PORTMUX.CTRLA.LUT1"/>
             </signals>
         </peripheral>
@@ -102,7 +102,7 @@
         <peripheral key="cpu" name="CPU" module-key="i2100">
             <register-group-instance register-group-key="cpu" address-space-key="data" offset="0x30"/>
             <signals>
-                <signal name="BREAK" pad-key="pc4" function="BREAK_ALT" field="PORTMUX.CTRLA.EXTBRK"/>
+                <signal name="BREAK" pad-key="pc4" alternative="true" function="BREAK_ALT" field="PORTMUX.CTRLA.EXTBRK"/>
                 <signal name="BREAK" pad-key="pa1" function="BREAK" field="PORTMUX.CTRLA.EXTBRK"/>
             </signals>
         </peripheral>
@@ -258,13 +258,13 @@
         <peripheral key="spi0" name="SPI0" module-key="i2107">
             <register-group-instance register-group-key="spi" address-space-key="data" offset="0x820"/>
             <signals>
-                <signal name="MISO" pad-key="pc1" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
+                <signal name="MISO" pad-key="pc1" alternative="true" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
                 <signal name="MISO" pad-key="pa2" function="SPI0" field="PORTMUX.CTRLB.SPI0"/>
-                <signal name="MOSI" pad-key="pc2" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
+                <signal name="MOSI" pad-key="pc2" alternative="true" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
                 <signal name="MOSI" pad-key="pa1" function="SPI0" field="PORTMUX.CTRLB.SPI0"/>
-                <signal name="SCK" pad-key="pc0" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
+                <signal name="SCK" pad-key="pc0" alternative="true" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
                 <signal name="SCK" pad-key="pa3" function="SPI0" field="PORTMUX.CTRLB.SPI0"/>
-                <signal name="SS" pad-key="pc3" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
+                <signal name="SS" pad-key="pc3" alternative="true" function="SPI0_ALT" field="PORTMUX.CTRLB.SPI0"/>
                 <signal name="SS" pad-key="pa4" function="SPI0" field="PORTMUX.CTRLB.SPI0"/>
             </signals>
         </peripheral>
@@ -277,24 +277,24 @@
         <peripheral key="tca0" name="TCA0" module-key="i2117">
             <register-group-instance register-group-key="tca" address-space-key="data" offset="0xA00"/>
             <signals>
-                <signal name="WO" pad-key="pb3" index="0" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA00"/>
+                <signal name="WO" pad-key="pb3" alternative="true" index="0" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA00"/>
                 <signal name="WO" pad-key="pb0" index="0" function="TCA0" field="PORTMUX.CTRLC.TCA00"/>
-                <signal name="WO" pad-key="pb4" index="1" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA01"/>
+                <signal name="WO" pad-key="pb4" alternative="true" index="1" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA01"/>
                 <signal name="WO" pad-key="pb1" index="1" function="TCA0" field="PORTMUX.CTRLC.TCA01"/>
-                <signal name="WO" pad-key="pb5" index="2" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA02"/>
+                <signal name="WO" pad-key="pb5" alternative="true" index="2" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA02"/>
                 <signal name="WO" pad-key="pb2" index="2" function="TCA0" field="PORTMUX.CTRLC.TCA02"/>
-                <signal name="WO" pad-key="pc3" index="3" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA03"/>
+                <signal name="WO" pad-key="pc3" alternative="true" index="3" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA03"/>
                 <signal name="WO" pad-key="pa3" index="3" function="TCA0" field="PORTMUX.CTRLC.TCA03"/>
-                <signal name="WO" pad-key="pc4" index="4" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA04"/>
+                <signal name="WO" pad-key="pc4" alternative="true" index="4" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA04"/>
                 <signal name="WO" pad-key="pa4" index="4" function="TCA0" field="PORTMUX.CTRLC.TCA04"/>
-                <signal name="WO" pad-key="pc5" index="5" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA05"/>
+                <signal name="WO" pad-key="pc5" alternative="true" index="5" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA05"/>
                 <signal name="WO" pad-key="pa5" index="5" function="TCA0" field="PORTMUX.CTRLC.TCA05"/>
             </signals>
         </peripheral>
         <peripheral key="tcb0" name="TCB0" module-key="i2119">
             <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xA40"/>
             <signals>
-                <signal name="WO" pad-key="pc0" index="0" function="TCB0_ALT" field="PORTMUX.CTRLD.TCB0"/>
+                <signal name="WO" pad-key="pc0" alternative="true" index="0" function="TCB0_ALT" field="PORTMUX.CTRLD.TCB0"/>
                 <signal name="WO" pad-key="pa5" index="0" function="TCB0" field="PORTMUX.CTRLD.TCB0"/>
             </signals>
         </peripheral>
@@ -310,22 +310,22 @@
         <peripheral key="twi0" name="TWI0" module-key="i2110">
             <register-group-instance register-group-key="twi" address-space-key="data" offset="0x810"/>
             <signals>
-                <signal name="SCL" pad-key="pa2" function="TWI0_ALT" field="PORTMUX.CTRLB.TWI0"/>
+                <signal name="SCL" pad-key="pa2" alternative="true" function="TWI0_ALT" field="PORTMUX.CTRLB.TWI0"/>
                 <signal name="SCL" pad-key="pb0" function="TWI0" field="PORTMUX.CTRLB.TWI0"/>
-                <signal name="SDA" pad-key="pa1" function="TWI0_ALT" field="PORTMUX.CTRLB.TWI0"/>
+                <signal name="SDA" pad-key="pa1" alternative="true" function="TWI0_ALT" field="PORTMUX.CTRLB.TWI0"/>
                 <signal name="SDA" pad-key="pb1" function="TWI0" field="PORTMUX.CTRLB.TWI0"/>
             </signals>
         </peripheral>
         <peripheral key="usart0" name="USART0" module-key="i2108">
             <register-group-instance register-group-key="usart" address-space-key="data" offset="0x800"/>
             <signals>
-                <signal name="RXD" pad-key="pa2" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="RXD" pad-key="pa2" alternative="true" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
                 <signal name="RXD" pad-key="pb3" function="USART0" field="PORTMUX.CTRLB.USART0"/>
-                <signal name="TXD" pad-key="pa1" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="TXD" pad-key="pa1" alternative="true" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
                 <signal name="TXD" pad-key="pb2" function="USART0" field="PORTMUX.CTRLB.USART0"/>
-                <signal name="XCK" pad-key="pa3" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="XCK" pad-key="pa3" alternative="true" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
                 <signal name="XCK" pad-key="pb1" function="USART0" field="PORTMUX.CTRLB.USART0"/>
-                <signal name="XDIR" pad-key="pa4" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="XDIR" pad-key="pa4" alternative="true" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
                 <signal name="XDIR" pad-key="pb0" function="USART0" field="PORTMUX.CTRLB.USART0"/>
             </signals>
         </peripheral>

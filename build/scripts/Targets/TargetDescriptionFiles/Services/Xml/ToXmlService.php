@@ -198,6 +198,10 @@ class ToXmlService
         $element->setAttribute('name', $signal->name);
         $element->setAttribute('pad-key', $signal->padKey);
 
+        if ($signal->alternative !== null) {
+            $element->setAttribute('alternative', $signal->alternative ? 'true' : 'false');
+        }
+
         if ($signal->index !== null) {
             $element->setAttribute('index', $signal->index);
         }

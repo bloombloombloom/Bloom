@@ -262,14 +262,14 @@
             <signals>
                 <signal name="SDA" pad-key="pb0" function="USI" field="USIPOS"/>
                 <signal name="SCL" pad-key="pb2" function="USI" field="USIPOS"/>
-                <signal name="SCL " pad-key="pa2" function="USI_ALT" field="USIPOS"/>
-                <signal name="SDA" pad-key="pa0" function="USI_ALT" field="USIPOS"/>
+                <signal name="SCL " pad-key="pa2" alternative="true" function="USI_ALT" field="USIPOS"/>
+                <signal name="SDA" pad-key="pa0" alternative="true" function="USI_ALT" field="USIPOS"/>
                 <signal name="DI" pad-key="pb0" function="USI" field="USIPOS"/>
                 <signal name="DO" pad-key="pb1" function="USI" field="USIPOS"/>
                 <signal name="USCK" pad-key="pb2" function="USI" field="USIPOS"/>
-                <signal name="USCK" pad-key="pa2" function="USI_ALT" field="USIPOS"/>
-                <signal name="DO" pad-key="pa1" function="USI_ALT" field="USIPOS"/>
-                <signal name="DI" pad-key="pa0" function="USI_ALT" field="USIPOS"/>
+                <signal name="USCK" pad-key="pa2" alternative="true" function="USI_ALT" field="USIPOS"/>
+                <signal name="DO" pad-key="pa1" alternative="true" function="USI_ALT" field="USIPOS"/>
+                <signal name="DI" pad-key="pa0" alternative="true" function="USI_ALT" field="USIPOS"/>
             </signals>
         </peripheral>
         <peripheral key="eeprom" name="EEPROM" module-key="eeprom">

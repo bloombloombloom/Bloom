@@ -55,7 +55,7 @@
                 <signal name="AINP" pad-key="pd2" index="0" function="AINP"/>
                 <signal name="AINP" pad-key="pd6" index="3" function="AINP"/>
                 <signal name="AINP" pad-key="pc3" index="4" function="AINP"/>
-                <signal name="OUT" pad-key="pa7" function="DEFAULT" field="PORTMUX.ACROUTEA.AC0"/>
+                <signal name="OUT" pad-key="pa7" alternative="false" function="DEFAULT" field="PORTMUX.ACROUTEA.AC0"/>
             </signals>
         </peripheral>
         <peripheral key="ac1" name="AC1" module-key="cmp_control_v8">
@@ -69,7 +69,7 @@
                 <signal name="AINP" pad-key="pd4" index="2" function="AINP"/>
                 <signal name="AINP" pad-key="pd6" index="3" function="AINP"/>
                 <signal name="AINP" pad-key="pc3" index="4" function="AINP"/>
-                <signal name="OUT" pad-key="pa7" function="DEFAULT" field="PORTMUX.ACROUTEA.AC1"/>
+                <signal name="OUT" pad-key="pa7" alternative="false" function="DEFAULT" field="PORTMUX.ACROUTEA.AC1"/>
             </signals>
         </peripheral>
         <peripheral key="adc0" name="ADC0" module-key="adc_12b_diff_ctrl_avr_v2">
@@ -135,10 +135,10 @@
                 <signal name="LUT3_IN" pad-key="pf0" index="0" function="IN"/>
                 <signal name="LUT3_IN" pad-key="pf1" index="1" function="IN"/>
                 <signal name="LUT0_OUT" pad-key="pa6" function="ALT1" field="PORTMUX.CCLROUTEA.LUT0"/>
-                <signal name="LUT0_OUT" pad-key="pa3" function="DEFAULT" field="PORTMUX.CCLROUTEA.LUT0"/>
-                <signal name="LUT1_OUT" pad-key="pc3" function="DEFAULT" field="PORTMUX.CCLROUTEA.LUT1"/>
+                <signal name="LUT0_OUT" pad-key="pa3" alternative="false" function="DEFAULT" field="PORTMUX.CCLROUTEA.LUT0"/>
+                <signal name="LUT1_OUT" pad-key="pc3" alternative="false" function="DEFAULT" field="PORTMUX.CCLROUTEA.LUT1"/>
                 <signal name="LUT2_OUT" pad-key="pd6" function="ALT1" field="PORTMUX.CCLROUTEA.LUT2"/>
-                <signal name="LUT2_OUT" pad-key="pd3" function="DEFAULT" field="PORTMUX.CCLROUTEA.LUT2"/>
+                <signal name="LUT2_OUT" pad-key="pd3" alternative="false" function="DEFAULT" field="PORTMUX.CCLROUTEA.LUT2"/>
             </signals>
         </peripheral>
         <peripheral key="clkctrl" name="CLKCTRL" module-key="avrea_clkctrl">
@@ -171,10 +171,10 @@
             <register-group-instance register-group-key="evsys" address-space-key="data" offset="0x200"/>
             <signals>
                 <signal name="EVOUT" pad-key="pa7" index="0" function="ALT1" field="PORTMUX.EVSYSROUTEA.EVOUTA"/>
-                <signal name="EVOUT" pad-key="pa2" index="0" function="DEFAULT" field="PORTMUX.EVSYSROUTEA.EVOUTA"/>
-                <signal name="EVOUT" pad-key="pc2" index="2" function="DEFAULT" field="PORTMUX.EVSYSROUTEA.EVOUTC"/>
+                <signal name="EVOUT" pad-key="pa2" alternative="false" index="0" function="DEFAULT" field="PORTMUX.EVSYSROUTEA.EVOUTA"/>
+                <signal name="EVOUT" pad-key="pc2" alternative="false" index="2" function="DEFAULT" field="PORTMUX.EVSYSROUTEA.EVOUTC"/>
                 <signal name="EVOUT" pad-key="pd7" index="3" function="ALT1" field="PORTMUX.EVSYSROUTEA.EVOUTD"/>
-                <signal name="EVOUT" pad-key="pd2" index="3" function="DEFAULT" field="PORTMUX.EVSYSROUTEA.EVOUTD"/>
+                <signal name="EVOUT" pad-key="pd2" alternative="false" index="3" function="DEFAULT" field="PORTMUX.EVSYSROUTEA.EVOUTD"/>
                 <signal name="EVOUT" pad-key="pf7" index="5" function="ALT1" field="PORTMUX.EVSYSROUTEA.EVOUTF"/>
             </signals>
         </peripheral>
@@ -271,10 +271,10 @@
                 <signal name="MOSI" pad-key="pc2" function="ALT6" field="PORTMUX.SPIROUTEA.SPI0"/>
                 <signal name="SCK" pad-key="pc3" function="ALT6" field="PORTMUX.SPIROUTEA.SPI0"/>
                 <signal name="SS" pad-key="pf7" function="ALT6" field="PORTMUX.SPIROUTEA.SPI0"/>
-                <signal name="MISO" pad-key="pa5" function="DEFAULT" field="PORTMUX.SPIROUTEA.SPI0"/>
-                <signal name="MOSI" pad-key="pa4" function="DEFAULT" field="PORTMUX.SPIROUTEA.SPI0"/>
-                <signal name="SCK" pad-key="pa6" function="DEFAULT" field="PORTMUX.SPIROUTEA.SPI0"/>
-                <signal name="SS" pad-key="pa7" function="DEFAULT" field="PORTMUX.SPIROUTEA.SPI0"/>
+                <signal name="MISO" pad-key="pa5" alternative="false" function="DEFAULT" field="PORTMUX.SPIROUTEA.SPI0"/>
+                <signal name="MOSI" pad-key="pa4" alternative="false" function="DEFAULT" field="PORTMUX.SPIROUTEA.SPI0"/>
+                <signal name="SCK" pad-key="pa6" alternative="false" function="DEFAULT" field="PORTMUX.SPIROUTEA.SPI0"/>
+                <signal name="SS" pad-key="pa7" alternative="false" function="DEFAULT" field="PORTMUX.SPIROUTEA.SPI0"/>
             </signals>
         </peripheral>
         <peripheral key="syscfg" name="SYSCFG" module-key="avrea_syscfg">
@@ -295,30 +295,30 @@
                 <signal name="WO" pad-key="pd5" index="5" function="ALT3" field="PORTMUX.TCAROUTEA.TCA0"/>
                 <signal name="WO" pad-key="pf0" index="0" function="ALT5" field="PORTMUX.TCAROUTEA.TCA0"/>
                 <signal name="WO" pad-key="pf1" index="1" function="ALT5" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal name="WO" pad-key="pa0" index="0" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal name="WO" pad-key="pa1" index="1" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal name="WO" pad-key="pa2" index="2" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal name="WO" pad-key="pa3" index="3" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal name="WO" pad-key="pa4" index="4" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
-                <signal name="WO" pad-key="pa5" index="5" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa0" alternative="false" index="0" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa1" alternative="false" index="1" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa2" alternative="false" index="2" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa3" alternative="false" index="3" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa4" alternative="false" index="4" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
+                <signal name="WO" pad-key="pa5" alternative="false" index="5" function="DEFAULT" field="PORTMUX.TCAROUTEA.TCA0"/>
             </signals>
         </peripheral>
         <peripheral key="tcb0" name="TCB0" module-key="tmr_16b_capture_v1">
             <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xB00"/>
             <signals>
-                <signal name="WO" pad-key="pa2" index="0" function="DEFAULT" field="PORTMUX.TCBROUTEA.TCB0"/>
+                <signal name="WO" pad-key="pa2" alternative="false" index="0" function="DEFAULT" field="PORTMUX.TCBROUTEA.TCB0"/>
             </signals>
         </peripheral>
         <peripheral key="tcb1" name="TCB1" module-key="tmr_16b_capture_v1">
             <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xB10"/>
             <signals>
-                <signal name="WO" pad-key="pa3" index="0" function="DEFAULT" field="PORTMUX.TCBROUTEA.TCB1"/>
+                <signal name="WO" pad-key="pa3" alternative="false" index="0" function="DEFAULT" field="PORTMUX.TCBROUTEA.TCB1"/>
             </signals>
         </peripheral>
         <peripheral key="tcb2" name="TCB2" module-key="tmr_16b_capture_v1">
             <register-group-instance register-group-key="tcb" address-space-key="data" offset="0xB20"/>
             <signals>
-                <signal name="WO" pad-key="pc0" index="0" function="DEFAULT" field="PORTMUX.TCBROUTEA.TCB2"/>
+                <signal name="WO" pad-key="pc0" alternative="false" index="0" function="DEFAULT" field="PORTMUX.TCBROUTEA.TCB2"/>
             </signals>
         </peripheral>
         <peripheral key="twi0" name="TWI0" module-key="i2c_8bit_avr_v3">
@@ -332,10 +332,10 @@
                 <signal name="SCL_DUAL" pad-key="pc3" function="ALT3" field="PORTMUX.TWIROUTEA.TWI0"/>
                 <signal name="SDA" pad-key="pa0" function="ALT3" field="PORTMUX.TWIROUTEA.TWI0"/>
                 <signal name="SDA_DUAL" pad-key="pc2" function="ALT3" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal name="SCL" pad-key="pa3" function="DEFAULT" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal name="SCL_DUAL" pad-key="pc3" function="DEFAULT" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal name="SDA" pad-key="pa2" function="DEFAULT" field="PORTMUX.TWIROUTEA.TWI0"/>
-                <signal name="SDA_DUAL" pad-key="pc2" function="DEFAULT" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SCL" pad-key="pa3" alternative="false" function="DEFAULT" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SCL_DUAL" pad-key="pc3" alternative="false" function="DEFAULT" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SDA" pad-key="pa2" alternative="false" function="DEFAULT" field="PORTMUX.TWIROUTEA.TWI0"/>
+                <signal name="SDA_DUAL" pad-key="pc2" alternative="false" function="DEFAULT" field="PORTMUX.TWIROUTEA.TWI0"/>
             </signals>
         </peripheral>
         <peripheral key="usart0" name="USART0" module-key="uart_autobd_v4">
@@ -354,10 +354,10 @@
                 <signal name="RXD" pad-key="pc2" index="4" function="ALT4" field="PORTMUX.USARTROUTEA.USART0"/>
                 <signal name="TXD" pad-key="pc1" index="4" function="ALT4" field="PORTMUX.USARTROUTEA.USART0"/>
                 <signal name="XCK" pad-key="pc3" index="4" function="ALT4" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal name="RXD" pad-key="pa1" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal name="TXD" pad-key="pa0" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal name="XCK" pad-key="pa2" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART0"/>
-                <signal name="XDIR" pad-key="pa3" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="RXD" pad-key="pa1" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="TXD" pad-key="pa0" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="XCK" pad-key="pa2" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART0"/>
+                <signal name="XDIR" pad-key="pa3" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART0"/>
             </signals>
         </peripheral>
         <peripheral key="usart1" name="USART1" module-key="uart_autobd_v4">
@@ -365,17 +365,17 @@
             <signals>
                 <signal name="RXD" pad-key="pd7" function="ALT2" field="PORTMUX.USARTROUTEA.USART1"/>
                 <signal name="TXD" pad-key="pd6" function="ALT2" field="PORTMUX.USARTROUTEA.USART1"/>
-                <signal name="RXD" pad-key="pc1" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART1"/>
-                <signal name="TXD" pad-key="pc0" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART1"/>
-                <signal name="XCK" pad-key="pc2" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART1"/>
-                <signal name="XDIR" pad-key="pc3" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART1"/>
+                <signal name="RXD" pad-key="pc1" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART1"/>
+                <signal name="TXD" pad-key="pc0" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART1"/>
+                <signal name="XCK" pad-key="pc2" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART1"/>
+                <signal name="XDIR" pad-key="pc3" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART1"/>
             </signals>
         </peripheral>
         <peripheral key="usart2" name="USART2" module-key="uart_autobd_v4">
             <register-group-instance register-group-key="usart" address-space-key="data" offset="0x840"/>
             <signals>
-                <signal name="RXD" pad-key="pf1" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART2"/>
-                <signal name="TXD" pad-key="pf0" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART2"/>
+                <signal name="RXD" pad-key="pf1" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART2"/>
+                <signal name="TXD" pad-key="pf0" alternative="false" function="DEFAULT" field="PORTMUX.USARTROUTEA.USART2"/>
             </signals>
         </peripheral>
         <peripheral key="userrow" name="USERROW" module-key="avrea_userrow">

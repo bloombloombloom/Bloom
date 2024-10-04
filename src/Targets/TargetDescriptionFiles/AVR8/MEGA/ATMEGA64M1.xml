@@ -319,13 +319,13 @@
             <register-group-instance description="Serial Peripheral Interface" register-group-key="spi" address-space-key="data" offset="0x0"/>
             <signals>
                 <signal name="MISO" pad-key="pb0" function="SPI"/>
-                <signal name="MISO" pad-key="pd2" function="SPI_ALT"/>
+                <signal name="MISO" pad-key="pd2" alternative="true" function="SPI_ALT"/>
                 <signal name="MOSI" pad-key="pb1" function="SPI"/>
-                <signal name="MOSI" pad-key="pd3" function="SPI_ALT"/>
+                <signal name="MOSI" pad-key="pd3" alternative="true" function="SPI_ALT"/>
                 <signal name="SCK" pad-key="pb7" function="SPI"/>
-                <signal name="SCK" pad-key="pd4" function="SPI_ALT"/>
+                <signal name="SCK" pad-key="pd4" alternative="true" function="SPI_ALT"/>
                 <signal name="SS" pad-key="pd3" function="SPI"/>
-                <signal name="SS" pad-key="pc1" function="SPI_ALT"/>
+                <signal name="SS" pad-key="pc1" alternative="true" function="SPI_ALT"/>
             </signals>
         </peripheral>
         <peripheral key="wdt" name="WDT" module-key="wdt">

@@ -202,7 +202,7 @@
         <peripheral key="tca0" name="TCA0" module-key="i2117">
             <register-group-instance register-group-key="tca" address-space-key="data" offset="0xA00"/>
             <signals>
-                <signal name="WO" pad-key="pb3" index="0" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA00"/>
+                <signal name="WO" pad-key="pb3" alternative="true" index="0" function="TCA0_ALT" field="PORTMUX.CTRLC.TCA00"/>
                 <signal name="WO" pad-key="pb0" index="0" function="TCA0" field="PORTMUX.CTRLC.TCA00"/>
                 <signal name="WO" pad-key="pb1" index="1" function="TCA0" field="PORTMUX.CTRLC.TCA01"/>
                 <signal name="WO" pad-key="pb2" index="2" function="TCA0" field="PORTMUX.CTRLC.TCA02"/>
@@ -227,13 +227,13 @@
         <peripheral key="usart0" name="USART0" module-key="i2108">
             <register-group-instance register-group-key="usart" address-space-key="data" offset="0x800"/>
             <signals>
-                <signal name="RXD" pad-key="pa2" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="RXD" pad-key="pa2" alternative="true" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
                 <signal name="RXD" pad-key="pb3" function="USART0" field="PORTMUX.CTRLB.USART0"/>
-                <signal name="TXD" pad-key="pa1" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="TXD" pad-key="pa1" alternative="true" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
                 <signal name="TXD" pad-key="pb2" function="USART0" field="PORTMUX.CTRLB.USART0"/>
-                <signal name="XCK" pad-key="pa3" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="XCK" pad-key="pa3" alternative="true" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
                 <signal name="XCK" pad-key="pb1" function="USART0" field="PORTMUX.CTRLB.USART0"/>
-                <signal name="XDIR" pad-key="pa4" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
+                <signal name="XDIR" pad-key="pa4" alternative="true" function="USART0_ALT" field="PORTMUX.CTRLB.USART0"/>
                 <signal name="XDIR" pad-key="pb0" function="USART0" field="PORTMUX.CTRLB.USART0"/>
             </signals>
         </peripheral>
