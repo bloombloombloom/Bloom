@@ -40,6 +40,8 @@ namespace Services
          *  If `instructions` does not contain the subsequent instruction, we'll just return std::nullopt for
          *  instructions that skip the subsequent instruction.
          *
+         *  TODO: Why can't we just pass in the next instruction here? Instead of passing in the entire mapping?
+         *
          * @return
          *  The destination byte address the subject instruction may jump to, if we were able to resolve it.
          *  Otherwise, std::nullopt.

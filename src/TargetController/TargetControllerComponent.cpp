@@ -861,7 +861,7 @@ namespace TargetController
         if (cacheIt == this->programMemoryCachesByAddressSpaceKey.end()) {
             cacheIt = this->programMemoryCachesByAddressSpaceKey.emplace(
                 addressSpaceDescriptor.key,
-                TargetMemoryCache(addressSpaceDescriptor)
+                TargetMemoryCache{addressSpaceDescriptor}
             ).first;
         }
 

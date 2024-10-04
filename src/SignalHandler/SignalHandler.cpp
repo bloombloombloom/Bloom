@@ -19,7 +19,6 @@ void SignalHandler::run() {
 
                 const auto& handlerIt = this->handlersBySignalNum.find(signalNumber);
                 if (handlerIt != this->handlersBySignalNum.end()) {
-                    // We have a registered handler for this signal.
                     handlerIt->second();
                 }
             }
@@ -37,15 +36,14 @@ void SignalHandler::startup() {
     this->setName("SH");
     this->threadState = ThreadState::STARTING;
     Logger::debug("Starting SignalHandler");
+
     // Block all signal interrupts
     auto signalSet = this->getRegisteredSignalSet();
     ::sigprocmask(SIG_SETMASK, &signalSet, NULL);
 
-    // Register handlers
     this->handlersBySignalNum.emplace(SIGINT, std::bind(&SignalHandler::triggerApplicationShutdown, this));
     this->handlersBySignalNum.emplace(SIGTERM, std::bind(&SignalHandler::triggerApplicationShutdown, this));
 
-    // It's possible that the SignalHandler has been instructed to shut down, before it could finish starting up.
     if (this->getThreadState() != ThreadState::SHUTDOWN_INITIATED) {
         this->threadState = ThreadState::READY;
     }
@@ -54,7 +52,7 @@ void SignalHandler::startup() {
 ::sigset_t SignalHandler::getRegisteredSignalSet() const {
     auto set = ::sigset_t{};
     if (::sigfillset(&set) == -1) {
-        throw Exceptions::Exception("::sigfillset() failed - error number: " + std::to_string(errno));
+        throw Exceptions::Exception{"::sigfillset() failed - error number: " + std::to_string(errno)};
     }
 
     return set;
@@ -65,7 +63,6 @@ void SignalHandler::triggerApplicationShutdown() {
     this->shutdownSignalsReceived++;
 
     if (this->shutdownSignalsReceived > 1) {
-        // User has likely run out of patience
         Logger::warning("Aborting immediately");
         std::exit(EXIT_FAILURE);
     }
