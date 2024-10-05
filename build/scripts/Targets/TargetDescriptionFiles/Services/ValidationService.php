@@ -1113,12 +1113,9 @@ class ValidationService
             $failures[] = 'Key must contain only lowercase characters';
         }
 
-        if (str_contains($key, ' ')) {
-            $failures[] = 'Key contains at least one whitespace';
-        }
-
-        if (str_contains($key, '.')) {
-            $failures[] = 'Key contains at least one period (".") character';
+        // The underscore character is the only non-alphanumeric character that is permitted in keys
+        if (!ctype_alnum(str_replace('_', '', $key))) {
+            $failures[] = 'Key contains non-alphanumeric characters';
         }
 
         return array_map(
