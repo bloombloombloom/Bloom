@@ -11,7 +11,7 @@ namespace DebugServer::Gdb::ResponsePackets
     {
     public:
         EmptyResponsePacket()
-            : ResponsePacket(std::vector<unsigned char>{0})
+            : ResponsePacket(std::vector<unsigned char>{})
         {}
     };
 }
