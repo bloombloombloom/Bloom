@@ -873,8 +873,8 @@
         <pad key="pc4" name="PC4"/>
         <pad key="ucap" name="UCAP"/>
         <pad key="ugnd" name="UGND"/>
-        <pad key="d+" name="D+"/>
-        <pad key="d-" name="D-"/>
+        <pad key="dp" name="D+"/>
+        <pad key="dn" name="D-"/>
         <pad key="uvcc" name="UVCC"/>
         <pad key="avcc" name="AVCC"/>
     </pads>
@@ -908,8 +908,8 @@
             <pin position="26" pad-key="pc4"/>
             <pin position="27" pad-key="ucap"/>
             <pin position="28" pad-key="ugnd"/>
-            <pin position="29" pad-key="d+"/>
-            <pin position="30" pad-key="d-"/>
+            <pin position="29" pad-key="dp"/>
+            <pin position="30" pad-key="dn"/>
             <pin position="31" pad-key="uvcc"/>
             <pin position="32" pad-key="avcc"/>
         </pinout>

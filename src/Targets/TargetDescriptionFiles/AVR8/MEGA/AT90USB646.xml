@@ -1097,8 +1097,8 @@
         <pad key="pe6" name="PE6"/>
         <pad key="pe7" name="PE7"/>
         <pad key="uvcc" name="UVCC"/>
-        <pad key="d-" name="D-"/>
-        <pad key="d+" name="D+"/>
+        <pad key="dn" name="D-"/>
+        <pad key="dp" name="D+"/>
         <pad key="ugnd" name="UGND"/>
         <pad key="ucap" name="UCAP"/>
         <pad key="vbus" name="VBUS"/>
@@ -1162,8 +1162,8 @@
             <pin position="1" pad-key="pe6"/>
             <pin position="2" pad-key="pe7"/>
             <pin position="3" pad-key="uvcc"/>
-            <pin position="4" pad-key="d-"/>
-            <pin position="5" pad-key="d+"/>
+            <pin position="4" pad-key="dn"/>
+            <pin position="5" pad-key="dp"/>
             <pin position="6" pad-key="ugnd"/>
             <pin position="7" pad-key="ucap"/>
             <pin position="8" pad-key="vbus"/>
