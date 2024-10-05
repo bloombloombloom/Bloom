@@ -202,7 +202,7 @@
             <signals>
                 <signal name="TMS" pad-key="pf5"/>
                 <signal name="TDI" pad-key="pf7"/>
-                <signal name="TCK" pad-key="pf3/4"/>
+                <signal name="TCK" pad-key="pf3_4"/>
                 <signal name="TDO" pad-key="pf6"/>
             </signals>
         </physical-interface>
@@ -273,7 +273,7 @@
                 <signal name="PF0" pad-key="pf0" index="0" function="PORTF"/>
                 <signal name="PF1" pad-key="pf1" index="1" function="PORTF"/>
                 <signal name="PF2" pad-key="pf2" index="2" function="PORTF"/>
-                <signal name="PF3/4" pad-key="pf3/4" index="3" function="PORTF"/>
+                <signal name="PF3/4" pad-key="pf3_4" index="3" function="PORTF"/>
                 <signal name="PF5" pad-key="pf5" index="5" function="PORTF"/>
                 <signal name="PF6" pad-key="pf6" index="6" function="PORTF"/>
                 <signal name="PF7" pad-key="pf7" index="7" function="PORTF"/>
@@ -1558,7 +1558,7 @@
         </module>
     </modules>
     <pads>
-        <pad key="pf3/4" name="PF3/4"/>
+        <pad key="pf3_4" name="PF3/4"/>
         <pad key="pf5" name="PF5"/>
         <pad key="pf6" name="PF6"/>
         <pad key="pf7" name="PF7"/>
@@ -1609,7 +1609,7 @@
     </pads>
     <pinouts>
         <pinout key="qfn48" name="QFN48" type="qfn">
-            <pin position="1" pad-key="pf3/4"/>
+            <pin position="1" pad-key="pf3_4"/>
             <pin position="2" pad-key="pf5"/>
             <pin position="3" pad-key="pf6"/>
             <pin position="4" pad-key="pf7"/>
