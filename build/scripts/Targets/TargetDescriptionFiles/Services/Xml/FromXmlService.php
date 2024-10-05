@@ -394,7 +394,7 @@ class FromXmlService
         return new Signal(
             $attributes['name'] ?? null,
             $attributes['pad-key'] ?? null,
-            isset($attributes['alternative']) ? (bool) $attributes['alternative'] : null,
+            isset($attributes['alternative']) ? trim($attributes['alternative']) === 'true' : null,
             $this->stringService->tryStringToInt($attributes['index'] ?? null),
             $attributes['function'] ?? null,
             $attributes['field'] ?? null
