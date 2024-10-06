@@ -97,6 +97,11 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->reset();
         this->triggerDescriptorsByIndex = this->discoverTriggers();
 
+        if (!this->triggerDescriptorsByIndex.empty()) {
+            // Clear any left-over triggers from the previous debug session
+            this->clearAllBreakpoints();
+        }
+
         auto debugControlStatusRegister = this->readDebugControlStatusRegister();
         debugControlStatusRegister.breakUMode = true;
         debugControlStatusRegister.breakSMode = true;
