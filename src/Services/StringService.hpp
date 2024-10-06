@@ -19,6 +19,7 @@ namespace Services
 
         static std::string toHex(std::uint64_t value);
         static std::string toHex(std::uint32_t value);
+        static std::string toHex(std::uint16_t value);
         static std::string toHex(unsigned char value);
         static std::string toHex(const std::vector<unsigned char>& data);
         static std::string toHex(const std::string& data);
