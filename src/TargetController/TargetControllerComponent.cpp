@@ -690,7 +690,7 @@ namespace TargetController
             && this->environmentConfig.targetConfig.programMemoryCache
             && this->target->isProgramMemory(addressSpaceDescriptor, memorySegmentDescriptor, startAddress, bytes)
         ) {
-            auto& cache = this->getProgramMemoryCache(addressSpaceDescriptor);
+            auto& cache = this->getProgramMemoryCache(memorySegmentDescriptor);
 
             if (!cache.contains(startAddress, bytes)) {
                 Logger::debug(
@@ -749,7 +749,7 @@ namespace TargetController
         this->target->writeMemory(addressSpaceDescriptor, memorySegmentDescriptor, startAddress, buffer);
 
         if (isProgramMemory && this->environmentConfig.targetConfig.programMemoryCache) {
-            this->getProgramMemoryCache(addressSpaceDescriptor).insert(startAddress, buffer);
+            this->getProgramMemoryCache(memorySegmentDescriptor).insert(startAddress, buffer);
         }
 
         EventManager::triggerEvent(
@@ -778,7 +778,7 @@ namespace TargetController
 
             if (this->environmentConfig.targetConfig.programMemoryCache) {
                 Logger::debug("Clearing program memory cache");
-                this->getProgramMemoryCache(addressSpaceDescriptor).clear();
+                this->getProgramMemoryCache(memorySegmentDescriptor).clear();
             }
         }
 
@@ -854,14 +854,14 @@ namespace TargetController
     }
 
     TargetMemoryCache& TargetControllerComponent::getProgramMemoryCache(
-        const TargetAddressSpaceDescriptor& addressSpaceDescriptor
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
     ) {
-        auto cacheIt = this->programMemoryCachesByAddressSpaceKey.find(addressSpaceDescriptor.key);
+        auto cacheIt = this->programMemoryCachesBySegmentId.find(memorySegmentDescriptor.id);
 
-        if (cacheIt == this->programMemoryCachesByAddressSpaceKey.end()) {
-            cacheIt = this->programMemoryCachesByAddressSpaceKey.emplace(
-                addressSpaceDescriptor.key,
-                TargetMemoryCache{addressSpaceDescriptor}
+        if (cacheIt == this->programMemoryCachesBySegmentId.end()) {
+            cacheIt = this->programMemoryCachesBySegmentId.emplace(
+                memorySegmentDescriptor.id,
+                TargetMemoryCache{memorySegmentDescriptor}
             ).first;
         }
 

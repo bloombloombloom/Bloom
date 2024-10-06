@@ -6,16 +6,16 @@
 
 namespace Targets
 {
-    TargetMemoryCache::TargetMemoryCache(const TargetAddressSpaceDescriptor& addressSpaceDescriptor)
-        : addressSpaceDescriptor(addressSpaceDescriptor)
-        , data(TargetMemoryBuffer(addressSpaceDescriptor.size(), 0x00))
+    TargetMemoryCache::TargetMemoryCache(const TargetMemorySegmentDescriptor& memorySegmentDescriptor)
+        : memorySegmentDescriptor(memorySegmentDescriptor)
+        , data(TargetMemoryBuffer(memorySegmentDescriptor.size(), 0x00))
     {}
 
     TargetMemoryBuffer TargetMemoryCache::fetch(TargetMemoryAddress startAddress, TargetMemorySize bytes) const {
-        const auto startIndex = startAddress - this->addressSpaceDescriptor.addressRange.startAddress;
+        const auto startIndex = startAddress - this->memorySegmentDescriptor.addressRange.startAddress;
 
         if (
-            startAddress < this->addressSpaceDescriptor.addressRange.startAddress
+            startAddress < this->memorySegmentDescriptor.addressRange.startAddress
             || (startIndex + bytes) > this->data.size()
         ) {
             throw Exceptions::Exception{"Invalid cache access"};
@@ -34,7 +34,7 @@ namespace Targets
     }
 
     void TargetMemoryCache::insert(TargetMemoryAddress startAddress, const TargetMemoryBuffer& data) {
-        const auto startIndex = startAddress - this->addressSpaceDescriptor.addressRange.startAddress;
+        const auto startIndex = startAddress - this->memorySegmentDescriptor.addressRange.startAddress;
 
         std::copy(data.begin(), data.end(), this->data.begin() + startIndex);
 

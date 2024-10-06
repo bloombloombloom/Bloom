@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <map>
 
-#include "TargetAddressSpaceDescriptor.hpp"
+#include "TargetMemorySegmentDescriptor.hpp"
 #include "TargetMemory.hpp"
 
 namespace Targets
@@ -11,7 +11,7 @@ namespace Targets
     class TargetMemoryCache
     {
     public:
-        TargetMemoryCache(const TargetAddressSpaceDescriptor& addressSpaceDescriptor);
+        TargetMemoryCache(const TargetMemorySegmentDescriptor& memorySegmentDescriptor);
 
         /**
          * Fetches data from the cache.
@@ -47,7 +47,7 @@ namespace Targets
         void clear();
 
     private:
-        const TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor;
         TargetMemoryBuffer data;
 
         /**

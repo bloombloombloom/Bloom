@@ -64,6 +64,8 @@
 #include "src/Targets/Targets.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetMemoryCache.hpp"
 
 #include "src/EventManager/EventManager.hpp"
@@ -165,11 +167,11 @@ namespace TargetController
          *
          * If program caching is enabled, all program memory reads will be serviced by the cache, if we have the data.
          *
-         * Most targets only have a single program memory, which resides on a single address space. But some may have
-         * multiple program memories, residing on multiple address spaces. We have a single cache (TargetMemoryCache
-         * object) for each address space.
+         * Most targets only have a single memory segment for program memory, but some may have multiple program
+         * memories, across multiple address spaces. We have a single cache (TargetMemoryCache object) for each
+         * memory segment.
          */
-        std::map<std::string, Targets::TargetMemoryCache> programMemoryCachesByAddressSpaceKey;
+        std::map<Targets::TargetMemorySegmentId, Targets::TargetMemoryCache> programMemoryCachesBySegmentId;
 
         /**
          * Registers a handler function for a particular command type.
@@ -324,14 +326,14 @@ namespace TargetController
         void disableProgrammingMode();
 
         /**
-         * Fetches the program memory cache object for the given address space. If the address space has no associated
+         * Fetches the program memory cache object for the given memory segment. If the segment has no associated
          * cache object, one will be created.
          *
-         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          * @return
          */
         Targets::TargetMemoryCache& getProgramMemoryCache(
-            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
         );
 
         /**
