@@ -23,7 +23,7 @@ namespace Targets::Microchip::Avr8
     using namespace Exceptions;
 
     Avr8::Avr8(const TargetConfig& targetConfig, TargetDescriptionFile&& targetDescriptionFile)
-        : targetConfig(Avr8TargetConfig(targetConfig))
+        : targetConfig(Avr8TargetConfig{targetConfig})
         , targetDescriptionFile(std::move(targetDescriptionFile))
         , dataAddressSpaceDescriptor(this->targetDescriptionFile.getDataAddressSpaceDescriptor())
         , fuseAddressSpaceDescriptor(this->targetDescriptionFile.getFuseAddressSpaceDescriptor())

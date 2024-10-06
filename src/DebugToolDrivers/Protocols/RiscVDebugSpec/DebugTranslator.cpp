@@ -97,6 +97,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->reset();
         this->triggerDescriptorsByIndex = this->discoverTriggers();
 
+        Logger::debug("Discovered RISC-V triggers: " + std::to_string(this->triggerDescriptorsByIndex.size()));
+
         if (!this->triggerDescriptorsByIndex.empty()) {
             // Clear any left-over triggers from the previous debug session
             this->clearAllBreakpoints();
@@ -288,6 +290,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     void DebugTranslator::clearAllBreakpoints() {
+        // To ensure that any untracked breakpoints are cleared, we clear all triggers on the target.
         for (const auto [triggerIndex, triggerDescriptor] : this->triggerDescriptorsByIndex) {
             this->clearTrigger(triggerDescriptor);
         }
@@ -789,7 +792,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     void DebugTranslator::clearTrigger(const TriggerModule::TriggerDescriptor& triggerDescriptor) {
         using TriggerModule::TriggerType;
 
-        Logger::debug("Clearing trigger " + std::to_string(triggerDescriptor.index)); // TODO: keep this, but reword it
+        Logger::debug("Clearing RISC-V trigger " + std::to_string(triggerDescriptor.index));
 
         if (triggerDescriptor.supportedTypes.contains(TriggerType::MATCH_CONTROL)) {
             using TriggerModule::Registers::MatchControl;

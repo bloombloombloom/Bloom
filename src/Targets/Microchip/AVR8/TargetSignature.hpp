@@ -47,7 +47,7 @@ namespace Targets::Microchip::Avr8
             stream << std::setw(2) << static_cast<unsigned int>(this->byteOne);
             stream << std::setw(2) << static_cast<unsigned int>(this->byteTwo);
 
-            return "0x" + stream.str();
+            return "0x" + Services::StringService::asciiToUpper(stream.str());
         }
 
         bool operator == (const TargetSignature& signature) const {

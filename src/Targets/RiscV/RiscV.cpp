@@ -18,7 +18,7 @@ namespace Targets::RiscV
         const TargetConfig& targetConfig,
         TargetDescriptionFile&& targetDescriptionFile
     )
-        : targetConfig(RiscVTargetConfig(targetConfig))
+        : targetConfig(RiscVTargetConfig{targetConfig})
         , targetDescriptionFile(std::move(targetDescriptionFile))
         , cpuRegisterAddressSpaceDescriptor(RiscV::generateCpuRegisterAddressSpaceDescriptor())
         , csrMemorySegmentDescriptor(this->cpuRegisterAddressSpaceDescriptor.getMemorySegmentDescriptor("cs_registers"))
@@ -62,10 +62,10 @@ namespace Targets::RiscV
         const auto deviceId = this->riscVIdInterface->getDeviceId();
         const auto tdfDeviceId = this->targetDescriptionFile.getTargetId();
         if (deviceId != tdfDeviceId) {
-            throw Exceptions::InvalidConfig(
+            throw Exceptions::InvalidConfig{
                 "RISC-V target ID mismatch - expected " + tdfDeviceId + " but got " + deviceId +
                     ". Please check target configuration."
-            );
+            };
         }
     }
 
@@ -170,9 +170,9 @@ namespace Targets::RiscV
                     !this->csrMemorySegmentDescriptor.addressRange.contains(descriptor->startAddress)
                     && !this->gprMemorySegmentDescriptor.addressRange.contains(descriptor->startAddress)
                 ) {
-                    throw Exceptions::Exception(
+                    throw Exceptions::Exception{
                         "Cannot access CPU register \"" + descriptor->key + "\" - unknown memory segment"
-                    );
+                    };
                 }
 
                 cpuRegisterDescriptors.emplace_back(descriptor);
@@ -180,9 +180,9 @@ namespace Targets::RiscV
             }
 
             if (descriptor->addressSpaceId != this->sysAddressSpaceDescriptor.id) {
-                throw Exceptions::Exception(
+                throw Exceptions::Exception{
                     "Cannot access register \"" + descriptor->key + "\" - unknown address space"
-                );
+                };
             }
 
             auto value = this->riscVDebugInterface->readMemory(
@@ -217,7 +217,7 @@ namespace Targets::RiscV
                     !this->csrMemorySegmentDescriptor.addressRange.contains(descriptor.startAddress)
                     && !this->gprMemorySegmentDescriptor.addressRange.contains(descriptor.startAddress)
                 ) {
-                    throw Exceptions::Exception("Cannot access CPU register - unknown memory segment");
+                    throw Exceptions::Exception{"Cannot access CPU register - unknown memory segment"};
                 }
 
                 this->riscVDebugInterface->writeCpuRegisters({pair});
@@ -225,9 +225,9 @@ namespace Targets::RiscV
             }
 
             if (descriptor.addressSpaceId != this->sysAddressSpaceDescriptor.id) {
-                throw Exceptions::Exception(
+                throw Exceptions::Exception{
                     "Cannot access register \"" + descriptor.key + "\" - unknown address space"
-                );
+                };
             }
 
             auto value = pair.second;
@@ -397,16 +397,16 @@ namespace Targets::RiscV
         );
 
         if (segmentDescriptors.empty()) {
-            throw Exceptions::Exception(
+            throw Exceptions::Exception{
                 "Cannot access system register \"" + regDescriptor.key + "\" - unknown memory segment"
-            );
+            };
         }
 
         if (segmentDescriptors.size() != 1) {
-            throw Exceptions::Exception(
+            throw Exceptions::Exception{
                 "Cannot access system register \"" + regDescriptor.key
                     + "\" - register spans multiple memory segments"
-            );
+            };
         }
 
         return *(segmentDescriptors.front());
