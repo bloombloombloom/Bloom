@@ -70,10 +70,14 @@ namespace Targets::RiscV
     }
 
     void RiscV::deactivate() {
-        if (this->getExecutionState() != TargetExecutionState::RUNNING) {
-            this->run();
+        // TODO: Is this "tidy-up" code better placed in the TC? Review after v1.1.0.
+
+        if (this->getExecutionState() != TargetExecutionState::STOPPED) {
+            this->stop();
         }
 
+        this->clearAllBreakpoints();
+        this->run();
         this->riscVDebugInterface->deactivate();
     }
 
@@ -92,7 +96,11 @@ namespace Targets::RiscV
             this->targetDescriptionFile.targetPadDescriptorsByKey(),
             this->targetDescriptionFile.targetPinoutDescriptorsByKey(),
             this->targetDescriptionFile.targetVariantDescriptorsByKey(),
-            {} // TODO: populate this
+            BreakpointResources{
+                this->riscVDebugInterface->getHardwareBreakpointCount(),
+                std::nullopt,
+                static_cast<std::uint16_t>(this->targetConfig.reserveSteppingBreakpoint ? 1 : 0)
+            }
         };
 
         // Copy the RISC-V CPU register address space and peripheral descriptor
@@ -126,23 +134,23 @@ namespace Targets::RiscV
     }
 
     void RiscV::setSoftwareBreakpoint(TargetMemoryAddress address) {
-
+        throw Exceptions::Exception{"TARGET - SW breakpoints not supported"};
     }
 
     void RiscV::removeSoftwareBreakpoint(TargetMemoryAddress address) {
-
+        throw Exceptions::Exception{"TARGET - SW breakpoints not supported"};
     }
 
     void RiscV::setHardwareBreakpoint(TargetMemoryAddress address) {
-
+        this->riscVDebugInterface->setHardwareBreakpoint(address);
     }
 
     void RiscV::removeHardwareBreakpoint(TargetMemoryAddress address) {
-
+        this->riscVDebugInterface->clearHardwareBreakpoint(address);
     }
 
     void RiscV::clearAllBreakpoints() {
-
+        this->riscVDebugInterface->clearAllBreakpoints();
     }
 
     TargetRegisterDescriptorAndValuePairs RiscV::readRegisters(const TargetRegisterDescriptors& descriptors) {

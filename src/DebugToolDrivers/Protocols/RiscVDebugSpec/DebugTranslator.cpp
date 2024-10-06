@@ -11,6 +11,11 @@
 #include "DebugModule/Registers/RegisterAccessControlField.hpp"
 #include "DebugModule/Registers/MemoryAccessControlField.hpp"
 
+#include "TriggerModule/Registers/TriggerSelect.hpp"
+#include "TriggerModule/Registers/TriggerInfo.hpp"
+#include "TriggerModule/Registers/TriggerData1.hpp"
+#include "TriggerModule/Registers/MatchControl.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
@@ -90,6 +95,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         this->stop();
         this->reset();
+        this->triggerDescriptorsByIndex = this->discoverTriggers();
 
         auto debugControlStatusRegister = this->readDebugControlStatusRegister();
         debugControlStatusRegister.breakUMode = true;
@@ -213,23 +219,76 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     void DebugTranslator::setSoftwareBreakpoint(TargetMemoryAddress address) {
-
+        throw Exceptions::Exception{"SW breakpoints not supported"};
     }
 
     void DebugTranslator::clearSoftwareBreakpoint(TargetMemoryAddress address) {
+        throw Exceptions::Exception{"SW breakpoints not supported"};
+    }
 
+    std::uint16_t DebugTranslator::getHardwareBreakpointCount() {
+        return static_cast<std::uint16_t>(this->triggerDescriptorsByIndex.size());
     }
 
     void DebugTranslator::setHardwareBreakpoint(TargetMemoryAddress address) {
+        using TriggerModule::TriggerType;
 
+        const auto triggerDescriptorOpt = this->getAvailableTrigger();
+        if (!triggerDescriptorOpt.has_value()) {
+            throw Exceptions::Exception{"Insufficient resources - no available trigger"};
+        }
+
+        const auto& triggerDescriptor = triggerDescriptorOpt->get();
+        Logger::debug("Installing hardware BP at address " + Services::StringService::toHex(address) + " with index " + std::to_string(triggerDescriptor.index));
+
+        if (triggerDescriptor.supportedTypes.contains(TriggerType::MATCH_CONTROL)) {
+            using TriggerModule::Registers::MatchControl;
+
+            this->writeCpuRegister(
+                CpuRegisterNumber::TRIGGER_SELECT,
+                TriggerModule::Registers::TriggerSelect{triggerDescriptor.index}.value()
+            );
+
+            auto matchControlRegister = MatchControl{};
+            matchControlRegister.execute = true;
+            matchControlRegister.enabledInUserMode = true;
+            matchControlRegister.enabledInSupervisorMode = true;
+            matchControlRegister.enabledInMachineMode = true;
+            matchControlRegister.action = TriggerModule::TriggerAction::ENTER_DEBUG_MODE;
+            matchControlRegister.accessSize = MatchControl::AccessSize::ANY;
+            matchControlRegister.compareValueType = MatchControl::CompareValueType::ADDRESS;
+
+            this->writeCpuRegister(CpuRegisterNumber::TRIGGER_DATA_1, matchControlRegister.value());
+            this->writeCpuRegister(CpuRegisterNumber::TRIGGER_DATA_2, address);
+
+            this->allocatedTriggerIndices.emplace(triggerDescriptor.index);
+            this->triggerIndicesByBreakpointAddress.emplace(address, triggerDescriptor.index);
+            return;
+        }
+
+        throw Exceptions::Exception{"Unsupported trigger"};
     }
 
     void DebugTranslator::clearHardwareBreakpoint(TargetMemoryAddress address) {
+        const auto triggerIndexIt = this->triggerIndicesByBreakpointAddress.find(address);
+        if (triggerIndexIt == this->triggerIndicesByBreakpointAddress.end()) {
+            throw Exceptions::Exception{"Unknown hardware breakpoint"};
+        }
 
+        const auto& triggerDescriptor = this->triggerDescriptorsByIndex.at(triggerIndexIt->second);
+
+        this->clearTrigger(triggerDescriptor);
+        this->triggerIndicesByBreakpointAddress.erase(address);
+        this->allocatedTriggerIndices.erase(triggerDescriptor.index);
     }
 
     void DebugTranslator::clearAllBreakpoints() {
+        for (const auto [triggerIndex, triggerDescriptor] : this->triggerDescriptorsByIndex) {
+            this->clearTrigger(triggerDescriptor);
+        }
 
+        this->triggerIndicesByBreakpointAddress.clear();
+        this->allocatedTriggerIndices.clear();
     }
 
     TargetRegisterDescriptorAndValuePairs DebugTranslator::readCpuRegisters(
@@ -445,6 +504,63 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         return hartIndices;
     }
 
+    std::unordered_map<
+        TriggerModule::TriggerIndex,
+        TriggerModule::TriggerDescriptor
+    > DebugTranslator::discoverTriggers() {
+        auto output = std::unordered_map<TriggerModule::TriggerIndex, TriggerModule::TriggerDescriptor>{};
+
+        constexpr auto MAX_TRIGGER_INDEX = 10;
+        for (auto triggerIndex = TriggerModule::TriggerIndex{0}; triggerIndex <= MAX_TRIGGER_INDEX; ++triggerIndex) {
+            const auto selectRegValue = TriggerModule::Registers::TriggerSelect{triggerIndex}.value();
+
+            const auto writeSelectError = this->tryWriteCpuRegister(CpuRegisterNumber::TRIGGER_SELECT, selectRegValue);
+            if (writeSelectError == DebugModule::AbstractCommandError::EXCEPTION) {
+                break;
+            }
+
+            if (writeSelectError != DebugModule::AbstractCommandError::NONE) {
+                throw Exceptions::Exception{
+                    "Failed to write to TRIGGER_SELECT register - abstract command error: 0x"
+                        + Services::StringService::toHex(writeSelectError)
+                };
+            }
+
+            if (this->readCpuRegister(CpuRegisterNumber::TRIGGER_SELECT) != selectRegValue) {
+                break;
+            }
+
+            const auto infoReg = TriggerModule::Registers::TriggerInfo{
+                this->readCpuRegister(CpuRegisterNumber::TRIGGER_INFO)
+            };
+
+            if (infoReg.info == 0x01) {
+                // Trigger doesn't exist
+                break;
+            }
+
+            auto supportedTypes = infoReg.getSupportedTriggerTypes();
+            if (supportedTypes.empty()) {
+                // The trigger info register has no trigger type info. Try the data1 register.
+                const auto data1Reg = TriggerModule::Registers::TriggerData1{
+                    this->readCpuRegister(CpuRegisterNumber::TRIGGER_DATA_1)
+                };
+
+                const auto triggerType = data1Reg.getType();
+                if (!triggerType.has_value()) {
+                    // Trigger data1 register also lacks type info. Assume the trigger doesn't exist
+                    break;
+                }
+
+                supportedTypes.insert(*triggerType);
+            }
+
+            output.emplace(triggerIndex, TriggerModule::TriggerDescriptor{triggerIndex, supportedTypes});
+        }
+
+        return output;
+    }
+
     ControlRegister DebugTranslator::readDebugModuleControlRegister() {
         return ControlRegister{this->dtmInterface.readDebugModuleRegister(RegisterAddress::CONTROL_REGISTER)};
     }
@@ -649,5 +765,39 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         return static_cast<TargetMemorySize>(
             std::ceil(static_cast<double>(size) / static_cast<double>(alignTo))
         ) * alignTo;
+    }
+
+    std::optional<
+        std::reference_wrapper<const TriggerModule::TriggerDescriptor>
+    > DebugTranslator::getAvailableTrigger() {
+        for (const auto& [index, descriptor] : this->triggerDescriptorsByIndex) {
+            if (this->allocatedTriggerIndices.contains(index)) {
+                continue;
+            }
+
+            return descriptor;
+        }
+
+        return std::nullopt;
+    }
+
+    void DebugTranslator::clearTrigger(const TriggerModule::TriggerDescriptor& triggerDescriptor) {
+        using TriggerModule::TriggerType;
+
+        Logger::debug("Clearing trigger " + std::to_string(triggerDescriptor.index)); // TODO: keep this, but reword it
+
+        if (triggerDescriptor.supportedTypes.contains(TriggerType::MATCH_CONTROL)) {
+            using TriggerModule::Registers::MatchControl;
+
+            this->writeCpuRegister(
+                CpuRegisterNumber::TRIGGER_SELECT,
+                TriggerModule::Registers::TriggerSelect{triggerDescriptor.index}.value()
+            );
+
+            this->writeCpuRegister(CpuRegisterNumber::TRIGGER_DATA_1, MatchControl{}.value());
+            return;
+        }
+
+        throw Exceptions::Exception{"Unsupported trigger"};
     }
 }

@@ -2,6 +2,11 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <optional>
+#include <functional>
 
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 
@@ -20,6 +25,8 @@
 #include "DebugModule/Registers/AbstractControlStatusRegister.hpp"
 #include "DebugModule/Registers/AbstractCommandRegister.hpp"
 
+#include "TriggerModule/TriggerModule.hpp"
+#include "TriggerModule/TriggerDescriptor.hpp"
 
 #include "src/Helpers/Expected.hpp"
 
@@ -53,6 +60,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
         void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
 
+        std::uint16_t getHardwareBreakpointCount() override;
         void setHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
         void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
         void clearAllBreakpoints() override;
@@ -85,7 +93,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         std::vector<DebugModule::HartIndex> hartIndices;
         DebugModule::HartIndex selectedHartIndex = 0;
 
+        std::unordered_map<TriggerModule::TriggerIndex, TriggerModule::TriggerDescriptor> triggerDescriptorsByIndex;
+        std::unordered_set<TriggerModule::TriggerIndex> allocatedTriggerIndices;
+        std::unordered_map<Targets::TargetMemoryAddress, TriggerModule::TriggerIndex> triggerIndicesByBreakpointAddress;
+
         std::vector<DebugModule::HartIndex> discoverHartIndices();
+        std::unordered_map<TriggerModule::TriggerIndex, TriggerModule::TriggerDescriptor> discoverTriggers();
 
         DebugModule::Registers::ControlRegister readDebugModuleControlRegister();
         DebugModule::Registers::StatusRegister readDebugModuleStatusRegister();
@@ -120,5 +133,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             Targets::TargetMemoryAddress alignTo
         );
         Targets::TargetMemorySize alignMemorySize(Targets::TargetMemorySize size, Targets::TargetMemorySize alignTo);
+
+        std::optional<std::reference_wrapper<const TriggerModule::TriggerDescriptor>> getAvailableTrigger();
+        void clearTrigger(const TriggerModule::TriggerDescriptor& triggerDescriptor);
     };
 }

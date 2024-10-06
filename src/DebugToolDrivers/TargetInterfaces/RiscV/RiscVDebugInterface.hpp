@@ -31,6 +31,7 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
         virtual void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
         virtual void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
 
+        virtual std::uint16_t getHardwareBreakpointCount() = 0;
         virtual void setHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
         virtual void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
         virtual void clearAllBreakpoints() = 0;
