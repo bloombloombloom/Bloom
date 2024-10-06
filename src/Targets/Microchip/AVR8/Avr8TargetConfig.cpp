@@ -49,11 +49,5 @@ namespace Targets::Microchip::Avr8
                 this->preserveEeprom
             );
         }
-
-        if (targetNode["reserveSteppingBreakpoint"]) {
-            this->reserveSteppingBreakpoint = targetNode["reserveSteppingBreakpoint"].as<bool>(
-                this->reserveSteppingBreakpoint
-            );
-        }
     }
 }

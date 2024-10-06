@@ -203,6 +203,12 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
         this->programMemoryCache = targetNode["programMemoryCache"].as<bool>(this->programMemoryCache);
     }
 
+    if (targetNode["reserveSteppingBreakpoint"]) {
+        this->reserveSteppingBreakpoint = targetNode["reserveSteppingBreakpoint"].as<bool>(
+            this->reserveSteppingBreakpoint
+        );
+    }
+
     this->targetNode = targetNode;
 }
 

@@ -70,6 +70,11 @@ struct TargetConfig
     bool programMemoryCache = true;
 
     /**
+     * Determines if Bloom will reserve a single hardware breakpoint for stepping operations.
+     */
+    bool reserveSteppingBreakpoint = true;
+
+    /**
      * For extracting any target specific configuration. See Avr8TargetConfig::Avr8TargetConfig() and
      * Avr8::preActivationConfigure() for an example of this.
      */

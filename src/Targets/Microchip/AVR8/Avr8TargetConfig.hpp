@@ -79,11 +79,6 @@ namespace Targets::Microchip::Avr8
          */
         bool preserveEeprom = true;
 
-        /**
-         * Determines if Bloom will reserve a single hardware breakpoint for stepping operations.
-         */
-        bool reserveSteppingBreakpoint = true;
-
         explicit Avr8TargetConfig(const TargetConfig& targetConfig);
     };
 }
