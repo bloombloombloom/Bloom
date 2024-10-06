@@ -212,19 +212,19 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
     this->targetNode = targetNode;
 }
 
-DebugToolConfig::DebugToolConfig(const YAML::Node& debugToolNode) {
-    if (!debugToolNode.IsMap()) {
+DebugToolConfig::DebugToolConfig(const YAML::Node& toolNode) {
+    if (!toolNode.IsMap()) {
         throw Exceptions::InvalidConfig{
             "Invalid debug tool configuration provided - node must take the form of a YAML mapping."
         };
     }
 
-    if (!debugToolNode["name"]) {
+    if (!toolNode["name"]) {
         throw Exceptions::InvalidConfig{"No debug tool name found."};
     }
 
-    this->name = StringService::asciiToLower(debugToolNode["name"].as<std::string>());
-    this->debugToolNode = debugToolNode;
+    this->name = StringService::asciiToLower(toolNode["name"].as<std::string>());
+    this->toolNode = toolNode;
 }
 
 DebugServerConfig::DebugServerConfig(const YAML::Node& debugServerNode) {

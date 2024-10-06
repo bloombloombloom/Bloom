@@ -2,8 +2,9 @@
 
 namespace DebugToolDrivers::Wch
 {
-    WchLinkE::WchLinkE()
+    WchLinkE::WchLinkE(const DebugToolConfig& toolConfig)
         : WchLinkBase(
+            toolConfig,
             WchLinkVariant::LINK_E_CH32V307,
             WchLinkE::USB_VENDOR_ID,
             WchLinkE::USB_PRODUCT_ID,

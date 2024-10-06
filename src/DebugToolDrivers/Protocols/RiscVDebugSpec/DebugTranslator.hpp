@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <chrono>
 #include <unordered_map>
 #include <unordered_set>
 #include <optional>
@@ -11,6 +12,7 @@
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 
 #include "DebugTransportModuleInterface.hpp"
+#include "DebugTranslatorConfig.hpp"
 
 #include "src/Targets/RiscV/TargetDescriptionFile.hpp"
 #include "src/Targets/RiscV/RiscVTargetConfig.hpp"
@@ -40,6 +42,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     public:
         DebugTranslator(
             DebugTransportModuleInterface& dtmInterface,
+            const DebugTranslatorConfig& config,
             const ::Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
             const ::Targets::RiscV::RiscVTargetConfig& targetConfig
         );
@@ -85,7 +88,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         ) override;
 
     private:
+        static constexpr auto DEBUG_MODULE_RESPONSE_DELAY = std::chrono::microseconds{10};
+
         DebugTransportModuleInterface& dtmInterface;
+        const DebugTranslatorConfig& config;
 
         const ::Targets::RiscV::TargetDescriptionFile& targetDescriptionFile;
         const ::Targets::RiscV::RiscVTargetConfig& targetConfig;

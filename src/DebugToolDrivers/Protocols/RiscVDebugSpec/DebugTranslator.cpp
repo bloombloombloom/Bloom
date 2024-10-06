@@ -50,10 +50,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
     DebugTranslator::DebugTranslator(
         DebugTransportModuleInterface& dtmInterface,
+        const DebugTranslatorConfig& config,
         const TargetDescriptionFile& targetDescriptionFile,
         const RiscVTargetConfig& targetConfig
     )
         : dtmInterface(dtmInterface)
+        , config(config)
         , targetDescriptionFile(targetDescriptionFile)
         , targetConfig(targetConfig)
     {}
@@ -130,12 +132,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         controlRegister.haltRequest = true;
 
         this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
         auto statusRegister = this->readDebugModuleStatusRegister();
 
-        for (auto attempts = 1; !statusRegister.allHalted && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds{10});
+        for (
+            auto attempts = 1;
+            !statusRegister.allHalted
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+            ++attempts
+        ) {
+            std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
             statusRegister = this->readDebugModuleStatusRegister();
         }
 
@@ -154,12 +159,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         controlRegister.resumeRequest = true;
 
         this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
         auto statusRegister = this->readDebugModuleStatusRegister();
 
-        for (auto attempts = 1; !statusRegister.allResumeAcknowledge && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds{10});
+        for (
+            auto attempts = 1;
+            !statusRegister.allResumeAcknowledge
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+            ++attempts
+        ) {
+            std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
             statusRegister = this->readDebugModuleStatusRegister();
         }
 
@@ -203,12 +211,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         controlRegister.ndmReset = false;
         this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
         auto statusRegister = this->readDebugModuleStatusRegister();
 
-        for (auto attempts = 1; !statusRegister.allHaveReset && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds{10});
+        for (
+            auto attempts = 1;
+            !statusRegister.allHaveReset
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+            ++attempts
+        ) {
+            std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
             statusRegister = this->readDebugModuleStatusRegister();
         }
 
@@ -595,12 +606,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         controlRegister.selectedHartIndex = this->selectedHartIndex;
 
         this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
         controlRegister = this->readDebugModuleControlRegister();
 
-        for (auto attempts = 1; !controlRegister.debugModuleActive && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds{10});
+        for (
+            auto attempts = 1;
+            !controlRegister.debugModuleActive
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+            ++attempts
+        ) {
+            std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
             controlRegister = this->readDebugModuleControlRegister();
         }
 
@@ -615,12 +629,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         controlRegister.selectedHartIndex = this->selectedHartIndex;
 
         this->writeDebugModuleControlRegister(controlRegister);
-
-        constexpr auto maxAttempts = 10;
         controlRegister = this->readDebugModuleControlRegister();
 
-        for (auto attempts = 1; controlRegister.debugModuleActive && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds{10});
+        for (
+            auto attempts = 1;
+            controlRegister.debugModuleActive
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+            ++attempts
+        ) {
+            std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
             controlRegister = this->readDebugModuleControlRegister();
         }
 
@@ -741,9 +758,13 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             return abstractStatusRegister.commandError;
         }
 
-        constexpr auto maxAttempts = 10;
-        for (auto attempts = 1; abstractStatusRegister.busy && attempts <= maxAttempts; ++attempts) {
-            std::this_thread::sleep_for(std::chrono::microseconds{10});
+        for (
+            auto attempts = 1;
+            abstractStatusRegister.busy
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+            ++attempts
+        ) {
+            std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
             abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
         }
 

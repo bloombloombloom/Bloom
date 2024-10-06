@@ -373,8 +373,8 @@ namespace TargetController
             },
             {
                 "wch-link-e",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Wch::WchLinkE>();
+                [this] {
+                    return std::make_unique<DebugToolDrivers::Wch::WchLinkE>(this->environmentConfig.debugToolConfig);
                 }
             },
         };

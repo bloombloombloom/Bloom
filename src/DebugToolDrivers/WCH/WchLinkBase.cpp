@@ -11,12 +11,14 @@ namespace DebugToolDrivers::Wch
     using Exceptions::DeviceInitializationFailure;
 
     WchLinkBase::WchLinkBase(
+        const DebugToolConfig& toolConfig,
         WchLinkVariant variant,
         std::uint16_t vendorId,
         std::uint16_t productId,
         std::uint8_t wchLinkUsbInterfaceNumber
     )
         : UsbDevice(vendorId, productId)
+        , toolConfig(WchLinkToolConfig{toolConfig})
         , variant(variant)
         , wchLinkUsbInterfaceNumber(wchLinkUsbInterfaceNumber)
     {}
@@ -77,6 +79,7 @@ namespace DebugToolDrivers::Wch
         if (!this->wchRiscVTranslator) {
             this->wchRiscVTranslator = std::make_unique<DebugTranslator>(
                 *(this->wchLinkInterface.get()),
+                this->toolConfig.riscVDebugTranslatorConfig,
                 targetDescriptionFile,
                 targetConfig
             );

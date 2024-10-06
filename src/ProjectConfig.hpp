@@ -107,16 +107,16 @@ struct DebugToolConfig
     /**
      * For extracting any debug tool specific configuration.
      */
-    YAML::Node debugToolNode;
+    YAML::Node toolNode;
 
     DebugToolConfig() = default;
 
     /**
      * Obtains config parameters from YAML node.
      *
-     * @param debugToolNode
+     * @param toolNode
      */
-    explicit DebugToolConfig(const YAML::Node& debugToolNode);
+    explicit DebugToolConfig(const YAML::Node& toolNode);
 };
 
 /**

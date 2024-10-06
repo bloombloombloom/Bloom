@@ -8,6 +8,9 @@
 #include "src/DebugToolDrivers/USB/UsbDevice.hpp"
 #include "src/DebugToolDrivers/USB/UsbInterface.hpp"
 
+#include "WchLinkToolConfig.hpp"
+#include "src/ProjectConfig.hpp"
+
 #include "Protocols/WchLink/WchLinkInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTranslator.hpp"
 
@@ -20,6 +23,7 @@ namespace DebugToolDrivers::Wch
     {
     public:
         WchLinkBase(
+            const DebugToolConfig& toolConfig,
             WchLinkVariant variant,
             std::uint16_t vendorId,
             std::uint16_t productId,
@@ -64,6 +68,7 @@ namespace DebugToolDrivers::Wch
         ) override;
 
     protected:
+        WchLinkToolConfig toolConfig;
         bool initialised = false;
 
         WchLinkVariant variant;
