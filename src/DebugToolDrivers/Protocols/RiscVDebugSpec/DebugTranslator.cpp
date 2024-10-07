@@ -257,7 +257,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
 
         const auto& triggerDescriptor = triggerDescriptorOpt->get();
-        Logger::debug("Installing hardware BP at address " + Services::StringService::toHex(address) + " with index " + std::to_string(triggerDescriptor.index));
+        Logger::debug(
+            "Installing hardware BP at address " + Services::StringService::toHex(address) + " with trigger index "
+                + std::to_string(triggerDescriptor.index)
+        );
 
         if (triggerDescriptor.supportedTypes.contains(TriggerType::MATCH_CONTROL)) {
             using TriggerModule::Registers::MatchControl;

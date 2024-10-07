@@ -970,7 +970,7 @@
                 </register>
             </register-group>
         </module>
-        <module key="adc_ptc_ctrl_v1" name="PTC" description="Peripherial Touch Controller"/>
+        <module key="adc_ptc_ctrl_v1" name="PTC" description="Peripheral Touch Controller"/>
         <module key="rst_integration_v8" name="RSTCTRL" description="Reset controller">
             <register-group key="rstctrl" name="RSTCTRL">
                 <register key="rstfr" name="RSTFR" description="Reset Flags" offset="0x00" size="1" initial-value="0x00" access="RW">
