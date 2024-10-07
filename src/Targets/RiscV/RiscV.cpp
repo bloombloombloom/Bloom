@@ -150,7 +150,7 @@ namespace Targets::RiscV
     }
 
     void RiscV::clearAllBreakpoints() {
-        this->riscVDebugInterface->clearAllBreakpoints();
+        this->riscVDebugInterface->clearAllHardwareBreakpoints();
     }
 
     TargetRegisterDescriptorAndValuePairs RiscV::readRegisters(const TargetRegisterDescriptors& descriptors) {

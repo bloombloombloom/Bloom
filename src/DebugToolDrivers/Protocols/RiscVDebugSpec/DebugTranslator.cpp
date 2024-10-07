@@ -103,7 +103,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         if (!this->triggerDescriptorsByIndex.empty()) {
             // Clear any left-over triggers from the previous debug session
-            this->clearAllBreakpoints();
+            this->clearAllHardwareBreakpoints();
         }
 
         auto debugControlStatusRegister = this->readDebugControlStatusRegister();
@@ -300,7 +300,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->allocatedTriggerIndices.erase(triggerDescriptor.index);
     }
 
-    void DebugTranslator::clearAllBreakpoints() {
+    void DebugTranslator::clearAllHardwareBreakpoints() {
         // To ensure that any untracked breakpoints are cleared, we clear all triggers on the target.
         for (const auto [triggerIndex, triggerDescriptor] : this->triggerDescriptorsByIndex) {
             this->clearTrigger(triggerDescriptor);

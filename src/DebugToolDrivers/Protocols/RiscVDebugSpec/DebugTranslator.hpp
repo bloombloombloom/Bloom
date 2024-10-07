@@ -66,7 +66,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         std::uint16_t getHardwareBreakpointCount() override;
         void setHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
         void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
-        void clearAllBreakpoints() override;
+        void clearAllHardwareBreakpoints() override;
 
         Targets::TargetRegisterDescriptorAndValuePairs readCpuRegisters(
             const Targets::TargetRegisterDescriptors& descriptors
