@@ -463,7 +463,8 @@ namespace Targets::RiscV
     ) {
         auto cpuPeripheralDescriptor = TargetPeripheralDescriptor{
             "cpu",
-            "RISC-V CPU",
+            "CPU",
+            "RISC-V GPRs and CSRs",
             {},
             {}
         };

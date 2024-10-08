@@ -984,6 +984,7 @@ namespace Targets::TargetDescription
         auto output = TargetPeripheralDescriptor{
             peripheral.key,
             peripheral.name,
+            peripheralModule.description,
             {},
             {}
         };

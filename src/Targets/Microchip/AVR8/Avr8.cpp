@@ -283,7 +283,8 @@ namespace Targets::Microchip::Avr8
             "cpu_gpr",
             TargetPeripheralDescriptor{
                 "cpu_gpr",
-                "CPU General Purpose",
+                "GPRs",
+                "CPU General Purpose Registers",
                 {},
                 {}
             }

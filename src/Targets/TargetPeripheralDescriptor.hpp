@@ -22,12 +22,14 @@ namespace Targets
         const TargetPeripheralId id;
         const std::string key;
         std::string name;
+        std::string description;
         std::map<std::string, TargetRegisterGroupDescriptor, std::less<void>> registerGroupDescriptorsByKey;
         std::vector<TargetPeripheralSignalDescriptor> signalDescriptors;
 
         TargetPeripheralDescriptor(
             const std::string& key,
             const std::string& name,
+            const std::string& description,
             std::map<std::string, TargetRegisterGroupDescriptor, std::less<void>>&& registerGroupDescriptorsByKey,
             std::vector<TargetPeripheralSignalDescriptor>&& signalDescriptors
         );

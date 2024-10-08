@@ -12,12 +12,14 @@ namespace Targets
     TargetPeripheralDescriptor::TargetPeripheralDescriptor(
         const std::string& key,
         const std::string& name,
+        const std::string& description,
         std::map<std::string, TargetRegisterGroupDescriptor, std::less<void>>&& registerGroupDescriptorsByKey,
         std::vector<TargetPeripheralSignalDescriptor>&& signalDescriptors
     )
         : id(static_cast<TargetPeripheralId>(Services::StringService::generateUniqueInteger(key)))
         , key(key)
         , name(name)
+        , description(description)
         , registerGroupDescriptorsByKey(std::move(registerGroupDescriptorsByKey))
         , signalDescriptors(std::move(signalDescriptors))
     {}
@@ -68,6 +70,7 @@ namespace Targets
         auto output = TargetPeripheralDescriptor{
             this->key,
             this->name,
+            this->description,
             {},
             {}
         };
