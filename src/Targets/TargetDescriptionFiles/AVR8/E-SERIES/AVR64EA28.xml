@@ -1587,6 +1587,15 @@
         </module>
     </modules>
     <pads>
+        <pad key="gnd" name="GND"/>
+        <pad key="gnd1" name="GND1"/>
+        <pad key="pa0" name="PA0"/>
+        <pad key="pa1" name="PA1"/>
+        <pad key="pa2" name="PA2"/>
+        <pad key="pa3" name="PA3"/>
+        <pad key="pa4" name="PA4"/>
+        <pad key="pa5" name="PA5"/>
+        <pad key="pa6" name="PA6"/>
         <pad key="pa7" name="PA7"/>
         <pad key="pc0" name="PC0"/>
         <pad key="pc1" name="PC1"/>
@@ -1600,21 +1609,12 @@
         <pad key="pd5" name="PD5"/>
         <pad key="pd6" name="PD6"/>
         <pad key="pd7" name="PD7"/>
-        <pad key="vdd" name="VDD"/>
-        <pad key="gnd" name="GND"/>
         <pad key="pf0" name="PF0"/>
         <pad key="pf1" name="PF1"/>
         <pad key="pf6" name="PF6"/>
         <pad key="pf7" name="PF7"/>
+        <pad key="vdd" name="VDD"/>
         <pad key="vdd1" name="VDD1"/>
-        <pad key="gnd1" name="GND1"/>
-        <pad key="pa0" name="PA0"/>
-        <pad key="pa1" name="PA1"/>
-        <pad key="pa2" name="PA2"/>
-        <pad key="pa3" name="PA3"/>
-        <pad key="pa4" name="PA4"/>
-        <pad key="pa5" name="PA5"/>
-        <pad key="pa6" name="PA6"/>
     </pads>
     <pinouts>
         <pinout key="soic28" name="SOIC28" type="soic">

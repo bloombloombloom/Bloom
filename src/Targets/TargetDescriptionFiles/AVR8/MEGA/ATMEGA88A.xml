@@ -780,25 +780,19 @@
         </module>
     </modules>
     <pads>
-        <pad key="pd3" name="PD3"/>
-        <pad key="pd4" name="PD4"/>
+        <pad key="adc6" name="ADC6"/>
+        <pad key="adc7" name="ADC7"/>
+        <pad key="aref" name="AREF"/>
+        <pad key="avcc" name="AVCC"/>
         <pad key="gnd" name="GND"/>
-        <pad key="vcc" name="VCC"/>
-        <pad key="pb6" name="PB6"/>
-        <pad key="pb7" name="PB7"/>
-        <pad key="pd5" name="PD5"/>
-        <pad key="pd6" name="PD6"/>
-        <pad key="pd7" name="PD7"/>
         <pad key="pb0" name="PB0"/>
         <pad key="pb1" name="PB1"/>
         <pad key="pb2" name="PB2"/>
         <pad key="pb3" name="PB3"/>
         <pad key="pb4" name="PB4"/>
         <pad key="pb5" name="PB5"/>
-        <pad key="avcc" name="AVCC"/>
-        <pad key="adc6" name="ADC6"/>
-        <pad key="aref" name="AREF"/>
-        <pad key="adc7" name="ADC7"/>
+        <pad key="pb6" name="PB6"/>
+        <pad key="pb7" name="PB7"/>
         <pad key="pc0" name="PC0"/>
         <pad key="pc1" name="PC1"/>
         <pad key="pc2" name="PC2"/>
@@ -809,6 +803,12 @@
         <pad key="pd0" name="PD0"/>
         <pad key="pd1" name="PD1"/>
         <pad key="pd2" name="PD2"/>
+        <pad key="pd3" name="PD3"/>
+        <pad key="pd4" name="PD4"/>
+        <pad key="pd5" name="PD5"/>
+        <pad key="pd6" name="PD6"/>
+        <pad key="pd7" name="PD7"/>
+        <pad key="vcc" name="VCC"/>
     </pads>
     <pinouts>
         <pinout key="tqfp32" name="TQFP32" type="qfp">

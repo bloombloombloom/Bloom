@@ -1685,6 +1685,25 @@
         </module>
     </modules>
     <pads>
+        <pad key="agnd" name="AGND"/>
+        <pad key="avcc" name="AVCC"/>
+        <pad key="bias1" name="BIAS1"/>
+        <pad key="bias2" name="BIAS2"/>
+        <pad key="caph" name="CAPH"/>
+        <pad key="capl" name="CAPL"/>
+        <pad key="com0" name="COM0"/>
+        <pad key="com1" name="COM1"/>
+        <pad key="com2" name="COM2"/>
+        <pad key="com3" name="COM3"/>
+        <pad key="gnd" name="GND"/>
+        <pad key="pb0" name="PB0"/>
+        <pad key="pb1" name="PB1"/>
+        <pad key="pb2" name="PB2"/>
+        <pad key="pb3" name="PB3"/>
+        <pad key="pb4" name="PB4"/>
+        <pad key="pb5" name="PB5"/>
+        <pad key="pb6" name="PB6"/>
+        <pad key="pb7" name="PB7"/>
         <pad key="pc0" name="PC0"/>
         <pad key="pc1" name="PC1"/>
         <pad key="pc2" name="PC2"/>
@@ -1693,11 +1712,8 @@
         <pad key="pc5" name="PC5"/>
         <pad key="pc6" name="PC6"/>
         <pad key="pc7" name="PC7"/>
-        <pad key="gnd" name="GND"/>
-        <pad key="vcc" name="VCC"/>
         <pad key="pd0" name="PD0"/>
         <pad key="pd1" name="PD1"/>
-        <pad key="reset" name="RESET"/>
         <pad key="pdi" name="PDI"/>
         <pad key="pg0" name="PG0"/>
         <pad key="pg1" name="PG1"/>
@@ -1715,36 +1731,20 @@
         <pad key="pm5" name="PM5"/>
         <pad key="pm6" name="PM6"/>
         <pad key="pm7" name="PM7"/>
-        <pad key="seg8" name="SEG8"/>
-        <pad key="seg7" name="SEG7"/>
-        <pad key="seg6" name="SEG6"/>
-        <pad key="seg5" name="SEG5"/>
-        <pad key="seg4" name="SEG4"/>
-        <pad key="seg3" name="SEG3"/>
-        <pad key="seg2" name="SEG2"/>
-        <pad key="seg1" name="SEG1"/>
-        <pad key="seg0" name="SEG0"/>
-        <pad key="bias1" name="BIAS1"/>
-        <pad key="bias2" name="BIAS2"/>
-        <pad key="vlcd" name="VLCD"/>
-        <pad key="capl" name="CAPL"/>
-        <pad key="caph" name="CAPH"/>
-        <pad key="com0" name="COM0"/>
-        <pad key="com1" name="COM1"/>
-        <pad key="com2" name="COM2"/>
-        <pad key="com3" name="COM3"/>
         <pad key="pr0" name="PR0"/>
         <pad key="pr1" name="PR1"/>
-        <pad key="agnd" name="AGND"/>
-        <pad key="avcc" name="AVCC"/>
-        <pad key="pb0" name="PB0"/>
-        <pad key="pb1" name="PB1"/>
-        <pad key="pb2" name="PB2"/>
-        <pad key="pb3" name="PB3"/>
-        <pad key="pb4" name="PB4"/>
-        <pad key="pb5" name="PB5"/>
-        <pad key="pb6" name="PB6"/>
-        <pad key="pb7" name="PB7"/>
+        <pad key="reset" name="RESET"/>
+        <pad key="seg0" name="SEG0"/>
+        <pad key="seg1" name="SEG1"/>
+        <pad key="seg2" name="SEG2"/>
+        <pad key="seg3" name="SEG3"/>
+        <pad key="seg4" name="SEG4"/>
+        <pad key="seg5" name="SEG5"/>
+        <pad key="seg6" name="SEG6"/>
+        <pad key="seg7" name="SEG7"/>
+        <pad key="seg8" name="SEG8"/>
+        <pad key="vcc" name="VCC"/>
+        <pad key="vlcd" name="VLCD"/>
     </pads>
     <pinouts>
         <pinout key="qfp_qfn_64" name="QFP_QFN_64" type="qfn">

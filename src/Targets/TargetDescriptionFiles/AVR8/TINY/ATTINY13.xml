@@ -430,13 +430,13 @@
         </module>
     </modules>
     <pads>
-        <pad key="pb5" name="PB5"/>
-        <pad key="pb3" name="PB3"/>
-        <pad key="pb4" name="PB4"/>
         <pad key="gnd" name="GND"/>
         <pad key="pb0" name="PB0"/>
         <pad key="pb1" name="PB1"/>
         <pad key="pb2" name="PB2"/>
+        <pad key="pb3" name="PB3"/>
+        <pad key="pb4" name="PB4"/>
+        <pad key="pb5" name="PB5"/>
         <pad key="vcc" name="VCC"/>
     </pads>
     <pinouts>

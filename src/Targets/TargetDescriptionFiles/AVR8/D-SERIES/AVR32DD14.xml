@@ -1548,19 +1548,19 @@
     </modules>
     <pads>
         <pad key="agnd" name="AGND"/>
-        <pad key="pf6" name="PF6"/>
-        <pad key="pf7" name="PF7"/>
+        <pad key="avdd" name="AVDD"/>
         <pad key="pa0" name="PA0"/>
         <pad key="pa1" name="PA1"/>
         <pad key="pc1" name="PC1"/>
         <pad key="pc2" name="PC2"/>
         <pad key="pc3" name="PC3"/>
-        <pad key="vddio2" name="VDDIO2"/>
         <pad key="pd4" name="PD4"/>
         <pad key="pd5" name="PD5"/>
         <pad key="pd6" name="PD6"/>
         <pad key="pd7" name="PD7"/>
-        <pad key="avdd" name="AVDD"/>
+        <pad key="pf6" name="PF6"/>
+        <pad key="pf7" name="PF7"/>
+        <pad key="vddio2" name="VDDIO2"/>
     </pads>
     <pinouts>
         <pinout key="soic14mvio" name="SOIC14MVIO" type="soic">

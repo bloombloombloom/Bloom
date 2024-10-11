@@ -1139,14 +1139,14 @@
         </module>
     </modules>
     <pads>
-        <pad key="vdd" name="VDD"/>
-        <pad key="pa6" name="PA6"/>
-        <pad key="pa7" name="PA7"/>
+        <pad key="gnd" name="GND"/>
+        <pad key="pa0" name="PA0"/>
         <pad key="pa1" name="PA1"/>
         <pad key="pa2" name="PA2"/>
-        <pad key="pa0" name="PA0"/>
         <pad key="pa3" name="PA3"/>
-        <pad key="gnd" name="GND"/>
+        <pad key="pa6" name="PA6"/>
+        <pad key="pa7" name="PA7"/>
+        <pad key="vdd" name="VDD"/>
     </pads>
     <pinouts>
         <pinout key="soic8" name="SOIC8" type="soic">

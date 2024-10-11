@@ -1299,20 +1299,20 @@
         </module>
     </modules>
     <pads>
-        <pad key="vcc" name="VCC"/>
-        <pad key="pa4" name="PA4"/>
-        <pad key="pa5" name="PA5"/>
-        <pad key="pa6" name="PA6"/>
-        <pad key="pa7" name="PA7"/>
-        <pad key="pb3" name="PB3"/>
-        <pad key="pb2" name="PB2"/>
-        <pad key="pb1" name="PB1"/>
-        <pad key="pb0" name="PB0"/>
+        <pad key="gnd" name="GND"/>
         <pad key="pa0" name="PA0"/>
         <pad key="pa1" name="PA1"/>
         <pad key="pa2" name="PA2"/>
         <pad key="pa3" name="PA3"/>
-        <pad key="gnd" name="GND"/>
+        <pad key="pa4" name="PA4"/>
+        <pad key="pa5" name="PA5"/>
+        <pad key="pa6" name="PA6"/>
+        <pad key="pa7" name="PA7"/>
+        <pad key="pb0" name="PB0"/>
+        <pad key="pb1" name="PB1"/>
+        <pad key="pb2" name="PB2"/>
+        <pad key="pb3" name="PB3"/>
+        <pad key="vcc" name="VCC"/>
     </pads>
     <pinouts>
         <pinout key="soic14" name="SOIC14" type="soic">

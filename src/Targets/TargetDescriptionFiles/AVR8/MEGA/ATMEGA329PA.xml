@@ -1034,15 +1034,18 @@
         </module>
     </modules>
     <pads>
+        <pad key="aref" name="AREF"/>
+        <pad key="avcc" name="AVCC"/>
+        <pad key="gnd" name="GND"/>
         <pad key="lcdcap" name="LCDCAP"/>
-        <pad key="pe0" name="PE0"/>
-        <pad key="pe1" name="PE1"/>
-        <pad key="pe2" name="PE2"/>
-        <pad key="pe3" name="PE3"/>
-        <pad key="pe4" name="PE4"/>
-        <pad key="pe5" name="PE5"/>
-        <pad key="pe6" name="PE6"/>
-        <pad key="pe7" name="PE7"/>
+        <pad key="pa0" name="PA0"/>
+        <pad key="pa1" name="PA1"/>
+        <pad key="pa2" name="PA2"/>
+        <pad key="pa3" name="PA3"/>
+        <pad key="pa4" name="PA4"/>
+        <pad key="pa5" name="PA5"/>
+        <pad key="pa6" name="PA6"/>
+        <pad key="pa7" name="PA7"/>
         <pad key="pb0" name="PB0"/>
         <pad key="pb1" name="PB1"/>
         <pad key="pb2" name="PB2"/>
@@ -1051,23 +1054,6 @@
         <pad key="pb5" name="PB5"/>
         <pad key="pb6" name="PB6"/>
         <pad key="pb7" name="PB7"/>
-        <pad key="pg3" name="PG3"/>
-        <pad key="pg4" name="PG4"/>
-        <pad key="pg5" name="PG5"/>
-        <pad key="vcc" name="VCC"/>
-        <pad key="gnd" name="GND"/>
-        <pad key="xtal2" name="XTAL2"/>
-        <pad key="xtal1" name="XTAL1"/>
-        <pad key="pd0" name="PD0"/>
-        <pad key="pd1" name="PD1"/>
-        <pad key="pd2" name="PD2"/>
-        <pad key="pd3" name="PD3"/>
-        <pad key="pd4" name="PD4"/>
-        <pad key="pd5" name="PD5"/>
-        <pad key="pd6" name="PD6"/>
-        <pad key="pd7" name="PD7"/>
-        <pad key="pg0" name="PG0"/>
-        <pad key="pg1" name="PG1"/>
         <pad key="pc0" name="PC0"/>
         <pad key="pc1" name="PC1"/>
         <pad key="pc2" name="PC2"/>
@@ -1076,25 +1062,39 @@
         <pad key="pc5" name="PC5"/>
         <pad key="pc6" name="PC6"/>
         <pad key="pc7" name="PC7"/>
-        <pad key="pg2" name="PG2"/>
-        <pad key="pa7" name="PA7"/>
-        <pad key="pa6" name="PA6"/>
-        <pad key="pa5" name="PA5"/>
-        <pad key="pa4" name="PA4"/>
-        <pad key="pa3" name="PA3"/>
-        <pad key="pa2" name="PA2"/>
-        <pad key="pa1" name="PA1"/>
-        <pad key="pa0" name="PA0"/>
-        <pad key="pf7" name="PF7"/>
-        <pad key="pf6" name="PF6"/>
-        <pad key="pf5" name="PF5"/>
-        <pad key="pf4" name="PF4"/>
-        <pad key="pf3" name="PF3"/>
-        <pad key="pf2" name="PF2"/>
-        <pad key="pf1" name="PF1"/>
+        <pad key="pd0" name="PD0"/>
+        <pad key="pd1" name="PD1"/>
+        <pad key="pd2" name="PD2"/>
+        <pad key="pd3" name="PD3"/>
+        <pad key="pd4" name="PD4"/>
+        <pad key="pd5" name="PD5"/>
+        <pad key="pd6" name="PD6"/>
+        <pad key="pd7" name="PD7"/>
+        <pad key="pe0" name="PE0"/>
+        <pad key="pe1" name="PE1"/>
+        <pad key="pe2" name="PE2"/>
+        <pad key="pe3" name="PE3"/>
+        <pad key="pe4" name="PE4"/>
+        <pad key="pe5" name="PE5"/>
+        <pad key="pe6" name="PE6"/>
+        <pad key="pe7" name="PE7"/>
         <pad key="pf0" name="PF0"/>
-        <pad key="aref" name="AREF"/>
-        <pad key="avcc" name="AVCC"/>
+        <pad key="pf1" name="PF1"/>
+        <pad key="pf2" name="PF2"/>
+        <pad key="pf3" name="PF3"/>
+        <pad key="pf4" name="PF4"/>
+        <pad key="pf5" name="PF5"/>
+        <pad key="pf6" name="PF6"/>
+        <pad key="pf7" name="PF7"/>
+        <pad key="pg0" name="PG0"/>
+        <pad key="pg1" name="PG1"/>
+        <pad key="pg2" name="PG2"/>
+        <pad key="pg3" name="PG3"/>
+        <pad key="pg4" name="PG4"/>
+        <pad key="pg5" name="PG5"/>
+        <pad key="vcc" name="VCC"/>
+        <pad key="xtal1" name="XTAL1"/>
+        <pad key="xtal2" name="XTAL2"/>
     </pads>
     <pinouts>
         <pinout key="tqfp64" name="TQFP64" type="qfp">

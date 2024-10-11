@@ -1119,45 +1119,45 @@
         </module>
     </modules>
     <pads>
-        <pad key="pe6" name="PE6"/>
-        <pad key="uvcc" name="UVCC"/>
+        <pad key="aref" name="AREF"/>
+        <pad key="avcc" name="AVCC"/>
         <pad key="dm" name="DM"/>
         <pad key="dp" name="DP"/>
-        <pad key="ugnd" name="UGND"/>
-        <pad key="ucap" name="UCAP"/>
-        <pad key="vbus" name="VBUS"/>
+        <pad key="gnd" name="GND"/>
         <pad key="pb0" name="PB0"/>
         <pad key="pb1" name="PB1"/>
         <pad key="pb2" name="PB2"/>
         <pad key="pb3" name="PB3"/>
+        <pad key="pb4" name="PB4"/>
+        <pad key="pb5" name="PB5"/>
+        <pad key="pb6" name="PB6"/>
         <pad key="pb7" name="PB7"/>
-        <pad key="reset" name="RESET"/>
-        <pad key="vcc" name="VCC"/>
-        <pad key="gnd" name="GND"/>
-        <pad key="xtal2" name="XTAL2"/>
-        <pad key="xtal1" name="XTAL1"/>
+        <pad key="pc6" name="PC6"/>
+        <pad key="pc7" name="PC7"/>
         <pad key="pd0" name="PD0"/>
         <pad key="pd1" name="PD1"/>
         <pad key="pd2" name="PD2"/>
         <pad key="pd3" name="PD3"/>
-        <pad key="pd5" name="PD5"/>
-        <pad key="avcc" name="AVCC"/>
         <pad key="pd4" name="PD4"/>
+        <pad key="pd5" name="PD5"/>
         <pad key="pd6" name="PD6"/>
         <pad key="pd7" name="PD7"/>
-        <pad key="pb4" name="PB4"/>
-        <pad key="pb5" name="PB5"/>
-        <pad key="pb6" name="PB6"/>
-        <pad key="pc6" name="PC6"/>
-        <pad key="pc7" name="PC7"/>
         <pad key="pe2" name="PE2"/>
-        <pad key="pf7" name="PF7"/>
-        <pad key="pf6" name="PF6"/>
-        <pad key="pf5" name="PF5"/>
-        <pad key="pf4" name="PF4"/>
-        <pad key="pf1" name="PF1"/>
+        <pad key="pe6" name="PE6"/>
         <pad key="pf0" name="PF0"/>
-        <pad key="aref" name="AREF"/>
+        <pad key="pf1" name="PF1"/>
+        <pad key="pf4" name="PF4"/>
+        <pad key="pf5" name="PF5"/>
+        <pad key="pf6" name="PF6"/>
+        <pad key="pf7" name="PF7"/>
+        <pad key="reset" name="RESET"/>
+        <pad key="ucap" name="UCAP"/>
+        <pad key="ugnd" name="UGND"/>
+        <pad key="uvcc" name="UVCC"/>
+        <pad key="vbus" name="VBUS"/>
+        <pad key="vcc" name="VCC"/>
+        <pad key="xtal1" name="XTAL1"/>
+        <pad key="xtal2" name="XTAL2"/>
     </pads>
     <pinouts>
         <pinout key="tqfp44" name="TQFP44" type="qfp">

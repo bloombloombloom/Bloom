@@ -1557,31 +1557,15 @@
         </module>
     </modules>
     <pads>
-        <pad key="pf3_4" name="PF3/4"/>
-        <pad key="pf5" name="PF5"/>
-        <pad key="pf6" name="PF6"/>
-        <pad key="pf7" name="PF7"/>
-        <pad key="avss_rfp" name="AVSS_RFP"/>
-        <pad key="rfp" name="RFP"/>
-        <pad key="rfn" name="RFN"/>
+        <pad key="avdd" name="AVDD"/>
+        <pad key="avss" name="AVSS"/>
         <pad key="avss_rfn" name="AVSS_RFN"/>
-        <pad key="tst" name="TST"/>
-        <pad key="rstn" name="RSTN"/>
-        <pad key="pg1" name="PG1"/>
-        <pad key="pg3" name="PG3"/>
-        <pad key="pg4" name="PG4"/>
-        <pad key="dvss" name="DVSS"/>
-        <pad key="dvdd" name="DVDD"/>
-        <pad key="devdd" name="DEVDD"/>
-        <pad key="pd0" name="PD0"/>
-        <pad key="pd1" name="PD1"/>
-        <pad key="pd2" name="PD2"/>
-        <pad key="pd3" name="PD3"/>
-        <pad key="pd4" name="PD4"/>
-        <pad key="pd5" name="PD5"/>
-        <pad key="pd6" name="PD6"/>
-        <pad key="pd7" name="PD7"/>
+        <pad key="avss_rfp" name="AVSS_RFP"/>
         <pad key="clki" name="CLKI"/>
+        <pad key="devdd" name="DEVDD"/>
+        <pad key="dvdd" name="DVDD"/>
+        <pad key="dvss" name="DVSS"/>
+        <pad key="evdd" name="EVDD"/>
         <pad key="pb0" name="PB0"/>
         <pad key="pb1" name="PB1"/>
         <pad key="pb2" name="PB2"/>
@@ -1590,6 +1574,14 @@
         <pad key="pb5" name="PB5"/>
         <pad key="pb6" name="PB6"/>
         <pad key="pb7" name="PB7"/>
+        <pad key="pd0" name="PD0"/>
+        <pad key="pd1" name="PD1"/>
+        <pad key="pd2" name="PD2"/>
+        <pad key="pd3" name="PD3"/>
+        <pad key="pd4" name="PD4"/>
+        <pad key="pd5" name="PD5"/>
+        <pad key="pd6" name="PD6"/>
+        <pad key="pd7" name="PD7"/>
         <pad key="pe0" name="PE0"/>
         <pad key="pe1" name="PE1"/>
         <pad key="pe2" name="PE2"/>
@@ -1597,14 +1589,22 @@
         <pad key="pe4" name="PE4"/>
         <pad key="pe5" name="PE5"/>
         <pad key="pe7" name="PE7"/>
-        <pad key="xtal2" name="XTAL2"/>
-        <pad key="xtal1" name="XTAL1"/>
-        <pad key="avss" name="AVSS"/>
-        <pad key="evdd" name="EVDD"/>
-        <pad key="avdd" name="AVDD"/>
         <pad key="pf0" name="PF0"/>
         <pad key="pf1" name="PF1"/>
         <pad key="pf2" name="PF2"/>
+        <pad key="pf3_4" name="PF3/4"/>
+        <pad key="pf5" name="PF5"/>
+        <pad key="pf6" name="PF6"/>
+        <pad key="pf7" name="PF7"/>
+        <pad key="pg1" name="PG1"/>
+        <pad key="pg3" name="PG3"/>
+        <pad key="pg4" name="PG4"/>
+        <pad key="rfn" name="RFN"/>
+        <pad key="rfp" name="RFP"/>
+        <pad key="rstn" name="RSTN"/>
+        <pad key="tst" name="TST"/>
+        <pad key="xtal1" name="XTAL1"/>
+        <pad key="xtal2" name="XTAL2"/>
     </pads>
     <pinouts>
         <pinout key="qfn48" name="QFN48" type="qfn">

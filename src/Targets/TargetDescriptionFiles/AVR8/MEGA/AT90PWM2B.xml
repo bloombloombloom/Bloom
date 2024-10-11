@@ -884,30 +884,30 @@
         </module>
     </modules>
     <pads>
-        <pad key="pd0" name="PD0"/>
-        <pad key="pe0" name="PE0"/>
-        <pad key="pd1" name="PD1"/>
-        <pad key="pd2" name="PD2"/>
-        <pad key="pd3" name="PD3"/>
-        <pad key="vcc" name="VCC"/>
+        <pad key="agnd" name="AGND"/>
+        <pad key="aref" name="AREF"/>
+        <pad key="avcc" name="AVCC"/>
         <pad key="gnd" name="GND"/>
         <pad key="pb0" name="PB0"/>
         <pad key="pb1" name="PB1"/>
-        <pad key="pe1" name="PE1"/>
-        <pad key="pe2" name="PE2"/>
-        <pad key="pd4" name="PD4"/>
-        <pad key="pd5" name="PD5"/>
-        <pad key="pd6" name="PD6"/>
-        <pad key="pd7" name="PD7"/>
         <pad key="pb2" name="PB2"/>
-        <pad key="avcc" name="AVCC"/>
-        <pad key="agnd" name="AGND"/>
-        <pad key="aref" name="AREF"/>
         <pad key="pb3" name="PB3"/>
         <pad key="pb4" name="PB4"/>
         <pad key="pb5" name="PB5"/>
         <pad key="pb6" name="PB6"/>
         <pad key="pb7" name="PB7"/>
+        <pad key="pd0" name="PD0"/>
+        <pad key="pd1" name="PD1"/>
+        <pad key="pd2" name="PD2"/>
+        <pad key="pd3" name="PD3"/>
+        <pad key="pd4" name="PD4"/>
+        <pad key="pd5" name="PD5"/>
+        <pad key="pd6" name="PD6"/>
+        <pad key="pd7" name="PD7"/>
+        <pad key="pe0" name="PE0"/>
+        <pad key="pe1" name="PE1"/>
+        <pad key="pe2" name="PE2"/>
+        <pad key="vcc" name="VCC"/>
     </pads>
     <pinouts>
         <pinout key="soic24" name="SOIC24" type="soic">

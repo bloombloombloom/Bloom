@@ -878,10 +878,10 @@
         <pad key="pa5" name="PA5"/>
         <pad key="pa6" name="PA6"/>
         <pad key="pa7" name="PA7"/>
+        <pad key="pb0" name="PB0"/>
+        <pad key="pb1" name="PB1"/>
         <pad key="pb2" name="PB2"/>
         <pad key="pb3" name="PB3"/>
-        <pad key="pb1" name="PB1"/>
-        <pad key="pb0" name="PB0"/>
         <pad key="vcc" name="VCC"/>
     </pads>
     <pinouts>
