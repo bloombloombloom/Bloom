@@ -188,6 +188,11 @@ class AtdfService
 
         $tdf->pads = array_values($padsByKey);
 
+        // Sort pads by key
+        uasort($tdf->pads, function (Pad $padA, Pad $padB): bool {
+            return $padA->key > $padB->key;
+        });
+
         $variantElements = $this->getElementsFromXPath(
             'variants/variant',
             $document
