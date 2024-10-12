@@ -406,6 +406,15 @@ class ToXmlService
         $element->setAttribute('name', $variant->name);
         $element->setAttribute('pinout-key', $variant->pinoutKey);
 
+        if (!empty($variant->propertyGroups)) {
+            $propertyGroupsElement = $document->createElement('signals');
+            foreach ($variant->propertyGroups as $propertyGroup) {
+                $propertyGroupsElement->append($this->propertyGroupToXml($propertyGroup, $document));
+            }
+
+            $element->append($propertyGroupsElement);
+        }
+
         return $element;
     }
 }

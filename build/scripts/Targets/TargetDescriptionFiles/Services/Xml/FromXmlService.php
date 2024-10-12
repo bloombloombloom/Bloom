@@ -450,10 +450,32 @@ class FromXmlService
     {
         $attributes = $this->getNodeAttributesByName($element);
 
-        return new Variant(
+        $output = new Variant(
             $attributes['key'] ?? null,
             $attributes['name'] ?? null,
-            $attributes['pinout-key'] ?? null
+            $attributes['pinout-key'] ?? null,
+            []
         );
+
+        $propertyGroupsElements = $element->getElementsByTagName('property-groups');
+        if (
+            $propertyGroupsElements->count() === 1
+            && ($propertyGroupsElement = $propertyGroupsElements->item(0)) instanceof DOMElement
+        ) {
+            foreach ($propertyGroupsElement->childNodes as $childNode) {
+                if (!$childNode instanceof DOMElement) {
+                    continue;
+                }
+
+                if ($childNode->nodeName === 'property-group') {
+                    $output->propertyGroups[] = $this->propertyGroupFromElement($childNode);
+                }
+            }
+
+        } elseif ($propertyGroupsElements->count() > 1) {
+            throw new XmlParsingException('Unexpected number of "property-groups" elements');
+        }
+
+        return $output;
     }
 }

@@ -1039,6 +1039,17 @@ class ValidationService
                 . '" - check pinout key';
         }
 
+        $processedPropertyGroupKeys = [];
+        foreach ($variant->propertyGroups as $propertyGroup) {
+            $failures = array_merge($failures, $this->validatePropertyGroup($propertyGroup));
+
+            if ($propertyGroup->key !== null && in_array($propertyGroup->key, $processedPropertyGroupKeys)) {
+                $failures[] = 'Duplicate property group key ("' . $propertyGroup->key . '") detected';
+            }
+
+            $processedPropertyGroupKeys[] = $propertyGroup->key;
+        }
+
         return array_map(
             fn (string $failure): string => 'Variant "' . $variant->name . '" validation failure: ' . $failure,
             $failures

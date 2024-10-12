@@ -1046,7 +1046,8 @@ class AtdfService
                 strtolower($attributes['ordercode'] ?? $attributes['name'] ?? '')
             ),
             $attributes['ordercode'] ?? $attributes['name'] ?? null,
-            isset($attributes['pinout']) ? strtolower($attributes['pinout']) : null
+            isset($attributes['pinout']) ? strtolower($attributes['pinout']) : null,
+            []
         );
     }
 }

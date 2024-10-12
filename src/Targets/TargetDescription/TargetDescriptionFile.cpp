@@ -926,11 +926,23 @@ namespace Targets::TargetDescription
     }
 
     Variant TargetDescriptionFile::variantFromXml(const QDomElement& xmlElement) {
-        return {
+        auto output = Variant{
             TargetDescriptionFile::getAttribute(xmlElement, "key"),
             TargetDescriptionFile::getAttribute(xmlElement, "name"),
-            TargetDescriptionFile::getAttribute(xmlElement, "pinout-key")
+            TargetDescriptionFile::getAttribute(xmlElement, "pinout-key"),
+            {}
         };
+
+        for (
+            auto element = xmlElement.firstChildElement("property-groups").firstChildElement("property-group");
+            !element.isNull();
+            element = element.nextSiblingElement("property-group")
+        ) {
+            auto propertyGroup = TargetDescriptionFile::propertyGroupFromXml(element);
+            output.propertyGroupsByKey.emplace(propertyGroup.key, std::move(propertyGroup));
+        }
+
+        return output;
     }
 
     TargetAddressSpaceDescriptor TargetDescriptionFile::targetAddressSpaceDescriptorFromAddressSpace(
