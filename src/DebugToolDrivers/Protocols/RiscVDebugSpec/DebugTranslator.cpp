@@ -816,7 +816,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     void DebugTranslator::clearTrigger(const TriggerModule::TriggerDescriptor& triggerDescriptor) {
         using TriggerModule::TriggerType;
 
-        Logger::debug("Clearing RISC-V trigger " + std::to_string(triggerDescriptor.index));
+        Logger::debug("Clearing RISC-V trigger (index: " + std::to_string(triggerDescriptor.index) + ")");
 
         if (triggerDescriptor.supportedTypes.contains(TriggerType::MATCH_CONTROL)) {
             using TriggerModule::Registers::MatchControl;

@@ -488,13 +488,13 @@ namespace TargetController
 
         if (debugToolIt == supportedDebugTools.end()) {
             throw Exceptions::InvalidConfig{
-                "Debug tool name (\"" + debugToolName + "\") not recognised. Please check your configuration!"
+                "Debug tool (\"" + debugToolName + "\") not recognised. Please check your configuration."
             };
         }
 
         if (!briefTargetDescriptor.has_value()) {
             throw Exceptions::InvalidConfig{
-                "Target name (\"" + targetName + "\") not recognised. Please check your configuration!"
+                "Target (\"" + targetName + "\") not recognised. Please check your configuration."
             };
         }
 
