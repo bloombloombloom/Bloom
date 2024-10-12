@@ -16,10 +16,10 @@ namespace Targets::RiscV
 {
     RiscV::RiscV(
         const TargetConfig& targetConfig,
-        TargetDescriptionFile&& targetDescriptionFile
+        const TargetDescriptionFile& targetDescriptionFile
     )
         : targetConfig(RiscVTargetConfig{targetConfig})
-        , targetDescriptionFile(std::move(targetDescriptionFile))
+        , targetDescriptionFile(targetDescriptionFile)
         , cpuRegisterAddressSpaceDescriptor(RiscV::generateCpuRegisterAddressSpaceDescriptor())
         , csrMemorySegmentDescriptor(this->cpuRegisterAddressSpaceDescriptor.getMemorySegmentDescriptor("cs_registers"))
         , gprMemorySegmentDescriptor(this->cpuRegisterAddressSpaceDescriptor.getMemorySegmentDescriptor("gp_registers"))
@@ -58,15 +58,6 @@ namespace Targets::RiscV
 
     void RiscV::activate() {
         this->riscVDebugInterface->activate();
-
-        const auto deviceId = this->riscVIdInterface->getDeviceId();
-        const auto tdfDeviceId = this->targetDescriptionFile.getTargetId();
-        if (deviceId != tdfDeviceId) {
-            throw Exceptions::InvalidConfig{
-                "RISC-V target ID mismatch - expected " + tdfDeviceId + " but got " + deviceId +
-                    ". Please check target configuration."
-            };
-        }
     }
 
     void RiscV::deactivate() {
@@ -82,39 +73,7 @@ namespace Targets::RiscV
     }
 
     void RiscV::postActivate() {
-        Logger::info("WCH target ID: " + this->riscVIdInterface->getDeviceId());
-    }
-
-    TargetDescriptor RiscV::targetDescriptor() {
-        auto descriptor = TargetDescriptor{
-            this->targetDescriptionFile.getName(),
-            this->targetDescriptionFile.getFamily(),
-            this->targetDescriptionFile.getTargetId(),
-            this->targetDescriptionFile.getVendorName(),
-            this->targetDescriptionFile.targetAddressSpaceDescriptorsByKey(),
-            this->targetDescriptionFile.targetPeripheralDescriptorsByKey(),
-            this->targetDescriptionFile.targetPadDescriptorsByKey(),
-            this->targetDescriptionFile.targetPinoutDescriptorsByKey(),
-            this->targetDescriptionFile.targetVariantDescriptorsByKey(),
-            BreakpointResources{
-                this->riscVDebugInterface->getHardwareBreakpointCount(),
-                std::nullopt,
-                static_cast<std::uint16_t>(this->targetConfig.reserveSteppingBreakpoint ? 1 : 0)
-            }
-        };
-
-        // Copy the RISC-V CPU register address space and peripheral descriptor
-        descriptor.addressSpaceDescriptorsByKey.emplace(
-            this->cpuRegisterAddressSpaceDescriptor.key,
-            this->cpuRegisterAddressSpaceDescriptor.clone()
-        );
-
-        descriptor.peripheralDescriptorsByKey.emplace(
-            this->cpuPeripheralDescriptor.key,
-            this->cpuPeripheralDescriptor.clone()
-        );
-
-        return descriptor;
+        // Nothing to do here, for now.
     }
 
     void RiscV::run(std::optional<TargetMemoryAddress> toAddress) {

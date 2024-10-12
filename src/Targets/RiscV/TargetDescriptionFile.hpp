@@ -14,13 +14,6 @@ namespace Targets::RiscV
     public:
         explicit TargetDescriptionFile(const std::string& xmlFilePath);
 
-        /**
-         * Returns the RISC-V target ID from the TDF.
-         *
-         * @return
-         */
-        [[nodiscard]] std::string getTargetId() const;
-
         [[nodiscard]] TargetAddressSpaceDescriptor getSystemAddressSpaceDescriptor() const;
     };
 }

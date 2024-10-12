@@ -2,4 +2,4 @@
 
 #include "src/Targets/Target.hpp"
 #include "src/Targets/Microchip/AVR8/Avr8.hpp"
-#include "src/Targets/RiscV/RiscV.hpp"
+#include "src/Targets/RiscV/Wch/WchRiscV.hpp"

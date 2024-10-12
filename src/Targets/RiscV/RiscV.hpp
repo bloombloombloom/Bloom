@@ -19,7 +19,7 @@ namespace Targets::RiscV
     class RiscV: public Target
     {
     public:
-        RiscV(const TargetConfig& targetConfig, TargetDescriptionFile&& targetDescriptionFile);
+        RiscV(const TargetConfig& targetConfig, const TargetDescriptionFile& targetDescriptionFile);
 
         /*
          * The functions below implement the Target interface for RISC-V targets.
@@ -35,8 +35,6 @@ namespace Targets::RiscV
         void deactivate() override;
 
         void postActivate() override;
-
-        TargetDescriptor targetDescriptor() override;
 
         void run(std::optional<TargetMemoryAddress> toAddress = std::nullopt) override;
         void stop() override;

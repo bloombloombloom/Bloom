@@ -5,7 +5,7 @@
 #include <algorithm>
 
 #include "src/Targets/Microchip/AVR8/TargetDescriptionFile.hpp"
-#include "src/Targets/RiscV/TargetDescriptionFile.hpp"
+#include "src/Targets/RiscV/Wch/TargetDescriptionFile.hpp"
 
 #include "Responses/Error.hpp"
 
@@ -393,9 +393,15 @@ namespace TargetController
         }
 
         if (briefDescriptor.family == TargetFamily::RISC_V) {
-            return std::make_unique<RiscV::RiscV>(
+            /*
+             * Given that WCH targets are the only RISC-V targets we support ATM, we can just assume that
+             * construction of a WchRiscV object is necessary.
+             *
+             * TODO: Review later
+             */
+            return std::make_unique<RiscV::Wch::WchRiscV>(
                 this->environmentConfig.targetConfig,
-                RiscV::TargetDescriptionFile{
+                RiscV::Wch::TargetDescriptionFile{
                     PathService::targetDescriptionFilesDirPath() + "/" + briefDescriptor.relativeTdfPath
                 }
             );
