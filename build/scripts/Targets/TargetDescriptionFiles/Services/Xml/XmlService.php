@@ -159,9 +159,11 @@ class XmlService
             $deviceElement->setAttribute($attrName, $attrValue);
         }
 
-        $propertyGroupsElement = $document->createElement('property-groups');
-        foreach ($tdf->propertyGroups as $propertyGroup) {
-            $propertyGroupsElement->append($this->toXmlService->propertyGroupToXml($propertyGroup, $document));
+        if (!empty($tdf->propertyGroups)) {
+            $propertyGroupsElement = $document->createElement('property-groups');
+            foreach ($tdf->propertyGroups as $propertyGroup) {
+                $propertyGroupsElement->append($this->toXmlService->propertyGroupToXml($propertyGroup, $document));
+            }
         }
 
         $deviceElement->append($propertyGroupsElement);
