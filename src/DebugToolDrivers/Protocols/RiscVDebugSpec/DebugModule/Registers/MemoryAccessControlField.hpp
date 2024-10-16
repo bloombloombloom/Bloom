@@ -17,29 +17,19 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
             SIZE_128 = 0x04,
         };
 
-        bool write:1;
-        bool postIncrement:1;
-        MemorySize size:3;
-        bool virtualAddress:1;
+        bool write = false;
+        bool postIncrement = false;
+        MemorySize size = MemorySize::SIZE_8;
+        bool virtualAddress = false;
 
-        constexpr MemoryAccessControlField(
-            bool write,
-            bool postIncrement,
-            MemorySize size,
-            bool virtualAddress
-        )
-            : write(write)
-            , postIncrement(postIncrement)
-            , size(size)
-            , virtualAddress(virtualAddress)
-        {}
-
-        constexpr explicit MemoryAccessControlField(std::uint32_t controlValue)
-            : write(static_cast<bool>(controlValue & (0x01 << 16)))
-            , postIncrement(static_cast<bool>(controlValue & (0x01 << 19)))
-            , size(static_cast<MemorySize>((controlValue >> 20) & 0x07))
-            , virtualAddress(static_cast<bool>(controlValue & (0x01 << 23)))
-        {}
+        static constexpr auto fromValue(std::uint32_t value) {
+            return MemoryAccessControlField{
+                .write = static_cast<bool>(value & (0x01 << 16)),
+                .postIncrement = static_cast<bool>(value & (0x01 << 19)),
+                .size = static_cast<MemorySize>((value >> 20) & 0x07),
+                .virtualAddress = static_cast<bool>(value & (0x01 << 23)),
+            };
+        }
 
         [[nodiscard]] constexpr std::uint32_t value() const {
             return std::uint32_t{0}

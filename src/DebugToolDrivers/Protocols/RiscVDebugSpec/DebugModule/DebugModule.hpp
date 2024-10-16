@@ -22,7 +22,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule
         BUSY = 0x03,
     };
 
-    enum AbstractCommandError: std::uint8_t
+    enum class AbstractCommandError: std::uint8_t
     {
         NONE = 0x00,
         BUSY = 0x01,

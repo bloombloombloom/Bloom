@@ -6,6 +6,9 @@
 
 namespace DebugToolDrivers::Protocols::RiscVDebugSpec::TriggerModule::Registers
 {
+    /**
+     * TODO: Given the single, full width bit field, is this struct really necessary? Review.
+     */
     struct TriggerSelect
     {
         TriggerIndex index;

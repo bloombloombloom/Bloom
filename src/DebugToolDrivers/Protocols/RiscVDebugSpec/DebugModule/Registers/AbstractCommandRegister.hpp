@@ -9,7 +9,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 {
     struct AbstractCommandRegister
     {
-        enum CommandType: std::uint8_t
+        enum class CommandType: std::uint8_t
         {
             REGISTER_ACCESS = 0x00,
             QUICK_ACCESS = 0x01,
@@ -19,15 +19,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
         std::uint32_t control;
         CommandType commandType;
 
-        constexpr AbstractCommandRegister(std::uint32_t control, CommandType commandType)
-            : control(control)
-            , commandType(commandType)
-        {}
-
-        constexpr explicit AbstractCommandRegister(RegisterValue registerValue)
-            : control(static_cast<std::uint32_t>(registerValue & 0x00FFFFFF))
-            , commandType(static_cast<CommandType>((registerValue >> 24) & 0xFF))
-        {}
+        static constexpr AbstractCommandRegister fromValue(RegisterValue value) {
+            return {
+                .control = static_cast<std::uint32_t>(value & 0x00FFFFFF),
+                .commandType = static_cast<CommandType>((value >> 24) & 0xFF),
+            };
+        }
 
         [[nodiscard]] constexpr RegisterValue value() const {
             assert(this->control <= 0x00FFFFFF);

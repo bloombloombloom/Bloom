@@ -37,71 +37,39 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::TriggerModule::Registers
             DATA = 0x01,
         };
 
-        bool load:1 = false;
-        bool store:1 = false;
-        bool execute:1 = false;
-        bool enabledInUserMode:1 = false;
-        bool enabledInSupervisorMode:1 = false;
-        bool enabledInMachineMode:1 = false;
-        MatchMode matchMode:4 = MatchMode::EQUAL;
-        bool chain:1 = false; // TODO: Consider making this an enum
-        TriggerAction action:4 = TriggerAction::ENTER_DEBUG_MODE;
+        bool load = false;
+        bool store = false;
+        bool execute = false;
+        bool enabledInUserMode = false;
+        bool enabledInSupervisorMode = false;
+        bool enabledInMachineMode = false;
+        MatchMode matchMode = MatchMode::EQUAL;
+        bool chain = false; // TODO: Consider making this an enum
+        TriggerAction action = TriggerAction::RAISE_BREAKPOINT_EXCEPTION;
         AccessSize accessSize = AccessSize::ANY;
-        bool timing:1 = false; // TODO: Consider making this an enum
-        CompareValueType compareValueType:1 = CompareValueType::ADDRESS;
-        bool hit:1 = false;
+        bool timing = false; // TODO: Consider making this an enum
+        CompareValueType compareValueType = CompareValueType::ADDRESS;
+        bool hit = false;
 
-        MatchControl() = default;
-
-        constexpr explicit MatchControl(
-            bool load,
-            bool store,
-            bool execute,
-            bool enabledInUserMode,
-            bool enabledInSupervisorMode,
-            bool enabledInMachineMode,
-            MatchMode matchMode,
-            bool chain,
-            TriggerAction action,
-            AccessSize accessSize,
-            bool timing,
-            CompareValueType compareValueType,
-            bool hit
-        )
-            : load(load)
-            , store(store)
-            , execute(execute)
-            , enabledInUserMode(enabledInUserMode)
-            , enabledInSupervisorMode(enabledInSupervisorMode)
-            , enabledInMachineMode(enabledInMachineMode)
-            , matchMode(matchMode)
-            , chain(chain)
-            , action(action)
-            , accessSize(accessSize)
-            , timing(timing)
-            , compareValueType(compareValueType)
-            , hit(hit)
-        {}
-
-        constexpr explicit MatchControl(RegisterValue registerValue)
-            : load(static_cast<bool>(registerValue & 0x01))
-            , store(static_cast<bool>(registerValue & (0x01 << 1)))
-            , execute(static_cast<bool>(registerValue & (0x01 << 2)))
-            , enabledInUserMode(static_cast<bool>(registerValue & (0x01 << 3)))
-            , enabledInSupervisorMode(static_cast<bool>(registerValue & (0x01 << 4)))
-            , enabledInMachineMode(static_cast<bool>(registerValue & (0x01 << 6)))
-            , matchMode(static_cast<MatchMode>((registerValue >> 7) & 0x0F))
-            , chain(static_cast<bool>(registerValue & (0x01 << 11)))
-            , action(static_cast<TriggerAction>((registerValue >> 12) & 0x0F))
-            , accessSize(
-                static_cast<AccessSize>(
-                    (((registerValue >> 21) & 0x03) << 2) | ((registerValue >> 16) & 0x03)
-                )
-            )
-            , timing(static_cast<bool>(registerValue & (0x01 << 18)))
-            , compareValueType(static_cast<CompareValueType>((registerValue >> 19) & 0x01))
-            , hit(static_cast<bool>(registerValue & (0x01 << 20)))
-        {}
+        static constexpr auto fromValue(RegisterValue value) {
+            return MatchControl{
+                .load = static_cast<bool>(value & 0x01),
+                .store = static_cast<bool>(value & (0x01 << 1)),
+                .execute = static_cast<bool>(value & (0x01 << 2)),
+                .enabledInUserMode = static_cast<bool>(value & (0x01 << 3)),
+                .enabledInSupervisorMode = static_cast<bool>(value & (0x01 << 4)),
+                .enabledInMachineMode = static_cast<bool>(value & (0x01 << 6)),
+                .matchMode = static_cast<MatchMode>((value >> 7) & 0x0F),
+                .chain = static_cast<bool>(value & (0x01 << 11)),
+                .action = static_cast<TriggerAction>((value >> 12) & 0x0F),
+                .accessSize = static_cast<AccessSize>(
+                    (((value >> 21) & 0x03) << 2) | ((value >> 16) & 0x03)
+                ),
+                .timing = static_cast<bool>(value & (0x01 << 18)),
+                .compareValueType = static_cast<CompareValueType>((value >> 19) & 0x01),
+                .hit = static_cast<bool>(value & (0x01 << 20)),
+            };
+        }
 
         [[nodiscard]] constexpr RegisterValue value() const {
             return RegisterValue{0}

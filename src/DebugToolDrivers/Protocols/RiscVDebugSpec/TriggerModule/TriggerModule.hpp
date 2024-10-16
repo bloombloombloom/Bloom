@@ -22,6 +22,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::TriggerModule
 
     enum class TriggerAction: std::uint8_t
     {
+        RAISE_BREAKPOINT_EXCEPTION = 0x00,
         ENTER_DEBUG_MODE = 0x01,
     };
 }

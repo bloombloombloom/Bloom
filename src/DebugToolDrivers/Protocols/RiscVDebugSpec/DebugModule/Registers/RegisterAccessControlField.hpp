@@ -15,37 +15,23 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
             SIZE_128 = 0x04,
         };
 
-        RegisterNumber registerNumber;
-        bool write:1;
-        bool transfer:1;
-        bool postExecute:1;
-        bool postIncrement:1;
-        RegisterSize size:3;
+        RegisterNumber registerNumber = 0;
+        bool write = false;
+        bool transfer = false;
+        bool postExecute = false;
+        bool postIncrement = false;
+        RegisterSize size = RegisterSize::SIZE_32;
 
-        RegisterAccessControlField(
-            RegisterNumber registerNumber,
-            bool write,
-            bool transfer,
-            bool postExecute,
-            bool postIncrement,
-            RegisterSize size
-        )
-            : registerNumber(registerNumber)
-            , write(write)
-            , transfer(transfer)
-            , postExecute(postExecute)
-            , postIncrement(postIncrement)
-            , size(size)
-        {}
-
-        constexpr explicit RegisterAccessControlField(std::uint32_t controlValue)
-            : registerNumber(static_cast<RegisterNumber>(controlValue & 0xFFFF))
-            , write(static_cast<bool>(controlValue & (0x01 << 16)))
-            , transfer(static_cast<bool>(controlValue & (0x01 << 17)))
-            , postExecute(static_cast<bool>(controlValue & (0x01 << 18)))
-            , postIncrement(static_cast<bool>(controlValue & (0x01 << 19)))
-            , size(static_cast<RegisterSize>((controlValue >> 20) & 0x07))
-        {}
+        static constexpr auto fromValue(std::uint32_t value) {
+            return RegisterAccessControlField{
+                .registerNumber = static_cast<RegisterNumber>(value & 0xFFFF),
+                .write = static_cast<bool>(value & (0x01 << 16)),
+                .transfer = static_cast<bool>(value & (0x01 << 17)),
+                .postExecute = static_cast<bool>(value & (0x01 << 18)),
+                .postIncrement = static_cast<bool>(value & (0x01 << 19)),
+                .size = static_cast<RegisterSize>((value >> 20) & 0x07),
+            };
+        }
 
         [[nodiscard]] constexpr std::uint32_t value() const {
             return std::uint32_t{0}

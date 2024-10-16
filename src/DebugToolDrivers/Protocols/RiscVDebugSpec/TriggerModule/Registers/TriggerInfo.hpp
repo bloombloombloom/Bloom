@@ -13,10 +13,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::TriggerModule::Registers
         std::uint16_t info;
         std::uint8_t version;
 
-        constexpr explicit TriggerInfo(RegisterValue registerValue)
-            : info(registerValue & 0xFFFF)
-            , version(static_cast<std::uint8_t>(registerValue >> 24))
-        {}
+        static constexpr auto fromValue(RegisterValue value) {
+            return TriggerInfo{
+                .info = static_cast<std::uint16_t>(value & 0xFFFF),
+                .version = static_cast<std::uint8_t>(value >> 24),
+            };
+        }
 
         [[nodiscard]] constexpr RegisterValue value() const {
             return RegisterValue{0}
@@ -25,7 +27,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::TriggerModule::Registers
             ;
         }
 
-        std::set<TriggerType> getSupportedTriggerTypes() const {
+        [[nodiscard]] std::set<TriggerType> getSupportedTriggerTypes() const {
             auto output = std::set<TriggerType>{};
 
             static constexpr auto types = std::to_array<TriggerType>({

@@ -18,41 +18,41 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::Registers
             GROUP = 0x06,
         };
 
-        PrivilegeMode privilegeMode:2;
-        bool step:1 = false;
-        bool nmiPending:1 = false;
-        bool mprvEnabled:1 = false;
-        DebugModeCause debugModeCause:3;
-        bool stopTime:1 = false;
-        bool stopCount:1 = false;
-        bool stepInterruptsEnabled:1 = false;
-        bool breakUMode:1 = false;
-        bool breakSMode:1 = false;
-        bool breakMMode:1 = false;
-        bool breakVUMode:1 = false;
-        bool breakVSMode:1 = false;
-        std::uint8_t debugVersion:4 = 0;
+        PrivilegeMode privilegeMode = PrivilegeMode::USER;
+        bool step = false;
+        bool nmiPending = false;
+        bool mprvEnabled = false;
+        DebugModeCause debugModeCause = DebugModeCause::BREAK;
+        bool stopTime = false;
+        bool stopCount = false;
+        bool stepInterruptsEnabled = false;
+        bool breakUMode = false;
+        bool breakSMode = false;
+        bool breakMMode = false;
+        bool breakVUMode = false;
+        bool breakVSMode = false;
+        std::uint8_t debugVersion = 0;
 
-        DebugControlStatusRegister() = default;
+        static constexpr auto fromValue(RegisterValue value) {
+            return DebugControlStatusRegister{
+                .privilegeMode = static_cast<PrivilegeMode>(value & 0x03),
+                .step = static_cast<bool>(value & (0x01 << 2)),
+                .nmiPending = static_cast<bool>(value & (0x01 << 3)),
+                .mprvEnabled = static_cast<bool>(value & (0x01 << 4)),
+                .debugModeCause = static_cast<DebugModeCause>((value >> 6) & 0x07),
+                .stopTime = static_cast<bool>(value & (0x01 << 9)),
+                .stopCount = static_cast<bool>(value & (0x01 << 10)),
+                .stepInterruptsEnabled = static_cast<bool>(value & (0x01 << 11)),
+                .breakUMode = static_cast<bool>(value & (0x01 << 12)),
+                .breakSMode = static_cast<bool>(value & (0x01 << 13)),
+                .breakMMode = static_cast<bool>(value & (0x01 << 15)),
+                .breakVUMode = static_cast<bool>(value & (0x01 << 16)),
+                .breakVSMode = static_cast<bool>(value & (0x01 << 17)),
+                .debugVersion = static_cast<std::uint8_t>((value >> 28) & 0x0F)
+            };
+        }
 
-        constexpr explicit DebugControlStatusRegister(RegisterValue registerValue)
-            : privilegeMode(static_cast<PrivilegeMode>(registerValue & 0x03))
-            , step(static_cast<bool>(registerValue & (0x01 << 2)))
-            , nmiPending(static_cast<bool>(registerValue & (0x01 << 3)))
-            , mprvEnabled(static_cast<bool>(registerValue & (0x01 << 4)))
-            , debugModeCause(static_cast<DebugModeCause>((registerValue >> 6) & 0x07))
-            , stopTime(static_cast<bool>(registerValue & (0x01 << 9)))
-            , stopCount(static_cast<bool>(registerValue & (0x01 << 10)))
-            , stepInterruptsEnabled(static_cast<bool>(registerValue & (0x01 << 11)))
-            , breakUMode(static_cast<bool>(registerValue & (0x01 << 12)))
-            , breakSMode(static_cast<bool>(registerValue & (0x01 << 13)))
-            , breakMMode(static_cast<bool>(registerValue & (0x01 << 15)))
-            , breakVUMode(static_cast<bool>(registerValue & (0x01 << 16)))
-            , breakVSMode(static_cast<bool>(registerValue & (0x01 << 17)))
-            , debugVersion(static_cast<std::uint8_t>(registerValue >> 28) & 0x0F)
-        {}
-
-        constexpr RegisterValue value() const {
+        [[nodiscard]] constexpr RegisterValue value() const {
             return RegisterValue{0}
                 | static_cast<RegisterValue>(this->privilegeMode)
                 | static_cast<RegisterValue>(this->step) << 2
@@ -67,7 +67,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::Registers
                 | static_cast<RegisterValue>(this->breakMMode) << 15
                 | static_cast<RegisterValue>(this->breakVUMode) << 16
                 | static_cast<RegisterValue>(this->breakVSMode) << 17
-                | static_cast<RegisterValue>(this->debugVersion) << 28
+                | static_cast<RegisterValue>(this->debugVersion & 0x0F) << 28
             ;
         }
     };

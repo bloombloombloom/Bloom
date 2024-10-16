@@ -62,7 +62,6 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
     void DebugTranslator::init() {
         // No pre-activation initialisation required.
-        return;
     }
 
     void DebugTranslator::activate() {
@@ -126,18 +125,19 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     void DebugTranslator::stop() {
-        auto controlRegister = ControlRegister{};
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.haltRequest = true;
+        auto controlRegister = ControlRegister{
+            .debugModuleActive = true,
+            .selectedHartIndex = this->selectedHartIndex,
+            .haltRequest = true,
+        };
 
         this->writeDebugModuleControlRegister(controlRegister);
         auto statusRegister = this->readDebugModuleStatusRegister();
 
         for (
-            auto attempts = 1;
+            auto attempts = 0;
             !statusRegister.allHalted
-                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) <= this->config.targetResponseTimeout;
             ++attempts
         ) {
             std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
@@ -153,18 +153,19 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     void DebugTranslator::run() {
-        auto controlRegister = ControlRegister{};
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.resumeRequest = true;
+        auto controlRegister = ControlRegister{
+            .debugModuleActive = true,
+            .selectedHartIndex = this->selectedHartIndex,
+            .resumeRequest = true,
+        };
 
         this->writeDebugModuleControlRegister(controlRegister);
         auto statusRegister = this->readDebugModuleStatusRegister();
 
         for (
-            auto attempts = 1;
+            auto attempts = 0;
             !statusRegister.allResumeAcknowledge
-                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) <= this->config.targetResponseTimeout;
             ++attempts
         ) {
             std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
@@ -175,6 +176,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->writeDebugModuleControlRegister(controlRegister);
 
         if (!statusRegister.allResumeAcknowledge) {
+            Logger::debug("Failed to resume target execution - stopping target");
+            this->stop();
             throw Exceptions::Exception{"Target took too long to acknowledge resume request"};
         }
     }
@@ -185,10 +188,11 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         this->writeDebugControlStatusRegister(debugControlStatusRegister);
 
-        auto controlRegister = ControlRegister{};
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.resumeRequest = true;
+        auto controlRegister = ControlRegister{
+            .debugModuleActive = true,
+            .selectedHartIndex = this->selectedHartIndex,
+            .resumeRequest = true,
+        };
 
         this->writeDebugModuleControlRegister(controlRegister);
 
@@ -200,12 +204,13 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     void DebugTranslator::reset() {
-        auto controlRegister = ControlRegister{};
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.setResetHaltRequest = true;
-        controlRegister.haltRequest = true;
-        controlRegister.ndmReset = true;
+        auto controlRegister = ControlRegister{
+            .debugModuleActive = true,
+            .ndmReset = true,
+            .setResetHaltRequest = true,
+            .selectedHartIndex = this->selectedHartIndex,
+            .haltRequest = true,
+        };
 
         this->writeDebugModuleControlRegister(controlRegister);
 
@@ -214,22 +219,21 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         auto statusRegister = this->readDebugModuleStatusRegister();
 
         for (
-            auto attempts = 1;
+            auto attempts = 0;
             !statusRegister.allHaveReset
-                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) <= this->config.targetResponseTimeout;
             ++attempts
         ) {
             std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
             statusRegister = this->readDebugModuleStatusRegister();
         }
 
-        controlRegister = ControlRegister{};
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
-        controlRegister.clearResetHaltRequest = true;
-        controlRegister.acknowledgeHaveReset = true;
-
-        this->writeDebugModuleControlRegister(controlRegister);
+        this->writeDebugModuleControlRegister(ControlRegister{
+            .debugModuleActive = true,
+            .clearResetHaltRequest = true,
+            .selectedHartIndex = this->selectedHartIndex,
+            .acknowledgeHaveReset = true,
+        });
 
         if (!statusRegister.allHaveReset) {
             throw Exceptions::Exception{"Target took too long to reset"};
@@ -258,7 +262,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         const auto& triggerDescriptor = triggerDescriptorOpt->get();
         Logger::debug(
-            "Installing hardware BP at address " + Services::StringService::toHex(address) + " with trigger index "
+            "Installing hardware BP at address 0x" + Services::StringService::toHex(address) + " with trigger index "
                 + std::to_string(triggerDescriptor.index)
         );
 
@@ -270,16 +274,18 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
                 TriggerModule::Registers::TriggerSelect{triggerDescriptor.index}.value()
             );
 
-            auto matchControlRegister = MatchControl{};
-            matchControlRegister.execute = true;
-            matchControlRegister.enabledInUserMode = true;
-            matchControlRegister.enabledInSupervisorMode = true;
-            matchControlRegister.enabledInMachineMode = true;
-            matchControlRegister.action = TriggerModule::TriggerAction::ENTER_DEBUG_MODE;
-            matchControlRegister.accessSize = MatchControl::AccessSize::ANY;
-            matchControlRegister.compareValueType = MatchControl::CompareValueType::ADDRESS;
-
-            this->writeCpuRegister(CpuRegisterNumber::TRIGGER_DATA_1, matchControlRegister.value());
+            this->writeCpuRegister(
+                CpuRegisterNumber::TRIGGER_DATA_1,
+                MatchControl{
+                    .execute = true,
+                    .enabledInUserMode = true,
+                    .enabledInSupervisorMode = true,
+                    .enabledInMachineMode = true,
+                    .action = TriggerModule::TriggerAction::ENTER_DEBUG_MODE,
+                    .accessSize = MatchControl::AccessSize::ANY,
+                    .compareValueType = MatchControl::CompareValueType::ADDRESS,
+                }.value()
+            );
             this->writeCpuRegister(CpuRegisterNumber::TRIGGER_DATA_2, address);
 
             this->allocatedTriggerIndices.emplace(triggerDescriptor.index);
@@ -305,7 +311,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
     void DebugTranslator::clearAllHardwareBreakpoints() {
         // To ensure that any untracked breakpoints are cleared, we clear all triggers on the target.
-        for (const auto [triggerIndex, triggerDescriptor] : this->triggerDescriptorsByIndex) {
+        for (const auto& [triggerIndex, triggerDescriptor] : this->triggerDescriptorsByIndex) {
             this->clearTrigger(triggerDescriptor);
         }
 
@@ -386,13 +392,11 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
 
         constexpr auto command = AbstractCommandRegister{
-            MemoryAccessControlField{
-                false,
-                true,
-                MemoryAccessControlField::MemorySize::SIZE_32,
-                false
+            .control = MemoryAccessControlField{
+                .postIncrement = true,
+                .size = MemoryAccessControlField::MemorySize::SIZE_32,
             }.value(),
-            AbstractCommandRegister::CommandType::MEMORY_ACCESS
+            .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
         };
 
         for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
@@ -460,13 +464,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
 
         constexpr auto command = AbstractCommandRegister{
-            MemoryAccessControlField{
-                true,
-                true,
-                MemoryAccessControlField::MemorySize::SIZE_32,
-                false
+            .control = MemoryAccessControlField{
+                .write = true,
+                .postIncrement = true,
+                .size = MemoryAccessControlField::MemorySize::SIZE_32,
             }.value(),
-            AbstractCommandRegister::CommandType::MEMORY_ACCESS
+            .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
         };
 
         for (TargetMemoryAddress offset = 0; offset < buffer.size(); offset += 4) {
@@ -491,11 +494,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
          * We can obtain the maximum hart index by setting all of the hartsel bits in the control register and then
          * read the value back.
          */
-        auto controlRegister = ControlRegister{};
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = 0xFFFFF;
+        this->writeDebugModuleControlRegister(
+            ControlRegister{.debugModuleActive = true, .selectedHartIndex = 0xFFFFF}
+        );
 
-        this->writeDebugModuleControlRegister(controlRegister);
         const auto maxHartIndex = this->readDebugModuleControlRegister().selectedHartIndex;
 
         for (auto hartIndex = DebugModule::HartIndex{0}; hartIndex <= maxHartIndex; ++hartIndex) {
@@ -503,11 +505,9 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
              * We can't just assume that everything between 0 and the maximum hart index are valid hart indices. We
              * have to test each index until we find one that is non-existent.
              */
-            auto controlRegister = ControlRegister{};
-            controlRegister.debugModuleActive = true;
-            controlRegister.selectedHartIndex = hartIndex;
-
-            this->writeDebugModuleControlRegister(controlRegister);
+            this->writeDebugModuleControlRegister(
+                ControlRegister{.debugModuleActive = true, .selectedHartIndex = hartIndex}
+            );
 
             /*
              * It's worth noting that some RISC-V targets **do not** set the non-existent flags. I'm not sure why.
@@ -544,7 +544,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             if (writeSelectError != DebugModule::AbstractCommandError::NONE) {
                 throw Exceptions::Exception{
                     "Failed to write to TRIGGER_SELECT register - abstract command error: 0x"
-                        + Services::StringService::toHex(writeSelectError)
+                        + Services::StringService::toHex(static_cast<std::uint8_t>(writeSelectError))
                 };
             }
 
@@ -552,9 +552,9 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
                 break;
             }
 
-            const auto infoReg = TriggerModule::Registers::TriggerInfo{
+            const auto infoReg = TriggerModule::Registers::TriggerInfo::fromValue(
                 this->readCpuRegister(CpuRegisterNumber::TRIGGER_INFO)
-            };
+            );
 
             if (infoReg.info == 0x01) {
                 // Trigger doesn't exist
@@ -564,9 +564,9 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             auto supportedTypes = infoReg.getSupportedTriggerTypes();
             if (supportedTypes.empty()) {
                 // The trigger info register has no trigger type info. Try the data1 register.
-                const auto data1Reg = TriggerModule::Registers::TriggerData1{
+                const auto data1Reg = TriggerModule::Registers::TriggerData1::fromValue(
                     this->readCpuRegister(CpuRegisterNumber::TRIGGER_DATA_1)
-                };
+                );
 
                 const auto triggerType = data1Reg.getType();
                 if (!triggerType.has_value()) {
@@ -584,37 +584,40 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     ControlRegister DebugTranslator::readDebugModuleControlRegister() {
-        return ControlRegister{this->dtmInterface.readDebugModuleRegister(RegisterAddress::CONTROL_REGISTER)};
+        return ControlRegister::fromValue(
+            this->dtmInterface.readDebugModuleRegister(RegisterAddress::CONTROL_REGISTER)
+        );
     }
 
     StatusRegister DebugTranslator::readDebugModuleStatusRegister() {
-        return StatusRegister{this->dtmInterface.readDebugModuleRegister(RegisterAddress::STATUS_REGISTER)};
+        return StatusRegister::fromValue(this->dtmInterface.readDebugModuleRegister(RegisterAddress::STATUS_REGISTER));
     }
 
     AbstractControlStatusRegister DebugTranslator::readDebugModuleAbstractControlStatusRegister() {
-        return AbstractControlStatusRegister{
+        return AbstractControlStatusRegister::fromValue(
             this->dtmInterface.readDebugModuleRegister(RegisterAddress::ABSTRACT_CONTROL_STATUS_REGISTER)
-        };
+        );
     }
 
     DebugControlStatusRegister DebugTranslator::readDebugControlStatusRegister() {
-        return DebugControlStatusRegister{
+        return DebugControlStatusRegister::fromValue(
             this->readCpuRegister(static_cast<RegisterNumber>(CpuRegisterNumber::DEBUG_CONTROL_STATUS_REGISTER))
-        };
+        );
     }
 
     void DebugTranslator::enableDebugModule() {
-        auto controlRegister = ControlRegister{};
-        controlRegister.debugModuleActive = true;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
+        auto controlRegister = ControlRegister{
+            .debugModuleActive = true,
+            .selectedHartIndex = this->selectedHartIndex
+        };
 
         this->writeDebugModuleControlRegister(controlRegister);
         controlRegister = this->readDebugModuleControlRegister();
 
         for (
-            auto attempts = 1;
+            auto attempts = 0;
             !controlRegister.debugModuleActive
-                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) <= this->config.targetResponseTimeout;
             ++attempts
         ) {
             std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
@@ -627,17 +630,16 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     void DebugTranslator::disableDebugModule() {
-        auto controlRegister = ControlRegister{};
-        controlRegister.debugModuleActive = false;
-        controlRegister.selectedHartIndex = this->selectedHartIndex;
+        this->writeDebugModuleControlRegister(
+            ControlRegister{.debugModuleActive = false, .selectedHartIndex = this->selectedHartIndex}
+        );
 
-        this->writeDebugModuleControlRegister(controlRegister);
-        controlRegister = this->readDebugModuleControlRegister();
+        auto controlRegister = this->readDebugModuleControlRegister();
 
         for (
-            auto attempts = 1;
+            auto attempts = 0;
             controlRegister.debugModuleActive
-                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) <= this->config.targetResponseTimeout;
             ++attempts
         ) {
             std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
@@ -655,15 +657,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         using DebugModule::Registers::RegisterAccessControlField;
 
         const auto commandError = this->tryExecuteAbstractCommand(AbstractCommandRegister{
-            RegisterAccessControlField{
-                number,
-                false,
-                true,
-                false,
-                false,
-                RegisterAccessControlField::RegisterSize::SIZE_32
+            .control = RegisterAccessControlField{
+                .registerNumber = number,
+                .transfer = true,
+                .size= RegisterAccessControlField::RegisterSize::SIZE_32
             }.value(),
-            AbstractCommandRegister::CommandType::REGISTER_ACCESS
+            .commandType = AbstractCommandRegister::CommandType::REGISTER_ACCESS
         });
 
         if (commandError != DebugModule::AbstractCommandError::NONE) {
@@ -685,7 +684,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         if (!result.hasValue()) {
             throw Exceptions::Exception{
                 "Failed to read CPU register (number: 0x" + Services::StringService::toHex(number)
-                    + ") - abstract command error: 0x" + Services::StringService::toHex(result.error())
+                    + ") - abstract command error: 0x"
+                    + Services::StringService::toHex(static_cast<std::uint8_t>(result.error()))
             };
         }
 
@@ -704,15 +704,13 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0, value);
         return this->tryExecuteAbstractCommand(AbstractCommandRegister{
-            RegisterAccessControlField{
-                number,
-                true,
-                true,
-                false,
-                false,
-                RegisterAccessControlField::RegisterSize::SIZE_32
+            .control = RegisterAccessControlField{
+                .registerNumber = number,
+                .write = true,
+                .transfer = true,
+                .size = RegisterAccessControlField::RegisterSize::SIZE_32
             }.value(),
-            AbstractCommandRegister::CommandType::REGISTER_ACCESS
+            .commandType = AbstractCommandRegister::CommandType::REGISTER_ACCESS
         });
     }
 
@@ -728,7 +726,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         if (commandError != DebugModule::AbstractCommandError::NONE) {
             throw Exceptions::Exception{
                 "Failed to write to CPU register (number: 0x" + Services::StringService::toHex(number)
-                    + ") - abstract command error: 0x" + Services::StringService::toHex(commandError)
+                    + ") - abstract command error: 0x"
+                    + Services::StringService::toHex(static_cast<std::uint8_t>(commandError))
             };
         }
     }
@@ -762,9 +761,9 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
 
         for (
-            auto attempts = 1;
+            auto attempts = 0;
             abstractStatusRegister.busy
-                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) < this->config.targetResponseTimeout;
+                && (DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY * attempts) <= this->config.targetResponseTimeout;
             ++attempts
         ) {
             std::this_thread::sleep_for(DebugTranslator::DEBUG_MODULE_RESPONSE_DELAY);
@@ -784,7 +783,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         const auto commandError = this->tryExecuteAbstractCommand(abstractCommandRegister);
         if (commandError != DebugModule::AbstractCommandError::NONE) {
             throw Exceptions::Exception{
-                "Failed to execute abstract command - error: 0x" + Services::StringService::toHex(commandError)
+                "Failed to execute abstract command - error: 0x"
+                    + Services::StringService::toHex(static_cast<std::uint8_t>(commandError))
             };
         }
     }

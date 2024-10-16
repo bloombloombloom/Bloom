@@ -9,8 +9,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
     enum class PrivilegeMode: std::uint8_t
     {
-        U_MODE = 0x00,
-        S_MODE = 0x01,
-        M_MODE = 0x03,
+        USER = 0x00,
+        SUPERVISOR = 0x01,
+        MACHINE = 0x03,
     };
 }

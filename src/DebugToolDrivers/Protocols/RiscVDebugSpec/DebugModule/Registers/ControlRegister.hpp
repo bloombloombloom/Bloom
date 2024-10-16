@@ -9,43 +9,50 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 {
     struct ControlRegister
     {
-        enum HartSelectionMode: std::uint8_t
+        enum class HartSelectionMode: std::uint8_t
         {
             SINGLE = 0x00,
             MULTI = 0x01,
         };
 
-        bool debugModuleActive:1 = false;
-        bool ndmReset:1 = false;
-        bool clearResetHaltRequest:1 = false;
-        bool setResetHaltRequest:1 = false;
-        bool clearKeepAlive:1 = false;
-        bool setKeepAlive:1 = false;
+        bool debugModuleActive = false;
+        bool ndmReset = false;
+        bool clearResetHaltRequest = false;
+        bool setResetHaltRequest = false;
+        bool clearKeepAlive = false;
+        bool setKeepAlive = false;
         HartIndex selectedHartIndex = 0;
-        HartSelectionMode hartSelectionMode:1 = HartSelectionMode::SINGLE;
-        bool acknowledgeUnavailableHarts:1 = false;
-        bool acknowledgeHaveReset:1 = false;
-        bool hartReset:1 = false;
-        bool resumeRequest:1 = false;
-        bool haltRequest:1 = false;
+        HartSelectionMode hartSelectionMode = HartSelectionMode::SINGLE;
+        bool acknowledgeUnavailableHarts = false;
+        bool acknowledgeHaveReset = false;
+        bool hartReset = false;
+        bool resumeRequest = false;
+        bool haltRequest = false;
 
-        ControlRegister() = default;
-
-        constexpr explicit ControlRegister(RegisterValue registerValue)
-            : debugModuleActive(static_cast<bool>(registerValue & 0x01))
-            , ndmReset(static_cast<bool>(registerValue & (0x01 << 1)))
-            , clearResetHaltRequest(static_cast<bool>(registerValue & (0x01 << 2)))
-            , setResetHaltRequest(static_cast<bool>(registerValue & (0x01 << 3)))
-            , clearKeepAlive(static_cast<bool>(registerValue & (0x01 << 4)))
-            , setKeepAlive(static_cast<bool>(registerValue & (0x01 << 5)))
-            , selectedHartIndex((((registerValue >> 6) & 0x3FF) << 10) | ((registerValue >> 16) & 0x3FF))
-            , hartSelectionMode(static_cast<HartSelectionMode>(registerValue & (0x01 << 26)))
-            , acknowledgeUnavailableHarts(static_cast<bool>(registerValue & (0x01 << 27)))
-            , acknowledgeHaveReset(static_cast<bool>(registerValue & (0x01 << 28)))
-            , hartReset(static_cast<bool>(registerValue & (0x01 << 29)))
-            , resumeRequest(static_cast<bool>(registerValue & (0x01 << 30)))
-            , haltRequest(static_cast<bool>(registerValue & static_cast<std::uint32_t>(0x01 << 31)))
-        {}
+        /**
+         * These `fromValue()` functions cannot be constructors because we'd lose designated initialisation (as the
+         * structs would no longer be aggregates - structs with user-defined constructors cannot be aggregates).
+         *
+         * @param value
+         * @return
+         */
+        static constexpr auto fromValue(RegisterValue value) {
+            return ControlRegister{
+                .debugModuleActive = static_cast<bool>(value & 0x01),
+                .ndmReset = static_cast<bool>(value & (0x01 << 1)),
+                .clearResetHaltRequest = static_cast<bool>(value & (0x01 << 2)),
+                .setResetHaltRequest = static_cast<bool>(value & (0x01 << 3)),
+                .clearKeepAlive = static_cast<bool>(value & (0x01 << 4)),
+                .setKeepAlive = static_cast<bool>(value & (0x01 << 5)),
+                .selectedHartIndex = (((value >> 6) & 0x3FF) << 10) | ((value >> 16) & 0x3FF),
+                .hartSelectionMode = static_cast<HartSelectionMode>(value & (0x01 << 26)),
+                .acknowledgeUnavailableHarts = static_cast<bool>(value & (0x01 << 27)),
+                .acknowledgeHaveReset = static_cast<bool>(value & (0x01 << 28)),
+                .hartReset = static_cast<bool>(value & (0x01 << 29)),
+                .resumeRequest = static_cast<bool>(value & (0x01 << 30)),
+                .haltRequest = static_cast<bool>(value & static_cast<std::uint32_t>(0x01 << 31)),
+            };
+        }
 
         [[nodiscard]] constexpr RegisterValue value() const {
             assert(this->selectedHartIndex <= 0xFFFFF);

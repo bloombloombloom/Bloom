@@ -8,27 +8,29 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 {
     struct AbstractControlStatusRegister
     {
-        std::uint8_t dataCount:4;
-        AbstractCommandError commandError:3;
-        bool relaxedPrivilege:1;
-        bool busy:1;
-        std::uint8_t programBufferSize:5;
+        std::uint8_t dataCount = 0;
+        AbstractCommandError commandError = AbstractCommandError::NONE;
+        bool relaxedPrivilege = false;
+        bool busy = false;
+        std::uint8_t programBufferSize = 0;
 
-        constexpr explicit AbstractControlStatusRegister(RegisterValue registerValue)
-            : dataCount(static_cast<std::uint8_t>(registerValue & 0x0F))
-            , commandError(static_cast<AbstractCommandError>((registerValue >> 8) & 0x07))
-            , relaxedPrivilege(static_cast<bool>(registerValue & (0x01 << 11)))
-            , busy(static_cast<bool>(registerValue & (0x01 << 12)))
-            , programBufferSize(static_cast<std::uint8_t>((registerValue >> 24) & 0x1F))
-        {}
+        static constexpr AbstractControlStatusRegister fromValue(RegisterValue value) {
+            return {
+                .dataCount = static_cast<std::uint8_t>(value & 0x0F),
+                .commandError = static_cast<AbstractCommandError>((value >> 8) & 0x07),
+                .relaxedPrivilege = static_cast<bool>(value & (0x01 << 11)),
+                .busy = static_cast<bool>(value & (0x01 << 12)),
+                .programBufferSize = static_cast<std::uint8_t>((value >> 24) & 0x1F),
+            };
+        }
 
         [[nodiscard]] constexpr RegisterValue value() const {
             return RegisterValue{0}
-                | static_cast<RegisterValue>(this->dataCount)
+                | static_cast<RegisterValue>(this->dataCount & 0x0F)
                 | static_cast<RegisterValue>(this->commandError) << 8
                 | static_cast<RegisterValue>(this->relaxedPrivilege) << 11
                 | static_cast<RegisterValue>(this->busy) << 12
-                | static_cast<RegisterValue>(this->programBufferSize) << 24
+                | static_cast<RegisterValue>(this->programBufferSize & 0x1F) << 24
             ;
         }
 
