@@ -53,11 +53,7 @@ namespace Targets::TargetDescription
      * to be shipped with the Bloom binary.
      *
      * This class may be extended to further reflect a TDF that is specific to a particular target, target architecture
-     * or target family. For example, the Targets::Microchip::Avr8::TargetDescriptionFile class inherits from this
-     * class, to represent TDFs for AVR8 targets. The derived class provides access to additional data that is only
-     * found in AVR8 TDFs (such as AVR target signature, AVR Family, etc).
-     *
-     * For more information of TDFs, see src/Targets/TargetDescription/README.md
+     * or target family. For example, see the Targets::Microchip::Avr8::TargetDescriptionFile class.
      */
     class TargetDescriptionFile
     {

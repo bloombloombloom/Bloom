@@ -1048,10 +1048,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * the program memory base address (DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB).
          *
          * The additional DEVICE_UPDI_PROGMEM_BASE_ADDR_MSB field is only one byte in size, so it brings the total
-         * capacity for the program memory base address to three bytes. Because of this, we ensure that all TDFs,
-         * for targets that support UPDI, specify an address that does not exceed the maximum value of a 24 bit
-         * unsigned integer. This is done in our TDF validation script (see src/Targets/TargetDescription/README.md
-         * for more).
+         * capacity for the program memory base address to 24 bits.
          */
         Logger::debug("Setting UPDI_PROGMEM_BASE_ADDR AVR8 device parameter");
         this->setParameter(
