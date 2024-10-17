@@ -10,7 +10,7 @@ TargetController component can be found in src/TargetController. The entry point
 The TargetController is the second (after the SignalHandler) component to be instantiated at startup, and the second
 to last to be destroyed when Bloom shuts down.
 
-The TargetController will outlive both the DebugServer and the Insight GUI components.
+The TargetController will outlive both the DebugServer and Insight GUI components.
 
 ### Interfacing with the TargetController - The command-response mechanism
 
@@ -167,7 +167,7 @@ All descriptor structs can be found in [src/Targets/](../Targets).
 The `TargetDescriptor` struct is the top-level descriptor struct. Instances of all other descriptor structs can be
 accessed via the `TargetDescriptor` struct.
 
-The `GetTargetDescriptor` command returns a const reference to the top-level target descriptor object.
+The `GetTargetDescriptor` command returns a const reference to a top-level target descriptor object.
 The `TargetControllerService::getTargetDescriptor()` member function can be used to obtain the top-level target
 descriptor:
 
@@ -175,7 +175,7 @@ descriptor:
 const auto& targetDescriptor = tcService.getTargetDescriptor();
 
 // Obtain info on the target's "data" address space
-const auto& dataAsDescriptor = targetDescriptor.getAddressSpaceDescriptor("data");
+const auto& dataAsDescriptor = targetDescriptor.getAddressSpaceDescriptor("data"); // The "data" argument is the address space key
 /**
  * - dataAsDescriptor.addressRange.startAddress <- the start address of the address space
  * - dataAsDescriptor.size() <- the size of the address space, in bytes
@@ -185,7 +185,7 @@ const auto& dataAsDescriptor = targetDescriptor.getAddressSpaceDescriptor("data"
  */
 
 // Obtain info on the target's "ADC0" peripheral
-const auto& adcPerDescriptor = targetDescriptor.getPeripheralDescriptor("adc0");
+const auto& adcPerDescriptor = targetDescriptor.getPeripheralDescriptor("adc0"); // The "adc0" argument is the peripheral key
 /**
  * - adcPerDescriptor.name <- the name of the peripheral
  * - adcPerDescriptor.getRegisterGroupDescriptor(...) <- Access a register group within the peripheral
@@ -233,7 +233,7 @@ can be passed safely to the TargetController, in any TargetController command.
 Both the debug server and Insight GUI components hold a const reference of the master target descriptor, allowing them
 to access target information freely.
 
-Do **not** modify the master target descriptor. Do **not** perform a `const_cast` on the const reference. Ever.
+Do **not** mutate the master target descriptor (via `const_cast` or by any other means). Ever.
 
 ### Target state observation
 
