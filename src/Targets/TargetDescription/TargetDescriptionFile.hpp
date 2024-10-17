@@ -175,10 +175,10 @@ namespace Targets::TargetDescription
         void init(const std::string& xmlFilePath);
         void init(const QDomDocument& document);
 
-        std::optional<std::reference_wrapper<const std::string>> tryGetDeviceAttribute(
+        [[nodiscard]] std::optional<std::reference_wrapper<const std::string>> tryGetDeviceAttribute(
             const std::string& attributeName
         ) const;
-        const std::string& getDeviceAttribute(const std::string& attributeName) const;
+        [[nodiscard]] const std::string& getDeviceAttribute(const std::string& attributeName) const;
 
         [[nodiscard]] std::set<std::string> getGpioPadKeys() const;
 
