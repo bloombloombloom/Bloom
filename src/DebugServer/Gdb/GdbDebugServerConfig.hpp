@@ -35,6 +35,19 @@ namespace DebugServer::Gdb
          */
         bool rangeStepping = true;
 
+        /**
+         * Determines whether Bloom will seek to disable packet acknowledgement with GDB, at the start of the debug
+         * session.
+         *
+         * If this is set to false, Bloom will communicate its ability to disable package acknowledgment to GDB.
+         * GDB may then send the appropriate packet to disable packet acknowledgment. However, this isn't
+         * guaranteed - GDB may be configured to keep packet acknowledgment enabled (via the
+         * `set remote noack-packet off` command).
+         *
+         * This parameter is optional. If not specified, the default value set here will be used.
+         */
+        bool packetAcknowledgement = false;
+
         explicit GdbDebugServerConfig(const DebugServerConfig& debugServerConfig);
     };
 }

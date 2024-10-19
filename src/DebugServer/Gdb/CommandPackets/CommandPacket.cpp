@@ -61,6 +61,17 @@ namespace DebugServer::Gdb::CommandPackets
             return;
         }
 
+        if (!debugSession.serverConfig.packetAcknowledgement && packetString.find("QStartNoAckMode") == 0) {
+            Logger::info("Handling QStartNoAckMode");
+            /*
+             * We respond to the command before actually disabling packet acknowledgement, because GDB will send one
+             * final acknowledgement byte to acknowledge the response.
+             */
+            debugSession.connection.writePacket(OkResponsePacket{});
+            debugSession.connection.packetAcknowledgement = false;
+            return;
+        }
+
         Logger::debug("Unknown GDB RSP packet: " + packetString + " - returning empty response");
 
         // GDB expects an empty response for all unsupported commands

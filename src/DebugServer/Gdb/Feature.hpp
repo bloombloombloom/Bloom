@@ -11,6 +11,7 @@ namespace DebugServer::Gdb
         PACKET_SIZE,
         MEMORY_MAP_READ,
         VCONT_ACTIONS_QUERY,
+        NO_ACK_MODE,
     };
 
     static inline BiMap<Feature, std::string> getGdbFeatureToNameMapping() {
@@ -20,6 +21,7 @@ namespace DebugServer::Gdb
             {Feature::PACKET_SIZE, "PacketSize"},
             {Feature::MEMORY_MAP_READ, "qXfer:memory-map:read"},
             {Feature::VCONT_ACTIONS_QUERY, "vContSupported"},
+            {Feature::NO_ACK_MODE, "QStartNoAckMode"},
         };
     }
 }

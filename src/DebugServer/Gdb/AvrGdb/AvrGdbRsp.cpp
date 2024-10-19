@@ -155,11 +155,18 @@ namespace DebugServer::Gdb::AvrGdb
     }
 
     std::set<std::pair<Feature, std::optional<std::string>>> AvrGdbRsp::getSupportedFeatures() {
-        return {
+        auto output = std::set<std::pair<Feature, std::optional<std::string>>>{
+            {Feature::HARDWARE_BREAKPOINTS, std::nullopt},
             {Feature::SOFTWARE_BREAKPOINTS, std::nullopt},
             {Feature::MEMORY_MAP_READ, std::nullopt},
             {Feature::VCONT_ACTIONS_QUERY, std::nullopt},
         };
+
+        if (!this->debugServerConfig.packetAcknowledgement) {
+            output.emplace(Feature::NO_ACK_MODE, std::nullopt);
+        }
+
+        return output;
     }
 
     void AvrGdbRsp::handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress) {

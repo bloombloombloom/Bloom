@@ -42,5 +42,17 @@ namespace DebugServer::Gdb
                 );
             }
         }
+
+        if (debugServerConfig.debugServerNode["packetAcknowledgement"]) {
+            if (YamlUtilities::isCastable<bool>(debugServerConfig.debugServerNode["packetAcknowledgement"])) {
+                this->packetAcknowledgement = debugServerConfig.debugServerNode["packetAcknowledgement"].as<bool>();
+
+            } else {
+                Logger::error(
+                    "Invalid GDB debug server config parameter ('packetAcknowledgement') provided - value must be"
+                        " castable to a boolean. The parameter will be ignored."
+                );
+            }
+        }
     }
 }

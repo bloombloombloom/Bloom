@@ -135,8 +135,10 @@ namespace DebugServer::Gdb
                             )
                     );
 
-                    // Acknowledge receipt
-                    this->write({'+'});
+                    if (this->packetAcknowledgement) {
+                        // Acknowledge receipt
+                        this->write({'+'});
+                    }
 
                     output.emplace_back(std::move(rawPacket));
                     byteIndex = packetIndex;
@@ -149,22 +151,32 @@ namespace DebugServer::Gdb
     }
 
     void Connection::writePacket(const ResponsePacket& packet) {
-        // Write the packet repeatedly until the GDB client acknowledges it.
-        int attempts = 0;
         const auto rawPacket = packet.toRawPacket();
 
         Logger::debug("Writing GDB packet: " + std::string{rawPacket.begin(), rawPacket.end()});
 
-        do {
-            if (attempts > 10) {
-                throw ClientCommunicationError{
-                    "Failed to write GDB response packet - client failed to acknowledge receipt - retry limit reached"
-                };
-            }
+        this->write(rawPacket);
 
-            this->write(rawPacket);
-            attempts++;
-        } while (this->readSingleByte(false).value_or(0) != '+');
+        if (this->packetAcknowledgement) {
+            auto attempts = std::size_t{0};
+            auto ackByte = this->readSingleByte(false);
+            while (ackByte != '+') {
+                if (attempts > 10) {
+                    throw ClientCommunicationError{
+                        "Failed to write GDB response packet - client failed to acknowledge receipt - retry limit reached"
+                    };
+                }
+
+                if (ackByte == '-') {
+                    // GDB has requested retransmission
+                    Logger::debug("Sending packet again, upon GDB's request");
+                    this->write(rawPacket);
+                }
+
+                ackByte = this->readSingleByte(false);
+                ++attempts;
+            }
+        }
     }
 
     void Connection::accept(int serverSocketFileDescriptor) {
