@@ -11,7 +11,6 @@ namespace DebugToolDrivers::Wch
         LINK_CH549,
         LINK_E_CH32V307,
         LINK_S_CH32V203,
-        UNKNOWN,
     };
 
     enum class WchLinkTargetClockSpeed: std::uint8_t

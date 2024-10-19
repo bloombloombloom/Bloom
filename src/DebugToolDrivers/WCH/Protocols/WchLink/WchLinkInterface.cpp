@@ -43,12 +43,12 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
             {0x03, WchLinkVariant::LINK_S_CH32V203},
         };
 
-        return DeviceInfo(
+        return DeviceInfo{
             WchFirmwareVersion{response.payload[0], response.payload[1]},
             response.payload.size() >= 4
-                ? std::optional{variantsById.valueAt(response.payload[2]).value_or(WchLinkVariant::UNKNOWN)}
+                ? std::optional{variantsById.valueAt(response.payload[2])}
                 : std::nullopt
-        );
+        };
     }
 
     void WchLinkInterface::activate() {
