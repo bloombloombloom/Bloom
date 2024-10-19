@@ -115,7 +115,7 @@ namespace DebugServer::Gdb::CommandPackets
             "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor.startAddress)),
             StringService::TerminalColor::BLUE
         ) + "\n";
-        output += "Size: " + std::to_string(registerDescriptor.size) + " byte(s)\n\n";
+        output += "Width: " + std::to_string(registerDescriptor.size * 8) + "-bit\n\n";
 
         output += "----------- Value -----------\n";
 
@@ -183,7 +183,7 @@ namespace DebugServer::Gdb::CommandPackets
                 "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor.startAddress)),
                 StringService::TerminalColor::BLUE
             ) + ", ";
-            output += std::to_string(registerDescriptor.size) + " byte(s) | ";
+            output += std::to_string(registerDescriptor.size * 8) + "-bit | ";
 
             if (registerDescriptor.access.readable) {
                 const auto value = IntegerService::toUint64(

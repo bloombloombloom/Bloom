@@ -122,7 +122,7 @@ namespace DebugServer::Gdb::CommandPackets
                 "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor.startAddress)),
                 StringService::TerminalColor::BLUE
             ) + ", ";
-            output += std::to_string(registerDescriptor.size) + " byte(s)";
+            output += std::to_string(registerDescriptor.size * 8) + "-bit";
 
             if (registerDescriptor.description.has_value()) {
                 output += ", \"" + *(registerDescriptor.description) + "\"";

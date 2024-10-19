@@ -105,7 +105,7 @@ namespace DebugServer::Gdb::CommandPackets
             if (value > static_cast<std::uint64_t>(std::pow(2, (registerDescriptor.size * 8)))) {
                 throw Exception{
                     "The given value (0x" + StringService::toHex(value) + ") exceeds the size of the register ("
-                        + std::to_string(registerDescriptor.size) + " byte(s))"
+                        + std::to_string(registerDescriptor.size * 8) + "-bit)"
                 };
             }
 
@@ -120,7 +120,7 @@ namespace DebugServer::Gdb::CommandPackets
                 "Writing value " + StringService::applyTerminalColor(
                     "0x" + StringService::toHex(value).substr(16 - (registerDescriptor.size * 2)),
                     StringService::TerminalColor::DARK_YELLOW
-                ) + " (" +  std::to_string(buffer.size()) + " byte(s)"  + ") to " + registerDescriptor.name
+                ) + " (" +  std::to_string(buffer.size() * 8) + "-bit"  + ") to " + registerDescriptor.name
                 + " register, at address " + StringService::applyTerminalColor(
                     "0x" + StringService::toHex(registerDescriptor.startAddress),
                     StringService::TerminalColor::BLUE
