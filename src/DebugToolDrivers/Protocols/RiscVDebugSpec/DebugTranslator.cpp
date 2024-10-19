@@ -343,7 +343,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
     void DebugTranslator::writeCpuRegisters(const TargetRegisterDescriptorAndValuePairs& registers) {
         for (const auto& [descriptor, value] : registers) {
-            assert((value.size() * 8) > std::numeric_limits<RegisterValue>::digits);
+            assert((value.size() * 8) <= std::numeric_limits<RegisterValue>::digits);
 
             auto registerValue = RegisterValue{0};
             for (const auto& registerByte : value) {
