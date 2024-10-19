@@ -140,6 +140,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         );
         Targets::TargetMemorySize alignMemorySize(Targets::TargetMemorySize size, Targets::TargetMemorySize alignTo);
 
+        Targets::TargetMemoryBuffer readMemoryViaAbstractCommand(
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize bytes
+        );
+        void writeMemoryViaAbstractCommand(
+            Targets::TargetMemoryAddress startAddress,
+            const Targets::TargetMemoryBuffer& buffer
+        );
+
         std::optional<std::reference_wrapper<const TriggerModule::TriggerDescriptor>> getAvailableTrigger();
         void clearTrigger(const TriggerModule::TriggerDescriptor& triggerDescriptor);
     };

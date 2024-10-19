@@ -36,7 +36,7 @@ namespace DebugToolDrivers::Wch
         this->wchLinkUsbInterface->init();
 
         this->wchLinkInterface = std::make_unique<Protocols::WchLink::WchLinkInterface>(
-            *(this->wchLinkUsbInterface.get()),
+            *(this->wchLinkUsbInterface),
             *this
         );
 
@@ -78,7 +78,7 @@ namespace DebugToolDrivers::Wch
 
         if (!this->wchRiscVTranslator) {
             this->wchRiscVTranslator = std::make_unique<DebugTranslator>(
-                *(this->wchLinkInterface.get()),
+                *(this->wchLinkInterface),
                 this->toolConfig.riscVDebugTranslatorConfig,
                 targetDescriptionFile,
                 targetConfig

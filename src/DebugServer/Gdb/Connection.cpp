@@ -207,7 +207,7 @@ namespace DebugServer::Gdb
         bool interruptible,
         std::optional<std::chrono::milliseconds> timeout
     ) {
-        auto output = std::vector<unsigned char>();
+        auto output = std::vector<unsigned char>{};
 
         if (this->readInterruptEnabled != interruptible) {
             if (interruptible) {

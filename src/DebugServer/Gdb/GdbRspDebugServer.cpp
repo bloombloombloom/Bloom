@@ -159,14 +159,16 @@ namespace DebugServer::Gdb
             }
 
             const auto commandPacket = this->waitForCommandPacket();
-            if (commandPacket) {
-                commandPacket->handle(
-                    *(this->getActiveDebugSession()),
-                    this->getGdbTargetDescriptor(),
-                    this->targetDescriptor,
-                    this->targetControllerService
-                );
+            if (!commandPacket) {
+                return;
             }
+
+            commandPacket->handle(
+                *(this->getActiveDebugSession()),
+                this->getGdbTargetDescriptor(),
+                this->targetDescriptor,
+                this->targetControllerService
+            );
 
         } catch (const ClientDisconnected&) {
             Logger::info("GDB RSP client disconnected");

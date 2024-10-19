@@ -361,8 +361,6 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         TargetMemorySize bytes,
         const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) {
-        using DebugModule::Registers::MemoryAccessControlField;
-
         // TODO: excluded addresses
 
         const auto pageSize = 4;
@@ -383,34 +381,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             return TargetMemoryBuffer{offset, offset + bytes};
         }
 
-        auto output = TargetMemoryBuffer{};
-        output.reserve(bytes);
-
-        /*
-         * We only need to set the address once. No need to update it as we use the post-increment function to
-         * increment the address. See MemoryAccessControlField::postIncrement
-         */
-        this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
-
-        constexpr auto command = AbstractCommandRegister{
-            .control = MemoryAccessControlField{
-                .postIncrement = true,
-                .size = MemoryAccessControlField::MemorySize::SIZE_32,
-            }.value(),
-            .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
-        };
-
-        for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
-            this->executeAbstractCommand(command);
-
-            const auto data = this->dtmInterface.readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
-            output.emplace_back(static_cast<unsigned char>(data));
-            output.emplace_back(static_cast<unsigned char>(data >> 8));
-            output.emplace_back(static_cast<unsigned char>(data >> 16));
-            output.emplace_back(static_cast<unsigned char>(data >> 24));
-        }
-
-        return output;
+        return this->readMemoryViaAbstractCommand(startAddress, bytes);
     }
 
     void DebugTranslator::writeMemory(
@@ -462,30 +433,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             );
         }
 
-        this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
-
-        constexpr auto command = AbstractCommandRegister{
-            .control = MemoryAccessControlField{
-                .write = true,
-                .postIncrement = true,
-                .size = MemoryAccessControlField::MemorySize::SIZE_32,
-            }.value(),
-            .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
-        };
-
-        for (TargetMemoryAddress offset = 0; offset < buffer.size(); offset += 4) {
-            this->dtmInterface.writeDebugModuleRegister(
-                RegisterAddress::ABSTRACT_DATA_0,
-                static_cast<RegisterValue>(
-                    (buffer[offset + 3] << 24)
-                    | (buffer[offset + 2] << 16)
-                    | (buffer[offset + 1] << 8)
-                    | (buffer[offset])
-                )
-            );
-
-            this->executeAbstractCommand(command);
-        }
+        return this->writeMemoryViaAbstractCommand(startAddress, buffer);
     }
 
     std::vector<DebugModule::HartIndex> DebugTranslator::discoverHartIndices() {
@@ -798,6 +746,74 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         return static_cast<TargetMemorySize>(
             std::ceil(static_cast<double>(size) / static_cast<double>(alignTo))
         ) * alignTo;
+    }
+
+    Targets::TargetMemoryBuffer DebugTranslator::readMemoryViaAbstractCommand(
+        Targets::TargetMemoryAddress startAddress,
+        Targets::TargetMemorySize bytes
+    ) {
+        using DebugModule::Registers::MemoryAccessControlField;
+
+        auto output = TargetMemoryBuffer{};
+        output.reserve(bytes);
+
+        /*
+         * We only need to set the address once. No need to update it as we use the post-increment function to
+         * increment the address. See MemoryAccessControlField::postIncrement
+         */
+        this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
+
+        constexpr auto command = AbstractCommandRegister{
+            .control = MemoryAccessControlField{
+                .postIncrement = true,
+                .size = MemoryAccessControlField::MemorySize::SIZE_32,
+            }.value(),
+            .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
+        };
+
+        for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
+            this->executeAbstractCommand(command);
+
+            const auto data = this->dtmInterface.readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
+            output.emplace_back(static_cast<unsigned char>(data));
+            output.emplace_back(static_cast<unsigned char>(data >> 8));
+            output.emplace_back(static_cast<unsigned char>(data >> 16));
+            output.emplace_back(static_cast<unsigned char>(data >> 24));
+        }
+
+        return output;
+    }
+
+    void DebugTranslator::writeMemoryViaAbstractCommand(
+        Targets::TargetMemoryAddress startAddress,
+        const TargetMemoryBuffer& buffer
+    ) {
+        using DebugModule::Registers::MemoryAccessControlField;
+
+        this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
+
+        constexpr auto command = AbstractCommandRegister{
+            .control = MemoryAccessControlField{
+                .write = true,
+                .postIncrement = true,
+                .size = MemoryAccessControlField::MemorySize::SIZE_32,
+            }.value(),
+            .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
+        };
+
+        for (TargetMemoryAddress offset = 0; offset < buffer.size(); offset += 4) {
+            this->dtmInterface.writeDebugModuleRegister(
+                RegisterAddress::ABSTRACT_DATA_0,
+                static_cast<RegisterValue>(
+                    (buffer[offset + 3] << 24)
+                    | (buffer[offset + 2] << 16)
+                    | (buffer[offset + 1] << 8)
+                    | (buffer[offset])
+                )
+            );
+
+            this->executeAbstractCommand(command);
+        }
     }
 
     std::optional<

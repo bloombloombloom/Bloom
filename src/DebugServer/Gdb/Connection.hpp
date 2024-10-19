@@ -13,8 +13,8 @@
 #include "src/Helpers/EventFdNotifier.hpp"
 #include "src/Helpers/EpollInstance.hpp"
 
-#include "src/DebugServer/Gdb/Packet.hpp"
-#include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
+#include "Packet.hpp"
+#include "ResponsePackets/ResponsePacket.hpp"
 
 namespace DebugServer::Gdb
 {
