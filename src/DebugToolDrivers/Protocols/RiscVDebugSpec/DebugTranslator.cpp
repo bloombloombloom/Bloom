@@ -204,20 +204,20 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     void DebugTranslator::reset() {
-        auto controlRegister = ControlRegister{
+        this->writeDebugModuleControlRegister(ControlRegister{
             .debugModuleActive = true,
             .ndmReset = true,
             .setResetHaltRequest = true,
             .selectedHartIndex = this->selectedHartIndex,
             .haltRequest = true,
-        };
+        });
+        this->writeDebugModuleControlRegister(ControlRegister{
+            .debugModuleActive = true,
+            .selectedHartIndex = this->selectedHartIndex,
+            .haltRequest = true,
+        });
 
-        this->writeDebugModuleControlRegister(controlRegister);
-
-        controlRegister.ndmReset = false;
-        this->writeDebugModuleControlRegister(controlRegister);
         auto statusRegister = this->readDebugModuleStatusRegister();
-
         for (
             auto attempts = 0;
             !statusRegister.allHaveReset
@@ -233,6 +233,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             .clearResetHaltRequest = true,
             .selectedHartIndex = this->selectedHartIndex,
             .acknowledgeHaveReset = true,
+            .haltRequest = true,
         });
 
         if (!statusRegister.allHaveReset) {
