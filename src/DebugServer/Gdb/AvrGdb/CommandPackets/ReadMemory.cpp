@@ -19,13 +19,13 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     using Exceptions::Exception;
 
-    ReadMemory::ReadMemory(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
+    ReadMemory::ReadMemory(const RawPacket& rawPacket, const AvrGdbTargetDescriptor& gdbTargetDescriptor)
         : ReadMemory(rawPacket, gdbTargetDescriptor, ReadMemory::extractPacketData(rawPacket))
     {}
 
     void ReadMemory::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
@@ -147,7 +147,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     ReadMemory::ReadMemory(
         const RawPacket& rawPacket,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         ReadMemory::PacketData&& packetData
     )
         : CommandPacket(rawPacket)

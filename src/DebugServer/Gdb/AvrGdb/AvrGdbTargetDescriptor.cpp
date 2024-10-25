@@ -1,4 +1,4 @@
-#include "TargetDescriptor.hpp"
+#include "AvrGdbTargetDescriptor.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 
@@ -9,7 +9,7 @@ namespace DebugServer::Gdb::AvrGdb
 
     using Exceptions::Exception;
 
-    TargetDescriptor::TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
+    AvrGdbTargetDescriptor::AvrGdbTargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
         : programAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("prog"))
         , eepromAddressSpaceDescriptor(targetDescriptor.getFirstAddressSpaceDescriptorContainingMemorySegment("internal_eeprom"))
         , sramAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("data"))
@@ -45,11 +45,11 @@ namespace DebugServer::Gdb::AvrGdb
         }
 
         this->gdbRegisterDescriptorsById.emplace(
-            TargetDescriptor::STATUS_GDB_REGISTER_ID,
-            RegisterDescriptor{TargetDescriptor::STATUS_GDB_REGISTER_ID, 1}
+            AvrGdbTargetDescriptor::STATUS_GDB_REGISTER_ID,
+            RegisterDescriptor{AvrGdbTargetDescriptor::STATUS_GDB_REGISTER_ID, 1}
         );
         this->targetRegisterDescriptorsByGdbId.emplace(
-            TargetDescriptor::STATUS_GDB_REGISTER_ID,
+            AvrGdbTargetDescriptor::STATUS_GDB_REGISTER_ID,
             &(targetDescriptor.getPeripheralDescriptor("cpu").getRegisterGroupDescriptor("cpu")
                 .getRegisterDescriptor("sreg"))
         );
@@ -60,45 +60,45 @@ namespace DebugServer::Gdb::AvrGdb
          * CommandPackets::WriteRegister, etc for more.
          */
         this->gdbRegisterDescriptorsById.emplace(
-            TargetDescriptor::STACK_POINTER_GDB_REGISTER_ID,
-            RegisterDescriptor{TargetDescriptor::STACK_POINTER_GDB_REGISTER_ID, 2}
+            AvrGdbTargetDescriptor::STACK_POINTER_GDB_REGISTER_ID,
+            RegisterDescriptor{AvrGdbTargetDescriptor::STACK_POINTER_GDB_REGISTER_ID, 2}
         );
 
         this->gdbRegisterDescriptorsById.emplace(
-            TargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID,
-            RegisterDescriptor{TargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID, 4}
+            AvrGdbTargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID,
+            RegisterDescriptor{AvrGdbTargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID, 4}
         );
     }
 
-    const Targets::TargetAddressSpaceDescriptor& TargetDescriptor::addressSpaceDescriptorFromGdbAddress(
+    const Targets::TargetAddressSpaceDescriptor& AvrGdbTargetDescriptor::addressSpaceDescriptorFromGdbAddress(
         GdbMemoryAddress address
     ) const {
-        if ((address & TargetDescriptor::EEPROM_ADDRESS_MASK) == TargetDescriptor::EEPROM_ADDRESS_MASK) {
+        if ((address & AvrGdbTargetDescriptor::EEPROM_ADDRESS_MASK) == AvrGdbTargetDescriptor::EEPROM_ADDRESS_MASK) {
             return this->eepromAddressSpaceDescriptor;
         }
 
-        if ((address & TargetDescriptor::SRAM_ADDRESS_MASK) == TargetDescriptor::SRAM_ADDRESS_MASK) {
+        if ((address & AvrGdbTargetDescriptor::SRAM_ADDRESS_MASK) == AvrGdbTargetDescriptor::SRAM_ADDRESS_MASK) {
             return this->sramAddressSpaceDescriptor;
         }
 
         return this->programAddressSpaceDescriptor;
     }
 
-    Targets::TargetMemoryAddress TargetDescriptor::translateGdbAddress(GdbMemoryAddress address) const {
-        if ((address & TargetDescriptor::EEPROM_ADDRESS_MASK) == TargetDescriptor::EEPROM_ADDRESS_MASK) {
+    Targets::TargetMemoryAddress AvrGdbTargetDescriptor::translateGdbAddress(GdbMemoryAddress address) const {
+        if ((address & AvrGdbTargetDescriptor::EEPROM_ADDRESS_MASK) == AvrGdbTargetDescriptor::EEPROM_ADDRESS_MASK) {
             // GDB sends EEPROM addresses in relative form - convert them to absolute form.
             return this->eepromMemorySegmentDescriptor.addressRange.startAddress
-                + (address & ~(TargetDescriptor::EEPROM_ADDRESS_MASK));
+                + (address & ~(AvrGdbTargetDescriptor::EEPROM_ADDRESS_MASK));
         }
 
-        if ((address & TargetDescriptor::SRAM_ADDRESS_MASK) == TargetDescriptor::SRAM_ADDRESS_MASK) {
-            return address & ~(TargetDescriptor::SRAM_ADDRESS_MASK);
+        if ((address & AvrGdbTargetDescriptor::SRAM_ADDRESS_MASK) == AvrGdbTargetDescriptor::SRAM_ADDRESS_MASK) {
+            return address & ~(AvrGdbTargetDescriptor::SRAM_ADDRESS_MASK);
         }
 
         return address;
     }
 
-    GdbMemoryAddress TargetDescriptor::translateTargetMemoryAddress(
+    GdbMemoryAddress AvrGdbTargetDescriptor::translateTargetMemoryAddress(
         Targets::TargetMemoryAddress address,
         const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
@@ -110,10 +110,10 @@ namespace DebugServer::Gdb::AvrGdb
         if (memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::EEPROM) {
             // GDB expects EEPROM addresses in relative form
             return (address - memorySegmentDescriptor.addressRange.startAddress)
-                | TargetDescriptor::EEPROM_ADDRESS_MASK;
+                | AvrGdbTargetDescriptor::EEPROM_ADDRESS_MASK;
         }
 
         // We assume everything else is SRAM
-        return address | TargetDescriptor::SRAM_ADDRESS_MASK;
+        return address | AvrGdbTargetDescriptor::SRAM_ADDRESS_MASK;
     }
 }

@@ -16,10 +16,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Exceptions;
 
-    FlashErase::FlashErase(const RawPacket& rawPacket, const TargetDescriptor& targetDescriptor)
+    FlashErase::FlashErase(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
-        , programMemoryAddressSpaceDescriptor(targetDescriptor.programAddressSpaceDescriptor)
-        , programMemorySegmentDescriptor(targetDescriptor.programMemorySegmentDescriptor)
     {
         using Services::StringService;
 
@@ -45,8 +43,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     }
 
     void FlashErase::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
@@ -59,8 +57,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
             // We don't erase a specific address range - we just erase the entire program memory.
             targetControllerService.eraseMemory(
-                this->programMemoryAddressSpaceDescriptor,
-                this->programMemorySegmentDescriptor
+                gdbTargetDescriptor.programAddressSpaceDescriptor,
+                gdbTargetDescriptor.programMemorySegmentDescriptor
             );
 
             debugSession.connection.writePacket(OkResponsePacket{});

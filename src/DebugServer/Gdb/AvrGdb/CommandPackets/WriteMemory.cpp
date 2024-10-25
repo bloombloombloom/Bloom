@@ -16,13 +16,13 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Exceptions;
 
-    WriteMemory::WriteMemory(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
+    WriteMemory::WriteMemory(const RawPacket& rawPacket, const AvrGdbTargetDescriptor& gdbTargetDescriptor)
         : WriteMemory(rawPacket, gdbTargetDescriptor, WriteMemory::extractPacketData(rawPacket))
     {}
 
     void WriteMemory::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
@@ -116,7 +116,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     WriteMemory::WriteMemory(
         const RawPacket& rawPacket,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         PacketData&& packetData
     )
         : CommandPacket(rawPacket)

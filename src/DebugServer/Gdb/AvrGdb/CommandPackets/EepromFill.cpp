@@ -23,33 +23,31 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     using ::Exceptions::Exception;
     using Exceptions::InvalidCommandOption;
 
-    EepromFill::EepromFill(Monitor&& monitorPacket, const TargetDescriptor& gdbTargetDescriptor)
-        : Monitor(std::move(monitorPacket))
-        , eepromAddressSpaceDescriptor(gdbTargetDescriptor.eepromAddressSpaceDescriptor)
-        , eepromMemorySegmentDescriptor(gdbTargetDescriptor.eepromMemorySegmentDescriptor)
+    EepromFill::EepromFill(Gdb::CommandPackets::Monitor&& monitorPacket)
+        : CommandPacket(monitorPacket)
+        , rawFillValue(monitorPacket.commandArguments.size() >= 3 ? monitorPacket.commandArguments[2] : std::string{})
     {}
 
     void EepromFill::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
         Logger::info("Handling EepromFill packet");
 
         try {
-            if (this->commandArguments.size() < 3 || this->commandArguments[2].empty()) {
+            if (this->rawFillValue.empty()) {
                 throw InvalidCommandOption{"Fill value required"};
             }
 
-            const auto eepromSize = this->eepromMemorySegmentDescriptor.size();
-            const auto& rawFillValue = this->commandArguments[2];
+            const auto eepromSize = gdbTargetDescriptor.eepromMemorySegmentDescriptor.size();
 
             const auto fillValue = Services::StringService::dataFromHex(
-                rawFillValue.size() >= 3 && rawFillValue[0] == '0'
-                && (rawFillValue[1] == 'X' || rawFillValue[1] == 'x')
-                    ? rawFillValue.substr(2)
-                    : rawFillValue
+                this->rawFillValue.size() >= 3 && this->rawFillValue[0] == '0'
+                && (this->rawFillValue[1] == 'X' || this->rawFillValue[1] == 'x')
+                    ? this->rawFillValue.substr(2)
+                    : this->rawFillValue
             );
             const auto fillValueSize = fillValue.size();
 
@@ -87,9 +85,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             Logger::debug("Filling EEPROM with values: " + hexValues);
 
             targetControllerService.writeMemory(
-                this->eepromAddressSpaceDescriptor,
-                this->eepromMemorySegmentDescriptor,
-                this->eepromMemorySegmentDescriptor.addressRange.startAddress,
+                gdbTargetDescriptor.eepromAddressSpaceDescriptor,
+                gdbTargetDescriptor.eepromMemorySegmentDescriptor,
+                gdbTargetDescriptor.eepromMemorySegmentDescriptor.addressRange.startAddress,
                 std::move(data)
             );
 

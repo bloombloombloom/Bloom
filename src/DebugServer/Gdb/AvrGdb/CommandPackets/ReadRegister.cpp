@@ -4,7 +4,6 @@
 
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 
-#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -36,8 +35,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     }
 
     void ReadRegister::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
@@ -46,7 +45,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         try {
             Logger::debug("Reading GDB register ID: " + std::to_string(this->registerId));
 
-            if (this->registerId == TargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID) {
+            if (this->registerId == AvrGdbTargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID) {
                 /*
                  * GDB has requested the program counter. We can't access this in the same way as we do with other
                  * registers.
@@ -65,7 +64,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 return;
             }
 
-            if (this->registerId == TargetDescriptor::STACK_POINTER_GDB_REGISTER_ID) {
+            if (this->registerId == AvrGdbTargetDescriptor::STACK_POINTER_GDB_REGISTER_ID) {
                 /*
                  * GDB has requested the program counter. We can't access this in the same way as we do with other
                  * registers.

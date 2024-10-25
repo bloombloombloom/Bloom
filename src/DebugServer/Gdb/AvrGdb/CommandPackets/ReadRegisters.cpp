@@ -22,14 +22,13 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     using Exceptions::Exception;
 
-    ReadRegisters::ReadRegisters(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
+    ReadRegisters::ReadRegisters(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
-        , gpRegistersMemorySegmentDescriptor(gdbTargetDescriptor.gpRegistersMemorySegmentDescriptor)
     {}
 
     void ReadRegisters::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
@@ -60,7 +59,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                     }
 
                     const auto bufferOffset = regDesc.startAddress
-                        - this->gpRegistersMemorySegmentDescriptor.addressRange.startAddress;
+                        - gdbTargetDescriptor.gpRegistersMemorySegmentDescriptor.addressRange.startAddress;
 
                     assert((buffer.size() - bufferOffset) >= regVal.size());
 

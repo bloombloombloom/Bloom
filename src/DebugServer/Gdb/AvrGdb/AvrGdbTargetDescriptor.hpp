@@ -10,7 +10,7 @@
 
 namespace DebugServer::Gdb::AvrGdb
 {
-    class TargetDescriptor: public DebugServer::Gdb::TargetDescriptor
+    class AvrGdbTargetDescriptor: public DebugServer::Gdb::TargetDescriptor
     {
     public:
         static constexpr auto SRAM_ADDRESS_MASK = 0x00800000U;
@@ -33,7 +33,7 @@ namespace DebugServer::Gdb::AvrGdb
         const Targets::TargetPeripheralDescriptor& cpuGpPeripheralDescriptor;
         const Targets::TargetRegisterGroupDescriptor& cpuGpRegisterGroupDescriptor;
 
-        explicit TargetDescriptor(const Targets::TargetDescriptor& targetDescriptor);
+        explicit AvrGdbTargetDescriptor(const Targets::TargetDescriptor& targetDescriptor);
 
         const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptorFromGdbAddress(
             GdbMemoryAddress address

@@ -2,14 +2,14 @@
 
 #include <cstdint>
 
-#include "TargetDescriptor.hpp"
-#include "DebugSession.hpp"
+#include "AvrGdbTargetDescriptor.hpp"
+#include "CommandPackets/CommandPacket.hpp"
 
 #include "src/DebugServer/Gdb/GdbRspDebugServer.hpp"
 
 namespace DebugServer::Gdb::AvrGdb
 {
-    class AvrGdbRsp: public GdbRspDebugServer
+    class AvrGdbRsp: public GdbRspDebugServer<AvrGdbTargetDescriptor, Gdb::DebugSession, CommandPackets::CommandPacket>
     {
     public:
         AvrGdbRsp(
@@ -24,37 +24,8 @@ namespace DebugServer::Gdb::AvrGdb
         }
 
     protected:
-        DebugSession* startDebugSession(Connection&& connection) override;
-
-        void endDebugSession() override;
-
-        const Gdb::TargetDescriptor& getGdbTargetDescriptor() override;
-
-        DebugSession* getActiveDebugSession() override;
-
-        std::unique_ptr<Gdb::CommandPackets::CommandPacket> resolveCommandPacket(
-            const RawPacket& rawPacket
-        ) override;
-
-        /**
-         * Should return a set of GDB features supported by the AVR GDB server. Each supported feature may come with an
-         * optional value.
-         *
-         * The set of features returned by this function will be stored against the active debug session object.
-         *
-         * @return
-         */
-        std::set<std::pair<Feature, std::optional<std::string>>> getSupportedFeatures();
-
+        std::unique_ptr<CommandPackets::CommandPacket> rawPacketToCommandPacket(const RawPacket& rawPacket) override;
+        std::set<std::pair<Feature, std::optional<std::string>>> getSupportedFeatures() override;
         void handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress) override;
-
-    private:
-        TargetDescriptor gdbTargetDescriptor;
-
-        /**
-         * When a connection with a GDB client is established, a new instance of the DebugSession class is created and
-         * held here. A value of std::nullopt means there is no active debug session present.
-         */
-        std::optional<DebugSession> activeDebugSession;
     };
 }

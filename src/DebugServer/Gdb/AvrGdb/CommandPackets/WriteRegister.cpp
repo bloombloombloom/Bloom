@@ -46,15 +46,15 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     }
 
     void WriteRegister::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
         Logger::info("Handling WriteRegister packet");
 
         try {
-            if (this->registerId == TargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID) {
+            if (this->registerId == AvrGdbTargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID) {
                 if (this->registerValue.size() != 4) {
                     throw Exception{"Invalid PC value register size"};
                 }
@@ -72,7 +72,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 return;
             }
 
-            if (this->registerId == TargetDescriptor::STACK_POINTER_GDB_REGISTER_ID) {
+            if (this->registerId == AvrGdbTargetDescriptor::STACK_POINTER_GDB_REGISTER_ID) {
                 if (this->registerValue.size() != 2) {
                     throw Exception{"Invalid SP register value size"};
                 }

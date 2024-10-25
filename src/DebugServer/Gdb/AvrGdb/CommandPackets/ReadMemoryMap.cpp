@@ -13,11 +13,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     using Exceptions::Exception;
 
-    ReadMemoryMap::ReadMemoryMap(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
+    ReadMemoryMap::ReadMemoryMap(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
-        , eepromAddressSpaceDescriptor(gdbTargetDescriptor.eepromAddressSpaceDescriptor)
-        , programMemorySegmentDescriptor(gdbTargetDescriptor.programMemorySegmentDescriptor)
-        , eepromMemorySegmentDescriptor(gdbTargetDescriptor.eepromMemorySegmentDescriptor)
     {
         using Services::StringService;
 
@@ -41,8 +38,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     }
 
     void ReadMemoryMap::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
@@ -53,18 +50,18 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
          * data via memory read/write packets.
          */
         const auto ramSectionEndAddress = gdbTargetDescriptor.translateTargetMemoryAddress(
-            this->eepromMemorySegmentDescriptor.addressRange.endAddress,
-            this->eepromAddressSpaceDescriptor,
-            this->eepromMemorySegmentDescriptor
+            gdbTargetDescriptor.eepromMemorySegmentDescriptor.addressRange.endAddress,
+            gdbTargetDescriptor.eepromAddressSpaceDescriptor,
+            gdbTargetDescriptor.eepromMemorySegmentDescriptor
         );
-        const auto ramSectionStartAddress = TargetDescriptor::SRAM_ADDRESS_MASK;
+        const auto ramSectionStartAddress = AvrGdbTargetDescriptor::SRAM_ADDRESS_MASK;
         const auto ramSectionSize = ramSectionEndAddress - ramSectionStartAddress + 1;
 
         const auto memoryMap =
                 std::string{"<memory-map>"}
                 + "<memory type=\"ram\" start=\"" + std::to_string(ramSectionStartAddress) + "\" length=\"" + std::to_string(ramSectionSize) + "\"/>"
-                + "<memory type=\"flash\" start=\"0\" length=\"" + std::to_string(this->programMemorySegmentDescriptor.size()) + "\">"
-                    + "<property name=\"blocksize\">" + std::to_string(this->programMemorySegmentDescriptor.pageSize.value()) + "</property>"
+                + "<memory type=\"flash\" start=\"0\" length=\"" + std::to_string(gdbTargetDescriptor.programMemorySegmentDescriptor.size()) + "\">"
+                    + "<property name=\"blocksize\">" + std::to_string(gdbTargetDescriptor.programMemorySegmentDescriptor.pageSize.value()) + "</property>"
                 + "</memory>"
             + "</memory-map>";
 

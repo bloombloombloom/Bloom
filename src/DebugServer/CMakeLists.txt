@@ -4,7 +4,6 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/DebugServerComponent.cpp
 
         # GDB RSP Server
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/GdbRspDebugServer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/GdbDebugServerConfig.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/Connection.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/DebugSession.cpp
@@ -29,8 +28,7 @@ target_sources(
 
         # AVR GDB RSP Server
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/AvrGdbRsp.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/TargetDescriptor.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/DebugSession.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/AvrGdbTargetDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/ReadRegisters.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/ReadRegister.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/WriteRegister.cpp

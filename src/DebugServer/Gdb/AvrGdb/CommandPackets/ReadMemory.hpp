@@ -3,11 +3,10 @@
 #include <cstdint>
 #include <optional>
 
-#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
+#include "CommandPacket.hpp"
 
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
-#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -15,7 +14,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      * The ReadMemory class implements a structure for "m" packets. Upon receiving these packets, the server is
      * expected to read memory from the target and send it the client.
      */
-    class ReadMemory: public Gdb::CommandPackets::CommandPacket
+    class ReadMemory: public CommandPackets::CommandPacket
     {
     public:
         const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
@@ -23,11 +22,11 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         Targets::TargetMemoryAddress startAddress;
         Targets::TargetMemorySize bytes;
 
-        ReadMemory(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor);
+        ReadMemory(const RawPacket& rawPacket, const AvrGdbTargetDescriptor& gdbTargetDescriptor);
 
         void handle(
-            Gdb::DebugSession& debugSession,
-            const Gdb::TargetDescriptor& gdbTargetDescriptor,
+            DebugSession& debugSession,
+            const AvrGdbTargetDescriptor& gdbTargetDescriptor,
             const Targets::TargetDescriptor& targetDescriptor,
             Services::TargetControllerService& targetControllerService
         ) override;
@@ -42,7 +41,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         static PacketData extractPacketData(const RawPacket& rawPacket);
         ReadMemory(
             const RawPacket& rawPacket,
-            const Gdb::TargetDescriptor& gdbTargetDescriptor,
+            const AvrGdbTargetDescriptor& gdbTargetDescriptor,
             PacketData&& packetData
         );
     };

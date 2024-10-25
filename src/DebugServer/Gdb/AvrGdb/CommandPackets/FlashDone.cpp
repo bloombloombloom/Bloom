@@ -15,15 +15,13 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     using namespace Exceptions;
 
-    FlashDone::FlashDone(const RawPacket& rawPacket, const TargetDescriptor& targetDescriptor)
+    FlashDone::FlashDone(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
-        , programMemoryAddressSpaceDescriptor(targetDescriptor.programAddressSpaceDescriptor)
-        , programMemorySegmentDescriptor(targetDescriptor.programMemorySegmentDescriptor)
     {}
 
     void FlashDone::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
@@ -42,8 +40,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             targetControllerService.enableProgrammingMode();
 
             targetControllerService.writeMemory(
-                this->programMemoryAddressSpaceDescriptor,
-                this->programMemorySegmentDescriptor,
+                gdbTargetDescriptor.programAddressSpaceDescriptor,
+                gdbTargetDescriptor.programMemorySegmentDescriptor,
                 debugSession.programmingSession->startAddress,
                 std::move(debugSession.programmingSession->buffer)
             );

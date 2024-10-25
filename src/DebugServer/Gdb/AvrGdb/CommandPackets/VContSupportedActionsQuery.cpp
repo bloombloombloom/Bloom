@@ -13,8 +13,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     {}
 
     void VContSupportedActionsQuery::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {

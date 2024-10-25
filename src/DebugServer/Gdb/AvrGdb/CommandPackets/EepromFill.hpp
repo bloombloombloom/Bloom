@@ -1,13 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
+
+#include "CommandPacket.hpp"
 
 #include "src/DebugServer/Gdb/CommandPackets/Monitor.hpp"
-
-#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
-
-#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
-#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -16,17 +14,16 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      *
      * This command fills the target's EEPROM with the given value.
      */
-    class EepromFill: public Gdb::CommandPackets::Monitor
+    class EepromFill: public CommandPackets::CommandPacket
     {
     public:
-        const Targets::TargetAddressSpaceDescriptor& eepromAddressSpaceDescriptor;
-        const Targets::TargetMemorySegmentDescriptor& eepromMemorySegmentDescriptor;
+        std::string rawFillValue;
 
-        explicit EepromFill(Monitor&& monitorPacket, const TargetDescriptor& gdbTargetDescriptor);
+        explicit EepromFill(Gdb::CommandPackets::Monitor&& monitorPacket);
 
         void handle(
-            Gdb::DebugSession& debugSession,
-            const Gdb::TargetDescriptor& gdbTargetDescriptor,
+            DebugSession& debugSession,
+            const AvrGdbTargetDescriptor& gdbTargetDescriptor,
             const Targets::TargetDescriptor& targetDescriptor,
             Services::TargetControllerService& targetControllerService
         ) override;

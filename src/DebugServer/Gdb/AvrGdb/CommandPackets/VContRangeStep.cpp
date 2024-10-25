@@ -17,10 +17,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     using ResponsePackets::ErrorResponsePacket;
     using ::Exceptions::Exception;
 
-    VContRangeStep::VContRangeStep(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor)
+    VContRangeStep::VContRangeStep(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
-        , programAddressSpaceDescriptor(gdbTargetDescriptor.programAddressSpaceDescriptor)
-        , programMemorySegmentDescriptor(gdbTargetDescriptor.programMemorySegmentDescriptor)
     {
         using Services::StringService;
 
@@ -44,8 +42,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     }
 
     void VContRangeStep::handle(
-        Gdb::DebugSession& debugSession,
-        const Gdb::TargetDescriptor& gdbTargetDescriptor,
+        DebugSession& debugSession,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
@@ -61,7 +59,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         try {
             const auto stepAddressRange = Targets::TargetMemoryAddressRange{this->startAddress, this->endAddress};
             const auto stepByteSize = stepAddressRange.size() - 1; // -1 because the end address is exclusive
-            const auto& programMemoryAddressRange = this->programMemorySegmentDescriptor.addressRange;
+            const auto& programMemoryAddressRange = gdbTargetDescriptor.programMemorySegmentDescriptor.addressRange;
 
             if (
                 stepAddressRange.startAddress > stepAddressRange.endAddress
@@ -91,8 +89,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             const auto instructionsByAddress = Decoder::decode(
                 stepAddressRange.startAddress,
                 targetControllerService.readMemory(
-                    this->programAddressSpaceDescriptor,
-                    this->programMemorySegmentDescriptor,
+                    gdbTargetDescriptor.programAddressSpaceDescriptor,
+                    gdbTargetDescriptor.programMemorySegmentDescriptor,
                     stepAddressRange.startAddress,
                     stepByteSize
                 )

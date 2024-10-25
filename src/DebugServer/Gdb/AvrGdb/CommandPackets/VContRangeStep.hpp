@@ -2,11 +2,8 @@
 
 #include <cstdint>
 
-#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
+#include "CommandPacket.hpp"
 
-#include "src/DebugServer/Gdb/AvrGdb/TargetDescriptor.hpp"
-#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
-#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
@@ -16,20 +13,17 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      * step through a particular address range, and only report back to GDB when execution leaves that range, or when an
      * external breakpoint has been reached.
      */
-    class VContRangeStep: public Gdb::CommandPackets::CommandPacket
+    class VContRangeStep: public CommandPackets::CommandPacket
     {
     public:
-        const Targets::TargetAddressSpaceDescriptor& programAddressSpaceDescriptor;
-        const Targets::TargetMemorySegmentDescriptor& programMemorySegmentDescriptor;
-
         Targets::TargetMemoryAddress startAddress;
         Targets::TargetMemoryAddress endAddress;
 
-        explicit VContRangeStep(const RawPacket& rawPacket, const TargetDescriptor& gdbTargetDescriptor);
+        explicit VContRangeStep(const RawPacket& rawPacket);
 
         void handle(
-            Gdb::DebugSession& debugSession,
-            const Gdb::TargetDescriptor& gdbTargetDescriptor,
+            DebugSession& debugSession,
+            const AvrGdbTargetDescriptor& gdbTargetDescriptor,
             const Targets::TargetDescriptor& targetDescriptor,
             Services::TargetControllerService& targetControllerService
         ) override;
