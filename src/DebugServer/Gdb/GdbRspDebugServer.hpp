@@ -60,6 +60,8 @@
 #include "CommandPackets/ListRegistersMonitor.hpp"
 #include "CommandPackets/ReadRegistersMonitor.hpp"
 #include "CommandPackets/WriteRegisterMonitor.hpp"
+#include "CommandPackets/VContContinueExecution.hpp"
+#include "CommandPackets/VContStepExecution.hpp"
 
 #ifndef EXCLUDE_INSIGHT
 #include "CommandPackets/ActivateInsight.hpp"
@@ -439,6 +441,14 @@ namespace DebugServer::Gdb
              */
             if (rawPacketString.find("qSupported") == 0) {
                 return std::make_unique<CommandPackets::SupportedFeaturesQuery>(rawPacket);
+            }
+
+            if (rawPacketString.find("vCont;c") == 0 || rawPacketString.find("vCont;C") == 0) {
+                return std::make_unique<CommandPackets::VContContinueExecution>(rawPacket);
+            }
+
+            if (rawPacketString.find("vCont;s") == 0 || rawPacketString.find("vCont;S") == 0) {
+                return std::make_unique<CommandPackets::VContStepExecution>(rawPacket);
             }
 
             if (rawPacketString.find("qRcmd") == 0) {

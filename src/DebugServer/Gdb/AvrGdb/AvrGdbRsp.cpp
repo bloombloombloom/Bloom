@@ -13,8 +13,6 @@
 #include "CommandPackets/FlashWrite.hpp"
 #include "CommandPackets/FlashDone.hpp"
 #include "CommandPackets/VContSupportedActionsQuery.hpp"
-#include "CommandPackets/VContContinueExecution.hpp"
-#include "CommandPackets/VContStepExecution.hpp"
 #include "CommandPackets/VContRangeStep.hpp"
 
 #include "src/DebugServer/Gdb/CommandPackets/Monitor.hpp"
@@ -56,8 +54,6 @@ namespace DebugServer::Gdb::AvrGdb
         using CommandPackets::FlashWrite;
         using CommandPackets::FlashDone;
         using CommandPackets::VContSupportedActionsQuery;
-        using CommandPackets::VContContinueExecution;
-        using CommandPackets::VContStepExecution;
         using CommandPackets::VContRangeStep;
         using CommandPackets::EepromFill;
 
@@ -106,14 +102,6 @@ namespace DebugServer::Gdb::AvrGdb
 
             if (rawPacketString.find("vCont?") == 0) {
                 return std::make_unique<VContSupportedActionsQuery>(rawPacket);
-            }
-
-            if (rawPacketString.find("vCont;c") == 0 || rawPacketString.find("vCont;C") == 0) {
-                return std::make_unique<VContContinueExecution>(rawPacket);
-            }
-
-            if (rawPacketString.find("vCont;s") == 0 || rawPacketString.find("vCont;S") == 0) {
-                return std::make_unique<VContStepExecution>(rawPacket);
             }
 
             if (this->debugServerConfig.rangeStepping) {

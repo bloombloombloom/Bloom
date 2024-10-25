@@ -25,6 +25,8 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ListRegistersMonitor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ReadRegistersMonitor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/WriteRegisterMonitor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/VContContinueExecution.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/VContStepExecution.cpp
 
         # AVR GDB RSP Server
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/AvrGdbRsp.cpp
@@ -39,8 +41,6 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashWrite.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashDone.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContSupportedActionsQuery.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContContinueExecution.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContStepExecution.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContRangeStep.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/EepromFill.cpp
 )

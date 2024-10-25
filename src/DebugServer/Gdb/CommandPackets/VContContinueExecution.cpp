@@ -2,7 +2,7 @@
 
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
-namespace DebugServer::Gdb::AvrGdb::CommandPackets
+namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
@@ -16,7 +16,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
     void VContContinueExecution::handle(
         DebugSession& debugSession,
-        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
+        const TargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
         TargetControllerService& targetControllerService
     ) {
