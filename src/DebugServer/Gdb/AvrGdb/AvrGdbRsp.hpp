@@ -2,14 +2,14 @@
 
 #include <cstdint>
 
+#include "src/DebugServer/Gdb/GdbRspDebugServer.hpp"
+
 #include "AvrGdbTargetDescriptor.hpp"
 #include "CommandPackets/CommandPacket.hpp"
 
-#include "src/DebugServer/Gdb/GdbRspDebugServer.hpp"
-
 namespace DebugServer::Gdb::AvrGdb
 {
-    class AvrGdbRsp: public GdbRspDebugServer<AvrGdbTargetDescriptor, Gdb::DebugSession, CommandPackets::CommandPacket>
+    class AvrGdbRsp: public GdbRspDebugServer<AvrGdbTargetDescriptor, DebugSession, CommandPackets::CommandPacket>
     {
     public:
         AvrGdbRsp(
@@ -19,9 +19,7 @@ namespace DebugServer::Gdb::AvrGdb
             EventFdNotifier& eventNotifier
         );
 
-        std::string getName() const override {
-            return "AVR GDB Remote Serial Protocol Debug Server";
-        }
+        std::string getName() const override;
 
     protected:
         std::unique_ptr<CommandPackets::CommandPacket> rawPacketToCommandPacket(const RawPacket& rawPacket) override;

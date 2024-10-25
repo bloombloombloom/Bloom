@@ -22,26 +22,6 @@
 #include "RegisterDescriptor.hpp"
 #include "Feature.hpp"
 
-#include "src/EventManager/EventListener.hpp"
-#include "src/Helpers/EpollInstance.hpp"
-#include "src/Helpers/EventFdNotifier.hpp"
-#include "src/Services/TargetControllerService.hpp"
-#include "src/Targets/TargetDescriptor.hpp"
-
-#include "src/EventManager/Events/TargetStateChanged.hpp"
-#include "src/EventManager/EventManager.hpp"
-
-#include "src/Logger/Logger.hpp"
-
-#include "Exceptions/ClientDisconnected.hpp"
-#include "Exceptions/ClientNotSupported.hpp"
-#include "Exceptions/ClientCommunicationError.hpp"
-#include "Exceptions/DebugSessionInitialisationFailure.hpp"
-#include "Exceptions/DebugServerInterrupted.hpp"
-
-#include "src/Exceptions/Exception.hpp"
-#include "src/Exceptions/InvalidConfig.hpp"
-
 // Command packets
 #include "CommandPackets/CommandPacket.hpp"
 #include "CommandPackets/CommandPacket.hpp"
@@ -70,8 +50,26 @@
 // Response packets
 #include "ResponsePackets/TargetStopped.hpp"
 
+#include "src/EventManager/EventListener.hpp"
+#include "src/Helpers/EpollInstance.hpp"
+#include "src/Helpers/EventFdNotifier.hpp"
+#include "src/Services/TargetControllerService.hpp"
 #include "src/Services/ProcessService.hpp"
 #include "src/Services/StringService.hpp"
+#include "src/Targets/TargetDescriptor.hpp"
+#include "src/Logger/Logger.hpp"
+
+#include "src/EventManager/Events/TargetStateChanged.hpp"
+#include "src/EventManager/EventManager.hpp"
+
+#include "Exceptions/ClientDisconnected.hpp"
+#include "Exceptions/ClientNotSupported.hpp"
+#include "Exceptions/ClientCommunicationError.hpp"
+#include "Exceptions/DebugSessionInitialisationFailure.hpp"
+#include "Exceptions/DebugServerInterrupted.hpp"
+
+#include "src/Exceptions/Exception.hpp"
+#include "src/Exceptions/InvalidConfig.hpp"
 
 namespace DebugServer::Gdb
 {
