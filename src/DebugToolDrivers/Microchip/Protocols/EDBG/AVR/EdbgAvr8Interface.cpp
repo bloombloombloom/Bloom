@@ -149,7 +149,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             throw Avr8CommandFailure{"AVR8 Stop target command failed", responseFrame};
         }
 
-        if (this->getExecutionState() == TargetExecutionState::RUNNING) {
+        if (this->cachedExecutionState != TargetExecutionState::STOPPED) {
             this->waitForStoppedEvent();
         }
     }
