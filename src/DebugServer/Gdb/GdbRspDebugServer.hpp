@@ -548,7 +548,7 @@ namespace DebugServer::Gdb
                 return;
 
             } catch (const ::Exceptions::Exception& exception) {
-                Logger::error("Failed to handle target execution stopped event - " + exception.getMessage());
+                Logger::error("Failed to handle target execution state changed event - " + exception.getMessage());
             }
         }
 
