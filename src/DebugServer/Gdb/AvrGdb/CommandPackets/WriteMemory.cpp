@@ -29,7 +29,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         Logger::info("Handling WriteMemory packet");
 
         try {
-            if (this->buffer.size() == 0) {
+            if (this->buffer.empty()) {
                 debugSession.connection.writePacket(OkResponsePacket{});
                 return;
             }
