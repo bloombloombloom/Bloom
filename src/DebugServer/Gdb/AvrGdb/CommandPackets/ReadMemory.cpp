@@ -52,6 +52,38 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
              */
             auto accessibleBytes = Targets::TargetMemorySize{0};
             for (const auto* memorySegmentDescriptor : memorySegmentDescriptors) {
+                /*
+                 * GDB assumes that it can only access SRAM (including mapped IO, GPRs, etc), EEPROM and Flash.
+                 * So when it probes the stack (see comment below RE stack probing), it expects the server to
+                 * reject any attempts to access memory that resides after SRAM, on the SRAM (data) address space.
+                 *
+                 * The problem with this is that there are some AVR targets that have memory segments after the
+                 * SRAM segment, on the same address space. For example, the AVR128DA48 has the "mapped_progmem"
+                 * segment, which comes right after the SRAM segment.
+                 *
+                 * And what if the EEPROM segment (which sometimes resides on the data address space), comes after
+                 * the SRAM segment? We must account for all of this.
+                 *
+                 * Fortunately, mapped IO and GPR segments always come before SRAM (this is confirmed via TDF
+                 * validation), so we can still allow GDB to access to those segments.
+                 *
+                 * For the reasons mentioned above, when GDB attempts to access memory in the data address space, from
+                 * a segment which comes after the SRAM segment, and is not EEPROM, we just assume that its intention
+                 * was to access SRAM only, and return an error for any out-of-bounds access attempts.
+                 */
+                if (
+                    this->addressSpaceDescriptor == gdbTargetDescriptor.sramAddressSpaceDescriptor
+                    && memorySegmentDescriptor->type != Targets::TargetMemorySegmentType::RAM
+                    && memorySegmentDescriptor->type != Targets::TargetMemorySegmentType::EEPROM
+                    && memorySegmentDescriptor->addressRange.startAddress > gdbTargetDescriptor.sramMemorySegmentDescriptor.addressRange.endAddress
+                ) {
+                    /*
+                     * Ignore this memory segment, as it resides beyond the SRAM segment and is not EEPROM, so it's
+                     * unlikely GDB actually wanted to access it.
+                     */
+                    continue;
+                }
+
                 if (!memorySegmentDescriptor->debugModeAccess.readable) {
                     throw Exception{
                         "Attempted to access restricted memory segment (" + memorySegmentDescriptor->key
@@ -62,19 +94,15 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 accessibleBytes += memorySegmentDescriptor->addressRange.intersectingSize(addressRange);
             }
 
-            /*
-             * GDB will sometimes request an excess of up to two bytes outside the memory segment address range, even
-             * though we provide it with a memory map. I don't know why it does this, but I do know that we must
-             * tolerate it, otherwise GDB will moan.
-             */
-            if (accessibleBytes < this->bytes && (this->bytes - accessibleBytes) > 2) {
+            if (accessibleBytes < this->bytes) {
                 /*
-                 * GDB has requested memory that, at least partially, does not reside in any known memory segment.
+                 * GDB has requested memory that, at least partially, does not reside in any known/accessible memory
+                 * segment.
                  *
                  * This could be a result of GDB being configured to generate backtraces past the main function and
                  * the internal entry point of the application. This means that GDB will attempt to walk down the stack
                  * to identify every frame. The problem is that GDB doesn't really know where the stack begins, so it
-                 * probes the target by continuously issuing read memory commands until the server responds with an
+                 * probes the stack by continuously issuing read memory commands until the server responds with an
                  * error.
                  *
                  * CLion seems to enable this by default. Somewhere between CLion 2021.1 and 2022.1, it began issuing

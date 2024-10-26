@@ -45,6 +45,21 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
             auto accessibleBytes = Targets::TargetMemorySize{0};
             for (const auto* memorySegmentDescriptor : memorySegmentDescriptors) {
+                if (
+                    this->addressSpaceDescriptor == gdbTargetDescriptor.sramAddressSpaceDescriptor
+                    && memorySegmentDescriptor->type != Targets::TargetMemorySegmentType::RAM
+                    && memorySegmentDescriptor->type != Targets::TargetMemorySegmentType::EEPROM
+                    && memorySegmentDescriptor->addressRange.startAddress > gdbTargetDescriptor.sramMemorySegmentDescriptor.addressRange.endAddress
+                ) {
+                    /*
+                     * Ignore this memory segment, as it resides beyond the SRAM segment and is not EEPROM, so it's
+                     * unlikely GDB actually wanted to access it.
+                     *
+                     * See the comment in the ReadMemory command packet for more.
+                     */
+                    continue;
+                }
+
                 if (!memorySegmentDescriptor->debugModeAccess.writeable) {
                     throw Exception{
                         "Attempted to access restricted memory segment (" + memorySegmentDescriptor->key
