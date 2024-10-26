@@ -3,6 +3,7 @@
 #include "src/DebugServer/Gdb/TargetDescriptor.hpp"
 
 #include "src/Targets/TargetDescriptor.hpp"
+#include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetPeripheralDescriptor.hpp"
@@ -35,15 +36,41 @@ namespace DebugServer::Gdb::AvrGdb
 
         explicit AvrGdbTargetDescriptor(const Targets::TargetDescriptor& targetDescriptor);
 
-        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptorFromGdbAddress(
+        /**
+         * For AVR targets, GDB encodes address space information into memory addresses, by applying a mask.
+         *
+         * This function identifies the encoded address space within the given GDB memory address, and returns the
+         * relevant address space descriptor.
+         *
+         * @param address
+         * @return
+         */
+        [[nodiscard]] const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptorFromGdbAddress(
             GdbMemoryAddress address
-        ) const override;
+        ) const;
 
-        Targets::TargetMemoryAddress translateGdbAddress(GdbMemoryAddress address) const override;
-        GdbMemoryAddress translateTargetMemoryAddress(
+        /**
+         * This function translates a GDB memory address to a target memory address. It will strip away any
+         * GDB-specific masks and return an address that can be used within Bloom.
+         *
+         * @param address
+         * @return
+         */
+        [[nodiscard]] Targets::TargetMemoryAddress translateGdbAddress(GdbMemoryAddress address) const;
+
+        /**
+         * This function translates a target memory address to a GDB memory address. It will encode address space
+         * information into the address, as expected by GDB.
+         *
+         * @param address
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
+         * @return
+         */
+        [[nodiscard]] GdbMemoryAddress translateTargetMemoryAddress(
             Targets::TargetMemoryAddress address,
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
-        ) const override;
+        ) const;
     };
 }
