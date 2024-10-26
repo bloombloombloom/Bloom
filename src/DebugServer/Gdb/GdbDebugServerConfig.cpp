@@ -9,14 +9,15 @@ namespace DebugServer::Gdb
         : DebugServerConfig(debugServerConfig)
     {
         if (debugServerConfig.debugServerNode["ipAddress"]) {
-            if (!YamlUtilities::isCastable<std::string>(debugServerConfig.debugServerNode["ipAddress"])) {
+            if (YamlUtilities::isCastable<std::string>(debugServerConfig.debugServerNode["ipAddress"])) {
+                this->listeningAddress = debugServerConfig.debugServerNode["ipAddress"].as<std::string>();
+
+            } else {
                 Logger::error(
                     "Invalid GDB debug server config parameter ('ipAddress') provided - must be a string. The "
                         "parameter will be ignored."
                 );
             }
-
-            this->listeningAddress = debugServerConfig.debugServerNode["ipAddress"].as<std::string>();
         }
 
         if (debugServerConfig.debugServerNode["port"]) {
