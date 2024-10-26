@@ -17,6 +17,8 @@ namespace Services
         static bool isAscii(const std::string& str);
         static std::string replaceUnprintable(std::string str);
 
+        static bool isNumeric(const std::string& str);
+
         static std::string toHex(std::uint64_t value);
         static std::string toHex(std::uint32_t value);
         static std::string toHex(std::uint16_t value);

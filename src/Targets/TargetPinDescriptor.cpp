@@ -9,7 +9,11 @@ namespace Targets
         const std::optional<std::string>& padKey
     )
         : position(position)
-        , numericPosition(Services::StringService::toUint16(this->position, 10))
+        , numericPosition(
+            Services::StringService::isNumeric(this->position)
+                ? Services::StringService::toUint16(this->position, 10)
+                : 0
+        )
         , padKey(padKey)
     {}
 }

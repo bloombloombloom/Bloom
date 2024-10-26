@@ -42,6 +42,12 @@ namespace Services
         return str;
     }
 
+    bool StringService::isNumeric(const std::string& str) {
+        return !std::any_of(str.begin(), str.end(), [] (unsigned char character) {
+            return std::isdigit(character);
+        });
+    }
+
     std::string StringService::toHex(std::uint64_t value) {
         auto stream = std::stringstream{};
         stream << std::hex << std::setfill('0') << std::setw(16) << static_cast<unsigned int>(value);
