@@ -29,7 +29,7 @@ namespace DebugToolDrivers::Microchip
         static const inline std::uint16_t NON_EDBG_USB_VENDOR_ID = 0x04d8;
         static const inline std::uint16_t NON_EDBG_USB_PRODUCT_ID = 0x9012;
 
-        MplabPickit4();
+        MplabPickit4(const DebugToolConfig& debugToolConfig);
 
         std::string getName() override {
             return "MPLAB PICkit 4";

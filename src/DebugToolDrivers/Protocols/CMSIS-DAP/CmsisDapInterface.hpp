@@ -21,6 +21,8 @@ namespace DebugToolDrivers::Protocols::CmsisDap
     class CmsisDapInterface
     {
     public:
+        static constexpr auto CMSIS_COMMAND_DELAY_MAX = std::chrono::milliseconds{200};
+
         explicit CmsisDapInterface(Usb::HidInterface&& usbHidInterface);
 
         virtual ~CmsisDapInterface() = default;
@@ -38,8 +40,8 @@ namespace DebugToolDrivers::Protocols::CmsisDap
             return this->usbHidInterface.inputReportSize;
         }
 
-        void setMinimumCommandTimeGap(std::chrono::milliseconds commandTimeGap) {
-            this->commandDelay = commandTimeGap;
+        void setCommandDelay(std::chrono::milliseconds commandDelay) {
+            this->commandDelay = commandDelay;
         }
 
         /**

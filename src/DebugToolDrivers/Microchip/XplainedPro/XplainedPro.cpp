@@ -2,8 +2,9 @@
 
 namespace DebugToolDrivers::Microchip
 {
-    XplainedPro::XplainedPro()
+    XplainedPro::XplainedPro(const DebugToolConfig& debugToolConfig)
         : EdbgDevice(
+            debugToolConfig,
             XplainedPro::USB_VENDOR_ID,
             XplainedPro::USB_PRODUCT_ID,
             XplainedPro::CMSIS_HID_INTERFACE_NUMBER,

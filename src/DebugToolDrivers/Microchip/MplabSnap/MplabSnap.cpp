@@ -5,8 +5,9 @@
 
 namespace DebugToolDrivers::Microchip
 {
-    MplabSnap::MplabSnap()
+    MplabSnap::MplabSnap(const DebugToolConfig& debugToolConfig)
         : EdbgDevice(
+            debugToolConfig,
             MplabSnap::USB_VENDOR_ID,
             MplabSnap::USB_PRODUCT_ID,
             MplabSnap::CMSIS_HID_INTERFACE_NUMBER

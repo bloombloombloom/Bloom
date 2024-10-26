@@ -7,6 +7,9 @@
 #include "src/DebugToolDrivers/DebugTool.hpp"
 #include "src/DebugToolDrivers/USB/UsbDevice.hpp"
 
+#include "EdbgToolConfig.hpp"
+#include "src/ProjectConfig.hpp"
+
 #include "Protocols/EDBG/EdbgInterface.hpp"
 #include "Protocols/EDBG/AVR/EdbgAvr8Interface.hpp"
 #include "Protocols/EDBG/AVR/EdbgAvrIspInterface.hpp"
@@ -30,6 +33,7 @@ namespace DebugToolDrivers::Microchip
     {
     public:
         EdbgDevice(
+            const DebugToolConfig& debugToolConfig,
             std::uint16_t vendorId,
             std::uint16_t productId,
             std::uint8_t cmsisHidInterfaceNumber,
@@ -85,6 +89,7 @@ namespace DebugToolDrivers::Microchip
         void endSession();
 
     protected:
+        EdbgToolConfig toolConfig;
         bool initialised = false;
 
         /**

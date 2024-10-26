@@ -315,66 +315,69 @@ namespace TargetController
         std::string,
         std::function<std::unique_ptr<DebugTool>()>
     > TargetControllerComponent::getSupportedDebugTools() {
+        using namespace DebugToolDrivers::Microchip;
+        using namespace DebugToolDrivers::Wch;
+
         // The debug tool names in this mapping should always be lower-case.
         return std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
             {
                 "atmel-ice",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Microchip::AtmelIce>();
+                [this] {
+                    return std::make_unique<AtmelIce>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
                 "power-debugger",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Microchip::PowerDebugger>();
+                [this] {
+                    return std::make_unique<PowerDebugger>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
                 "snap",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Microchip::MplabSnap>();
+                [this] {
+                    return std::make_unique<MplabSnap>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
                 "pickit-4",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Microchip::MplabPickit4>();
+                [this] {
+                    return std::make_unique<MplabPickit4>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
                 "xplained-pro",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Microchip::XplainedPro>();
+                [this] {
+                    return std::make_unique<XplainedPro>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
                 "xplained-mini",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Microchip::XplainedMini>();
+                [this] {
+                    return std::make_unique<XplainedMini>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
                 "xplained-nano",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Microchip::XplainedNano>();
+                [this] {
+                    return std::make_unique<XplainedNano>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
                 "curiosity-nano",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Microchip::CuriosityNano>();
+                [this] {
+                    return std::make_unique<CuriosityNano>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
                 "jtagice3",
-                [] {
-                    return std::make_unique<DebugToolDrivers::Microchip::JtagIce3>();
+                [this] {
+                    return std::make_unique<JtagIce3>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
                 "wch-link-e",
                 [this] {
-                    return std::make_unique<DebugToolDrivers::Wch::WchLinkE>(this->environmentConfig.debugToolConfig);
+                    return std::make_unique<WchLinkE>(this->environmentConfig.debugToolConfig);
                 }
             },
         };

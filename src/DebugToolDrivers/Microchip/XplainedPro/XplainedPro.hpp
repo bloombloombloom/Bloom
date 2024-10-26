@@ -21,7 +21,7 @@ namespace DebugToolDrivers::Microchip
         static const inline std::uint16_t USB_PRODUCT_ID = 0x2111;
         static const inline std::uint8_t CMSIS_HID_INTERFACE_NUMBER = 0;
 
-        XplainedPro();
+        XplainedPro(const DebugToolConfig& debugToolConfig);
 
         std::string getName() override {
             return "Xplained Pro";

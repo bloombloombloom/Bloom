@@ -22,7 +22,7 @@ namespace DebugToolDrivers::Microchip
         static const inline std::uint8_t USB_CONFIGURATION_INDEX = 0;
         static const inline std::uint8_t CMSIS_HID_INTERFACE_NUMBER = 0;
 
-        PowerDebugger();
+        PowerDebugger(const DebugToolConfig& debugToolConfig);
 
         std::string getName() override {
             return "Power Debugger";

@@ -32,6 +32,7 @@ target_sources(
 
         # Microchip EDBG debug tools
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/EdbgDevice.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/EdbgToolConfig.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AtmelICE/AtmelIce.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/PowerDebugger/PowerDebugger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/MplabSnap/MplabSnap.cpp

@@ -32,7 +32,7 @@ namespace DebugToolDrivers::Microchip
         static const inline std::uint16_t NON_EDBG_USB_PRODUCT_ID = 0x9018;
         static const inline std::uint16_t NON_EDBG_USB_PRODUCT_ID_ALTERNATIVE = 0x9017;
 
-        MplabSnap();
+        MplabSnap(const DebugToolConfig& debugToolConfig);
 
         std::string getName() override {
             return "MPLAB Snap";

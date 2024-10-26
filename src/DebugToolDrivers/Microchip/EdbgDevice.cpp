@@ -1,8 +1,10 @@
 #include "EdbgDevice.hpp"
 
 #include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
+#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Microchip/Protocols/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
 
+#include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/DeviceFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
@@ -14,6 +16,7 @@ namespace DebugToolDrivers::Microchip
     using Exceptions::DeviceInitializationFailure;
 
     EdbgDevice::EdbgDevice(
+        const DebugToolConfig& debugToolConfig,
         std::uint16_t vendorId,
         std::uint16_t productId,
         std::uint8_t cmsisHidInterfaceNumber,
@@ -21,12 +24,14 @@ namespace DebugToolDrivers::Microchip
         std::optional<std::uint8_t> configurationIndex
     )
         : UsbDevice(vendorId, productId)
+        , toolConfig(EdbgToolConfig{debugToolConfig})
         , cmsisHidInterfaceNumber(cmsisHidInterfaceNumber)
         , supportsTargetPowerManagement(supportsTargetPowerManagement)
         , configurationIndex(configurationIndex)
     {}
 
     void EdbgDevice::init() {
+        using ::DebugToolDrivers::Protocols::CmsisDap::CmsisDapInterface;
         using Microchip::Protocols::Edbg::EdbgInterface;
         using Microchip::Protocols::Edbg::EdbgTargetPowerManagementInterface;
 
@@ -52,12 +57,29 @@ namespace DebugToolDrivers::Microchip
         this->edbgInterface = std::make_unique<EdbgInterface>(std::move(cmsisHidInterface));
 
         /*
-         * The EDBG/CMSIS-DAP interface doesn't operate properly when sending commands too quickly.
+         * Sometimes, some EDBG tools misbehave when we send commands too quickly, even though we wait for a response
+         * for each command we send...
          *
-         * Because of this, we have to enforce a minimum time gap between commands. See comment
-         * in CmsisDapInterface class declaration for more info.
+         * Because of this, we make available the option to enforce a minimum time gap between commands. This prevents
+         * the tool from misbehaving, but effectively chokes the EDBG driver, causing a drag on Bloom's performance.
+         *
+         * The command delay is disabled by default for all EDBG tools, but the user can enable it via their project
+         * config.
          */
-        this->edbgInterface->setMinimumCommandTimeGap(std::chrono::milliseconds{35});
+        if (this->toolConfig.cmsisCommandDelay.has_value()) {
+            const auto& cmsisCommandDelay = *(this->toolConfig.cmsisCommandDelay);
+
+            if (cmsisCommandDelay > CmsisDapInterface::CMSIS_COMMAND_DELAY_MAX) {
+                throw Exceptions::InvalidConfig{
+                    "CMSIS command delay value (" + std::to_string(cmsisCommandDelay.count())
+                        + " ms) is too high. Maximum value: " + std::to_string(
+                            CmsisDapInterface::CMSIS_COMMAND_DELAY_MAX.count()
+                        ) + " ms"
+                };
+            }
+
+            this->edbgInterface->setCommandDelay(cmsisCommandDelay);
+        }
 
         // We don't need to claim the CMSISDAP interface here as the HIDAPI will have already done so.
         if (!this->sessionStarted) {
