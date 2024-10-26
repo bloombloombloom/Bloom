@@ -40,20 +40,37 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'Missing "internal_program_memory" memory segment';
         }
 
-        if ($tdf->getRamSegment() === null) {
+        if (($gprSegment = $tdf->getGpRegistersMemorySegment()) === null) {
+            $failures[] = 'Missing "gp_registers" memory segment';
+        }
+
+        if (($ioSegment = $tdf->getIoMemorySegment()) === null) {
+            $failures[] = 'Missing IO memory segment';
+        }
+
+        if (($sramSegment = $tdf->getRamSegment()) === null) {
             $failures[] = 'Missing "internal_ram" memory segment';
+
+        } else {
+            $sramEndAddress = $sramSegment->startAddress + $sramSegment->size - 1;
+
+            /*
+             * The GPR and IO segments must not come after the SRAM segment in the data address space.
+             *
+             * There are some places in Bloom's codebase where we have made this assumption, which is why we confirm
+             * it here as part of TDF validation.
+             */
+            if ($gprSegment !== null && $gprSegment->startAddress > $sramEndAddress) {
+                $failures[] = 'The GPR memory segment comes after the SRAM segment';
+            }
+
+            if ($ioSegment !== null && $ioSegment->startAddress > $sramEndAddress) {
+                $failures[] = 'The IO memory segment comes after the SRAM segment';
+            }
         }
 
         if ($tdf->getEepromSegment() === null) {
             $failures[] = 'Missing "internal_eeprom" memory segment';
-        }
-
-        if ($tdf->getGpRegistersMemorySegment() === null) {
-            $failures[] = 'Missing "gp_registers" memory segment';
-        }
-
-        if ($tdf->getIoMemorySegment() === null) {
-            $failures[] = 'Missing IO memory segment';
         }
 
         if ($tdf->getSignaturesMemorySegment() === null) {
