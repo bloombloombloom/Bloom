@@ -105,12 +105,12 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         }
 
         return {
-            StringService::toUint32(command.substr(0, commaDelimiterPos), 16),
-            StringService::toUint32(
+            .gdbStartAddress = StringService::toUint32(command.substr(0, commaDelimiterPos), 16),
+            .bytes = StringService::toUint32(
                 command.substr(commaDelimiterPos + 1, colonDelimiterPos - (commaDelimiterPos + 1)),
                 16
             ),
-            StringService::dataFromHex(command.substr(colonDelimiterPos + 1))
+            .buffer = StringService::dataFromHex(command.substr(colonDelimiterPos + 1))
         };
     }
 

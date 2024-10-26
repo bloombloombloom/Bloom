@@ -140,8 +140,8 @@ namespace DebugServer::Gdb
                 };
             }
 
-            auto socketFileDescriptor = int{0};
-            if ((socketFileDescriptor = ::socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+            const auto socketFileDescriptor = ::socket(AF_INET, SOCK_STREAM, 0);
+            if (socketFileDescriptor == 0) {
                 throw ::Exceptions::Exception{"Failed to create socket file descriptor."};
             }
 

@@ -37,7 +37,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     private:
         struct PacketData
         {
-            std::uint32_t gdbStartAddress;
+            GdbMemoryAddress gdbStartAddress;
             std::uint32_t bytes;
             Targets::TargetMemoryBuffer buffer;
         };

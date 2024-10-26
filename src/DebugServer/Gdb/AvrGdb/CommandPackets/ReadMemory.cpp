@@ -140,8 +140,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         }
 
         return {
-            StringService::toUint32(command.substr(0, delimiterPos), 16),
-            StringService::toUint32(command.substr(delimiterPos + 1), 16)
+            .gdbStartAddress = StringService::toUint32(command.substr(0, delimiterPos), 16),
+            .bytes = StringService::toUint32(command.substr(delimiterPos + 1), 16)
         };
     }
 
