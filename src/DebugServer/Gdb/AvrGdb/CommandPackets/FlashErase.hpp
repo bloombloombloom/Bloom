@@ -3,7 +3,8 @@
 #include <cstdint>
 #include <optional>
 
-#include "CommandPacket.hpp"
+#include "AvrGdbCommandPacketInterface.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -11,7 +12,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      * The FlashErase class implements the structure for the "vFlashErase" packet. Upon receiving this packet, the
      * server is expected to erase a particular region of the target's flash memory.
      */
-    class FlashErase: public CommandPackets::CommandPacket
+    class FlashErase
+        : public CommandPackets::AvrGdbCommandPacketInterface
+        , private Gdb::CommandPackets::CommandPacket
     {
     public:
         std::uint32_t startAddress = 0;

@@ -45,7 +45,9 @@ namespace DebugServer::Gdb::AvrGdb
         return "AVR GDB Remote Serial Protocol Debug Server";
     }
 
-    std::unique_ptr<CommandPackets::CommandPacket> AvrGdbRsp::rawPacketToCommandPacket(const RawPacket& rawPacket) {
+    std::unique_ptr<CommandPackets::AvrGdbCommandPacketInterface> AvrGdbRsp::rawPacketToCommandPacket(
+        const RawPacket& rawPacket
+    ) {
         using Gdb::CommandPackets::Monitor;
 
         using CommandPackets::ReadRegister;

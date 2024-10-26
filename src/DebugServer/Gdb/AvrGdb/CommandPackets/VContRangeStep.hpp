@@ -2,7 +2,8 @@
 
 #include <cstdint>
 
-#include "CommandPacket.hpp"
+#include "AvrGdbCommandPacketInterface.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
 
@@ -13,7 +14,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      * step through a particular address range, and only report back to GDB when execution leaves that range, or when an
      * external breakpoint has been reached.
      */
-    class VContRangeStep: public CommandPackets::CommandPacket
+    class VContRangeStep
+        : public CommandPackets::AvrGdbCommandPacketInterface
+        , private Gdb::CommandPackets::CommandPacket
     {
     public:
         Targets::TargetMemoryAddress startAddress;

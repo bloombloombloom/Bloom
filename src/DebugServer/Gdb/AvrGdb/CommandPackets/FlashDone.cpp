@@ -16,7 +16,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     using namespace Exceptions;
 
     FlashDone::FlashDone(const RawPacket& rawPacket)
-        : CommandPacket(rawPacket)
+        : Gdb::CommandPackets::CommandPacket(rawPacket)
     {}
 
     void FlashDone::handle(

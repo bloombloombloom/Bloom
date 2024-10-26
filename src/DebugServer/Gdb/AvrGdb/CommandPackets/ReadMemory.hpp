@@ -3,7 +3,8 @@
 #include <cstdint>
 #include <optional>
 
-#include "CommandPacket.hpp"
+#include "AvrGdbCommandPacketInterface.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
@@ -14,7 +15,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      * The ReadMemory class implements a structure for "m" packets. Upon receiving these packets, the server is
      * expected to read memory from the target and send it the client.
      */
-    class ReadMemory: public CommandPackets::CommandPacket
+    class ReadMemory
+        : public CommandPackets::AvrGdbCommandPacketInterface
+        , private Gdb::CommandPackets::CommandPacket
     {
     public:
         const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;

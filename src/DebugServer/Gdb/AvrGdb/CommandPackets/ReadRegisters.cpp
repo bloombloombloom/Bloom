@@ -23,7 +23,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     using Exceptions::Exception;
 
     ReadRegisters::ReadRegisters(const RawPacket& rawPacket)
-        : CommandPacket(rawPacket)
+        : Gdb::CommandPackets::CommandPacket(rawPacket)
     {}
 
     void ReadRegisters::handle(

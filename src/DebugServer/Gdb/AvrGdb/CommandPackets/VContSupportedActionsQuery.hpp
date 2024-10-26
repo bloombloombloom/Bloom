@@ -3,7 +3,8 @@
 #include <string>
 #include <set>
 
-#include "CommandPacket.hpp"
+#include "AvrGdbCommandPacketInterface.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -13,7 +14,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      *
      * Responses to this command packet should take the form of a ResponsePackets::SupportedFeaturesResponse.
      */
-    class VContSupportedActionsQuery: public CommandPackets::CommandPacket
+    class VContSupportedActionsQuery
+        : public CommandPackets::AvrGdbCommandPacketInterface
+        , private Gdb::CommandPackets::CommandPacket
     {
     public:
         explicit VContSupportedActionsQuery(const RawPacket& rawPacket);

@@ -9,7 +9,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     using Services::TargetControllerService;
 
     VContSupportedActionsQuery::VContSupportedActionsQuery(const RawPacket& rawPacket)
-        : CommandPacket(rawPacket)
+        : Gdb::CommandPackets::CommandPacket(rawPacket)
     {}
 
     void VContSupportedActionsQuery::handle(

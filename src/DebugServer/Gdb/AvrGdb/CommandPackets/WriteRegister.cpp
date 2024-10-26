@@ -18,7 +18,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     using Exceptions::Exception;
 
     WriteRegister::WriteRegister(const RawPacket& rawPacket)
-        : CommandPacket(rawPacket)
+        : Gdb::CommandPackets::CommandPacket(rawPacket)
     {
         using Services::StringService;
 

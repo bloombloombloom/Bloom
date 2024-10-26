@@ -24,8 +24,8 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     using Exceptions::InvalidCommandOption;
 
     EepromFill::EepromFill(Gdb::CommandPackets::Monitor&& monitorPacket)
-        : CommandPacket(monitorPacket)
-        , rawFillValue(monitorPacket.commandArguments.size() >= 3 ? monitorPacket.commandArguments[2] : std::string{})
+        : Gdb::CommandPackets::Monitor(std::move(monitorPacket))
+        , rawFillValue(this->commandArguments.size() >= 3 ? this->commandArguments[2] : std::string{})
     {}
 
     void EepromFill::handle(

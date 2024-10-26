@@ -150,7 +150,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         ReadMemory::PacketData&& packetData
     )
-        : CommandPacket(rawPacket)
+        : Gdb::CommandPackets::CommandPacket(rawPacket)
         , addressSpaceDescriptor(gdbTargetDescriptor.addressSpaceDescriptorFromGdbAddress(packetData.gdbStartAddress))
         , startAddress(gdbTargetDescriptor.translateGdbAddress(packetData.gdbStartAddress))
         , bytes(packetData.bytes)

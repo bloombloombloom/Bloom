@@ -3,7 +3,8 @@
 #include <cstdint>
 #include <optional>
 
-#include "CommandPacket.hpp"
+#include "AvrGdbCommandPacketInterface.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
@@ -14,7 +15,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      * The WriteMemory class implements the structure for "M" packets. Upon receiving this packet, the server is
      * expected to write data to the target's memory, at the specified start address.
      */
-    class WriteMemory: public CommandPackets::CommandPacket
+    class WriteMemory
+        : public CommandPackets::AvrGdbCommandPacketInterface
+        , private Gdb::CommandPackets::CommandPacket
     {
     public:
         const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;

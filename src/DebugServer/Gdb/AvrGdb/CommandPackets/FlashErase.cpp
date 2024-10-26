@@ -17,7 +17,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     using namespace Exceptions;
 
     FlashErase::FlashErase(const RawPacket& rawPacket)
-        : CommandPacket(rawPacket)
+        : Gdb::CommandPackets::CommandPacket(rawPacket)
     {
         using Services::StringService;
 

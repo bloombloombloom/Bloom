@@ -8,18 +8,10 @@
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
-    class CommandPacket: public Gdb::CommandPackets::CommandPacket
+    class AvrGdbCommandPacketInterface
     {
     public:
-        explicit CommandPacket(const RawPacket& rawPacket)
-            : Gdb::CommandPackets::CommandPacket(rawPacket)
-        {}
-
-        explicit CommandPacket(const Gdb::CommandPackets::CommandPacket& commandPacket)
-            : Gdb::CommandPackets::CommandPacket(commandPacket)
-        {}
-
-        virtual ~CommandPacket() = default;
+        virtual ~AvrGdbCommandPacketInterface() = default;
 
         /**
          * Should handle the command for the current active debug session.

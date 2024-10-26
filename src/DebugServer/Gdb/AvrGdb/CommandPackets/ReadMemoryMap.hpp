@@ -2,7 +2,8 @@
 
 #include <cstdint>
 
-#include "CommandPacket.hpp"
+#include "AvrGdbCommandPacketInterface.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
@@ -10,7 +11,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      * The ReadMemoryMap class implements a structure for the "qXfer:memory-map:read::..." packet. Upon receiving this
      * packet, the server is expected to respond with the target's memory map.
      */
-    class ReadMemoryMap: public CommandPackets::CommandPacket
+    class ReadMemoryMap
+        : public CommandPackets::AvrGdbCommandPacketInterface
+        , private Gdb::CommandPackets::CommandPacket
     {
     public:
         /**

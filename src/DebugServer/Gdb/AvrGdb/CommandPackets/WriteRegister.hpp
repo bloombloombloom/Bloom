@@ -1,6 +1,7 @@
 #pragma once
 
-#include "CommandPacket.hpp"
+#include "AvrGdbCommandPacketInterface.hpp"
+#include "src/DebugServer/Gdb/CommandPackets/CommandPacket.hpp"
 
 #include "src/DebugServer/Gdb/RegisterDescriptor.hpp"
 
@@ -11,7 +12,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
     /**
      * The WriteRegister class implements the structure for "P" packets.
      */
-    class WriteRegister: public CommandPackets::CommandPacket
+    class WriteRegister
+        : public CommandPackets::AvrGdbCommandPacketInterface
+        , private Gdb::CommandPackets::CommandPacket
     {
     public:
         GdbRegisterId registerId;

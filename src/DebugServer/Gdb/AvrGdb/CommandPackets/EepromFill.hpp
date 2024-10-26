@@ -3,8 +3,7 @@
 #include <cstdint>
 #include <string>
 
-#include "CommandPacket.hpp"
-
+#include "AvrGdbCommandPacketInterface.hpp"
 #include "src/DebugServer/Gdb/CommandPackets/Monitor.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
@@ -14,7 +13,9 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
      *
      * This command fills the target's EEPROM with the given value.
      */
-    class EepromFill: public CommandPackets::CommandPacket
+    class EepromFill
+        : public CommandPackets::AvrGdbCommandPacketInterface
+        , private Gdb::CommandPackets::Monitor
     {
     public:
         std::string rawFillValue;
