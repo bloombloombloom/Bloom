@@ -411,6 +411,7 @@ class TargetDescriptionFile
             $register->size,
             $register->initialValue,
             $register->description,
+            $register->access,
             array_map(
                 fn (BitField $bitField): TargetRegisterBitField => $this->targetRegisterBitFieldFromBitField($bitField),
                 $register->bitFields

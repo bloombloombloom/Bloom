@@ -24,6 +24,7 @@ class TargetRegister
     public ?int $size = null;
     public ?int $initialValue = null;
     public ?string $description = null;
+    public ?string $access = null;
 
     /** @var TargetRegisterBitField[] */
     public array $bitFields;
@@ -36,6 +37,7 @@ class TargetRegister
         ?int $size,
         ?int $initialValue,
         ?string $description,
+        ?string $access,
         array $bitFields
     ) {
         $this->key = $key;
@@ -45,6 +47,7 @@ class TargetRegister
         $this->size = $size;
         $this->initialValue = $initialValue;
         $this->description = $description;
+        $this->access = $access;
         $this->bitFields = $bitFields;
     }
 }
