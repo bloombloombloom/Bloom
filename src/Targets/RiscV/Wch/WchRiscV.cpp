@@ -47,6 +47,8 @@ namespace Targets::RiscV::Wch
     }
 
     TargetDescriptor WchRiscV::targetDescriptor() {
+        const auto hardwareBreakpointCount = this->riscVDebugInterface->getHardwareBreakpointCount();
+
         auto descriptor = TargetDescriptor{
             this->targetDescriptionFile.getName(),
             this->targetDescriptionFile.getFamily(),
@@ -58,9 +60,11 @@ namespace Targets::RiscV::Wch
             this->targetDescriptionFile.targetPinoutDescriptorsByKey(),
             this->targetDescriptionFile.targetVariantDescriptorsByKey(),
             BreakpointResources{
-                this->riscVDebugInterface->getHardwareBreakpointCount(),
+                hardwareBreakpointCount,
                 std::nullopt,
-                static_cast<std::uint16_t>(this->targetConfig.reserveSteppingBreakpoint ? 1 : 0)
+                static_cast<std::uint16_t>(
+                    this->targetConfig.reserveSteppingBreakpoint && hardwareBreakpointCount > 0 ? 1 : 0
+                )
             }
         };
 
