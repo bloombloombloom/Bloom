@@ -22,6 +22,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         , ramMemorySegment(this->targetDescriptionFile.getRamMemorySegment())
         , eepromMemorySegment(this->targetDescriptionFile.getEepromMemorySegment())
         , ioMemorySegment(this->targetDescriptionFile.getIoMemorySegment())
+        , fuseMemorySegment(this->targetDescriptionFile.getFuseMemorySegment())
         , signatureMemorySegment(this->targetDescriptionFile.getSignatureMemorySegment())
         , programAppSection(this->programMemorySegment.tryGetSection("app_section"))
         , programBootSection(this->programMemorySegment.tryGetSection("boot_section"))

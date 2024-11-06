@@ -47,6 +47,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         const Targets::TargetDescription::MemorySegment& ramMemorySegment;
         const Targets::TargetDescription::MemorySegment& eepromMemorySegment;
         const Targets::TargetDescription::MemorySegment& ioMemorySegment;
+        const Targets::TargetDescription::MemorySegment& fuseMemorySegment;
         const Targets::TargetDescription::MemorySegment& signatureMemorySegment;
 
         const std::optional<

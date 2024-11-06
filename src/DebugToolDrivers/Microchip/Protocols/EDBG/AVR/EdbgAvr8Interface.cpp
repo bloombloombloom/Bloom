@@ -720,7 +720,20 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             return this->readMemory(Avr8MemoryType::EEPROM, startAddress, bytes, excludedAddresses);
         }
 
-        if (memorySegmentDescriptor.type == TargetMemorySegmentType::FUSES) {
+        if (
+            memorySegmentDescriptor.type == TargetMemorySegmentType::FUSES
+            && this->programmingModeEnabled
+            && this->session.configVariant != Avr8ConfigVariant::DEBUG_WIRE
+        ) {
+            if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
+                return this->readMemory(
+                    Avr8MemoryType::FUSES,
+                    startAddress - this->session.fuseMemorySegment.startAddress,
+                    bytes,
+                    excludedAddresses
+                );
+            }
+
             return this->readMemory(Avr8MemoryType::FUSES, startAddress, bytes, excludedAddresses);
         }
 
@@ -790,7 +803,20 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             return this->writeMemory(Avr8MemoryType::EEPROM, startAddress, buffer);
         }
 
-        if (memorySegmentDescriptor.type == TargetMemorySegmentType::FUSES) {
+        if (
+            memorySegmentDescriptor.type == TargetMemorySegmentType::FUSES
+            && this->programmingModeEnabled
+            && this->session.configVariant != Avr8ConfigVariant::DEBUG_WIRE
+        ) {
+            if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
+                // Fuse addresses should be in relative form, for XMEGA (PDI) targets
+                return this->writeMemory(
+                    Avr8MemoryType::FUSES,
+                    startAddress - this->session.fuseMemorySegment.startAddress,
+                    buffer
+                );
+            }
+
             return this->writeMemory(Avr8MemoryType::FUSES, startAddress, buffer);
         }
 
