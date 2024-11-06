@@ -49,7 +49,7 @@ namespace Targets
         virtual bool supportsDebugTool(DebugTool* debugTool) = 0;
 
         /**
-         * Assuming the Target::isDebugToolSupported() check passed, this function will be called shortly after, by the
+         * Assuming the Target::supportsDebugTool() check passed, this function will be called shortly after, by the
          * TargetController.
          *
          * @param debugTool

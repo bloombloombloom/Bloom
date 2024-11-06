@@ -1471,7 +1471,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             throw Avr8CommandFailure{"AVR8 Read memory command failed", responseFrame};
         }
 
-        const auto data = responseFrame.getMemoryData();
+        auto data = responseFrame.getMemoryData();
 
         if (data.size() != bytes) {
             throw Avr8CommandFailure{"Unexpected number of bytes returned from EDBG debug tool"};
