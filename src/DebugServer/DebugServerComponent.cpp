@@ -4,6 +4,7 @@
 
 // Debug server implementations
 #include "Gdb/AvrGdb/AvrGdbRsp.hpp"
+#include "Gdb/RiscVGdb/RiscVGdbRsp.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Logger/Logger.hpp"
@@ -48,6 +49,21 @@ namespace DebugServer
                     }
 
                     return std::make_unique<DebugServer::Gdb::AvrGdb::AvrGdbRsp>(
+                        this->debugServerConfig,
+                        this->targetDescriptor,
+                        *(this->eventListener.get()),
+                        this->interruptEventNotifier
+                    );
+                }
+            },
+            {
+                "riscv-gdb-rsp",
+                [this] () -> std::unique_ptr<ServerInterface> {
+                    if (this->targetDescriptor.family != Targets::TargetFamily::RISC_V) {
+                        throw Exceptions::Exception{"The RISC-V GDB RSP server is only compatible with RISC-V targets."};
+                    }
+
+                    return std::make_unique<DebugServer::Gdb::RiscVGdb::RiscVGdbRsp>(
                         this->debugServerConfig,
                         this->targetDescriptor,
                         *(this->eventListener.get()),

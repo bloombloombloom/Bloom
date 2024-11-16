@@ -85,6 +85,20 @@ namespace Targets::RiscV::Wch
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_program_memory").inspectionEnabled = true;
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_ram").inspectionEnabled = true;
 
+        /*
+         * WCH targets typically possess a memory segment that is mapped to program memory. We cannot write to this
+         * segment directly, which is why it's described as read-only in Bloom's TDFs. However, we enable writing to
+         * the segment by forwarding any write operations to the appropriate (aliased) segment.
+         *
+         * For this reason, we adjust the access member on the memory segment descriptor so that other components
+         * within Bloom will see the segment as writeable.
+         *
+         * See the overridden WchRiscV::writeMemory() member function below, for more.
+         */
+        sysAddressSpaceDescriptor.getMemorySegmentDescriptor(
+            this->mappedProgramMemorySegmentDescriptor.key
+        ).programmingModeAccess.writeable = true;
+
         return descriptor;
     }
 
@@ -95,12 +109,16 @@ namespace Targets::RiscV::Wch
         const TargetMemoryBuffer& buffer
     ) {
         /*
-         * WCH targets have a memory segment that maps to either the program memory segment or the boot program
+         * WCH targets have an alias segment that maps to either the program memory segment or the boot program
          * memory segment.
          *
-         * Reading directly from the mapped memory segment is fine, but we cannot write to it - the operation just
-         * fails silently. We handle this by altering the write operation so that we write to the appropriate,
-         * non-mapped segment.
+         * Reading directly from this memory segment is fine, but we cannot write to it - the operation just fails
+         * silently. We handle this by forwarding any write operations on that segment to the appropriate (aliased)
+         * segment.
+         *
+         * @TODO: Currently, this just assumes that the alias segment always maps to the program memory segment, but I
+         *        believe it may map to the boot program memory segment in some cases. This needs to be revisited
+         *        before v1.1.0.
          */
         if (memorySegmentDescriptor == this->mappedProgramMemorySegmentDescriptor) {
             const auto newAddress = startAddress - this->mappedProgramMemorySegmentDescriptor.addressRange.startAddress

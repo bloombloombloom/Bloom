@@ -43,6 +43,20 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContSupportedActionsQuery.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/VContRangeStep.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/EepromFill.cpp
+
+        # RISC-V GDB RSP Server
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/RiscVGdbRsp.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/RiscVGdbTargetDescriptor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/ReadRegisters.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/ReadRegister.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/WriteRegister.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/ReadMemory.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/WriteMemory.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/ReadMemoryMap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/FlashErase.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/FlashWrite.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/FlashDone.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/VContSupportedActionsQuery.cpp
 )
 
 if (NOT EXCLUDE_INSIGHT)
