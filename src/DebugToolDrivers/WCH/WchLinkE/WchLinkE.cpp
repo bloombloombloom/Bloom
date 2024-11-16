@@ -11,4 +11,8 @@ namespace DebugToolDrivers::Wch
             WchLinkE::WCH_LINK_INTERFACE_NUMBER
         )
     {}
+
+    std::string WchLinkE::getName() {
+        return "WCH-LinkE";
+    }
 }

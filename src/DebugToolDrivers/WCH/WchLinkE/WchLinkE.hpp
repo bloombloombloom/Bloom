@@ -23,10 +23,8 @@ namespace DebugToolDrivers::Wch
         static const inline std::uint16_t USB_PRODUCT_ID = 0x8010;
         static const inline std::uint8_t WCH_LINK_INTERFACE_NUMBER = 0;
 
-        WchLinkE(const DebugToolConfig& toolConfig);
+        explicit WchLinkE(const DebugToolConfig& toolConfig);
 
-        std::string getName() override {
-            return "WCH-LinkE";
-        }
+        std::string getName() override;
     };
 }

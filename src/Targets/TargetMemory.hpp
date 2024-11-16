@@ -105,7 +105,7 @@ namespace Targets
          *
          * @return
          */
-        std::set<Targets::TargetMemoryAddress> addresses() const noexcept {
+        [[nodiscard]] std::set<Targets::TargetMemoryAddress> addresses() const noexcept {
             auto addresses = std::set<Targets::TargetMemoryAddress>{};
             auto addressesIt = addresses.end();
 

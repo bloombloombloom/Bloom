@@ -78,7 +78,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemorySize bytes,
-            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
+            const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
         ) override;
         void writeMemory(
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,

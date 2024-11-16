@@ -56,7 +56,7 @@ namespace Targets::RiscV
             const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             TargetMemoryAddress startAddress,
             TargetMemorySize bytes,
-            const std::set<TargetMemoryAddressRange>& excludedAddressRanges = {}
+            const std::set<TargetMemoryAddressRange>& excludedAddressRanges
         ) override;
         void writeMemory(
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,

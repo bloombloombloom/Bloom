@@ -53,7 +53,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         return DeviceInfo{
             WchFirmwareVersion{response.payload[0], response.payload[1]},
             response.payload.size() >= 4
-                ? std::optional{variantsById.valueAt(response.payload[2])}
+                ? variantsById.valueAt(response.payload[2])
                 : std::nullopt
         };
     }
