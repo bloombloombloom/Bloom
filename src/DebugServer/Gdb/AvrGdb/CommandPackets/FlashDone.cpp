@@ -29,7 +29,13 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
         try {
             if (!debugSession.programmingSession.has_value()) {
-                throw Exception{"No active programming session"};
+                /*
+                 * GDB will send a VFlashDone packet even it only performs an erase. In this case, there's nothing more
+                 * to do, as erase operations are executed immediately.
+                 */
+                targetControllerService.disableProgrammingMode();
+                debugSession.connection.writePacket(OkResponsePacket{});
+                return;
             }
 
             Logger::info(
