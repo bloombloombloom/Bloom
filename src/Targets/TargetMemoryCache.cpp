@@ -33,7 +33,7 @@ namespace Targets
             && intersectingSegmentIt->second >= (startAddress + bytes - 1);
     }
 
-    void TargetMemoryCache::insert(TargetMemoryAddress startAddress, const TargetMemoryBuffer& data) {
+    void TargetMemoryCache::insert(TargetMemoryAddress startAddress, TargetMemoryBufferSpan data) {
         const auto startIndex = startAddress - this->memorySegmentDescriptor.addressRange.startAddress;
 
         std::copy(data.begin(), data.end(), this->data.begin() + startIndex);

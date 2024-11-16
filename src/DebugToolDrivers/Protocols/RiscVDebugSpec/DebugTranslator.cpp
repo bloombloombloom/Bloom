@@ -43,6 +43,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     using ::Targets::TargetMemoryAddressRange;
     using ::Targets::TargetMemorySize;
     using ::Targets::TargetMemoryBuffer;
+    using ::Targets::TargetMemoryBufferSpan;
     using ::Targets::TargetStackPointer;
     using ::Targets::TargetAddressSpaceDescriptor;
     using ::Targets::TargetMemorySegmentDescriptor;
@@ -389,7 +390,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
-        const TargetMemoryBuffer& buffer
+        TargetMemoryBufferSpan buffer
     ) {
         using DebugModule::Registers::MemoryAccessControlField;
 
@@ -799,7 +800,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
     void DebugTranslator::writeMemoryViaAbstractCommand(
         Targets::TargetMemoryAddress startAddress,
-        const TargetMemoryBuffer& buffer
+        Targets::TargetMemoryBufferSpan buffer
     ) {
         using DebugModule::Registers::MemoryAccessControlField;
 
@@ -814,7 +815,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
         };
 
-        for (TargetMemoryAddress offset = 0; offset < buffer.size(); offset += 4) {
+        for (auto offset = TargetMemoryAddress{0}; offset < buffer.size(); offset += 4) {
             this->dtmInterface.writeDebugModuleRegister(
                 RegisterAddress::ABSTRACT_DATA_0,
                 static_cast<RegisterValue>(

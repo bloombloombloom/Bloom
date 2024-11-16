@@ -235,7 +235,7 @@ namespace Targets::RiscV
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
-        const TargetMemoryBuffer& buffer
+        TargetMemoryBufferSpan buffer
     ) {
         assert(!buffer.empty());
 

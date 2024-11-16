@@ -745,7 +745,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
-        const TargetMemoryBuffer& buffer
+        Targets::TargetMemoryBufferSpan buffer
     ) {
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
             if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
@@ -1484,7 +1484,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     void EdbgAvr8Interface::writeMemory(
         Avr8MemoryType type,
         TargetMemoryAddress startAddress,
-        const TargetMemoryBuffer& buffer
+        Targets::TargetMemoryBufferSpan buffer
     ) {
         if (type == Avr8MemoryType::FUSES && this->session.configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
             throw Exception{"Cannot access AVR fuses via the debugWIRE interface"};
@@ -1548,7 +1548,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                 this->writeMemory(
                     type,
                     startAddress + bytesWritten,
-                    TargetMemoryBuffer{buffer.begin() + bytesWritten, buffer.begin() + bytesWritten + chunkSize}
+                    buffer.subspan(bytesWritten, chunkSize)
                 );
 
                 bytesWritten += chunkSize;

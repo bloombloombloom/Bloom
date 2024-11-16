@@ -68,6 +68,7 @@ namespace Services
     using Targets::TargetMemorySize;
     using Targets::TargetMemoryAddressRange;
     using Targets::TargetMemoryBuffer;
+    using Targets::TargetMemoryBufferSpan;
     using Targets::TargetStackPointer;
 
     using Targets::TargetBreakpoint;
@@ -210,14 +211,14 @@ namespace Services
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
-        Targets::TargetMemoryBuffer&& buffer
+        TargetMemoryBufferSpan buffer
     ) const {
         this->commandManager.sendCommandAndWaitForResponse(
             std::make_unique<WriteTargetMemory>(
                 addressSpaceDescriptor,
                 memorySegmentDescriptor,
                 startAddress,
-                std::move(buffer)
+                buffer
             ),
             this->defaultTimeout,
             this->activeAtomicSessionId

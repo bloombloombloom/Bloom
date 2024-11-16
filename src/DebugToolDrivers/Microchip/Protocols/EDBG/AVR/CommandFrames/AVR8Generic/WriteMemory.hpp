@@ -10,7 +10,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::Avr8
     class WriteMemory: public Avr8GenericCommandFrame<std::vector<unsigned char>>
     {
     public:
-        WriteMemory(const Avr8MemoryType& type, std::uint32_t address, const Targets::TargetMemoryBuffer& buffer)
+        WriteMemory(const Avr8MemoryType& type, std::uint32_t address, Targets::TargetMemoryBufferSpan buffer)
             : Avr8GenericCommandFrame()
         {
             /*

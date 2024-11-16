@@ -84,7 +84,7 @@ namespace Targets::Microchip::Avr8
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             TargetMemoryAddress startAddress,
-            const TargetMemoryBuffer& buffer
+            TargetMemoryBufferSpan buffer
         ) override;
         bool isProgramMemory(
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,

@@ -198,7 +198,7 @@ namespace Targets
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             TargetMemoryAddress startAddress,
-            const TargetMemoryBuffer& buffer
+            TargetMemoryBufferSpan buffer
         ) = 0;
 
         /**

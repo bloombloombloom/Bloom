@@ -106,7 +106,7 @@ namespace Targets::RiscV::Wch
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
-        const TargetMemoryBuffer& buffer
+        TargetMemoryBufferSpan buffer
     ) {
         /*
          * WCH targets have an alias segment that maps to either the program memory segment or the boot program

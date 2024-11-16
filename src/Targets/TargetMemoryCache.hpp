@@ -39,7 +39,7 @@ namespace Targets
          * @param startAddress
          * @param data
          */
-        void insert(TargetMemoryAddress startAddress, const TargetMemoryBuffer& data);
+        void insert(TargetMemoryAddress startAddress, TargetMemoryBufferSpan data);
 
         /**
          * Clears the cache.

@@ -52,7 +52,7 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
-            const Targets::TargetMemoryBuffer& buffer
+            Targets::TargetMemoryBufferSpan buffer
         ) = 0;
     };
 }

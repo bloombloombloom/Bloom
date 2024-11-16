@@ -302,7 +302,7 @@ namespace TargetController
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
-            const Targets::TargetMemoryBuffer& buffer
+            Targets::TargetMemoryBufferSpan buffer
         );
 
         void eraseTargetMemory(

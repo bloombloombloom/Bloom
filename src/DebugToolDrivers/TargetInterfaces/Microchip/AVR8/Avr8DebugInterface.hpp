@@ -118,7 +118,7 @@ namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr8
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
-            const Targets::TargetMemoryBuffer& buffer
+            Targets::TargetMemoryBufferSpan buffer
         ) = 0;
 
         /**

@@ -18,18 +18,18 @@ namespace TargetController::Commands
         const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
         const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
         Targets::TargetMemoryAddress startAddress;
-        Targets::TargetMemoryBuffer buffer;
+        Targets::TargetMemoryBufferSpan buffer;
 
         WriteTargetMemory(
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
-            Targets::TargetMemoryBuffer&& buffer
+            Targets::TargetMemoryBufferSpan buffer
         )
             : addressSpaceDescriptor(addressSpaceDescriptor)
             , memorySegmentDescriptor(memorySegmentDescriptor)
             , startAddress(startAddress)
-            , buffer(std::move(buffer))
+            , buffer(buffer)
         {};
 
         [[nodiscard]] CommandType getType() const override {

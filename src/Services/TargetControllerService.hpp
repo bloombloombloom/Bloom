@@ -155,7 +155,7 @@ namespace Services
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
-            Targets::TargetMemoryBuffer&& buffer
+            Targets::TargetMemoryBufferSpan buffer
         ) const;
 
         /**

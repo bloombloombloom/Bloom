@@ -23,7 +23,7 @@ namespace Targets::RiscV::Wch
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             TargetMemoryAddress startAddress,
-            const TargetMemoryBuffer& buffer
+            TargetMemoryBufferSpan buffer
         ) override;
 
     protected:

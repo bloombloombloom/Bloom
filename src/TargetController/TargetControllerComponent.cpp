@@ -741,8 +741,8 @@ namespace TargetController
     void TargetControllerComponent::writeTargetMemory(
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
-        Targets::TargetMemoryAddress startAddress,
-        const TargetMemoryBuffer& buffer
+        TargetMemoryAddress startAddress,
+        TargetMemoryBufferSpan buffer
     ) {
         const auto isProgramMemory = this->target->isProgramMemory(
             addressSpaceDescriptor,

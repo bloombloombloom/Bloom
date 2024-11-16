@@ -259,7 +259,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
-            const Targets::TargetMemoryBuffer& buffer
+            Targets::TargetMemoryBufferSpan buffer
         ) override;
 
         /**
@@ -546,7 +546,11 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * @param address
          * @param buffer
          */
-        void writeMemory(Avr8MemoryType type, Targets::TargetMemoryAddress address, const Targets::TargetMemoryBuffer& buffer);
+        void writeMemory(
+            Avr8MemoryType type,
+            Targets::TargetMemoryAddress address,
+            Targets::TargetMemoryBufferSpan buffer
+        );
 
         /**
          * Fetches the current target state.

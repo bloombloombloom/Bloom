@@ -84,7 +84,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
-            const Targets::TargetMemoryBuffer& buffer
+            Targets::TargetMemoryBufferSpan buffer
         ) override;
 
     private:
@@ -146,7 +146,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         );
         void writeMemoryViaAbstractCommand(
             Targets::TargetMemoryAddress startAddress,
-            const Targets::TargetMemoryBuffer& buffer
+            Targets::TargetMemoryBufferSpan buffer
         );
 
         std::optional<std::reference_wrapper<const TriggerModule::TriggerDescriptor>> getAvailableTrigger();

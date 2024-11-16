@@ -405,7 +405,7 @@ namespace Targets::Microchip::Avr8
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         std::uint32_t startAddress,
-        const TargetMemoryBuffer& buffer
+        TargetMemoryBufferSpan buffer
     ) {
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH && !this->programmingModeEnabled()) {
             throw Exception{"Attempted Flash memory write in the absence of an active programming session."};
@@ -1088,7 +1088,7 @@ namespace Targets::Microchip::Avr8
             this->fuseAddressSpaceDescriptor,
             this->fuseMemorySegmentDescriptor,
             ocdenRegisterDescriptor.startAddress,
-            {newValue}
+            TargetMemoryBuffer({newValue})
         );
 
         Logger::debug("Verifying OCDEN fuse bit");
@@ -1140,7 +1140,7 @@ namespace Targets::Microchip::Avr8
             this->fuseAddressSpaceDescriptor,
             this->fuseMemorySegmentDescriptor,
             eesaveRegisterDescriptor.startAddress,
-            {newValue}
+            TargetMemoryBuffer({newValue})
         );
 
         Logger::debug("Verifying EESAVE fuse bit");
