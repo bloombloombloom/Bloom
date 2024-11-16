@@ -11,7 +11,7 @@ namespace Targets
     class TargetMemoryCache
     {
     public:
-        TargetMemoryCache(const TargetMemorySegmentDescriptor& memorySegmentDescriptor);
+        explicit TargetMemoryCache(const TargetMemorySegmentDescriptor& memorySegmentDescriptor);
 
         /**
          * Fetches data from the cache.
@@ -21,7 +21,7 @@ namespace Targets
          *
          * @return
          */
-        TargetMemoryBuffer fetch(TargetMemoryAddress startAddress, TargetMemorySize bytes) const;
+        [[nodiscard]] TargetMemoryBuffer fetch(TargetMemoryAddress startAddress, TargetMemorySize bytes) const;
 
         /**
          * Checks if the cache currently holds data within the given address range.
@@ -31,7 +31,7 @@ namespace Targets
          *
          * @return
          */
-        bool contains(TargetMemoryAddress startAddress, TargetMemorySize bytes) const;
+        [[nodiscard]] bool contains(TargetMemoryAddress startAddress, TargetMemorySize bytes) const;
 
         /**
          * Inserts data into the cache and performs any necessary bookkeeping.
@@ -68,6 +68,6 @@ namespace Targets
          *  An iterator to the intersecting segment, or populatedSegments::end() if none is found.
          */
         using SegmentIt = decltype(TargetMemoryCache::populatedSegments)::const_iterator;
-        SegmentIt intersectingSegment(TargetMemoryAddress address) const;
+        [[nodiscard]] SegmentIt intersectingSegment(TargetMemoryAddress address) const;
     };
 }
