@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <span>
 #include <optional>
 #include <chrono>
 
@@ -43,7 +44,11 @@ namespace Usb
             std::optional<std::chrono::milliseconds> timeout = std::nullopt
         );
 
-        void writeBulk(std::uint8_t endpointAddress, std::vector<unsigned char>&& buffer);
+        void writeBulk(
+            std::uint8_t endpointAddress,
+            std::span<const unsigned char> buffer,
+            std::uint16_t maxPacketSize
+        );
 
     private:
         ::libusb_device_handle* deviceHandle;

@@ -1,5 +1,6 @@
 #include "UsbInterface.hpp"
 
+#include <cassert>
 #include <limits>
 
 #include "src/Logger/Logger.hpp"
@@ -84,29 +85,45 @@ namespace Usb
         return output;
     }
 
-    void UsbInterface::writeBulk(std::uint8_t endpointAddress, std::vector<unsigned char>&& buffer) {
-        if (buffer.size() > std::numeric_limits<int>::max()) {
-            throw DeviceCommunicationFailure{"Attempted to send too much data to bulk endpoint"};
-        }
+    void UsbInterface::writeBulk(
+        std::uint8_t endpointAddress,
+        std::span<const unsigned char> buffer,
+        std::uint16_t maxPacketSize
+    ) {
+        assert(buffer.size() <= std::numeric_limits<int>::max());
 
-        const auto length = static_cast<int>(buffer.size());
-        auto bytesTransferred = int{0};
+        const auto bufferSize = buffer.size();
+        auto totalBytesTransferred = std::size_t{0};
 
-        const auto statusCode = ::libusb_bulk_transfer(
-            this->deviceHandle,
-            endpointAddress,
-            buffer.data(),
-            length,
-            &bytesTransferred,
-            0
-        );
-
-        if (statusCode != 0 || bytesTransferred != length) {
-            Logger::debug(
-                "Attempted to write " + std::to_string(length) + " bytes to USB bulk endpoint. Bytes written: "
-                    + std::to_string(bytesTransferred) + ". Status code: " + std::to_string(statusCode)
+        while (totalBytesTransferred < bufferSize) {
+            auto bytesTransferred = int{0};
+            const auto length = std::min(
+                static_cast<int>(bufferSize - totalBytesTransferred),
+                static_cast<int>(maxPacketSize)
             );
-            throw DeviceCommunicationFailure{"Failed to write data to bulk endpoint"};
+
+            const auto statusCode = ::libusb_bulk_transfer(
+                this->deviceHandle,
+                endpointAddress,
+                /*
+                 * I know, I know...this is horrible. I'm effectively lying about the constness of `buffer`. But libusb
+                 * *shouldn't* write to `buffer` here, because we're not reading from the device.
+                 */
+                const_cast<unsigned char*>(buffer.data()) + totalBytesTransferred,
+                length,
+                &bytesTransferred,
+                0
+            );
+
+            if (statusCode != 0 || bytesTransferred != length) {
+                Logger::debug(
+                    "Attempted to write " + std::to_string(length) + " bytes to USB bulk endpoint. Bytes written: "
+                        + std::to_string(bytesTransferred) + ". Status code: " + std::to_string(statusCode)
+                );
+                throw DeviceCommunicationFailure{"Failed to write data to bulk endpoint"};
+            }
+
+            totalBytesTransferred += static_cast<std::size_t>(bytesTransferred);
         }
     }
 }
