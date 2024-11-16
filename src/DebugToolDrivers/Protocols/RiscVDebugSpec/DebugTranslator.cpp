@@ -5,6 +5,7 @@
 #include <chrono>
 #include <limits>
 #include <cassert>
+#include <algorithm>
 
 #include "Registers/CpuRegisterNumbers.hpp"
 #include "DebugModule/Registers/RegisterAddresses.hpp"
@@ -411,19 +412,31 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
                     addressSpaceDescriptor,
                     memorySegmentDescriptor,
                     alignedStartAddress,
-                    (startAddress - alignedStartAddress)
+                    (startAddress - alignedStartAddress),
+                    {}
                 )
                 : TargetMemoryBuffer{};
-            alignedBuffer.reserve(alignedBytes);
 
-            // Read the offset bytes required to align the buffer size
+            alignedBuffer.resize(alignedBytes);
+
+            std::copy(
+                buffer.begin(),
+                buffer.end(),
+                alignedBuffer.begin() + (startAddress - alignedStartAddress)
+            );
+
             const auto dataBack = this->readMemory(
                 addressSpaceDescriptor,
                 memorySegmentDescriptor,
                 startAddress + bytes,
-                alignedBytes - bytes - (startAddress - alignedStartAddress)
+                alignedBytes - bytes - (startAddress - alignedStartAddress),
+                {}
             );
-            alignedBuffer.insert(alignedBuffer.end(), dataBack.begin(), dataBack.end());
+            std::copy(
+                dataBack.begin(),
+                dataBack.end(),
+                alignedBuffer.begin() + (startAddress - alignedStartAddress) + bytes
+            );
 
             return this->writeMemory(
                 addressSpaceDescriptor,

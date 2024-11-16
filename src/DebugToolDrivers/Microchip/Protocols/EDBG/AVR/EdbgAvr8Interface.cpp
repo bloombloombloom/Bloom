@@ -3,6 +3,7 @@
 #include <thread>
 #include <cassert>
 #include <cmath>
+#include <algorithm>
 
 #include "src/Services/PathService.hpp"
 #include "src/Services/StringService.hpp"
@@ -1505,15 +1506,30 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                  * We can't just forward the memory type to readMemory(), because some memory types (such as
                  * EEPROM_ATOMIC) can only be used for writing.
                  */
-                auto alignedBuffer = this->readMemory(
-                    type == Avr8MemoryType::EEPROM_ATOMIC ? Avr8MemoryType::EEPROM : type,
-                    alignedStartAddress,
-                    alignedBytes
-                );
-                assert(alignedBuffer.size() >= buffer.size());
+                const auto readMemType = type == Avr8MemoryType::EEPROM_ATOMIC ? Avr8MemoryType::EEPROM : type;
+                auto alignedBuffer = (alignedStartAddress < startAddress)
+                    ? this->readMemory(readMemType, alignedStartAddress, startAddress - alignedStartAddress)
+                    : TargetMemoryBuffer{};
 
-                const auto offset = alignedBuffer.begin() + (startAddress - alignedStartAddress);
-                std::copy(buffer.begin(), buffer.end(), offset);
+                alignedBuffer.resize(alignedBytes);
+
+                std::copy(
+                    buffer.begin(),
+                    buffer.end(),
+                    alignedBuffer.begin() + (startAddress - alignedStartAddress)
+                );
+
+                const auto dataBack = this->readMemory(
+                    readMemType,
+                    startAddress + bytes,
+                    alignedBytes - bytes - (startAddress - alignedStartAddress),
+                    {}
+                );
+                std::copy(
+                    dataBack.begin(),
+                    dataBack.end(),
+                    alignedBuffer.begin() + (startAddress - alignedStartAddress) + bytes
+                );
 
                 return this->writeMemory(type, alignedStartAddress, alignedBuffer);
             }
