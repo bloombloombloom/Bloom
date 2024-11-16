@@ -87,11 +87,17 @@ namespace DebugToolDrivers::Wch
         return this->wchRiscVTranslator.get();
     }
 
-    Protocols::WchLink::WchLinkInterface* WchLinkBase::getRiscVProgramInterface(
+    Protocols::WchLink::WchLinkProgrammingInterface* WchLinkBase::getRiscVProgramInterface(
         const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
         const Targets::RiscV::RiscVTargetConfig& targetConfig
     ) {
-        return this->wchLinkInterface.get();
+        if (!this->wchLinkProgrammingInterface) {
+            this->wchLinkProgrammingInterface = std::make_unique<Protocols::WchLink::WchLinkProgrammingInterface>(
+                *(this->wchLinkInterface),
+                targetDescriptionFile
+            );
+        }
+        return this->wchLinkProgrammingInterface.get();
     }
 
     Protocols::WchLink::WchLinkInterface* WchLinkBase::getRiscVIdentificationInterface(

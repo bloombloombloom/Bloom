@@ -14,6 +14,8 @@ namespace Targets::RiscV::Wch
     )
         : RiscV(targetConfig, targetDescriptionFile)
         , targetDescriptionFile(std::move(targetDescriptionFile))
+        , programMemorySegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_program_memory"))
+        , mappedProgramMemorySegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("mapped_progmem"))
     {}
 
     void WchRiscV::activate() {
@@ -84,5 +86,30 @@ namespace Targets::RiscV::Wch
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_ram").inspectionEnabled = true;
 
         return descriptor;
+    }
+
+    void WchRiscV::writeMemory(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        TargetMemoryAddress startAddress,
+        const TargetMemoryBuffer& buffer
+    ) {
+        /*
+         * WCH targets have a memory segment that maps to either the program memory segment or the boot program
+         * memory segment.
+         *
+         * Reading directly from the mapped memory segment is fine, but we cannot write to it - the operation just
+         * fails silently. We handle this by altering the write operation so that we write to the appropriate,
+         * non-mapped segment.
+         */
+        if (memorySegmentDescriptor == this->mappedProgramMemorySegmentDescriptor) {
+            const auto newAddress = startAddress - this->mappedProgramMemorySegmentDescriptor.addressRange.startAddress
+                + this->programMemorySegmentDescriptor.addressRange.startAddress;
+            assert(this->programMemorySegmentDescriptor.addressRange.contains(newAddress));
+
+            return RiscV::writeMemory(addressSpaceDescriptor, this->programMemorySegmentDescriptor, newAddress, buffer);
+        }
+
+        return RiscV::writeMemory(addressSpaceDescriptor, memorySegmentDescriptor, startAddress, buffer);
     }
 }

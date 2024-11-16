@@ -6,7 +6,11 @@ namespace Targets::RiscV
         : Targets::TargetDescription::TargetDescriptionFile(xmlFilePath)
     {}
 
+    const TargetDescription::AddressSpace& TargetDescriptionFile::getSystemAddressSpace() const {
+        return this->getAddressSpace("system");
+    }
+
     TargetAddressSpaceDescriptor TargetDescriptionFile::getSystemAddressSpaceDescriptor() const {
-        return this->targetAddressSpaceDescriptorFromAddressSpace(this->getAddressSpace("system"));
+        return this->targetAddressSpaceDescriptorFromAddressSpace(this->getSystemAddressSpace());
     }
 }

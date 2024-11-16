@@ -130,6 +130,8 @@ namespace Targets::RiscV
          */
         TargetAddressSpaceDescriptor sysAddressSpaceDescriptor;
 
+        bool programmingMode = false;
+
         const TargetMemorySegmentDescriptor& resolveRegisterMemorySegmentDescriptor(
             const TargetRegisterDescriptor& regDescriptor,
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor

@@ -12,7 +12,10 @@
 #include "src/ProjectConfig.hpp"
 
 #include "Protocols/WchLink/WchLinkInterface.hpp"
+#include "Protocols/WchLink/WchLinkProgrammingInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTranslator.hpp"
+
+#include "src/Targets/RiscV/Wch/TargetDescriptionFile.hpp"
 
 #include "WchGeneric.hpp"
 #include "DeviceInfo.hpp"
@@ -57,7 +60,7 @@ namespace DebugToolDrivers::Wch
          *
          * @return
          */
-        Protocols::WchLink::WchLinkInterface* getRiscVProgramInterface(
+        Protocols::WchLink::WchLinkProgrammingInterface* getRiscVProgramInterface(
             const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
             const Targets::RiscV::RiscVTargetConfig& targetConfig
         ) override;
@@ -76,6 +79,7 @@ namespace DebugToolDrivers::Wch
         std::uint8_t wchLinkUsbInterfaceNumber;
         std::unique_ptr<Usb::UsbInterface> wchLinkUsbInterface = nullptr;
         std::unique_ptr<Protocols::WchLink::WchLinkInterface> wchLinkInterface = nullptr;
+        std::unique_ptr<Protocols::WchLink::WchLinkProgrammingInterface> wchLinkProgrammingInterface = nullptr;
         std::unique_ptr<::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator> wchRiscVTranslator = nullptr;
 
         mutable std::optional<DeviceInfo> cachedDeviceInfo = std::nullopt;

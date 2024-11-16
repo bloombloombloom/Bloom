@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <vector>
+#include <span>
 #include <set>
 #include <optional>
 #include <cassert>
@@ -13,6 +14,7 @@ namespace Targets
     using TargetMemorySize = std::uint32_t;
     using TargetStackPointer = TargetMemoryAddress;
     using TargetMemoryBuffer = std::vector<unsigned char>;
+    using TargetMemoryBufferSpan = std::span<const TargetMemoryBuffer::value_type>;
 
     using TargetAddressSpaceId = std::size_t;
     using TargetMemorySegmentId = std::size_t;

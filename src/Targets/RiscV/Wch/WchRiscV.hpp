@@ -10,7 +10,7 @@
 
 namespace Targets::RiscV::Wch
 {
-class WchRiscV: public ::Targets::RiscV::RiscV
+    class WchRiscV: public ::Targets::RiscV::RiscV
     {
     public:
         WchRiscV(const TargetConfig& targetConfig, TargetDescriptionFile&& targetDescriptionFile);
@@ -19,8 +19,18 @@ class WchRiscV: public ::Targets::RiscV::RiscV
         void postActivate() override;
         TargetDescriptor targetDescriptor() override;
 
+        void writeMemory(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            TargetMemoryAddress startAddress,
+            const TargetMemoryBuffer& buffer
+        ) override;
+
     protected:
         TargetDescriptionFile targetDescriptionFile;
         std::optional<std::reference_wrapper<const TargetDescription::Variant>> variant = std::nullopt;
+
+        const TargetMemorySegmentDescriptor& programMemorySegmentDescriptor;
+        const TargetMemorySegmentDescriptor& mappedProgramMemorySegmentDescriptor;
     };
 }

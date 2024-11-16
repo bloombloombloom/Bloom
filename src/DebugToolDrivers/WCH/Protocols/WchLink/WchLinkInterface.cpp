@@ -9,6 +9,13 @@
 #include "Commands/SetClockSpeed.hpp"
 #include "Commands/DebugModuleInterfaceOperation.hpp"
 #include "Commands/PreparePartialFlashPageWrite.hpp"
+#include "Commands/StartProgrammingSession.hpp"
+#include "Commands/EndProgrammingSession.hpp"
+#include "Commands/SetFlashWriteRegion.hpp"
+#include "Commands/StartRamCodeWrite.hpp"
+#include "Commands/EndRamCodeWrite.hpp"
+#include "Commands/WriteFlash.hpp"
+#include "Commands/EraseChip.hpp"
 
 #include "src/Helpers/BiMap.hpp"
 #include "src/Services/StringService.hpp"
@@ -136,18 +143,23 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         throw Exceptions::DeviceCommunicationFailure{"DMI operation timed out"};
     }
 
-    void WchLinkInterface::writeFlashMemory(
+    void WchLinkInterface::writePartialPage(
         Targets::TargetMemoryAddress startAddress,
-        const Targets::TargetMemoryBuffer& buffer
+        Targets::TargetMemoryBufferSpan buffer
     ) {
-        const auto packetSize = Targets::TargetMemorySize{this->dataEndpointMaxPacketSize};
+        constexpr auto packetSize = std::uint8_t{64};
         const auto bufferSize = static_cast<Targets::TargetMemorySize>(buffer.size());
         const auto packetsRequired = static_cast<std::uint32_t>(
             std::ceil(static_cast<float>(bufferSize) / static_cast<float>(packetSize))
         );
 
         for (auto i = std::uint32_t{0}; i < packetsRequired; ++i) {
-            const auto segmentSize = static_cast<std::uint8_t>(std::min(bufferSize - (i * packetSize), packetSize));
+            const auto segmentSize = static_cast<std::uint8_t>(
+                std::min(
+                    static_cast<std::uint8_t>(bufferSize - (i * packetSize)),
+                    packetSize
+                )
+            );
             const auto response = this->sendCommandAndWaitForResponse(
                 Commands::PreparePartialFlashPageWrite{startAddress + (packetSize * i), segmentSize}
             );
@@ -160,31 +172,85 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
             this->usbInterface.writeBulk(
                 WchLinkInterface::USB_DATA_ENDPOINT_OUT,
-                std::vector<unsigned char>{
-                    buffer.begin() + (packetSize * i),
-                    buffer.begin() + (packetSize * i) + segmentSize
-                }
+                buffer.subspan(packetSize * i, segmentSize),
+                this->dataEndpointMaxPacketSize
             );
 
             const auto rawResponse = this->usbInterface.readBulk(WchLinkInterface::USB_DATA_ENDPOINT_IN);
-
             if (rawResponse.size() != 4) {
                 throw Exceptions::DeviceCommunicationFailure{"Unexpected response size for partial flash page write"};
             }
 
             /*
-             * I have no idea what any of these bytes mean. I've not been a le to find any documentation for
+             * I have no idea what any of these bytes mean. I've not been able to find any documentation for
              * this. All I know is that these values indicate a successful write.
              */
-            if (
-                rawResponse[0] != 0x41
-                || rawResponse[1] != 0x01
-                || rawResponse[2] != 0x01
-                || rawResponse[3] != 0x02
-            ) {
+            if (rawResponse[0] != 0x41 || rawResponse[1] != 0x01 || rawResponse[2] != 0x01 || rawResponse[3] != 0x02) {
                 throw Exceptions::DeviceCommunicationFailure{"Partial flash page write failed"};
             }
         }
+    }
+
+    void WchLinkInterface::writeFullPage(
+        Targets::TargetMemoryAddress startAddress,
+        Targets::TargetMemoryBufferSpan buffer,
+        Targets::TargetMemorySize pageSize,
+        std::span<const unsigned char> flashProgramOpcodes
+    ) {
+        assert((buffer.size() % pageSize) == 0);
+
+        const auto bufferSize = static_cast<Targets::TargetMemorySize>(buffer.size());
+
+        /*
+         * We don't issue the StartProgrammingSession command here, as it seems to result in a failure when writing a
+         * flash page. We get a 0x05 in rawResponse[3], but I have no idea why.
+         */
+        this->sendCommandAndWaitForResponse(Commands::SetFlashWriteRegion{startAddress, bufferSize});
+        this->sendCommandAndWaitForResponse(Commands::StartRamCodeWrite{});
+
+        this->usbInterface.writeBulk(
+            WchLinkInterface::USB_DATA_ENDPOINT_OUT,
+            flashProgramOpcodes,
+            this->dataEndpointMaxPacketSize
+        );
+
+        this->sendCommandAndWaitForResponse(Commands::EndRamCodeWrite{});
+        this->sendCommandAndWaitForResponse(Commands::WriteFlash{});
+
+        auto bytesWritten = Targets::TargetMemorySize{0};
+        while (bytesWritten < bufferSize) {
+            const auto length = std::min(bufferSize - bytesWritten, pageSize);
+
+            this->usbInterface.writeBulk(
+                WchLinkInterface::USB_DATA_ENDPOINT_OUT,
+                buffer.subspan(bytesWritten, length),
+                this->dataEndpointMaxPacketSize
+            );
+
+            const auto rawResponse = this->usbInterface.readBulk(WchLinkInterface::USB_DATA_ENDPOINT_IN);
+            if (rawResponse.size() != 4) {
+                throw Exceptions::DeviceCommunicationFailure{"Unexpected response size for flash page write"};
+            }
+
+            if (rawResponse[3] != 0x02 && rawResponse[3] != 0x04) {
+                throw Exceptions::DeviceCommunicationFailure{
+                    "Flash page write failed - unexpected response (0x"
+                        + Services::StringService::toHex(rawResponse[3]) + ")"
+                };
+            }
+
+            bytesWritten += length;
+        }
+
+        this->sendCommandAndWaitForResponse(Commands::EndProgrammingSession{});
+
+        this->deactivate();
+        this->sendCommandAndWaitForResponse(Commands::Control::GetDeviceInfo{});
+        this->activate();
+    }
+
+    void WchLinkInterface::eraseChip() {
+        this->sendCommandAndWaitForResponse(Commands::EraseChip{});
     }
 
     void WchLinkInterface::setClockSpeed(WchLinkTargetClockSpeed speed) {

@@ -14,6 +14,8 @@ namespace Targets::RiscV
     public:
         explicit TargetDescriptionFile(const std::string& xmlFilePath);
 
+        [[nodiscard]] const TargetDescription::AddressSpace& getSystemAddressSpace() const;
+
         [[nodiscard]] TargetAddressSpaceDescriptor getSystemAddressSpaceDescriptor() const;
     };
 }
