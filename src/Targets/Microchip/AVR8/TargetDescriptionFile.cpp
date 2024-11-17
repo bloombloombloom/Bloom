@@ -114,7 +114,7 @@ namespace Targets::Microchip::Avr8
     }
 
     const TargetDescription::MemorySegment& TargetDescriptionFile::getIoMemorySegment() const {
-        const auto addressSpace = this->getIoAddressSpace();
+        const auto& addressSpace = this->getIoAddressSpace();
         const auto segment = addressSpace.tryGetMemorySegment("io");
         return segment.has_value()
             ? segment->get()
