@@ -60,8 +60,6 @@ namespace DebugServer::Gdb::CommandPackets
         Logger::info("Handling RemoveBreakpoint packet");
 
         try {
-            Logger::debug("Removing breakpoint at address " + std::to_string(this->address));
-
             debugSession.removeExternalBreakpoint(this->address, targetControllerService);
             debugSession.connection.writePacket(OkResponsePacket{});
 
