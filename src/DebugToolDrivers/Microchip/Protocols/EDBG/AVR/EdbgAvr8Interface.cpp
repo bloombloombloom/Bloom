@@ -384,6 +384,14 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             return breakpointNumbers;
         };
 
+        if (this->hardwareBreakpointNumbersByAddress.contains(address)) {
+            Logger::debug(
+                "Hardware breakpoint already installed for byte address 0x" + Services::StringService::toHex(address)
+                    + " - ignoring request"
+            );
+            return;
+        }
+
         const auto availableBreakpointNumbers = getAvailableBreakpointNumbers();
 
         if (availableBreakpointNumbers.empty()) {
