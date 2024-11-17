@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <optional>
 #include <map>
+#include <utility>
 
 #include "MemorySegment.hpp"
 #include "src/Targets/TargetMemory.hpp"
@@ -27,14 +28,14 @@ namespace Targets::TargetDescription
             TargetMemorySize size,
             std::uint8_t unitSize,
             const std::optional<TargetMemoryEndianness>& endianness,
-            const std::map<std::string, MemorySegment, std::less<void>>& memorySegmentsByKey
+            std::map<std::string, MemorySegment, std::less<void>>&& memorySegmentsByKey
         )
             : key(key)
             , startAddress(startAddress)
             , size(size)
             , unitSize(unitSize)
             , endianness(endianness)
-            , memorySegmentsByKey(memorySegmentsByKey)
+            , memorySegmentsByKey(std::move(memorySegmentsByKey))
         {}
 
         std::optional<std::reference_wrapper<const MemorySegment>> tryGetMemorySegment(std::string_view key) const {

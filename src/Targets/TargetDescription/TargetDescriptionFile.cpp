@@ -615,7 +615,6 @@ namespace Targets::TargetDescription
         static const auto typesByName = BiMap<std::string, TargetMemorySegmentType>{
             {"gp_registers", TargetMemorySegmentType::GENERAL_PURPOSE_REGISTERS},
             {"aliased", TargetMemorySegmentType::ALIASED},
-            {"regs", TargetMemorySegmentType::REGISTERS},
             {"eeprom", TargetMemorySegmentType::EEPROM},
             {"flash", TargetMemorySegmentType::FLASH},
             {"fuses", TargetMemorySegmentType::FUSES},
