@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/RiscVGeneric.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/Common.hpp"
 
 namespace DebugToolDrivers::Protocols::RiscVDebugSpec::Registers
 {

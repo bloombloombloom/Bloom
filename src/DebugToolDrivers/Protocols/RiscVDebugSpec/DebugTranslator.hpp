@@ -17,7 +17,7 @@
 #include "src/Targets/RiscV/TargetDescriptionFile.hpp"
 #include "src/Targets/RiscV/RiscVTargetConfig.hpp"
 
-#include "RiscVGeneric.hpp"
+#include "Common.hpp"
 #include "Registers/CpuRegisterNumbers.hpp"
 #include "Registers/DebugControlStatusRegister.hpp"
 

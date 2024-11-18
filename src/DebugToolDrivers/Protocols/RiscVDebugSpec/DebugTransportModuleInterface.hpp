@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-#include "RiscVGeneric.hpp"
+#include "Common.hpp"
 #include "DebugModule/DebugModule.hpp"
 #include "DebugModule/Registers/RegisterAddresses.hpp"
 
