@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Exception.hpp"
+#include "FatalErrorException.hpp"
 
 namespace Exceptions
 {
-    class InvalidConfig: public Exception
+    class InvalidConfig: public FatalErrorException
     {
     public:
         explicit InvalidConfig(const std::string& message)
-            : Exception(message)
+            : FatalErrorException(message)
         {}
     };
 }

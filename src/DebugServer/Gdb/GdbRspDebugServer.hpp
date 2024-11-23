@@ -69,6 +69,7 @@
 #include "Exceptions/DebugServerInterrupted.hpp"
 
 #include "src/Exceptions/Exception.hpp"
+#include "src/Exceptions/FatalErrorException.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace DebugServer::Gdb
@@ -288,6 +289,10 @@ namespace DebugServer::Gdb
                 // Server was interrupted by an event
                 Logger::debug("GDB RSP interrupted");
                 return;
+
+            } catch (const ::Exceptions::FatalErrorException& exception) {
+                this->endDebugSession();
+                throw exception;
             }
         }
 
@@ -546,6 +551,10 @@ namespace DebugServer::Gdb
                 // Server was interrupted
                 Logger::debug("GDB RSP interrupted");
                 return;
+
+            } catch (const ::Exceptions::FatalErrorException& exception) {
+                this->endDebugSession();
+                throw exception;
 
             } catch (const ::Exceptions::Exception& exception) {
                 Logger::error("Failed to handle target execution state changed event - " + exception.getMessage());

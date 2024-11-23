@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Exception.hpp"
+#include "FatalErrorException.hpp"
 #include "src/Services/PathService.hpp"
 
 namespace Exceptions
 {
-    class InternalFatalErrorException: public Exception
+    class InternalFatalErrorException: public FatalErrorException
     {
     public:
         explicit InternalFatalErrorException(const std::string& message)
-            : Exception(
+            : FatalErrorException(
                 "Internal fatal error - " + message + " - please report this via "
                     + Services::PathService::homeDomainName() + "/report-issue"
             )

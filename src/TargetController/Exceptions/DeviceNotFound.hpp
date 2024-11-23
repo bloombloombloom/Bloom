@@ -4,11 +4,11 @@
 
 namespace Exceptions
 {
-    class DeviceNotFound: public Exception
+    class DeviceNotFound: public FatalErrorException
     {
     public:
         explicit DeviceNotFound(const std::string& message)
-            : Exception(message)
+            : FatalErrorException(message)
         {}
     };
 }

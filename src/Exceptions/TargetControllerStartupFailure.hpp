@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Exception.hpp"
+#include "FatalErrorException.hpp"
 
 namespace Exceptions
 {
-    class TargetControllerStartupFailure: public Exception
+    class TargetControllerStartupFailure: public FatalErrorException
     {
     public:
         explicit TargetControllerStartupFailure(const std::string& message)
-            : Exception(message)
+            : FatalErrorException(message)
         {}
     };
 }

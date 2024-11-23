@@ -15,6 +15,7 @@
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
+#include "src/Exceptions/FatalErrorException.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
 namespace TargetController
@@ -78,7 +79,7 @@ namespace TargetController
             while (this->getThreadState() == ThreadState::READY) {
                 this->refreshExecutionState();
 
-                TargetControllerComponent::notifier.waitForNotification(std::chrono::milliseconds(60));
+                TargetControllerComponent::notifier.waitForNotification(std::chrono::milliseconds(60    ));
 
                 this->processQueuedCommands();
                 this->eventListener->dispatchCurrentEvents();
@@ -455,7 +456,7 @@ namespace TargetController
 
                 this->registerCommandResponse(commandId, commandHandlerIt->second(*(command.get())));
 
-            } catch (const DeviceFailure& exception) {
+            } catch (const FatalErrorException& exception) {
                 this->registerCommandResponse(
                     commandId,
                     std::make_unique<Responses::Error>(exception.getMessage())
