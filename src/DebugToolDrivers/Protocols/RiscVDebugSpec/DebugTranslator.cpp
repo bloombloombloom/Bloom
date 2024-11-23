@@ -6,11 +6,19 @@
 #include <limits>
 #include <cassert>
 #include <algorithm>
+#include <thread>
 
 #include "Registers/CpuRegisterNumbers.hpp"
 #include "DebugModule/Registers/RegisterAddresses.hpp"
 #include "DebugModule/Registers/RegisterAccessControlField.hpp"
 #include "DebugModule/Registers/MemoryAccessControlField.hpp"
+#include "DebugModule/Registers/AbstractCommandAutoExecuteRegister.hpp"
+
+#include "src/Targets/RiscV/Opcodes/Lb.hpp"
+#include "src/Targets/RiscV/Opcodes/Lw.hpp"
+#include "src/Targets/RiscV/Opcodes/Sb.hpp"
+#include "src/Targets/RiscV/Opcodes/Sw.hpp"
+#include "src/Targets/RiscV/Opcodes/Addi.hpp"
 
 #include "TriggerModule/Registers/TriggerSelect.hpp"
 #include "TriggerModule/Registers/TriggerInfo.hpp"
@@ -19,6 +27,8 @@
 
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
+#include "src/Exceptions/InternalFatalErrorException.hpp"
+#include "src/TargetController/Exceptions/DeviceFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 
@@ -33,6 +43,11 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     using DebugModule::Registers::StatusRegister;
     using DebugModule::Registers::AbstractControlStatusRegister;
     using DebugModule::Registers::AbstractCommandRegister;
+    using DebugModule::Registers::AbstractCommandAutoExecuteRegister;
+    using DebugModule::Registers::RegisterAccessControlField;
+    using DebugModule::Registers::MemoryAccessControlField;
+    using DebugModule::AbstractCommandError;
+    using DebugModule::MemoryAccessStrategy;
 
     using Registers::CpuRegisterNumber;
 
@@ -69,12 +84,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     void DebugTranslator::activate() {
         this->dtmInterface.activate();
 
-        this->hartIndices = this->discoverHartIndices();
-        if (this->hartIndices.empty()) {
+        this->debugModuleDescriptor.hartIndices = this->discoverHartIndices();
+        if (this->debugModuleDescriptor.hartIndices.empty()) {
             throw Exceptions::TargetOperationFailure{"Failed to discover any RISC-V harts"};
         }
 
-        Logger::debug("Discovered RISC-V harts: " + std::to_string(this->hartIndices.size()));
+        Logger::debug("Discovered RISC-V harts: " + std::to_string(this->debugModuleDescriptor.hartIndices.size()));
 
         /*
          * We only support debugging a single RISC-V hart, for now.
@@ -82,11 +97,11 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
          * If we discover more than one, we select the first one and ensure that this is explicitly communicated to the
          * user.
          */
-        if (this->hartIndices.size() > 1) {
+        if (this->debugModuleDescriptor.hartIndices.size() > 1) {
             Logger::warning("Bloom only supports debugging a single RISC-V hart - selecting first available");
         }
 
-        this->selectedHartIndex = this->hartIndices.front();
+        this->selectedHartIndex = this->debugModuleDescriptor.hartIndices.front();
         Logger::info("Selected RISC-V hart index: " + std::to_string(this->selectedHartIndex));
 
         /*
@@ -97,22 +112,63 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->enableDebugModule();
 
         this->stop();
-        this->reset();
-        this->triggerDescriptorsByIndex = this->discoverTriggers();
 
-        Logger::debug("Discovered RISC-V triggers: " + std::to_string(this->triggerDescriptorsByIndex.size()));
+        this->debugModuleDescriptor.triggerDescriptorsByIndex = this->discoverTriggers();
 
-        if (!this->triggerDescriptorsByIndex.empty()) {
+        Logger::debug(
+            "Discovered RISC-V triggers: "
+                + std::to_string(this->debugModuleDescriptor.triggerDescriptorsByIndex.size())
+        );
+
+        if (!this->debugModuleDescriptor.triggerDescriptorsByIndex.empty()) {
             // Clear any left-over triggers from the previous debug session
             this->clearAllHardwareBreakpoints();
         }
 
-        auto debugControlStatusRegister = this->readDebugControlStatusRegister();
-        debugControlStatusRegister.breakUMode = true;
-        debugControlStatusRegister.breakSMode = true;
-        debugControlStatusRegister.breakMMode = true;
+        this->initDebugControlStatusRegister();
 
-        this->writeDebugControlStatusRegister(debugControlStatusRegister);
+        const auto abstractControlStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
+        this->debugModuleDescriptor.programBufferSize = abstractControlStatusRegister.programBufferSize;
+
+        Logger::debug("Program buffer size: " + std::to_string(this->debugModuleDescriptor.programBufferSize));
+
+        if (this->debugModuleDescriptor.programBufferSize >= 3) {
+            this->debugModuleDescriptor.memoryAccessStrategies.insert(MemoryAccessStrategy::PROGRAM_BUFFER);
+        }
+
+        /*
+         * Attempt to read a single word from the start of the system address space, via a memory access abstract
+         * command.
+         */
+        constexpr auto probingMemoryAccessCommand = AbstractCommandRegister{
+            .control = MemoryAccessControlField{
+                .postIncrement = true,
+                .size = MemoryAccessControlField::MemorySize::SIZE_32,
+            }.value(),
+            .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
+        };
+
+        this->dtmInterface.writeDebugModuleRegister(
+            RegisterAddress::ABSTRACT_DATA_1,
+            this->targetDescriptionFile.getSystemAddressSpace().startAddress
+        );
+
+        if (this->tryExecuteAbstractCommand(probingMemoryAccessCommand) == AbstractCommandError::NONE) {
+            this->debugModuleDescriptor.memoryAccessStrategies.insert(MemoryAccessStrategy::ABSTRACT_COMMAND);
+        }
+
+        if (this->debugModuleDescriptor.memoryAccessStrategies.empty()) {
+            throw Exceptions::TargetOperationFailure{"Target doesn't support any known memory access strategies"};
+        }
+
+        this->memoryAccessStrategy = this->determineMemoryAccessStrategy();
+        Logger::debug(
+            "Selected memory access strategy: " + (
+                this->memoryAccessStrategy == MemoryAccessStrategy::ABSTRACT_COMMAND
+                    ? std::string{"ABSTRACT_COMMAND"}
+                    : std::string{"PROGRAM_BUFFER"}
+            )
+        );
     }
 
     void DebugTranslator::deactivate() {
@@ -241,6 +297,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         if (!statusRegister.allHaveReset) {
             throw Exceptions::Exception{"Target took too long to reset"};
         }
+
+        this->initDebugControlStatusRegister();
     }
 
     void DebugTranslator::setSoftwareBreakpoint(TargetMemoryAddress address) {
@@ -252,7 +310,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     std::uint16_t DebugTranslator::getHardwareBreakpointCount() {
-        return static_cast<std::uint16_t>(this->triggerDescriptorsByIndex.size());
+        return static_cast<std::uint16_t>(this->debugModuleDescriptor.triggerDescriptorsByIndex.size());
     }
 
     void DebugTranslator::setHardwareBreakpoint(TargetMemoryAddress address) {
@@ -305,7 +363,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             throw Exceptions::Exception{"Unknown hardware breakpoint"};
         }
 
-        const auto& triggerDescriptor = this->triggerDescriptorsByIndex.at(triggerIndexIt->second);
+        const auto& triggerDescriptor = this->debugModuleDescriptor.triggerDescriptorsByIndex.at(triggerIndexIt->second);
 
         this->clearTrigger(triggerDescriptor);
         this->triggerIndicesByBreakpointAddress.erase(address);
@@ -314,7 +372,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
     void DebugTranslator::clearAllHardwareBreakpoints() {
         // To ensure that any untracked breakpoints are cleared, we clear all triggers on the target.
-        for (const auto& [triggerIndex, triggerDescriptor] : this->triggerDescriptorsByIndex) {
+        for (const auto& [triggerIndex, triggerDescriptor] : this->debugModuleDescriptor.triggerDescriptorsByIndex) {
             this->clearTrigger(triggerDescriptor);
         }
 
@@ -365,11 +423,11 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     ) {
         // TODO: excluded addresses
 
-        const auto pageSize = 4;
-        if ((startAddress % pageSize) != 0 || (bytes % pageSize) != 0) {
+        constexpr auto alignTo = DebugTranslator::WORD_BYTE_SIZE;
+        if ((startAddress % alignTo) != 0 || (bytes % alignTo) != 0) {
             // Alignment required
-            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, pageSize);
-            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), pageSize);
+            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, alignTo);
+            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), alignTo);
 
             const auto memoryBuffer = this->readMemory(
                 addressSpaceDescriptor,
@@ -383,7 +441,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             return TargetMemoryBuffer{offset, offset + bytes};
         }
 
-        return this->readMemoryViaAbstractCommand(startAddress, bytes);
+        if (this->memoryAccessStrategy == MemoryAccessStrategy::PROGRAM_BUFFER) {
+            return this->readMemoryViaProgramBuffer(startAddress, bytes);
+        }
+
+        if (this->memoryAccessStrategy == MemoryAccessStrategy::ABSTRACT_COMMAND) {
+            return this->readMemoryViaAbstractCommand(startAddress, bytes);
+        }
+
+        throw Exceptions::InternalFatalErrorException{"Unknown selected memory access strategy"};
     }
 
     void DebugTranslator::writeMemory(
@@ -392,9 +458,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         TargetMemoryAddress startAddress,
         TargetMemoryBufferSpan buffer
     ) {
-        using DebugModule::Registers::MemoryAccessControlField;
-
-        constexpr auto alignTo = TargetMemorySize{4};
+        constexpr auto alignTo = DebugTranslator::WORD_BYTE_SIZE;
         const auto bytes = static_cast<TargetMemorySize>(buffer.size());
         if ((startAddress % alignTo) != 0 || (bytes % alignTo) != 0) {
             /*
@@ -447,7 +511,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             );
         }
 
-        return this->writeMemoryViaAbstractCommand(startAddress, buffer);
+        if (this->memoryAccessStrategy == MemoryAccessStrategy::PROGRAM_BUFFER) {
+            return this->writeMemoryViaProgramBuffer(startAddress, buffer);
+        }
+
+        if (this->memoryAccessStrategy == MemoryAccessStrategy::ABSTRACT_COMMAND) {
+            return this->writeMemoryViaAbstractCommand(startAddress, buffer);
+        }
+
+        throw Exceptions::InternalFatalErrorException{"Unknown selected memory access strategy"};
     }
 
     std::vector<DebugModule::HartIndex> DebugTranslator::discoverHartIndices() {
@@ -500,11 +572,11 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             const auto selectRegValue = TriggerModule::Registers::TriggerSelect{triggerIndex}.value();
 
             const auto writeSelectError = this->tryWriteCpuRegister(CpuRegisterNumber::TRIGGER_SELECT, selectRegValue);
-            if (writeSelectError == DebugModule::AbstractCommandError::EXCEPTION) {
+            if (writeSelectError == AbstractCommandError::EXCEPTION) {
                 break;
             }
 
-            if (writeSelectError != DebugModule::AbstractCommandError::NONE) {
+            if (writeSelectError != AbstractCommandError::NONE) {
                 throw Exceptions::Exception{
                     "Failed to write to TRIGGER_SELECT register - abstract command error: 0x"
                         + Services::StringService::toHex(static_cast<std::uint8_t>(writeSelectError))
@@ -614,35 +686,49 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
     }
 
-    Expected<RegisterValue, DebugModule::AbstractCommandError> DebugTranslator::tryReadCpuRegister(
-        RegisterNumber number
-    ) {
-        using DebugModule::Registers::RegisterAccessControlField;
+    void DebugTranslator::initDebugControlStatusRegister() {
+        this->writeDebugControlStatusRegister(DebugControlStatusRegister{
+            .breakUMode = true,
+            .breakSMode = true,
+            .breakMMode = true,
+            .breakVUMode = true,
+            .breakVSMode = true,
+        });
+    }
 
+    Expected<RegisterValue, AbstractCommandError> DebugTranslator::tryReadCpuRegister(
+        RegisterNumber number,
+        const RegisterAccessControlField::Flags& flags
+    ) {
         const auto commandError = this->tryExecuteAbstractCommand(AbstractCommandRegister{
             .control = RegisterAccessControlField{
                 .registerNumber = number,
                 .transfer = true,
+                .flags = flags,
                 .size= RegisterAccessControlField::RegisterSize::SIZE_32
             }.value(),
             .commandType = AbstractCommandRegister::CommandType::REGISTER_ACCESS
         });
 
-        if (commandError != DebugModule::AbstractCommandError::NONE) {
+        if (commandError != AbstractCommandError::NONE) {
             return commandError;
         }
 
         return this->dtmInterface.readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
     }
 
-    Expected<RegisterValue, DebugModule::AbstractCommandError> DebugTranslator::tryReadCpuRegister(
-        Registers::CpuRegisterNumber number
+    Expected<RegisterValue, AbstractCommandError> DebugTranslator::tryReadCpuRegister(
+        Registers::CpuRegisterNumber number,
+        const RegisterAccessControlField::Flags& flags
     ) {
-        return this->tryReadCpuRegister(static_cast<RegisterNumber>(number));
+        return this->tryReadCpuRegister(static_cast<RegisterNumber>(number), flags);
     }
 
-    RegisterValue DebugTranslator::readCpuRegister(RegisterNumber number) {
-        const auto result = this->tryReadCpuRegister(number);
+    RegisterValue DebugTranslator::readCpuRegister(
+        RegisterNumber number,
+        const RegisterAccessControlField::Flags& flags
+    ) {
+        const auto result = this->tryReadCpuRegister(number, flags);
 
         if (!result.hasValue()) {
             throw Exceptions::Exception{
@@ -655,38 +741,46 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         return result.value();
     }
 
-    RegisterValue DebugTranslator::readCpuRegister(Registers::CpuRegisterNumber number) {
-        return this->readCpuRegister(static_cast<RegisterNumber>(number));
+    RegisterValue DebugTranslator::readCpuRegister(
+        Registers::CpuRegisterNumber number,
+        const RegisterAccessControlField::Flags& flags
+    ) {
+        return this->readCpuRegister(static_cast<RegisterNumber>(number), flags);
     }
 
-    DebugModule::AbstractCommandError DebugTranslator::tryWriteCpuRegister(
+    AbstractCommandError DebugTranslator::tryWriteCpuRegister(
         RegisterNumber number,
-        RegisterValue value
+        RegisterValue value,
+        const RegisterAccessControlField::Flags& flags
     ) {
-        using DebugModule::Registers::RegisterAccessControlField;
-
         this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0, value);
         return this->tryExecuteAbstractCommand(AbstractCommandRegister{
             .control = RegisterAccessControlField{
                 .registerNumber = number,
                 .write = true,
                 .transfer = true,
+                .flags = flags,
                 .size = RegisterAccessControlField::RegisterSize::SIZE_32
             }.value(),
             .commandType = AbstractCommandRegister::CommandType::REGISTER_ACCESS
         });
     }
 
-    DebugModule::AbstractCommandError DebugTranslator::tryWriteCpuRegister(
+    AbstractCommandError DebugTranslator::tryWriteCpuRegister(
         Registers::CpuRegisterNumber number,
-        RegisterValue value
+        RegisterValue value,
+        const RegisterAccessControlField::Flags& flags
     ) {
-        return this->tryWriteCpuRegister(static_cast<RegisterNumber>(number), value);
+        return this->tryWriteCpuRegister(static_cast<RegisterNumber>(number), value, flags);
     }
 
-    void DebugTranslator::writeCpuRegister(RegisterNumber number, RegisterValue value) {
-        const auto commandError = this->tryWriteCpuRegister(number, value);
-        if (commandError != DebugModule::AbstractCommandError::NONE) {
+    void DebugTranslator::writeCpuRegister(
+        RegisterNumber number,
+        RegisterValue value,
+        const RegisterAccessControlField::Flags& flags
+    ) {
+        const auto commandError = this->tryWriteCpuRegister(number, value, flags);
+        if (commandError != AbstractCommandError::NONE) {
             throw Exceptions::Exception{
                 "Failed to write to CPU register (number: 0x" + Services::StringService::toHex(number)
                     + ") - abstract command error: 0x"
@@ -695,8 +789,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
     }
 
-    void DebugTranslator::writeCpuRegister(Registers::CpuRegisterNumber number, RegisterValue value) {
-        this->writeCpuRegister(static_cast<RegisterNumber>(number), value);
+    void DebugTranslator::writeCpuRegister(
+        Registers::CpuRegisterNumber number,
+        RegisterValue value,
+        const RegisterAccessControlField::Flags& flags
+    ) {
+        this->writeCpuRegister(static_cast<RegisterNumber>(number), value, flags);
     }
 
     void DebugTranslator::writeDebugModuleControlRegister(const ControlRegister& controlRegister) {
@@ -710,7 +808,14 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         );
     }
 
-    DebugModule::AbstractCommandError DebugTranslator::tryExecuteAbstractCommand(
+    void DebugTranslator::clearAbstractCommandError() {
+        this->dtmInterface.writeDebugModuleRegister(
+            RegisterAddress::ABSTRACT_CONTROL_STATUS_REGISTER,
+            AbstractControlStatusRegister{.commandError = AbstractCommandError::CLEAR}.value()
+        );
+    }
+
+    AbstractCommandError DebugTranslator::tryExecuteAbstractCommand(
         const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister
     ) {
         this->dtmInterface.writeDebugModuleRegister(
@@ -719,9 +824,6 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         );
 
         auto abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
-        if (abstractStatusRegister.commandError != DebugModule::AbstractCommandError::NONE) {
-            return abstractStatusRegister.commandError;
-        }
 
         for (
             auto attempts = 0;
@@ -737,6 +839,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             throw Exceptions::Exception{"Abstract command took too long to execute"};
         }
 
+        if (abstractStatusRegister.commandError != AbstractCommandError::NONE) {
+            this->clearAbstractCommandError();
+        }
+
         return abstractStatusRegister.commandError;
     }
 
@@ -744,12 +850,30 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister
     ) {
         const auto commandError = this->tryExecuteAbstractCommand(abstractCommandRegister);
-        if (commandError != DebugModule::AbstractCommandError::NONE) {
+        if (commandError != AbstractCommandError::NONE) {
             throw Exceptions::Exception{
                 "Failed to execute abstract command - error: 0x"
                     + Services::StringService::toHex(static_cast<std::uint8_t>(commandError))
             };
         }
+    }
+
+    MemoryAccessStrategy DebugTranslator::determineMemoryAccessStrategy() {
+        assert(!this->debugModuleDescriptor.memoryAccessStrategies.empty());
+
+        if (
+            this->config.preferredMemoryAccessStrategy.has_value()
+            && this->debugModuleDescriptor.memoryAccessStrategies.contains(
+                *(this->config.preferredMemoryAccessStrategy)
+            )
+        ) {
+            return *(this->config.preferredMemoryAccessStrategy);
+        }
+
+        // Favour the abstract command strategy, as it seems to be faster on the targets currently supported by Bloom.
+        return this->debugModuleDescriptor.memoryAccessStrategies.contains(MemoryAccessStrategy::ABSTRACT_COMMAND)
+            ? MemoryAccessStrategy::ABSTRACT_COMMAND
+            : *(this->debugModuleDescriptor.memoryAccessStrategies.begin());
     }
 
     TargetMemoryAddress DebugTranslator::alignMemoryAddress(TargetMemoryAddress address, TargetMemoryAddress alignTo) {
@@ -766,10 +890,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemorySize bytes
     ) {
-        using DebugModule::Registers::MemoryAccessControlField;
-
-        auto output = TargetMemoryBuffer{};
-        output.reserve(bytes);
+        assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
+        assert(bytes % DebugTranslator::WORD_BYTE_SIZE == 0);
 
         /*
          * We only need to set the address once. No need to update it as we use the post-increment function to
@@ -784,6 +906,9 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             }.value(),
             .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
         };
+
+        auto output = TargetMemoryBuffer{};
+        output.reserve(bytes);
 
         for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
             this->executeAbstractCommand(command);
@@ -803,10 +928,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         Targets::TargetMemoryBufferSpan buffer
     ) {
         using DebugModule::Registers::MemoryAccessControlField;
+        assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
+        assert(buffer.size() % DebugTranslator::WORD_BYTE_SIZE == 0);
 
         this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
 
-        constexpr auto command = AbstractCommandRegister{
+        static constexpr auto command = AbstractCommandRegister{
             .control = MemoryAccessControlField{
                 .write = true,
                 .postIncrement = true,
@@ -815,7 +942,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
         };
 
-        for (auto offset = TargetMemoryAddress{0}; offset < buffer.size(); offset += 4) {
+        for (auto offset = std::size_t{0}; offset < buffer.size(); offset += 4) {
             this->dtmInterface.writeDebugModuleRegister(
                 RegisterAddress::ABSTRACT_DATA_0,
                 static_cast<RegisterValue>(
@@ -830,10 +957,236 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
     }
 
+    Targets::TargetMemoryBuffer DebugTranslator::readMemoryViaProgramBuffer(
+        Targets::TargetMemoryAddress startAddress,
+        Targets::TargetMemorySize bytes
+    ) {
+        using namespace Targets::RiscV::Opcodes;
+        assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
+        assert(bytes % DebugTranslator::WORD_BYTE_SIZE == 0);
+
+        static constexpr auto programOpcodes = std::to_array<Opcodes::Opcode>({
+            Opcodes::Lw{
+                .destinationRegister = Opcodes::GprNumber::X9,
+                .baseAddressRegister = Opcodes::GprNumber::X8,
+                .addressOffset = 0
+            }.opcode(),
+            Opcodes::Addi{
+                .destinationRegister = Opcodes::GprNumber::X8,
+                .sourceRegister = Opcodes::GprNumber::X8,
+                .value = DebugTranslator::WORD_BYTE_SIZE
+            }.opcode(),
+            Opcodes::Ebreak,
+        });
+
+        if (programOpcodes.size() > this->debugModuleDescriptor.programBufferSize) {
+            throw Exceptions::Exception{
+                "Cannot read memory via RISC-V debug module program buffer - insufficient program buffer size"
+            };
+        }
+
+        auto preservedX8Register = PreservedCpuRegister{CpuRegisterNumber::GPR_X8, *this};
+        auto preservedX9Register = PreservedCpuRegister{CpuRegisterNumber::GPR_X9, *this};
+
+        try {
+            this->writeProgramBuffer(programOpcodes);
+            this->writeCpuRegister(CpuRegisterNumber::GPR_X8, startAddress, {.postExecute = true});
+
+            auto output = Targets::TargetMemoryBuffer{};
+            output.reserve(bytes);
+
+            if (bytes == DebugTranslator::WORD_BYTE_SIZE) {
+                const auto word = this->readCpuRegister(CpuRegisterNumber::GPR_X9);
+                output.emplace_back(static_cast<unsigned char>(word));
+                output.emplace_back(static_cast<unsigned char>(word >> 8));
+                output.emplace_back(static_cast<unsigned char>(word >> 16));
+                output.emplace_back(static_cast<unsigned char>(word >> 24));
+
+                preservedX8Register.restore();
+                preservedX9Register.restore();
+
+                return output;
+            }
+
+            // Populate the abstract command register with a register access command, to read X9 into data0.
+            this->readCpuRegister(CpuRegisterNumber::GPR_X9, {.postExecute = true});
+
+            /*
+             * At this point, the program buffer will have already been executed twice, with the first word currently
+             * residing in data0, and the second in X9.
+             *
+             * The abstract command register will be populated with a register access command, to read X9 into data0,
+             * with 'postexec' enabled. Enabling auto execution at this point will mean that the abstract command will
+             * be executed every time we access the data0 register, resulting in the next word being copied into
+             * data0 (from X9) and the program buffer being executed again (filling X9 with another word).
+             *
+             * To avoid reading an excess of words (which could result in an out-of-bounds exception), we only enable
+             * auto execution if we require more data that what has already been read.
+             */
+            const auto autoExecutionEnabled = bytes > (DebugTranslator::WORD_BYTE_SIZE * 2);
+            this->dtmInterface.writeDebugModuleRegister(
+                RegisterAddress::ABSTRACT_COMMAND_AUTO_EXECUTE_REGISTER,
+                AbstractCommandAutoExecuteRegister{.onData0Access = autoExecutionEnabled}.value()
+            );
+
+            while (output.size() < (bytes - DebugTranslator::WORD_BYTE_SIZE)) {
+                if (autoExecutionEnabled && output.size() >= (bytes - DebugTranslator::WORD_BYTE_SIZE * 2)) {
+                    /*
+                     * We're on the second to last word, which has already been read and currently resides in data0.
+                     * The last word has also been read and currently resides in X9.
+                     *
+                     * Disable auto execution here to prevent any further reads.
+                     */
+                    this->dtmInterface.writeDebugModuleRegister(
+                        RegisterAddress::ABSTRACT_COMMAND_AUTO_EXECUTE_REGISTER,
+                        AbstractCommandAutoExecuteRegister{}.value()
+                    );
+                }
+
+                const auto word = this->dtmInterface.readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
+                output.emplace_back(static_cast<unsigned char>(word));
+                output.emplace_back(static_cast<unsigned char>(word >> 8));
+                output.emplace_back(static_cast<unsigned char>(word >> 16));
+                output.emplace_back(static_cast<unsigned char>(word >> 24));
+            }
+
+            const auto abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
+            if (abstractStatusRegister.commandError != AbstractCommandError::NONE) {
+                this->clearAbstractCommandError();
+
+                throw Exceptions::Exception{
+                    "Program buffer execution failed - abstract command error: 0x"
+                        + Services::StringService::toHex(abstractStatusRegister.commandError)
+                };
+            }
+
+            const auto lastWord = this->readCpuRegister(CpuRegisterNumber::GPR_X9);
+            output.emplace_back(static_cast<unsigned char>(lastWord));
+            output.emplace_back(static_cast<unsigned char>(lastWord >> 8));
+            output.emplace_back(static_cast<unsigned char>(lastWord >> 16));
+            output.emplace_back(static_cast<unsigned char>(lastWord >> 24));
+
+            preservedX8Register.restore();
+            preservedX9Register.restore();
+
+            return output;
+
+        } catch (const Exceptions::Exception& exception) {
+            preservedX8Register.restoreOnce();
+            preservedX9Register.restoreOnce();
+
+            throw exception;
+        }
+    }
+
+    void DebugTranslator::writeMemoryViaProgramBuffer(
+        Targets::TargetMemoryAddress startAddress,
+        Targets::TargetMemoryBufferSpan buffer
+    ) {
+        using namespace Targets::RiscV::Opcodes;
+        assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
+        assert(buffer.size() % DebugTranslator::WORD_BYTE_SIZE == 0);
+
+        static constexpr auto programOpcodes = std::to_array<Opcodes::Opcode>({
+            Opcodes::Sw{
+                .baseAddressRegister = Opcodes::GprNumber::X8,
+                .valueRegister = Opcodes::GprNumber::X9,
+                .addressOffset = 0
+            }.opcode(),
+            Opcodes::Addi{
+                .destinationRegister = Opcodes::GprNumber::X8,
+                .sourceRegister = Opcodes::GprNumber::X8,
+                .value = DebugTranslator::WORD_BYTE_SIZE
+            }.opcode(),
+            Opcodes::Ebreak,
+        });
+
+        if (programOpcodes.size() > this->debugModuleDescriptor.programBufferSize) {
+            throw Exceptions::Exception{
+                "Cannot write to memory via RISC-V debug module program buffer - insufficient program buffer size"
+            };
+        }
+
+        auto preservedX8Register = PreservedCpuRegister{CpuRegisterNumber::GPR_X8, *this};
+        auto preservedX9Register = PreservedCpuRegister{CpuRegisterNumber::GPR_X9, *this};
+
+        try {
+            this->writeProgramBuffer(programOpcodes);
+            this->writeCpuRegister(CpuRegisterNumber::GPR_X8, startAddress, {.postExecute = false});
+
+            this->writeCpuRegister(
+                CpuRegisterNumber::GPR_X9,
+                static_cast<RegisterValue>(
+                    (buffer[3] << 24)
+                    | (buffer[2] << 16)
+                    | (buffer[1] << 8)
+                    | (buffer[0])
+                ),
+                {.postExecute = true}
+            );
+
+            this->dtmInterface.writeDebugModuleRegister(
+                RegisterAddress::ABSTRACT_COMMAND_AUTO_EXECUTE_REGISTER,
+                AbstractCommandAutoExecuteRegister{.onData0Access = true}.value()
+            );
+
+            for (
+                auto offset = std::size_t{DebugTranslator::WORD_BYTE_SIZE};
+                offset < buffer.size();
+                offset += DebugTranslator::WORD_BYTE_SIZE
+            ) {
+                this->dtmInterface.writeDebugModuleRegister(
+                    RegisterAddress::ABSTRACT_DATA_0,
+                    static_cast<RegisterValue>(
+                        (buffer[offset + 3] << 24)
+                        | (buffer[offset + 2] << 16)
+                        | (buffer[offset + 1] << 8)
+                        | (buffer[offset])
+                    )
+                );
+            }
+
+            this->dtmInterface.writeDebugModuleRegister(
+                RegisterAddress::ABSTRACT_COMMAND_AUTO_EXECUTE_REGISTER,
+                AbstractCommandAutoExecuteRegister{}.value()
+            );
+
+            const auto abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
+            if (abstractStatusRegister.commandError != AbstractCommandError::NONE) {
+                this->clearAbstractCommandError();
+
+                throw Exceptions::Exception{
+                    "Program buffer execution failed - abstract command error: 0x"
+                        + Services::StringService::toHex(abstractStatusRegister.commandError)
+                };
+            }
+
+            preservedX8Register.restore();
+            preservedX9Register.restore();
+
+        } catch (const Exceptions::Exception& exception) {
+            preservedX8Register.restoreOnce();
+            preservedX9Register.restoreOnce();
+
+            throw exception;
+        }
+    }
+
+    void DebugTranslator::writeProgramBuffer(std::span<const Targets::RiscV::Opcodes::Opcode> opcodes) {
+        assert(opcodes.size() <= 16);
+        assert(opcodes.size() <= this->debugModuleDescriptor.programBufferSize);
+
+        auto programBufferAddress = static_cast<DebugModule::RegisterAddress>(RegisterAddress::PROGRAM_BUFFER_0);
+        for (const auto& opcode : opcodes) {
+            this->dtmInterface.writeDebugModuleRegister(programBufferAddress, opcode);
+            ++programBufferAddress;
+        }
+    }
+
     std::optional<
         std::reference_wrapper<const TriggerModule::TriggerDescriptor>
     > DebugTranslator::getAvailableTrigger() {
-        for (const auto& [index, descriptor] : this->triggerDescriptorsByIndex) {
+        for (const auto& [index, descriptor] : this->debugModuleDescriptor.triggerDescriptorsByIndex) {
             if (this->allocatedTriggerIndices.contains(index)) {
                 continue;
             }
@@ -862,5 +1215,55 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
 
         throw Exceptions::Exception{"Unsupported trigger"};
+    }
+
+    DebugTranslator::PreservedCpuRegister::PreservedCpuRegister(
+        Registers::CpuRegisterNumber registerNumber,
+        RegisterValue value,
+        DebugTranslator& debugTranslator
+    )
+        : registerNumber(registerNumber)
+        , value(value)
+        , debugTranslator(debugTranslator)
+    {}
+
+    DebugTranslator::PreservedCpuRegister::PreservedCpuRegister(
+        Registers::CpuRegisterNumber registerNumber,
+        DebugTranslator& debugTranslator
+    )
+        : PreservedCpuRegister(
+            registerNumber,
+            debugTranslator.readCpuRegister(registerNumber),
+            debugTranslator
+        )
+    {}
+
+    void DebugTranslator::PreservedCpuRegister::restore() {
+        try {
+            this->debugTranslator.writeCpuRegister(this->registerNumber, this->value);
+            this->restored = true;
+
+        } catch (const Exceptions::Exception& exception) {
+            /*
+             * If we fail to restore the value of a CPU register, we must raise this as a fatal error, as the target
+             * will be left in an undefined state. More specifically, the state of the program running on the target
+             * may be corrupted. We cannot recover from this.
+             *
+             * DeviceFailure exceptions are considered to be fatal. A clean shutdown will follow.
+             */
+            throw Exceptions::DeviceFailure{
+                "Failed to restore CPU register (number: 0x"
+                    + Services::StringService::toHex(this->registerNumber) + ") - error: " + exception.getMessage()
+                    + " - the target is now in an undefined state and may require a reset"
+            };
+        }
+    }
+
+    void DebugTranslator::PreservedCpuRegister::restoreOnce() {
+        if (this->restored) {
+            return;
+        }
+
+        this->restore();
     }
 }

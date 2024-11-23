@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 #include <optional>
@@ -13,9 +14,12 @@
 
 #include "DebugTransportModuleInterface.hpp"
 #include "DebugTranslatorConfig.hpp"
+#include "DebugModuleDescriptor.hpp"
 
 #include "src/Targets/RiscV/TargetDescriptionFile.hpp"
 #include "src/Targets/RiscV/RiscVTargetConfig.hpp"
+#include "src/Targets/RiscV/Opcodes/Opcode.hpp"
+#include "src/Targets/TargetMemory.hpp"
 
 #include "Common.hpp"
 #include "Registers/CpuRegisterNumbers.hpp"
@@ -26,6 +30,7 @@
 #include "DebugModule/Registers/StatusRegister.hpp"
 #include "DebugModule/Registers/AbstractControlStatusRegister.hpp"
 #include "DebugModule/Registers/AbstractCommandRegister.hpp"
+#include "DebugModule/Registers/RegisterAccessControlField.hpp"
 
 #include "TriggerModule/TriggerModule.hpp"
 #include "TriggerModule/TriggerDescriptor.hpp"
@@ -89,6 +94,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
     private:
         static constexpr auto DEBUG_MODULE_RESPONSE_DELAY = std::chrono::microseconds{10};
+        static constexpr auto MEMORY_ACCESS_ALIGNMENT_SIZE = ::Targets::TargetMemorySize{4};
+        static constexpr auto WORD_BYTE_SIZE = ::Targets::TargetMemorySize{4};
 
         DebugTransportModuleInterface& dtmInterface;
         const DebugTranslatorConfig& config;
@@ -96,10 +103,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         const ::Targets::RiscV::TargetDescriptionFile& targetDescriptionFile;
         const ::Targets::RiscV::RiscVTargetConfig& targetConfig;
 
-        std::vector<DebugModule::HartIndex> hartIndices;
-        DebugModule::HartIndex selectedHartIndex = 0;
+        DebugModuleDescriptor debugModuleDescriptor = {};
 
-        std::unordered_map<TriggerModule::TriggerIndex, TriggerModule::TriggerDescriptor> triggerDescriptorsByIndex;
+        DebugModule::HartIndex selectedHartIndex = 0;
+        DebugModule::MemoryAccessStrategy memoryAccessStrategy = DebugModule::MemoryAccessStrategy::ABSTRACT_COMMAND;
         std::unordered_set<TriggerModule::TriggerIndex> allocatedTriggerIndices;
         std::unordered_map<Targets::TargetMemoryAddress, TriggerModule::TriggerIndex> triggerIndicesByBreakpointAddress;
 
@@ -114,25 +121,56 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         void enableDebugModule();
         void disableDebugModule();
 
-        Expected<RegisterValue, DebugModule::AbstractCommandError> tryReadCpuRegister(RegisterNumber number);
-        Expected<RegisterValue, DebugModule::AbstractCommandError> tryReadCpuRegister(
-            Registers::CpuRegisterNumber number
-        );
-        RegisterValue readCpuRegister(RegisterNumber number);
-        RegisterValue readCpuRegister(Registers::CpuRegisterNumber number);
+        void initDebugControlStatusRegister();
 
-        DebugModule::AbstractCommandError tryWriteCpuRegister(RegisterNumber number, RegisterValue value);
-        DebugModule::AbstractCommandError tryWriteCpuRegister(Registers::CpuRegisterNumber number, RegisterValue value);
-        void writeCpuRegister(RegisterNumber number, RegisterValue value);
-        void writeCpuRegister(Registers::CpuRegisterNumber number, RegisterValue value);
+        Expected<RegisterValue, DebugModule::AbstractCommandError> tryReadCpuRegister(
+            RegisterNumber number,
+            const DebugModule::Registers::RegisterAccessControlField::Flags& flags = {}
+        );
+        Expected<RegisterValue, DebugModule::AbstractCommandError> tryReadCpuRegister(
+            Registers::CpuRegisterNumber number,
+            const DebugModule::Registers::RegisterAccessControlField::Flags& flags = {}
+        );
+        RegisterValue readCpuRegister(
+            RegisterNumber number,
+            const DebugModule::Registers::RegisterAccessControlField::Flags& flags = {}
+        );
+        RegisterValue readCpuRegister(
+            Registers::CpuRegisterNumber number,
+            const DebugModule::Registers::RegisterAccessControlField::Flags& flags = {}
+        );
+
+        DebugModule::AbstractCommandError tryWriteCpuRegister(
+            RegisterNumber number,
+            RegisterValue value,
+            const DebugModule::Registers::RegisterAccessControlField::Flags& flags = {}
+        );
+        DebugModule::AbstractCommandError tryWriteCpuRegister(
+            Registers::CpuRegisterNumber number,
+            RegisterValue value,
+            const DebugModule::Registers::RegisterAccessControlField::Flags& flags = {}
+        );
+        void writeCpuRegister(
+            RegisterNumber number,
+            RegisterValue value,
+            const DebugModule::Registers::RegisterAccessControlField::Flags& flags = {}
+        );
+        void writeCpuRegister(
+            Registers::CpuRegisterNumber number,
+            RegisterValue value,
+            const DebugModule::Registers::RegisterAccessControlField::Flags& flags = {}
+        );
 
         void writeDebugModuleControlRegister(const DebugModule::Registers::ControlRegister& controlRegister);
         void writeDebugControlStatusRegister(const Registers::DebugControlStatusRegister& controlRegister);
 
+        void clearAbstractCommandError();
         DebugModule::AbstractCommandError tryExecuteAbstractCommand(
             const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister
         );
         void executeAbstractCommand(const DebugModule::Registers::AbstractCommandRegister& abstractCommandRegister);
+
+        DebugModule::MemoryAccessStrategy determineMemoryAccessStrategy();
 
         Targets::TargetMemoryAddress alignMemoryAddress(
             Targets::TargetMemoryAddress address,
@@ -149,7 +187,48 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             Targets::TargetMemoryBufferSpan buffer
         );
 
+        Targets::TargetMemoryBuffer readMemoryViaProgramBuffer(
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemorySize bytes
+        );
+        void writeMemoryViaProgramBuffer(
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemoryBufferSpan buffer
+        );
+
+        void writeProgramBuffer(std::span<const Targets::RiscV::Opcodes::Opcode> opcodes);
+
         std::optional<std::reference_wrapper<const TriggerModule::TriggerDescriptor>> getAvailableTrigger();
         void clearTrigger(const TriggerModule::TriggerDescriptor& triggerDescriptor);
+
+        struct PreservedCpuRegister
+        {
+            const Registers::CpuRegisterNumber registerNumber;
+            const RegisterValue value;
+
+            PreservedCpuRegister(
+                Registers::CpuRegisterNumber registerNumber,
+                RegisterValue value,
+                DebugTranslator& debugTranslator
+            );
+
+            PreservedCpuRegister(
+                Registers::CpuRegisterNumber registerNumber,
+                DebugTranslator& debugTranslator
+            );
+
+            PreservedCpuRegister(const PreservedCpuRegister& other) = delete;
+            PreservedCpuRegister& operator = (const PreservedCpuRegister& other) = delete;
+
+            PreservedCpuRegister(const PreservedCpuRegister&& other) = delete;
+            PreservedCpuRegister& operator = (const PreservedCpuRegister&& other) = delete;
+
+            void restore();
+            void restoreOnce();
+
+        private:
+            DebugTranslator& debugTranslator;
+            bool restored = false;
+        };
     };
 }

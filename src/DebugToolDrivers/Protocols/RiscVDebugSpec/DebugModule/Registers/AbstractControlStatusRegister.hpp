@@ -33,10 +33,5 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
                 | static_cast<RegisterValue>(this->programBufferSize & 0x1F) << 24
             ;
         }
-
-        constexpr void clearCommandError() {
-            // Setting all of the bits will clear the field
-            this->commandError = AbstractCommandError::OTHER;
-        }
     };
 }

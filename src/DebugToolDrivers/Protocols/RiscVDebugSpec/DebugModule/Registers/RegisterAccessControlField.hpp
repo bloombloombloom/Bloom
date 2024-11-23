@@ -8,6 +8,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 {
     struct RegisterAccessControlField
     {
+        struct Flags
+        {
+            bool postExecute = false;
+            bool postIncrement = false;
+        };
+
         enum class RegisterSize: std::uint8_t
         {
             SIZE_32 = 0x02,
@@ -18,8 +24,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
         RegisterNumber registerNumber = 0;
         bool write = false;
         bool transfer = false;
-        bool postExecute = false;
-        bool postIncrement = false;
+        Flags flags = {};
         RegisterSize size = RegisterSize::SIZE_32;
 
         static constexpr auto fromValue(std::uint32_t value) {
@@ -27,8 +32,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
                 .registerNumber = static_cast<RegisterNumber>(value & 0xFFFF),
                 .write = static_cast<bool>(value & (0x01 << 16)),
                 .transfer = static_cast<bool>(value & (0x01 << 17)),
-                .postExecute = static_cast<bool>(value & (0x01 << 18)),
-                .postIncrement = static_cast<bool>(value & (0x01 << 19)),
+                .flags = {
+                    .postExecute = static_cast<bool>(value & (0x01 << 18)),
+                    .postIncrement = static_cast<bool>(value & (0x01 << 19)),
+                },
                 .size = static_cast<RegisterSize>((value >> 20) & 0x07),
             };
         }
@@ -38,8 +45,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
                 | static_cast<std::uint32_t>(this->registerNumber)
                 | static_cast<std::uint32_t>(this->write) << 16
                 | static_cast<std::uint32_t>(this->transfer) << 17
-                | static_cast<std::uint32_t>(this->postExecute) << 18
-                | static_cast<std::uint32_t>(this->postIncrement) << 19
+                | static_cast<std::uint32_t>(this->flags.postExecute) << 18
+                | static_cast<std::uint32_t>(this->flags.postIncrement) << 19
                 | static_cast<std::uint32_t>(this->size) << 20
             ;
         }

@@ -31,5 +31,12 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule
         HALT_RESUME = 0x04,
         BUS = 0x05,
         OTHER = 0x07,
+        CLEAR = 0x07,
+    };
+
+    enum class MemoryAccessStrategy: std::uint8_t
+    {
+        ABSTRACT_COMMAND,
+        PROGRAM_BUFFER,
     };
 }

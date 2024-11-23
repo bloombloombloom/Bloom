@@ -4,6 +4,8 @@
 #include <string_view>
 #include <cstdint>
 #include <vector>
+#include <type_traits>
+#include <utility>
 
 namespace Services
 {
@@ -25,6 +27,12 @@ namespace Services
         static std::string toHex(unsigned char value);
         static std::string toHex(const std::vector<unsigned char>& data);
         static std::string toHex(const std::string& data);
+
+        template <typename Type>
+            requires std::is_enum_v<Type>
+        static std::string toHex(Type value) {
+            return StringService::toHex(static_cast<std::underlying_type_t<Type>>(value));
+        }
 
         static std::string toBinaryStringWithMask(std::uint64_t value, std::uint64_t mask);
 
