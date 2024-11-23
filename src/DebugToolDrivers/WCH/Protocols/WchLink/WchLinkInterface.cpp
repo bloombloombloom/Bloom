@@ -6,6 +6,7 @@
 #include "Commands/Control/GetDeviceInfo.hpp"
 #include "Commands/Control/AttachTarget.hpp"
 #include "Commands/Control/DetachTarget.hpp"
+#include "Commands/Control/PostAttach.hpp"
 #include "Commands/SetClockSpeed.hpp"
 #include "Commands/DebugModuleInterfaceOperation.hpp"
 #include "Commands/PreparePartialFlashPageWrite.hpp"
@@ -61,16 +62,47 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
     void WchLinkInterface::activate() {
         this->setClockSpeed(WchLinkTargetClockSpeed::CLK_6000_KHZ);
 
-        const auto response = this->sendCommandAndWaitForResponse(Commands::Control::AttachTarget{});
+        auto response = this->sendCommandAndWaitForResponse(Commands::Control::AttachTarget{});
         if (response.payload.size() != 5) {
             throw Exceptions::DeviceCommunicationFailure{"Unexpected response payload size for AttachTarget command"};
         }
 
-        this->cachedTargetId = static_cast<WchTargetId>(
+        this->cachedTargetId = response.payload[0];
+
+        /*
+         * For some WCH targets, we must send another command to the debug tool, immediately after attaching.
+         *
+         * I don't know what this post-attach command does. But what I *do* know is that the target and/or the debug
+         * tool will misbehave if we don't send it immediately after the attach.
+         *
+         * More specifically, the debug tool will read an invalid target variant ID upon the mutation of the target's
+         * program buffer. So when we write to progbuf2, progbuf3, progbuf4 or progbuf5, all subsequent reads of the
+         * target variant ID will yield invalid values, until the target and debug tool have been power cycled.
+         * Interestingly, when we restore those progbuf registers to their original values, the reading of the target
+         * variant ID works again. So I suspect the debug tool is using the target's program buffer to read the
+         * variant ID, but it's assuming the program buffer hasn't changed. Maybe.
+         *
+         * So how does this post-attach command fix this issue? I don't know. I just know that it does.
+         *
+         * In addition to sending the post-attach command, we have to send another attach command, because the target
+         * variant ID returned in the response of the first attach command may be invalid. Sending another attach
+         * command will ensure that we have a valid target variant ID.
+         */
+        if (this->cachedTargetId == 0x09) {
+            this->sendCommandAndWaitForResponse(Commands::Control::PostAttach{});
+            response = this->sendCommandAndWaitForResponse(Commands::Control::AttachTarget{});
+
+            if (response.payload.size() != 5) {
+                throw Exceptions::DeviceCommunicationFailure{
+                    "Unexpected response payload size for subsequent AttachTarget command"
+                };
+            }
+        }
+
+        this->cachedVariantId = static_cast<WchTargetVariantId>(
             (response.payload[1] << 24) | (response.payload[2] << 16) | (response.payload[3] << 8)
                 | (response.payload[4])
         );
-        this->cachedTargetGroupId = response.payload[0];
     }
 
     void WchLinkInterface::deactivate() {
@@ -81,7 +113,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
     }
 
     std::string WchLinkInterface::getDeviceId() {
-        return "0x" + Services::StringService::toHex(this->cachedTargetId.value());
+        return "0x" + Services::StringService::toHex(this->cachedVariantId.value());
     }
 
     DebugModule::RegisterValue WchLinkInterface::readDebugModuleRegister(DebugModule::RegisterAddress address) {
@@ -261,7 +293,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         };
 
         const auto response = this->sendCommandAndWaitForResponse(
-            Commands::SetClockSpeed{this->cachedTargetGroupId.value_or(0x01), speedIdsBySpeed.at(speed)}
+            Commands::SetClockSpeed{this->cachedTargetId.value_or(0x01), speedIdsBySpeed.at(speed)}
         );
 
         if (response.payload.size() != 1) {

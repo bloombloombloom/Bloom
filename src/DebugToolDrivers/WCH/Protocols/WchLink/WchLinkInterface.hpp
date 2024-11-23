@@ -75,17 +75,12 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         /**
          * The 'target activation' command returns a payload of 5 bytes.
          *
-         * The last 4 bytes hold the WCH RISC-V target ID. Given that the 'target activation' command appears to be
-         * the only way to obtain the target ID, we cache it via WchLinkInterface::cachedTargetId and return the
-         * cached value in WchLinkInterface::getTargetId().
-         *
-         * As for the first byte in the payload, I'm not really sure what it is. It appears to be some kind of
-         * identifier for groups of WCH RISC-V targets. It's unclear. All I know is that it has some significance, as
-         * it's expected in the payload of some other commands, such as the command to set clock speed. For this
-         * reason, we have to keep hold of it via WchLinkInterface::cachedTargetGroupId.
+         * The last 4 bytes hold the WCH target variant ID. Given that the 'target activation' command appears to be
+         * the only way to obtain this ID, we cache it via WchLinkInterface::cachedVariantId and return the cached
+         * value in WchLinkInterface::getTargetId().
          */
+        std::optional<WchTargetVariantId> cachedVariantId;
         std::optional<WchTargetId> cachedTargetId;
-        std::optional<std::uint8_t> cachedTargetGroupId;
 
         void setClockSpeed(WchLinkTargetClockSpeed speed);
 

@@ -4,7 +4,8 @@
 
 namespace DebugToolDrivers::Wch
 {
-    using WchTargetId = std::uint32_t;
+    using WchTargetId = std::uint8_t;
+    using WchTargetVariantId = std::uint32_t;
 
     enum class WchLinkVariant: std::uint8_t
     {
