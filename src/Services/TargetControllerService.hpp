@@ -61,14 +61,14 @@ namespace Services
          *
          * @return
          */
-        const Targets::TargetDescriptor& getTargetDescriptor() const;
+        [[nodiscard]] const Targets::TargetDescriptor& getTargetDescriptor() const;
 
         /**
          * Fetches the current target state.
          *
          * @return
          */
-        const Targets::TargetState& getTargetState() const;
+        [[nodiscard]] const Targets::TargetState& getTargetState() const;
 
         /**
          * Requests the TargetController to halt execution on the target.
@@ -93,7 +93,7 @@ namespace Services
          *
          * @return
          */
-        Targets::TargetRegisterDescriptorAndValuePairs readRegisters(
+        [[nodiscard]] Targets::TargetRegisterDescriptorAndValuePairs readRegisters(
             const Targets::TargetRegisterDescriptors& descriptors
         ) const;
 
@@ -103,7 +103,7 @@ namespace Services
          * @param descriptor
          * @return
          */
-        Targets::TargetMemoryBuffer readRegister(const Targets::TargetRegisterDescriptor& descriptor) const;
+        [[nodiscard]] Targets::TargetMemoryBuffer readRegister(const Targets::TargetRegisterDescriptor& descriptor) const;
 
         /**
          * Requests the TargetController to write register values to the target.
@@ -134,7 +134,7 @@ namespace Services
          * @param excludedAddressRanges
          * @return
          */
-        Targets::TargetMemoryBuffer readMemory(
+        [[nodiscard]] Targets::TargetMemoryBuffer readMemory(
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
@@ -178,7 +178,7 @@ namespace Services
          * @return
          *  The installed breakpoint.
          */
-        Targets::TargetBreakpoint setBreakpoint(
+        [[nodiscard]] Targets::TargetBreakpoint setBreakpoint(
             Targets::TargetMemoryAddress address,
             Targets::TargetBreakpoint::Type preferredType = Targets::TargetBreakpoint::Type::HARDWARE
         ) const;
@@ -195,7 +195,7 @@ namespace Services
          *
          * @return
          */
-        Targets::TargetMemoryAddress getProgramCounter() const;
+        [[nodiscard]] Targets::TargetMemoryAddress getProgramCounter() const;
 
         /**
          * Sets the target's program counter to the given address.
@@ -209,7 +209,7 @@ namespace Services
          *
          * @param padDescriptors
          */
-        Targets::TargetGpioPadDescriptorAndStatePairs getGpioPadStates(
+        [[nodiscard]] Targets::TargetGpioPadDescriptorAndStatePairs getGpioPadStates(
             const Targets::TargetPadDescriptors& padDescriptors
         ) const;
 
@@ -229,7 +229,7 @@ namespace Services
          *
          * @return
          */
-        Targets::TargetStackPointer getStackPointer() const;
+        [[nodiscard]] Targets::TargetStackPointer getStackPointer() const;
 
         /**
          * Sets the target's stack pointer to the given value.
@@ -275,7 +275,7 @@ namespace Services
 
         std::optional<TargetController::AtomicSessionIdType> activeAtomicSessionId = std::nullopt;
 
-        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds(60000);
+        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds{30000};
 
         TargetController::AtomicSessionIdType startAtomicSession();
         void endAtomicSession(TargetController::AtomicSessionIdType sessionId);
