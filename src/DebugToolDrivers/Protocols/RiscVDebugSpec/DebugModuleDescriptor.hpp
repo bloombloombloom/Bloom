@@ -19,6 +19,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         std::vector<DebugModule::HartIndex> hartIndices;
 
         std::unordered_set<DebugModule::MemoryAccessStrategy> memoryAccessStrategies;
+        std::uint8_t abstractDataRegisterCount = 0;
         std::uint8_t programBufferSize = 0;
 
         std::unordered_map<TriggerModule::TriggerIndex, TriggerModule::TriggerDescriptor> triggerDescriptorsByIndex;

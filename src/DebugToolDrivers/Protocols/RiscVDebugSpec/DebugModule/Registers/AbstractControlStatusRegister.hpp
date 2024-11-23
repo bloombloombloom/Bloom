@@ -8,7 +8,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 {
     struct AbstractControlStatusRegister
     {
-        std::uint8_t dataCount = 0;
+        std::uint8_t dataRegisterCount = 0;
         AbstractCommandError commandError = AbstractCommandError::NONE;
         bool relaxedPrivilege = false;
         bool busy = false;
@@ -16,7 +16,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 
         static constexpr AbstractControlStatusRegister fromValue(RegisterValue value) {
             return {
-                .dataCount = static_cast<std::uint8_t>(value & 0x0F),
+                .dataRegisterCount = static_cast<std::uint8_t>(value & 0x0F),
                 .commandError = static_cast<AbstractCommandError>((value >> 8) & 0x07),
                 .relaxedPrivilege = static_cast<bool>(value & (0x01 << 11)),
                 .busy = static_cast<bool>(value & (0x01 << 12)),
@@ -26,7 +26,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
 
         [[nodiscard]] constexpr RegisterValue value() const {
             return RegisterValue{0}
-                | static_cast<RegisterValue>(this->dataCount & 0x0F)
+                | static_cast<RegisterValue>(this->dataRegisterCount & 0x0F)
                 | static_cast<RegisterValue>(this->commandError) << 8
                 | static_cast<RegisterValue>(this->relaxedPrivilege) << 11
                 | static_cast<RegisterValue>(this->busy) << 12

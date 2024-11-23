@@ -128,33 +128,37 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->initDebugControlStatusRegister();
 
         const auto abstractControlStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
+        this->debugModuleDescriptor.abstractDataRegisterCount = abstractControlStatusRegister.dataRegisterCount;
         this->debugModuleDescriptor.programBufferSize = abstractControlStatusRegister.programBufferSize;
 
+        Logger::debug("Data register count: " + std::to_string(this->debugModuleDescriptor.abstractDataRegisterCount));
         Logger::debug("Program buffer size: " + std::to_string(this->debugModuleDescriptor.programBufferSize));
 
-        if (this->debugModuleDescriptor.programBufferSize >= 3) {
-            this->debugModuleDescriptor.memoryAccessStrategies.insert(MemoryAccessStrategy::PROGRAM_BUFFER);
-        }
+        if (this->debugModuleDescriptor.abstractDataRegisterCount > 0) {
+            if (this->debugModuleDescriptor.programBufferSize >= 3) {
+                this->debugModuleDescriptor.memoryAccessStrategies.insert(MemoryAccessStrategy::PROGRAM_BUFFER);
+            }
 
-        /*
-         * Attempt to read a single word from the start of the system address space, via a memory access abstract
-         * command.
-         */
-        constexpr auto probingMemoryAccessCommand = AbstractCommandRegister{
-            .control = MemoryAccessControlField{
-                .postIncrement = true,
-                .size = MemoryAccessControlField::MemorySize::SIZE_32,
-            }.value(),
-            .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
-        };
+            /*
+             * Attempt to read a single word from the start of the system address space, via a memory access abstract
+             * command.
+             */
+            constexpr auto probingMemoryAccessCommand = AbstractCommandRegister{
+                .control = MemoryAccessControlField{
+                    .postIncrement = true,
+                    .size = MemoryAccessControlField::MemorySize::SIZE_32,
+                }.value(),
+                .commandType = AbstractCommandRegister::CommandType::MEMORY_ACCESS
+            };
 
-        this->dtmInterface.writeDebugModuleRegister(
-            RegisterAddress::ABSTRACT_DATA_1,
-            this->targetDescriptionFile.getSystemAddressSpace().startAddress
-        );
+            this->dtmInterface.writeDebugModuleRegister(
+                RegisterAddress::ABSTRACT_DATA_1,
+                this->targetDescriptionFile.getSystemAddressSpace().startAddress
+            );
 
-        if (this->tryExecuteAbstractCommand(probingMemoryAccessCommand) == AbstractCommandError::NONE) {
-            this->debugModuleDescriptor.memoryAccessStrategies.insert(MemoryAccessStrategy::ABSTRACT_COMMAND);
+            if (this->tryExecuteAbstractCommand(probingMemoryAccessCommand) == AbstractCommandError::NONE) {
+                this->debugModuleDescriptor.memoryAccessStrategies.insert(MemoryAccessStrategy::ABSTRACT_COMMAND);
+            }
         }
 
         if (this->debugModuleDescriptor.memoryAccessStrategies.empty()) {
