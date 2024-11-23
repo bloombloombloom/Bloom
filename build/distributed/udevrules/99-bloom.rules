@@ -30,4 +30,7 @@ ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2177", MODE="0666"
 # MPLAB Snap In-Circuit Debugger
 ACTION=="add", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2180", MODE="0666"
 
+# WCH-LinkE
+ACTION=="add", ATTR{idVendor}=="1a86", ATTR{idProduct}=="8010", MODE="0666"
+
 LABEL="bloom_end"
