@@ -65,7 +65,7 @@ namespace Targets::RiscV::Wch
                 hardwareBreakpointCount,
                 std::nullopt,
                 static_cast<std::uint16_t>(
-                    this->targetConfig.reserveSteppingBreakpoint && hardwareBreakpointCount > 0 ? 1 : 0
+                    this->targetConfig.reserveSteppingBreakpoint.value_or(false) && hardwareBreakpointCount > 0 ? 1 : 0
                 )
             }
         };

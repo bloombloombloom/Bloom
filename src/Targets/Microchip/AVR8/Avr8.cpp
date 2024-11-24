@@ -819,7 +819,7 @@ namespace Targets::Microchip::Avr8
             maxHardwareBreakpoints,
             std::nullopt,
             std::min(
-                static_cast<std::uint16_t>(this->targetConfig.reserveSteppingBreakpoint ? 1 : 0),
+                static_cast<std::uint16_t>(this->targetConfig.reserveSteppingBreakpoint.value_or(true) ? 1 : 0),
                 maxHardwareBreakpoints
             )
         };

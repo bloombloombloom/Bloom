@@ -72,7 +72,7 @@ struct TargetConfig
     /**
      * Determines if Bloom will reserve a single hardware breakpoint for stepping operations.
      */
-    bool reserveSteppingBreakpoint = true;
+    std::optional<bool> reserveSteppingBreakpoint = std::nullopt;
 
     /**
      * For extracting any target specific configuration. See Avr8TargetConfig::Avr8TargetConfig() and

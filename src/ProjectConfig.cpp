@@ -204,9 +204,7 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
     }
 
     if (targetNode["reserveSteppingBreakpoint"]) {
-        this->reserveSteppingBreakpoint = targetNode["reserveSteppingBreakpoint"].as<bool>(
-            this->reserveSteppingBreakpoint
-        );
+        this->reserveSteppingBreakpoint = targetNode["reserveSteppingBreakpoint"].as<bool>(false);
     }
 
     this->targetNode = targetNode;
