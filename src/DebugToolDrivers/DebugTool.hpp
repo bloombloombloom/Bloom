@@ -8,8 +8,6 @@
 #include "src/Targets/Microchip/AVR8/Avr8TargetConfig.hpp"
 
 #include "TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
-#include "TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
-#include "TargetInterfaces/RiscV/RiscVIdentificationInterface.hpp"
 #include "src/Targets/RiscV/TargetDescriptionFile.hpp"
 #include "src/Targets/RiscV/RiscVTargetConfig.hpp"
 
@@ -117,47 +115,6 @@ public:
      * @return
      */
     virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* getRiscVDebugInterface(
-        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
-        const Targets::RiscV::RiscVTargetConfig& targetConfig
-    ) {
-        return nullptr;
-    }
-
-    /**
-     * Some debug tools are unable to program RISC-V targets via the RISC-V debug interface. Such tools must provide
-     * an implementation of the RiscVProgramInterface, which will allow them to implement flash memory writing as a
-     * separate function, independent of the debug interface.
-     *
-     * The RISC-V target driver will forward all flash memory writes to the RiscVProgramInterface returned by this
-     * member function. If nullptr is returned, the driver will fall back to the RiscVDebugInterface for flash memory
-     * writes.
-     *
-     * Note: the caller of this function will not manage the lifetime of the returned instance.
-     *
-     * @return
-     */
-    virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVProgramInterface* getRiscVProgramInterface(
-        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
-        const Targets::RiscV::RiscVTargetConfig& targetConfig
-    ) {
-        return nullptr;
-    }
-
-    /**
-     * The RISC-V debug spec does not define a target ID. But vendors typically assign each model with an ID and
-     * provide a means to extract it from the connected target, via the debug tool.
-     *
-     * For example, WCH debug tools return the target ID in response to the target activation command. For more, see
-     * the implementation of the WCH-Link protocol.
-     *
-     * Bloom uses the target ID for verification purposes. We simply compare it to the one we have in the TDF and shout
-     * if they don't match.
-     *
-     * Note: the caller of this function will not manage the lifetime of the returned instance.
-     *
-     * @return
-     */
-    virtual DebugToolDrivers::TargetInterfaces::RiscV::RiscVIdentificationInterface* getRiscVIdentificationInterface(
         const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
         const Targets::RiscV::RiscVTargetConfig& targetConfig
     ) {

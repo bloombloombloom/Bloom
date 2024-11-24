@@ -16,25 +16,6 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     {
     public:
         /**
-         * Should prepare for and then activate the physical interface between the debug tool and the RISC-V target.
-         *
-         * Should throw an exception if activation fails. The error will be considered fatal, and result in a shutdown.
-         *
-         * Unless otherwise stated, it can be assumed that this function will be called (and must succeed)
-         * before any of the other functions below this point are called. In other words, we can assume that the
-         * interface has been activated in the implementations of any of the functions below this point.
-         */
-        virtual void activate() = 0;
-
-        /**
-         * Should deactivate the physical interface between the debug tool and the RISC-V target.
-         *
-         * CAUTION: This function **CAN** be called before activate(), or in instances where activate() failed (threw
-         * an exception). Implementations must accommodate this.
-         */
-        virtual void deactivate() = 0;
-
-        /**
          * Should read the value of a debug module register.
          *
          * @param address

@@ -17,9 +17,10 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
     class RiscVDebugInterface
     {
     public:
-        virtual void init() = 0;
         virtual void activate() = 0;
         virtual void deactivate() = 0;
+
+        virtual std::string getDeviceId() = 0;
 
         virtual Targets::TargetExecutionState getExecutionState() = 0;
 
@@ -53,6 +54,10 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemoryBufferSpan buffer
+        ) = 0;
+        virtual void eraseMemory(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
         ) = 0;
     };
 }

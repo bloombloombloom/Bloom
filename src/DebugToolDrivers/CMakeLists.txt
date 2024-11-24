@@ -45,7 +45,7 @@ target_sources(
 
         # WCH debug tools and interface implementations
         ${CMAKE_CURRENT_SOURCE_DIR}/WCH/Protocols/WchLink/WchLinkInterface.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/WCH/Protocols/WchLink/WchLinkProgrammingInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/WCH/WchLinkDebugInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/WCH/WchLinkToolConfig.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/WCH/WchLinkBase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/WCH/WchLinkE/WchLinkE.cpp

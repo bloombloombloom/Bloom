@@ -39,23 +39,11 @@ namespace Targets::RiscV
     {}
 
     bool RiscV::supportsDebugTool(DebugTool* debugTool) {
-        return
-            debugTool->getRiscVDebugInterface(this->targetDescriptionFile, this->targetConfig) != nullptr
-            && debugTool->getRiscVProgramInterface(this->targetDescriptionFile, this->targetConfig) != nullptr
-            && debugTool->getRiscVIdentificationInterface(this->targetDescriptionFile, this->targetConfig) != nullptr
-        ;
+        return debugTool->getRiscVDebugInterface(this->targetDescriptionFile, this->targetConfig) != nullptr;
     }
 
     void RiscV::setDebugTool(DebugTool* debugTool) {
         this->riscVDebugInterface = debugTool->getRiscVDebugInterface(this->targetDescriptionFile, this->targetConfig);
-        this->riscVProgramInterface = debugTool->getRiscVProgramInterface(
-            this->targetDescriptionFile,
-            this->targetConfig
-        );
-        this->riscVIdInterface = debugTool->getRiscVIdentificationInterface(
-            this->targetDescriptionFile,
-            this->targetConfig
-        );
     }
 
     void RiscV::activate() {
@@ -249,78 +237,6 @@ namespace Targets::RiscV
             static_cast<TargetMemoryAddress>(startAddress + buffer.size()) - 1)
         );
 
-        if (
-            memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH
-            && this->isProgramMemory(
-                addressSpaceDescriptor,
-                memorySegmentDescriptor,
-                startAddress,
-                static_cast<TargetMemorySize>(buffer.size())
-            )
-        ) {
-            const auto alignmentSize = this->riscVProgramInterface->alignmentSize(
-                addressSpaceDescriptor,
-                memorySegmentDescriptor,
-                startAddress,
-                static_cast<TargetMemorySize>(buffer.size())
-            );
-
-            if (alignmentSize.has_value()) {
-                const auto bufferSize = static_cast<TargetMemorySize>(buffer.size());
-                const auto alignedStartAddress = (startAddress / *alignmentSize) * *alignmentSize;
-                const auto alignedBufferSize = static_cast<TargetMemorySize>(std::ceil(
-                    static_cast<double>(bufferSize) / static_cast<double>(*alignmentSize)
-                ) * *alignmentSize);
-
-                if (alignedStartAddress != startAddress || alignedBufferSize != bufferSize) {
-                    auto alignedBuffer = (alignedStartAddress < startAddress)
-                        ? this->readMemory(
-                            addressSpaceDescriptor,
-                            memorySegmentDescriptor,
-                            alignedStartAddress,
-                            (startAddress - alignedStartAddress),
-                            {}
-                        )
-                        : TargetMemoryBuffer{};
-
-                    alignedBuffer.resize(alignedBufferSize);
-
-                    std::copy(
-                        buffer.begin(),
-                        buffer.end(),
-                        alignedBuffer.begin() + (startAddress - alignedStartAddress)
-                    );
-
-                    const auto dataBack = this->readMemory(
-                        addressSpaceDescriptor,
-                        memorySegmentDescriptor,
-                        startAddress + bufferSize,
-                        alignedBufferSize - bufferSize - (startAddress - alignedStartAddress),
-                        {}
-                    );
-                    std::copy(
-                        dataBack.begin(),
-                        dataBack.end(),
-                        alignedBuffer.begin() + (startAddress - alignedStartAddress) + bufferSize
-                    );
-
-                    return this->riscVProgramInterface->writeProgramMemory(
-                        addressSpaceDescriptor,
-                        memorySegmentDescriptor,
-                        alignedStartAddress,
-                        alignedBuffer
-                    );
-                }
-            }
-
-            return this->riscVProgramInterface->writeProgramMemory(
-                addressSpaceDescriptor,
-                memorySegmentDescriptor,
-                startAddress,
-                buffer
-            );
-        }
-
         return this->riscVDebugInterface->writeMemory(
             addressSpaceDescriptor,
             memorySegmentDescriptor,
@@ -342,7 +258,7 @@ namespace Targets::RiscV
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor
     ) {
-        this->riscVProgramInterface->eraseProgramMemory(addressSpaceDescriptor, memorySegmentDescriptor);
+        this->riscVDebugInterface->eraseMemory(addressSpaceDescriptor, memorySegmentDescriptor);
     }
 
     TargetExecutionState RiscV::getExecutionState() {
@@ -358,7 +274,6 @@ namespace Targets::RiscV
     }
 
     void RiscV::setProgramCounter(TargetMemoryAddress programCounter) {
-        // TODO: test this
         this->riscVDebugInterface->writeCpuRegisters({
             {
                 this->pcRegisterDescriptor,

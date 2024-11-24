@@ -70,41 +70,20 @@ namespace DebugToolDrivers::Wch
         return UsbDevice::getSerialNumber();
     }
 
-    ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator* WchLinkBase::getRiscVDebugInterface(
+    WchLinkDebugInterface* WchLinkBase::getRiscVDebugInterface(
         const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
         const Targets::RiscV::RiscVTargetConfig& targetConfig
     ) {
-        using ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator;
 
-        if (!this->wchRiscVTranslator) {
-            this->wchRiscVTranslator = std::make_unique<DebugTranslator>(
-                *(this->wchLinkInterface),
-                this->toolConfig.riscVDebugTranslatorConfig,
+        if (!this->wchLinkDebugInterface) {
+            this->wchLinkDebugInterface = std::make_unique<WchLinkDebugInterface>(
+                this->toolConfig,
+                targetConfig,
                 targetDescriptionFile,
-                targetConfig
+                *(this->wchLinkInterface)
             );
         }
-        return this->wchRiscVTranslator.get();
-    }
-
-    Protocols::WchLink::WchLinkProgrammingInterface* WchLinkBase::getRiscVProgramInterface(
-        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
-        const Targets::RiscV::RiscVTargetConfig& targetConfig
-    ) {
-        if (!this->wchLinkProgrammingInterface) {
-            this->wchLinkProgrammingInterface = std::make_unique<Protocols::WchLink::WchLinkProgrammingInterface>(
-                *(this->wchLinkInterface),
-                targetDescriptionFile
-            );
-        }
-        return this->wchLinkProgrammingInterface.get();
-    }
-
-    Protocols::WchLink::WchLinkInterface* WchLinkBase::getRiscVIdentificationInterface(
-        const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
-        const Targets::RiscV::RiscVTargetConfig& targetConfig
-    ) {
-        return this->wchLinkInterface.get();
+        return this->wchLinkDebugInterface.get();
     }
 
     const DeviceInfo& WchLinkBase::getDeviceInfo() const {

@@ -59,61 +59,24 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         };
     }
 
-    void WchLinkInterface::activate() {
-        this->setClockSpeed(WchLinkTargetClockSpeed::CLK_6000_KHZ);
+    void WchLinkInterface::setClockSpeed(WchLinkTargetClockSpeed speed, WchTargetId targetId) {
+        const auto speedIdsBySpeed = BiMap<WchLinkTargetClockSpeed, std::uint8_t>{
+            {WchLinkTargetClockSpeed::CLK_6000_KHZ, 0x01},
+            {WchLinkTargetClockSpeed::CLK_4000_KHZ, 0x02},
+            {WchLinkTargetClockSpeed::CLK_400_KHZ, 0x03},
+        };
 
-        auto response = this->sendCommandAndWaitForResponse(Commands::Control::AttachTarget{});
-        if (response.payload.size() != 5) {
-            throw Exceptions::DeviceCommunicationFailure{"Unexpected response payload size for AttachTarget command"};
-        }
-
-        this->cachedTargetId = response.payload[0];
-
-        /*
-         * For some WCH targets, we must send another command to the debug tool, immediately after attaching.
-         *
-         * I don't know what this post-attach command does. But what I *do* know is that the target and/or the debug
-         * tool will misbehave if we don't send it immediately after the attach.
-         *
-         * More specifically, the debug tool will read an invalid target variant ID upon the mutation of the target's
-         * program buffer. So when we write to progbuf2, progbuf3, progbuf4 or progbuf5, all subsequent reads of the
-         * target variant ID will yield invalid values, until the target and debug tool have been power cycled.
-         * Interestingly, when we restore those progbuf registers to their original values, the reading of the target
-         * variant ID works again. So I suspect the debug tool is using the target's program buffer to read the
-         * variant ID, but it's assuming the program buffer hasn't changed. Maybe.
-         *
-         * So how does this post-attach command fix this issue? I don't know. I just know that it does.
-         *
-         * In addition to sending the post-attach command, we have to send another attach command, because the target
-         * variant ID returned in the response of the first attach command may be invalid. Sending another attach
-         * command will ensure that we have a valid target variant ID.
-         */
-        if (this->cachedTargetId == 0x09) {
-            this->sendCommandAndWaitForResponse(Commands::Control::PostAttach{});
-            response = this->sendCommandAndWaitForResponse(Commands::Control::AttachTarget{});
-
-            if (response.payload.size() != 5) {
-                throw Exceptions::DeviceCommunicationFailure{
-                    "Unexpected response payload size for subsequent AttachTarget command"
-                };
-            }
-        }
-
-        this->cachedVariantId = static_cast<WchTargetVariantId>(
-            (response.payload[1] << 24) | (response.payload[2] << 16) | (response.payload[3] << 8)
-                | (response.payload[4])
+        const auto response = this->sendCommandAndWaitForResponse(
+            Commands::SetClockSpeed{targetId, speedIdsBySpeed.at(speed)}
         );
-    }
 
-    void WchLinkInterface::deactivate() {
-        const auto response = this->sendCommandAndWaitForResponse(Commands::Control::DetachTarget{});
         if (response.payload.size() != 1) {
-            throw Exceptions::DeviceCommunicationFailure{"Unexpected response payload size for DetachTarget command"};
+            throw Exceptions::DeviceCommunicationFailure{"Unexpected response payload size for SetClockSpeed command"};
         }
-    }
 
-    std::string WchLinkInterface::getDeviceId() {
-        return "0x" + Services::StringService::toHex(this->cachedVariantId.value());
+        if (response.payload[0] != 0x01) {
+            throw Exceptions::DeviceCommunicationFailure{"Unexpected response for SetClockSpeed command"};
+        }
     }
 
     DebugModule::RegisterValue WchLinkInterface::readDebugModuleRegister(DebugModule::RegisterAddress address) {
@@ -275,33 +238,9 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         }
 
         this->sendCommandAndWaitForResponse(Commands::EndProgrammingSession{});
-
-        this->deactivate();
-        this->sendCommandAndWaitForResponse(Commands::Control::GetDeviceInfo{});
-        this->activate();
     }
 
     void WchLinkInterface::eraseChip() {
         this->sendCommandAndWaitForResponse(Commands::EraseChip{});
-    }
-
-    void WchLinkInterface::setClockSpeed(WchLinkTargetClockSpeed speed) {
-        const auto speedIdsBySpeed = BiMap<WchLinkTargetClockSpeed, std::uint8_t>{
-            {WchLinkTargetClockSpeed::CLK_6000_KHZ, 0x01},
-            {WchLinkTargetClockSpeed::CLK_4000_KHZ, 0x02},
-            {WchLinkTargetClockSpeed::CLK_400_KHZ, 0x03},
-        };
-
-        const auto response = this->sendCommandAndWaitForResponse(
-            Commands::SetClockSpeed{this->cachedTargetId.value_or(0x01), speedIdsBySpeed.at(speed)}
-        );
-
-        if (response.payload.size() != 1) {
-            throw Exceptions::DeviceCommunicationFailure{"Unexpected response payload size for SetClockSpeed command"};
-        }
-
-        if (response.payload[0] != 0x01) {
-            throw Exceptions::DeviceCommunicationFailure{"Unexpected response for SetClockSpeed command"};
-        }
     }
 }

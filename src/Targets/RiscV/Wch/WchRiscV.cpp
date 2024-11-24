@@ -26,7 +26,7 @@ namespace Targets::RiscV::Wch
          * the variant ID.
          */
         const auto variantsById = this->targetDescriptionFile.getVariantsByWchVariantId();
-        const auto deviceId = this->riscVIdInterface->getDeviceId();
+        const auto deviceId = this->riscVDebugInterface->getDeviceId();
 
         const auto variantIt = variantsById.find(deviceId);
         if (variantIt == variantsById.end()) {

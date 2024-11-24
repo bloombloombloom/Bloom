@@ -10,16 +10,17 @@
 #include <optional>
 #include <functional>
 
-#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
-
 #include "DebugTransportModuleInterface.hpp"
 #include "DebugTranslatorConfig.hpp"
 #include "DebugModuleDescriptor.hpp"
 
+#include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetState.hpp"
 #include "src/Targets/RiscV/TargetDescriptionFile.hpp"
 #include "src/Targets/RiscV/RiscVTargetConfig.hpp"
 #include "src/Targets/RiscV/Opcodes/Opcode.hpp"
-#include "src/Targets/TargetMemory.hpp"
 
 #include "Common.hpp"
 #include "Registers/CpuRegisterNumbers.hpp"
@@ -42,7 +43,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     /**
      * Implementation of a RISC-V debug translator
      */
-    class DebugTranslator: public ::DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface
+    class DebugTranslator
     {
     public:
         DebugTranslator(
@@ -54,29 +55,25 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         virtual ~DebugTranslator() = default;
 
-        void init() override;
-        void activate() override;
-        void deactivate() override;
+        void activate();
+        void deactivate();
 
-        Targets::TargetExecutionState getExecutionState() override;
+        Targets::TargetExecutionState getExecutionState();
 
-        void stop() override;
-        void run() override;
-        void step() override;
-        void reset() override;
+        void stop();
+        void run();
+        void step();
+        void reset();
 
-        void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
-        void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
-
-        std::uint16_t getHardwareBreakpointCount() override;
-        void setHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
-        void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
-        void clearAllHardwareBreakpoints() override;
+        std::uint16_t getTriggerCount() const;
+        void insertTriggerBreakpoint(Targets::TargetMemoryAddress address);
+        void clearTriggerBreakpoint(Targets::TargetMemoryAddress address);
+        void clearAllTriggerBreakpoints();
 
         Targets::TargetRegisterDescriptorAndValuePairs readCpuRegisters(
             const Targets::TargetRegisterDescriptors& descriptors
-        ) override;
-        void writeCpuRegisters(const Targets::TargetRegisterDescriptorAndValuePairs& registers) override;
+        );
+        void writeCpuRegisters(const Targets::TargetRegisterDescriptorAndValuePairs& registers);
 
         Targets::TargetMemoryBuffer readMemory(
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
@@ -84,13 +81,13 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
-        ) override;
+        );
         void writeMemory(
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemoryBufferSpan buffer
-        ) override;
+        );
 
     private:
         static constexpr auto DEBUG_MODULE_RESPONSE_DELAY = std::chrono::microseconds{10};

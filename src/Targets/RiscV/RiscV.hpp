@@ -11,8 +11,6 @@
 #include "TargetDescriptionFile.hpp"
 
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
-#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
-#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVIdentificationInterface.hpp"
 
 namespace Targets::RiscV
 {
@@ -97,8 +95,6 @@ namespace Targets::RiscV
         TargetDescriptionFile targetDescriptionFile;
 
         DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* riscVDebugInterface = nullptr;
-        DebugToolDrivers::TargetInterfaces::RiscV::RiscVProgramInterface* riscVProgramInterface = nullptr;
-        DebugToolDrivers::TargetInterfaces::RiscV::RiscVIdentificationInterface* riscVIdInterface = nullptr;
 
         /*
          * On RISC-V targets, CPU registers are typically only accessible via the debug module (we can't access them

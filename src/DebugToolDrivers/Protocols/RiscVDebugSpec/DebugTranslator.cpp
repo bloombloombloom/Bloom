@@ -77,13 +77,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         , targetConfig(targetConfig)
     {}
 
-    void DebugTranslator::init() {
-        // No pre-activation initialisation required.
-    }
-
     void DebugTranslator::activate() {
-        this->dtmInterface.activate();
-
         this->debugModuleDescriptor.hartIndices = this->discoverHartIndices();
         if (this->debugModuleDescriptor.hartIndices.empty()) {
             throw Exceptions::TargetOperationFailure{"Failed to discover any RISC-V harts"};
@@ -122,7 +116,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         if (!this->debugModuleDescriptor.triggerDescriptorsByIndex.empty()) {
             // Clear any left-over triggers from the previous debug session
-            this->clearAllHardwareBreakpoints();
+            this->clearAllTriggerBreakpoints();
         }
 
         this->initDebugControlStatusRegister();
@@ -177,7 +171,6 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
     void DebugTranslator::deactivate() {
         this->disableDebugModule();
-        this->dtmInterface.deactivate();
     }
 
     TargetExecutionState DebugTranslator::getExecutionState() {
@@ -305,19 +298,11 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->initDebugControlStatusRegister();
     }
 
-    void DebugTranslator::setSoftwareBreakpoint(TargetMemoryAddress address) {
-        throw Exceptions::Exception{"SW breakpoints not supported"};
-    }
-
-    void DebugTranslator::clearSoftwareBreakpoint(TargetMemoryAddress address) {
-        throw Exceptions::Exception{"SW breakpoints not supported"};
-    }
-
-    std::uint16_t DebugTranslator::getHardwareBreakpointCount() {
+    std::uint16_t DebugTranslator::getTriggerCount() const {
         return static_cast<std::uint16_t>(this->debugModuleDescriptor.triggerDescriptorsByIndex.size());
     }
 
-    void DebugTranslator::setHardwareBreakpoint(TargetMemoryAddress address) {
+    void DebugTranslator::insertTriggerBreakpoint(TargetMemoryAddress address) {
         using TriggerModule::TriggerType;
 
         const auto triggerDescriptorOpt = this->getAvailableTrigger();
@@ -361,7 +346,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         throw Exceptions::Exception{"Unsupported trigger"};
     }
 
-    void DebugTranslator::clearHardwareBreakpoint(TargetMemoryAddress address) {
+    void DebugTranslator::clearTriggerBreakpoint(TargetMemoryAddress address) {
         const auto triggerIndexIt = this->triggerIndicesByBreakpointAddress.find(address);
         if (triggerIndexIt == this->triggerIndicesByBreakpointAddress.end()) {
             throw Exceptions::Exception{"Unknown hardware breakpoint"};
@@ -374,7 +359,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->allocatedTriggerIndices.erase(triggerDescriptor.index);
     }
 
-    void DebugTranslator::clearAllHardwareBreakpoints() {
+    void DebugTranslator::clearAllTriggerBreakpoints() {
         // To ensure that any untracked breakpoints are cleared, we clear all triggers on the target.
         for (const auto& [triggerIndex, triggerDescriptor] : this->debugModuleDescriptor.triggerDescriptorsByIndex) {
             this->clearTrigger(triggerDescriptor);

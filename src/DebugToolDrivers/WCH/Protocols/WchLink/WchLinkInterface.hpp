@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTransportModuleInterface.hpp"
-#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVProgramInterface.hpp"
-#include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVIdentificationInterface.hpp"
 
 #include "src/DebugToolDrivers/USB/UsbInterface.hpp"
 #include "src/DebugToolDrivers/USB/UsbDevice.hpp"
@@ -21,23 +19,21 @@
 
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
+#include "src/Services/StringService.hpp"
+
 namespace DebugToolDrivers::Wch::Protocols::WchLink
 {
     /**
-     * Implementation of the WCH-Link protocol, which provides an implementation of a RISC-V DTM interface, and a
-     * target identification interface.
+     * Implementation of the WCH-Link protocol, which provides an implementation of a RISC-V DTM interface.
      */
     class WchLinkInterface
         : public ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTransportModuleInterface
-        , public TargetInterfaces::RiscV::RiscVIdentificationInterface
     {
     public:
         WchLinkInterface(Usb::UsbInterface& usbInterface, Usb::UsbDevice& usbDevice);
 
         DeviceInfo getDeviceInfo();
-        void activate() override;
-        void deactivate() override;
-        std::string getDeviceId() override;
+        void setClockSpeed(WchLinkTargetClockSpeed speed, WchTargetId targetId);
 
         ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterValue readDebugModuleRegister(
             ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterAddress address
@@ -48,41 +44,13 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         ) override;
 
         void writePartialPage(Targets::TargetMemoryAddress startAddress, Targets::TargetMemoryBufferSpan buffer);
-
         void writeFullPage(
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemoryBufferSpan buffer,
             Targets::TargetMemorySize pageSize,
             std::span<const unsigned char> flashProgramOpcodes
         );
-
         void eraseChip();
-
-    private:
-        static constexpr std::uint8_t USB_COMMAND_ENDPOINT_IN = 0x81;
-        static constexpr std::uint8_t USB_COMMAND_ENDPOINT_OUT = 0x01;
-        static constexpr std::uint8_t USB_DATA_ENDPOINT_IN = 0x82;
-        static constexpr std::uint8_t USB_DATA_ENDPOINT_OUT = 0x02;
-        static constexpr std::uint8_t DMI_OP_MAX_RETRY = 10;
-
-        Usb::UsbInterface& usbInterface;
-
-        std::uint16_t commandEndpointMaxPacketSize = 0;
-        std::uint16_t dataEndpointMaxPacketSize = 0;
-        // TODO: Move this into a config param
-        std::chrono::microseconds dmiOpRetryDelay = std::chrono::microseconds{10};
-
-        /**
-         * The 'target activation' command returns a payload of 5 bytes.
-         *
-         * The last 4 bytes hold the WCH target variant ID. Given that the 'target activation' command appears to be
-         * the only way to obtain this ID, we cache it via WchLinkInterface::cachedVariantId and return the cached
-         * value in WchLinkInterface::getTargetId().
-         */
-        std::optional<WchTargetVariantId> cachedVariantId;
-        std::optional<WchTargetId> cachedTargetId;
-
-        void setClockSpeed(WchLinkTargetClockSpeed speed);
 
         template <class CommandType>
         auto sendCommandAndWaitForResponse(const CommandType& command) {
@@ -116,12 +84,15 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
             }
 
             if (rawResponse[0] == 0x81) {
-                // TODO: Create ErrorResponse exception class and throw an instance of it here.
                 throw Exceptions::DeviceCommunicationFailure{"Error response"};
             }
 
             if (rawResponse[1] != command.commandId) {
-                throw Exceptions::DeviceCommunicationFailure{"Missing/invalid command ID in response from device"};
+                throw Exceptions::DeviceCommunicationFailure{
+                    "Missing/invalid command ID in response from device 0x"
+                        + Services::StringService::toHex(rawResponse[1]) + " - expected: 0x"
+                        + Services::StringService::toHex(command.commandId)
+                };
             }
 
             if ((rawResponse.size() - 3) != rawResponse[2]) {
@@ -132,5 +103,19 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
                 std::vector<unsigned char>{rawResponse.begin() + 3, rawResponse.end()}
             };
         }
+
+    private:
+        static constexpr std::uint8_t USB_COMMAND_ENDPOINT_IN = 0x81;
+        static constexpr std::uint8_t USB_COMMAND_ENDPOINT_OUT = 0x01;
+        static constexpr std::uint8_t USB_DATA_ENDPOINT_IN = 0x82;
+        static constexpr std::uint8_t USB_DATA_ENDPOINT_OUT = 0x02;
+        static constexpr std::uint8_t DMI_OP_MAX_RETRY = 10;
+
+        Usb::UsbInterface& usbInterface;
+
+        std::uint16_t commandEndpointMaxPacketSize = 0;
+        std::uint16_t dataEndpointMaxPacketSize = 0;
+        // TODO: Move this into a config param
+        std::chrono::microseconds dmiOpRetryDelay = std::chrono::microseconds{10};
     };
 }

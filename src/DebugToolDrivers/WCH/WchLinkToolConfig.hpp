@@ -13,7 +13,7 @@ namespace DebugToolDrivers::Wch
     struct WchLinkToolConfig: public DebugToolConfig
     {
     public:
-        Protocols::RiscVDebugSpec::DebugTranslatorConfig riscVDebugTranslatorConfig = {};
+        ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslatorConfig riscVDebugTranslatorConfig = {};
 
         explicit WchLinkToolConfig(const DebugToolConfig& toolConfig);
     };
