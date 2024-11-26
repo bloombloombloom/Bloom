@@ -77,7 +77,7 @@ namespace DebugToolDrivers::Wch
         ) override;
 
     private:
-        static constexpr Targets::TargetMemorySize MAX_PARTIAL_PAGE_WRITE_SIZE = 64;
+        static constexpr Targets::TargetMemorySize MAX_PARTIAL_BLOCK_WRITE_SIZE = 64;
 
         const WchLinkToolConfig& toolConfig;
         const Targets::RiscV::RiscVTargetConfig& targetConfig;
@@ -97,7 +97,7 @@ namespace DebugToolDrivers::Wch
         std::optional<WchTargetId> cachedTargetId;
 
         std::span<const unsigned char> flashProgramOpcodes;
-        Targets::TargetMemorySize programmingPacketSize;
+        Targets::TargetMemorySize programmingBlockSize;
 
         void writeFlashMemory(Targets::TargetMemoryAddress startAddress, Targets::TargetMemoryBufferSpan buffer);
         void eraseFlashMemory();

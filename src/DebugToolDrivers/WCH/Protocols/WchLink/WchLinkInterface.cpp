@@ -9,7 +9,7 @@
 #include "Commands/Control/PostAttach.hpp"
 #include "Commands/SetClockSpeed.hpp"
 #include "Commands/DebugModuleInterfaceOperation.hpp"
-#include "Commands/PreparePartialFlashPageWrite.hpp"
+#include "Commands/PreparePartialFlashBlockWrite.hpp"
 #include "Commands/StartProgrammingSession.hpp"
 #include "Commands/EndProgrammingSession.hpp"
 #include "Commands/SetFlashWriteRegion.hpp"
@@ -138,7 +138,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         throw Exceptions::DeviceCommunicationFailure{"DMI operation timed out"};
     }
 
-    void WchLinkInterface::writePartialPage(
+    void WchLinkInterface::writeFlashPartialBlock(
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemoryBufferSpan buffer
     ) {
@@ -156,12 +156,12 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
                 )
             );
             const auto response = this->sendCommandAndWaitForResponse(
-                Commands::PreparePartialFlashPageWrite{startAddress + (packetSize * i), segmentSize}
+                Commands::PreparePartialFlashBlockWrite{startAddress + (packetSize * i), segmentSize}
             );
 
             if (response.payload.size() != 1) {
                 throw Exceptions::DeviceCommunicationFailure{
-                    "Unexpected response payload size for PreparePartialFlashPageWrite command"
+                    "Unexpected response payload size for PreparePartialFlashBlockWrite command"
                 };
             }
 
@@ -173,32 +173,32 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
             const auto rawResponse = this->usbInterface.readBulk(WchLinkInterface::USB_DATA_ENDPOINT_IN);
             if (rawResponse.size() != 4) {
-                throw Exceptions::DeviceCommunicationFailure{"Unexpected response size for partial flash page write"};
+                throw Exceptions::DeviceCommunicationFailure{"Unexpected response size for partial flash block write"};
             }
 
             /*
-             * I have no idea what any of these bytes mean. I've not been able to find any documentation for
-             * this. All I know is that these values indicate a successful write.
+             * I have no idea what any of these bytes mean. I've not been able to find any documentation for this.
+             * All I know is that these values indicate a successful write.
              */
             if (rawResponse[0] != 0x41 || rawResponse[1] != 0x01 || rawResponse[2] != 0x01 || rawResponse[3] != 0x02) {
-                throw Exceptions::DeviceCommunicationFailure{"Partial flash page write failed"};
+                throw Exceptions::DeviceCommunicationFailure{"Partial flash block write failed"};
             }
         }
     }
 
-    void WchLinkInterface::writeFullPage(
+    void WchLinkInterface::writeFlashFullBlocks(
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemoryBufferSpan buffer,
-        Targets::TargetMemorySize pageSize,
+        Targets::TargetMemorySize blockSize,
         std::span<const unsigned char> flashProgramOpcodes
     ) {
-        assert((buffer.size() % pageSize) == 0);
+        assert((buffer.size() % blockSize) == 0);
 
         const auto bufferSize = static_cast<Targets::TargetMemorySize>(buffer.size());
 
         /*
          * We don't issue the StartProgrammingSession command here, as it seems to result in a failure when writing a
-         * flash page. We get a 0x05 in rawResponse[3], but I have no idea why.
+         * flash block. We get a 0x05 in rawResponse[3], but I have no idea why.
          */
         this->sendCommandAndWaitForResponse(Commands::SetFlashWriteRegion{startAddress, bufferSize});
         this->sendCommandAndWaitForResponse(Commands::StartRamCodeWrite{});
@@ -214,7 +214,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
         auto bytesWritten = Targets::TargetMemorySize{0};
         while (bytesWritten < bufferSize) {
-            const auto length = std::min(bufferSize - bytesWritten, pageSize);
+            const auto length = std::min(bufferSize - bytesWritten, blockSize);
 
             this->usbInterface.writeBulk(
                 WchLinkInterface::USB_DATA_ENDPOINT_OUT,
@@ -224,12 +224,12 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
             const auto rawResponse = this->usbInterface.readBulk(WchLinkInterface::USB_DATA_ENDPOINT_IN);
             if (rawResponse.size() != 4) {
-                throw Exceptions::DeviceCommunicationFailure{"Unexpected response size for flash page write"};
+                throw Exceptions::DeviceCommunicationFailure{"Unexpected response size for flash block write"};
             }
 
             if (rawResponse[3] != 0x02 && rawResponse[3] != 0x04) {
                 throw Exceptions::DeviceCommunicationFailure{
-                    "Flash page write failed - unexpected response (0x"
+                    "Flash block write failed - unexpected response (0x"
                         + Services::StringService::toHex(rawResponse[3]) + ")"
                 };
             }

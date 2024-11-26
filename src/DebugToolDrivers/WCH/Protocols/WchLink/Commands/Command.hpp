@@ -24,6 +24,11 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink::Commands
         std::uint8_t commandId;
         PayloadContainerType payload;
 
+        Command(std::uint8_t commandId, PayloadContainerType&& payload)
+            : commandId(commandId)
+            , payload(std::move(payload))
+        {};
+
         explicit Command(std::uint8_t commandId)
             : commandId(commandId)
         {};

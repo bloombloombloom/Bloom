@@ -43,11 +43,11 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
             ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterValue value
         ) override;
 
-        void writePartialPage(Targets::TargetMemoryAddress startAddress, Targets::TargetMemoryBufferSpan buffer);
-        void writeFullPage(
+        void writeFlashPartialBlock(Targets::TargetMemoryAddress startAddress, Targets::TargetMemoryBufferSpan buffer);
+        void writeFlashFullBlocks(
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemoryBufferSpan buffer,
-            Targets::TargetMemorySize pageSize,
+            Targets::TargetMemorySize blockSize,
             std::span<const unsigned char> flashProgramOpcodes
         );
         void eraseChip();
