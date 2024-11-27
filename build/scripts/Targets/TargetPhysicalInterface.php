@@ -24,7 +24,6 @@ enum TargetPhysicalInterface: string
             self::UPDI => 'UPDI',
             self::DEBUG_WIRE => 'debugWIRE',
             self::SDI => 'SDI',
-            default => 'Other'
         };
     }
 
@@ -34,7 +33,7 @@ enum TargetPhysicalInterface: string
             self::JTAG => 'jtag',
             self::PDI => 'pdi',
             self::UPDI => 'updi',
-            self::DEBUG_WIRE => 'debug-wire',
+            self::DEBUG_WIRE => 'debug_wire',
             self::SDI => 'sdi',
             default => null
         };

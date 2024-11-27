@@ -1,20 +1,20 @@
 environments:
   default:
-    shutdownPostDebugSession: true
+    shutdown_post_debug_session: true
 
     tool:
-      name: "xplained-pro"
+      name: "xplained_pro"
 
     target:
       name: "atmega4809"
-      physicalInterface: "updi"
-      hardwareBreakpoints: true
+      physical_interface: "updi"
+      hardware_breakpoints: true
 
     server:
-      name: "avr-gdb-rsp"
-      ipAddress: "127.0.0.1"
+      name: "avr_gdb_rsp"
+      ip_address: "127.0.0.1"
       port: 1442
-      rangeStepping: true
+      range_stepping: true
 
 insight:
-  activateOnStartup: false
+  activate_on_startup: false

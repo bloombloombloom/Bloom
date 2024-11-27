@@ -322,13 +322,13 @@ namespace TargetController
         // The debug tool names in this mapping should always be lower-case.
         return std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
             {
-                "atmel-ice",
+                "atmel_ice",
                 [this] {
                     return std::make_unique<AtmelIce>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
-                "power-debugger",
+                "power_debugger",
                 [this] {
                     return std::make_unique<PowerDebugger>(this->environmentConfig.debugToolConfig);
                 }
@@ -340,31 +340,31 @@ namespace TargetController
                 }
             },
             {
-                "pickit-4",
+                "pickit_4",
                 [this] {
                     return std::make_unique<MplabPickit4>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
-                "xplained-pro",
+                "xplained_pro",
                 [this] {
                     return std::make_unique<XplainedPro>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
-                "xplained-mini",
+                "xplained_mini",
                 [this] {
                     return std::make_unique<XplainedMini>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
-                "xplained-nano",
+                "xplained_nano",
                 [this] {
                     return std::make_unique<XplainedNano>(this->environmentConfig.debugToolConfig);
                 }
             },
             {
-                "curiosity-nano",
+                "curiosity_nano",
                 [this] {
                     return std::make_unique<CuriosityNano>(this->environmentConfig.debugToolConfig);
                 }
@@ -376,7 +376,7 @@ namespace TargetController
                 }
             },
             {
-                "wch-link-e",
+                "wch_link_e",
                 [this] {
                     return std::make_unique<WchLinkE>(this->environmentConfig.debugToolConfig);
                 }

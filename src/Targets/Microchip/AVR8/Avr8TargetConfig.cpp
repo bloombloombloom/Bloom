@@ -7,47 +7,36 @@ namespace Targets::Microchip::Avr8
     {
         const auto& targetNode = targetConfig.targetNode;
 
-        // The 'manageDwenFuseBit' param used to be 'updateDwenFuseBit' - we still support the old, for now.
-        if (targetNode["updateDwenFuseBit"]) {
-            this->manageDwenFuseBit = targetNode["updateDwenFuseBit"].as<bool>(
+        if (targetNode["manage_dwen_fuse_bit"]) {
+            this->manageDwenFuseBit = targetNode["manage_dwen_fuse_bit"].as<bool>(
                 this->manageDwenFuseBit
             );
         }
 
-        if (targetNode["manageDwenFuseBit"]) {
-            this->manageDwenFuseBit = targetNode["manageDwenFuseBit"].as<bool>(
-                this->manageDwenFuseBit
-            );
-        }
-
-        if (targetNode["cycleTargetPowerPostDwenUpdate"]) {
-            this->cycleTargetPowerPostDwenUpdate = targetNode["cycleTargetPowerPostDwenUpdate"].as<bool>(
+        if (targetNode["cycle_target_power_post_dwen_update"]) {
+            this->cycleTargetPowerPostDwenUpdate = targetNode["cycle_target_power_post_dwen_update"].as<bool>(
                 this->cycleTargetPowerPostDwenUpdate
             );
         }
 
-        if (targetNode["disableDebugWirePreDisconnect"]) {
-            this->disableDebugWireOnDeactivate = targetNode["disableDebugWirePreDisconnect"].as<bool>(
+        if (targetNode["disable_debug_wire_pre_disconnect"]) {
+            this->disableDebugWireOnDeactivate = targetNode["disable_debug_wire_pre_disconnect"].as<bool>(
                 this->disableDebugWireOnDeactivate
             );
         }
 
-        if (targetNode["targetPowerCycleDelay"]) {
-            this->targetPowerCycleDelay = std::chrono::milliseconds{targetNode["targetPowerCycleDelay"].as<int>(
+        if (targetNode["target_power_cycle_delay"]) {
+            this->targetPowerCycleDelay = std::chrono::milliseconds{targetNode["target_power_cycle_delay"].as<int>(
                 this->targetPowerCycleDelay.count()
             )};
         }
 
-        if (targetNode["manageOcdenFuseBit"]) {
-            this->manageOcdenFuseBit = targetNode["manageOcdenFuseBit"].as<bool>(
-                this->manageOcdenFuseBit
-            );
+        if (targetNode["manage_ocden_fuse_bit"]) {
+            this->manageOcdenFuseBit = targetNode["manage_ocden_fuse_bit"].as<bool>(this->manageOcdenFuseBit);
         }
 
-        if (targetNode["preserveEeprom"]) {
-            this->preserveEeprom = targetNode["preserveEeprom"].as<bool>(
-                this->preserveEeprom
-            );
+        if (targetNode["preserve_eeprom"]) {
+            this->preserveEeprom = targetNode["preserve_eeprom"].as<bool>(this->preserveEeprom);
         }
     }
 }

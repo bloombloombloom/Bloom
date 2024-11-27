@@ -10,17 +10,17 @@ namespace DebugToolDrivers::Microchip
     {
         const auto& toolNode = toolConfig.toolNode;
 
-        const auto edbgDriverNode = toolNode["edbgDriver"];
+        const auto edbgDriverNode = toolNode["edbg_driver"];
         if (edbgDriverNode) {
-            if (edbgDriverNode["cmsisCommandDelay"]) {
-                if (YamlUtilities::isCastable<std::uint16_t>(edbgDriverNode["cmsisCommandDelay"])) {
+            if (edbgDriverNode["cmsis_command_delay"]) {
+                if (YamlUtilities::isCastable<std::uint16_t>(edbgDriverNode["cmsis_command_delay"])) {
                     this->cmsisCommandDelay = std::chrono::milliseconds{
-                        edbgDriverNode["cmsisCommandDelay"].as<std::uint16_t>()
+                        edbgDriverNode["cmsis_command_delay"].as<std::uint16_t>()
                     };
 
                 } else {
                     Logger::error(
-                        "Invalid EDBG driver config parameter ('cmsisCommandDelay') provided - must be a 16-bit "
+                        "Invalid EDBG driver config parameter ('cmsis_command_delay') provided - must be a 16-bit "
                             "unsigned integer. The parameter will be ignored."
                     );
                 }

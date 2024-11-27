@@ -7,9 +7,9 @@ namespace DebugToolDrivers::Wch
     {
         const auto& toolNode = toolConfig.toolNode;
 
-        if (toolNode["riscVDebugTranslator"]) {
+        if (toolNode["riscv_debug_translator"]) {
             this->riscVDebugTranslatorConfig = ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslatorConfig{
-                toolNode["riscVDebugTranslator"]
+                toolNode["riscv_debug_translator"]
             };
         }
     }

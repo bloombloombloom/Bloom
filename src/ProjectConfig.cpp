@@ -74,8 +74,8 @@ ProjectConfig::ProjectConfig(const YAML::Node& configNode) {
         this->debugLogging = configNode["debugLoggingEnabled"].as<bool>(this->debugLogging);
     }
 
-    if (configNode["debugLogging"]) {
-        this->debugLogging = configNode["debugLogging"].as<bool>(this->debugLogging);
+    if (configNode["debug_logging"]) {
+        this->debugLogging = configNode["debug_logging"].as<bool>(this->debugLogging);
     }
 }
 
@@ -86,12 +86,12 @@ InsightConfig::InsightConfig(const YAML::Node& insightNode) {
         };
     }
 
-    if (insightNode["activateOnStartup"]) {
-        this->activateOnStartup = insightNode["activateOnStartup"].as<bool>(this->activateOnStartup);
+    if (insightNode["activate_on_startup"]) {
+        this->activateOnStartup = insightNode["activate_on_startup"].as<bool>(this->activateOnStartup);
     }
 
-    if (insightNode["shutdownOnClose"]) {
-        this->shutdownOnClose = insightNode["shutdownOnClose"].as<bool>(this->shutdownOnClose);
+    if (insightNode["shutdown_on_close"]) {
+        this->shutdownOnClose = insightNode["shutdown_on_close"].as<bool>(this->shutdownOnClose);
     }
 }
 
@@ -143,8 +143,8 @@ EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environ
         this->insightConfig = InsightConfig(environmentNode["insight"]);
     }
 
-    if (environmentNode["shutdownPostDebugSession"]) {
-        this->shutdownPostDebugSession = environmentNode["shutdownPostDebugSession"].as<bool>(
+    if (environmentNode["shutdown_post_debug_session"]) {
+        this->shutdownPostDebugSession = environmentNode["shutdown_post_debug_session"].as<bool>(
             this->shutdownPostDebugSession
         );
     }
@@ -166,19 +166,18 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
     this->name = StringService::asciiToLower(targetNode["name"].as<std::string>());
 
     static auto physicalInterfacesByConfigName = std::map<std::string, TargetPhysicalInterface>{
-        {"debugwire", TargetPhysicalInterface::DEBUG_WIRE}, // Deprecated - left here for backwards compatibility
-        {"debug-wire", TargetPhysicalInterface::DEBUG_WIRE},
+        {"debug_wire", TargetPhysicalInterface::DEBUG_WIRE},
         {"pdi", TargetPhysicalInterface::PDI},
         {"jtag", TargetPhysicalInterface::JTAG},
         {"updi", TargetPhysicalInterface::UPDI},
         {"sdi", TargetPhysicalInterface::SDI},
     };
 
-    if (!targetNode["physicalInterface"]) {
+    if (!targetNode["physical_interface"]) {
         throw Exceptions::InvalidConfig{"No physical interface specified."};
     }
 
-    const auto physicalInterfaceName = StringService::asciiToLower(targetNode["physicalInterface"].as<std::string>());
+    const auto physicalInterfaceName = StringService::asciiToLower(targetNode["physical_interface"].as<std::string>());
     const auto physicalInterfaceIt = physicalInterfacesByConfigName.find(physicalInterfaceName);
 
     if (physicalInterfaceIt == physicalInterfacesByConfigName.end()) {
@@ -195,16 +194,16 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
         this->variantName = StringService::asciiToLower(targetNode["variantName"].as<std::string>());
     }
 
-    if (targetNode["hardwareBreakpoints"]) {
-        this->hardwareBreakpoints = targetNode["hardwareBreakpoints"].as<bool>(this->hardwareBreakpoints);
+    if (targetNode["hardware_breakpoints"]) {
+        this->hardwareBreakpoints = targetNode["hardware_breakpoints"].as<bool>(this->hardwareBreakpoints);
     }
 
-    if (targetNode["programMemoryCache"]) {
-        this->programMemoryCache = targetNode["programMemoryCache"].as<bool>(this->programMemoryCache);
+    if (targetNode["program_memory_cache"]) {
+        this->programMemoryCache = targetNode["program_memory_cache"].as<bool>(this->programMemoryCache);
     }
 
-    if (targetNode["reserveSteppingBreakpoint"]) {
-        this->reserveSteppingBreakpoint = targetNode["reserveSteppingBreakpoint"].as<bool>(false);
+    if (targetNode["reserve_stepping_breakpoint"]) {
+        this->reserveSteppingBreakpoint = targetNode["reserve_stepping_breakpoint"].as<bool>(false);
     }
 
     this->targetNode = targetNode;
