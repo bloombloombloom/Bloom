@@ -13,6 +13,7 @@ use Targets\TargetRegisterGroup;
 require_once __DIR__ . "/../TargetDescriptionFile.php";
 require_once __DIR__ . "/../Services/StringService.php";
 require_once __DIR__ . "/AvrFamily.php";
+require_once __DIR__ . "/AvrIsa.php";
 require_once __DIR__ . "/Signature.php";
 require_once __DIR__ . "/DebugWireParameters.php";
 require_once __DIR__ . "/IspParameters.php";
@@ -58,6 +59,11 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
     public function getAvrFamily(): ?AvrFamily
     {
         return AvrFamily::tryFrom($this->deviceAttributesByName['avr-family']);
+    }
+
+    public function getAvrIsa(): ?AvrIsa
+    {
+        return AvrIsa::tryFrom($this->deviceAttributesByName['architecture']);
     }
 
     public function getDebugWireParameters(): DebugWireParameters

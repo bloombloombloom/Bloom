@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<device name="AT90USB1286" family="AVR8" configuration-value="at90usb1286" architecture="AVR8" avr-family="MEGA">
+<device name="AT90USB1286" family="AVR8" configuration-value="at90usb1286" architecture="AVRe+" avr-family="MEGA">
     <property-groups>
         <property-group key="signatures">
             <property key="jtagid" value="0x0978203F"/>

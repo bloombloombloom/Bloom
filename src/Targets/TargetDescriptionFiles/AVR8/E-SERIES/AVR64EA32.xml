@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<device name="AVR64EA32" family="AVR8" configuration-value="avr64ea32" architecture="AVR8X" avr-family="EA">
+<device name="AVR64EA32" family="AVR8" configuration-value="avr64ea32" architecture="AVRxt" avr-family="EA">
     <property-groups>
         <property-group key="programming_info">
             <property key="fuse_enabled_value" value="1"/>

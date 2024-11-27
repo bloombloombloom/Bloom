@@ -3,6 +3,7 @@ namespace Targets\TargetDescriptionFiles\AVR8\Services;
 
 use Targets\TargetDescriptionFiles\Avr8\Avr8TargetDescriptionFile;
 use Targets\TargetDescriptionFiles\Avr8\AvrFamily;
+use Targets\TargetDescriptionFiles\Avr8\AvrIsa;
 use Targets\TargetDescriptionFiles\Avr8\DebugWireParameters;
 use Targets\TargetDescriptionFiles\Avr8\IspParameters;
 use Targets\TargetDescriptionFiles\Avr8\JtagParameters;
@@ -96,7 +97,20 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         $family = $tdf->getAvrFamily();
         if ($family === null) {
-            $failures[] = 'Unknown AVR8 family';
+            $failures[] = 'Missing/unknown AVR8 family';
+        }
+
+        $isa = $tdf->getAvrIsa();
+        if ($isa === null) {
+            $failures[] = 'Missing/unknown AVR ISA';
+        }
+
+        if ($isa === AvrIsa::AVR_RC) {
+            /*
+             * The "reduced core" only implements 16 GPRs. Bloom assumes all AVRs have 32 GPRs.
+             * Not sure if any AVRrc targets even have debug support...
+             */
+            $failures[] = 'Bloom does not support AVRrc targets';
         }
 
         // The target must have at least one SP register, and it must reside in the CPU peripheral.

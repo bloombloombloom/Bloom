@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<device name="AVR128DB28" family="AVR8" configuration-value="avr128db28" architecture="AVR8X" avr-family="DB">
+<device name="AVR128DB28" family="AVR8" configuration-value="avr128db28" architecture="AVRxt" avr-family="DB">
     <property-groups>
         <property-group key="ocd_features">
             <property key="break_pin" value="PF6"/>

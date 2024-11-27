@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<device name="ATmega328PB" family="AVR8" configuration-value="atmega328pb" architecture="AVR8" avr-family="MEGA">
+<device name="ATmega328PB" family="AVR8" configuration-value="atmega328pb" architecture="AVRe+" avr-family="MEGA">
     <property-groups>
         <property-group key="signatures">
             <property key="jtagid" value="0x9516"/>

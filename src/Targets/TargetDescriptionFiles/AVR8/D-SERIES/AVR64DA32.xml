@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<device name="AVR64DA32" family="AVR8" configuration-value="avr64da32" architecture="AVR8X" avr-family="DA">
+<device name="AVR64DA32" family="AVR8" configuration-value="avr64da32" architecture="AVRxt" avr-family="DA">
     <property-groups>
         <property-group key="ocd_features">
             <property key="break_pin" value="PF6"/>
