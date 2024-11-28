@@ -118,7 +118,7 @@ namespace Targets::RiscV::Wch
          *
          * @TODO: Currently, this just assumes that the alias segment always maps to the program memory segment, but I
          *        believe it may map to the boot program memory segment in some cases. This needs to be revisited
-         *        before v1.1.0.
+         *        before v2.0.0.
          */
         if (memorySegmentDescriptor == this->mappedProgramMemorySegmentDescriptor) {
             const auto newAddress = startAddress - this->mappedProgramMemorySegmentDescriptor.addressRange.startAddress

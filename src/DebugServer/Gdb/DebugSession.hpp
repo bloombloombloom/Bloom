@@ -36,7 +36,7 @@ namespace DebugServer::Gdb
          * The current server configuration.
          *
          * TODO: I think this should be moved out of the DebugSession struct and passed into CommandPacket::handle()
-         *       function. Review after v1.1.0.
+         *       function. Review after v2.0.0.
          */
         const GdbDebugServerConfig& serverConfig;
 

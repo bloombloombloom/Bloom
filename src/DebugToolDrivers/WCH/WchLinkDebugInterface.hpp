@@ -77,8 +77,6 @@ namespace DebugToolDrivers::Wch
         ) override;
 
     private:
-        static constexpr Targets::TargetMemorySize MAX_PARTIAL_BLOCK_WRITE_SIZE = 64;
-
         const WchLinkToolConfig& toolConfig;
         const Targets::RiscV::RiscVTargetConfig& targetConfig;
         const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile;

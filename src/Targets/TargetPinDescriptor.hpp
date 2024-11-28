@@ -10,7 +10,7 @@ namespace Targets
     {
     public:
         std::string position;
-        std::uint16_t numericPosition; // TODO: Consider removing this bodge. Review after v1.1.0
+        std::uint16_t numericPosition; // TODO: Consider removing this bodge. Review after v2.0.0
         std::optional<std::string> padKey;
 
         TargetPinDescriptor(

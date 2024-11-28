@@ -11,6 +11,7 @@
 #include "Exceptions/ClientCommunicationError.hpp"
 
 #include "src/Exceptions/Exception.hpp"
+#include "src/Exceptions/InternalFatalErrorException.hpp"
 
 #include "src/Logger/Logger.hpp"
 #include "src/Services/StringService.hpp"
@@ -207,6 +208,10 @@ namespace DebugServer::Gdb
         bool interruptible,
         std::optional<std::chrono::milliseconds> timeout
     ) {
+        if (bytes.has_value() && *bytes > Connection::ABSOLUTE_MAXIMUM_PACKET_READ_SIZE) {
+            throw InternalFatalErrorException{"Attempted to read too many bytes from GDB socket"};
+        }
+
         auto output = std::vector<unsigned char>{};
 
         if (this->readInterruptEnabled != interruptible) {

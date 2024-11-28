@@ -210,7 +210,7 @@ namespace DebugToolDrivers::Wch
              * See WchLinkDebugInterface::writeFlashMemory() below, for more.
              */
             const auto bufferSize = static_cast<TargetMemorySize>(buffer.size());
-            const auto alignmentSize = bufferSize > WchLinkDebugInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE
+            const auto alignmentSize = bufferSize > WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE
                 ? this->programmingBlockSize
                 : 1;
 
@@ -286,7 +286,7 @@ namespace DebugToolDrivers::Wch
          *     Writes any number of bytes to flash, but limited to a maximum of 64 bytes per write. Larger writes
          *     must be split into multiple writes.
          * - Full block write
-         *     Writes an entire block to flash. Where the block size is target-specific (resides in the target's
+         *     Writes an entire block to flash, where the block size is target-specific (resides in the target's
          *     TDF). Requires alignment to the block size. Requires reattaching to the target at the end of the
          *     programming session.
          *
@@ -294,7 +294,7 @@ namespace DebugToolDrivers::Wch
          * target. But the partial block write is faster and more suitable for writing buffers that are smaller than
          * 64 bytes, such as when we're inserting software breakpoints.
          */
-        if (buffer.size() <= WchLinkDebugInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE) {
+        if (buffer.size() <= WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE) {
             return this->wchLinkInterface.writeFlashPartialBlock(startAddress, buffer);
         }
 

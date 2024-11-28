@@ -142,21 +142,24 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemoryBufferSpan buffer
     ) {
-        constexpr auto packetSize = std::uint8_t{64};
+        constexpr auto packetSize = WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE;
         const auto bufferSize = static_cast<Targets::TargetMemorySize>(buffer.size());
-        const auto packetsRequired = static_cast<std::uint32_t>(
+        const auto packetsRequired = static_cast<std::size_t>(
             std::ceil(static_cast<float>(bufferSize) / static_cast<float>(packetSize))
         );
 
-        for (auto i = std::uint32_t{0}; i < packetsRequired; ++i) {
-            const auto segmentSize = static_cast<std::uint8_t>(
-                std::min(
-                    static_cast<std::uint8_t>(bufferSize - (i * packetSize)),
-                    packetSize
-                )
+        for (auto i = std::size_t{0}; i < packetsRequired; ++i) {
+            const auto segmentSize = std::min(
+                static_cast<Targets::TargetMemorySize>(bufferSize - (i * packetSize)),
+                packetSize
             );
+            assert(segmentSize <= 0xFF);
+
             const auto response = this->sendCommandAndWaitForResponse(
-                Commands::PreparePartialFlashBlockWrite{startAddress + (packetSize * i), segmentSize}
+                Commands::PreparePartialFlashBlockWrite{
+                    static_cast<Targets::TargetMemorySize>(startAddress + (packetSize * i)),
+                    static_cast<std::uint8_t>(segmentSize)
+                }
             );
 
             if (response.payload.size() != 1) {

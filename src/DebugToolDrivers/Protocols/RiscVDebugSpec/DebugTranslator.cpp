@@ -28,8 +28,7 @@
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Exceptions/InternalFatalErrorException.hpp"
-#include "src/TargetController/Exceptions/DeviceFailure.hpp"
-#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
+#include "src/TargetController/Exceptions/TargetFailure.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 
 #include "src/Logger/Logger.hpp"
@@ -80,18 +79,13 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     void DebugTranslator::activate() {
         this->debugModuleDescriptor.hartIndices = this->discoverHartIndices();
         if (this->debugModuleDescriptor.hartIndices.empty()) {
-            throw Exceptions::TargetOperationFailure{"Failed to discover any RISC-V harts"};
+            throw Exceptions::TargetFailure{"Failed to discover any RISC-V harts"};
         }
 
-        Logger::debug("Discovered RISC-V harts: " + std::to_string(this->debugModuleDescriptor.hartIndices.size()));
-
-        /*
-         * We only support debugging a single RISC-V hart, for now.
-         *
-         * If we discover more than one, we select the first one and ensure that this is explicitly communicated to the
-         * user.
-         */
         if (this->debugModuleDescriptor.hartIndices.size() > 1) {
+            Logger::debug(
+                "Discovered RISC-V harts: " + std::to_string(this->debugModuleDescriptor.hartIndices.size())
+            );
             Logger::warning("Bloom only supports debugging a single RISC-V hart - selecting first available");
         }
 
@@ -156,7 +150,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
 
         if (this->debugModuleDescriptor.memoryAccessStrategies.empty()) {
-            throw Exceptions::TargetOperationFailure{"Target doesn't support any known memory access strategies"};
+            throw Exceptions::TargetFailure{"Target doesn't support any known memory access strategies"};
         }
 
         this->memoryAccessStrategy = this->determineMemoryAccessStrategy();
@@ -203,7 +197,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->writeDebugModuleControlRegister(controlRegister);
 
         if (!statusRegister.allHalted) {
-            throw Exceptions::Exception{"Target took too long to halt selected harts"};
+            throw Exceptions::TargetOperationFailure{"Target took too long to halt selected harts"};
         }
     }
 
@@ -233,7 +227,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         if (!statusRegister.allResumeAcknowledge) {
             Logger::debug("Failed to resume target execution - stopping target");
             this->stop();
-            throw Exceptions::Exception{"Target took too long to acknowledge resume request"};
+            throw Exceptions::TargetOperationFailure{"Target took too long to acknowledge resume request"};
         }
     }
 
@@ -292,7 +286,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         });
 
         if (!statusRegister.allHaveReset) {
-            throw Exceptions::Exception{"Target took too long to reset"};
+            throw Exceptions::TargetOperationFailure{"Target took too long to reset"};
         }
 
         this->initDebugControlStatusRegister();
@@ -307,7 +301,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         const auto triggerDescriptorOpt = this->getAvailableTrigger();
         if (!triggerDescriptorOpt.has_value()) {
-            throw Exceptions::Exception{"Insufficient resources - no available trigger"};
+            throw Exceptions::TargetOperationFailure{"Insufficient resources - no available trigger"};
         }
 
         const auto& triggerDescriptor = triggerDescriptorOpt->get();
@@ -343,13 +337,13 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             return;
         }
 
-        throw Exceptions::Exception{"Unsupported trigger"};
+        throw Exceptions::TargetOperationFailure{"Unsupported trigger"};
     }
 
     void DebugTranslator::clearTriggerBreakpoint(TargetMemoryAddress address) {
         const auto triggerIndexIt = this->triggerIndicesByBreakpointAddress.find(address);
         if (triggerIndexIt == this->triggerIndicesByBreakpointAddress.end()) {
-            throw Exceptions::Exception{"Unknown hardware breakpoint"};
+            throw Exceptions::TargetOperationFailure{"Unknown hardware breakpoint"};
         }
 
         const auto& triggerDescriptor = this->debugModuleDescriptor.triggerDescriptorsByIndex.at(triggerIndexIt->second);
@@ -566,7 +560,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             }
 
             if (writeSelectError != AbstractCommandError::NONE) {
-                throw Exceptions::Exception{
+                throw Exceptions::TargetOperationFailure{
                     "Failed to write to TRIGGER_SELECT register - abstract command error: 0x"
                         + Services::StringService::toHex(static_cast<std::uint8_t>(writeSelectError))
                 };
@@ -649,7 +643,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
 
         if (!controlRegister.debugModuleActive) {
-            throw Exceptions::Exception{"Took too long to enable debug module"};
+            throw Exceptions::TargetOperationFailure{"Took too long to enable debug module"};
         }
     }
 
@@ -671,7 +665,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
 
         if (controlRegister.debugModuleActive) {
-            throw Exceptions::Exception{"Took too long to disable debug module"};
+            throw Exceptions::TargetOperationFailure{"Took too long to disable debug module"};
         }
     }
 
@@ -720,7 +714,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         const auto result = this->tryReadCpuRegister(number, flags);
 
         if (!result.hasValue()) {
-            throw Exceptions::Exception{
+            throw Exceptions::TargetOperationFailure{
                 "Failed to read CPU register (number: 0x" + Services::StringService::toHex(number)
                     + ") - abstract command error: 0x"
                     + Services::StringService::toHex(static_cast<std::uint8_t>(result.error()))
@@ -770,7 +764,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     ) {
         const auto commandError = this->tryWriteCpuRegister(number, value, flags);
         if (commandError != AbstractCommandError::NONE) {
-            throw Exceptions::Exception{
+            throw Exceptions::TargetOperationFailure{
                 "Failed to write to CPU register (number: 0x" + Services::StringService::toHex(number)
                     + ") - abstract command error: 0x"
                     + Services::StringService::toHex(static_cast<std::uint8_t>(commandError))
@@ -825,7 +819,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
 
         if (abstractStatusRegister.busy) {
-            throw Exceptions::Exception{"Abstract command took too long to execute"};
+            throw Exceptions::TargetOperationFailure{"Abstract command took too long to execute"};
         }
 
         if (abstractStatusRegister.commandError != AbstractCommandError::NONE) {
@@ -840,7 +834,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     ) {
         const auto commandError = this->tryExecuteAbstractCommand(abstractCommandRegister);
         if (commandError != AbstractCommandError::NONE) {
-            throw Exceptions::Exception{
+            throw Exceptions::TargetOperationFailure{
                 "Failed to execute abstract command - error: 0x"
                     + Services::StringService::toHex(static_cast<std::uint8_t>(commandError))
             };
@@ -969,7 +963,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         });
 
         if (programOpcodes.size() > this->debugModuleDescriptor.programBufferSize) {
-            throw Exceptions::Exception{
+            throw Exceptions::TargetOperationFailure{
                 "Cannot read memory via RISC-V debug module program buffer - insufficient program buffer size"
             };
         }
@@ -1043,7 +1037,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             if (abstractStatusRegister.commandError != AbstractCommandError::NONE) {
                 this->clearAbstractCommandError();
 
-                throw Exceptions::Exception{
+                throw Exceptions::TargetOperationFailure{
                     "Program buffer execution failed - abstract command error: 0x"
                         + Services::StringService::toHex(abstractStatusRegister.commandError)
                 };
@@ -1091,7 +1085,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         });
 
         if (programOpcodes.size() > this->debugModuleDescriptor.programBufferSize) {
-            throw Exceptions::Exception{
+            throw Exceptions::TargetOperationFailure{
                 "Cannot write to memory via RISC-V debug module program buffer - insufficient program buffer size"
             };
         }
@@ -1144,7 +1138,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             if (abstractStatusRegister.commandError != AbstractCommandError::NONE) {
                 this->clearAbstractCommandError();
 
-                throw Exceptions::Exception{
+                throw Exceptions::TargetOperationFailure{
                     "Program buffer execution failed - abstract command error: 0x"
                         + Services::StringService::toHex(abstractStatusRegister.commandError)
                 };
@@ -1203,7 +1197,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             return;
         }
 
-        throw Exceptions::Exception{"Unsupported trigger"};
+        throw Exceptions::TargetOperationFailure{"Unsupported trigger"};
     }
 
     DebugTranslator::PreservedCpuRegister::PreservedCpuRegister(
@@ -1238,9 +1232,9 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
              * will be left in an undefined state. More specifically, the state of the program running on the target
              * may be corrupted. We cannot recover from this.
              *
-             * DeviceFailure exceptions are considered to be fatal. A clean shutdown will follow.
+             * TargetFailure exceptions are considered to be fatal. A clean shutdown will follow.
              */
-            throw Exceptions::DeviceFailure{
+            throw Exceptions::TargetFailure{
                 "Failed to restore CPU register (number: 0x"
                     + Services::StringService::toHex(this->registerNumber) + ") - error: " + exception.getMessage()
                     + " - the target is now in an undefined state and may require a reset"

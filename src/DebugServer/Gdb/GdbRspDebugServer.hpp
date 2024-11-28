@@ -117,10 +117,6 @@ namespace DebugServer::Gdb
         GdbRspDebugServer& operator = (const GdbRspDebugServer& other) = delete;
         GdbRspDebugServer& operator = (GdbRspDebugServer&& other) = delete;
 
-        [[nodiscard]] std::string getName() const override {
-            return "GDB Remote Serial Protocol DebugServer";
-        }
-
         /**
          * Prepares the GDB server for listing on the selected address and port.
          */
@@ -291,6 +287,7 @@ namespace DebugServer::Gdb
                 return;
 
             } catch (const ::Exceptions::FatalErrorException& exception) {
+                Logger::error("Fatal error occurred - closing connection");
                 this->endDebugSession();
                 throw exception;
             }

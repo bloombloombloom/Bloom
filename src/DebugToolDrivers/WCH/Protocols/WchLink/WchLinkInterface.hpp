@@ -30,6 +30,8 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         : public ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTransportModuleInterface
     {
     public:
+        static constexpr Targets::TargetMemorySize MAX_PARTIAL_BLOCK_WRITE_SIZE = 64;
+
         WchLinkInterface(Usb::UsbInterface& usbInterface, Usb::UsbDevice& usbDevice);
 
         DeviceInfo getDeviceInfo();
