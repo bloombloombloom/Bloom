@@ -44,8 +44,6 @@ namespace Targets::RiscV::Wch
         const auto& variant = this->variant->get();
         Logger::info("WCH variant ID: " + variant.getProperty("vendor", "variant_id").value);
         Logger::info("WCH variant name: " + variant.name);
-
-        RiscV::postActivate();
     }
 
     TargetDescriptor WchRiscV::targetDescriptor() {

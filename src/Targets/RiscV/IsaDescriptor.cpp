@@ -279,7 +279,7 @@ namespace Targets::RiscV
         stringOffset += majorString->length();
 
         auto output = IsaVersionNumber{
-            .major = static_cast<std::uint16_t>(std::stoul(*majorString, nullptr, 10)),
+            .major = Services::StringService::toUint16(*majorString, 10),
             .minor = 0
         };
 
@@ -290,7 +290,7 @@ namespace Targets::RiscV
 
         const auto minorString = getNextDigitSequence(isaStringLower, stringOffset + 1);
         if (minorString.has_value()) {
-            output.minor = static_cast<std::uint16_t>(std::stoul(*minorString, nullptr, 10));
+            output.minor = Services::StringService::toUint16(*minorString, 10);
             stringOffset += minorString->length() + 1;
         }
 

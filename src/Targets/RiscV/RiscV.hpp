@@ -33,8 +33,6 @@ namespace Targets::RiscV
         void activate() override;
         void deactivate() override;
 
-        void postActivate() override;
-
         void run(std::optional<TargetMemoryAddress> toAddress = std::nullopt) override;
         void stop() override;
         void step() override;

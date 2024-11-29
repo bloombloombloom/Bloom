@@ -64,10 +64,6 @@ namespace Targets::RiscV
         this->riscVDebugInterface->deactivate();
     }
 
-    void RiscV::postActivate() {
-        // Nothing to do here, for now.
-    }
-
     void RiscV::run(std::optional<TargetMemoryAddress> toAddress) {
         this->riscVDebugInterface->run();
     }
