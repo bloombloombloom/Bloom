@@ -141,9 +141,11 @@ namespace Targets::RiscV
                 if (character == '_') {
                     commitMultiLetterExtension(*multiLetterExtension);
                     multiLetterExtension = std::nullopt;
+
+                } else {
+                    multiLetterExtension->push_back(character);
                 }
 
-                multiLetterExtension->push_back(character);
                 ++stringOffset;
                 continue;
             }
