@@ -9,6 +9,7 @@
 
 #include "RiscVTargetConfig.hpp"
 #include "TargetDescriptionFile.hpp"
+#include "IsaDescriptor.hpp"
 
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 
@@ -93,6 +94,7 @@ namespace Targets::RiscV
     protected:
         RiscVTargetConfig targetConfig;
         TargetDescriptionFile targetDescriptionFile;
+        IsaDescriptor isaDescriptor;
 
         DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* riscVDebugInterface = nullptr;
 
@@ -135,6 +137,7 @@ namespace Targets::RiscV
 
         static TargetAddressSpaceDescriptor generateCpuRegisterAddressSpaceDescriptor();
         static TargetPeripheralDescriptor generateCpuPeripheralDescriptor(
+            const IsaDescriptor& isaDescriptor,
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const TargetMemorySegmentDescriptor& csrMemorySegmentDescriptor,
             const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor

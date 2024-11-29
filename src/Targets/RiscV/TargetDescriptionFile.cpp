@@ -13,4 +13,8 @@ namespace Targets::RiscV
     TargetAddressSpaceDescriptor TargetDescriptionFile::getSystemAddressSpaceDescriptor() const {
         return this->targetAddressSpaceDescriptorFromAddressSpace(this->getSystemAddressSpace());
     }
+
+    IsaDescriptor TargetDescriptionFile::getIsaDescriptor() const {
+        return IsaDescriptor{this->getDeviceAttribute("architecture")};
+    }
 }

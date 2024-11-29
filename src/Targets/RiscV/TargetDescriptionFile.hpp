@@ -2,6 +2,8 @@
 
 #include "src/Targets/TargetDescription/TargetDescriptionFile.hpp"
 
+#include "IsaDescriptor.hpp"
+
 namespace Targets::RiscV
 {
     /**
@@ -15,7 +17,7 @@ namespace Targets::RiscV
         explicit TargetDescriptionFile(const std::string& xmlFilePath);
 
         [[nodiscard]] const TargetDescription::AddressSpace& getSystemAddressSpace() const;
-
         [[nodiscard]] TargetAddressSpaceDescriptor getSystemAddressSpaceDescriptor() const;
+        [[nodiscard]] IsaDescriptor getIsaDescriptor() const;
     };
 }

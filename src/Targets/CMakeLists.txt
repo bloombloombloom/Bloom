@@ -24,6 +24,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/RiscV.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/RiscVTargetConfig.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/TargetDescriptionFile.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/IsaDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/Wch/WchRiscV.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/Wch/TargetDescriptionFile.cpp
 )

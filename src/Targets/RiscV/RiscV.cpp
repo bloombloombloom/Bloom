@@ -21,11 +21,13 @@ namespace Targets::RiscV
     )
         : targetConfig(RiscVTargetConfig{targetConfig})
         , targetDescriptionFile(targetDescriptionFile)
+        , isaDescriptor(this->targetDescriptionFile.getIsaDescriptor())
         , cpuRegisterAddressSpaceDescriptor(RiscV::generateCpuRegisterAddressSpaceDescriptor())
         , csrMemorySegmentDescriptor(this->cpuRegisterAddressSpaceDescriptor.getMemorySegmentDescriptor("cs_registers"))
         , gprMemorySegmentDescriptor(this->cpuRegisterAddressSpaceDescriptor.getMemorySegmentDescriptor("gp_registers"))
         , cpuPeripheralDescriptor(
             RiscV::generateCpuPeripheralDescriptor(
+                this->isaDescriptor,
                 this->cpuRegisterAddressSpaceDescriptor,
                 this->csrMemorySegmentDescriptor,
                 this->gprMemorySegmentDescriptor
@@ -401,6 +403,7 @@ namespace Targets::RiscV
     }
 
     TargetPeripheralDescriptor RiscV::generateCpuPeripheralDescriptor(
+        const IsaDescriptor& isaDescriptor,
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& csrMemorySegmentDescriptor,
         const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor
@@ -427,7 +430,7 @@ namespace Targets::RiscV
             }
         ).first->second;
 
-        for (auto i = std::uint8_t{0}; i <= 31; ++i) {
+        for (auto i = std::uint8_t{0}; i <= static_cast<std::uint8_t>(isaDescriptor.isReduced() ? 15 : 31); ++i) {
             const auto key = "x" + std::to_string(i);
             gprGroup.registerDescriptorsByKey.emplace(
                 key,
