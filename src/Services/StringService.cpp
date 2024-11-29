@@ -1,6 +1,7 @@
 #include "StringService.hpp"
 
 #include <algorithm>
+#include <iterator>
 #include <cctype>
 #include <sstream>
 #include <iomanip>
@@ -12,37 +13,46 @@
 
 namespace Services
 {
-    std::string StringService::asciiToLower(std::string str) {
-        std::transform(str.begin(), str.end(), str.begin(), [] (unsigned char character) {
+    std::string StringService::asciiToLower(std::string_view str) {
+        auto output = std::string{};
+        output.reserve(str.size());
+
+        std::transform(str.begin(), str.end(), std::back_inserter(output), [] (unsigned char character) {
             return std::tolower(character);
         });
 
-        return str;
+        return output;
     }
 
-    std::string StringService::asciiToUpper(std::string str) {
-        std::transform(str.begin(), str.end(), str.begin(), [] (unsigned char character) {
+    std::string StringService::asciiToUpper(std::string_view str) {
+        auto output = std::string{};
+        output.reserve(str.size());
+
+        std::transform(str.begin(), str.end(), std::back_inserter(output), [] (unsigned char character) {
             return std::toupper(character);
         });
 
-        return str;
+        return output;
     }
 
-    bool StringService::isAscii(const std::string& str) {
+    bool StringService::isAscii(std::string_view str) {
         return !std::any_of(str.begin(), str.end(), [] (unsigned char character) {
             return character > 127;
         });
     }
 
-    std::string StringService::replaceUnprintable(std::string str) {
-        std::transform(str.begin(), str.end(), str.begin(), [] (unsigned char character) {
+    std::string StringService::replaceUnprintable(std::string_view str) {
+        auto output = std::string{};
+        output.reserve(str.size());
+
+        std::transform(str.begin(), str.end(), std::back_inserter(output), [] (unsigned char character) {
             return character < 32 || character > 126 ? '?' : character;
         });
 
-        return str;
+        return output;
     }
 
-    bool StringService::isNumeric(const std::string& str) {
+    bool StringService::isNumeric(std::string_view str) {
         return !std::any_of(str.begin(), str.end(), [] (unsigned char character) {
             return std::isdigit(character);
         });
@@ -83,7 +93,7 @@ namespace Services
         return stream.str();
     }
 
-    std::string StringService::toHex(const std::string& data) {
+    std::string StringService::toHex(std::string_view data) {
         auto stream = std::stringstream{};
         stream << std::hex << std::setfill('0');
 
@@ -108,7 +118,7 @@ namespace Services
         return output;
     }
 
-    std::vector<unsigned char> StringService::dataFromHex(const std::string& hexData) {
+    std::vector<unsigned char> StringService::dataFromHex(std::string_view hexData) {
          auto output = std::vector<unsigned char>{};
 
         for (auto i = 0; i < hexData.size(); i += 2) {

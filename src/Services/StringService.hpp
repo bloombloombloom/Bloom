@@ -12,21 +12,21 @@ namespace Services
     class StringService
     {
     public:
-        static std::string asciiToLower(std::string str);
+        static std::string asciiToLower(std::string_view str);
 
-        static std::string asciiToUpper(std::string str);
+        static std::string asciiToUpper(std::string_view str);
 
-        static bool isAscii(const std::string& str);
-        static std::string replaceUnprintable(std::string str);
+        static bool isAscii(std::string_view str);
+        static std::string replaceUnprintable(std::string_view str);
 
-        static bool isNumeric(const std::string& str);
+        static bool isNumeric(std::string_view str);
 
         static std::string toHex(std::uint64_t value);
         static std::string toHex(std::uint32_t value);
         static std::string toHex(std::uint16_t value);
         static std::string toHex(unsigned char value);
         static std::string toHex(const std::vector<unsigned char>& data);
-        static std::string toHex(const std::string& data);
+        static std::string toHex(std::string_view data);
 
         template <typename Type>
             requires std::is_enum_v<Type>
@@ -36,7 +36,7 @@ namespace Services
 
         static std::string toBinaryStringWithMask(std::uint64_t value, std::uint64_t mask);
 
-        static std::vector<unsigned char> dataFromHex(const std::string& hexData);
+        static std::vector<unsigned char> dataFromHex(std::string_view hexData);
 
         static std::uint64_t toUint64(const std::string& str, int base = 0);
         static std::uint32_t toUint32(const std::string& str, int base = 0);
