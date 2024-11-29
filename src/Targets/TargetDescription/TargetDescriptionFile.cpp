@@ -647,8 +647,8 @@ namespace Targets::TargetDescription
             StringService::toUint32(TargetDescriptionFile::getAttribute(xmlElement, "size")),
             TargetDescriptionFile::getAttribute(xmlElement, "executable") == "1",
             TargetMemoryAccess{
-                accessString.has_value() ? accessString->find('R') != std::string::npos : true,
-                accessString.has_value() ? accessString->find('W') != std::string::npos : true
+                !accessString.has_value() || accessString->find('R') != std::string::npos,
+                !accessString.has_value() || accessString->find('W') != std::string::npos
             },
             pageSize.has_value()
                 ? std::optional{StringService::toUint32(*pageSize)}

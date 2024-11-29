@@ -53,7 +53,7 @@ namespace Targets::RiscV
     }
 
     void RiscV::deactivate() {
-        // TODO: Is this "tidy-up" code better placed in the TC? Review after v1.1.0.
+        // TODO: Is this "tidy-up" code better placed in the TC? Review after v2.0.0.
 
         if (this->getExecutionState() != TargetExecutionState::STOPPED) {
             this->stop();
