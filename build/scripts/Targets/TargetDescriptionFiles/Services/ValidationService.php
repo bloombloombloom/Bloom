@@ -34,7 +34,7 @@ class ValidationService
         $failures = [];
 
         if (empty($tdf->getName())) {
-            $failures[] = 'Target name not found';
+            $failures[] = 'Missing/empty name attribute';
         }
 
         if (str_contains($tdf->getName(), ' ')) {
@@ -42,11 +42,15 @@ class ValidationService
         }
 
         if (empty($tdf->getFamily())) {
-            $failures[] = 'Missing/invalid target family';
+            $failures[] = 'Missing/invalid target family attribute';
         }
 
         if (empty($tdf->getConfigurationValue())) {
-            $failures[] = 'Missing configuration value';
+            $failures[] = 'Missing/empty configuration value attribute';
+        }
+
+        if (empty($tdf->getArchitecture())) {
+            $failures[] = 'Missing/empty architecture attribute';
         }
 
         if (empty($tdf->variants)) {
