@@ -35,7 +35,7 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
         Logger::info("Handling ReadRegisters packet");
 
         try {
-            const auto totalRegBytes = gdbTargetDescriptor.targetRegisterDescriptorsByGdbId.size() * 4;
+            const auto totalRegBytes = (gdbTargetDescriptor.targetRegisterDescriptorsByGdbId.size() + 1) * 4;
             auto buffer = Targets::TargetMemoryBuffer(totalRegBytes, 0x00);
 
             auto gpRegDescriptors = Targets::TargetRegisterDescriptors{};
