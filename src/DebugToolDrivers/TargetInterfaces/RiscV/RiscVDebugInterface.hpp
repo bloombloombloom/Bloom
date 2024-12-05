@@ -11,6 +11,7 @@
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetBreakpoint.hpp"
 
 namespace DebugToolDrivers::TargetInterfaces::RiscV
 {
@@ -29,13 +30,9 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
         virtual void step() = 0;
         virtual void reset() = 0;
 
-        virtual void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
-        virtual void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
-
-        virtual std::uint16_t getHardwareBreakpointCount() = 0;
-        virtual void setHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
-        virtual void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
-        virtual void clearAllHardwareBreakpoints() = 0;
+        virtual Targets::BreakpointResources getBreakpointResources() = 0;
+        virtual void setProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) = 0;
+        virtual void removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) = 0;
 
         virtual Targets::TargetRegisterDescriptorAndValuePairs readCpuRegisters(
             const Targets::TargetRegisterDescriptors& descriptors
@@ -59,5 +56,8 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
         ) = 0;
+
+        virtual void enableProgrammingMode() = 0;
+        virtual void disableProgrammingMode() = 0;
     };
 }

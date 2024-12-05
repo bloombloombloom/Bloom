@@ -202,14 +202,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
 
         /**
-         * Clears all software and hardware breakpoints on the target.
-         *
-         * This function will not clear any untracked hardware breakpoints (breakpoints that were installed in a
-         * previous session).
-         */
-        void clearAllBreakpoints() override;
-
-        /**
          * Reads registers from the target.
          *
          * @param descriptorIds
@@ -462,6 +454,14 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * immediately.
          */
         void clearAllSoftwareBreakpoints();
+
+        /**
+         * Clears all software and hardware breakpoints on the target.
+         *
+         * This function will not clear any untracked hardware breakpoints (breakpoints that were installed in a
+         * previous session).
+         */
+        void clearAllBreakpoints();
 
         /**
          * Fetches any queued events belonging to the AVR8 Generic protocol (such as target break events).

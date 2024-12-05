@@ -41,8 +41,8 @@ namespace TargetController
     using Commands::WriteTargetMemory;
     using Commands::EraseTargetMemory;
     using Commands::StepTargetExecution;
-    using Commands::SetBreakpoint;
-    using Commands::RemoveBreakpoint;
+    using Commands::SetProgramBreakpointAnyType;
+    using Commands::RemoveProgramBreakpoint;
     using Commands::SetTargetProgramCounter;
     using Commands::SetTargetStackPointer;
     using Commands::GetTargetGpioPadStates;
@@ -59,7 +59,7 @@ namespace TargetController
     using Responses::TargetGpioPadStates;
     using Responses::TargetStackPointer;
     using Responses::TargetProgramCounter;
-    using Responses::Breakpoint;
+    using Responses::ProgramBreakpoint;
 
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
@@ -218,12 +218,16 @@ namespace TargetController
             std::bind(&TargetControllerComponent::handleStepTargetExecution, this, std::placeholders::_1)
         );
 
-        this->registerCommandHandler<SetBreakpoint>(
-            std::bind(&TargetControllerComponent::handleSetBreakpoint, this, std::placeholders::_1)
+        this->registerCommandHandler<SetProgramBreakpointAnyType>(
+            std::bind(
+                &TargetControllerComponent::handleSetProgramBreakpointBreakpointAnyType,
+                this,
+                std::placeholders::_1
+            )
         );
 
-        this->registerCommandHandler<RemoveBreakpoint>(
-            std::bind(&TargetControllerComponent::handleRemoveBreakpoint, this, std::placeholders::_1)
+        this->registerCommandHandler<RemoveProgramBreakpoint>(
+            std::bind(&TargetControllerComponent::handleRemoveProgramBreakpoint, this, std::placeholders::_1)
         );
 
         this->registerCommandHandler<SetTargetStackPointer>(
@@ -298,6 +302,17 @@ namespace TargetController
 
             // Reject any commands still waiting in the queue
             this->processQueuedCommands();
+
+            if (this->target != nullptr) {
+                // Cleanup before deactivating the target
+                try {
+                    this->stopTarget();
+                    this->clearAllBreakpoints();
+
+                } catch (const Exception& exception) {
+                    Logger::error("Target pre-deactivation cleanup failed: " + exception.getMessage());
+                }
+            }
 
             this->releaseHardware();
 
@@ -540,24 +555,15 @@ namespace TargetController
         );
         this->refreshExecutionState();
 
-        if (!this->environmentConfig.targetConfig.hardwareBreakpoints) {
-            Logger::warning("Hardware breakpoints have been disabled");
+        if (this->environmentConfig.targetConfig.hardwareBreakpoints) {
+            const auto& breakpointResources = this->targetDescriptor->breakpointResources;
+            Logger::info("Available hardware breakpoints: " + std::to_string(breakpointResources.hardwareBreakpoints));
+            Logger::info(
+                "Reserved hardware breakpoints: " + std::to_string(breakpointResources.reservedHardwareBreakpoints)
+            );
 
         } else {
-            const auto& breakpointResources = this->targetDescriptor->breakpointResources;
-            if (breakpointResources.maximumHardwareBreakpoints.has_value()) {
-                Logger::info(
-                    "Available hardware breakpoints: " + std::to_string(
-                        *(breakpointResources.maximumHardwareBreakpoints)
-                    )
-                );
-            }
-
-            if (breakpointResources.reservedHardwareBreakpoints > 0) {
-                Logger::info(
-                    "Reserved hardware breakpoints: " + std::to_string(breakpointResources.reservedHardwareBreakpoints)
-                );
-            }
+            Logger::warning("Hardware breakpoints have been disabled");
         }
     }
 
@@ -571,10 +577,6 @@ namespace TargetController
 
         if (debugTool != nullptr && debugTool->isInitialised()) {
             if (target != nullptr) {
-                /*
-                 * We call deactivate() without checking if the target is activated. This will address any cases
-                 * where a target is only partially activated (where the call to activate() failed).
-                 */
                 Logger::info("Deactivating target");
                 target->deactivate();
             }
@@ -795,40 +797,114 @@ namespace TargetController
         this->target->eraseMemory(addressSpaceDescriptor, memorySegmentDescriptor);
     }
 
-    void TargetControllerComponent::setBreakpoint(const TargetBreakpoint& breakpoint) {
-        using Services::StringService;
-
-        if (breakpoint.type == TargetBreakpoint::Type::HARDWARE) {
-            Logger::debug(
-                "Installing hardware breakpoint at byte address 0x" + StringService::toHex(breakpoint.address)
-            );
-
-            this->target->setHardwareBreakpoint(breakpoint.address);
-            this->hardwareBreakpointsByAddress.emplace(breakpoint.address, breakpoint);
-            return;
-        }
-
-        Logger::debug("Installing software breakpoint at byte address 0x" + StringService::toHex(breakpoint.address));
-
-        this->target->setSoftwareBreakpoint(breakpoint.address);
-        this->softwareBreakpointsByAddress.emplace(breakpoint.address, breakpoint);
+    std::uint32_t TargetControllerComponent::availableHardwareBreakpoints() {
+        const auto& targetBreakpointResources = this->targetDescriptor->breakpointResources;
+        return static_cast<std::uint32_t>(
+            targetBreakpointResources.hardwareBreakpoints - targetBreakpointResources.reservedHardwareBreakpoints
+                - this->hardwareBreakpointRegistry.size()
+        );
     }
 
-    void TargetControllerComponent::removeBreakpoint(const TargetBreakpoint& breakpoint) {
+    void TargetControllerComponent::setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
         using Services::StringService;
 
-        if (breakpoint.type == Targets::TargetBreakpoint::Type::HARDWARE) {
-            Logger::debug("Removing hardware breakpoint at byte address 0x" + StringService::toHex(breakpoint.address));
+        auto& registry = breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE
+            ? this->hardwareBreakpointRegistry
+            : this->softwareBreakpointRegistry;
 
-            this->target->removeHardwareBreakpoint(breakpoint.address);
-            this->hardwareBreakpointsByAddress.erase(breakpoint.address);
+        Logger::debug("Inserting breakpoint at byte address 0x" + StringService::toHex(breakpoint.address));
+
+        if (registry.contains(breakpoint)) {
+            Logger::debug("Breakpoint already in registry - ignoring insertion request");
             return;
         }
 
-        Logger::debug("Removing software breakpoint at byte address 0x" + StringService::toHex(breakpoint.address));
+        this->target->setProgramBreakpoint(breakpoint);
+        registry.insert(breakpoint);
 
-        this->target->removeSoftwareBreakpoint(breakpoint.address);
-        this->softwareBreakpointsByAddress.erase(breakpoint.address);
+        if (
+            breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
+            && this->environmentConfig.targetConfig.programMemoryCache
+            && this->target->isProgramMemory(
+                breakpoint.addressSpaceDescriptor,
+                breakpoint.memorySegmentDescriptor,
+                breakpoint.address,
+                breakpoint.size
+            )
+        ) {
+            auto& cache = this->getProgramMemoryCache(breakpoint.memorySegmentDescriptor);
+            if (cache.contains(breakpoint.address, breakpoint.size)) {
+                // Update program memory cache
+                cache.insert(
+                    breakpoint.address,
+                    this->target->readMemory(
+                        breakpoint.addressSpaceDescriptor,
+                        breakpoint.memorySegmentDescriptor,
+                        breakpoint.address,
+                        breakpoint.size,
+                        {}
+                    )
+                );
+            }
+        }
+    }
+
+    void TargetControllerComponent::removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        using Services::StringService;
+
+        auto& registry = breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE
+            ? this->hardwareBreakpointRegistry
+            : this->softwareBreakpointRegistry;
+
+        Logger::debug("Removing breakpoint at byte address 0x" + StringService::toHex(breakpoint.address));
+
+        if (!registry.contains(breakpoint)) {
+            Logger::debug("Breakpoint not found in registry - ignoring removal request");
+            return;
+        }
+
+        this->target->removeProgramBreakpoint(breakpoint);
+        registry.remove(breakpoint);
+
+        if (
+            breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
+            && this->environmentConfig.targetConfig.programMemoryCache
+            && this->target->isProgramMemory(
+                breakpoint.addressSpaceDescriptor,
+                breakpoint.memorySegmentDescriptor,
+                breakpoint.address,
+                breakpoint.size
+            )
+        ) {
+            auto& cache = this->getProgramMemoryCache(breakpoint.memorySegmentDescriptor);
+            if (cache.contains(breakpoint.address, breakpoint.size)) {
+                // Update program memory cache
+                cache.insert(
+                    breakpoint.address,
+                    this->target->readMemory(
+                        breakpoint.addressSpaceDescriptor,
+                        breakpoint.memorySegmentDescriptor,
+                        breakpoint.address,
+                        breakpoint.size,
+                        {}
+                    )
+                );
+            }
+        }
+    }
+
+    void TargetControllerComponent::clearAllBreakpoints() {
+        for (const auto& [addressSpaceId, breakpointsByAddress] : this->softwareBreakpointRegistry) {
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->removeProgramBreakpoint(breakpoint);
+            }
+        }
+
+        for (const auto& [addressSpaceId, breakpointsByAddress] : this->hardwareBreakpointRegistry) {
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->removeProgramBreakpoint(breakpoint);
+            }
+        }
     }
 
     void TargetControllerComponent::enableProgrammingMode() {
@@ -849,12 +925,16 @@ namespace TargetController
         Logger::info("Restoring breakpoints");
         this->target->stop();
 
-        for (const auto& [address, breakpoint] : this->softwareBreakpointsByAddress) {
-            this->target->setSoftwareBreakpoint(address);
+        for (const auto& [addressSpaceId, breakpointsByAddress] : this->softwareBreakpointRegistry) {
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->target->setProgramBreakpoint(breakpoint);
+            }
         }
 
-        for (const auto& [address, breakpoint] : this->hardwareBreakpointsByAddress) {
-            this->target->setHardwareBreakpoint(address);
+        for (const auto& [addressSpaceId, breakpointsByAddress] : this->hardwareBreakpointRegistry) {
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->target->setProgramBreakpoint(breakpoint);
+            }
         }
 
         auto newState = *(this->targetState);
@@ -1022,34 +1102,26 @@ namespace TargetController
         return std::make_unique<Response>();
     }
 
-    std::unique_ptr<Breakpoint> TargetControllerComponent::handleSetBreakpoint(SetBreakpoint& command) {
-        using Targets::TargetBreakpoint;
-        using Services::StringService;
-
-        const auto& targetBreakpointResources = this->targetDescriptor->breakpointResources;
-        if (
-            command.preferredType == Targets::TargetBreakpoint::Type::HARDWARE
-            && this->environmentConfig.targetConfig.hardwareBreakpoints
-            && (
-                !targetBreakpointResources.maximumHardwareBreakpoints.has_value()
-                || this->hardwareBreakpointsByAddress.size() < (*(targetBreakpointResources.maximumHardwareBreakpoints)
-                    - targetBreakpointResources.reservedHardwareBreakpoints)
-            )
-        ) {
-            const auto hwBreakpoint = TargetBreakpoint{command.address, TargetBreakpoint::Type::HARDWARE};
-            this->setBreakpoint(hwBreakpoint);
-
-            return std::make_unique<Breakpoint>(hwBreakpoint);
-        }
-
-        const auto swBreakpoint = TargetBreakpoint(command.address, TargetBreakpoint::Type::SOFTWARE);
-        this->setBreakpoint(swBreakpoint);
-
-        return std::make_unique<Breakpoint>(swBreakpoint);
+    std::unique_ptr<ProgramBreakpoint> TargetControllerComponent::handleSetProgramBreakpointBreakpointAnyType(
+        SetProgramBreakpointAnyType& command
+    ) {
+        const auto breakpoint = TargetProgramBreakpoint{
+            .addressSpaceDescriptor = command.addressSpaceDescriptor,
+            .memorySegmentDescriptor = command.memorySegmentDescriptor,
+            .address = command.address,
+            .size = command.size,
+            .type = this->environmentConfig.targetConfig.hardwareBreakpoints && this->availableHardwareBreakpoints() > 0
+                ? TargetProgramBreakpoint::Type::HARDWARE
+                : TargetProgramBreakpoint::Type::SOFTWARE
+        };
+        this->setProgramBreakpoint(breakpoint);
+        return std::make_unique<ProgramBreakpoint>(breakpoint);
     }
 
-    std::unique_ptr<Response> TargetControllerComponent::handleRemoveBreakpoint(RemoveBreakpoint& command) {
-        this->removeBreakpoint(command.breakpoint);
+    std::unique_ptr<Response> TargetControllerComponent::handleRemoveProgramBreakpoint(
+        RemoveProgramBreakpoint& command
+    ) {
+        this->removeProgramBreakpoint(command.breakpoint);
         return std::make_unique<Response>();
     }
 

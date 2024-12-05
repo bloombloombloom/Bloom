@@ -63,12 +63,8 @@ namespace Targets::Microchip::Avr8
         void step() override;
         void reset() override;
 
-        void setSoftwareBreakpoint(TargetMemoryAddress address) override;
-        void removeSoftwareBreakpoint(TargetMemoryAddress address) override;
-
-        void setHardwareBreakpoint(TargetMemoryAddress address) override;
-        void removeHardwareBreakpoint(TargetMemoryAddress address) override;
-        void clearAllBreakpoints() override;
+        void setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) override;
+        void removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) override;
 
         TargetRegisterDescriptorAndValuePairs readRegisters(const TargetRegisterDescriptors& descriptors) override;
         void writeRegisters(const TargetRegisterDescriptorAndValuePairs& registers) override;
@@ -122,9 +118,11 @@ namespace Targets::Microchip::Avr8
         Avr8TargetConfig targetConfig;
         TargetDescriptionFile targetDescriptionFile;
 
+        TargetAddressSpaceDescriptor programAddressSpaceDescriptor;
         TargetAddressSpaceDescriptor dataAddressSpaceDescriptor;
         TargetAddressSpaceDescriptor fuseAddressSpaceDescriptor;
 
+        TargetMemorySegmentDescriptor programMemorySegmentDescriptor;
         TargetMemorySegmentDescriptor ramMemorySegmentDescriptor;
         TargetMemorySegmentDescriptor ioMemorySegmentDescriptor;
         TargetMemorySegmentDescriptor fuseMemorySegmentDescriptor;

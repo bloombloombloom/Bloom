@@ -116,40 +116,8 @@ namespace Targets
          */
         virtual void reset() = 0;
 
-        /**
-         * Should set a software breakpoint on the target, at the given address.
-         *
-         * @param address
-         */
-        virtual void setSoftwareBreakpoint(TargetMemoryAddress address) = 0;
-
-        /**
-         * Should remove a software breakpoint at the given address.
-         *
-         * @param address
-         */
-        virtual void removeSoftwareBreakpoint(TargetMemoryAddress address) = 0;
-
-        /**
-         * Should set a hardware breakpoint on the target, at the given address.
-         *
-         * @param address
-         */
-        virtual void setHardwareBreakpoint(TargetMemoryAddress address) = 0;
-
-        /**
-         * Should remove a hardware breakpoint at the given address.
-         *
-         * @param address
-         */
-        virtual void removeHardwareBreakpoint(TargetMemoryAddress address) = 0;
-
-        /**
-         * Should clear all breakpoints on the target.
-         *
-         * @TODO: is this still needed? Review
-         */
-        virtual void clearAllBreakpoints() = 0;
+        virtual void setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) = 0;
+        virtual void removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) = 0;
 
         /**
          * Should read register values of the registers described by the given descriptors.

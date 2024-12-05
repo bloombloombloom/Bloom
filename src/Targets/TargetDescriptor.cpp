@@ -42,6 +42,18 @@ namespace Targets
         return std::cref(descriptorIt->second);
     }
 
+    std::optional<
+        std::reference_wrapper<TargetAddressSpaceDescriptor>
+    > TargetDescriptor::tryGetAddressSpaceDescriptor(const std::string& key) {
+        const auto descriptorIt = this->addressSpaceDescriptorsByKey.find(key);
+
+        if (descriptorIt == this->addressSpaceDescriptorsByKey.end()) {
+            return std::nullopt;
+        }
+
+        return std::ref(descriptorIt->second);
+    }
+
     const TargetAddressSpaceDescriptor& TargetDescriptor::getAddressSpaceDescriptor(const std::string& key) const {
         const auto descriptor = this->tryGetAddressSpaceDescriptor(key);
         if (!descriptor.has_value()) {
@@ -52,6 +64,28 @@ namespace Targets
         }
 
         return descriptor->get();
+    }
+
+    TargetAddressSpaceDescriptor& TargetDescriptor::getAddressSpaceDescriptor(const std::string& key) {
+        return const_cast<TargetAddressSpaceDescriptor&>(
+            const_cast<const TargetDescriptor*>(this)->getAddressSpaceDescriptor(key)
+        );
+    }
+
+    const TargetMemorySegmentDescriptor& TargetDescriptor::getMemorySegmentDescriptor(
+        const std::string& addressSpaceKey,
+        const std::string& segmentKey
+    ) const {
+        return this->getAddressSpaceDescriptor(addressSpaceKey).getMemorySegmentDescriptor(segmentKey);
+    }
+
+    TargetMemorySegmentDescriptor& TargetDescriptor::getMemorySegmentDescriptor(
+        const std::string& addressSpaceKey,
+        const std::string& segmentKey
+    ) {
+        return const_cast<TargetMemorySegmentDescriptor&>(
+            const_cast<const TargetDescriptor*>(this)->getMemorySegmentDescriptor(addressSpaceKey, segmentKey)
+        );
     }
 
     const TargetAddressSpaceDescriptor& TargetDescriptor::getFirstAddressSpaceDescriptorContainingMemorySegment(

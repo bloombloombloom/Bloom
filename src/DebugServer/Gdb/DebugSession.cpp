@@ -26,78 +26,93 @@ namespace DebugServer::Gdb
     }
 
     void DebugSession::setInternalBreakpoint(
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         Targets::TargetMemoryAddress address,
+        Targets::TargetMemorySize size,
         Services::TargetControllerService& targetControllerService
     ) {
-        if (this->internalBreakpointsByAddress.contains(address)) {
+        if (this->internalBreakpointRegistry.contains(addressSpaceDescriptor.id, address)) {
             return;
         }
 
-        const auto externalBreakpointIt = this->externalBreakpointsByAddress.find(address);
-        if (externalBreakpointIt != this->externalBreakpointsByAddress.end()) {
+        const auto externalBreakpoint = this->externalBreakpointRegistry.find(addressSpaceDescriptor.id, address);
+        if (externalBreakpoint.has_value()) {
             // We already have an external breakpoint at this address
-            this->internalBreakpointsByAddress.emplace(address, externalBreakpointIt->second);
+            this->internalBreakpointRegistry.insert(externalBreakpoint->get());
             return;
         }
 
-        this->internalBreakpointsByAddress.emplace(
-            address,
-            targetControllerService.setBreakpoint(address, Targets::TargetBreakpoint::Type::HARDWARE)
+        this->internalBreakpointRegistry.insert(
+            targetControllerService.setProgramBreakpointAnyType(
+                addressSpaceDescriptor,
+                memorySegmentDescriptor,
+                address,
+                size
+            )
         );
     }
 
     void DebugSession::removeInternalBreakpoint(
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         Targets::TargetMemoryAddress address,
         Services::TargetControllerService& targetControllerService
     ) {
-        const auto breakpointIt = this->internalBreakpointsByAddress.find(address);
-        if (breakpointIt == this->internalBreakpointsByAddress.end()) {
+        const auto breakpoint = this->internalBreakpointRegistry.find(addressSpaceDescriptor.id, address);
+        if (!breakpoint.has_value()) {
             return;
         }
 
-        if (!this->externalBreakpointsByAddress.contains(address)) {
-            targetControllerService.removeBreakpoint(breakpointIt->second);
+        if (!this->externalBreakpointRegistry.contains(addressSpaceDescriptor.id, address)) {
+            targetControllerService.removeProgramBreakpoint(breakpoint->get());
         }
 
-        this->internalBreakpointsByAddress.erase(breakpointIt);
+        this->internalBreakpointRegistry.remove(addressSpaceDescriptor.id, address);
     }
 
     void DebugSession::setExternalBreakpoint(
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         Targets::TargetMemoryAddress address,
+        Targets::TargetMemorySize size,
         Services::TargetControllerService& targetControllerService
     ) {
-        if (this->externalBreakpointsByAddress.contains(address)) {
+        if (this->externalBreakpointRegistry.contains(addressSpaceDescriptor.id, address)) {
             return;
         }
 
-        const auto internalBreakpointIt = this->internalBreakpointsByAddress.find(address);
-
-        if (internalBreakpointIt != this->internalBreakpointsByAddress.end()) {
+        const auto internalBreakpoint = this->internalBreakpointRegistry.find(addressSpaceDescriptor.id, address);
+        if (internalBreakpoint.has_value()) {
             // We already have an internal breakpoint at this address
-            this->externalBreakpointsByAddress.emplace(address, internalBreakpointIt->second);
+            this->externalBreakpointRegistry.insert(internalBreakpoint->get());
             return;
         }
 
-        this->externalBreakpointsByAddress.emplace(
-            address,
-            targetControllerService.setBreakpoint(address, Targets::TargetBreakpoint::Type::HARDWARE)
+        this->externalBreakpointRegistry.insert(
+            targetControllerService.setProgramBreakpointAnyType(
+                addressSpaceDescriptor,
+                memorySegmentDescriptor,
+                address,
+                size
+            )
         );
     }
 
     void DebugSession::removeExternalBreakpoint(
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         Targets::TargetMemoryAddress address,
         Services::TargetControllerService& targetControllerService
     ) {
-        const auto breakpointIt = this->externalBreakpointsByAddress.find(address);
-        if (breakpointIt == this->externalBreakpointsByAddress.end()) {
+        const auto breakpoint = this->externalBreakpointRegistry.find(addressSpaceDescriptor.id, address);
+        if (!breakpoint.has_value()) {
             return;
         }
 
-        if (!this->internalBreakpointsByAddress.contains(address)) {
-            targetControllerService.removeBreakpoint(breakpointIt->second);
+        if (!this->internalBreakpointRegistry.contains(addressSpaceDescriptor.id, address)) {
+            targetControllerService.removeProgramBreakpoint(breakpoint->get());
         }
 
-        this->externalBreakpointsByAddress.erase(breakpointIt);
+        this->externalBreakpointRegistry.remove(addressSpaceDescriptor.id, address);
     }
 
     void DebugSession::startRangeSteppingSession(
@@ -105,10 +120,22 @@ namespace DebugServer::Gdb
         Services::TargetControllerService& targetControllerService
     ) {
         for (const auto& interceptAddress : session.interceptedAddresses) {
-            this->setInternalBreakpoint(interceptAddress, targetControllerService);
+            /*
+             * Have hard-coded the breakpoint size here, as range stepping is only supported on AVR targets.
+             *
+             * TODO: Review this after v2.0.0. Maybe move this range-stepping code out to an AVR-specific DebugSession
+             *       struct. Or, refactor the range stepping session object to accommodate breakpoint sizes.
+             */
+            this->setInternalBreakpoint(
+                session.addressSpaceDescriptor,
+                session.memorySegmentDescriptor,
+                interceptAddress,
+                2,
+                targetControllerService
+            );
         }
 
-        this->activeRangeSteppingSession = std::move(session);
+        this->activeRangeSteppingSession.emplace(std::move(session));
     }
 
     void DebugSession::terminateRangeSteppingSession(Services::TargetControllerService& targetControllerService) {
@@ -118,7 +145,11 @@ namespace DebugServer::Gdb
 
         // Clear all intercepting breakpoints
         for (const auto& interceptAddress : this->activeRangeSteppingSession->interceptedAddresses) {
-            this->removeInternalBreakpoint(interceptAddress, targetControllerService);
+            this->removeInternalBreakpoint(
+                this->activeRangeSteppingSession->addressSpaceDescriptor,
+                interceptAddress,
+                targetControllerService
+            );
         }
 
         this->activeRangeSteppingSession.reset();

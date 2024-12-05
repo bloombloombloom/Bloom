@@ -100,7 +100,7 @@ namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr8
         virtual void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
         virtual void setHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
         virtual void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
-        virtual void clearAllBreakpoints() = 0;
+
         virtual Targets::TargetMemoryAddress getProgramCounter() = 0;
         virtual void setProgramCounter(Targets::TargetMemoryAddress programCounter) = 0;
         virtual Targets::TargetRegisterDescriptorAndValuePairs readRegisters(

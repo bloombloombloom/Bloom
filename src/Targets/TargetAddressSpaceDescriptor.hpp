@@ -92,6 +92,18 @@ namespace Targets
             const TargetMemoryAddressRange& addressRange
         ) const;
 
+        /**
+         * Fetches the memory segment which contains the given address.
+         *
+         * @param address
+         *
+         * @return
+         *   The containing memory segment descriptor, or std::nullopt of no segments contain the address.
+         */
+        [[nodiscard]] std::optional<
+            std::reference_wrapper<const TargetMemorySegmentDescriptor>
+        > getContainingMemorySegmentDescriptor(const TargetMemoryAddress& address) const;
+
         [[nodiscard]] TargetAddressSpaceDescriptor clone() const;
 
         static TargetAddressSpaceId generateId(const std::string& addressSpaceKey);

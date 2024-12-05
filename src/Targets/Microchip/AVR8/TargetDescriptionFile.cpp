@@ -133,12 +133,23 @@ namespace Targets::Microchip::Avr8
         return this->getLockbitAddressSpace().getMemorySegment("lockbits");
     }
 
+    TargetAddressSpaceDescriptor TargetDescriptionFile::getProgramAddressSpaceDescriptor() const {
+        return this->targetAddressSpaceDescriptorFromAddressSpace(this->getProgramAddressSpace());
+    }
+
     TargetAddressSpaceDescriptor TargetDescriptionFile::getDataAddressSpaceDescriptor() const {
         return this->targetAddressSpaceDescriptorFromAddressSpace(this->getDataAddressSpace());
     }
 
     TargetAddressSpaceDescriptor TargetDescriptionFile::getFuseAddressSpaceDescriptor() const {
         return this->targetAddressSpaceDescriptorFromAddressSpace(this->getFuseAddressSpace());
+    }
+
+    TargetMemorySegmentDescriptor TargetDescriptionFile::getProgramMemorySegmentDescriptor() const {
+        return this->targetMemorySegmentDescriptorFromMemorySegment(
+            this->getProgramMemorySegment(),
+            this->getProgramAddressSpace()
+        );
     }
 
     TargetMemorySegmentDescriptor TargetDescriptionFile::getRamMemorySegmentDescriptor() const {

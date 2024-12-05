@@ -9,6 +9,8 @@
 #include "CommandPackets/ReadMemory.hpp"
 #include "CommandPackets/WriteMemory.hpp"
 #include "CommandPackets/ReadMemoryMap.hpp"
+#include "CommandPackets/SetBreakpoint.hpp"
+#include "CommandPackets/RemoveBreakpoint.hpp"
 #include "CommandPackets/FlashErase.hpp"
 #include "CommandPackets/FlashWrite.hpp"
 #include "CommandPackets/FlashDone.hpp"
@@ -53,6 +55,8 @@ namespace DebugServer::Gdb::RiscVGdb
         using CommandPackets::ReadMemory;
         using CommandPackets::WriteMemory;
         using CommandPackets::ReadMemoryMap;
+        using CommandPackets::SetBreakpoint;
+        using CommandPackets::RemoveBreakpoint;
         using CommandPackets::FlashErase;
         using CommandPackets::FlashWrite;
         using CommandPackets::FlashDone;
@@ -80,6 +84,14 @@ namespace DebugServer::Gdb::RiscVGdb
 
         if (rawPacket[1] == 'M') {
             return std::make_unique<WriteMemory>(rawPacket, this->gdbTargetDescriptor);
+        }
+
+        if (rawPacket[1] == 'Z') {
+            return std::make_unique<SetBreakpoint>(rawPacket);
+        }
+
+        if (rawPacket[1] == 'z') {
+            return std::make_unique<RemoveBreakpoint>(rawPacket);
         }
 
         if (rawPacket.size() > 1) {

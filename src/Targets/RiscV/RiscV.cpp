@@ -59,8 +59,6 @@ namespace Targets::RiscV
             this->stop();
         }
 
-        this->clearAllBreakpoints();
-        this->run();
         this->riscVDebugInterface->deactivate();
     }
 
@@ -78,26 +76,6 @@ namespace Targets::RiscV
 
     void RiscV::reset() {
         this->riscVDebugInterface->reset();
-    }
-
-    void RiscV::setSoftwareBreakpoint(TargetMemoryAddress address) {
-        throw Exceptions::Exception{"TARGET - SW breakpoints not supported"};
-    }
-
-    void RiscV::removeSoftwareBreakpoint(TargetMemoryAddress address) {
-        throw Exceptions::Exception{"TARGET - SW breakpoints not supported"};
-    }
-
-    void RiscV::setHardwareBreakpoint(TargetMemoryAddress address) {
-        this->riscVDebugInterface->setHardwareBreakpoint(address);
-    }
-
-    void RiscV::removeHardwareBreakpoint(TargetMemoryAddress address) {
-        this->riscVDebugInterface->clearHardwareBreakpoint(address);
-    }
-
-    void RiscV::clearAllBreakpoints() {
-        this->riscVDebugInterface->clearAllHardwareBreakpoints();
     }
 
     TargetRegisterDescriptorAndValuePairs RiscV::readRegisters(const TargetRegisterDescriptors& descriptors) {
@@ -316,10 +294,12 @@ namespace Targets::RiscV
     }
 
     void RiscV::enableProgrammingMode() {
+        this->riscVDebugInterface->enableProgrammingMode();
         this->programmingMode = true;
     }
 
     void RiscV::disableProgrammingMode() {
+        this->riscVDebugInterface->disableProgrammingMode();
         this->programmingMode = false;
     }
 

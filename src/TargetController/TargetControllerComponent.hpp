@@ -35,8 +35,8 @@
 #include "Commands/WriteTargetMemory.hpp"
 #include "Commands/EraseTargetMemory.hpp"
 #include "Commands/StepTargetExecution.hpp"
-#include "Commands/SetBreakpoint.hpp"
-#include "Commands/RemoveBreakpoint.hpp"
+#include "Commands/SetProgramBreakpointAnyType.hpp"
+#include "Commands/RemoveProgramBreakpoint.hpp"
 #include "Commands/SetTargetProgramCounter.hpp"
 #include "Commands/SetTargetStackPointer.hpp"
 #include "Commands/GetTargetGpioPadStates.hpp"
@@ -56,7 +56,7 @@
 #include "Responses/TargetGpioPadStates.hpp"
 #include "Responses/TargetStackPointer.hpp"
 #include "Responses/TargetProgramCounter.hpp"
-#include "Responses/Breakpoint.hpp"
+#include "Responses/ProgramBreakpoint.hpp"
 
 #include "src/DebugToolDrivers/DebugTools.hpp"
 #include "src/Targets/BriefTargetDescriptor.hpp"
@@ -66,6 +66,7 @@
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/ProgramBreakpointRegistry.hpp"
 #include "src/Targets/TargetMemoryCache.hpp"
 
 #include "src/EventManager/EventManager.hpp"
@@ -156,11 +157,8 @@ namespace TargetController
          */
         std::map<std::string, Targets::TargetRegisterDescriptors> registerDescriptorsByAddressSpaceKey;
 
-        /**
-         * The TargetController keeps track of all installed breakpoints.
-         */
-        std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> softwareBreakpointsByAddress;
-        std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> hardwareBreakpointsByAddress;
+        Targets::ProgramBreakpointRegistry softwareBreakpointRegistry;
+        Targets::ProgramBreakpointRegistry hardwareBreakpointRegistry;
 
         /**
          * The target's program memory cache
@@ -268,19 +266,14 @@ namespace TargetController
         void releaseHardware();
 
         void startAtomicSession();
-
         void endActiveAtomicSession();
 
         void refreshExecutionState();
-
         void updateTargetState(const Targets::TargetState& newState);
 
         void stopTarget();
-
         void resumeTarget();
-
         void stepTarget();
-
         void resetTarget();
 
         Targets::TargetRegisterDescriptorAndValuePairs readTargetRegisters(
@@ -310,9 +303,10 @@ namespace TargetController
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
         );
 
-        void setBreakpoint(const Targets::TargetBreakpoint& breakpoint);
-
-        void removeBreakpoint(const Targets::TargetBreakpoint& breakpoint);
+        std::uint32_t availableHardwareBreakpoints();
+        void setProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
+        void removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
+        void clearAllBreakpoints();
 
         /**
          * Puts the target into programming mode and disables command handlers for debug commands (commands that serve
@@ -367,8 +361,10 @@ namespace TargetController
         std::unique_ptr<Responses::Response> handleWriteTargetMemory(Commands::WriteTargetMemory& command);
         std::unique_ptr<Responses::Response> handleEraseTargetMemory(Commands::EraseTargetMemory& command);
         std::unique_ptr<Responses::Response> handleStepTargetExecution(Commands::StepTargetExecution& command);
-        std::unique_ptr<Responses::Breakpoint> handleSetBreakpoint(Commands::SetBreakpoint& command);
-        std::unique_ptr<Responses::Response> handleRemoveBreakpoint(Commands::RemoveBreakpoint& command);
+        std::unique_ptr<Responses::ProgramBreakpoint> handleSetProgramBreakpointBreakpointAnyType(
+            Commands::SetProgramBreakpointAnyType& command
+        );
+        std::unique_ptr<Responses::Response> handleRemoveProgramBreakpoint(Commands::RemoveProgramBreakpoint& command);
         std::unique_ptr<Responses::Response> handleSetProgramCounter(Commands::SetTargetProgramCounter& command);
         std::unique_ptr<Responses::Response> handleSetStackPointer(Commands::SetTargetStackPointer& command);
         std::unique_ptr<Responses::TargetGpioPadStates> handleGetTargetGpioPadStates(

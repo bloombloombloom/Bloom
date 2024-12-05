@@ -5,6 +5,8 @@
 #include <cassert>
 
 #include "TargetMemory.hpp"
+#include "TargetAddressSpaceDescriptor.hpp"
+#include "TargetMemorySegmentDescriptor.hpp"
 
 namespace Targets
 {
@@ -14,7 +16,7 @@ namespace Targets
         UNKNOWN,
     };
 
-    struct TargetBreakpoint
+    struct TargetProgramBreakpoint
     {
         enum class Type: std::uint8_t
         {
@@ -22,42 +24,17 @@ namespace Targets
             SOFTWARE,
         };
 
-        /**
-         * Byte address of the breakpoint.
-         */
-        TargetMemoryAddress address = 0;
-
-        Type type = Type::SOFTWARE;
-
-        TargetBreakpoint() = default;
-
-        explicit TargetBreakpoint(TargetMemoryAddress address, Type type = Type::SOFTWARE)
-            : address(address)
-            , type(type)
-        {};
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+        TargetMemoryAddress address;
+        TargetMemorySize size;
+        Type type;
     };
 
     struct BreakpointResources
     {
-        std::optional<std::uint16_t> maximumHardwareBreakpoints = std::nullopt;
-        std::optional<std::uint16_t> maximumSoftwareBreakpoints = std::nullopt;
-        std::uint16_t reservedHardwareBreakpoints = 0;
-
-        BreakpointResources() = default;
-
-        BreakpointResources(
-            std::optional<std::uint16_t> maximumHardwareBreakpoints,
-            std::optional<std::uint16_t> maximumSoftwareBreakpoints,
-            std::uint16_t reservedHardwareBreakpoints
-        )
-            : maximumHardwareBreakpoints(maximumHardwareBreakpoints)
-            , maximumSoftwareBreakpoints(maximumSoftwareBreakpoints)
-            , reservedHardwareBreakpoints(reservedHardwareBreakpoints)
-        {
-            assert(
-                !this->maximumHardwareBreakpoints.has_value()
-                || this->maximumHardwareBreakpoints >= this->reservedHardwareBreakpoints
-            );
-        }
+        std::uint32_t hardwareBreakpoints = 0;
+        std::uint32_t softwareBreakpoints = 0;
+        std::uint32_t reservedHardwareBreakpoints = 0;
     };
 }

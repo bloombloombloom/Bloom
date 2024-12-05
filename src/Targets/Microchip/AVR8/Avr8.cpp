@@ -25,8 +25,10 @@ namespace Targets::Microchip::Avr8
     Avr8::Avr8(const TargetConfig& targetConfig, TargetDescriptionFile&& targetDescriptionFile)
         : targetConfig(Avr8TargetConfig{targetConfig})
         , targetDescriptionFile(std::move(targetDescriptionFile))
+        , programAddressSpaceDescriptor(this->targetDescriptionFile.getProgramAddressSpaceDescriptor())
         , dataAddressSpaceDescriptor(this->targetDescriptionFile.getDataAddressSpaceDescriptor())
         , fuseAddressSpaceDescriptor(this->targetDescriptionFile.getFuseAddressSpaceDescriptor())
+        , programMemorySegmentDescriptor(this->targetDescriptionFile.getProgramMemorySegmentDescriptor())
         , ramMemorySegmentDescriptor(this->targetDescriptionFile.getRamMemorySegmentDescriptor())
         , ioMemorySegmentDescriptor(this->targetDescriptionFile.getIoMemorySegmentDescriptor())
         , fuseMemorySegmentDescriptor(this->targetDescriptionFile.getFuseMemorySegmentDescriptor())
@@ -234,7 +236,6 @@ namespace Targets::Microchip::Avr8
             }
 
             this->stop();
-            this->clearAllBreakpoints();
 
             if (
                 this->targetConfig.physicalInterface == TargetPhysicalInterface::JTAG
@@ -357,24 +358,30 @@ namespace Targets::Microchip::Avr8
         this->avr8DebugInterface->reset();
     }
 
-    void Avr8::setSoftwareBreakpoint(TargetMemoryAddress address) {
-        this->avr8DebugInterface->setSoftwareBreakpoint(address);
+    void Avr8::setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (breakpoint.addressSpaceDescriptor != this->programAddressSpaceDescriptor) {
+            throw Exception{"Unexpected address space descriptor"};
+        }
+
+        if (breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE) {
+            this->avr8DebugInterface->setHardwareBreakpoint(breakpoint.address);
+
+        } else {
+            this->avr8DebugInterface->setSoftwareBreakpoint(breakpoint.address);
+        }
     }
 
-    void Avr8::removeSoftwareBreakpoint(TargetMemoryAddress address) {
-        this->avr8DebugInterface->clearSoftwareBreakpoint(address);
-    }
+    void Avr8::removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (breakpoint.addressSpaceDescriptor != this->programAddressSpaceDescriptor) {
+            throw Exception{"Unexpected address space descriptor"};
+        }
 
-    void Avr8::setHardwareBreakpoint(TargetMemoryAddress address) {
-        this->avr8DebugInterface->setHardwareBreakpoint(address);
-    }
+        if (breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE) {
+            this->avr8DebugInterface->clearHardwareBreakpoint(breakpoint.address);
 
-    void Avr8::removeHardwareBreakpoint(TargetMemoryAddress address) {
-        this->avr8DebugInterface->clearHardwareBreakpoint(address);
-    }
-
-    void Avr8::clearAllBreakpoints() {
-        this->avr8DebugInterface->clearAllBreakpoints();
+        } else {
+            this->avr8DebugInterface->clearSoftwareBreakpoint(breakpoint.address);
+        }
     }
 
     TargetRegisterDescriptorAndValuePairs Avr8::readRegisters(const Targets::TargetRegisterDescriptors& descriptors) {
@@ -795,19 +802,19 @@ namespace Targets::Microchip::Avr8
     }
 
     BreakpointResources Avr8::getBreakpointResources() {
-        auto maxHardwareBreakpoints = std::uint16_t{0};
+        auto hardwareBreakpoints = std::uint32_t{0};
 
         switch (this->targetConfig.physicalInterface) {
             case TargetPhysicalInterface::JTAG: {
-                maxHardwareBreakpoints = this->family == Family::XMEGA ? 2 : 3;
+                hardwareBreakpoints = this->family == Family::XMEGA ? 2 : 3;
                 break;
             }
             case TargetPhysicalInterface::PDI: {
-                maxHardwareBreakpoints = 2;
+                hardwareBreakpoints = 2;
                 break;
             }
             case TargetPhysicalInterface::UPDI: {
-                maxHardwareBreakpoints = 1;
+                hardwareBreakpoints = 1;
                 break;
             }
             default: {
@@ -816,11 +823,15 @@ namespace Targets::Microchip::Avr8
         }
 
         return BreakpointResources{
-            maxHardwareBreakpoints,
-            std::nullopt,
+            hardwareBreakpoints,
+            /*
+             * AVR targets have unlimited SW breakpoints, so we just use the program memory size divided by the
+             * breakpoint ("BREAK") opcode (byte) size, to determine the limit.
+             */
+            this->programMemorySegmentDescriptor.size() / 2,
             std::min(
-                static_cast<std::uint16_t>(this->targetConfig.reserveSteppingBreakpoint.value_or(true) ? 1 : 0),
-                maxHardwareBreakpoints
+                static_cast<std::uint32_t>(this->targetConfig.reserveSteppingBreakpoint.value_or(true) ? 1 : 0),
+                hardwareBreakpoints
             )
         };
     }

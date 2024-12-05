@@ -19,6 +19,9 @@ namespace Targets::RiscV::Wch
         void postActivate() override;
         TargetDescriptor targetDescriptor() override;
 
+        void setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) override;
+        void removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) override;
+
         void writeMemory(
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
@@ -31,6 +34,10 @@ namespace Targets::RiscV::Wch
         std::optional<std::reference_wrapper<const TargetDescription::Variant>> variant = std::nullopt;
 
         const TargetMemorySegmentDescriptor& programMemorySegmentDescriptor;
+        const TargetMemorySegmentDescriptor& bootProgramMemorySegmentDescriptor;
         const TargetMemorySegmentDescriptor& mappedProgramMemorySegmentDescriptor;
+
+        const TargetMemorySegmentDescriptor& getDestinationProgramMemorySegmentDescriptor();
+        TargetMemoryAddress transformAliasedProgramMemoryAddress(TargetMemoryAddress address) const;
     };
 }

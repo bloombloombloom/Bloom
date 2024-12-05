@@ -61,9 +61,11 @@ namespace Targets::Microchip::Avr8
         [[nodiscard]] const TargetDescription::MemorySegment& getFuseMemorySegment() const;
         [[nodiscard]] const TargetDescription::MemorySegment& getLockbitMemorySegment() const;
 
+        [[nodiscard]] TargetAddressSpaceDescriptor getProgramAddressSpaceDescriptor() const;
         [[nodiscard]] TargetAddressSpaceDescriptor getDataAddressSpaceDescriptor() const;
         [[nodiscard]] TargetAddressSpaceDescriptor getFuseAddressSpaceDescriptor() const;
 
+        [[nodiscard]] TargetMemorySegmentDescriptor getProgramMemorySegmentDescriptor() const;
         [[nodiscard]] TargetMemorySegmentDescriptor getRamMemorySegmentDescriptor() const;
         [[nodiscard]] TargetMemorySegmentDescriptor getFuseMemorySegmentDescriptor() const;
         [[nodiscard]] TargetMemorySegmentDescriptor getIoMemorySegmentDescriptor() const;

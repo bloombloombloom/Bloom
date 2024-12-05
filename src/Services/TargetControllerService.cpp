@@ -14,8 +14,8 @@
 #include "src/TargetController/Commands/WriteTargetMemory.hpp"
 #include "src/TargetController/Commands/EraseTargetMemory.hpp"
 #include "src/TargetController/Commands/StepTargetExecution.hpp"
-#include "src/TargetController/Commands/SetBreakpoint.hpp"
-#include "src/TargetController/Commands/RemoveBreakpoint.hpp"
+#include "src/TargetController/Commands/SetProgramBreakpointAnyType.hpp"
+#include "src/TargetController/Commands/RemoveProgramBreakpoint.hpp"
 #include "src/TargetController/Commands/SetTargetProgramCounter.hpp"
 #include "src/TargetController/Commands/SetTargetStackPointer.hpp"
 #include "src/TargetController/Commands/GetTargetGpioPadStates.hpp"
@@ -43,8 +43,8 @@ namespace Services
     using TargetController::Commands::WriteTargetMemory;
     using TargetController::Commands::EraseTargetMemory;
     using TargetController::Commands::StepTargetExecution;
-    using TargetController::Commands::SetBreakpoint;
-    using TargetController::Commands::RemoveBreakpoint;
+    using TargetController::Commands::SetProgramBreakpointAnyType;
+    using TargetController::Commands::RemoveProgramBreakpoint;
     using TargetController::Commands::SetTargetProgramCounter;
     using TargetController::Commands::SetTargetStackPointer;
     using TargetController::Commands::GetTargetGpioPadStates;
@@ -70,8 +70,6 @@ namespace Services
     using Targets::TargetMemoryBuffer;
     using Targets::TargetMemoryBufferSpan;
     using Targets::TargetStackPointer;
-
-    using Targets::TargetBreakpoint;
 
     using Targets::TargetPinoutDescriptor;
     using Targets::TargetPinDescriptor;
@@ -236,20 +234,27 @@ namespace Services
         );
     }
 
-    Targets::TargetBreakpoint TargetControllerService::setBreakpoint(
+    Targets::TargetProgramBreakpoint TargetControllerService::setProgramBreakpointAnyType(
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         Targets::TargetMemoryAddress address,
-        Targets::TargetBreakpoint::Type preferredType
+        Targets::TargetMemorySize size
     ) const {
         return this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<SetBreakpoint>(address, preferredType),
+            std::make_unique<SetProgramBreakpointAnyType>(
+                addressSpaceDescriptor,
+                memorySegmentDescriptor,
+                address,
+                size
+            ),
             this->defaultTimeout,
             this->activeAtomicSessionId
         )->breakpoint;
     }
 
-    void TargetControllerService::removeBreakpoint(TargetBreakpoint breakpoint) const {
+    void TargetControllerService::removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) const {
         this->commandManager.sendCommandAndWaitForResponse(
-            std::make_unique<RemoveBreakpoint>(breakpoint),
+            std::make_unique<RemoveProgramBreakpoint>(breakpoint),
             this->defaultTimeout,
             this->activeAtomicSessionId
         );

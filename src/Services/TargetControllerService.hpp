@@ -170,25 +170,29 @@ namespace Services
         ) const;
 
         /**
-         * Requests the TargetController to set a breakpoint on the target.
+         * Requests the TargetController to set a program breakpoint of any type (hardware/software) on the target.
          *
+         * @param addressSpaceDescriptor
+         * @param memorySegmentDescriptor
          * @param address
-         * @param preferredType
+         * @param size
          *
          * @return
          *  The installed breakpoint.
          */
-        [[nodiscard]] Targets::TargetBreakpoint setBreakpoint(
+        [[nodiscard]] Targets::TargetProgramBreakpoint setProgramBreakpointAnyType(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress address,
-            Targets::TargetBreakpoint::Type preferredType = Targets::TargetBreakpoint::Type::HARDWARE
+            Targets::TargetMemorySize size
         ) const;
 
         /**
-         * Requests the TargetController to remove a breakpoint from the target.
+         * Requests the TargetController to remove a program breakpoint from the target.
          *
          * @param breakpoint
          */
-        void removeBreakpoint(Targets::TargetBreakpoint breakpoint) const;
+        void removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) const;
 
         /**
          * Retrieves the current program counter value from the target.

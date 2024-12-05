@@ -110,7 +110,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         if (!this->debugModuleDescriptor.triggerDescriptorsByIndex.empty()) {
             // Clear any left-over triggers from the previous debug session
-            this->clearAllTriggerBreakpoints();
+            this->clearAllTriggers();
         }
 
         this->initDebugControlStatusRegister();
@@ -121,6 +121,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         Logger::debug("Data register count: " + std::to_string(this->debugModuleDescriptor.abstractDataRegisterCount));
         Logger::debug("Program buffer size: " + std::to_string(this->debugModuleDescriptor.programBufferSize));
+
+        this->clearProgramBuffer();
 
         if (this->debugModuleDescriptor.abstractDataRegisterCount > 0) {
             if (this->debugModuleDescriptor.programBufferSize >= 3) {
@@ -299,15 +301,20 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     void DebugTranslator::insertTriggerBreakpoint(TargetMemoryAddress address) {
         using TriggerModule::TriggerType;
 
-        const auto triggerDescriptorOpt = this->getAvailableTrigger();
+        // We may already have a trigger for this address. If so, reuse it.
+        const auto preexistingTriggerIndexIt = this->triggerIndicesByBreakpointAddress.find(address);
+        auto triggerDescriptorOpt = preexistingTriggerIndexIt != this->triggerIndicesByBreakpointAddress.end()
+            ? std::cref(this->debugModuleDescriptor.triggerDescriptorsByIndex.at(preexistingTriggerIndexIt->second))
+            : this->getAvailableTrigger();
+
         if (!triggerDescriptorOpt.has_value()) {
             throw Exceptions::TargetOperationFailure{"Insufficient resources - no available trigger"};
         }
 
         const auto& triggerDescriptor = triggerDescriptorOpt->get();
         Logger::debug(
-            "Installing hardware BP at address 0x" + Services::StringService::toHex(address) + " with trigger index "
-                + std::to_string(triggerDescriptor.index)
+            "Installing RISC-V trigger for program address 0x" + Services::StringService::toHex(address)
+                + " with trigger index " + std::to_string(triggerDescriptor.index)
         );
 
         if (triggerDescriptor.supportedTypes.contains(TriggerType::MATCH_CONTROL)) {
@@ -353,7 +360,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         this->allocatedTriggerIndices.erase(triggerDescriptor.index);
     }
 
-    void DebugTranslator::clearAllTriggerBreakpoints() {
+    void DebugTranslator::clearAllTriggers() {
         // To ensure that any untracked breakpoints are cleared, we clear all triggers on the target.
         for (const auto& [triggerIndex, triggerDescriptor] : this->debugModuleDescriptor.triggerDescriptorsByIndex) {
             this->clearTrigger(triggerDescriptor);
@@ -503,6 +510,42 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         }
 
         throw Exceptions::InternalFatalErrorException{"Unknown selected memory access strategy"};
+    }
+
+    AbstractCommandError DebugTranslator::readAndClearAbstractCommandError() {
+        const auto commandError = this->readDebugModuleAbstractControlStatusRegister().commandError;
+        if (commandError != AbstractCommandError::NONE) {
+            this->clearAbstractCommandError();
+        }
+
+        return commandError;
+    }
+
+    void DebugTranslator::clearProgramBuffer() {
+        if (this->debugModuleDescriptor.programBufferSize < 1) {
+            return;
+        }
+
+        this->writeProgramBuffer(
+            std::vector<Opcodes::Opcode>(this->debugModuleDescriptor.programBufferSize, Opcodes::Ebreak)
+        );
+    }
+
+    void DebugTranslator::executeFenceProgram() {
+        static constexpr auto programOpcodes = std::to_array<Opcodes::Opcode>({
+            Opcodes::FenceI,
+            Opcodes::Fence,
+            Opcodes::Ebreak,
+        });
+
+        if (programOpcodes.size() > this->debugModuleDescriptor.programBufferSize) {
+            throw Exceptions::TargetOperationFailure{
+                "Cannot execute fence program via RISC-V debug module program buffer - insufficient program buffer size"
+            };
+        }
+
+        this->writeProgramBuffer(programOpcodes);
+        this->readCpuRegister(CpuRegisterNumber::GPR_X8, {.postExecute = true});
     }
 
     std::vector<DebugModule::HartIndex> DebugTranslator::discoverHartIndices() {

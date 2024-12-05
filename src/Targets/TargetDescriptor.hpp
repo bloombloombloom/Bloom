@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <map>
+#include <functional>
 #include <algorithm>
 #include <QMetaType>
 
@@ -53,8 +54,21 @@ namespace Targets
         std::optional<std::reference_wrapper<const TargetAddressSpaceDescriptor>> tryGetAddressSpaceDescriptor(
             const std::string& key
         ) const;
+        std::optional<std::reference_wrapper<TargetAddressSpaceDescriptor>> tryGetAddressSpaceDescriptor(
+            const std::string& key
+        );
 
         const TargetAddressSpaceDescriptor& getAddressSpaceDescriptor(const std::string& key) const;
+        TargetAddressSpaceDescriptor& getAddressSpaceDescriptor(const std::string& key);
+
+        const TargetMemorySegmentDescriptor& getMemorySegmentDescriptor(
+            const std::string& addressSpaceKey,
+            const std::string& segmentKey
+        ) const;
+        TargetMemorySegmentDescriptor& getMemorySegmentDescriptor(
+            const std::string& addressSpaceKey,
+            const std::string& segmentKey
+        );
 
         /**
          * Returns the descriptor for the first address space that contains the given memory segment.

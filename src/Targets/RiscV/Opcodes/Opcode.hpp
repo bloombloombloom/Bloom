@@ -5,6 +5,7 @@
 namespace Targets::RiscV::Opcodes
 {
     using Opcode = std::uint32_t;
+    using OpcodeCompressed = std::uint16_t;
 
     enum class GprNumber: std::uint8_t
     {
@@ -14,4 +15,8 @@ namespace Targets::RiscV::Opcodes
     };
 
     static constexpr auto Ebreak = Opcode{0x00100073};
+    static constexpr auto EbreakCompressed = OpcodeCompressed{0x9002};
+
+    static constexpr auto Fence = Opcode{0x0000000f};
+    static constexpr auto FenceI = Opcode{0x0000100f};
 }

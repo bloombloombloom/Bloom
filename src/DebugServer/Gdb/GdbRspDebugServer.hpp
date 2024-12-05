@@ -29,8 +29,6 @@
 #include "CommandPackets/InterruptExecution.hpp"
 #include "CommandPackets/ContinueExecution.hpp"
 #include "CommandPackets/StepExecution.hpp"
-#include "CommandPackets/SetBreakpoint.hpp"
-#include "CommandPackets/RemoveBreakpoint.hpp"
 #include "CommandPackets/Monitor.hpp"
 #include "CommandPackets/ResetTarget.hpp"
 #include "CommandPackets/HelpMonitorInfo.hpp"
@@ -332,6 +330,26 @@ namespace DebugServer::Gdb
         std::optional<DebugSessionType> debugSession;
 
         void endDebugSession() {
+            if (!debugSession.has_value()) {
+                return;
+            }
+
+            /*
+             * When GDB is configured to leave breakpoints in place, it will sometimes not even bother to remove them
+             * at the end of the debug session.
+             */
+            for (const auto& [addressSpaceId, breakpointsByAddress] : this->debugSession->internalBreakpointRegistry) {
+                for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                    this->targetControllerService.removeProgramBreakpoint(breakpoint);
+                }
+            }
+
+            for (const auto& [addressSpaceId, breakpointsByAddress] : this->debugSession->externalBreakpointRegistry) {
+                for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                    this->targetControllerService.removeProgramBreakpoint(breakpoint);
+                }
+            }
+
             this->debugSession.reset();
         }
 
@@ -419,14 +437,6 @@ namespace DebugServer::Gdb
 
             if (rawPacket[1] == 's') {
                 return std::make_unique<CommandPackets::StepExecution>(rawPacket);
-            }
-
-            if (rawPacket[1] == 'Z') {
-                return std::make_unique<CommandPackets::SetBreakpoint>(rawPacket);
-            }
-
-            if (rawPacket[1] == 'z') {
-                return std::make_unique<CommandPackets::RemoveBreakpoint>(rawPacket);
             }
 
             if (rawPacket[1] == 'D') {

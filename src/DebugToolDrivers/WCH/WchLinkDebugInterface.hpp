@@ -12,7 +12,10 @@
 #include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTranslator.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/ProgramBreakpointRegistry.hpp"
+
 #include "src/Targets/RiscV/Wch/TargetDescriptionFile.hpp"
+#include "src/Targets/RiscV/ProgramBreakpoint.hpp"
 
 namespace DebugToolDrivers::Wch
 {
@@ -45,13 +48,9 @@ namespace DebugToolDrivers::Wch
         void step() override;
         void reset() override;
 
-        void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
-        void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
-
-        std::uint16_t getHardwareBreakpointCount() override;
-        void setHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
-        void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
-        void clearAllHardwareBreakpoints() override;
+        Targets::BreakpointResources getBreakpointResources() override;
+        void setProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) override;
+        void removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) override;
 
         Targets::TargetRegisterDescriptorAndValuePairs readCpuRegisters(
             const Targets::TargetRegisterDescriptors& descriptors
@@ -76,6 +75,9 @@ namespace DebugToolDrivers::Wch
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
         ) override;
 
+        void enableProgrammingMode() override;
+        void disableProgrammingMode() override;
+
     private:
         const WchLinkToolConfig& toolConfig;
         const Targets::RiscV::RiscVTargetConfig& targetConfig;
@@ -94,12 +96,15 @@ namespace DebugToolDrivers::Wch
         std::optional<WchTargetVariantId> cachedVariantId;
         std::optional<WchTargetId> cachedTargetId;
 
+        Targets::ProgramBreakpointRegistryGeneric<Targets::RiscV::ProgramBreakpoint> softwareBreakpointRegistry;
+
         std::span<const unsigned char> flashProgramOpcodes;
         Targets::TargetMemorySize programmingBlockSize;
 
-        void writeFlashMemory(Targets::TargetMemoryAddress startAddress, Targets::TargetMemoryBufferSpan buffer);
-        void eraseFlashMemory();
+        void setSoftwareBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
+        void clearSoftwareBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
 
+        void eraseFlashMemory();
         static std::span<const unsigned char> getFlashProgramOpcodes(const std::string& key);
     };
 }

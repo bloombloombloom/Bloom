@@ -242,6 +242,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
     void EdbgAvr8Interface::deactivate() {
         if (this->targetAttached) {
+            this->clearAllBreakpoints();
+
             if (
                 this->session.targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
                 && this->session.targetConfig.disableDebugWireOnDeactivate
@@ -427,15 +429,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         this->hardwareBreakpointNumbersByAddress.erase(address);
-    }
-
-    void EdbgAvr8Interface::clearAllBreakpoints() {
-        this->clearAllSoftwareBreakpoints();
-
-        // Clear all hardware breakpoints
-        while (!this->hardwareBreakpointNumbersByAddress.empty()) {
-            this->clearHardwareBreakpoint(this->hardwareBreakpointNumbersByAddress.begin()->first);
-        }
     }
 
     TargetRegisterDescriptorAndValuePairs EdbgAvr8Interface::readRegisters(
@@ -1241,6 +1234,15 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         if (responseFrame.id == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure{"AVR8 Clear all software breakpoints command failed", responseFrame};
+        }
+    }
+
+    void EdbgAvr8Interface::clearAllBreakpoints() {
+        this->clearAllSoftwareBreakpoints();
+
+        // Clear all hardware breakpoints
+        while (!this->hardwareBreakpointNumbersByAddress.empty()) {
+            this->clearHardwareBreakpoint(this->hardwareBreakpointNumbersByAddress.begin()->first);
         }
     }
 

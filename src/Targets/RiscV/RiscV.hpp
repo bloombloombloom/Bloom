@@ -38,13 +38,6 @@ namespace Targets::RiscV
         void step() override;
         void reset() override;
 
-        void setSoftwareBreakpoint(TargetMemoryAddress address) override;
-        void removeSoftwareBreakpoint(TargetMemoryAddress address) override;
-
-        void setHardwareBreakpoint(TargetMemoryAddress address) override;
-        void removeHardwareBreakpoint(TargetMemoryAddress address) override;
-        void clearAllBreakpoints() override;
-
         TargetRegisterDescriptorAndValuePairs readRegisters(const TargetRegisterDescriptors& descriptors) override;
         void writeRegisters(const TargetRegisterDescriptorAndValuePairs& registers) override;
 
@@ -84,9 +77,7 @@ namespace Targets::RiscV
         void setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) override;
 
         void enableProgrammingMode() override;
-
         void disableProgrammingMode() override;
-
         bool programmingModeEnabled() override;
 
     protected:

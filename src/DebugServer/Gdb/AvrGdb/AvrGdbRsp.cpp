@@ -9,6 +9,8 @@
 #include "CommandPackets/ReadMemory.hpp"
 #include "CommandPackets/WriteMemory.hpp"
 #include "CommandPackets/ReadMemoryMap.hpp"
+#include "CommandPackets/SetBreakpoint.hpp"
+#include "CommandPackets/RemoveBreakpoint.hpp"
 #include "CommandPackets/FlashErase.hpp"
 #include "CommandPackets/FlashWrite.hpp"
 #include "CommandPackets/FlashDone.hpp"
@@ -56,6 +58,8 @@ namespace DebugServer::Gdb::AvrGdb
         using CommandPackets::ReadMemory;
         using CommandPackets::WriteMemory;
         using CommandPackets::ReadMemoryMap;
+        using CommandPackets::SetBreakpoint;
+        using CommandPackets::RemoveBreakpoint;
         using CommandPackets::FlashErase;
         using CommandPackets::FlashWrite;
         using CommandPackets::FlashDone;
@@ -85,6 +89,14 @@ namespace DebugServer::Gdb::AvrGdb
 
         if (rawPacket[1] == 'M') {
             return std::make_unique<WriteMemory>(rawPacket, this->gdbTargetDescriptor);
+        }
+
+        if (rawPacket[1] == 'Z') {
+            return std::make_unique<SetBreakpoint>(rawPacket);
+        }
+
+        if (rawPacket[1] == 'z') {
+            return std::make_unique<RemoveBreakpoint>(rawPacket);
         }
 
         if (rawPacket.size() > 1) {
@@ -161,7 +173,12 @@ namespace DebugServer::Gdb::AvrGdb
              *
              * We need to figure out why, and determine whether the stop should be reported to GDB.
              */
-            if (this->debugSession->externalBreakpointsByAddress.contains(programAddress)) {
+            if (
+                this->debugSession->externalBreakpointRegistry.contains(
+                    activeRangeSteppingSession->addressSpaceDescriptor.id,
+                    programAddress
+                )
+            ) {
                 /*
                  * The target stopped due to an external breakpoint, set by GDB.
                  *

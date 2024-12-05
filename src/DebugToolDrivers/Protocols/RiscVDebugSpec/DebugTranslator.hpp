@@ -68,7 +68,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         std::uint16_t getTriggerCount() const;
         void insertTriggerBreakpoint(Targets::TargetMemoryAddress address);
         void clearTriggerBreakpoint(Targets::TargetMemoryAddress address);
-        void clearAllTriggerBreakpoints();
+        void clearAllTriggers();
 
         Targets::TargetRegisterDescriptorAndValuePairs readCpuRegisters(
             const Targets::TargetRegisterDescriptors& descriptors
@@ -88,6 +88,21 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemoryBufferSpan buffer
         );
+
+        DebugModule::AbstractCommandError readAndClearAbstractCommandError();
+
+        /**
+         * Fills the program buffer with ebreak instructions.
+         */
+        void clearProgramBuffer();
+
+        /**
+         * This isn't used anywhere ATM. I don't think it's needed, as Bloom only supports RISC-V targets that have a
+         * single hart.
+         *
+         * TODO: Consider removing
+         */
+        void executeFenceProgram();
 
     private:
         static constexpr auto DEBUG_MODULE_RESPONSE_DELAY = std::chrono::microseconds{10};

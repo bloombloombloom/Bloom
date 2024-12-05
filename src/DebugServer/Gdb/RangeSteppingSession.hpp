@@ -3,6 +3,8 @@
 #include <set>
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 namespace DebugServer::Gdb
 {
@@ -15,6 +17,12 @@ namespace DebugServer::Gdb
      */
     struct RangeSteppingSession
     {
+        /**
+         * The address space and memory segment of the program memory which we are stepping over.
+         */
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+
         /**
          * The (byte) address range we're stepping over.
          *
@@ -36,11 +44,23 @@ namespace DebugServer::Gdb
         bool singleStepping = false;
 
         RangeSteppingSession(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             const Targets::TargetMemoryAddressRange& range,
             const std::set<Targets::TargetMemoryAddress>& interceptedAddresses
         )
-            : range(range)
+            : addressSpaceDescriptor(addressSpaceDescriptor)
+            , memorySegmentDescriptor(memorySegmentDescriptor)
+            , range(range)
             , interceptedAddresses(interceptedAddresses)
         {};
+
+        RangeSteppingSession(RangeSteppingSession&& other) noexcept
+            : addressSpaceDescriptor(other.addressSpaceDescriptor)
+            , memorySegmentDescriptor(other.memorySegmentDescriptor)
+            , range(other.range)
+            , interceptedAddresses(std::move(other.interceptedAddresses))
+            , singleStepping(other.singleStepping)
+        {}
     };
 }

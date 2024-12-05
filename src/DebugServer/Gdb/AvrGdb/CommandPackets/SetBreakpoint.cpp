@@ -1,6 +1,6 @@
 #include "SetBreakpoint.hpp"
 
-#include <QtCore/QString>
+#include <string>
 
 #include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/EmptyResponsePacket.hpp"
@@ -8,14 +8,14 @@
 
 #include "src/Targets/TargetBreakpoint.hpp"
 
+#include "src/Services/StringService.hpp"
+
 #include "src/Logger/Logger.hpp"
 #include "src/Exceptions/Exception.hpp"
 
-namespace DebugServer::Gdb::CommandPackets
+namespace DebugServer::Gdb::AvrGdb::CommandPackets
 {
     using Services::TargetControllerService;
-
-    using Targets::TargetBreakpoint;
 
     using ResponsePackets::OkResponsePacket;
     using ResponsePackets::ErrorResponsePacket;
@@ -26,36 +26,36 @@ namespace DebugServer::Gdb::CommandPackets
     SetBreakpoint::SetBreakpoint(const RawPacket& rawPacket)
         : CommandPacket(rawPacket)
     {
-        if (this->data.size() < 6) {
+        const auto packetString = std::string{this->data.begin(), this->data.end()};
+
+        if (packetString.size() < 6) {
             throw Exception{"Unexpected SetBreakpoint packet size"};
         }
 
         // Z0 = SW breakpoint, Z1 = HW breakpoint
-        this->type = (this->data[1] == '0')
+        this->type = (packetString[1] == '0')
             ? BreakpointType::SOFTWARE_BREAKPOINT
-            : (this->data[1] == '1') ? BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
+            : (packetString[1] == '1') ? BreakpointType::HARDWARE_BREAKPOINT : BreakpointType::UNKNOWN;
 
-        auto packetData = QString::fromLocal8Bit(
-            reinterpret_cast<const char*>(this->data.data() + 2),
-            static_cast<int>(this->data.size() - 2)
+        const auto firstCommaPos = packetString.find_first_of(',');
+        const auto secondCommaPos = packetString.find_first_of(',', firstCommaPos + 1);
+        if (firstCommaPos == std::string::npos || secondCommaPos == std::string::npos) {
+            throw Exception{"Invalid SetBreakpoint packet"};
+        }
+
+        const auto addressString = packetString.substr(firstCommaPos + 1, secondCommaPos - firstCommaPos - 1);
+        const auto sizeString = packetString.substr(
+            secondCommaPos + 1,
+            packetString.find_first_of(';', secondCommaPos) - secondCommaPos - 1
         );
 
-        auto packetSegments = packetData.split(",");
-        if (packetSegments.size() < 3) {
-            throw Exception{"Unexpected number of packet segments in SetBreakpoint packet"};
-        }
-
-        bool conversionStatus = true;
-        this->address = packetSegments.at(1).toUInt(&conversionStatus, 16);
-
-        if (!conversionStatus) {
-            throw Exception{"Failed to convert address hex value from SetBreakpoint packet."};
-        }
+        this->address = Services::StringService::toUint32(addressString, 16);
+        this->size = Services::StringService::toUint32(sizeString, 10);
     }
 
     void SetBreakpoint::handle(
         DebugSession& debugSession,
-        const TargetDescriptor& gdbTargetDescriptor,
+        const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor&,
         TargetControllerService& targetControllerService
     ) {
@@ -71,7 +71,11 @@ namespace DebugServer::Gdb::CommandPackets
                 return;
             }
 
-            debugSession.setExternalBreakpoint(this->address, targetControllerService);
+            debugSession.setExternalBreakpoint(
+                gdbTargetDescriptor.programAddressSpaceDescriptor,
+                gdbTargetDescriptor.programMemorySegmentDescriptor,
+                this->address, this->size, targetControllerService
+            );
             debugSession.connection.writePacket(OkResponsePacket{});
 
         } catch (const Exception& exception) {

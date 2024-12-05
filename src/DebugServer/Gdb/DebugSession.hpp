@@ -12,7 +12,10 @@
 #include "RangeSteppingSession.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
+#include "src/Targets/ProgramBreakpointRegistry.hpp"
 
 #include "src/Services/TargetControllerService.hpp"
 
@@ -53,8 +56,8 @@ namespace DebugServer::Gdb
          *
          * We track internal and external breakpoints separately.
          */
-        std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> internalBreakpointsByAddress;
-        std::map<Targets::TargetMemoryAddress, Targets::TargetBreakpoint> externalBreakpointsByAddress;
+        Targets::ProgramBreakpointRegistry internalBreakpointRegistry;
+        Targets::ProgramBreakpointRegistry externalBreakpointRegistry;
 
         /**
          * When the GDB client is waiting for the target to halt, this is set to true so we know when to notify the
@@ -102,21 +105,29 @@ namespace DebugServer::Gdb
         virtual ~DebugSession();
 
         virtual void setInternalBreakpoint(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress address,
+            Targets::TargetMemorySize size,
             Services::TargetControllerService& targetControllerService
         );
 
         virtual void removeInternalBreakpoint(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             Targets::TargetMemoryAddress address,
             Services::TargetControllerService& targetControllerService
         );
 
         virtual void setExternalBreakpoint(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddress address,
+            Targets::TargetMemorySize size,
             Services::TargetControllerService& targetControllerService
         );
 
         virtual void removeExternalBreakpoint(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             Targets::TargetMemoryAddress address,
             Services::TargetControllerService& targetControllerService
         );

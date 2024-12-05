@@ -47,8 +47,6 @@ namespace Targets::RiscV::Wch
     }
 
     TargetDescriptor WchRiscV::targetDescriptor() {
-        const auto hardwareBreakpointCount = this->riscVDebugInterface->getHardwareBreakpointCount();
-
         auto descriptor = TargetDescriptor{
             this->targetDescriptionFile.getName(),
             this->targetDescriptionFile.getFamily(),
@@ -59,14 +57,15 @@ namespace Targets::RiscV::Wch
             this->targetDescriptionFile.targetPadDescriptorsByKey(),
             this->targetDescriptionFile.targetPinoutDescriptorsByKey(),
             this->targetDescriptionFile.targetVariantDescriptorsByKey(),
-            BreakpointResources{
-                hardwareBreakpointCount,
-                std::nullopt,
-                static_cast<std::uint16_t>(
-                    this->targetConfig.reserveSteppingBreakpoint.value_or(false) && hardwareBreakpointCount > 0 ? 1 : 0
-                )
-            }
+            this->riscVDebugInterface->getBreakpointResources()
         };
+
+        if (
+            this->targetConfig.reserveSteppingBreakpoint.value_or(false)
+            && descriptor.breakpointResources.hardwareBreakpoints > 0
+        ) {
+            descriptor.breakpointResources.reservedHardwareBreakpoints = 1;
+        }
 
         // Copy the RISC-V CPU register address space and peripheral descriptor
         descriptor.addressSpaceDescriptorsByKey.emplace(
@@ -100,6 +99,44 @@ namespace Targets::RiscV::Wch
         return descriptor;
     }
 
+    void WchRiscV::setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (
+            breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
+            && breakpoint.memorySegmentDescriptor == this->mappedProgramMemorySegmentDescriptor
+        ) {
+            this->riscVDebugInterface->setProgramBreakpoint(TargetProgramBreakpoint{
+                .addressSpaceDescriptor = this->sysAddressSpaceDescriptor,
+                .memorySegmentDescriptor = this->getDestinationProgramMemorySegmentDescriptor(),
+                .address = this->transformAliasedProgramMemoryAddress(breakpoint.address),
+                .size = breakpoint.size,
+                .type = breakpoint.type
+            });
+
+            return;
+        }
+
+        this->riscVDebugInterface->setProgramBreakpoint(breakpoint);
+    }
+
+    void WchRiscV::removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (
+            breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
+            && breakpoint.memorySegmentDescriptor == this->mappedProgramMemorySegmentDescriptor
+        ) {
+            this->riscVDebugInterface->removeProgramBreakpoint(TargetProgramBreakpoint{
+                .addressSpaceDescriptor = this->sysAddressSpaceDescriptor,
+                .memorySegmentDescriptor = this->getDestinationProgramMemorySegmentDescriptor(),
+                .address = this->transformAliasedProgramMemoryAddress(breakpoint.address),
+                .size = breakpoint.size,
+                .type = breakpoint.type
+            });
+
+            return;
+        }
+
+        this->riscVDebugInterface->removeProgramBreakpoint(breakpoint);
+    }
+
     void WchRiscV::writeMemory(
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
@@ -119,13 +156,35 @@ namespace Targets::RiscV::Wch
          *        before v2.0.0.
          */
         if (memorySegmentDescriptor == this->mappedProgramMemorySegmentDescriptor) {
-            const auto newAddress = startAddress - this->mappedProgramMemorySegmentDescriptor.addressRange.startAddress
-                + this->programMemorySegmentDescriptor.addressRange.startAddress;
-            assert(this->programMemorySegmentDescriptor.addressRange.contains(newAddress));
+            const auto transformedAddress = this->transformAliasedProgramMemoryAddress(startAddress);
+            assert(this->programMemorySegmentDescriptor.addressRange.contains(transformedAddress));
 
-            return RiscV::writeMemory(addressSpaceDescriptor, this->programMemorySegmentDescriptor, newAddress, buffer);
+            return RiscV::writeMemory(
+                addressSpaceDescriptor,
+                this->programMemorySegmentDescriptor,
+                transformedAddress,
+                buffer
+            );
         }
 
         return RiscV::writeMemory(addressSpaceDescriptor, memorySegmentDescriptor, startAddress, buffer);
+    }
+
+    const TargetMemorySegmentDescriptor& WchRiscV::getDestinationProgramMemorySegmentDescriptor() {
+        return this->programMemorySegmentDescriptor;
+    }
+
+    TargetMemoryAddress WchRiscV::transformAliasedProgramMemoryAddress(TargetMemoryAddress address) const {
+        using Services::StringService;
+
+        const auto transformedAddress = address - this->mappedProgramMemorySegmentDescriptor.addressRange.startAddress
+            + this->programMemorySegmentDescriptor.addressRange.startAddress;
+
+        Logger::debug(
+            "Transformed mapped program memory address 0x" + StringService::toHex(address) + " to 0x"
+                + StringService::toHex(transformedAddress)
+        );
+
+        return transformedAddress;
     }
 }

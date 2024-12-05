@@ -84,7 +84,12 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 return;
             }
 
-            auto rangeSteppingSession = RangeSteppingSession{stepAddressRange, {}};
+            auto rangeSteppingSession = RangeSteppingSession{
+                gdbTargetDescriptor.programAddressSpaceDescriptor,
+                gdbTargetDescriptor.programMemorySegmentDescriptor,
+                stepAddressRange,
+                {}
+            };
 
             const auto instructionsByAddress = Decoder::decode(
                 stepAddressRange.startAddress,

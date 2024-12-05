@@ -14,8 +14,6 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ContinueExecution.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/StepExecution.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/InterruptExecution.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/SetBreakpoint.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/RemoveBreakpoint.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/Monitor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ResetTarget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/HelpMonitorInfo.cpp
@@ -37,6 +35,8 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/ReadMemory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/WriteMemory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/ReadMemoryMap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/SetBreakpoint.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/RemoveBreakpoint.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashErase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashWrite.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/AvrGdb/CommandPackets/FlashDone.cpp
@@ -53,6 +53,8 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/ReadMemory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/WriteMemory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/ReadMemoryMap.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/SetBreakpoint.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/RemoveBreakpoint.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/FlashErase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/FlashWrite.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/FlashDone.cpp

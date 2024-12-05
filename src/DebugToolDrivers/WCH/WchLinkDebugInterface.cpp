@@ -1,5 +1,7 @@
 #include "WchLinkDebugInterface.hpp"
 
+#include <array>
+
 #include "Protocols/WchLink/Commands/Control/AttachTarget.hpp"
 #include "Protocols/WchLink/Commands/Control/DetachTarget.hpp"
 #include "Protocols/WchLink/Commands/Control/PostAttach.hpp"
@@ -8,7 +10,12 @@
 
 #include "Protocols/WchLink/FlashProgramOpcodes.hpp"
 
+#include "src/Targets/RiscV/Opcodes/Opcode.hpp"
+
 #include "src/Services/StringService.hpp"
+
+#include "src/Exceptions/InternalFatalErrorException.hpp"
+#include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 #include "src/Targets/TargetDescription/Exceptions/InvalidTargetDescriptionDataException.hpp"
 
 #include "src/Logger/Logger.hpp"
@@ -24,6 +31,7 @@ namespace DebugToolDrivers::Wch
     using ::Targets::TargetStackPointer;
     using ::Targets::TargetAddressSpaceDescriptor;
     using ::Targets::TargetMemorySegmentDescriptor;
+    using ::Targets::TargetProgramBreakpoint;
     using ::Targets::TargetMemorySegmentType;
     using ::Targets::TargetRegisterDescriptors;
     using ::Targets::TargetRegisterDescriptorAndValuePairs;
@@ -113,6 +121,7 @@ namespace DebugToolDrivers::Wch
     }
 
     void WchLinkDebugInterface::deactivate() {
+        this->riscVTranslator.clearAllTriggers();
         this->riscVTranslator.deactivate();
 
         const auto response = this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::DetachTarget{});
@@ -145,28 +154,29 @@ namespace DebugToolDrivers::Wch
         this->riscVTranslator.reset();
     }
 
-    void WchLinkDebugInterface::setSoftwareBreakpoint(Targets::TargetMemoryAddress address) {
-        throw Exceptions::Exception{"SW breakpoints not supported"};
+    Targets::BreakpointResources WchLinkDebugInterface::getBreakpointResources() {
+        return {
+            .hardwareBreakpoints = this->riscVTranslator.getTriggerCount(),
+            .softwareBreakpoints = 0xFFFFFFFF, // TODO: Use the program memory size to determine the limit.
+        };
     }
 
-    void WchLinkDebugInterface::clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) {
-        throw Exceptions::Exception{"SW breakpoints not supported"};
+    void WchLinkDebugInterface::setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE) {
+            this->riscVTranslator.insertTriggerBreakpoint(breakpoint.address);
+
+        } else {
+            this->setSoftwareBreakpoint(breakpoint);
+        }
     }
 
-    std::uint16_t WchLinkDebugInterface::getHardwareBreakpointCount() {
-        return this->riscVTranslator.getTriggerCount();
-    }
+    void WchLinkDebugInterface::removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE) {
+            this->riscVTranslator.clearTriggerBreakpoint(breakpoint.address);
 
-    void WchLinkDebugInterface::setHardwareBreakpoint(Targets::TargetMemoryAddress address) {
-        this->riscVTranslator.insertTriggerBreakpoint(address);
-    }
-
-    void WchLinkDebugInterface::clearHardwareBreakpoint(Targets::TargetMemoryAddress address) {
-        this->riscVTranslator.clearTriggerBreakpoint(address);
-    }
-
-    void WchLinkDebugInterface::clearAllHardwareBreakpoints() {
-        this->riscVTranslator.clearAllTriggerBreakpoints();
+        } else {
+            this->clearSoftwareBreakpoint(breakpoint);
+        }
     }
 
     Targets::TargetRegisterDescriptorAndValuePairs WchLinkDebugInterface::readCpuRegisters(
@@ -203,60 +213,121 @@ namespace DebugToolDrivers::Wch
     ) {
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
             /*
-             * WCH-Link tools cannot write to flash memory via the target's debug module.
+             * WCH-Link tools cannot write to flash memory via the target's debug module. They do, however, offer a
+             * set of dedicated commands for this. We invoke them here.
              *
-             * They do, however, offer a set of dedicated commands for writing to flash memory. We invoke them here.
+             * There are two commands we can choose from:
              *
-             * See WchLinkDebugInterface::writeFlashMemory() below, for more.
+             * - Partial block write
+             *     Writes any number of bytes to flash, but limited to a maximum of 64 bytes per write. Larger writes
+             *     must be split into multiple writes.
+             * - Full block write
+             *     Writes an entire block to flash, where the block size is target-specific (resides in the target's
+             *     TDF). Requires alignment to the block size. Requires reattaching to the target at the end of the
+             *     programming session.
+             *
+             * The full block write is much faster for writing large buffers (KiBs), such as when we're programming
+             * the target. But the partial block write is faster and more suitable for writing buffers that are
+             * smaller than 64 bytes, such as when we're inserting software breakpoints.
              */
             const auto bufferSize = static_cast<TargetMemorySize>(buffer.size());
-            const auto alignmentSize = bufferSize > WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE
-                ? this->programmingBlockSize
-                : 1;
 
-            if (alignmentSize > 1) {
-                const auto alignedStartAddress = (startAddress / alignmentSize) * alignmentSize;
-                const auto alignedBufferSize = static_cast<TargetMemorySize>(std::ceil(
-                    static_cast<double>(bufferSize) / static_cast<double>(alignmentSize)
-                ) * alignmentSize);
+            if (bufferSize <= WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE) {
+                using namespace ::DebugToolDrivers::Protocols::RiscVDebugSpec;
+                /*
+                 * WCH-Link tools seem to make use of the target's program buffer to service the partial block write
+                 * command.
+                 *
+                 * This sometimes leads to exceptions occurring on the target, when the program buffer contains certain
+                 * instructions before the partial block write command is serviced. This is why we clear the program
+                 * buffer before invoking the partial block write command.
+                 */
+                this->riscVTranslator.clearProgramBuffer();
+                this->wchLinkInterface.writeFlashPartialBlock(startAddress, buffer);
 
-                if (alignedStartAddress != startAddress || alignedBufferSize != bufferSize) {
-                    auto alignedBuffer = (alignedStartAddress < startAddress)
-                        ? this->readMemory(
-                            addressSpaceDescriptor,
-                            memorySegmentDescriptor,
-                            alignedStartAddress,
-                            (startAddress - alignedStartAddress),
-                            {}
-                        )
-                        : TargetMemoryBuffer{};
-
-                    alignedBuffer.resize(alignedBufferSize);
-
-                    std::copy(
-                        buffer.begin(),
-                        buffer.end(),
-                        alignedBuffer.begin() + (startAddress - alignedStartAddress)
-                    );
-
-                    const auto dataBack = this->readMemory(
-                        addressSpaceDescriptor,
-                        memorySegmentDescriptor,
-                        startAddress + bufferSize,
-                        alignedBufferSize - bufferSize - (startAddress - alignedStartAddress),
-                        {}
-                    );
-                    std::copy(
-                        dataBack.begin(),
-                        dataBack.end(),
-                        alignedBuffer.begin() + (startAddress - alignedStartAddress) + bufferSize
-                    );
-
-                    return this->writeFlashMemory(alignedStartAddress, alignedBuffer);
+                const auto commandError = this->riscVTranslator.readAndClearAbstractCommandError();
+                if (commandError != DebugModule::AbstractCommandError::NONE) {
+                    throw Exceptions::Exception{
+                        "Partial block write failed - abstract command error: 0x"
+                            + Services::StringService::toHex(commandError)
+                    };
                 }
+
+                return;
             }
 
-            return this->writeFlashMemory(startAddress, buffer);
+            const auto alignmentSize = this->programmingBlockSize;
+            const auto alignedStartAddress = (startAddress / alignmentSize) * alignmentSize;
+            const auto alignedBufferSize = static_cast<TargetMemorySize>(std::ceil(
+                static_cast<double>(bufferSize) / static_cast<double>(alignmentSize)
+            ) * alignmentSize);
+
+            if (alignedStartAddress != startAddress || alignedBufferSize != bufferSize) {
+                if (
+                    !memorySegmentDescriptor.addressRange.contains(
+                        TargetMemoryAddressRange{
+                            alignedStartAddress,
+                            alignedStartAddress + alignedBufferSize - 1
+                        }
+                    )
+                ) {
+                    /*
+                     * TODO: The aligned address range exceeds the bounds of the memory segment. I'm not sure what to
+                     *       do here. We could just ignore it...I don't think it will cause much of an issue, for now.
+                     *       Review (after v2.0.0, maybe?).
+                     */
+                }
+
+                auto alignedBuffer = (alignedStartAddress < startAddress)
+                    ? this->readMemory(
+                        addressSpaceDescriptor,
+                        memorySegmentDescriptor,
+                        alignedStartAddress,
+                        (startAddress - alignedStartAddress),
+                        {}
+                    )
+                    : TargetMemoryBuffer{};
+
+                alignedBuffer.resize(alignedBufferSize);
+
+                std::copy(
+                    buffer.begin(),
+                    buffer.end(),
+                    alignedBuffer.begin() + (startAddress - alignedStartAddress)
+                );
+
+                const auto dataBack = this->readMemory(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    startAddress + bufferSize,
+                    alignedBufferSize - bufferSize - (startAddress - alignedStartAddress),
+                    {}
+                );
+                std::copy(
+                    dataBack.begin(),
+                    dataBack.end(),
+                    alignedBuffer.begin() + (startAddress - alignedStartAddress) + bufferSize
+                );
+
+                return this->writeMemory(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    alignedStartAddress,
+                    alignedBuffer
+                );
+            }
+
+            this->wchLinkInterface.writeFlashFullBlocks(
+                startAddress,
+                buffer,
+                this->programmingBlockSize,
+                this->flashProgramOpcodes
+            );
+
+            this->deactivate();
+            this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::GetDeviceInfo{});
+            this->activate();
+            return;
         }
 
         this->riscVTranslator.writeMemory(
@@ -278,36 +349,96 @@ namespace DebugToolDrivers::Wch
         throw Exception{"Erasing non-flash memory not supported in WchLinkDebugInterface"};
     }
 
-    void WchLinkDebugInterface::writeFlashMemory(TargetMemoryAddress startAddress, TargetMemoryBufferSpan buffer) {
-        /*
-         * There are two commands we can choose from when writing to flash memory:
-         *
-         * - Partial block write
-         *     Writes any number of bytes to flash, but limited to a maximum of 64 bytes per write. Larger writes
-         *     must be split into multiple writes.
-         * - Full block write
-         *     Writes an entire block to flash, where the block size is target-specific (resides in the target's
-         *     TDF). Requires alignment to the block size. Requires reattaching to the target at the end of the
-         *     programming session.
-         *
-         * The full block write is much faster for writing large buffers (KiBs), such as when we're programming the
-         * target. But the partial block write is faster and more suitable for writing buffers that are smaller than
-         * 64 bytes, such as when we're inserting software breakpoints.
-         */
-        if (buffer.size() <= WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE) {
-            return this->wchLinkInterface.writeFlashPartialBlock(startAddress, buffer);
+    void WchLinkDebugInterface::enableProgrammingMode() {
+        // Nothing to do here
+    }
+
+    void WchLinkDebugInterface::disableProgrammingMode() {
+        this->softwareBreakpointRegistry.clear();
+    }
+
+    void WchLinkDebugInterface::setSoftwareBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (breakpoint.size != 2 && breakpoint.size != 4) {
+            throw Exception{"Invalid software breakpoint size (" + std::to_string(breakpoint.size) + ")"};
         }
 
-        this->wchLinkInterface.writeFlashFullBlocks(
-            startAddress,
-            buffer,
-            this->programmingBlockSize,
-            this->flashProgramOpcodes
+        const auto originalData = this->readMemory(
+            breakpoint.addressSpaceDescriptor,
+            breakpoint.memorySegmentDescriptor,
+            breakpoint.address,
+            breakpoint.size,
+            {}
         );
 
-        this->deactivate();
-        this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::GetDeviceInfo{});
-        this->activate();
+        const auto softwareBreakpoint = ::Targets::RiscV::ProgramBreakpoint{
+            breakpoint,
+            static_cast<::Targets::RiscV::Opcodes::Opcode>(
+                breakpoint.size == 2
+                    ? (originalData[1] << 8) | originalData[0]
+                    : (originalData[3] << 24) | (originalData[2] << 16) | (originalData[1] << 8) | originalData[0]
+            )
+        };
+
+        static constexpr auto ebreakBytes = std::to_array<unsigned char>({
+            static_cast<unsigned char>(::Targets::RiscV::Opcodes::Ebreak),
+            static_cast<unsigned char>(::Targets::RiscV::Opcodes::Ebreak >> 8),
+            static_cast<unsigned char>(::Targets::RiscV::Opcodes::Ebreak >> 16),
+            static_cast<unsigned char>(::Targets::RiscV::Opcodes::Ebreak >> 24)
+        });
+
+        static constexpr auto compressedEbreakBytes = std::to_array<unsigned char>({
+            static_cast<unsigned char>(::Targets::RiscV::Opcodes::EbreakCompressed),
+            static_cast<unsigned char>(::Targets::RiscV::Opcodes::EbreakCompressed >> 8)
+        });
+
+        this->writeMemory(
+            softwareBreakpoint.addressSpaceDescriptor,
+            softwareBreakpoint.memorySegmentDescriptor,
+            softwareBreakpoint.address,
+            softwareBreakpoint.size == 2
+                ? TargetMemoryBufferSpan{compressedEbreakBytes}
+                : TargetMemoryBufferSpan{ebreakBytes}
+        );
+
+        this->softwareBreakpointRegistry.insert(softwareBreakpoint);
+    }
+
+    void WchLinkDebugInterface::clearSoftwareBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (breakpoint.size != 2 && breakpoint.size != 4) {
+            throw Exception{"Invalid software breakpoint size (" + std::to_string(breakpoint.size) + ")"};
+        }
+
+        const auto softwareBreakpointOpt = this->softwareBreakpointRegistry.find(breakpoint);
+        if (!softwareBreakpointOpt.has_value()) {
+            throw TargetOperationFailure{
+                "Unknown software breakpoint (byte address: 0x" + Services::StringService::toHex(breakpoint.address)
+                    + ")"
+            };
+        }
+
+        const auto& softwareBreakpoint = softwareBreakpointOpt->get();
+        if (!softwareBreakpoint.originalInstruction.has_value()) {
+            throw InternalFatalErrorException{"Missing original opcode"};
+        }
+
+        this->writeMemory(
+            softwareBreakpoint.addressSpaceDescriptor,
+            softwareBreakpoint.memorySegmentDescriptor,
+            softwareBreakpoint.address,
+            softwareBreakpoint.size == 2
+                ? TargetMemoryBuffer{
+                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction)),
+                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction) >> 8)
+                }
+                : TargetMemoryBuffer{
+                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction)),
+                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction) >> 8),
+                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction) >> 16),
+                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction) >> 24)
+                }
+        );
+
+        this->softwareBreakpointRegistry.remove(softwareBreakpoint);
     }
 
     void WchLinkDebugInterface::eraseFlashMemory() {

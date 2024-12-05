@@ -16,6 +16,6 @@ namespace TargetController::Responses
         TARGET_GPIO_PAD_STATES,
         TARGET_STACK_POINTER,
         TARGET_PROGRAM_COUNTER,
-        BREAKPOINT,
+        PROGRAM_BREAKPOINT,
     };
 }

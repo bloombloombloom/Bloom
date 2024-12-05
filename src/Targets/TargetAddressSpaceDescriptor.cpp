@@ -85,6 +85,18 @@ namespace Targets
         return output;
     }
 
+    std::optional<
+        std::reference_wrapper<const TargetMemorySegmentDescriptor>
+    > TargetAddressSpaceDescriptor::getContainingMemorySegmentDescriptor(const TargetMemoryAddress& address) const {
+        for (const auto& [key, segmentDescriptor] : this->segmentDescriptorsByKey) {
+            if (segmentDescriptor.addressRange.contains(address)) {
+                return std::cref(segmentDescriptor);
+            }
+        }
+
+        return std::nullopt;
+    }
+
     TargetAddressSpaceDescriptor TargetAddressSpaceDescriptor::clone() const {
         auto output = TargetAddressSpaceDescriptor{
             this->key,
