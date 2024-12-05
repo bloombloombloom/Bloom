@@ -987,7 +987,6 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemorySize bytes
     ) {
-        using namespace Targets::RiscV::Opcodes;
         assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
         assert(bytes % DebugTranslator::WORD_BYTE_SIZE == 0);
 
@@ -1109,7 +1108,6 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemoryBufferSpan buffer
     ) {
-        using namespace Targets::RiscV::Opcodes;
         assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
         assert(buffer.size() % DebugTranslator::WORD_BYTE_SIZE == 0);
 
@@ -1271,7 +1269,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         } catch (const Exceptions::Exception& exception) {
             /*
-             * If we fail to restore the value of a CPU register, we must raise this as a fatal error, as the target
+             * If we fail to restore the value of a CPU register, we must escalate this to a fatal error, as the target
              * will be left in an undefined state. More specifically, the state of the program running on the target
              * may be corrupted. We cannot recover from this.
              *

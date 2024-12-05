@@ -23,18 +23,10 @@
 
 namespace Targets
 {
-    /**
-     * Abstract class for Targets.
-     *
-     * All targets supported by Bloom must implement this interface.
-     *
-     * A single implementation of this interface can represent a single target, or an entire family of targets.
-     */
     class Target
     {
     public:
-        explicit Target() = default;
-
+        Target() = default;
         virtual ~Target() = default;
 
         /**
@@ -94,58 +86,17 @@ namespace Targets
          */
         virtual TargetDescriptor targetDescriptor() = 0;
 
-        /**
-         * Should resume execution on the target.
-         *
-         * @param toAddress
-         */
         virtual void run(std::optional<TargetMemoryAddress> toAddress) = 0;
-
-        /**
-         * Should halt execution on the target.
-         */
         virtual void stop() = 0;
-
-        /**
-         * Should step execution on the target (instruction step).
-         */
         virtual void step() = 0;
-
-        /**
-         * Should reset the target.
-         */
         virtual void reset() = 0;
 
         virtual void setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) = 0;
         virtual void removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) = 0;
 
-        /**
-         * Should read register values of the registers described by the given descriptors.
-         *
-         * @param descriptors
-         *
-         * @return
-         */
         virtual TargetRegisterDescriptorAndValuePairs readRegisters(const TargetRegisterDescriptors& descriptors) = 0;
-
-        /**
-         * Should update the value of the given registers.
-         *
-         * @param registers
-         */
         virtual void writeRegisters(const TargetRegisterDescriptorAndValuePairs& registers) = 0;
 
-        /**
-         * Should read memory from the target.
-         *
-         * @param addressSpaceDescriptor
-         * @param memorySegmentDescriptor
-         * @param startAddress
-         * @param bytes
-         * @param excludedAddressRanges
-         *
-         * @return
-         */
         virtual TargetMemoryBuffer readMemory(
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
@@ -153,15 +104,6 @@ namespace Targets
             TargetMemorySize bytes,
             const std::set<TargetMemoryAddressRange>& excludedAddressRanges
         ) = 0;
-
-        /**
-         * Should write memory to the target.
-         *
-         * @param addressSpaceDescriptor
-         * @param memorySegmentDescriptor
-         * @param startAddress
-         * @param buffer
-         */
         virtual void writeMemory(
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
@@ -189,82 +131,24 @@ namespace Targets
             TargetMemorySize size
         ) = 0;
 
-        /**
-         * Should erase the entire address range of a given memory type.
-         *
-         * @param addressSpaceDescriptor
-         * @param memorySegmentDescriptor
-         */
         virtual void eraseMemory(
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const TargetMemorySegmentDescriptor& memorySegmentDescriptor
         ) = 0;
 
-        /**
-         * Should return the current state of the target.
-         *
-         * @return
-         */
         virtual TargetExecutionState getExecutionState() = 0;
 
-        /**
-         * Should fetch the current program counter value.
-         *
-         * @return
-         */
         virtual TargetMemoryAddress getProgramCounter() = 0;
-
-        /**
-         * Should update the program counter on the target.
-         *
-         * @param programCounter
-         */
         virtual void setProgramCounter(TargetMemoryAddress programCounter) = 0;
 
-        /**
-         * Should fetch the current stack pointer value.
-         *
-         * @return
-         */
         virtual TargetStackPointer getStackPointer() = 0;
-
-        /**
-         * Should update the stack pointer value on the target.
-         *
-         * @param stackPointer
-         */
         virtual void setStackPointer(TargetStackPointer stackPointer) = 0;
 
-        /**
-         * Should get the current state of the given GPIO pads.
-         *
-         * @return
-         */
         virtual TargetGpioPadDescriptorAndStatePairs getGpioPadStates(const TargetPadDescriptors& padDescriptors) = 0;
-
-        /**
-         * Should update the state for the given GPIO pad, with the given state.
-         *
-         * @param padDescriptor
-         * @param state
-         */
         virtual void setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) = 0;
 
-        /**
-         * Should prepare the target for programming.
-         */
         virtual void enableProgrammingMode() = 0;
-
-        /**
-         * Should prepare the target for resuming debugging operations after programming.
-         */
         virtual void disableProgrammingMode() = 0;
-
-        /**
-         * Should return true if programming is currently enabled. Otherwise false.
-         *
-         * @return
-         */
         virtual bool programmingModeEnabled() = 0;
     };
 }

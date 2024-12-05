@@ -13,9 +13,9 @@
 #include "src/DebugToolDrivers/USB/UsbDevice.hpp"
 
 #include "src/DebugToolDrivers/WCH/WchGeneric.hpp"
-#include "Commands/Command.hpp"
-
 #include "src/DebugToolDrivers/WCH/DeviceInfo.hpp"
+
+#include "Commands/Command.hpp"
 
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 

@@ -57,7 +57,7 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
                 throw Exception{
                     memorySegmentDescriptors.empty()
                         ? "Invalid command - no containing memory segments found for the given address range"
-                        : "Invalid command - address range intersects with multiple memory segments"
+                        : "Invalid command - address range intersects multiple memory segments"
                 };
             }
 
