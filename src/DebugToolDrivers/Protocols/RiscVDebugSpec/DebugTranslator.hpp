@@ -107,6 +107,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     private:
         static constexpr auto DEBUG_MODULE_RESPONSE_DELAY = std::chrono::microseconds{10};
         static constexpr auto WORD_BYTE_SIZE = ::Targets::TargetMemorySize{4};
+        static constexpr auto MAX_PROGRAM_BUFFER_SIZE = std::uint8_t{16};
 
         DebugTransportModuleInterface& dtmInterface;
         const DebugTranslatorConfig& config;

@@ -25,6 +25,8 @@
 #include "TriggerModule/Registers/TriggerData1.hpp"
 #include "TriggerModule/Registers/MatchControl.hpp"
 
+#include "src/Helpers/Array.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Exceptions/InternalFatalErrorException.hpp"
@@ -526,9 +528,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             return;
         }
 
-        this->writeProgramBuffer(
-            std::vector<Opcodes::Opcode>(this->debugModuleDescriptor.programBufferSize, Opcodes::Ebreak)
-        );
+        static constexpr auto clearedBuffer = Array::repeat<DebugTranslator::MAX_PROGRAM_BUFFER_SIZE>(Opcodes::Ebreak);
+
+        assert(this->debugModuleDescriptor.programBufferSize <= DebugTranslator::MAX_PROGRAM_BUFFER_SIZE);
+        this->writeProgramBuffer({clearedBuffer.begin(), this->debugModuleDescriptor.programBufferSize});
     }
 
     void DebugTranslator::executeFenceProgram() {
