@@ -78,6 +78,16 @@ namespace Targets::RiscV::Wch
             this->cpuPeripheralDescriptor.clone()
         );
 
+        for (auto& [addressSpaceKey, addressSpaceDescriptor] : descriptor.addressSpaceDescriptorsByKey) {
+            this->applyDebugInterfaceAccessRestrictions(addressSpaceDescriptor);
+        }
+
+        for (auto& [peripheralKey, peripheralDescriptor] : descriptor.peripheralDescriptorsByKey) {
+            for (auto& [groupKey, groupDescriptor] : peripheralDescriptor.registerGroupDescriptorsByKey) {
+                this->applyDebugInterfaceAccessRestrictions(groupDescriptor);
+            }
+        }
+
         auto& sysAddressSpaceDescriptor = descriptor.getAddressSpaceDescriptor("system");
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_program_memory").inspectionEnabled = true;
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_ram").inspectionEnabled = true;

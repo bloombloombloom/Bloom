@@ -78,6 +78,9 @@ namespace DebugToolDrivers::Wch
         void enableProgrammingMode() override;
         void disableProgrammingMode() override;
 
+        void applyAccessRestrictions(Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor) override;
+        void applyAccessRestrictions(Targets::TargetRegisterDescriptor& registerDescriptor) override;
+
     private:
         const WchLinkToolConfig& toolConfig;
         const Targets::RiscV::RiscVTargetConfig& targetConfig;

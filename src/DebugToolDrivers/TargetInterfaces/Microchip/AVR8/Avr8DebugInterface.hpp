@@ -70,8 +70,7 @@ namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr8
          * registers can only be accessed during a programming session. This restriction is specific to the EDBG debug
          * interface.
          *
-         * This function should communicate any access restrictions for the given register, which apply during a debug
-         * session. It does not need to account for any access restrictions that only apply outside of a debug session.
+         * This function should apply any additional access restrictions for the given register.
          *
          * @param registerDescriptor
          *  The descriptor of the register.
@@ -81,8 +80,8 @@ namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr8
          *
          * @return
          */
-        virtual Targets::TargetRegisterAccess getRegisterAccess(
-            const Targets::TargetRegisterDescriptor& registerDescriptor,
+        virtual void applyAccessRestrictions(
+            Targets::TargetRegisterDescriptor& registerDescriptor,
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor
         ) = 0;
 

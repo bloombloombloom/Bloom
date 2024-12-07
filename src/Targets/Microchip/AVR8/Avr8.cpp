@@ -328,7 +328,7 @@ namespace Targets::Microchip::Avr8
         // The debug interface may have its own access restrictions for registers.
         for (auto& [peripheralKey, peripheral] : descriptor.peripheralDescriptorsByKey) {
             for (auto& [groupKey, registerGroup] : peripheral.registerGroupDescriptorsByKey) {
-                this->applyDebugInterfaceRegisterAccessRestrictions(
+                this->applyDebugInterfaceAccessRestrictions(
                     registerGroup,
                     descriptor.getAddressSpaceDescriptor(registerGroup.addressSpaceKey)
                 );
@@ -781,23 +781,16 @@ namespace Targets::Microchip::Avr8
         this->writeRegisters({{descriptor, value}});
     }
 
-    void Avr8::applyDebugInterfaceRegisterAccessRestrictions(
+    void Avr8::applyDebugInterfaceAccessRestrictions(
         TargetRegisterGroupDescriptor& groupDescriptor,
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor
     ) {
-        for (auto& [subgroupKey, subgroupDescriptor] : groupDescriptor.subgroupDescriptorsByKey) {
-            this->applyDebugInterfaceRegisterAccessRestrictions(subgroupDescriptor, addressSpaceDescriptor);
+        for (auto& [registerKey, registerDescriptor] : groupDescriptor.registerDescriptorsByKey) {
+            this->avr8DebugInterface->applyAccessRestrictions(registerDescriptor, addressSpaceDescriptor);
         }
 
-        for (auto& [registerKey, registerDescriptor] : groupDescriptor.registerDescriptorsByKey) {
-            if (!registerDescriptor.access.readable && !registerDescriptor.access.writable) {
-                // This register is already inaccessible - no need to check for further restrictions
-                continue;
-            }
-
-            const auto access = this->avr8DebugInterface->getRegisterAccess(registerDescriptor, addressSpaceDescriptor);
-            registerDescriptor.access.readable = registerDescriptor.access.readable && access.readable;
-            registerDescriptor.access.writable = registerDescriptor.access.writable && access.writable;
+        for (auto& [subgroupKey, subgroupDescriptor] : groupDescriptor.subgroupDescriptorsByKey) {
+            this->applyDebugInterfaceAccessRestrictions(subgroupDescriptor, addressSpaceDescriptor);
         }
     }
 

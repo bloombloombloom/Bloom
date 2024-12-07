@@ -11,6 +11,9 @@
 #include "TargetDescriptionFile.hpp"
 #include "IsaDescriptor.hpp"
 
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetRegisterGroupDescriptor.hpp"
+
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 
 namespace Targets::RiscV
@@ -118,6 +121,9 @@ namespace Targets::RiscV
         TargetAddressSpaceDescriptor sysAddressSpaceDescriptor;
 
         bool programmingMode = false;
+
+        void applyDebugInterfaceAccessRestrictions(TargetAddressSpaceDescriptor& addressSpaceDescriptor);
+        void applyDebugInterfaceAccessRestrictions(TargetRegisterGroupDescriptor& registerGroupDescriptor);
 
         const TargetMemorySegmentDescriptor& resolveRegisterMemorySegmentDescriptor(
             const TargetRegisterDescriptor& regDescriptor,

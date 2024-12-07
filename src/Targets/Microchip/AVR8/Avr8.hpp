@@ -169,7 +169,7 @@ namespace Targets::Microchip::Avr8
         TargetMemoryBuffer readRegister(const TargetRegisterDescriptor& descriptor);
         void writeRegister(const TargetRegisterDescriptor& descriptor, const TargetMemoryBuffer& value) ;
 
-        void applyDebugInterfaceRegisterAccessRestrictions(
+        void applyDebugInterfaceAccessRestrictions(
             TargetRegisterGroupDescriptor& groupDescriptor,
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor
         );

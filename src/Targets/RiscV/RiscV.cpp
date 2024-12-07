@@ -307,6 +307,22 @@ namespace Targets::RiscV
         return this->programmingMode;
     }
 
+    void RiscV::applyDebugInterfaceAccessRestrictions(TargetAddressSpaceDescriptor& addressSpaceDescriptor) {
+        for (auto& [segmentKey, segmentDescriptor] : addressSpaceDescriptor.segmentDescriptorsByKey) {
+            this->riscVDebugInterface->applyAccessRestrictions(segmentDescriptor);
+        }
+    }
+
+    void RiscV::applyDebugInterfaceAccessRestrictions(TargetRegisterGroupDescriptor& registerGroupDescriptor) {
+        for (auto& [registerKey, registerDescriptor] : registerGroupDescriptor.registerDescriptorsByKey) {
+            this->riscVDebugInterface->applyAccessRestrictions(registerDescriptor);
+        }
+
+        for (auto& [subgroupKey, subgroupDescriptor] : registerGroupDescriptor.subgroupDescriptorsByKey) {
+            this->applyDebugInterfaceAccessRestrictions(subgroupDescriptor);
+        }
+    }
+
     const TargetMemorySegmentDescriptor& RiscV::resolveRegisterMemorySegmentDescriptor(
         const TargetRegisterDescriptor& regDescriptor,
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor
@@ -355,6 +371,7 @@ namespace Targets::RiscV
                 false,
                 {true, true},
                 {false, false},
+                false,
                 std::nullopt
             }
         );
@@ -371,6 +388,7 @@ namespace Targets::RiscV
                 false,
                 {true, true},
                 {false, false},
+                false,
                 std::nullopt
             }
         );

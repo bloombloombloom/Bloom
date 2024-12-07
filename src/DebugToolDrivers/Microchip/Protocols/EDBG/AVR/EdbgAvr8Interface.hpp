@@ -138,8 +138,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          */
         void deactivate() override;
 
-        Targets::TargetRegisterAccess getRegisterAccess(
-            const Targets::TargetRegisterDescriptor& registerDescriptor,
+        void applyAccessRestrictions(
+            Targets::TargetRegisterDescriptor& registerDescriptor,
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor
         ) override;
 

@@ -59,5 +59,15 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
 
         virtual void enableProgrammingMode() = 0;
         virtual void disableProgrammingMode() = 0;
+
+        /**
+         * The debug interface may have its own access restrictions for memory segments and registers. These member
+         * functions should adjust the access members of the given segment/register descriptor, to apply any additional
+         * access restrictions.
+         *
+         * The member functions are called as part of the construction of the RISC-V target descriptor.
+         */
+        virtual void applyAccessRestrictions(Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor) = 0;
+        virtual void applyAccessRestrictions(Targets::TargetRegisterDescriptor& registerDescriptor) = 0;
     };
 }

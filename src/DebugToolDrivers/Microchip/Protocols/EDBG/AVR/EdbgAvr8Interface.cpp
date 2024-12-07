@@ -270,8 +270,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
     }
 
-    Targets::TargetRegisterAccess EdbgAvr8Interface::getRegisterAccess(
-        const TargetRegisterDescriptor& registerDescriptor,
+    void EdbgAvr8Interface::applyAccessRestrictions(
+        TargetRegisterDescriptor& registerDescriptor,
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor
     ) {
         /*
@@ -281,10 +281,10 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * There are some other memory types we can use to access some other registers during a debug session, but
          * these are yet to be implemented.
          */
-        const auto access = addressSpaceDescriptor.key == this->session.dataAddressSpace.key
+        const auto accessible = addressSpaceDescriptor.key == this->session.dataAddressSpace.key
             || addressSpaceDescriptor.key == this->session.registerFileAddressSpace.key;
-
-        return {access, access};
+        registerDescriptor.access.readable = accessible && registerDescriptor.access.readable;
+        registerDescriptor.access.writable = accessible && registerDescriptor.access.writable;
     }
 
     TargetMemoryAddress EdbgAvr8Interface::getProgramCounter() {

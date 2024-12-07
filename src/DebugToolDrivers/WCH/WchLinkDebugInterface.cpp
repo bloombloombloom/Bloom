@@ -357,6 +357,20 @@ namespace DebugToolDrivers::Wch
         this->softwareBreakpointRegistry.clear();
     }
 
+    void WchLinkDebugInterface::applyAccessRestrictions(TargetMemorySegmentDescriptor& memorySegmentDescriptor) {
+        if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
+            /*
+             * Actually, we *can* write to flash memory whilst in debug mode (via a partial page write), but we don't
+             * need to, so I'm just going to block it, for now.
+             */
+            memorySegmentDescriptor.debugModeAccess.writeable = false;
+        }
+    }
+
+    void WchLinkDebugInterface::applyAccessRestrictions(Targets::TargetRegisterDescriptor& registerDescriptor) {
+        // I don't believe any further access restrictions are required for registers. TODO: Review after v2.0.0.
+    }
+
     void WchLinkDebugInterface::setSoftwareBreakpoint(const TargetProgramBreakpoint& breakpoint) {
         if (breakpoint.size != 2 && breakpoint.size != 4) {
             throw Exception{"Invalid software breakpoint size (" + std::to_string(breakpoint.size) + ")"};
