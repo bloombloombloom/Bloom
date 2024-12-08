@@ -30,6 +30,8 @@ namespace DebugToolDrivers::Wch
             WchLinkVariant variant,
             std::uint16_t vendorId,
             std::uint16_t productId,
+            std::uint16_t iapVendorId,
+            std::uint16_t iapProductId,
             std::uint8_t wchLinkUsbInterfaceNumber
         );
 
@@ -50,6 +52,9 @@ namespace DebugToolDrivers::Wch
 
     protected:
         WchLinkToolConfig toolConfig;
+        std::uint16_t iapVendorId;
+        std::uint16_t iapProductId;
+
         bool initialised = false;
 
         WchLinkVariant variant;
@@ -62,5 +67,6 @@ namespace DebugToolDrivers::Wch
         mutable std::optional<DeviceInfo> cachedDeviceInfo = std::nullopt;
 
         const DeviceInfo& getDeviceInfo() const;
+        void exitIapMode(Usb::UsbDevice& iapDevice) const;
     };
 }

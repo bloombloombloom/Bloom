@@ -1,7 +1,10 @@
 #include "WchLinkBase.hpp"
 
+#include <chrono>
+
 #include "Protocols/WchLink/WchLinkInterface.hpp"
 
+#include "src/TargetController/Exceptions/DeviceNotFound.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 #include "src/Logger/Logger.hpp"
@@ -15,16 +18,49 @@ namespace DebugToolDrivers::Wch
         WchLinkVariant variant,
         std::uint16_t vendorId,
         std::uint16_t productId,
+        std::uint16_t iapVendorId,
+        std::uint16_t iapProductId,
         std::uint8_t wchLinkUsbInterfaceNumber
     )
         : UsbDevice(vendorId, productId)
         , toolConfig(WchLinkToolConfig{toolConfig})
+        , iapVendorId(iapVendorId)
+        , iapProductId(iapProductId)
         , variant(variant)
         , wchLinkUsbInterfaceNumber(wchLinkUsbInterfaceNumber)
     {}
 
     void WchLinkBase::init() {
-        UsbDevice::init();
+        using Exceptions::DeviceNotFound;
+
+        try {
+            UsbDevice::init();
+
+        } catch (const DeviceNotFound& exception) {
+            auto iapDevice = Usb::UsbDevice::tryDevice(this->iapVendorId, this->iapProductId);
+
+            if (!iapDevice.has_value()) {
+                throw exception;
+            }
+
+            if (!this->toolConfig.exitIapMode) {
+                throw DeviceInitializationFailure{
+                    "Device found in IAP mode - Bloom can have the device exit this mode - see the 'exit_iap_mode' "
+                        "tool config parameter, for more"
+                };
+            }
+
+            Logger::warning("Found device in IAP mode - attempting exit operation");
+            this->exitIapMode(*iapDevice);
+
+            Logger::info("Waiting for device to re-enumerate...");
+            if (!Usb::UsbDevice::waitForDevice(this->vendorId, this->productId, std::chrono::seconds{8})) {
+                throw DeviceInitializationFailure{"Timeout exceeded whilst waiting for device to re-enumerate"};
+            }
+
+            Logger::info("Re-enumerated device found - IAP exit operation was successful");
+            UsbDevice::init();
+        }
 
         this->detachKernelDriverFromInterface(this->wchLinkUsbInterfaceNumber);
 
@@ -92,5 +128,16 @@ namespace DebugToolDrivers::Wch
         }
 
         return *(this->cachedDeviceInfo);
+    }
+
+    void WchLinkBase::exitIapMode(UsbDevice& iapDevice) const {
+        static constexpr auto IAP_INTERFACE_NUMBER = std::uint8_t{0};
+        static constexpr auto IAP_COMMAND_ENDPOINT_ADDRESS = std::uint8_t{0x02};
+
+        auto interface = Usb::UsbInterface{IAP_INTERFACE_NUMBER, iapDevice.libusbDeviceHandle.get()};
+        interface.init();
+
+        static constexpr auto COMMAND_BUFFER = std::to_array<unsigned char>({0x83});
+        interface.writeBulk(IAP_COMMAND_ENDPOINT_ADDRESS, COMMAND_BUFFER, 64);
     }
 }

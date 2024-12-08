@@ -5,6 +5,7 @@
 #include <vector>
 #include <optional>
 #include <libusb-1.0/libusb.h>
+#include <chrono>
 
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
@@ -18,10 +19,16 @@ namespace Usb
     class UsbDevice
     {
     public:
+        static inline LibusbContext libusbContext = {nullptr, ::libusb_exit};
+
+        LibusbDevice libusbDevice = {nullptr, ::libusb_unref_device};
+        LibusbDeviceHandle libusbDeviceHandle = {nullptr, ::libusb_close};
+
         std::uint16_t vendorId;
         std::uint16_t productId;
 
         UsbDevice(std::uint16_t vendorId, std::uint16_t productId);
+        virtual ~UsbDevice();
 
         UsbDevice(const UsbDevice& other) = delete;
         UsbDevice& operator = (const UsbDevice& other) = delete;
@@ -61,20 +68,13 @@ namespace Usb
          */
         virtual void setConfiguration(std::uint8_t configurationIndex);
 
-        virtual ~UsbDevice();
+        static std::optional<UsbDevice> tryDevice(std::uint16_t vendorId, std::uint16_t productId);
+        static bool waitForDevice(std::uint16_t vendorId, std::uint16_t productId, std::chrono::milliseconds timeout);
 
     protected:
-        static inline LibusbContext libusbContext = {nullptr, ::libusb_exit};
-
-        LibusbDevice libusbDevice = {nullptr, ::libusb_unref_device};
-        LibusbDeviceHandle libusbDeviceHandle = {nullptr, ::libusb_close};
-
-        std::vector<LibusbDevice> findMatchingDevices(std::uint16_t vendorId, std::uint16_t productId);
-
+        static std::vector<LibusbDevice> findMatchingDevices(std::uint16_t vendorId, std::uint16_t productId);
         LibusbConfigDescriptor getConfigDescriptor(std::optional<std::uint8_t> configurationIndex = std::nullopt);
-
         void detachKernelDriverFromInterface(std::uint8_t interfaceNumber);
-
         void close();
     };
 }

@@ -12,7 +12,7 @@ namespace DebugToolDrivers::Wch
      */
     struct WchLinkToolConfig: public DebugToolConfig
     {
-    public:
+        bool exitIapMode = true;
         ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslatorConfig riscVDebugTranslatorConfig = {};
 
         explicit WchLinkToolConfig(const DebugToolConfig& toolConfig);

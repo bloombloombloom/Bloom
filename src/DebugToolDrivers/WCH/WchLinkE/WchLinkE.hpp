@@ -21,6 +21,8 @@ namespace DebugToolDrivers::Wch
     public:
         static const inline std::uint16_t USB_VENDOR_ID = 0x1a86;
         static const inline std::uint16_t USB_PRODUCT_ID = 0x8010;
+        static const inline std::uint16_t IAP_USB_VENDOR_ID = 0x4348;
+        static const inline std::uint16_t IAP_USB_PRODUCT_ID = 0x55e0;
         static const inline std::uint8_t WCH_LINK_INTERFACE_NUMBER = 0;
 
         explicit WchLinkE(const DebugToolConfig& toolConfig);

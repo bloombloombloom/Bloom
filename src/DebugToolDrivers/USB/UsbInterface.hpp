@@ -23,6 +23,8 @@ namespace Usb
             ::libusb_device_handle* deviceHandle
         );
 
+        ~UsbInterface();
+
         UsbInterface(const UsbInterface& other) = delete;
         UsbInterface& operator = (const UsbInterface& other) = delete;
 

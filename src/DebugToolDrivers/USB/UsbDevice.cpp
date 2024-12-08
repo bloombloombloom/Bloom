@@ -2,6 +2,7 @@
 
 #include <libusb-1.0/libusb.h>
 #include <array>
+#include <thread>
 
 #include "src/Logger/Logger.hpp"
 #include "src/Services/StringService.hpp"
@@ -23,6 +24,10 @@ namespace Usb
             ::libusb_init(&libusbContext);
             UsbDevice::libusbContext.reset(libusbContext);
         }
+    }
+
+    UsbDevice::~UsbDevice() {
+        this->close();
     }
 
     void UsbDevice::init() {
@@ -102,6 +107,32 @@ namespace Usb
         }
     }
 
+    std::optional<UsbDevice> UsbDevice::tryDevice(std::uint16_t vendorId, std::uint16_t productId) {
+        auto device = UsbDevice{vendorId, productId};
+
+        try {
+            device.init();
+
+        } catch (const DeviceNotFound&) {
+            return std::nullopt;
+        }
+
+        return device;
+    }
+
+    bool UsbDevice::waitForDevice(std::uint16_t vendorId, std::uint16_t productId, std::chrono::milliseconds timeout) {
+        static constexpr auto DELAY = std::chrono::milliseconds{50};
+        for (auto i = 0; (i * DELAY) <= timeout; ++i){
+            if (!UsbDevice::findMatchingDevices(vendorId, productId).empty()) {
+                return true;
+            }
+
+            std::this_thread::sleep_for(DELAY);
+        }
+
+        return false;
+    }
+
     std::uint8_t UsbDevice::getFirstEndpointAddress(
         std::uint8_t interfaceNumber,
         ::libusb_endpoint_direction direction
@@ -152,7 +183,7 @@ namespace Usb
     std::vector<LibusbDevice> UsbDevice::findMatchingDevices(std::uint16_t vendorId, std::uint16_t productId) {
         ::libusb_device** devices = nullptr;
         ::libusb_device* device;
-        std::vector<LibusbDevice> matchedDevices;
+        auto matchedDevices = std::vector<LibusbDevice>{};
 
         auto libusbStatusCode = ::libusb_get_device_list(UsbDevice::libusbContext.get(), &devices);
         if (libusbStatusCode < 0) {
@@ -163,7 +194,7 @@ namespace Usb
 
         ssize_t i = 0;
         while ((device = devices[i++]) != nullptr) {
-            auto libusbDevice = LibusbDevice(device, ::libusb_unref_device);
+            auto libusbDevice = LibusbDevice{device, ::libusb_unref_device};
             struct ::libusb_device_descriptor desc = {};
 
             if ((libusbStatusCode = ::libusb_get_device_descriptor(device, &desc)) < 0) {
@@ -220,9 +251,5 @@ namespace Usb
     void UsbDevice::close() {
         this->libusbDeviceHandle.reset();
         this->libusbDevice.reset();
-    }
-
-    UsbDevice::~UsbDevice() {
-        this->close();
     }
 }

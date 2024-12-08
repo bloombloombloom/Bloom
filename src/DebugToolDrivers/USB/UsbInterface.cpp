@@ -20,6 +20,10 @@ namespace Usb
         , deviceHandle(deviceHandle)
     {}
 
+    UsbInterface::~UsbInterface() {
+        this->close();
+    }
+
     void UsbInterface::init() {
         Logger::debug("Claiming USB interface (number: " + std::to_string(this->interfaceNumber) + ")");
 
@@ -37,12 +41,14 @@ namespace Usb
     void UsbInterface::close() {
         if (this->claimed) {
             const auto statusCode = ::libusb_release_interface(this->deviceHandle, this->interfaceNumber);
-            if (statusCode != 0) {
+            if (statusCode != 0 && statusCode != ::LIBUSB_ERROR_NO_DEVICE) {
                 Logger::error(
                     "Failed to release USB interface (number: " + std::to_string(this->interfaceNumber)
                         + ") - error code: " + std::to_string(statusCode)
                 );
             }
+
+            this->claimed = false;
         }
     }
 
