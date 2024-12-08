@@ -56,6 +56,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
         template <class CommandType>
         auto sendCommandAndWaitForResponse(const CommandType& command) {
+            using Services::StringService;
             const auto rawCommand = command.getRawCommand();
 
             /*
@@ -86,14 +87,15 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
             }
 
             if (rawResponse[0] == 0x81) {
-                throw Exceptions::DeviceCommunicationFailure{"Error response"};
+                throw Exceptions::DeviceCommunicationFailure{
+                    "Error response to command 0x" + StringService::toHex(command.commandId)
+                };
             }
 
             if (rawResponse[1] != command.commandId) {
                 throw Exceptions::DeviceCommunicationFailure{
-                    "Missing/invalid command ID in response from device 0x"
-                        + Services::StringService::toHex(rawResponse[1]) + " - expected: 0x"
-                        + Services::StringService::toHex(command.commandId)
+                    "Missing/invalid command ID in response from device 0x" + StringService::toHex(rawResponse[1])
+                        + " - expected: 0x" + StringService::toHex(command.commandId)
                 };
             }
 

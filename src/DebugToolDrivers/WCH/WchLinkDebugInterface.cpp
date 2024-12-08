@@ -239,8 +239,8 @@ namespace DebugToolDrivers::Wch
                  * command.
                  *
                  * This sometimes leads to exceptions occurring on the target, when the program buffer contains certain
-                 * instructions before the partial block write command is serviced. This is why we clear the program
-                 * buffer before invoking the partial block write command.
+                 * instructions before the partial block write command is invoked. This is why we clear the program
+                 * buffer beforehand.
                  */
                 this->riscVTranslator.clearProgramBuffer();
                 this->wchLinkInterface.writeFlashPartialBlock(startAddress, buffer);
@@ -324,6 +324,16 @@ namespace DebugToolDrivers::Wch
                 this->flashProgramOpcodes
             );
 
+            /*
+             * Would this not be better placed in endProgrammingSession()? We could persist the command type we invoked
+             * to perform the write, and if required, reattach at the end of the programming session.
+             *
+             * I don't think that would work, because the target needs to be accessible for other operations whilst in
+             * programming mode. We may perform other operations in between program memory writes, but that wouldn't
+             * work if we left the target in an inaccessible state between writes. So I think we have to reattach here.
+             *
+             * TODO: Review after v2.0.0.
+             */
             this->deactivate();
             this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::GetDeviceInfo{});
             this->activate();
@@ -350,7 +360,13 @@ namespace DebugToolDrivers::Wch
     }
 
     void WchLinkDebugInterface::enableProgrammingMode() {
-        // Nothing to do here
+        /*
+         * Nothing to do here
+         *
+         * We cannot prepare the WCH-Link tool for a programming session here, as the preparation process differs
+         * across the two types of flash write commands (full and partial block write). We don't know which command
+         * we'll be utilising at this point, so we perform the preparation in writeMemory().
+         */
     }
 
     void WchLinkDebugInterface::disableProgrammingMode() {
@@ -360,7 +376,7 @@ namespace DebugToolDrivers::Wch
     void WchLinkDebugInterface::applyAccessRestrictions(TargetMemorySegmentDescriptor& memorySegmentDescriptor) {
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
             /*
-             * Actually, we *can* write to flash memory whilst in debug mode (via a partial page write), but we don't
+             * Actually, we *can* write to flash memory whilst in debug mode (via a partial block write), but we don't
              * need to, so I'm just going to block it, for now.
              */
             memorySegmentDescriptor.debugModeAccess.writeable = false;
