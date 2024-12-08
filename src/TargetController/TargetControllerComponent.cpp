@@ -303,7 +303,7 @@ namespace TargetController
             // Reject any commands still waiting in the queue
             this->processQueuedCommands();
 
-            if (this->target != nullptr) {
+            if (this->target != nullptr && this->targetState != nullptr) {
                 // Cleanup before deactivating the target
                 try {
                     this->stopTarget();
