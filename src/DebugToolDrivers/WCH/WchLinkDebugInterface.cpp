@@ -57,6 +57,11 @@ namespace DebugToolDrivers::Wch
                 this->targetConfig
             }
         )
+        , programSegmentDescriptor(
+            this->targetDescriptionFile.getSystemAddressSpaceDescriptor().getMemorySegmentDescriptor(
+                "internal_program_memory"
+            )
+        )
         , flashProgramOpcodes(
             WchLinkDebugInterface::getFlashProgramOpcodes(
                 this->targetDescriptionFile.getProperty("wch_link_interface", "programming_opcode_key").value
@@ -352,11 +357,11 @@ namespace DebugToolDrivers::Wch
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor
     ) {
-        if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
-            return this->eraseFlashMemory();
+        if (memorySegmentDescriptor == this->programSegmentDescriptor) {
+            return this->wchLinkInterface.eraseProgramMemory();
         }
 
-        throw Exception{"Erasing non-flash memory not supported in WchLinkDebugInterface"};
+        // Ignore other (non-program memory) erase requests, for now.
     }
 
     void WchLinkDebugInterface::enableProgrammingMode() {
@@ -469,10 +474,6 @@ namespace DebugToolDrivers::Wch
         );
 
         this->softwareBreakpointRegistry.remove(softwareBreakpoint);
-    }
-
-    void WchLinkDebugInterface::eraseFlashMemory() {
-        this->wchLinkInterface.eraseChip();
     }
 
     std::span<const unsigned char> WchLinkDebugInterface::getFlashProgramOpcodes(const std::string& key) {

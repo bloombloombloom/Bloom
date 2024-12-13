@@ -16,7 +16,7 @@
 #include "Commands/StartRamCodeWrite.hpp"
 #include "Commands/EndRamCodeWrite.hpp"
 #include "Commands/WriteFlash.hpp"
-#include "Commands/EraseChip.hpp"
+#include "Commands/EraseProgramMemory.hpp"
 
 #include "src/Helpers/BiMap.hpp"
 #include "src/Services/StringService.hpp"
@@ -243,7 +243,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         this->sendCommandAndWaitForResponse(Commands::EndProgrammingSession{});
     }
 
-    void WchLinkInterface::eraseChip() {
-        this->sendCommandAndWaitForResponse(Commands::EraseChip{});
+    void WchLinkInterface::eraseProgramMemory() {
+        this->sendCommandAndWaitForResponse(Commands::EraseProgramMemory{});
     }
 }

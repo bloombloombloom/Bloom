@@ -6,10 +6,10 @@
 
 namespace DebugToolDrivers::Wch::Protocols::WchLink::Commands
 {
-    class EraseChip: public Command<std::array<unsigned char, 1>>
+    class EraseProgramMemory: public Command<std::array<unsigned char, 1>>
     {
     public:
-        EraseChip()
+        EraseProgramMemory()
             : Command(0x02)
         {
             this->payload = {

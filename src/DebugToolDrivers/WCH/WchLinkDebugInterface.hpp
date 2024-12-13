@@ -89,6 +89,8 @@ namespace DebugToolDrivers::Wch
         Protocols::WchLink::WchLinkInterface& wchLinkInterface;
         DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator riscVTranslator;
 
+        const Targets::TargetMemorySegmentDescriptor& programSegmentDescriptor;
+
         /**
          * The 'target activation' command returns a payload of 5 bytes.
          *
@@ -107,7 +109,6 @@ namespace DebugToolDrivers::Wch
         void setSoftwareBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
         void clearSoftwareBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
 
-        void eraseFlashMemory();
         static std::span<const unsigned char> getFlashProgramOpcodes(const std::string& key);
     };
 }

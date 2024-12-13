@@ -52,7 +52,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
             Targets::TargetMemorySize blockSize,
             std::span<const unsigned char> flashProgramOpcodes
         );
-        void eraseChip();
+        void eraseProgramMemory();
 
         template <class CommandType>
         auto sendCommandAndWaitForResponse(const CommandType& command) {

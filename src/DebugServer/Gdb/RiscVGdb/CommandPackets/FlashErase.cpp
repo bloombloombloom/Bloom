@@ -45,14 +45,27 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
         Logger::info("Handling FlashErase packet");
 
         try {
+            const auto segmentDescriptorOpt = gdbTargetDescriptor.systemAddressSpaceDescriptor.getContainingMemorySegmentDescriptor(
+                this->startAddress
+            );
+
+            if (!segmentDescriptorOpt.has_value()) {
+                throw Exception{"Invalid command - no containing memory segment found for the given start address"};
+            }
+
+            const auto& segmentDescriptor = segmentDescriptorOpt->get();
+            if (!segmentDescriptor.programmingModeAccess.writeable) {
+                throw Exception{"Memory segment (\"" + segmentDescriptor.name + "\") not writable in programming mode"};
+            }
+
+            Logger::warning("Erasing \"" + segmentDescriptor.name + "\" segment, in preparation for programming");
+
             targetControllerService.enableProgrammingMode();
 
-            Logger::warning("Erasing program memory, in preparation for programming");
-
-            // We don't erase a specific address range - we just erase the entire program memory.
+            // We don't erase a specific address range - we just erase the entire segment
             targetControllerService.eraseMemory(
                 gdbTargetDescriptor.systemAddressSpaceDescriptor,
-                gdbTargetDescriptor.programMemorySegmentDescriptor
+                segmentDescriptor
             );
 
             debugSession.connection.writePacket(OkResponsePacket{});
