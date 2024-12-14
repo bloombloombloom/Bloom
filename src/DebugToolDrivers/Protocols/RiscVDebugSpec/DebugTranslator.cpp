@@ -172,7 +172,28 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     }
 
     TargetExecutionState DebugTranslator::getExecutionState() {
-        return this->readDebugModuleStatusRegister().anyRunning
+        const auto statusRegister = this->readDebugModuleStatusRegister();
+
+        if (statusRegister.anyHaveReset) {
+            Logger::warning("Reset detected at RISC-V hart " + std::to_string(this->selectedHartIndex));
+
+            if (statusRegister.anyRunning) {
+                this->stop();
+            }
+
+            this->initDebugControlStatusRegister();
+            this->writeDebugModuleControlRegister(ControlRegister{
+                .debugModuleActive = true,
+                .selectedHartIndex = this->selectedHartIndex,
+                .acknowledgeHaveReset = true,
+            });
+
+            if (statusRegister.anyRunning) {
+                this->run();
+            }
+        }
+
+        return statusRegister.anyRunning
             ? TargetExecutionState::RUNNING
             : TargetExecutionState::STOPPED;
     }
@@ -208,6 +229,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     void DebugTranslator::run() {
         auto controlRegister = ControlRegister{
             .debugModuleActive = true,
+            .setResetHaltRequest = true,
             .selectedHartIndex = this->selectedHartIndex,
             .resumeRequest = true,
         };
@@ -243,6 +265,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         auto controlRegister = ControlRegister{
             .debugModuleActive = true,
+            .setResetHaltRequest = true,
             .selectedHartIndex = this->selectedHartIndex,
             .resumeRequest = true,
         };
@@ -283,7 +306,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         this->writeDebugModuleControlRegister(ControlRegister{
             .debugModuleActive = true,
-            .clearResetHaltRequest = true,
+            .setResetHaltRequest = true,
             .selectedHartIndex = this->selectedHartIndex,
             .acknowledgeHaveReset = true,
             .haltRequest = true,
