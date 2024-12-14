@@ -82,7 +82,7 @@ namespace Services
         return stream.str();
     }
 
-    std::string StringService::toHex(const std::vector<unsigned char>& data) {
+    std::string StringService::toHex(std::span<const unsigned char> data) {
         auto stream = std::stringstream{};
         stream << std::hex << std::setfill('0');
 

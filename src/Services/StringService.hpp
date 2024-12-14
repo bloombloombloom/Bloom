@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 #include <cstdint>
+#include <span>
 #include <vector>
 #include <type_traits>
 #include <utility>
@@ -25,7 +26,7 @@ namespace Services
         static std::string toHex(std::uint32_t value);
         static std::string toHex(std::uint16_t value);
         static std::string toHex(unsigned char value);
-        static std::string toHex(const std::vector<unsigned char>& data);
+        static std::string toHex(std::span<const unsigned char> data);
         static std::string toHex(std::string_view data);
 
         template <typename Type>

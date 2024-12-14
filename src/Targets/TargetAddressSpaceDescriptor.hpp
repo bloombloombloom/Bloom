@@ -52,7 +52,7 @@ namespace Targets
         bool operator == (const TargetAddressSpaceDescriptor& other) const;
         bool operator != (const TargetAddressSpaceDescriptor& other) const;
 
-        TargetMemorySize size() const;
+        [[nodiscard]] TargetMemorySize size() const;
 
         /**
          * Attempts to fetch a memory segment descriptor with the given key.
