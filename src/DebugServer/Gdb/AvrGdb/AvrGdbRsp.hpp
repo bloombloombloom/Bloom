@@ -27,6 +27,6 @@ namespace DebugServer::Gdb::AvrGdb
             const RawPacket& rawPacket
         ) override;
         std::set<std::pair<Feature, std::optional<std::string>>> getSupportedFeatures() override;
-        void handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress) override;
+        void handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programCounter) override;
     };
 }

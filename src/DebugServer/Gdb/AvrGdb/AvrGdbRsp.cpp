@@ -156,17 +156,17 @@ namespace DebugServer::Gdb::AvrGdb
         return output;
     }
 
-    void AvrGdbRsp::handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress) {
+    void AvrGdbRsp::handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programCounter) {
         using Services::StringService;
 
-        Logger::debug("Target stopped at byte address: 0x" + StringService::toHex(programAddress));
+        Logger::debug("Target stopped at byte address: 0x" + StringService::toHex(programCounter));
 
         auto& activeRangeSteppingSession = this->debugSession->activeRangeSteppingSession;
 
         if (
             activeRangeSteppingSession.has_value()
-            && programAddress >= activeRangeSteppingSession->range.startAddress
-            && programAddress < activeRangeSteppingSession->range.endAddress
+            && programCounter >= activeRangeSteppingSession->range.startAddress
+            && programCounter < activeRangeSteppingSession->range.endAddress
         ) {
             /*
              * The target stopped within the stepping range of an active range stepping session.
@@ -176,7 +176,7 @@ namespace DebugServer::Gdb::AvrGdb
             if (
                 this->debugSession->externalBreakpointRegistry.contains(
                     activeRangeSteppingSession->addressSpaceDescriptor.id,
-                    programAddress
+                    programCounter
                 )
             ) {
                 /*
@@ -187,10 +187,10 @@ namespace DebugServer::Gdb::AvrGdb
                 Logger::debug("Reached external breakpoint within stepping range");
 
                 this->debugSession->terminateRangeSteppingSession(this->targetControllerService);
-                return GdbRspDebugServer::handleTargetStoppedGdbResponse(programAddress);
+                return GdbRspDebugServer::handleTargetStoppedGdbResponse(programCounter);
             }
 
-            if (activeRangeSteppingSession->interceptedAddresses.contains(programAddress)) {
+            if (activeRangeSteppingSession->interceptedAddresses.contains(programCounter)) {
                 /*
                  * The target stopped due to an intercepting breakpoint, but we're still within the stepping range,
                  * which can only mean that we weren't sure where this instruction would lead to.
@@ -199,7 +199,7 @@ namespace DebugServer::Gdb::AvrGdb
                  * range, we'll end the session and report back to GDB.
                  */
                 Logger::debug("Reached intercepting breakpoint within stepping range");
-                Logger::debug("Attempting single step from 0x" + StringService::toHex(programAddress));
+                Logger::debug("Attempting single step from 0x" + StringService::toHex(programCounter));
 
                 activeRangeSteppingSession->singleStepping = true;
                 this->targetControllerService.stepTargetExecution();
@@ -232,6 +232,6 @@ namespace DebugServer::Gdb::AvrGdb
         }
 
         // Report the stop to GDB
-        return GdbRspDebugServer::handleTargetStoppedGdbResponse(programAddress);
+        return GdbRspDebugServer::handleTargetStoppedGdbResponse(programCounter);
     }
 }

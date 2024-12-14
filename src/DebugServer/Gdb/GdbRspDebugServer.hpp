@@ -573,7 +573,7 @@ namespace DebugServer::Gdb
             }
         }
 
-        virtual void handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programAddress) {
+        virtual void handleTargetStoppedGdbResponse(Targets::TargetMemoryAddress programCounter) {
             if (this->debugSession->activeRangeSteppingSession.has_value()) {
                 this->debugSession->terminateRangeSteppingSession(this->targetControllerService);
             }

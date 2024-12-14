@@ -103,7 +103,7 @@ namespace Targets::Microchip::Avr8
             && this->targetConfig.physicalInterface != TargetPhysicalInterface::JTAG
         ) {
             Logger::warning(
-                "The 'manageOcdenFuseBit' parameter only applies to JTAG targets. It will be ignored in this session."
+                "The 'manage_ocden_fuse_bit' parameter only applies to JTAG targets. It will be ignored in this session."
             );
         }
     }

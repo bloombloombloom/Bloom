@@ -6,6 +6,7 @@
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Exceptions/Exception.hpp"
 
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 namespace Targets::RiscV::Wch
@@ -256,6 +257,8 @@ namespace Targets::RiscV::Wch
     }
 
     TargetMemoryAddress WchRiscV::getProgramCounter() {
+        using Services::StringService;
+
         const auto programCounter = RiscV::getProgramCounter();
 
         if (this->mappedSegmentDescriptor.addressRange.contains(programCounter)) {
@@ -283,12 +286,14 @@ namespace Targets::RiscV::Wch
                  * aliased address. That way, it will be clear to all external entities, that the target is currently
                  * executing code in a different memory segment to the one that was selected for debugging.
                  */
+                const auto transformedAddress = this->transformMappedAddress(programCounter, actualAliasedSegment);
                 Logger::warning(
                     "The mapped program memory segment is currently aliasing a foreign segment (\""
-                        + actualAliasedSegment.key + "\") - the program counter will be transformed to its aliased"
-                        " address"
+                        + actualAliasedSegment.key + "\") - the program counter (0x"
+                        + StringService::toHex(programCounter) + ") has been transformed to the aliased address (0x"
+                        + StringService::toHex(transformedAddress) + ")"
                 );
-                return this->transformMappedAddress(programCounter, actualAliasedSegment);
+                return transformedAddress;
             }
         }
 
