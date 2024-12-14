@@ -55,6 +55,7 @@
 #include "src/Services/ProcessService.hpp"
 #include "src/Services/StringService.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
+#include "src/Targets/TargetState.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/EventManager/Events/TargetStateChanged.hpp"
@@ -104,6 +105,7 @@ namespace DebugServer::Gdb
             , gdbTargetDescriptor(std::move(gdbTargetDescriptor))
             , eventListener(eventListener)
             , interruptEventNotifier(eventNotifier)
+            , targetState(this->targetControllerService.getTargetState())
         {};
 
         GdbRspDebugServer() = delete;
@@ -238,6 +240,7 @@ namespace DebugServer::Gdb
                         *(this->debugSession),
                         this->gdbTargetDescriptor,
                         this->targetDescriptor,
+                        this->targetState,
                         this->targetControllerService
                     );
 
@@ -320,6 +323,8 @@ namespace DebugServer::Gdb
         EpollInstance epollInstance = {};
 
         Services::TargetControllerService targetControllerService = {};
+
+        const Targets::TargetState& targetState;
 
         struct sockaddr_in socketAddress = {};
         std::optional<int> serverSocketFileDescriptor;

@@ -30,6 +30,7 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
         Gdb::DebugSession& debugSession,
         const RiscVGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState,
         TargetControllerService& targetControllerService
     ) {
         Logger::info("Handling ReadRegisters packet");
@@ -58,13 +59,11 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
 
                     assert((buffer.size() - bufferOffset) >= regVal.size());
 
-                    /*
-                     * GDB expects register values in LSB form, which is why we use reverse iterators below.
-                     */
+                    // GDB expects register values in LSB form, which is why we use reverse iterators below.
                     std::copy(regVal.rbegin(), regVal.rend(), buffer.begin() + bufferOffset);
                 }
 
-                const auto pcValue = targetControllerService.getProgramCounter();
+                const auto pcValue = targetState.programCounter.load().value();
                 buffer[totalRegBytes - 4] = static_cast<unsigned char>(pcValue);
                 buffer[totalRegBytes - 3] = static_cast<unsigned char>(pcValue >> 8);
                 buffer[totalRegBytes - 2] = static_cast<unsigned char>(pcValue >> 16);

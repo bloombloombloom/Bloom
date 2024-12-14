@@ -4,6 +4,7 @@
 #include "src/DebugServer/Gdb/DebugSession.hpp"
 #include "src/DebugServer/Gdb/AvrGdb/AvrGdbTargetDescriptor.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
+#include "src/Targets/TargetState.hpp"
 #include "src/Services/TargetControllerService.hpp"
 
 namespace DebugServer::Gdb::AvrGdb::CommandPackets
@@ -25,6 +26,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             DebugSession& debugSession,
             const AvrGdbTargetDescriptor& gdbTargetDescriptor,
             const Targets::TargetDescriptor& targetDescriptor,
+            const Targets::TargetState& targetState,
             Services::TargetControllerService& targetControllerService
         ) = 0;
     };

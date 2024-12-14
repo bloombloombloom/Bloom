@@ -38,6 +38,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         DebugSession& debugSession,
         const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState,
         TargetControllerService& targetControllerService
     ) {
         Logger::info("Handling ReadRegister packet");
@@ -46,12 +47,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
             Logger::debug("Reading GDB register ID: " + std::to_string(this->registerId));
 
             if (this->registerId == AvrGdbTargetDescriptor::PROGRAM_COUNTER_GDB_REGISTER_ID) {
-                /*
-                 * GDB has requested the program counter. We can't access this in the same way as we do with other
-                 * registers.
-                 */
-                const auto programCounter = targetControllerService.getProgramCounter();
-
+                const auto programCounter = targetState.programCounter.load().value();
                 debugSession.connection.writePacket(
                     ResponsePacket{Services::StringService::toHex(Targets::TargetMemoryBuffer{
                         static_cast<unsigned char>(programCounter),

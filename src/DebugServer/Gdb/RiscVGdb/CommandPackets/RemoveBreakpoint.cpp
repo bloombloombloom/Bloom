@@ -56,6 +56,7 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
         DebugSession& debugSession,
         const RiscVGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor&,
+        const Targets::TargetState& targetState,
         TargetControllerService& targetControllerService
     ) {
         Logger::info("Handling RemoveBreakpoint packet");

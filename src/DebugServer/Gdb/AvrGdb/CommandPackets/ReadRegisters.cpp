@@ -30,6 +30,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         DebugSession& debugSession,
         const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState,
         TargetControllerService& targetControllerService
     ) {
         Logger::info("Handling ReadRegisters packet");
@@ -76,7 +77,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                 buffer[33] = static_cast<unsigned char>(spValue);
                 buffer[34] = static_cast<unsigned char>(spValue >> 8);
 
-                const auto pcValue = targetControllerService.getProgramCounter();
+                const auto pcValue = targetState.programCounter.load().value();
                 buffer[35] = static_cast<unsigned char>(pcValue);
                 buffer[36] = static_cast<unsigned char>(pcValue >> 8);
                 buffer[37] = static_cast<unsigned char>(pcValue >> 16);

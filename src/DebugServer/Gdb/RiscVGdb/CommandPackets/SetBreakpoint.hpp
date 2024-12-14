@@ -32,6 +32,7 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
             DebugSession& debugSession,
             const RiscVGdbTargetDescriptor& gdbTargetDescriptor,
             const Targets::TargetDescriptor& targetDescriptor,
+            const Targets::TargetState& targetState,
             Services::TargetControllerService& targetControllerService
         ) override;
     };

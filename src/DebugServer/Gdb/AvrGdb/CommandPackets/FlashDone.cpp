@@ -23,6 +23,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         DebugSession& debugSession,
         const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState,
         TargetControllerService& targetControllerService
     ) {
         Logger::info("Handling FlashDone packet");

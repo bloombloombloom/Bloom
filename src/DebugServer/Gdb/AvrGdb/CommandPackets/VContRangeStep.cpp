@@ -45,6 +45,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         DebugSession& debugSession,
         const AvrGdbTargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState,
         TargetControllerService& targetControllerService
     ) {
         using Targets::Microchip::Avr8::OpcodeDecoder::Decoder;
