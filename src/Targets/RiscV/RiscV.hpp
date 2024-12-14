@@ -122,6 +122,12 @@ namespace Targets::RiscV
 
         bool programmingMode = false;
 
+        bool probeMemory(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            TargetMemoryAddress address
+        );
+
         void applyDebugInterfaceAccessRestrictions(TargetAddressSpaceDescriptor& addressSpaceDescriptor);
         void applyDebugInterfaceAccessRestrictions(TargetRegisterGroupDescriptor& registerGroupDescriptor);
 

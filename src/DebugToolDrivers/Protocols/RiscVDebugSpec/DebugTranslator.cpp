@@ -32,6 +32,7 @@
 #include "src/Exceptions/InternalFatalErrorException.hpp"
 #include "src/TargetController/Exceptions/TargetFailure.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
+#include "src/Targets/RiscV/Exceptions/IllegalMemoryAccess.hpp"
 
 #include "src/Logger/Logger.hpp"
 
@@ -963,7 +964,17 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         output.reserve(bytes);
 
         for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
-            this->executeAbstractCommand(command);
+            const auto commandError = this->tryExecuteAbstractCommand(command);
+            if (commandError != AbstractCommandError::NONE) {
+                if (commandError == AbstractCommandError::EXCEPTION) {
+                    throw Exceptions::IllegalMemoryAccess{};
+                }
+
+                throw Exceptions::TargetOperationFailure{
+                    "Failed to read memory via abstract command - error: 0x"
+                        + Services::StringService::toHex(static_cast<std::uint8_t>(commandError))
+                };
+            }
 
             const auto data = this->dtmInterface.readDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_0);
             output.emplace_back(static_cast<unsigned char>(data));
@@ -1005,7 +1016,17 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
                 )
             );
 
-            this->executeAbstractCommand(command);
+            const auto commandError = this->tryExecuteAbstractCommand(command);
+            if (commandError != AbstractCommandError::NONE) {
+                if (commandError == AbstractCommandError::EXCEPTION) {
+                    throw Exceptions::IllegalMemoryAccess{};
+                }
+
+                throw Exceptions::TargetOperationFailure{
+                    "Failed to write memory via abstract command - error: 0x"
+                        + Services::StringService::toHex(static_cast<std::uint8_t>(commandError))
+                };
+            }
         }
     }
 
@@ -1041,7 +1062,22 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         try {
             this->writeProgramBuffer(programOpcodes);
-            this->writeCpuRegister(CpuRegisterNumber::GPR_X8, startAddress, {.postExecute = true});
+
+            auto commandError = this->tryWriteCpuRegister(
+                CpuRegisterNumber::GPR_X8,
+                startAddress,
+                {.postExecute = true}
+            );
+            if (commandError != AbstractCommandError::NONE) {
+                if (commandError == AbstractCommandError::EXCEPTION) {
+                    throw Exceptions::IllegalMemoryAccess{};
+                }
+
+                throw Exceptions::TargetOperationFailure{
+                    "Program buffer execution failed - abstract command error: 0x"
+                        + Services::StringService::toHex(commandError)
+                };
+            }
 
             auto output = Targets::TargetMemoryBuffer{};
             output.reserve(bytes);
@@ -1101,13 +1137,15 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
                 output.emplace_back(static_cast<unsigned char>(word >> 24));
             }
 
-            const auto abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
-            if (abstractStatusRegister.commandError != AbstractCommandError::NONE) {
-                this->clearAbstractCommandError();
+            commandError = this->readAndClearAbstractCommandError();
+            if (commandError != AbstractCommandError::NONE) {
+                if (commandError == AbstractCommandError::EXCEPTION) {
+                    throw Exceptions::IllegalMemoryAccess{};
+                }
 
                 throw Exceptions::TargetOperationFailure{
                     "Program buffer execution failed - abstract command error: 0x"
-                        + Services::StringService::toHex(abstractStatusRegister.commandError)
+                        + Services::StringService::toHex(commandError)
                 };
             }
 
@@ -1122,11 +1160,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
             return output;
 
-        } catch (const Exceptions::Exception& exception) {
+        } catch (const Exceptions::Exception&) {
             preservedX8Register.restoreOnce();
             preservedX9Register.restoreOnce();
-
-            throw exception;
+            throw;
         }
     }
 
@@ -1201,24 +1238,25 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
                 AbstractCommandAutoExecuteRegister{}.value()
             );
 
-            const auto abstractStatusRegister = this->readDebugModuleAbstractControlStatusRegister();
-            if (abstractStatusRegister.commandError != AbstractCommandError::NONE) {
-                this->clearAbstractCommandError();
+            const auto commandError = this->readAndClearAbstractCommandError();
+            if (commandError != AbstractCommandError::NONE) {
+                if (commandError == AbstractCommandError::EXCEPTION) {
+                    throw Exceptions::IllegalMemoryAccess{};
+                }
 
                 throw Exceptions::TargetOperationFailure{
                     "Program buffer execution failed - abstract command error: 0x"
-                        + Services::StringService::toHex(abstractStatusRegister.commandError)
+                        + Services::StringService::toHex(commandError)
                 };
             }
 
             preservedX8Register.restore();
             preservedX9Register.restore();
 
-        } catch (const Exceptions::Exception& exception) {
+        } catch (const Exceptions::Exception&) {
             preservedX8Register.restoreOnce();
             preservedX9Register.restoreOnce();
-
-            throw exception;
+            throw;
         }
     }
 

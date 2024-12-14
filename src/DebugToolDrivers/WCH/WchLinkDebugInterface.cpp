@@ -58,9 +58,7 @@ namespace DebugToolDrivers::Wch
             }
         )
         , programSegmentDescriptor(
-            this->targetDescriptionFile.getSystemAddressSpaceDescriptor().getMemorySegmentDescriptor(
-                "internal_program_memory"
-            )
+            this->targetDescriptionFile.getSystemAddressSpaceDescriptor().getMemorySegmentDescriptor("main_program")
         )
         , flashProgramOpcodes(
             WchLinkDebugInterface::getFlashProgramOpcodes(
@@ -105,6 +103,9 @@ namespace DebugToolDrivers::Wch
          * In addition to sending the post-attach command, we have to send another attach command, because the target
          * variant ID returned in the response of the first attach command may be invalid. Sending another attach
          * command will ensure that we have a valid target variant ID.
+         *
+         * TODO: Add a property to the target's TDF, to determine whether the post-attach is required, instead of
+         *       hardcoding target IDs here. This can be done after v2.0.0.
          */
         if (this->cachedTargetId == 0x09) {
             this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::PostAttach{});
@@ -236,9 +237,28 @@ namespace DebugToolDrivers::Wch
              * smaller than 64 bytes, such as when we're inserting software breakpoints.
              */
             const auto bufferSize = static_cast<TargetMemorySize>(buffer.size());
+            const auto alignmentSize = this->programmingBlockSize;
+            const auto alignedStartAddress = (startAddress / alignmentSize) * alignmentSize;
+            const auto alignedBufferSize = static_cast<TargetMemorySize>(std::ceil(
+                static_cast<double>(bufferSize) / static_cast<double>(alignmentSize)
+            ) * alignmentSize);
+            const auto alignmentRequired = alignedStartAddress != startAddress || alignedBufferSize != bufferSize;
 
-            if (bufferSize <= WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE) {
+            if (
+                bufferSize <= WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE
+                || (
+                    alignmentRequired
+                    && !memorySegmentDescriptor.addressRange.contains(
+                        TargetMemoryAddressRange{
+                            alignedStartAddress,
+                            alignedStartAddress + alignedBufferSize - 1
+                        }
+                    )
+                )
+            ) {
                 using namespace ::DebugToolDrivers::Protocols::RiscVDebugSpec;
+                Logger::debug("Using partial block write command");
+
                 /*
                  * WCH-Link tools seem to make use of the target's program buffer to service the partial block write
                  * command.
@@ -261,28 +281,7 @@ namespace DebugToolDrivers::Wch
                 return;
             }
 
-            const auto alignmentSize = this->programmingBlockSize;
-            const auto alignedStartAddress = (startAddress / alignmentSize) * alignmentSize;
-            const auto alignedBufferSize = static_cast<TargetMemorySize>(std::ceil(
-                static_cast<double>(bufferSize) / static_cast<double>(alignmentSize)
-            ) * alignmentSize);
-
-            if (alignedStartAddress != startAddress || alignedBufferSize != bufferSize) {
-                if (
-                    !memorySegmentDescriptor.addressRange.contains(
-                        TargetMemoryAddressRange{
-                            alignedStartAddress,
-                            alignedStartAddress + alignedBufferSize - 1
-                        }
-                    )
-                ) {
-                    /*
-                     * TODO: The aligned address range exceeds the bounds of the memory segment. I'm not sure what to
-                     *       do here. We could just ignore it...I don't think it will cause much of an issue, for now.
-                     *       Review (after v2.0.0, maybe?).
-                     */
-                }
-
+            if (alignmentRequired) {
                 auto alignedBuffer = (alignedStartAddress < startAddress)
                     ? this->readMemory(
                         addressSpaceDescriptor,
@@ -322,6 +321,9 @@ namespace DebugToolDrivers::Wch
                 );
             }
 
+            Logger::debug(
+                "Using full block write command (block size: " + std::to_string(this->programmingBlockSize) + ")"
+            );
             this->wchLinkInterface.writeFlashFullBlocks(
                 startAddress,
                 buffer,

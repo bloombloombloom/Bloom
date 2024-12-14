@@ -9,6 +9,8 @@
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
+#include "Exceptions/IllegalMemoryAccess.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
@@ -305,6 +307,20 @@ namespace Targets::RiscV
 
     bool RiscV::programmingModeEnabled() {
         return this->programmingMode;
+    }
+
+    bool RiscV::probeMemory(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        Targets::TargetMemoryAddress address
+    ) {
+        try {
+            this->riscVDebugInterface->readMemory(addressSpaceDescriptor, memorySegmentDescriptor, address, 4, {});
+            return true;
+
+        } catch (const Exceptions::IllegalMemoryAccess&) {
+            return false;
+        }
     }
 
     void RiscV::applyDebugInterfaceAccessRestrictions(TargetAddressSpaceDescriptor& addressSpaceDescriptor) {

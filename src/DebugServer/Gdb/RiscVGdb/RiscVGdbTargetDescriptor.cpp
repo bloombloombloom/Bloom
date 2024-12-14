@@ -12,7 +12,7 @@ namespace DebugServer::Gdb::RiscVGdb
     RiscVGdbTargetDescriptor::RiscVGdbTargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
         : systemAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("system"))
         , cpuAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("debug_module"))
-        , programMemorySegmentDescriptor(this->systemAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_program_memory"))
+        , programMemorySegmentDescriptor(this->systemAddressSpaceDescriptor.getMemorySegmentDescriptor("main_program"))
         , gpRegistersMemorySegmentDescriptor(this->cpuAddressSpaceDescriptor.getMemorySegmentDescriptor("gp_registers"))
         , cpuGpPeripheralDescriptor(targetDescriptor.getPeripheralDescriptor("cpu"))
         , cpuGpRegisterGroupDescriptor(this->cpuGpPeripheralDescriptor.getRegisterGroupDescriptor("gpr"))

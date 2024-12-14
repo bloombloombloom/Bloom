@@ -3,8 +3,10 @@
 #include <utility>
 #include <cassert>
 
-#include "src/Logger/Logger.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
+#include "src/Exceptions/Exception.hpp"
+
+#include "src/Logger/Logger.hpp"
 
 namespace Targets::RiscV::Wch
 {
@@ -13,10 +15,24 @@ namespace Targets::RiscV::Wch
         TargetDescriptionFile&& targetDescriptionFile
     )
         : RiscV(targetConfig, targetDescriptionFile)
+        , targetConfig(WchRiscVTargetConfig{RiscV::targetConfig})
         , targetDescriptionFile(std::move(targetDescriptionFile))
-        , programMemorySegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_program_memory"))
-        , mappedProgramMemorySegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("mapped_progmem"))
-    {}
+        , mappedSegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("mapped_program_memory"))
+        , mainProgramSegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("main_program"))
+        , bootProgramSegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("boot_program"))
+        , peripheralSegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("peripherals"))
+        , selectedProgramSegmentDescriptor(
+            this->targetConfig.programSegmentKey.has_value()
+            && *(this->targetConfig.programSegmentKey) == this->bootProgramSegmentDescriptor.key
+                ? this->bootProgramSegmentDescriptor
+                : this->mainProgramSegmentDescriptor
+        )
+    {
+        Logger::info(
+            "Selected program memory segment: \"" + this->selectedProgramSegmentDescriptor.name + "\" (\""
+                + this->selectedProgramSegmentDescriptor.key + "\")"
+        );
+    }
 
     void WchRiscV::activate() {
         RiscV::activate();
@@ -89,7 +105,7 @@ namespace Targets::RiscV::Wch
         }
 
         auto& sysAddressSpaceDescriptor = descriptor.getAddressSpaceDescriptor("system");
-        sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_program_memory").inspectionEnabled = true;
+        sysAddressSpaceDescriptor.getMemorySegmentDescriptor("main_program").inspectionEnabled = true;
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_ram").inspectionEnabled = true;
 
         /*
@@ -103,7 +119,7 @@ namespace Targets::RiscV::Wch
          * See the overridden WchRiscV::writeMemory() member function below, for more.
          */
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor(
-            this->mappedProgramMemorySegmentDescriptor.key
+            this->mappedSegmentDescriptor.key
         ).programmingModeAccess.writeable = true;
 
         return descriptor;
@@ -112,12 +128,12 @@ namespace Targets::RiscV::Wch
     void WchRiscV::setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
         if (
             breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
-            && breakpoint.memorySegmentDescriptor == this->mappedProgramMemorySegmentDescriptor
+            && breakpoint.memorySegmentDescriptor == this->mappedSegmentDescriptor
         ) {
             this->riscVDebugInterface->setProgramBreakpoint(TargetProgramBreakpoint{
                 .addressSpaceDescriptor = this->sysAddressSpaceDescriptor,
-                .memorySegmentDescriptor = this->getDestinationProgramMemorySegmentDescriptor(),
-                .address = this->transformAliasedProgramMemoryAddress(breakpoint.address),
+                .memorySegmentDescriptor = this->selectedProgramSegmentDescriptor,
+                .address = this->transformMappedAddress(breakpoint.address, this->selectedProgramSegmentDescriptor),
                 .size = breakpoint.size,
                 .type = breakpoint.type
             });
@@ -131,12 +147,12 @@ namespace Targets::RiscV::Wch
     void WchRiscV::removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
         if (
             breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
-            && breakpoint.memorySegmentDescriptor == this->mappedProgramMemorySegmentDescriptor
+            && breakpoint.memorySegmentDescriptor == this->mappedSegmentDescriptor
         ) {
             this->riscVDebugInterface->removeProgramBreakpoint(TargetProgramBreakpoint{
                 .addressSpaceDescriptor = this->sysAddressSpaceDescriptor,
-                .memorySegmentDescriptor = this->getDestinationProgramMemorySegmentDescriptor(),
-                .address = this->transformAliasedProgramMemoryAddress(breakpoint.address),
+                .memorySegmentDescriptor = this->selectedProgramSegmentDescriptor,
+                .address = this->transformMappedAddress(breakpoint.address, this->selectedProgramSegmentDescriptor),
                 .size = breakpoint.size,
                 .type = breakpoint.type
             });
@@ -147,52 +163,183 @@ namespace Targets::RiscV::Wch
         this->riscVDebugInterface->removeProgramBreakpoint(breakpoint);
     }
 
+    TargetMemoryBuffer WchRiscV::readMemory(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        TargetMemoryAddress startAddress,
+        TargetMemorySize bytes,
+        const std::set<TargetMemoryAddressRange>& excludedAddressRanges
+    ) {
+        using Services::StringService;
+
+        if (memorySegmentDescriptor == this->mappedSegmentDescriptor) {
+            const auto& aliasedSegment = this->selectedProgramSegmentDescriptor;
+            const auto transformedAddress = this->transformMappedAddress(startAddress, aliasedSegment);
+
+            const auto addressRange = TargetMemoryAddressRange{
+                transformedAddress,
+                static_cast<TargetMemoryAddress>(transformedAddress + bytes - 1)
+            };
+
+            if (!aliasedSegment.addressRange.contains(addressRange)) {
+                throw Exceptions::Exception{
+                    "Read access range (0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"
+                        + StringService::toHex(addressRange.endAddress) + ", " + std::to_string(addressRange.size())
+                        + " bytes) exceeds the boundary of the selected program segment \"" + aliasedSegment.key
+                        + "\" (0x" + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
+                        + StringService::toHex(aliasedSegment.addressRange.endAddress) + ", "
+                        + std::to_string(aliasedSegment.addressRange.size()) + " bytes)"
+                };
+            }
+
+            return RiscV::readMemory(
+                addressSpaceDescriptor,
+                aliasedSegment,
+                transformedAddress,
+                bytes,
+                excludedAddressRanges
+            );
+        }
+
+        return RiscV::readMemory(
+            addressSpaceDescriptor,
+            memorySegmentDescriptor,
+            startAddress,
+            bytes,
+            excludedAddressRanges
+        );
+    }
+
     void WchRiscV::writeMemory(
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
         TargetMemoryBufferSpan buffer
     ) {
-        /*
-         * WCH targets have an alias segment that maps to either the program memory segment or the boot program
-         * memory segment.
-         *
-         * Reading directly from this memory segment is fine, but we cannot write to it - the operation just fails
-         * silently. We handle this by forwarding any write operations on that segment to the appropriate (aliased)
-         * segment.
-         *
-         * @TODO: Currently, this just assumes that the alias segment always maps to the program memory segment, but I
-         *        believe it may map to the boot program memory segment in some cases. This needs to be revisited
-         *        before v2.0.0.
-         */
-        if (memorySegmentDescriptor == this->mappedProgramMemorySegmentDescriptor) {
-            const auto transformedAddress = this->transformAliasedProgramMemoryAddress(startAddress);
-            assert(this->programMemorySegmentDescriptor.addressRange.contains(transformedAddress));
+        using Services::StringService;
 
-            return RiscV::writeMemory(
-                addressSpaceDescriptor,
-                this->programMemorySegmentDescriptor,
+        if (memorySegmentDescriptor == this->mappedSegmentDescriptor) {
+            const auto& aliasedSegment = this->selectedProgramSegmentDescriptor;
+            const auto transformedAddress = this->transformMappedAddress(startAddress, aliasedSegment);
+
+            const auto addressRange = TargetMemoryAddressRange{
                 transformedAddress,
-                buffer
-            );
+                static_cast<TargetMemoryAddress>(transformedAddress + buffer.size() - 1)
+            };
+
+            if (!aliasedSegment.addressRange.contains(addressRange)) {
+                throw Exceptions::Exception{
+                    "Write access range (0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"
+                        + StringService::toHex(addressRange.endAddress) + ", " + std::to_string(addressRange.size())
+                        + " bytes) exceeds the boundary of the selected program segment \"" + aliasedSegment.key
+                        + "\" (0x" + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
+                        + StringService::toHex(aliasedSegment.addressRange.endAddress) + ", "
+                        + std::to_string(aliasedSegment.addressRange.size()) + " bytes)"
+                };
+            }
+
+            return RiscV::writeMemory(addressSpaceDescriptor, aliasedSegment, transformedAddress, buffer);
         }
 
         return RiscV::writeMemory(addressSpaceDescriptor, memorySegmentDescriptor, startAddress, buffer);
     }
 
-    const TargetMemorySegmentDescriptor& WchRiscV::getDestinationProgramMemorySegmentDescriptor() {
-        return this->programMemorySegmentDescriptor;
+    void WchRiscV::eraseMemory(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor
+    ) {
+        if (memorySegmentDescriptor == this->mappedSegmentDescriptor) {
+            return RiscV::eraseMemory(addressSpaceDescriptor, this->selectedProgramSegmentDescriptor);
+        }
+
+        RiscV::eraseMemory(addressSpaceDescriptor, memorySegmentDescriptor);
     }
 
-    TargetMemoryAddress WchRiscV::transformAliasedProgramMemoryAddress(TargetMemoryAddress address) const {
+    TargetMemoryAddress WchRiscV::getProgramCounter() {
+        const auto programCounter = RiscV::getProgramCounter();
+
+        if (this->mappedSegmentDescriptor.addressRange.contains(programCounter)) {
+            const auto& actualAliasedSegment = this->resolveAliasedMemorySegment();
+            if (actualAliasedSegment != this->selectedProgramSegmentDescriptor) {
+                /*
+                 * The target's mapped segment no longer aliases the selected program segment.
+                 *
+                 * Imagine starting a debug session with GDB, then replacing the entire program being debugged with a
+                 * totally different program, whilst GDB is still running and the same debug session is still active.
+                 * Understandably, GDB would become very confused by this, as it has no idea what just happened, or why
+                 * the program it was observing just moments ago has suddenly disappeared and been replaced by another.
+                 *
+                 * This is essentially what has just happened. The mapped segment initially aliased one segment in
+                 * program memory, but now, all of a sudden, it appears to be aliasing a different segment. This can
+                 * happen when the target switches to a different mode of operation. When the target is in "user mode",
+                 * the mapped segment aliases the main program segment. But when the target is in "boot mode", the
+                 * mapped segment aliases the boot segment. The program running on the target can invoke a mode switch
+                 * by writing to a register and performing a software reset.
+                 *
+                 * So, we have a program counter that's addressing a totally different program, but to most external
+                 * entities, it will appear as if it's addressing the same program.
+                 *
+                 * In order to avoid causing havoc and potentially misleading the user, we transform the PC to its
+                 * aliased address. That way, it will be clear to all external entities, that the target is currently
+                 * executing code in a different memory segment to the one that was selected for debugging.
+                 */
+                Logger::warning(
+                    "The mapped program memory segment is currently aliasing a foreign segment (\""
+                        + actualAliasedSegment.key + "\") - the program counter will be transformed to its aliased"
+                        " address"
+                );
+                return this->transformMappedAddress(programCounter, actualAliasedSegment);
+            }
+        }
+
+        return programCounter;
+    }
+
+    const TargetMemorySegmentDescriptor& WchRiscV::resolveAliasedMemorySegment() {
+        /*
+         * To determine the aliased segment, we probe the boundary of the boot segment via the mapped segment.
+         *
+         * Assumptions that must hold, for this to work:
+         *   - The boot segment must be smaller than the main program memory segment
+         *   - Breaching the boundary of the boot segment must always result in an exception (out-of-bounds error)
+         *
+         * If the mapped segment is aliasing the boot segment, the memory access will fail, due to an out-of-bounds
+         * error. If the access succeeds, we can be fairly certain the mapped segment is aliasing the main program
+         * memory segment.
+         *
+         * I did consider using the FLASH_STATR peripheral register to determine the aliased segment, but not all WCH
+         * targets have the required bit fields for that to work. And even the ones that do, do not behave in the way
+         * described by the documentation.
+         */
+        const auto probeAddress = this->bootProgramSegmentDescriptor.addressRange.endAddress
+            - this->bootProgramSegmentDescriptor.addressRange.startAddress
+            + this->mappedSegmentDescriptor.addressRange.startAddress + 1;
+
+        assert(this->sysAddressSpaceDescriptor.addressRange.contains(probeAddress));
+        assert(this->mainProgramSegmentDescriptor.size() > this->bootProgramSegmentDescriptor.size());
+
+        const auto& segment = this->probeMemory(
+            this->sysAddressSpaceDescriptor,
+            this->mappedSegmentDescriptor,
+            probeAddress
+        ) ? this->mainProgramSegmentDescriptor : this->bootProgramSegmentDescriptor;
+
+        Logger::debug("Aliased program memory segment: \"" + segment.key + "\"");
+        return segment;
+    }
+
+    TargetMemoryAddress WchRiscV::transformMappedAddress(
+        TargetMemoryAddress address,
+        const TargetMemorySegmentDescriptor& segmentDescriptor
+    ) {
         using Services::StringService;
 
-        const auto transformedAddress = address - this->mappedProgramMemorySegmentDescriptor.addressRange.startAddress
-            + this->programMemorySegmentDescriptor.addressRange.startAddress;
+        const auto transformedAddress = address - this->mappedSegmentDescriptor.addressRange.startAddress
+            + segmentDescriptor.addressRange.startAddress;
 
         Logger::debug(
             "Transformed mapped program memory address 0x" + StringService::toHex(address) + " to 0x"
-                + StringService::toHex(transformedAddress)
+                + StringService::toHex(transformedAddress) + " (segment: \"" + segmentDescriptor.key + "\")"
         );
 
         return transformedAddress;
