@@ -33,6 +33,17 @@ namespace Targets::RiscV::Wch
             "Selected program memory segment: \"" + this->selectedProgramSegmentDescriptor.name + "\" (\""
                 + this->selectedProgramSegmentDescriptor.key + "\")"
         );
+
+        if (
+            this->selectedProgramSegmentDescriptor == this->bootProgramSegmentDescriptor
+            && !this->selectedProgramSegmentDescriptor.programmingModeAccess.writeable
+        ) {
+            Logger::warning(
+                "A read-only boot segment has been selected as the program memory segment - all programming sessions"
+                    " will fail. This WCH target does not support storing custom bootloaders in this boot segment."
+            );
+            // TODO: Add link to further documentation here
+        }
     }
 
     void WchRiscV::activate() {
@@ -131,6 +142,16 @@ namespace Targets::RiscV::Wch
             breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
             && breakpoint.memorySegmentDescriptor == this->mappedSegmentDescriptor
         ) {
+            if (
+                !this->selectedProgramSegmentDescriptor.debugModeAccess.writeable
+                && (!this->programmingMode || !this->selectedProgramSegmentDescriptor.programmingModeAccess.writeable)
+            ) {
+                throw Exceptions::Exception{
+                    "The selected program memory segment (\"" + this->selectedProgramSegmentDescriptor.key
+                        + "\") is not writable - cannot insert software breakpoint"
+                };
+            }
+
             this->riscVDebugInterface->setProgramBreakpoint(TargetProgramBreakpoint{
                 .addressSpaceDescriptor = this->sysAddressSpaceDescriptor,
                 .memorySegmentDescriptor = this->selectedProgramSegmentDescriptor,
@@ -150,6 +171,16 @@ namespace Targets::RiscV::Wch
             breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
             && breakpoint.memorySegmentDescriptor == this->mappedSegmentDescriptor
         ) {
+            if (
+                !this->selectedProgramSegmentDescriptor.debugModeAccess.writeable
+                && (!this->programmingMode || !this->selectedProgramSegmentDescriptor.programmingModeAccess.writeable)
+            ) {
+                throw Exceptions::Exception{
+                    "The selected program memory segment (\"" + this->selectedProgramSegmentDescriptor.key
+                        + "\") is not writable - cannot remove software breakpoint"
+                };
+            }
+
             this->riscVDebugInterface->removeProgramBreakpoint(TargetProgramBreakpoint{
                 .addressSpaceDescriptor = this->sysAddressSpaceDescriptor,
                 .memorySegmentDescriptor = this->selectedProgramSegmentDescriptor,
@@ -221,6 +252,16 @@ namespace Targets::RiscV::Wch
 
         if (memorySegmentDescriptor == this->mappedSegmentDescriptor) {
             const auto& aliasedSegment = this->selectedProgramSegmentDescriptor;
+
+            if (
+                !aliasedSegment.debugModeAccess.writeable
+                && (!this->programmingMode || !aliasedSegment.programmingModeAccess.writeable)
+            ) {
+                throw Exceptions::Exception{
+                    "The selected program memory segment (\"" + aliasedSegment.key + "\") is not writable"
+                };
+            }
+
             const auto transformedAddress = this->transformMappedAddress(startAddress, aliasedSegment);
 
             const auto addressRange = TargetMemoryAddressRange{
