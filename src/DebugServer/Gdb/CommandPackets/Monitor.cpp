@@ -1,5 +1,6 @@
 #include "Monitor.hpp"
 
+#include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/EmptyResponsePacket.hpp"
 
 #include "src/Services/StringService.hpp"
@@ -9,6 +10,7 @@ namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
 
+    using ResponsePackets::ResponsePacket;
     using ResponsePackets::EmptyResponsePacket;
 
     Monitor::Monitor(const RawPacket& rawPacket)
@@ -34,6 +36,17 @@ namespace DebugServer::Gdb::CommandPackets
         const Targets::TargetDescriptor&,
         TargetControllerService& targetControllerService
     ) {
+        const auto passthroughResponse = targetControllerService.invokeTargetPassthroughCommand(
+            Targets::PassthroughCommand{.arguments = this->commandArguments}
+        );
+
+        if (passthroughResponse.has_value()) {
+            debugSession.connection.writePacket(ResponsePacket{
+                Services::StringService::toHex(passthroughResponse->output)
+            });
+            return;
+        }
+
         Logger::error("Unknown custom GDB command (\"" + this->command + "\") received.");
         debugSession.connection.writePacket(EmptyResponsePacket{});
     }

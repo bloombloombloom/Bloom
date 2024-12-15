@@ -335,6 +335,14 @@ namespace Targets::Microchip::Avr8
             }
         }
 
+        // Make RAM, FLASH and EEPROM available for inspection the Insight GUI.
+        descriptor.getMemorySegmentDescriptor("data", "internal_ram").inspectionEnabled = true;
+        descriptor.getMemorySegmentDescriptor("prog", "internal_program_memory").inspectionEnabled = true;
+        descriptor.getMemorySegmentDescriptor(
+            descriptor.getFirstAddressSpaceDescriptorContainingMemorySegment("internal_eeprom").key,
+            "internal_eeprom"
+        ).inspectionEnabled = true;
+
         return descriptor;
     }
 
@@ -681,6 +689,11 @@ namespace Targets::Microchip::Avr8
 
     bool Avr8::programmingModeEnabled() {
         return this->activeProgrammingSession.has_value();
+    }
+
+    std::optional<PassthroughResponse> Avr8::invokePassthroughCommand(const PassthroughCommand& command) {
+        // AVR targets do not currently support any passthrough commands
+        return std::nullopt;
     }
 
     std::map<TargetPadId, GpioPadDescriptor> Avr8::generateGpioPadDescriptorMapping(

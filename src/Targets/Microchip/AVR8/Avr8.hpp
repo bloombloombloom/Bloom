@@ -105,10 +105,10 @@ namespace Targets::Microchip::Avr8
         void setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) override;
 
         void enableProgrammingMode() override;
-
         void disableProgrammingMode() override;
-
         bool programmingModeEnabled() override;
+
+        std::optional<PassthroughResponse> invokePassthroughCommand(const PassthroughCommand& command) override;
 
     protected:
         DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* targetPowerManagementInterface = nullptr;

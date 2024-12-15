@@ -3,11 +3,12 @@
 #include <utility>
 #include <cassert>
 
-
 #include "src/Targets/DynamicRegisterValue.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Exceptions/Exception.hpp"
+
+#include "src/EventManager/EventManager.hpp"
 
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
@@ -348,6 +349,95 @@ namespace Targets::RiscV::Wch
         }
 
         return programCounter;
+    }
+
+    std::optional<PassthroughResponse> WchRiscV::invokePassthroughCommand(const PassthroughCommand& command) {
+        using Services::StringService;
+
+        const auto& arguments = command.arguments;
+        if (arguments.empty()) {
+            return std::nullopt;
+        }
+
+        auto response = PassthroughResponse{};
+
+        try {
+            if (arguments[0] == "pm") {
+                const auto &actualAliasedSegment = this->resolveAliasedMemorySegment();
+
+                if (arguments.size() == 1) {
+                    response.output = "Program mode: \"" + StringService::applyTerminalColor(
+                        actualAliasedSegment == this->bootProgramSegmentDescriptor ? "boot mode" : "user mode",
+                        StringService::TerminalColor::DARK_YELLOW
+                    ) + "\"\n";
+                    response.output += "Aliased memory segment key: \""
+                        + StringService::applyTerminalColor(
+                            actualAliasedSegment.key,
+                            StringService::TerminalColor::DARK_YELLOW
+                        ) + "\"\n";
+                    response.output += "Mapped address -> aliased address: " + StringService::applyTerminalColor(
+                        "0x" + StringService::asciiToUpper(
+                            StringService::toHex(this->mappedSegmentDescriptor.addressRange.startAddress)
+                        ),
+                        StringService::TerminalColor::BLUE
+                    ) + " -> " + StringService::applyTerminalColor(
+                        "0x" + StringService::asciiToUpper(
+                            StringService::toHex(actualAliasedSegment.addressRange.startAddress)
+                        ),
+                        StringService::TerminalColor::BLUE
+                    ) + "\n";
+                    response.output += "Program counter: " + StringService::applyTerminalColor(
+                        "0x" + StringService::asciiToUpper(StringService::toHex(this->getProgramCounter())),
+                        StringService::TerminalColor::BLUE
+                    ) + "\n";
+
+                    return response;
+                }
+
+                if (arguments[1] == "boot") {
+                    if (actualAliasedSegment == this->bootProgramSegmentDescriptor) {
+                        response.output += "Target is already in \"boot mode\"\n";
+                        response.output += "Proceeding, anyway...\n\n";
+                    }
+
+                    this->enableBootMode();
+                    EventManager::triggerEvent(std::make_shared<Events::TargetReset>());
+
+                    response.output += "Boot mode has been enabled\n";
+                    response.output += "Program counter: " + StringService::applyTerminalColor(
+                        "0x" + StringService::asciiToUpper(StringService::toHex(this->getProgramCounter())),
+                        StringService::TerminalColor::BLUE
+                    ) + "\n";
+
+                    return response;
+                }
+
+                if (arguments[1] == "user") {
+                    if (actualAliasedSegment == this->mainProgramSegmentDescriptor) {
+                        response.output += "Target is already in \"user mode\"\n";
+                        response.output += "Proceeding, anyway...\n\n";
+                    }
+
+                    this->enableUserMode();
+                    EventManager::triggerEvent(std::make_shared<Events::TargetReset>());
+
+                    response.output += "User mode has been enabled\n";
+                    response.output += "Program counter: " + StringService::applyTerminalColor(
+                        "0x" + StringService::asciiToUpper(StringService::toHex(this->getProgramCounter())),
+                        StringService::TerminalColor::BLUE
+                    ) + "\n";
+
+                    return response;
+                }
+            }
+
+        } catch (const Exceptions::Exception& exception) {
+            Logger::error("Passthrough command error: " + exception.getMessage());
+            response.output = "Error: " + exception.getMessage();
+            return response;
+        }
+
+        return std::nullopt;
     }
 
     const TargetMemorySegmentDescriptor& WchRiscV::resolveAliasedMemorySegment() {

@@ -6,6 +6,7 @@
 #include <memory>
 #include <set>
 #include <map>
+#include <optional>
 
 #include "src/ProjectConfig.hpp"
 
@@ -18,6 +19,9 @@
 #include "TargetBreakpoint.hpp"
 #include "TargetPadDescriptor.hpp"
 #include "TargetGpioPadState.hpp"
+
+#include "PassthroughCommand.hpp"
+#include "PassthroughResponse.hpp"
 
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
@@ -150,5 +154,7 @@ namespace Targets
         virtual void enableProgrammingMode() = 0;
         virtual void disableProgrammingMode() = 0;
         virtual bool programmingModeEnabled() = 0;
+
+        virtual std::optional<PassthroughResponse> invokePassthroughCommand(const PassthroughCommand& command) = 0;
     };
 }

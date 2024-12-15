@@ -54,6 +54,7 @@ namespace Services
     using TargetController::Commands::EnableProgrammingMode;
     using TargetController::Commands::DisableProgrammingMode;
     using TargetController::Commands::Shutdown;
+    using TargetController::Commands::InvokeTargetPassthroughCommand;
 
     using Targets::TargetDescriptor;
     using Targets::TargetState;
@@ -343,6 +344,16 @@ namespace Services
             this->defaultTimeout,
             this->activeAtomicSessionId
         );
+    }
+
+    std::optional<Targets::PassthroughResponse> TargetControllerService::invokeTargetPassthroughCommand(
+        Targets::PassthroughCommand&& command
+    ) const {
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<InvokeTargetPassthroughCommand>(std::move(command)),
+            this->defaultTimeout,
+            this->activeAtomicSessionId
+        )->response;
     }
 
     TargetControllerService::AtomicSession TargetControllerService::makeAtomicSession() {

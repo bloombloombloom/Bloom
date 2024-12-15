@@ -31,5 +31,6 @@ namespace TargetController::Commands
         GET_TARGET_PROGRAM_COUNTER,
         ENABLE_PROGRAMMING_MODE,
         DISABLE_PROGRAMMING_MODE,
+        INVOKE_TARGET_PASSTHROUGH_COMMAND,
     };
 }

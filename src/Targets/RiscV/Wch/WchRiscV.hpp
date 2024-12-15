@@ -43,6 +43,8 @@ namespace Targets::RiscV::Wch
 
         TargetMemoryAddress getProgramCounter() override;
 
+        std::optional<PassthroughResponse> invokePassthroughCommand(const PassthroughCommand& command) override;
+
     protected:
         WchRiscVTargetConfig targetConfig;
         TargetDescriptionFile targetDescriptionFile;

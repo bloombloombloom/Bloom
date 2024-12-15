@@ -20,6 +20,8 @@
 #include "src/Targets/TargetGpioPadState.hpp"
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
+#include "src/Targets/PassthroughCommand.hpp"
+#include "src/Targets/PassthroughResponse.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 
@@ -265,6 +267,10 @@ namespace Services
          * Forces the TargetController to shutdown
          */
         void shutdown() const;
+
+        std::optional<Targets::PassthroughResponse> invokeTargetPassthroughCommand(
+            Targets::PassthroughCommand&& command
+        ) const;
 
         /**
          * Starts a new atomic session with the TC, via an TargetControllerService::AtomicSession RAII object.

@@ -51,6 +51,7 @@ namespace TargetController
     using Commands::GetTargetProgramCounter;
     using Commands::EnableProgrammingMode;
     using Commands::DisableProgrammingMode;
+    using Commands::InvokeTargetPassthroughCommand;
 
     using Responses::Response;
     using Responses::AtomicSessionId;
@@ -60,6 +61,7 @@ namespace TargetController
     using Responses::TargetStackPointer;
     using Responses::TargetProgramCounter;
     using Responses::ProgramBreakpoint;
+    using Responses::TargetPassthroughResponse;
 
     TargetControllerComponent::TargetControllerComponent(
         const ProjectConfig& projectConfig,
@@ -260,6 +262,10 @@ namespace TargetController
 
         this->registerCommandHandler<DisableProgrammingMode>(
             std::bind(&TargetControllerComponent::handleDisableProgrammingMode, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<InvokeTargetPassthroughCommand>(
+            std::bind(&TargetControllerComponent::handleTargetPassthroughCommand, this, std::placeholders::_1)
         );
 
         // Register event handlers
@@ -1172,5 +1178,11 @@ namespace TargetController
         }
 
         return std::make_unique<Response>();
+    }
+
+    std::unique_ptr<TargetPassthroughResponse> TargetControllerComponent::handleTargetPassthroughCommand(
+        InvokeTargetPassthroughCommand& command
+    ) {
+        return std::make_unique<TargetPassthroughResponse>(this->target->invokePassthroughCommand(command.command));
     }
 }
