@@ -57,7 +57,7 @@ namespace DebugToolDrivers::Wch
                 this->targetConfig
             }
         )
-        , programSegmentDescriptor(
+        , mainProgramSegmentDescriptor(
             this->targetDescriptionFile.getSystemAddressSpaceDescriptor().getMemorySegmentDescriptor("main_program")
         )
         , flashProgramOpcodes(
@@ -80,7 +80,7 @@ namespace DebugToolDrivers::Wch
 
         auto response = this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::AttachTarget{});
         if (response.payload.size() != 5) {
-            throw Exceptions::DeviceCommunicationFailure{"Unexpected response payload size for AttachTarget command"};
+            throw DeviceCommunicationFailure{"Unexpected response payload size for AttachTarget command"};
         }
 
         this->cachedTargetId = response.payload[0];
@@ -112,7 +112,7 @@ namespace DebugToolDrivers::Wch
             response = this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::AttachTarget{});
 
             if (response.payload.size() != 5) {
-                throw Exceptions::DeviceCommunicationFailure{
+                throw DeviceCommunicationFailure{
                     "Unexpected response payload size for subsequent AttachTarget command"
                 };
             }
@@ -132,7 +132,7 @@ namespace DebugToolDrivers::Wch
 
         const auto response = this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::DetachTarget{});
         if (response.payload.size() != 1) {
-            throw Exceptions::DeviceCommunicationFailure{"Unexpected response payload size for DetachTarget command"};
+            throw DeviceCommunicationFailure{"Unexpected response payload size for DetachTarget command"};
         }
     }
 
@@ -272,7 +272,7 @@ namespace DebugToolDrivers::Wch
 
                 const auto commandError = this->riscVTranslator.readAndClearAbstractCommandError();
                 if (commandError != DebugModule::AbstractCommandError::NONE) {
-                    throw Exceptions::Exception{
+                    throw Exception{
                         "Partial block write failed - abstract command error: 0x"
                             + Services::StringService::toHex(commandError)
                     };
@@ -359,7 +359,7 @@ namespace DebugToolDrivers::Wch
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor
     ) {
-        if (memorySegmentDescriptor == this->programSegmentDescriptor) {
+        if (memorySegmentDescriptor == this->mainProgramSegmentDescriptor) {
             return this->wchLinkInterface.eraseProgramMemory();
         }
 

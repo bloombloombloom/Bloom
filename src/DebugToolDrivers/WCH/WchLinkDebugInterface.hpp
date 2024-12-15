@@ -89,7 +89,7 @@ namespace DebugToolDrivers::Wch
         Protocols::WchLink::WchLinkInterface& wchLinkInterface;
         DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator riscVTranslator;
 
-        const Targets::TargetMemorySegmentDescriptor& programSegmentDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& mainProgramSegmentDescriptor;
 
         /**
          * The 'target activation' command returns a payload of 5 bytes.

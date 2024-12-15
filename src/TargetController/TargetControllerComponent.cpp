@@ -81,7 +81,7 @@ namespace TargetController
             while (this->getThreadState() == ThreadState::READY) {
                 this->refreshExecutionState();
 
-                TargetControllerComponent::notifier.waitForNotification(std::chrono::milliseconds(60    ));
+                TargetControllerComponent::notifier.waitForNotification(std::chrono::milliseconds{60});
 
                 this->processQueuedCommands();
                 this->eventListener->dispatchCurrentEvents();
