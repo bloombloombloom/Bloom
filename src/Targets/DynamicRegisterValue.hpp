@@ -24,8 +24,11 @@ namespace Targets
 
         [[nodiscard]] std::uint64_t bitField(const TargetBitFieldDescriptor& bitFieldDescriptor) const;
         [[nodiscard]] std::uint64_t bitField(const std::string& bitFieldKey) const;
-        [[nodiscard]] bool bitFieldFlag(const TargetBitFieldDescriptor& bitFieldDescriptor) const;
-        [[nodiscard]] bool bitFieldFlag(const std::string& bitFieldKey) const;
+
+        template <typename ReturnType>
+        [[nodiscard]] ReturnType bitFieldAs(const TargetBitFieldDescriptor& bitFieldDescriptor) const {
+            return static_cast<ReturnType>(this->bitField(bitFieldDescriptor));
+        }
 
         [[nodiscard]] TargetMemoryBuffer data() const;
     };

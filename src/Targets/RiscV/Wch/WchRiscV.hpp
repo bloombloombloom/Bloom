@@ -73,10 +73,23 @@ namespace Targets::RiscV::Wch
          */
         const TargetMemorySegmentDescriptor& selectedProgramSegmentDescriptor;
 
+        const TargetPeripheralDescriptor flashPeripheralDescriptor;
+        const TargetRegisterDescriptor& flashKeyRegisterDescriptor;
+        const TargetRegisterDescriptor& flashBootKeyRegisterDescriptor;
+        const TargetRegisterDescriptor& flashStatusRegisterDescriptor;
+
+        const TargetBitFieldDescriptor& flashStatusBootLockFieldDescriptor;
+        const TargetBitFieldDescriptor& flashStatusBootModeFieldDescriptor;
+
         const TargetMemorySegmentDescriptor& resolveAliasedMemorySegment();
         TargetMemoryAddress transformMappedAddress(
             TargetMemoryAddress address,
             const TargetMemorySegmentDescriptor& segmentDescriptor
         );
+
+        void unlockFlash();
+        void unlockBootModeBitField();
+        void enableBootMode();
+        void enableUserMode();
     };
 }

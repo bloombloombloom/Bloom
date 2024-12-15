@@ -69,14 +69,6 @@ namespace Targets
         return this->bitField(this->registerDescriptor.getBitFieldDescriptor(bitFieldKey));
     }
 
-    bool DynamicRegisterValue::bitFieldFlag(const TargetBitFieldDescriptor& bitFieldDescriptor) const {
-        return static_cast<bool>(this->bitField(bitFieldDescriptor));
-    }
-
-    bool DynamicRegisterValue::bitFieldFlag(const std::string& bitFieldKey) const {
-        return this->bitFieldFlag(this->registerDescriptor.getBitFieldDescriptor(bitFieldKey));
-    }
-
     TargetMemoryBuffer DynamicRegisterValue::data() const {
         auto output = TargetMemoryBuffer(this->registerDescriptor.size, 0x00);
 

@@ -3,6 +3,9 @@
 #include <utility>
 #include <cassert>
 
+
+#include "src/Targets/DynamicRegisterValue.hpp"
+
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/Exceptions/Exception.hpp"
 
@@ -28,6 +31,12 @@ namespace Targets::RiscV::Wch
                 ? this->bootProgramSegmentDescriptor
                 : this->mainProgramSegmentDescriptor
         )
+        , flashPeripheralDescriptor(this->targetDescriptionFile.getTargetPeripheralDescriptor("flash"))
+        , flashKeyRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "keyr"))
+        , flashBootKeyRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "boot_modekeyr"))
+        , flashStatusRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "statr"))
+        , flashStatusBootLockFieldDescriptor(this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_lock"))
+        , flashStatusBootModeFieldDescriptor(this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_mode"))
     {
         Logger::info(
             "Selected program memory segment: \"" + this->selectedProgramSegmentDescriptor.name + "\" (\""
@@ -389,5 +398,49 @@ namespace Targets::RiscV::Wch
         );
 
         return transformedAddress;
+    }
+
+    void WchRiscV::unlockFlash() {
+        // TODO: Move these key values to a TDF property. After v2.0.0
+        this->writeRegister(this->flashKeyRegisterDescriptor, 0x45670123);
+        this->writeRegister(this->flashKeyRegisterDescriptor, 0xCDEF89AB);
+    }
+
+    void WchRiscV::unlockBootModeBitField() {
+        // TODO: Move these key values to a TDF property. After v2.0.0
+        this->writeRegister(this->flashBootKeyRegisterDescriptor, 0x45670123);
+        this->writeRegister(this->flashBootKeyRegisterDescriptor, 0xCDEF89AB);
+    }
+
+    void WchRiscV::enableBootMode() {
+        this->unlockFlash();
+        this->unlockBootModeBitField();
+
+        auto statusRegister = this->readRegisterDynamicValue(this->flashStatusRegisterDescriptor);
+
+        if (statusRegister.bitFieldAs<bool>(this->flashStatusBootLockFieldDescriptor)) {
+            throw Exceptions::Exception{"Failed to unlock boot mode field"};
+        }
+
+        statusRegister.setBitField(this->flashStatusBootModeFieldDescriptor, true);
+        this->writeRegister(this->flashStatusRegisterDescriptor, statusRegister.data());
+
+        this->reset();
+    }
+
+    void WchRiscV::enableUserMode() {
+        this->unlockFlash();
+        this->unlockBootModeBitField();
+
+        auto statusRegister = this->readRegisterDynamicValue(this->flashStatusRegisterDescriptor);
+
+        if (statusRegister.bitFieldAs<bool>(this->flashStatusBootLockFieldDescriptor)) {
+            throw Exceptions::Exception{"Failed to unlock boot mode field"};
+        }
+
+        statusRegister.setBitField(this->flashStatusBootModeFieldDescriptor, false);
+        this->writeRegister(this->flashStatusRegisterDescriptor, statusRegister.data());
+
+        this->reset();
     }
 }
