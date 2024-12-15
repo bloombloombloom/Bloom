@@ -13,6 +13,7 @@
 
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetRegisterGroupDescriptor.hpp"
+#include "src/Targets/DynamicRegisterValue.hpp"
 
 #include "src/DebugToolDrivers/TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 
@@ -121,6 +122,11 @@ namespace Targets::RiscV
         TargetAddressSpaceDescriptor sysAddressSpaceDescriptor;
 
         bool programmingMode = false;
+
+        TargetMemoryBuffer readRegister(const TargetRegisterDescriptor& descriptor);
+        DynamicRegisterValue readRegisterDynamicValue(const TargetRegisterDescriptor& descriptor);
+        void writeRegister(const TargetRegisterDescriptor& descriptor, TargetMemoryBufferSpan value);
+        void writeRegister(const TargetRegisterDescriptor& descriptor, std::uint64_t value);
 
         bool probeMemory(
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor,

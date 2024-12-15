@@ -309,6 +309,28 @@ namespace Targets::RiscV
         return this->programmingMode;
     }
 
+    TargetMemoryBuffer RiscV::readRegister(const TargetRegisterDescriptor& descriptor) {
+        return this->readRegisters({&descriptor}).front().second;
+    }
+
+    DynamicRegisterValue RiscV::readRegisterDynamicValue(const TargetRegisterDescriptor& descriptor) {
+        return DynamicRegisterValue{descriptor, this->readRegister(descriptor)};
+    }
+
+    void RiscV::writeRegister(const TargetRegisterDescriptor& descriptor, TargetMemoryBufferSpan value) {
+        this->writeRegisters({{descriptor, TargetMemoryBuffer{value.begin(), value.end()}}});
+    }
+
+    void RiscV::writeRegister(const TargetRegisterDescriptor& descriptor, std::uint64_t value) {
+        auto data = TargetMemoryBuffer(descriptor.size, 0x00);
+
+        for (auto i = TargetMemorySize{0}; i < descriptor.size; ++i) {
+            data[i] = static_cast<unsigned char>(value >> ((descriptor.size - i - 1) * 8));
+        }
+
+        this->writeRegister(descriptor, data);
+    }
+
     bool RiscV::probeMemory(
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,

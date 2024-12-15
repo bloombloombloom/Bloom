@@ -15,6 +15,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetVariantDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetMemoryCache.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetPhysicalInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/DynamicRegisterValue.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetDescription/TargetDescriptionFile.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR8/Avr8.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR8/Avr8TargetConfig.cpp
