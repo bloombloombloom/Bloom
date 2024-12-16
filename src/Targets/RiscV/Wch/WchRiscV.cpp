@@ -39,6 +39,17 @@ namespace Targets::RiscV::Wch
         , flashStatusBootLockFieldDescriptor(this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_lock"))
         , flashStatusBootModeFieldDescriptor(this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_mode"))
     {
+        if (
+            this->targetConfig.programSegmentKey.has_value()
+            && *(this->targetConfig.programSegmentKey) != this->bootProgramSegmentDescriptor.key
+            && *(this->targetConfig.programSegmentKey) != this->mainProgramSegmentDescriptor.key
+        ) {
+            Logger::error(
+                "Invalid program_segment_key parameter value (\"" + *(this->targetConfig.programSegmentKey)
+                    + "\") - parameter will be ignored"
+            );
+        }
+
         Logger::info(
             "Selected program memory segment: \"" + this->selectedProgramSegmentDescriptor.name + "\" (\""
                 + this->selectedProgramSegmentDescriptor.key + "\")"
@@ -50,7 +61,7 @@ namespace Targets::RiscV::Wch
         ) {
             Logger::warning(
                 "A read-only boot segment has been selected as the program memory segment - all programming sessions"
-                    " will fail. This WCH target does not support storing custom bootloaders in this boot segment."
+                    " will fail. This WCH target does not support storing custom bootloaders in the boot segment."
             );
             // TODO: Add link to further documentation here
         }

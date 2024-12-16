@@ -390,7 +390,7 @@ namespace Targets::RiscV
 
     TargetAddressSpaceDescriptor RiscV::generateCpuRegisterAddressSpaceDescriptor() {
         auto addressSpace = TargetAddressSpaceDescriptor{
-            "debug_module",
+            "csr",
             {0x0000, 0xFFFF},
             TargetMemoryEndianness::LITTLE,
             {},
