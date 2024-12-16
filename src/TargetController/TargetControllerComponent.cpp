@@ -492,6 +492,13 @@ namespace TargetController
                 throw exception;
 
             } catch (const Exception& exception) {
+                try {
+                    this->refreshExecutionState(true);
+
+                } catch (const Exception& refreshException) {
+                    Logger::error("Post exception target state refresh failed: " + refreshException.getMessage());
+                }
+
                 this->registerCommandResponse(
                     commandId,
                     std::make_unique<Responses::Error>(exception.getMessage())
@@ -621,37 +628,27 @@ namespace TargetController
         TargetControllerComponent::notifier.notify();
     }
 
-    void TargetControllerComponent::refreshExecutionState() {
-        auto newExecutionState = this->target->getExecutionState();
+    void TargetControllerComponent::refreshExecutionState(bool forceRefresh) {
+        auto newState = *(this->targetState);
+        newState.executionState = this->target->getExecutionState();
 
-        if (newExecutionState != this->targetState->executionState) {
-            Logger::debug("Target execution state changed");
-
-            auto newState = *(this->targetState);
-            newState.executionState = newExecutionState;
-
-            if (newExecutionState == TargetExecutionState::STOPPED) {
-                Logger::debug("Target stopped");
-                newState.programCounter = this->target->getProgramCounter();
-
-            } else {
-                Logger::debug("Target resumed");
-                newState.programCounter = std::nullopt;
-            }
-
-            this->updateTargetState(newState);
-        }
-    }
-
-    void TargetControllerComponent::updateTargetState(const TargetState& newState) {
-        if (newState == *(this->targetState)) {
-            // Nothing has changed, nothing to do
+        if (!forceRefresh && newState.executionState == this->targetState->executionState) {
             return;
         }
 
+        newState.programCounter = newState.executionState == TargetExecutionState::STOPPED
+            ? std::optional{this->target->getProgramCounter()}
+            : std::nullopt;
+        this->updateTargetState(newState);
+    }
+
+    void TargetControllerComponent::updateTargetState(const TargetState& newState) {
         const auto previousState = *(this->targetState);
         *(this->targetState) = newState;
-        EventManager::triggerEvent(std::make_shared<TargetStateChanged>(*(this->targetState), previousState));
+
+        if (newState != previousState) {
+            EventManager::triggerEvent(std::make_shared<TargetStateChanged>(*(this->targetState), previousState));
+        }
     }
 
     void TargetControllerComponent::stopTarget() {
