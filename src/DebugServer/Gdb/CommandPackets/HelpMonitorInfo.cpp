@@ -24,7 +24,7 @@ namespace DebugServer::Gdb::CommandPackets
         DebugSession& debugSession,
         const TargetDescriptor& gdbTargetDescriptor,
         const Targets::TargetDescriptor& targetDescriptor,
-        TargetControllerService&
+        TargetControllerService& targetControllerService
     ) {
         Logger::info("Handling HelpMonitorInfo packet");
 
@@ -130,6 +130,12 @@ namespace DebugServer::Gdb::CommandPackets
             output += leftPadding + "mon " + StringService::applyTerminalColor("eeprom fill", CMD_COLOR) + " "
                 + StringService::applyTerminalColor("FF00FF00AABBCC", PARAM_COLOR) + "\n";
             output += leftPadding + "  To repeat the hexadecimal sequence 'FF00FF00AABBCC' across the entirety of the target's EEPROM memory segment.\n\n";
+        }
+
+        const auto passthroughText = targetControllerService.getTargetPassthroughHelpText();
+        if (!passthroughText.empty()) {
+            output += "--------------------------------------------------------------------------------------------------------------\n\n";
+            output += "Target driver passthrough commands:\n\n" + passthroughText;
         }
 
         output += "\n";

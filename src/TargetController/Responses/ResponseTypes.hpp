@@ -17,6 +17,7 @@ namespace TargetController::Responses
         TARGET_STACK_POINTER,
         TARGET_PROGRAM_COUNTER,
         PROGRAM_BREAKPOINT,
+        TARGET_PASSTHROUGH_HELP_TEXT,
         TARGET_PASSTHROUGH_RESPONSE,
     };
 }

@@ -108,6 +108,7 @@ namespace Targets::Microchip::Avr8
         void disableProgrammingMode() override;
         bool programmingModeEnabled() override;
 
+        std::string passthroughCommandHelpText() override;
         std::optional<PassthroughResponse> invokePassthroughCommand(const PassthroughCommand& command) override;
 
     protected:

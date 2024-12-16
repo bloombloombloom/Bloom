@@ -25,6 +25,8 @@
 #include "src/TargetController/Commands/EnableProgrammingMode.hpp"
 #include "src/TargetController/Commands/DisableProgrammingMode.hpp"
 #include "src/TargetController/Commands/Shutdown.hpp"
+#include "src/TargetController/Commands/GetTargetPassthroughHelpText.hpp"
+#include "src/TargetController/Commands/InvokeTargetPassthroughCommand.hpp"
 
 #include "src/Exceptions/Exception.hpp"
 
@@ -54,6 +56,7 @@ namespace Services
     using TargetController::Commands::EnableProgrammingMode;
     using TargetController::Commands::DisableProgrammingMode;
     using TargetController::Commands::Shutdown;
+    using TargetController::Commands::GetTargetPassthroughHelpText;
     using TargetController::Commands::InvokeTargetPassthroughCommand;
 
     using Targets::TargetDescriptor;
@@ -344,6 +347,14 @@ namespace Services
             this->defaultTimeout,
             this->activeAtomicSessionId
         );
+    }
+
+    std::string TargetControllerService::getTargetPassthroughHelpText() const {
+        return this->commandManager.sendCommandAndWaitForResponse(
+            std::make_unique<GetTargetPassthroughHelpText>(),
+            this->defaultTimeout,
+            this->activeAtomicSessionId
+        )->text;
     }
 
     std::optional<Targets::PassthroughResponse> TargetControllerService::invokeTargetPassthroughCommand(

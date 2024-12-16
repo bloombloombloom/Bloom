@@ -268,6 +268,8 @@ namespace Services
          */
         void shutdown() const;
 
+        std::string getTargetPassthroughHelpText() const;
+
         std::optional<Targets::PassthroughResponse> invokeTargetPassthroughCommand(
             Targets::PassthroughCommand&& command
         ) const;

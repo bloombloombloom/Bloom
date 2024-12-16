@@ -155,6 +155,7 @@ namespace Targets
         virtual void disableProgrammingMode() = 0;
         virtual bool programmingModeEnabled() = 0;
 
+        virtual std::string passthroughCommandHelpText() = 0;
         virtual std::optional<PassthroughResponse> invokePassthroughCommand(const PassthroughCommand& command) = 0;
     };
 }

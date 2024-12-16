@@ -351,6 +351,35 @@ namespace Targets::RiscV::Wch
         return programCounter;
     }
 
+    std::string WchRiscV::passthroughCommandHelpText() {
+        using Services::StringService;
+
+        static constexpr auto CMD_COLOR = StringService::TerminalColor::DARK_YELLOW;
+        static constexpr auto PARAM_COLOR = StringService::TerminalColor::BLUE;
+
+        static const auto leftPadding = std::string{std::string::size_type{3}, ' ', std::string::allocator_type{}};
+        auto output = std::string{};
+
+        output += StringService::applyTerminalColor("program_mode", CMD_COLOR) + "\n\n";
+        output += leftPadding + "Determines the target's current program mode (boot/user).\n\n";
+
+        output += StringService::applyTerminalColor("program_mode", CMD_COLOR) + " ["
+            + StringService::applyTerminalColor("MODE", PARAM_COLOR) + "]\n\n";
+        output += leftPadding + "Changes the program mode on the target. Triggers a target reset.\n";
+        output += leftPadding + "Valid modes: \"boot\" and \"user\".\n\n";
+        output += leftPadding + "Examples:\n\n";
+        output += leftPadding + "mon " + StringService::applyTerminalColor("program_mode", CMD_COLOR) + " "
+            + StringService::applyTerminalColor("boot", PARAM_COLOR) + "\n";
+        output += leftPadding + "  To switch to boot mode, where the mapped program memory segment aliases the boot"
+            " segment (key: \"" + this->bootProgramSegmentDescriptor.key + "\").\n\n";
+        output += leftPadding + "mon " + StringService::applyTerminalColor("program_mode", CMD_COLOR) + " "
+            + StringService::applyTerminalColor("user", PARAM_COLOR) + "\n";
+        output += leftPadding + "  To switch to user mode, where the mapped program memory segment aliases the main"
+            " program segment (key: \"" + this->mainProgramSegmentDescriptor.key + "\").\n";
+
+        return output;
+    }
+
     std::optional<PassthroughResponse> WchRiscV::invokePassthroughCommand(const PassthroughCommand& command) {
         using Services::StringService;
 
@@ -362,7 +391,7 @@ namespace Targets::RiscV::Wch
         auto response = PassthroughResponse{};
 
         try {
-            if (arguments[0] == "pm") {
+            if (arguments[0] == "program_mode") {
                 const auto &actualAliasedSegment = this->resolveAliasedMemorySegment();
 
                 if (arguments.size() == 1) {

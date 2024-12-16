@@ -691,6 +691,10 @@ namespace Targets::Microchip::Avr8
         return this->activeProgrammingSession.has_value();
     }
 
+    std::string Avr8::passthroughCommandHelpText() {
+        return {};
+    }
+
     std::optional<PassthroughResponse> Avr8::invokePassthroughCommand(const PassthroughCommand& command) {
         // AVR targets do not currently support any passthrough commands
         return std::nullopt;

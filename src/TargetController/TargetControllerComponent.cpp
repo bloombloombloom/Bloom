@@ -51,6 +51,7 @@ namespace TargetController
     using Commands::GetTargetProgramCounter;
     using Commands::EnableProgrammingMode;
     using Commands::DisableProgrammingMode;
+    using Commands::GetTargetPassthroughHelpText;
     using Commands::InvokeTargetPassthroughCommand;
 
     using Responses::Response;
@@ -61,6 +62,7 @@ namespace TargetController
     using Responses::TargetStackPointer;
     using Responses::TargetProgramCounter;
     using Responses::ProgramBreakpoint;
+    using Responses::TargetPassthroughHelpText;
     using Responses::TargetPassthroughResponse;
 
     TargetControllerComponent::TargetControllerComponent(
@@ -262,6 +264,10 @@ namespace TargetController
 
         this->registerCommandHandler<DisableProgrammingMode>(
             std::bind(&TargetControllerComponent::handleDisableProgrammingMode, this, std::placeholders::_1)
+        );
+
+        this->registerCommandHandler<GetTargetPassthroughHelpText>(
+            std::bind(&TargetControllerComponent::handleTargetPassthroughHelpText, this, std::placeholders::_1)
         );
 
         this->registerCommandHandler<InvokeTargetPassthroughCommand>(
@@ -1178,6 +1184,12 @@ namespace TargetController
         }
 
         return std::make_unique<Response>();
+    }
+
+    std::unique_ptr<TargetPassthroughHelpText> TargetControllerComponent::handleTargetPassthroughHelpText(
+        GetTargetPassthroughHelpText& command
+    ) {
+        return std::make_unique<TargetPassthroughHelpText>(this->target->passthroughCommandHelpText());
     }
 
     std::unique_ptr<TargetPassthroughResponse> TargetControllerComponent::handleTargetPassthroughCommand(

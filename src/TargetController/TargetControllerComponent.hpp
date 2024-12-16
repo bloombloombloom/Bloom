@@ -45,6 +45,7 @@
 #include "Commands/GetTargetProgramCounter.hpp"
 #include "Commands/EnableProgrammingMode.hpp"
 #include "Commands/DisableProgrammingMode.hpp"
+#include "Commands/GetTargetPassthroughHelpText.hpp"
 #include "Commands/InvokeTargetPassthroughCommand.hpp"
 
 // Responses
@@ -58,6 +59,7 @@
 #include "Responses/TargetStackPointer.hpp"
 #include "Responses/TargetProgramCounter.hpp"
 #include "Responses/ProgramBreakpoint.hpp"
+#include "Responses/TargetPassthroughHelpText.hpp"
 #include "Responses/TargetPassthroughResponse.hpp"
 
 #include "src/DebugToolDrivers/DebugTools.hpp"
@@ -381,6 +383,9 @@ namespace TargetController
         );
         std::unique_ptr<Responses::Response> handleEnableProgrammingMode(Commands::EnableProgrammingMode& command);
         std::unique_ptr<Responses::Response> handleDisableProgrammingMode(Commands::DisableProgrammingMode& command);
+        std::unique_ptr<Responses::TargetPassthroughHelpText> handleTargetPassthroughHelpText(
+            Commands::GetTargetPassthroughHelpText& command
+        );
         std::unique_ptr<Responses::TargetPassthroughResponse> handleTargetPassthroughCommand(
             Commands::InvokeTargetPassthroughCommand& command
         );
