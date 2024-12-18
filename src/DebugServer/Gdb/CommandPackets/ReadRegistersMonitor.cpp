@@ -1,6 +1,7 @@
 #include "ReadRegistersMonitor.hpp"
 
 #include <bitset>
+#include <algorithm>
 
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/PartialResponsePacket.hpp"
@@ -77,8 +78,8 @@ namespace DebugServer::Gdb::CommandPackets
 
             if (!registerKey.has_value()) {
                 debugSession.connection.writePacket(PartialResponsePacket{StringService::toHex(
-                    "Reading all registers in " + registerGroupDescriptor.name + " register group, from "
-                        + peripheralDescriptor.name + " peripheral...\n\n"
+                    "Reading all registers in \"" + registerGroupDescriptor.name + "\" register group, from \""
+                        + peripheralDescriptor.name + "\" peripheral...\n\n"
                 )});
                 this->handleRegisterGroupOutput(registerGroupDescriptor, debugSession, targetControllerService);
                 debugSession.connection.writePacket(ResponsePacket{StringService::toHex("\n")});
@@ -110,7 +111,7 @@ namespace DebugServer::Gdb::CommandPackets
         DebugSession& debugSession,
         TargetControllerService& targetControllerService
     ) {
-        auto output = std::string{"\nName: " + registerDescriptor.name + "\n"};
+        auto output = std::string{"\nName: \"" + registerDescriptor.name + "\"\n"};
         output += "Address: " + StringService::applyTerminalColor(
             "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor.startAddress)),
             StringService::TerminalColor::BLUE
@@ -137,9 +138,9 @@ namespace DebugServer::Gdb::CommandPackets
                 StringService::TerminalColor::DARK_YELLOW
             ) + ")\n";
 
-            for (const auto& [bitFieldKey, bitFieldDescriptor] : registerDescriptor.bitFieldDescriptorsByKey) {
-                output += bitFieldDescriptor.name + ": " + StringService::applyTerminalColor(
-                    "0b" + StringService::toBinaryStringWithMask(value, bitFieldDescriptor.mask),
+            for (const auto* bitFieldDescriptor : this->sortBitFieldDescriptors(registerDescriptor.bitFieldDescriptorsByKey)) {
+                output += bitFieldDescriptor->name + ": " + StringService::applyTerminalColor(
+                    "0b" + StringService::toBinaryStringWithMask(value, bitFieldDescriptor->mask),
                     StringService::TerminalColor::DARK_YELLOW
                 ) + " ";
 
@@ -160,7 +161,7 @@ namespace DebugServer::Gdb::CommandPackets
         TargetControllerService& targetControllerService
     ) {
         debugSession.connection.writePacket(PartialResponsePacket{StringService::toHex(
-            "Reading " + peripheralDescriptor.name + " peripheral registers...\n\n"
+            "Reading \"" + peripheralDescriptor.name + "\" peripheral registers...\n\n"
         )});
 
         for (const auto& [groupKey, groupDescriptor] : peripheralDescriptor.registerGroupDescriptorsByKey) {
@@ -175,23 +176,23 @@ namespace DebugServer::Gdb::CommandPackets
         DebugSession& debugSession,
         TargetControllerService& targetControllerService
     ) {
-        for (const auto& [registerKey, registerDescriptor] : groupDescriptor.registerDescriptorsByKey) {
-            auto output = std::string{registerDescriptor.absoluteGroupKey + ", "};
-            output += registerDescriptor.key + ", ";
-            output += registerDescriptor.name + ", ";
+        for (const auto* registerDescriptor : this->sortRegisterDescriptors(groupDescriptor.registerDescriptorsByKey)) {
+            auto output = std::string{"`" + registerDescriptor->absoluteGroupKey + "`, "};
+            output += "`" + registerDescriptor->key + "`, ";
+            output += "\"" + registerDescriptor->name + "\", ";
             output += StringService::applyTerminalColor(
-                "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor.startAddress)),
+                "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor->startAddress)),
                 StringService::TerminalColor::BLUE
             ) + ", ";
-            output += std::to_string(registerDescriptor.size * 8) + "-bit | ";
+            output += std::to_string(registerDescriptor->size * 8) + "-bit | ";
 
-            if (registerDescriptor.access.readable) {
+            if (registerDescriptor->access.readable) {
                 const auto value = IntegerService::toUint64(
-                    targetControllerService.readRegister(registerDescriptor)
+                    targetControllerService.readRegister(*registerDescriptor)
                 );
 
                 output += StringService::applyTerminalColor(
-                    "0x" + StringService::asciiToUpper(StringService::toHex(value)).substr(16 - (registerDescriptor.size * 2)),
+                    "0x" + StringService::asciiToUpper(StringService::toHex(value)).substr(16 - (registerDescriptor->size * 2)),
                     StringService::TerminalColor::DARK_YELLOW
                 );
                 output += " (" + StringService::applyTerminalColor(
@@ -199,13 +200,13 @@ namespace DebugServer::Gdb::CommandPackets
                     StringService::TerminalColor::DARK_YELLOW
                 );
                 output += ", " + StringService::applyTerminalColor(
-                    "0b" + std::bitset<64>{value}.to_string().substr(64 - (registerDescriptor.size * 8)),
+                    "0b" + std::bitset<64>{value}.to_string().substr(64 - (registerDescriptor->size * 8)),
                     StringService::TerminalColor::DARK_YELLOW
                 ) + ")";
 
-                for (const auto& [bitFieldKey, bitFieldDescriptor] : registerDescriptor.bitFieldDescriptorsByKey) {
-                    output += ", " + bitFieldDescriptor.name + ": " + StringService::applyTerminalColor(
-                        "0b" + StringService::toBinaryStringWithMask(value, bitFieldDescriptor.mask),
+                for (const auto* bitFieldDescriptor : this->sortBitFieldDescriptors(registerDescriptor->bitFieldDescriptorsByKey)) {
+                    output += ", " + bitFieldDescriptor->name + ": " + StringService::applyTerminalColor(
+                        "0b" + StringService::toBinaryStringWithMask(value, bitFieldDescriptor->mask),
                         StringService::TerminalColor::DARK_YELLOW
                     );
                 }
@@ -221,5 +222,59 @@ namespace DebugServer::Gdb::CommandPackets
         for (const auto& [subGroupKey, subGroupDescriptor] : groupDescriptor.subgroupDescriptorsByKey) {
             this->handleRegisterGroupOutput(subGroupDescriptor, debugSession, targetControllerService);
         }
+    }
+
+    std::vector<const Targets::TargetRegisterDescriptor*> ReadRegistersMonitor::sortRegisterDescriptors(
+        const std::map<std::string, Targets::TargetRegisterDescriptor, std::less<void>>& map
+    ) {
+        auto output = std::vector<const Targets::TargetRegisterDescriptor*>{};
+        std::transform(
+            map.begin(),
+            map.end(),
+            std::back_inserter(output),
+            [] (const auto& pair) {
+                return &pair.second;
+            }
+        );
+
+        std::sort(
+            output.begin(),
+            output.end(),
+            [] (
+                const Targets::TargetRegisterDescriptor* descriptorA,
+                const Targets::TargetRegisterDescriptor* descriptorB
+            ) {
+                return descriptorA->startAddress < descriptorB->startAddress;
+            }
+        );
+
+        return output;
+    }
+
+    std::vector<const Targets::TargetBitFieldDescriptor*> ReadRegistersMonitor::sortBitFieldDescriptors(
+        const std::map<std::string, Targets::TargetBitFieldDescriptor>& map
+    ) {
+        auto output = std::vector<const Targets::TargetBitFieldDescriptor*>{};
+        std::transform(
+            map.begin(),
+            map.end(),
+            std::back_inserter(output),
+            [] (const auto& pair) {
+                return &pair.second;
+            }
+        );
+
+        std::sort(
+            output.begin(),
+            output.end(),
+            [] (
+                const Targets::TargetBitFieldDescriptor* descriptorA,
+                const Targets::TargetBitFieldDescriptor* descriptorB
+            ) {
+                return descriptorA->mask < descriptorB->mask;
+            }
+        );
+
+        return output;
     }
 }

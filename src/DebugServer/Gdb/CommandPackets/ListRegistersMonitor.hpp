@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
+#include <map>
+#include <string>
 
 #include "Monitor.hpp"
 
@@ -31,6 +34,10 @@ namespace DebugServer::Gdb::CommandPackets
         void handleRegisterGroupOutput(
             const Targets::TargetRegisterGroupDescriptor& groupDescriptor,
             DebugSession& debugSession
+        );
+
+        static std::vector<const Targets::TargetRegisterDescriptor*> sortRegisterDescriptors(
+            const std::map<std::string, Targets::TargetRegisterDescriptor, std::less<void>>& map
         );
     };
 }

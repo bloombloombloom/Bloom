@@ -73,8 +73,8 @@ namespace DebugServer::Gdb::CommandPackets
             const auto& registerGroupDescriptor = registerGroupDescriptorOpt->get();
 
             debugSession.connection.writePacket(PartialResponsePacket{StringService::toHex(
-                peripheralDescriptor.name + " peripheral registers, in " + registerGroupDescriptor.name
-                    + " register group:\n\n"
+                "\"" + peripheralDescriptor.name + "\" peripheral registers, in \"" + registerGroupDescriptor.name
+                    + "\" register group:\n\n"
             )});
             this->handleRegisterGroupOutput(registerGroupDescriptor, debugSession);
             debugSession.connection.writePacket(ResponsePacket{StringService::toHex("\n")});
@@ -96,13 +96,13 @@ namespace DebugServer::Gdb::CommandPackets
         DebugSession& debugSession
     ) {
         debugSession.connection.writePacket(PartialResponsePacket{StringService::toHex(
-            "---------- " + StringService::applyTerminalColor(
+            "---------- \"" + StringService::applyTerminalColor(
                 peripheralDescriptor.name,
                 StringService::TerminalColor::DARK_GREEN
-            ) + " (" + StringService::applyTerminalColor(
+            ) + "\" (`" + StringService::applyTerminalColor(
                 peripheralDescriptor.key,
                 StringService::TerminalColor::DARK_YELLOW
-            ) + ") peripheral registers ----------\n\n"
+            ) + "`) peripheral registers ----------\n\n"
         )});
 
         for (const auto& [groupKey, groupDescriptor] : peripheralDescriptor.registerGroupDescriptorsByKey) {
@@ -114,18 +114,18 @@ namespace DebugServer::Gdb::CommandPackets
         const Targets::TargetRegisterGroupDescriptor& groupDescriptor,
         DebugSession& debugSession
     ) {
-        for (const auto& [registerKey, registerDescriptor] : groupDescriptor.registerDescriptorsByKey) {
-            auto output = std::string{registerDescriptor.absoluteGroupKey + ", "};
-            output += registerDescriptor.key + ", ";
-            output += registerDescriptor.name + ", ";
+        for (const auto* registerDescriptor : this->sortRegisterDescriptors(groupDescriptor.registerDescriptorsByKey)) {
+            auto output = std::string{"`" + registerDescriptor->absoluteGroupKey + "`, "};
+            output += "`" + registerDescriptor->key + "`, ";
+            output += "\"" + registerDescriptor->name + "\", ";
             output += StringService::applyTerminalColor(
-                "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor.startAddress)),
+                "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor->startAddress)),
                 StringService::TerminalColor::BLUE
             ) + ", ";
-            output += std::to_string(registerDescriptor.size * 8) + "-bit";
+            output += std::to_string(registerDescriptor->size * 8) + "-bit";
 
-            if (registerDescriptor.description.has_value()) {
-                output += ", \"" + *(registerDescriptor.description) + "\"";
+            if (registerDescriptor->description.has_value()) {
+                output += ", \"" + *(registerDescriptor->description) + "\"";
             }
 
             output += "\n";
@@ -135,5 +135,32 @@ namespace DebugServer::Gdb::CommandPackets
         for (const auto& [subGroupKey, subGroupDescriptor] : groupDescriptor.subgroupDescriptorsByKey) {
             this->handleRegisterGroupOutput(subGroupDescriptor, debugSession);
         }
+    }
+
+    std::vector<const Targets::TargetRegisterDescriptor*> ListRegistersMonitor::sortRegisterDescriptors(
+        const std::map<std::string, Targets::TargetRegisterDescriptor, std::less<void>>& map
+    ) {
+        auto output = std::vector<const Targets::TargetRegisterDescriptor*>{};
+        std::transform(
+            map.begin(),
+            map.end(),
+            std::back_inserter(output),
+            [] (const auto& pair) {
+                return &pair.second;
+            }
+        );
+
+        std::sort(
+            output.begin(),
+            output.end(),
+            [] (
+                const Targets::TargetRegisterDescriptor* descriptorA,
+                const Targets::TargetRegisterDescriptor* descriptorB
+            ) {
+                return descriptorA->startAddress < descriptorB->startAddress;
+            }
+        );
+
+        return output;
     }
 }

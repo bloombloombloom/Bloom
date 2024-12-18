@@ -88,7 +88,7 @@ namespace DebugServer::Gdb::CommandPackets
             const auto& registerDescriptor = registerDescriptorOpt->get();
 
             if (!registerDescriptor.access.writable) {
-                throw Exception{registerDescriptor.name + " register is not writeable"};
+                throw Exception{"\"" + registerDescriptor.name + "\" register is not writeable"};
             }
 
             if (registerDescriptor.size > 8) {
@@ -120,8 +120,8 @@ namespace DebugServer::Gdb::CommandPackets
                 "Writing value " + StringService::applyTerminalColor(
                     "0x" + StringService::toHex(value).substr(16 - (registerDescriptor.size * 2)),
                     StringService::TerminalColor::DARK_YELLOW
-                ) + " (" +  std::to_string(buffer.size() * 8) + "-bit"  + ") to " + registerDescriptor.name
-                + " register, at address " + StringService::applyTerminalColor(
+                ) + " (" +  std::to_string(buffer.size() * 8) + "-bit"  + ") to \"" + registerDescriptor.name
+                + "\" register, at address " + StringService::applyTerminalColor(
                     "0x" + StringService::toHex(registerDescriptor.startAddress),
                     StringService::TerminalColor::BLUE
                 ) + ", via `" + registerDescriptor.addressSpaceKey + "` address space...\n"
