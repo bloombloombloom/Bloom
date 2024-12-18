@@ -151,7 +151,7 @@ namespace DebugServer::Gdb::CommandPackets
             ).substr(16 - (registerDescriptor.size * 2));
             Logger::debug("Initial register value: 0x" + initialValueHex);
             debugSession.connection.writePacket(PartialResponsePacket{StringService::toHex(
-                "Initial register value " + StringService::applyTerminalColor(
+                "Initial register value: " + StringService::applyTerminalColor(
                     "0x" + initialValueHex,
                     StringService::TerminalColor::DARK_YELLOW
                 ) + "\n"
@@ -163,7 +163,7 @@ namespace DebugServer::Gdb::CommandPackets
             ).substr(16 - (registerDescriptor.size * 2));
             Logger::debug("New register value: 0x" + newValueHex);
             debugSession.connection.writePacket(PartialResponsePacket{StringService::toHex(
-                "New register value " + StringService::applyTerminalColor(
+                "New register value: " + StringService::applyTerminalColor(
                     "0x" + newValueHex,
                     StringService::TerminalColor::DARK_YELLOW
                 ) + "\n\n"
