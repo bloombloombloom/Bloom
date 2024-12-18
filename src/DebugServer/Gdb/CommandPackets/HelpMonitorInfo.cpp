@@ -115,6 +115,31 @@ namespace DebugServer::Gdb::CommandPackets
             + StringService::applyTerminalColor("0x40", PARAM_COLOR) + "\n";
         output += leftPadding + "  Same as above, excluding the register group key.\n\n";
 
+        output += StringService::applyTerminalColor("wrb", CMD_COLOR) + " ["
+            + StringService::applyTerminalColor("PERIPHERAL_KEY", PARAM_COLOR) + "] ["
+            + StringService::applyTerminalColor("ABS_REG_GROUP_KEY", PARAM_COLOR) + "] ["
+            + StringService::applyTerminalColor("REG_KEY", PARAM_COLOR) + "] ["
+            + StringService::applyTerminalColor("BIT_FIELD_KEY", PARAM_COLOR) + "] ["
+            + StringService::applyTerminalColor("VALUE_BINARY", PARAM_COLOR) + "]\n\n";
+        output += leftPadding + "Applies the given bit field value to the current value of the given register. The value\n";
+        output += leftPadding + "must take the form of a binary string. The register group key can be omitted if the\n";
+        output += leftPadding + "peripheral contains a single register group, and the subject register resides directly within\n";
+        output += leftPadding + "that group (not in any subgroup).\n\n";
+        output += leftPadding + "Examples:\n\n";
+        output += leftPadding + "mon " + StringService::applyTerminalColor("wrb", CMD_COLOR) + " "
+            + StringService::applyTerminalColor("rcc", PARAM_COLOR) + " "
+            + StringService::applyTerminalColor("rcc", PARAM_COLOR) + " "
+            + StringService::applyTerminalColor("ctlr", PARAM_COLOR) + " "
+            + StringService::applyTerminalColor("hsion", PARAM_COLOR) + " "
+            + StringService::applyTerminalColor("0b1", PARAM_COLOR) + "\n";
+        output += leftPadding + "  Sets the `hsion` bit field to 0b1, in the `ctlr` register, in the `rcc` register group, in the `rcc` peripheral.\n\n";
+        output += leftPadding + "mon " + StringService::applyTerminalColor("wrb", CMD_COLOR) + " "
+            + StringService::applyTerminalColor("rcc", PARAM_COLOR) + " "
+            + StringService::applyTerminalColor("ctlr", PARAM_COLOR) + " "
+            + StringService::applyTerminalColor("hsion", PARAM_COLOR) + " "
+            + StringService::applyTerminalColor("1", PARAM_COLOR) + "\n";
+        output += leftPadding + "  Same as above, excluding the register group key and the \"0b\" prefix in the given value.\n\n";
+
         if (targetDescriptor.family == Targets::TargetFamily::AVR_8) {
             output += StringService::applyTerminalColor("eeprom fill", CMD_COLOR) + " ["
                 + StringService::applyTerminalColor("FILL_VALUE_HEX", PARAM_COLOR) + "]\n\n";

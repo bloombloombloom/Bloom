@@ -28,6 +28,8 @@ namespace Targets
         TargetBitFieldDescriptor(TargetBitFieldDescriptor&& other) noexcept = default;
         TargetBitFieldDescriptor& operator = (TargetBitFieldDescriptor&& other) = default;
 
+        std::size_t width() const;
+
         [[nodiscard]] TargetBitFieldDescriptor clone() const;
 
     private:

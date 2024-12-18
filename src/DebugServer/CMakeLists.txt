@@ -23,6 +23,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ListRegistersMonitor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ReadRegistersMonitor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/WriteRegisterMonitor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/WriteRegisterBitFieldMonitor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/VContContinueExecution.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/VContStepExecution.cpp
 

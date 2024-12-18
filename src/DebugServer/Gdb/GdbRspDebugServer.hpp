@@ -38,6 +38,7 @@
 #include "CommandPackets/ListRegistersMonitor.hpp"
 #include "CommandPackets/ReadRegistersMonitor.hpp"
 #include "CommandPackets/WriteRegisterMonitor.hpp"
+#include "CommandPackets/WriteRegisterBitFieldMonitor.hpp"
 #include "CommandPackets/VContContinueExecution.hpp"
 #include "CommandPackets/VContStepExecution.hpp"
 
@@ -492,6 +493,10 @@ namespace DebugServer::Gdb
 
                 if (monitorCommand->command.find("rr") == 0) {
                     return std::make_unique<CommandPackets::ReadRegistersMonitor>(std::move(*(monitorCommand.release())));
+                }
+
+                if (monitorCommand->command.find("wrb") == 0) {
+                    return std::make_unique<CommandPackets::WriteRegisterBitFieldMonitor>(std::move(*(monitorCommand.release())));
                 }
 
                 if (monitorCommand->command.find("wr") == 0) {

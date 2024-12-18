@@ -21,6 +21,7 @@ namespace Services
         static std::string replaceUnprintable(std::string_view str);
 
         static bool isNumeric(std::string_view str);
+        static bool isBinary(std::string_view str);
 
         static std::string toHex(std::uint64_t value);
         static std::string toHex(std::uint32_t value);

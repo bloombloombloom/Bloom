@@ -54,7 +54,13 @@ namespace Services
 
     bool StringService::isNumeric(std::string_view str) {
         return !std::any_of(str.begin(), str.end(), [] (unsigned char character) {
-            return std::isdigit(character);
+            return !std::isdigit(character);
+        });
+    }
+
+    bool StringService::isBinary(std::string_view str) {
+        return !std::any_of(str.begin(), str.end(), [] (unsigned char character) {
+            return character != '0' && character != '1';
         });
     }
 
