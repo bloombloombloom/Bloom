@@ -143,7 +143,7 @@ namespace DebugServer::Gdb::CommandPackets
                     "0b" + rawBitFieldValue,
                     StringService::TerminalColor::DARK_YELLOW
                 ) + " to \"" + bitFieldDescriptor.name + "\" bit field, to \"" + registerDescriptor.name
-                + "\" register, via `" + registerDescriptor.addressSpaceKey + "` address space...\n"
+                + "\" register...\n"
             )});
 
             const auto initialValueHex = StringService::toHex(
