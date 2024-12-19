@@ -140,6 +140,7 @@ namespace Targets::RiscV::Wch
         auto& sysAddressSpaceDescriptor = descriptor.getAddressSpaceDescriptor("system");
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor("main_program").inspectionEnabled = true;
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_ram").inspectionEnabled = true;
+        sysAddressSpaceDescriptor.getMemorySegmentDescriptor("boot_program").inspectionEnabled = true;
 
         /*
          * WCH targets typically possess a memory segment that is mapped to program memory. We cannot write to this

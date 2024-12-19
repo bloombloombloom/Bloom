@@ -14,6 +14,7 @@ namespace Targets
         bool executable,
         const TargetMemoryAccess& debugModeAccess,
         const TargetMemoryAccess& programmingModeAccess,
+        bool inspectionEnabled,
         std::optional<TargetMemorySize> pageSize
     )
         : id(static_cast<TargetMemorySegmentId>(Services::StringService::generateUniqueInteger(addressSpaceKey + key)))
@@ -25,6 +26,7 @@ namespace Targets
         , executable(executable)
         , debugModeAccess(debugModeAccess)
         , programmingModeAccess(programmingModeAccess)
+        , inspectionEnabled(inspectionEnabled)
         , pageSize(pageSize)
     {}
 

@@ -28,6 +28,7 @@ namespace Targets
         bool executable;
         TargetMemoryAccess debugModeAccess;
         TargetMemoryAccess programmingModeAccess;
+        bool inspectionEnabled;
         std::optional<TargetMemorySize> pageSize;
 
         TargetMemorySegmentDescriptor(
@@ -40,6 +41,7 @@ namespace Targets
             bool executable,
             const TargetMemoryAccess& debugModeAccess,
             const TargetMemoryAccess& programmingModeAccess,
+            bool inspectionEnabled,
             std::optional<TargetMemorySize> pageSize
         );
 
