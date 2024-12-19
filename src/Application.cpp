@@ -29,7 +29,7 @@ Application::Application(std::vector<std::string>&& arguments)
 
 int Application::run() {
     try {
-        this->setName("Bloom");
+        this->setName("bloom");
 
         if (this->arguments.size() > 1) {
             auto& firstArg = this->arguments.at(1);
