@@ -84,7 +84,7 @@ const std::string& Logger::threadName() {
          * We override the main thread name when printing logs, to keep the format of the thread name in the
          * logs consistent.
          */
-        nameIt = nameCache.emplace(threadId, name == "Bloom" ? "MT" : name).first;
+        nameIt = nameCache.emplace(threadId, name == "bloom" ? "MT" : name).first;
     }
 
     return nameIt->second;
