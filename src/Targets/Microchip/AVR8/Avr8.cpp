@@ -611,14 +611,12 @@ namespace Targets::Microchip::Avr8
                 : gpioPadDescriptor.inputRegisterDescriptor;
 
             output.emplace_back(
-                TargetGpioPadDescriptorAndStatePair{
-                    *padDescriptor,
-                    TargetGpioPadState{
-                        (readGpioReg(stateRegisterDescriptor) & gpioPadDescriptor.registerMask) != 0
-                            ? TargetGpioPadState::State::HIGH
-                            : TargetGpioPadState::State::LOW,
-                        ddrValue
-                    }
+                *padDescriptor,
+                TargetGpioPadState{
+                    (readGpioReg(stateRegisterDescriptor) & gpioPadDescriptor.registerMask) != 0
+                        ? TargetGpioPadState::State::HIGH
+                        : TargetGpioPadState::State::LOW,
+                    ddrValue
                 }
             );
         }

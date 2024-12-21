@@ -100,9 +100,9 @@ namespace Targets::RiscV::Wch
         std::map<TargetPadId, GpioPadDescriptor> gpioPadDescriptorsByPadId;
 
         const TargetMemorySegmentDescriptor& resolveAliasedMemorySegment();
-        TargetMemoryAddress transformMappedAddress(
+        TargetMemoryAddress deAliasMappedAddress(
             TargetMemoryAddress address,
-            const TargetMemorySegmentDescriptor& segmentDescriptor
+            const TargetMemorySegmentDescriptor& aliasedSegmentDescriptor
         );
 
         void unlockFlash();

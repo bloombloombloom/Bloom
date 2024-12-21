@@ -64,8 +64,8 @@ namespace Targets::RiscV::Wch
         }
 
         Logger::info(
-            "Selected program memory segment: \"" + this->selectedProgramSegmentDescriptor.name + "\" (\""
-                + this->selectedProgramSegmentDescriptor.key + "\")"
+            "Selected program memory segment: \"" + this->selectedProgramSegmentDescriptor.name + "\" (`"
+                + this->selectedProgramSegmentDescriptor.key + "`)"
         );
 
         if (
@@ -156,9 +156,9 @@ namespace Targets::RiscV::Wch
         sysAddressSpaceDescriptor.getMemorySegmentDescriptor("boot_program").inspectionEnabled = true;
 
         /*
-         * WCH targets typically possess a memory segment that is mapped to program memory. We cannot write to this
-         * segment directly, which is why it's described as read-only in Bloom's TDFs. However, we enable writing to
-         * the segment by forwarding any write operations to the appropriate (aliased) segment.
+         * We cannot write to the mapped program memory segment directly, which is why it's described as read-only in
+         * Bloom's TDFs. However, we enable writing to the segment by forwarding any write operations to the selected
+         * program segment.
          *
          * For this reason, we adjust the access member on the memory segment descriptor so that other components
          * within Bloom will see the segment as writeable.
@@ -177,20 +177,17 @@ namespace Targets::RiscV::Wch
             breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
             && breakpoint.memorySegmentDescriptor == this->mappedSegmentDescriptor
         ) {
-            if (
-                !this->selectedProgramSegmentDescriptor.debugModeAccess.writeable
-                && (!this->programmingMode || !this->selectedProgramSegmentDescriptor.programmingModeAccess.writeable)
-            ) {
+            if (!this->selectedProgramSegmentDescriptor.programmingModeAccess.writeable) {
                 throw Exceptions::Exception{
-                    "The selected program memory segment (\"" + this->selectedProgramSegmentDescriptor.key
-                        + "\") is not writable - cannot insert software breakpoint"
+                    "The selected program memory segment (`" + this->selectedProgramSegmentDescriptor.key
+                        + "`) is not writable - cannot insert software breakpoint"
                 };
             }
 
             this->riscVDebugInterface->setProgramBreakpoint(TargetProgramBreakpoint{
                 .addressSpaceDescriptor = this->sysAddressSpaceDescriptor,
                 .memorySegmentDescriptor = this->selectedProgramSegmentDescriptor,
-                .address = this->transformMappedAddress(breakpoint.address, this->selectedProgramSegmentDescriptor),
+                .address = this->deAliasMappedAddress(breakpoint.address, this->selectedProgramSegmentDescriptor),
                 .size = breakpoint.size,
                 .type = breakpoint.type
             });
@@ -206,20 +203,17 @@ namespace Targets::RiscV::Wch
             breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
             && breakpoint.memorySegmentDescriptor == this->mappedSegmentDescriptor
         ) {
-            if (
-                !this->selectedProgramSegmentDescriptor.debugModeAccess.writeable
-                && (!this->programmingMode || !this->selectedProgramSegmentDescriptor.programmingModeAccess.writeable)
-            ) {
+            if (!this->selectedProgramSegmentDescriptor.programmingModeAccess.writeable) {
                 throw Exceptions::Exception{
-                    "The selected program memory segment (\"" + this->selectedProgramSegmentDescriptor.key
-                        + "\") is not writable - cannot remove software breakpoint"
+                    "The selected program memory segment (`" + this->selectedProgramSegmentDescriptor.key
+                        + "`) is not writable - cannot remove software breakpoint"
                 };
             }
 
             this->riscVDebugInterface->removeProgramBreakpoint(TargetProgramBreakpoint{
                 .addressSpaceDescriptor = this->sysAddressSpaceDescriptor,
                 .memorySegmentDescriptor = this->selectedProgramSegmentDescriptor,
-                .address = this->transformMappedAddress(breakpoint.address, this->selectedProgramSegmentDescriptor),
+                .address = this->deAliasMappedAddress(breakpoint.address, this->selectedProgramSegmentDescriptor),
                 .size = breakpoint.size,
                 .type = breakpoint.type
             });
@@ -241,7 +235,7 @@ namespace Targets::RiscV::Wch
 
         if (memorySegmentDescriptor == this->mappedSegmentDescriptor) {
             const auto& aliasedSegment = this->selectedProgramSegmentDescriptor;
-            const auto transformedAddress = this->transformMappedAddress(startAddress, aliasedSegment);
+            const auto transformedAddress = this->deAliasMappedAddress(startAddress, aliasedSegment);
 
             const auto addressRange = TargetMemoryAddressRange{
                 transformedAddress,
@@ -252,8 +246,8 @@ namespace Targets::RiscV::Wch
                 throw Exceptions::Exception{
                     "Read access range (0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"
                         + StringService::toHex(addressRange.endAddress) + ", " + std::to_string(addressRange.size())
-                        + " bytes) exceeds the boundary of the selected program segment \"" + aliasedSegment.key
-                        + "\" (0x" + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
+                        + " bytes) exceeds the boundary of the selected program segment `" + aliasedSegment.key
+                        + "` (0x" + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
                         + StringService::toHex(aliasedSegment.addressRange.endAddress) + ", "
                         + std::to_string(aliasedSegment.addressRange.size()) + " bytes)"
                 };
@@ -293,11 +287,11 @@ namespace Targets::RiscV::Wch
                 && (!this->programmingMode || !aliasedSegment.programmingModeAccess.writeable)
             ) {
                 throw Exceptions::Exception{
-                    "The selected program memory segment (\"" + aliasedSegment.key + "\") is not writable"
+                    "The selected program memory segment (`" + aliasedSegment.key + "`) is not writable"
                 };
             }
 
-            const auto transformedAddress = this->transformMappedAddress(startAddress, aliasedSegment);
+            const auto transformedAddress = this->deAliasMappedAddress(startAddress, aliasedSegment);
 
             const auto addressRange = TargetMemoryAddressRange{
                 transformedAddress,
@@ -308,8 +302,8 @@ namespace Targets::RiscV::Wch
                 throw Exceptions::Exception{
                     "Write access range (0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"
                         + StringService::toHex(addressRange.endAddress) + ", " + std::to_string(addressRange.size())
-                        + " bytes) exceeds the boundary of the selected program segment \"" + aliasedSegment.key
-                        + "\" (0x" + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
+                        + " bytes) exceeds the boundary of the selected program segment `" + aliasedSegment.key
+                        + "` (0x" + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
                         + StringService::toHex(aliasedSegment.addressRange.endAddress) + ", "
                         + std::to_string(aliasedSegment.addressRange.size()) + " bytes)"
                 };
@@ -358,18 +352,18 @@ namespace Targets::RiscV::Wch
                  * So, we have a program counter that's addressing a totally different program, but to most external
                  * entities, it will appear as if it's addressing the same program.
                  *
-                 * In order to avoid causing havoc and potentially misleading the user, we transform the PC to its
-                 * aliased address. That way, it will be clear to all external entities, that the target is currently
-                 * executing code in a different memory segment to the one that was selected for debugging.
+                 * In order to avoid causing havoc and potentially misleading the user, we de-alias the program
+                 * counter in this scenario. That way, it will be clear to all external entities, that the target is
+                 * currently executing code in a different memory segment to the one that was selected for debugging.
                  */
-                const auto transformedAddress = this->transformMappedAddress(programCounter, actualAliasedSegment);
+                const auto deAliasedAddress = this->deAliasMappedAddress(programCounter, actualAliasedSegment);
                 Logger::warning(
-                    "The mapped program memory segment is currently aliasing a foreign segment (\""
-                        + actualAliasedSegment.key + "\") - the program counter (0x"
-                        + StringService::toHex(programCounter) + ") has been transformed to the aliased address (0x"
-                        + StringService::toHex(transformedAddress) + ")"
+                    "The mapped program memory segment is currently aliasing a foreign segment (`"
+                        + actualAliasedSegment.key + "`) - the program counter (0x"
+                        + StringService::toHex(programCounter) + ") has been de-aliased to 0x"
+                        + StringService::toHex(deAliasedAddress)
                 );
-                return transformedAddress;
+                return deAliasedAddress;
             }
         }
 
@@ -412,14 +406,12 @@ namespace Targets::RiscV::Wch
 
             if (padMode == static_cast<std::uint8_t>(GpioPadDirection::INPUT)) {
                 output.emplace_back(
-                    TargetGpioPadDescriptorAndStatePair{
-                        *padDescriptor,
-                        TargetGpioPadState{
-                            readGpioReg(gpioPadDescriptor.inputDataRegisterDescriptor).bitFieldAs<bool>(
-                                gpioPadDescriptor.inputDataBitFieldDescriptor
-                            ) ? TargetGpioPadState::State::HIGH : TargetGpioPadState::State::LOW,
-                            TargetGpioPadState::DataDirection::INPUT
-                        }
+                    *padDescriptor,
+                    TargetGpioPadState{
+                        readGpioReg(gpioPadDescriptor.inputDataRegisterDescriptor).bitFieldAs<bool>(
+                            gpioPadDescriptor.inputDataBitFieldDescriptor
+                        ) ? TargetGpioPadState::State::HIGH : TargetGpioPadState::State::LOW,
+                        TargetGpioPadState::DataDirection::INPUT
                     }
                 );
 
@@ -427,14 +419,12 @@ namespace Targets::RiscV::Wch
             }
 
             output.emplace_back(
-                TargetGpioPadDescriptorAndStatePair{
-                    *padDescriptor,
-                    TargetGpioPadState{
-                        readGpioReg(gpioPadDescriptor.outputDataRegisterDescriptor).bitFieldAs<bool>(
-                            gpioPadDescriptor.outputDataBitFieldDescriptor
-                        ) ? TargetGpioPadState::State::HIGH : TargetGpioPadState::State::LOW,
-                        TargetGpioPadState::DataDirection::OUTPUT
-                    }
+                *padDescriptor,
+                TargetGpioPadState{
+                    readGpioReg(gpioPadDescriptor.outputDataRegisterDescriptor).bitFieldAs<bool>(
+                        gpioPadDescriptor.outputDataBitFieldDescriptor
+                    ) ? TargetGpioPadState::State::HIGH : TargetGpioPadState::State::LOW,
+                    TargetGpioPadState::DataDirection::OUTPUT
                 }
             );
         }
@@ -502,11 +492,11 @@ namespace Targets::RiscV::Wch
         output += leftPadding + "mon " + StringService::applyTerminalColor("program_mode", CMD_COLOR) + " "
             + StringService::applyTerminalColor("boot", PARAM_COLOR) + "\n";
         output += leftPadding + "  To switch to boot mode, where the mapped program memory segment aliases the boot"
-            " segment (key: \"" + this->bootProgramSegmentDescriptor.key + "\").\n\n";
+            " segment (`" + this->bootProgramSegmentDescriptor.key + "`).\n\n";
         output += leftPadding + "mon " + StringService::applyTerminalColor("program_mode", CMD_COLOR) + " "
             + StringService::applyTerminalColor("user", PARAM_COLOR) + "\n";
         output += leftPadding + "  To switch to user mode, where the mapped program memory segment aliases the main"
-            " program segment (key: \"" + this->mainProgramSegmentDescriptor.key + "\").\n";
+            " program segment (`" + this->mainProgramSegmentDescriptor.key + "`).\n";
 
         return output;
     }
@@ -530,11 +520,11 @@ namespace Targets::RiscV::Wch
                         actualAliasedSegment == this->bootProgramSegmentDescriptor ? "boot mode" : "user mode",
                         StringService::TerminalColor::DARK_YELLOW
                     ) + "\"\n";
-                    response.output += "Aliased memory segment key: \""
+                    response.output += "Aliased memory segment key: `"
                         + StringService::applyTerminalColor(
                             actualAliasedSegment.key,
                             StringService::TerminalColor::DARK_YELLOW
-                        ) + "\"\n";
+                        ) + "`\n";
                     response.output += "Mapped address -> aliased address: " + StringService::applyTerminalColor(
                         "0x" + StringService::asciiToUpper(
                             StringService::toHex(this->mappedSegmentDescriptor.addressRange.startAddress)
@@ -629,25 +619,25 @@ namespace Targets::RiscV::Wch
             probeAddress
         ) ? this->mainProgramSegmentDescriptor : this->bootProgramSegmentDescriptor;
 
-        Logger::debug("Aliased program memory segment: \"" + segment.key + "\"");
+        Logger::debug("Aliased program memory segment: `" + segment.key + "`");
         return segment;
     }
 
-    TargetMemoryAddress WchRiscV::transformMappedAddress(
+    TargetMemoryAddress WchRiscV::deAliasMappedAddress(
         TargetMemoryAddress address,
-        const TargetMemorySegmentDescriptor& segmentDescriptor
+        const TargetMemorySegmentDescriptor& aliasedSegmentDescriptor
     ) {
         using Services::StringService;
 
-        const auto transformedAddress = address - this->mappedSegmentDescriptor.addressRange.startAddress
-            + segmentDescriptor.addressRange.startAddress;
+        const auto deAliasedAddress = address - this->mappedSegmentDescriptor.addressRange.startAddress
+            + aliasedSegmentDescriptor.addressRange.startAddress;
 
         Logger::debug(
-            "Transformed mapped program memory address 0x" + StringService::toHex(address) + " to 0x"
-                + StringService::toHex(transformedAddress) + " (segment: \"" + segmentDescriptor.key + "\")"
+            "De-aliased mapped program memory address 0x" + StringService::toHex(address) + " to 0x"
+                + StringService::toHex(deAliasedAddress) + " (segment: `" + aliasedSegmentDescriptor.key + "`)"
         );
 
-        return transformedAddress;
+        return deAliasedAddress;
     }
 
     void WchRiscV::unlockFlash() {
